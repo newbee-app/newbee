@@ -1,3 +1,4 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import Joi from 'joi';
 import winston from 'winston';
 
@@ -7,10 +8,16 @@ export const environment = {
 
 export interface AppConfigInterface {
   logging: winston.LoggerOptions;
+  database: TypeOrmModuleOptions;
 }
 
 export const appEnvironmentVariablesSchema = Joi.object({
+  // API port
   PORT: Joi.number(),
+
+  // CockroachDB
+  COCKROACHDB_URL: Joi.string().required(),
+  COCKROACHDB_CLUSTER: Joi.string().required(),
 });
 
 export default () => ({
@@ -38,5 +45,14 @@ export default () => ({
         ),
       }),
     ],
+  },
+  database: {
+    type: 'cockroachdb',
+    url: process.env['COCKROACHDB_URL'],
+    ssl: true,
+    extra: {
+      options: `--cluter=${process.env['COCKROACHDB_CLUSTER']}`,
+    },
+    autoLoadEntities: true,
   },
 });

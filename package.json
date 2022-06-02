@@ -22,12 +22,14 @@
     "@nestjs/config": "~2.1.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/typeorm": "~8.1.2",
     "@nrwl/angular": "14.1.9",
     "joi": "~17.6.0",
     "nest-winston": "~1.6.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.4.0",
     "tslib": "^2.0.0",
+    "typeorm": "~0.3.6",
     "winston": "~3.7.2",
     "zone.js": "~0.11.4"
   },
@@ -64,7 +66,7 @@
     "prettier": "^2.5.1",
     "prettier-plugin-organize-imports": "~2.3.4",
     "ts-jest": "27.1.4",
-    "ts-node": "9.1.1",
+    "ts-node": "~10.7.0",
     "typescript": "~4.6.2"
   }
 }

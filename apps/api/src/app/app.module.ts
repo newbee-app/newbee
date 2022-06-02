@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
 import {
   AppConfigInterface,
@@ -20,6 +21,11 @@ import { AppService } from './app.service';
     WinstonModule.forRootAsync({
       useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
         configService.get('logging', { infer: true }),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+        configService.get('database', { infer: true }),
       inject: [ConfigService],
     }),
   ],
