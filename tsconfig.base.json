@@ -32,7 +32,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@newbee/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@newbee/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@newbee/api/shared/data-access": [
+        "libs/api/shared/data-access/src/index.ts"
+      ],
+      "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

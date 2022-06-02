@@ -4,6 +4,8 @@
   "projects": {
     "api": "apps/api",
     "api-interfaces": "libs/api-interfaces",
+    "api-shared-data-access": "libs/api/shared/data-access",
+    "api-shared-util": "libs/api/shared/util",
     "newbee": "apps/newbee",
     "newbee-e2e": "apps/newbee-e2e"
   }
