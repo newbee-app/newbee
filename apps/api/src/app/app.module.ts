@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WinstonModule } from 'nest-winston';
 import {
+  AppConfigInterface,
   appEnvironmentVariablesSchema,
   default as appConfig,
 } from '../environments/environment';
@@ -14,6 +16,11 @@ import { AppService } from './app.service';
       expandVariables: true,
       validationSchema: appEnvironmentVariablesSchema,
       load: [appConfig],
+    }),
+    WinstonModule.forRootAsync({
+      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+        configService.get('logging', { infer: true }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],

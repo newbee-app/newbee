@@ -24,9 +24,11 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nrwl/angular": "14.1.9",
     "joi": "~17.6.0",
+    "nest-winston": "~1.6.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.4.0",
     "tslib": "^2.0.0",
+    "winston": "~3.7.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
