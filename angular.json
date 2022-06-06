@@ -8,6 +8,9 @@
     "api-shared-util": "libs/api/shared/util",
     "api-user-data-access": "libs/api/user/data-access",
     "api-user-feature": "libs/api/user/feature",
+    "api-user-settings-data-access": "libs/api/user-settings/data-access",
+    "api-user-settings-feature": "libs/api/user-settings/feature",
+    "api-user-settings-util": "libs/api/user-settings/util",
     "api-user-util": "libs/api/user/util",
     "newbee": "apps/newbee",
     "newbee-e2e": "apps/newbee-e2e"
