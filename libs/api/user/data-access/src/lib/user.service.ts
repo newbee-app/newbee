@@ -15,7 +15,7 @@ export class UserService {
     private readonly dataSource: DataSource
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User | undefined> {
+  async create(createUserDto: CreateUserDto): Promise<User | null> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -39,7 +39,7 @@ export class UserService {
       await queryRunner.rollbackTransaction();
 
       this.logger.error(err);
-      return undefined;
+      return null;
     } finally {
       await queryRunner.release();
     }
