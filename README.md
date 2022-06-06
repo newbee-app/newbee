@@ -1,105 +1,64 @@
+# NewBee
 
+## Description
 
-# Newbee
+This repo represents a monolith that encapsulates all of the TypeScript code written by NewBee LLC. NewBee makes use of Nx to handle the complexities of running an enterprise-level monorepo. For all intents and purposes, NewBee projects try to stick with canonical Nx structure and Nx recommendations.
 
-This project was generated using [Nx](https://nx.dev).
+Currently, the only project that NewBee LLC is developing is NewBee, an internal documentation app marketed towards businesses. NewBee is powered by Nest in the backend and Angular in the frontend, both of which maintain first-level support status with Nx. The combination of Nx, Nest, and Angular was made for a couple of reasons.
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+1. They are all opinionated tools (with reasonable opinions) with clear guidelines and recommendations, which drastically cuts down on decision fatigue.
+2. They are all powerful, and come with loads of first-class plugins that allow them to meet most use-cases out-of-the-box.
+3. They are all inspired by each other (Angular was created by and is maintained by Google, Nx was created by a former Google engineer and is based off of Google's proprietary monorepo management tools, Nest is heavily inspired by Angular and follows its conventions), meaning the tools have a high degree of first-class support for each other and maintain compatible philosophies.
+4. They are all well-maintained projects with great documentation and robust developer communities.
 
-🔎 **Smart, Fast and Extensible Build System**
+> The official Nx docs: <https://nx.dev/getting-started/intro>
+> The official Nest docs: <https://docs.nestjs.com/>
+> The official Angular docs: <https://angular.io/docs>
 
-## Quick Start & Documentation
+## The TypeScript configuration
 
-[Nx Documentation](https://nx.dev/angular)
+> The official docs for how to structure a tsconfig.json file: <https://www.typescriptlang.org/tsconfig>
 
-[10-minute video showing all Nx features](https://nx.dev/getting-started/intro)
+The JavaScript projects at NewBee LLC make use of TypeScript, as opposed to vanilla JavaScript, in order to: catch errors before runtime, make the code clearer, and allow for better maintainability as new contributors are tasked with adding to and maintaining the codebase. In order to do this, we make use of tsconfig.json files in all of our TS projects. These project-specific tsconfig.json files inherit from the tsconfig.base.json file that exists in the root dir. When picking out the settings that would go into the base config, choices were made to focus on:
 
-[Interactive Tutorial](https://nx.dev/tutorial/01-create-application)
+1. Catching as many bugs as possible at compile time.
+2. Forcing developers to keep to a defined and predictable standard.
+3. Complying with conventional JavaScript and TypeScript conventions.
+4. Keeping the compiled JavaScript files as small and optimized as possible for use in production deployment.
+5. Giving developers flexibility that does not come at the cost of any of the above points.
 
-## Adding capabilities to your workspace
+As specified in the docs, some options in the tsconfig.base.json file also affect other options. For such options, the root tsconfig.base.json file tries to specify as few lines as possible, meaning "child" options are not specified unless they should explicitly differ from their "parent" option. The following are all of the "parent" options specified in the base file and the "child" options associated with them which were not explicitly changed:
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+- strict
+  - alwaysStrict
+  - strictNullChecks
+  - strictBindCallApply
+  - strictFunctionTypes
+  - strictPropertyInitialization
+  - noImplicitAny
+  - noImplicitThis
+  - useUnknownInCatchVariables
+- esModuleInterop
+  - allowSyntheticDefaultImports
+- target
+  - useDefineForClassFields
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+## Style guide
 
-Below are our core plugins:
+### Importing packages
 
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
+While Prettier handles formatting code most of the time, it explicitly does not organize import statements because, "Prettier only prints code. It does not transform it." However, it's very annoying to have willy-nilly import statements, or import logic that makes sense to one developer but not to another. To simply everything, NewBee projects make use of the `prettier-plugin-organize-imports` package. It organizes import statements alphabetically, which is the convention we will follow.
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+## Opinionated language philosophies to follow
 
-## Generate an application
+- Any scripting that needs to be done should be done in TypeScript.
+- If any third-party packages are needed, stick with what's available in the TypeScript/JavaScript ecosystem.
+- If performance becomes an issue and/or we need to build a tool that compiles down to web assembly, use Rust.
+- For the sake of mobile development, use Dart as all moible development will be done using Flutter.
 
-Run `ng g @nrwl/angular:app my-app` to generate an application.
+## Unorganized thoughts to organize later
 
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@newbee/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
-
-
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+- On the backend, HttpExceptions should be thrown on the controller-level, not on the service-level. If done on the service-level, it's not flexible enough as various controllers might have to throw different exceptions.
+- As DTOs are simple classes (basically interfaces), they should be put in the `util` library associated with their corresponding feature.
+- Code that does not import framework- or library-specific packages should be put in the `util` library associated with their corresponding feature.
+- To avoid issues with barrel files and circular dependencies, put all entity files in the `api-shared-data-access` library.
