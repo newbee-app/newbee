@@ -45,6 +45,12 @@
         "projects": "self"
       }
     ],
+    "lint": [
+      {
+        "target": "lint",
+        "projects": "dependencies"
+      }
+    ],
     "serve": [
       {
         "target": "build",
