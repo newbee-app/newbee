@@ -65,6 +65,9 @@
     },
     "@nrwl/angular:component": {
       "style": "scss"
+    },
+    "@nrwl/nest:library": {
+      "buildable": true
     }
   },
   "defaultProject": "newbee"
