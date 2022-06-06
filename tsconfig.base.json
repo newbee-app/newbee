@@ -36,7 +36,12 @@
       "@newbee/api/shared/data-access": [
         "libs/api/shared/data-access/src/index.ts"
       ],
-      "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"]
+      "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"],
+      "@newbee/api/user/data-access": [
+        "libs/api/user/data-access/src/index.ts"
+      ],
+      "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
+      "@newbee/api/user/util": ["libs/api/user/util/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
