@@ -1,3 +1,4 @@
+import { MailerOptions } from '@nestjs-modules/mailer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import Joi from 'joi';
 import winston from 'winston';
@@ -9,6 +10,7 @@ export const environment = {
 export interface AppConfigInterface {
   logging: winston.LoggerOptions;
   database: TypeOrmModuleOptions;
+  mailer: MailerOptions;
 }
 
 export const appEnvironmentVariablesSchema = Joi.object({
@@ -18,6 +20,15 @@ export const appEnvironmentVariablesSchema = Joi.object({
   // CockroachDB
   COCKROACHDB_URL: Joi.string().required(),
   COCKROACHDB_CLUSTER: Joi.string().required(),
+
+  // AUTH: Magic Login Strategy
+  MAGIC_LOGIN_SECRET: Joi.string().required(),
+
+  // SMTP
+  SMTP_HOST: Joi.string().required(),
+  SMTP_USERNAME: Joi.string().required(),
+  SMTP_PASSWORD: Joi.string().required(),
+  SMTP_DEFAULT_FROM: Joi.string().required(),
 });
 
 export default () => ({
@@ -54,5 +65,11 @@ export default () => ({
       options: `--cluter=${process.env['COCKROACHDB_CLUSTER']}`,
     },
     autoLoadEntities: true,
+  },
+  mailer: {
+    transport: `smtps://${process.env['SMTP_USERNAME']}:${process.env['SMTP_PASSWORD']}@${process.env['SMTP_HOST']}`,
+    defaults: {
+      from: process.env['SMTP_DEFAULT_FROM'],
+    },
   },
 });

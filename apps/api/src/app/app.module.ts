@@ -1,3 +1,4 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -26,6 +27,11 @@ import { AppService } from './app.service';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
         configService.get('database', { infer: true }),
+      inject: [ConfigService],
+    }),
+    MailerModule.forRootAsync({
+      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+        configService.get('mailer', { infer: true }),
       inject: [ConfigService],
     }),
   ],
