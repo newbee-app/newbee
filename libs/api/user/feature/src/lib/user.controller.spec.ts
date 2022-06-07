@@ -7,14 +7,14 @@ import { UserController } from './user.controller';
 
 const testId1 = '1';
 const testEmail1 = 'johndoe@gmail.com';
-const testFirstName = 'John';
-const testLastName = 'Doe';
+const testFirstName1 = 'John';
+const testLastName1 = 'Doe';
 
 const oneUser = new User({
   id: testId1,
   email: testEmail1,
-  firstName: testFirstName,
-  lastName: testLastName,
+  firstName: testFirstName1,
+  lastName: testLastName1,
 });
 
 describe('UserController', () => {
@@ -56,8 +56,8 @@ describe('UserController', () => {
     it('should try to find and update a user by id', async () => {
       const updateUserDto: UpdateUserDto = {
         email: testEmail1,
-        firstName: testFirstName,
-        lastName: testLastName,
+        firstName: testFirstName1,
+        lastName: testLastName1,
       };
       await expect(controller.update(testId1, updateUserDto)).resolves.toEqual(
         oneUser

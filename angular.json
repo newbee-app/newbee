@@ -3,6 +3,9 @@
   "version": 2,
   "projects": {
     "api": "apps/api",
+    "api-auth-data-access": "libs/api/auth/data-access",
+    "api-auth-feature": "libs/api/auth/feature",
+    "api-auth-util": "libs/api/auth/util",
     "api-interfaces": "libs/api-interfaces",
     "api-shared-data-access": "libs/api/shared/data-access",
     "api-shared-util": "libs/api/shared/util",
