@@ -58,7 +58,9 @@ While Prettier handles formatting code most of the time, it explicitly does not 
 
 ## Unorganized thoughts to organize later
 
-- On the backend, HttpExceptions should be thrown on the controller-level, not on the service-level. If done on the service-level, it's not flexible enough as various controllers might have to throw different exceptions.
+- On the backend, HttpExceptions should be thrown on the controller-level, not on the service-level. If done on the service-level, it's not flexible enough as various controllers might have to throw different exceptions for the same service-level output.
 - As DTOs are simple classes (basically interfaces), they should be put in the `util` library associated with their corresponding feature.
-- Code that does not import framework- or library-specific packages should be put in the `util` library associated with their corresponding feature.
+- Code that does not and will never need to import from other `data-access`, `ui`, or `feature` libraries should be put in the `util` library associated with their corresponding feature.
 - To avoid issues with barrel files and circular dependencies, put all entity files in the `api-shared-data-access` library.
+- If you look at `apps/api/project.json`, you will notice that the `build` target has an option `"tsPlugins": ["@nestjs/swagger/plugin"]`. This opts-in to the Swagger plugin whenever the `api` app is built, automatically annotating the compiled output to include OpenAPI decorators. This allows us to get an informed view of the API through the Swagger UI without having to manually annotate the code.
+- When constructing DTOs, try to make use of the mapped types utilities provided in the `@nestjs/swagger` package.

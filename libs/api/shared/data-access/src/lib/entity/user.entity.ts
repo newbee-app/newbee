@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   DeepPartial,
@@ -38,6 +39,11 @@ export class User {
     cascade: ['update'],
   })
   settings!: Relation<UserSettings>;
+
+  @Expose()
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
 
   constructor(partial?: DeepPartial<User>) {
     if (partial) {

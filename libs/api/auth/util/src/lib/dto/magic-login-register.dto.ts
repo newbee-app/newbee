@@ -1,11 +1,17 @@
-import { IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsDefined, IsOptional, IsPhoneNumber } from 'class-validator';
+import { MagicLoginLoginDto } from './magic-login-login.dto';
 
-export class MagicLoginRegisterDto {
-  @IsEmail()
-  destination!: string; // email
+export class MagicLoginRegisterDto extends MagicLoginLoginDto {
+  @IsDefined()
   firstName!: string;
+
+  @IsDefined()
   lastName!: string;
+
+  @IsOptional()
   displayName?: string;
+
+  @IsOptional()
   @IsPhoneNumber()
   phoneNumber?: string;
 }

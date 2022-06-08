@@ -32,7 +32,7 @@ export class AuthController {
     private readonly magicLoginStrategy: MagicLoginStrategy
   ) {}
 
-  @Post(['magic-login', 'login'])
+  @Post('magic-login/login')
   async checkAndLogin(
     @Body() magicLoginLoginDto: MagicLoginLoginDto,
     @Req() req: Request,
@@ -56,7 +56,7 @@ export class AuthController {
     this.magicLoginStrategy.send(req, res);
   }
 
-  @Post(['magic-login', 'register'])
+  @Post('magic-login/register')
   async checkAndRegister(
     @Body() magicLoginRegisterDto: MagicLoginRegisterDto,
     @Req() req: Request,
