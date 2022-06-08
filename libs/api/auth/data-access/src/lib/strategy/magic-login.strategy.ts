@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthConfigInterface, MagicLoginPayload } from '@newbee/api/auth/util';
@@ -9,12 +9,14 @@ import Strategy from 'passport-magic-login';
 
 @Injectable()
 export class MagicLoginStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(MagicLoginStrategy.name);
+
   constructor(
     private readonly userService: UserService,
     mailerService: MailerService,
     configService: ConfigService<AuthConfigInterface, true>
   ) {
-    const magicLoginConfig = configService.get('magicLogin', {
+    const magicLoginConfig = configService.get('auth.magicLogin', {
       infer: true,
     });
     super({
@@ -35,11 +37,14 @@ export class MagicLoginStrategy extends PassportStrategy(Strategy) {
 
   // Called in MagicLoginAuthGuard
   async validate(payload: MagicLoginPayload): Promise<User> {
+    this.logger.log(
+      `Validate request received for payload: ${JSON.stringify(payload)}`
+    );
     const user = await this.userService.findOneByEmail(payload.destination);
     if (!user) {
-      throw new UnauthorizedException(
-        `User not found for email: ${payload.destination}`
-      );
+      const errorMsg = `User not found for email: ${payload.destination}`;
+      this.logger.error(errorMsg);
+      throw new UnauthorizedException(errorMsg);
     }
 
     return user;

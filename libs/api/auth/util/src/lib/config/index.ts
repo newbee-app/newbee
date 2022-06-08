@@ -1,9 +1,11 @@
 import { registerAs } from '@nestjs/config';
 
 export interface AuthConfigInterface {
-  magicLogin: {
-    secret: string;
-    callbackUrl: string;
+  auth: {
+    magicLogin: {
+      secret: string;
+      callbackUrl: string;
+    };
   };
 }
 
