@@ -58,11 +58,11 @@ export default () => ({
     ],
   },
   database: {
-    type: 'cockroachdb',
+    type: 'postgres',
     url: process.env['COCKROACHDB_URL'],
     ssl: true,
     extra: {
-      options: `--cluter=${process.env['COCKROACHDB_CLUSTER']}`,
+      options: `--cluster=${process.env['COCKROACHDB_CLUSTER']}`,
     },
     autoLoadEntities: true,
   },
