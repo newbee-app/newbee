@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   InternalServerErrorException,
@@ -70,11 +71,10 @@ export class AuthController {
       magicLoginRegisterDto.destination
     );
     if (user) {
-      this.logger.error(
-        `User found for email: ${magicLoginRegisterDto.destination}, sending user login magic link instead of registering`
-      );
+      const errorMsg = `User found for email: ${magicLoginRegisterDto.destination}, sending user login magic link instead of registering`;
+      this.logger.error(errorMsg);
       this.magicLoginStrategy.send(req, res);
-      return;
+      throw new ConflictException(errorMsg);
     }
 
     const { destination, ...userData } = magicLoginRegisterDto;

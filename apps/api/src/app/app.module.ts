@@ -55,7 +55,7 @@ import { AppService } from './app.service';
     AppService,
     {
       provide: APP_PIPE,
-      useValue: new ValidationPipe({ transform: true, whitelist: true }),
+      useValue: new ValidationPipe({ transform: true }),
     },
     {
       provide: APP_INTERCEPTOR,
