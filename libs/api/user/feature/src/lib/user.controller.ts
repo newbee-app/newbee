@@ -12,7 +12,7 @@ import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import { UpdateUserDto } from '@newbee/api/user/util';
 
-@Controller('user')
+@Controller({ path: 'user', version: '1' })
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 

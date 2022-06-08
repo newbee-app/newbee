@@ -10,7 +10,7 @@ import { UserSettings } from '@newbee/api/shared/data-access';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
 import { UpdateUserSettingsDto } from '@newbee/api/user-settings/util';
 
-@Controller('user-settings')
+@Controller({ path: 'user-settings', version: '1' })
 export class UserSettingsController {
   private readonly logger = new Logger(UserSettingsController.name);
 
