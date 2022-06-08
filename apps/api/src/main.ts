@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app/app.module';
 
@@ -8,6 +9,9 @@ async function bootstrap() {
 
   // Set up Winston as the logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // Set up Helmet
+  app.use(helmet());
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
