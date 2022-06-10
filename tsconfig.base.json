@@ -55,7 +55,10 @@
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
-      "@newbee/api/user/util": ["libs/api/user/util/src/index.ts"]
+      "@newbee/api/user/util": ["libs/api/user/util/src/index.ts"],
+      "@newbee/passport-magic-link-login": [
+        "libs/publishable/passport-magic-link-login/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
