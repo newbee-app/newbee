@@ -1,17 +1,16 @@
 import { registerAs } from '@nestjs/config';
+import { StrategyOptions } from '@newbee/passport-magic-link-login';
 
 export interface AuthConfigInterface {
   auth: {
-    magicLogin: {
-      secret: string;
-      callbackUrl: string;
-    };
+    magicLinkLogin: StrategyOptions;
   };
 }
 
 export default registerAs('auth', () => ({
-  magicLogin: {
-    secret: process.env['MAGIC_LOGIN_SECRET'],
-    callbackUrl: process.env['MAGIC_LOGIN_CALLBACK_URL'],
+  magicLinkLogin: {
+    secret: process.env['MAGIC_LINK_LOGIN_SECRET'],
+    rootDomain: process.env['ROOT_DOMAIN'],
+    verifyRoute: process.env['MAGIC_LINK_LOGIN_VERIFY_ROUTE'],
   },
 }));

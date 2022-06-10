@@ -36,7 +36,6 @@
     "nest-winston": "~1.6.2",
     "nodemailer": "~6.7.5",
     "passport": "~0.5.3",
-    "passport-magic-login": "~1.0.9",
     "passport-strategy": "~1.0.0",
     "pg": "~8.7.3",
     "reflect-metadata": "^0.1.13",

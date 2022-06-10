@@ -1,20 +1,21 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { MagicLoginStrategy } from '@newbee/api/auth/data-access';
-import {
-  MagicLoginLoginDto,
-  MagicLoginRegisterDto,
-} from '@newbee/api/auth/util';
+import { MagicLinkLoginStrategy } from '@newbee/api/auth/data-access';
+import { MagicLinkLoginLoginDto } from '@newbee/api/auth/util';
 import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import { CreateUserDto } from '@newbee/api/user/util';
-import { Request, Response } from 'express';
 import { AuthController } from './auth.controller';
 
 const testId1 = '1';
 const testEmail1 = 'johndoe@gmail.com';
 const testFirstName1 = 'John';
 const testLastName1 = 'Doe';
+const createUserDto1: CreateUserDto = {
+  email: testEmail1,
+  firstName: testFirstName1,
+  lastName: testLastName1,
+};
 
 const oneUser = new User({
   id: testId1,
@@ -23,13 +24,10 @@ const oneUser = new User({
   lastName: testLastName1,
 });
 
-const req = createMock<Request>();
-const res = createMock<Response>();
-
 describe('AuthController', () => {
   let controller: AuthController;
   let service: UserService;
-  let strategy: MagicLoginStrategy;
+  let strategy: MagicLinkLoginStrategy;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -43,8 +41,8 @@ describe('AuthController', () => {
           }),
         },
         {
-          provide: MagicLoginStrategy,
-          useValue: createMock<MagicLoginStrategy>({
+          provide: MagicLinkLoginStrategy,
+          useValue: createMock<MagicLinkLoginStrategy>({
             send: jest.fn().mockResolvedValue(undefined),
           }),
         },
@@ -53,7 +51,7 @@ describe('AuthController', () => {
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<UserService>(UserService);
-    strategy = module.get<MagicLoginStrategy>(MagicLoginStrategy);
+    strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
   });
 
   it('should be defined', () => {
@@ -62,20 +60,31 @@ describe('AuthController', () => {
 
   describe('login()', () => {
     it('should send a link to the user', async () => {
-      const magicLoginLoginDto: MagicLoginLoginDto = {
-        destination: testEmail1,
+      const magicLoginLoginDto: MagicLinkLoginLoginDto = {
+        email: testEmail1,
       };
       await expect(
-        controller.checkAndLogin(magicLoginLoginDto, req, res)
+        controller.checkAndLogin(magicLoginLoginDto)
       ).resolves.toBeUndefined();
       expect(service.findOneByEmail).toBeCalledTimes(1);
       expect(service.findOneByEmail).toBeCalledWith(testEmail1);
       expect(strategy.send).toBeCalledTimes(1);
-      expect(strategy.send).toBeCalledWith(req, res);
+      expect(strategy.send).toBeCalledWith({ email: testEmail1 });
     });
   });
 
-  describe('register()', () => {
+  describe('register() without create', () => {
+    it(`shouldn't create a user and send a link`, async () => {
+      await expect(
+        controller.checkAndRegister(createUserDto1)
+      ).rejects.toThrow();
+      expect(service.create).not.toBeCalled();
+      expect(strategy.send).toBeCalledTimes(1);
+      expect(strategy.send).toBeCalledWith({ email: testEmail1 });
+    });
+  });
+
+  describe('register() with create', () => {
     beforeEach(async () => {
       const module = await Test.createTestingModule({
         controllers: [AuthController],
@@ -88,8 +97,8 @@ describe('AuthController', () => {
             }),
           },
           {
-            provide: MagicLoginStrategy,
-            useValue: createMock<MagicLoginStrategy>({
+            provide: MagicLinkLoginStrategy,
+            useValue: createMock<MagicLinkLoginStrategy>({
               send: jest.fn().mockResolvedValue(undefined),
             }),
           },
@@ -98,26 +107,16 @@ describe('AuthController', () => {
 
       controller = module.get<AuthController>(AuthController);
       service = module.get<UserService>(UserService);
-      strategy = module.get<MagicLoginStrategy>(MagicLoginStrategy);
+      strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
     });
     it('should create a user and send a link', async () => {
-      const magicLoginRegisterDto: MagicLoginRegisterDto = {
-        destination: testEmail1,
-        firstName: testFirstName1,
-        lastName: testLastName1,
-      };
-      const createUserDto: CreateUserDto = {
-        email: testEmail1,
-        firstName: testFirstName1,
-        lastName: testLastName1,
-      };
       await expect(
-        controller.checkAndRegister(magicLoginRegisterDto, req, res)
+        controller.checkAndRegister(createUserDto1)
       ).resolves.toBeUndefined();
       expect(service.findOneByEmail).toBeCalledTimes(1);
       expect(service.findOneByEmail).toBeCalledWith(testEmail1);
       expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(createUserDto);
+      expect(service.create).toBeCalledWith(createUserDto1);
     });
   });
 });

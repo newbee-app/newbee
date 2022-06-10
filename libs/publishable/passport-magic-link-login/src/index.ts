@@ -4,17 +4,24 @@ import { Strategy } from 'passport-strategy';
 
 const defaultTokenExpiration = '1h';
 
-type DoneCallback = (err?: Error, user?: unknown, info?: unknown) => void;
+export type DoneCallback = (
+  err?: Error,
+  user?: unknown,
+  info?: unknown
+) => void;
 
-type VerifyFunction = (payload: StrategyJwtPayload, done: DoneCallback) => void;
+export type VerifyFunction = (
+  payload: ValidatePayload,
+  done: DoneCallback
+) => void;
 
 export type SendMagicLinkFunction = (
   payload: SendPayload,
   link: string,
-  id: string
+  code: string
 ) => Promise<void>;
 
-interface StrategyOptions {
+export interface StrategyOptions {
   secret: string;
   rootDomain: string;
   verifyRoute: string;
@@ -25,13 +32,14 @@ interface StrategyOptions {
   jwtVerifyOptions?: jwt.VerifyOptions;
 }
 
-interface StrategyJwtPayload extends jwt.JwtPayload {
+export interface ValidatePayload {
   email: string;
+  [key: string]: unknown | undefined;
 }
 
-interface SendPayload {
-  [key: string]: unknown;
+export interface SendPayload {
   email: string;
+  [key: string]: unknown | undefined;
 }
 
 export class MagicLinkLoginStrategy extends Strategy {
@@ -83,7 +91,7 @@ export class MagicLinkLoginStrategy extends Strategy {
         req.query['token'] as string,
         this.secret,
         this.jwtVerifyOptions
-      ) as StrategyJwtPayload;
+      ) as ValidatePayload;
 
       const verified: DoneCallback = (
         err?: Error,

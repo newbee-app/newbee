@@ -17,12 +17,16 @@ export const appEnvironmentVariablesSchema = Joi.object({
   // API port
   PORT: Joi.number(),
 
+  // Root domain
+  ROOT_DOMAIN: Joi.string().required(),
+
   // CockroachDB
   COCKROACHDB_URL: Joi.string().required(),
   COCKROACHDB_CLUSTER: Joi.string().required(),
 
-  // AUTH: Magic Login Strategy
-  MAGIC_LOGIN_SECRET: Joi.string().required(),
+  // AUTH: Magic Link Login Strategy
+  MAGIC_LINK_LOGIN_SECRET: Joi.string().required(),
+  MAGIC_LINK_LOGIN_VERIFY_ROUTE: Joi.string().required(),
 
   // SMTP
   SMTP_HOST: Joi.string().required(),

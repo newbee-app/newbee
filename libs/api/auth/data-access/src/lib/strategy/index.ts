@@ -1,1 +1,1 @@
-export * from './magic-login.strategy';
+export * from './magic-link-login.strategy';

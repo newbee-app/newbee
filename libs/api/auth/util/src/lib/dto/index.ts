@@ -1,2 +1,1 @@
-export * from './magic-login-login.dto';
-export * from './magic-login-register.dto';
+export * from './magic-link-login-login.dto';

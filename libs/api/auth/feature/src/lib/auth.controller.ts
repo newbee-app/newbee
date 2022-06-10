@@ -7,21 +7,18 @@ import {
   Logger,
   NotFoundException,
   Post,
-  Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { MagicLoginStrategy } from '@newbee/api/auth/data-access';
+import { MagicLinkLoginStrategy } from '@newbee/api/auth/data-access';
 import {
-  MagicLoginAuthGuard,
-  MagicLoginLoginDto,
-  MagicLoginRegisterDto,
+  magicLinkLogin,
+  MagicLinkLoginAuthGuard,
+  MagicLinkLoginLoginDto,
 } from '@newbee/api/auth/util';
 import { User as UserEntity } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import { CreateUserDto } from '@newbee/api/user/util';
-import { Request, Response } from 'express';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
@@ -29,72 +26,61 @@ export class AuthController {
 
   constructor(
     private readonly userService: UserService,
-    private readonly magicLoginStrategy: MagicLoginStrategy
+    private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy
   ) {}
 
-  @Post('magic-login/login')
+  @Post(`${magicLinkLogin}/login`)
   async checkAndLogin(
-    @Body() magicLoginLoginDto: MagicLoginLoginDto,
-    @Req() req: Request,
-    @Res() res: Response
+    @Body() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
   ): Promise<void> {
     this.logger.log(
-      `Check and login request received: ${JSON.stringify(magicLoginLoginDto)}`
+      `Check and login request received: ${JSON.stringify(
+        magicLinkLoginLoginDto
+      )}`
     );
-    const user = await this.userService.findOneByEmail(
-      magicLoginLoginDto.destination
-    );
+    const email = magicLinkLoginLoginDto.email;
+    const user = await this.userService.findOneByEmail(email);
     if (!user) {
-      const errorMsg = `User not found for email: ${magicLoginLoginDto.destination}`;
+      const errorMsg = `User not found for email: ${email}`;
       this.logger.error(errorMsg);
       throw new NotFoundException(errorMsg);
     }
 
     this.logger.log(
-      `Valid email found for email: ${magicLoginLoginDto.destination}, sending magic link`
+      `Valid email found for email: ${email}, sending magic link`
     );
-    this.magicLoginStrategy.send(req, res);
+    this.magicLinkLoginStrategy.send({ email });
   }
 
-  @Post('magic-login/register')
-  async checkAndRegister(
-    @Body() magicLoginRegisterDto: MagicLoginRegisterDto,
-    @Req() req: Request,
-    @Res() res: Response
-  ): Promise<void> {
-    const magicLoginRegisterDtoString = JSON.stringify(magicLoginRegisterDto);
+  @Post(`${magicLinkLogin}/register`)
+  async checkAndRegister(@Body() createUserDto: CreateUserDto): Promise<void> {
+    const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
-      `Check and register request received: ${magicLoginRegisterDtoString}`
+      `Check and register request received: ${createUserDtoString}`
     );
+    const email = createUserDto.email;
 
-    let user = await this.userService.findOneByEmail(
-      magicLoginRegisterDto.destination
-    );
+    let user = await this.userService.findOneByEmail(email);
     if (user) {
-      const errorMsg = `User found for email: ${magicLoginRegisterDto.destination}, sending user login magic link instead of registering`;
+      const errorMsg = `User found for email: ${email}, sending user login magic link instead of registering`;
       this.logger.error(errorMsg);
-      this.magicLoginStrategy.send(req, res);
+      this.magicLinkLoginStrategy.send({ email });
       throw new ConflictException(errorMsg);
     }
 
-    const { destination, ...userData } = magicLoginRegisterDto;
-    const createUserDto: CreateUserDto = {
-      email: destination,
-      ...userData,
-    };
     user = await this.userService.create(createUserDto);
     if (!user) {
-      const errorMsg = `User could not be created for: ${magicLoginRegisterDtoString}`;
+      const errorMsg = `User could not be created for: ${createUserDtoString}`;
       this.logger.error(errorMsg);
       throw new InternalServerErrorException(errorMsg);
     }
 
     this.logger.log(`Created user: ${JSON.stringify(user)}`);
-    this.magicLoginStrategy.send(req, res);
+    this.magicLinkLoginStrategy.send({ email });
   }
 
-  @UseGuards(MagicLoginAuthGuard)
-  @Get('magic-login')
+  @UseGuards(MagicLinkLoginAuthGuard)
+  @Get(magicLinkLogin)
   async magicLoginCallback(@User() user: UserEntity): Promise<UserEntity> {
     return user;
   }
