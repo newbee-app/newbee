@@ -10,7 +10,6 @@ export interface AuthConfigInterface {
 export default registerAs('auth', () => ({
   magicLinkLogin: {
     secret: process.env['MAGIC_LINK_LOGIN_SECRET'],
-    rootDomain: process.env['ROOT_DOMAIN'],
-    verifyRoute: process.env['MAGIC_LINK_LOGIN_VERIFY_ROUTE'],
+    verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'],
   },
 }));

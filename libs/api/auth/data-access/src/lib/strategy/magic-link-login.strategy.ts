@@ -21,7 +21,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     mailerService: MailerService,
     configService: ConfigService<AuthConfigInterface, true>
   ) {
-    const magicLoginConfig = configService.get('auth.magicLinkLogin', {
+    const magicLinkLoginConfig = configService.get('auth.magicLinkLogin', {
       infer: true,
     });
     const sendMagicLink: SendMagicLinkFunction = async (
@@ -37,7 +37,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
       });
 
     super({
-      ...magicLoginConfig,
+      ...magicLinkLoginConfig,
       sendMagicLink,
     });
   }

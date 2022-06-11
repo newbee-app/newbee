@@ -46,10 +46,8 @@ export class AuthController {
       throw new NotFoundException(errorMsg);
     }
 
-    this.logger.log(
-      `Valid email found for email: ${email}, sending magic link`
-    );
-    this.magicLinkLoginStrategy.send({ email });
+    this.logger.log(`Valid email found for email: ${email}`);
+    await this.trySendMagicLink(email);
   }
 
   @Post(`${magicLinkLogin}/register`)
@@ -64,7 +62,7 @@ export class AuthController {
     if (user) {
       const errorMsg = `User found for email: ${email}, sending user login magic link instead of registering`;
       this.logger.error(errorMsg);
-      this.magicLinkLoginStrategy.send({ email });
+      await this.magicLinkLoginStrategy.send({ email });
       throw new ConflictException(errorMsg);
     }
 
@@ -76,12 +74,23 @@ export class AuthController {
     }
 
     this.logger.log(`Created user: ${JSON.stringify(user)}`);
-    this.magicLinkLoginStrategy.send({ email });
+    await this.trySendMagicLink(email);
   }
 
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)
-  async magicLoginCallback(@User() user: UserEntity): Promise<UserEntity> {
+  async magicLinkLoginVerify(@User() user: UserEntity): Promise<UserEntity> {
     return user;
+  }
+
+  private async trySendMagicLink(email: string): Promise<void> {
+    this.logger.log(`Sending magic link to email: ${email}`);
+    try {
+      this.magicLinkLoginStrategy.send({ email });
+    } catch (err: unknown) {
+      const errorMsg = `Magic link could not be sent to email: ${email}, error: ${err}`;
+      this.logger.error(errorMsg);
+      throw new InternalServerErrorException(errorMsg);
+    }
   }
 }

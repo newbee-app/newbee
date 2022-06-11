@@ -23,8 +23,7 @@ export type SendMagicLinkFunction = (
 
 export interface StrategyOptions {
   secret: string;
-  rootDomain: string;
-  verifyRoute: string;
+  verifyLink: string;
   sendMagicLink: SendMagicLinkFunction;
 
   name?: string;
@@ -44,8 +43,7 @@ export interface SendPayload {
 
 export class MagicLinkLoginStrategy extends Strategy {
   private readonly secret: string;
-  private readonly rootDomain: string;
-  private readonly verifyRoute: string;
+  private readonly verifyLink: string;
   private readonly sendMagicLink: SendMagicLinkFunction;
 
   readonly name: string = 'magic-link-login';
@@ -63,8 +61,7 @@ export class MagicLinkLoginStrategy extends Strategy {
     super();
 
     this.secret = options.secret;
-    this.rootDomain = options.rootDomain;
-    this.verifyRoute = options.verifyRoute;
+    this.verifyLink = options.verifyLink;
     this.sendMagicLink = options.sendMagicLink;
 
     if (options.name) {
@@ -118,7 +115,7 @@ export class MagicLinkLoginStrategy extends Strategy {
       throw new TypeError(`'email' is a required property`);
     }
 
-    const jwtid = (Math.random() * 90000 + 10000).toString();
+    const jwtid = (Math.floor(Math.random() * 90000) + 10000).toString();
     const token = jwt.sign(payload, this.secret, {
       ...this.jwtSignOptions,
       jwtid,
@@ -127,7 +124,7 @@ export class MagicLinkLoginStrategy extends Strategy {
     try {
       await this.sendMagicLink(
         payload,
-        `${this.rootDomain}/${this.verifyRoute}?token=${token}`,
+        `${this.verifyLink}?token=${token}`,
         jwtid
       );
     } catch (err: unknown) {
