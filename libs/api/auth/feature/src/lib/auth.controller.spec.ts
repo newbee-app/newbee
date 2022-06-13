@@ -4,19 +4,11 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import {
-  AccessTokenDto,
-  MagicLinkLoginLoginDto,
-  UserJwtDto,
-} from '@newbee/api/auth/util';
+import { LoginDto, MagicLinkLoginLoginDto } from '@newbee/api/auth/util';
 import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import { CreateUserDto } from '@newbee/api/user/util';
 import { AuthController } from './auth.controller';
-
-const accessToken1 = 'access_token1';
-
-const oneAccessToken: AccessTokenDto = { access_token: accessToken1 };
 
 const testId1 = '1';
 const testEmail1 = 'johndoe@gmail.com';
@@ -35,10 +27,9 @@ const oneUser = new User({
   lastName: testLastName1,
 });
 
-const oneUserJwtDto: UserJwtDto = {
-  email: testEmail1,
-  sub: testId1,
-};
+const accessToken1 = 'access_token1';
+
+const oneLoginDto: LoginDto = { access_token: accessToken1, user: oneUser };
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -53,7 +44,7 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: createMock<AuthService>({
-            generateAccessToken: jest.fn().mockReturnValue(oneAccessToken),
+            login: jest.fn().mockReturnValue(oneLoginDto),
           }),
         },
         {
@@ -150,17 +141,9 @@ describe('AuthController', () => {
 
   describe('magicLinkLogin()', () => {
     it('should return a token', () => {
-      expect(controller.magicLinkLogin(oneUser)).toEqual(oneAccessToken);
-      expect(service.generateAccessToken).toBeCalledTimes(1);
-      expect(service.generateAccessToken).toBeCalledWith(oneUser);
-    });
-  });
-
-  describe('profile()', () => {
-    it('should return a user', async () => {
-      await expect(controller.profile(oneUserJwtDto)).resolves.toEqual(oneUser);
-      expect(userService.findOneById).toBeCalledTimes(1);
-      expect(userService.findOneById).toBeCalledWith(testId1);
+      expect(controller.magicLinkLogin(oneUser)).toEqual(oneLoginDto);
+      expect(service.login).toBeCalledTimes(1);
+      expect(service.login).toBeCalledWith(oneUser);
     });
   });
 });

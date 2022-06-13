@@ -14,11 +14,10 @@ import {
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
 import {
-  AccessTokenDto,
+  LoginDto,
   magicLinkLogin,
   MagicLinkLoginAuthGuard,
   MagicLinkLoginLoginDto,
-  UserJwtDto,
 } from '@newbee/api/auth/util';
 import { User as UserEntity } from '@newbee/api/shared/data-access';
 import { Public, User } from '@newbee/api/shared/util';
@@ -88,32 +87,15 @@ export class AuthController {
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)
-  magicLinkLogin(@User() user: UserEntity): AccessTokenDto {
+  magicLinkLogin(@User() user: UserEntity): LoginDto {
     this.logger.log(
       `Generating access token for user: ${JSON.stringify(user)}`
     );
-    const accessTokenDto = this.authService.generateAccessToken(user);
+    const loginDto = this.authService.login(user);
     this.logger.log(
-      `Access token generated: ${JSON.stringify(accessTokenDto.access_token)}`
+      `Access token generated: ${JSON.stringify(loginDto.access_token)}`
     );
-    return accessTokenDto;
-  }
-
-  @Get('profile')
-  async profile(@User() userJwtDto: UserJwtDto): Promise<UserEntity> {
-    this.logger.log(
-      `Profile request received for user: ${JSON.stringify(userJwtDto)}`
-    );
-    const { sub: id } = userJwtDto;
-    const user = await this.userService.findOneById(id);
-    if (!user) {
-      const errorMsg = `User not found for id: ${id}`;
-      this.logger.error(errorMsg);
-      throw new NotFoundException(errorMsg);
-    }
-
-    this.logger.log(`User found for id: ${id}`);
-    return user;
+    return loginDto;
   }
 
   private async trySendMagicLink(email: string): Promise<void> {

@@ -1,13 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
-import { AccessTokenDto, UserJwtDto } from '@newbee/api/auth/util';
+import { LoginDto, UserJwtPayload } from '@newbee/api/auth/util';
 import { User } from '@newbee/api/shared/data-access';
 import { AuthService } from './auth.service';
-
-const accessToken1 = 'access_token1';
-
-const oneAccessToken: AccessTokenDto = { access_token: accessToken1 };
 
 const testId1 = '1';
 const testEmail1 = 'johndoe@gmail.com';
@@ -21,10 +17,14 @@ const oneUser = new User({
   lastName: testLastName1,
 });
 
-const oneUserJwtDto: UserJwtDto = {
+const oneUserJwtDto: UserJwtPayload = {
   email: testEmail1,
   sub: testId1,
 };
+
+const accessToken1 = 'access_token1';
+
+const oneLoginDto: LoginDto = { access_token: accessToken1, user: oneUser };
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -53,7 +53,7 @@ describe('AuthService', () => {
 
   describe('generateAccessToken()', () => {
     it('should return access token', () => {
-      expect(service.generateAccessToken(oneUser)).toEqual(oneAccessToken);
+      expect(service.login(oneUser)).toEqual(oneLoginDto);
       expect(jwtService.sign).toBeCalledTimes(1);
       expect(jwtService.sign).toBeCalledWith(oneUserJwtDto);
     });
