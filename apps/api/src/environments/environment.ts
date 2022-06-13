@@ -17,6 +17,9 @@ export const appEnvironmentVariablesSchema = Joi.object({
   // API port
   PORT: Joi.number(),
 
+  // Domain
+  APP_URL: Joi.string().required(),
+
   // CockroachDB
   COCKROACHDB_URL: Joi.string().required(),
   COCKROACHDB_CLUSTER: Joi.string().required(),
