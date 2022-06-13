@@ -44,7 +44,9 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: ValidatePayload): Promise<User> {
     this.logger.log(
-      `Validate request received for payload: ${JSON.stringify(payload)}`
+      `Magic Link Login validate request received for payload: ${JSON.stringify(
+        payload
+      )}`
     );
     const user = await this.userService.findOneByEmail(payload.email);
     if (!user) {
@@ -53,6 +55,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException(errorMsg);
     }
 
+    this.logger.log(`User found for email: ${payload.email}`);
     return user;
   }
 }

@@ -1,11 +1,22 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { MagicLinkLoginStrategy } from '@newbee/api/auth/data-access';
-import { MagicLinkLoginLoginDto } from '@newbee/api/auth/util';
+import {
+  AuthService,
+  MagicLinkLoginStrategy,
+} from '@newbee/api/auth/data-access';
+import {
+  AccessTokenDto,
+  MagicLinkLoginLoginDto,
+  UserJwtDto,
+} from '@newbee/api/auth/util';
 import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import { CreateUserDto } from '@newbee/api/user/util';
 import { AuthController } from './auth.controller';
+
+const accessToken1 = 'access_token1';
+
+const oneAccessToken: AccessTokenDto = { access_token: accessToken1 };
 
 const testId1 = '1';
 const testEmail1 = 'johndoe@gmail.com';
@@ -24,9 +35,15 @@ const oneUser = new User({
   lastName: testLastName1,
 });
 
+const oneUserJwtDto: UserJwtDto = {
+  email: testEmail1,
+  sub: testId1,
+};
+
 describe('AuthController', () => {
   let controller: AuthController;
-  let service: UserService;
+  let service: AuthService;
+  let userService: UserService;
   let strategy: MagicLinkLoginStrategy;
 
   beforeEach(async () => {
@@ -34,9 +51,15 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         {
+          provide: AuthService,
+          useValue: createMock<AuthService>({
+            generateAccessToken: jest.fn().mockReturnValue(oneAccessToken),
+          }),
+        },
+        {
           provide: UserService,
           useValue: createMock<UserService>({
-            create: jest.fn().mockResolvedValue(oneUser),
+            findOneById: jest.fn().mockResolvedValue(oneUser),
             findOneByEmail: jest.fn().mockResolvedValue(oneUser),
           }),
         },
@@ -50,7 +73,8 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    service = module.get<UserService>(UserService);
+    service = module.get<AuthService>(AuthService);
+    userService = module.get<UserService>(UserService);
     strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
   });
 
@@ -58,7 +82,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('login()', () => {
+  describe('checkAndLogin()', () => {
     it('should send a link to the user', async () => {
       const magicLoginLoginDto: MagicLinkLoginLoginDto = {
         email: testEmail1,
@@ -66,29 +90,33 @@ describe('AuthController', () => {
       await expect(
         controller.checkAndLogin(magicLoginLoginDto)
       ).resolves.toBeUndefined();
-      expect(service.findOneByEmail).toBeCalledTimes(1);
-      expect(service.findOneByEmail).toBeCalledWith(testEmail1);
+      expect(userService.findOneByEmail).toBeCalledTimes(1);
+      expect(userService.findOneByEmail).toBeCalledWith(testEmail1);
       expect(strategy.send).toBeCalledTimes(1);
       expect(strategy.send).toBeCalledWith({ email: testEmail1 });
     });
   });
 
-  describe('register() without create', () => {
+  describe('checkAndRegister() without create', () => {
     it(`shouldn't create a user and send a link`, async () => {
       await expect(
         controller.checkAndRegister(createUserDto1)
       ).rejects.toThrow();
-      expect(service.create).not.toBeCalled();
+      expect(userService.create).not.toBeCalled();
       expect(strategy.send).toBeCalledTimes(1);
       expect(strategy.send).toBeCalledWith({ email: testEmail1 });
     });
   });
 
-  describe('register() with create', () => {
+  describe('checkAndRegister() with create', () => {
     beforeEach(async () => {
       const module = await Test.createTestingModule({
         controllers: [AuthController],
         providers: [
+          {
+            provide: AuthService,
+            useValue: createMock<AuthService>(),
+          },
           {
             provide: UserService,
             useValue: createMock<UserService>({
@@ -106,17 +134,33 @@ describe('AuthController', () => {
       }).compile();
 
       controller = module.get<AuthController>(AuthController);
-      service = module.get<UserService>(UserService);
+      userService = module.get<UserService>(UserService);
       strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
     });
     it('should create a user and send a link', async () => {
       await expect(
         controller.checkAndRegister(createUserDto1)
       ).resolves.toBeUndefined();
-      expect(service.findOneByEmail).toBeCalledTimes(1);
-      expect(service.findOneByEmail).toBeCalledWith(testEmail1);
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(createUserDto1);
+      expect(userService.findOneByEmail).toBeCalledTimes(1);
+      expect(userService.findOneByEmail).toBeCalledWith(testEmail1);
+      expect(userService.create).toBeCalledTimes(1);
+      expect(userService.create).toBeCalledWith(createUserDto1);
+    });
+  });
+
+  describe('magicLinkLogin()', () => {
+    it('should return a token', () => {
+      expect(controller.magicLinkLogin(oneUser)).toEqual(oneAccessToken);
+      expect(service.generateAccessToken).toBeCalledTimes(1);
+      expect(service.generateAccessToken).toBeCalledWith(oneUser);
+    });
+  });
+
+  describe('profile()', () => {
+    it('should return a user', async () => {
+      await expect(controller.profile(oneUserJwtDto)).resolves.toEqual(oneUser);
+      expect(userService.findOneById).toBeCalledTimes(1);
+      expect(userService.findOneById).toBeCalledWith(testId1);
     });
   });
 });

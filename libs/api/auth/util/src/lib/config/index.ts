@@ -1,15 +1,29 @@
 import { registerAs } from '@nestjs/config';
-import { StrategyOptions } from '@newbee/passport-magic-link-login';
+import { JwtModuleOptions } from '@nestjs/jwt';
+import { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
+import {
+  ExtractJwt,
+  StrategyOptions as JwtStrategyOptions,
+} from 'passport-jwt';
 
 export interface AuthConfigInterface {
   auth: {
-    magicLinkLogin: StrategyOptions;
+    jwtModule: JwtModuleOptions;
+    magicLinkLogin: MagicLinkLoginStrategyOtions;
+    jwtStrategy: JwtStrategyOptions;
   };
 }
 
 export default registerAs('auth', () => ({
+  jwtModule: {
+    secret: process.env['JWT_SECRET'],
+  },
   magicLinkLogin: {
-    secret: process.env['MAGIC_LINK_LOGIN_SECRET'],
+    secret: process.env['JWT_SECRET'],
     verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'],
+  },
+  jwtStrategy: {
+    secretOrKey: process.env['JWT_SECRET'],
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   },
 }));

@@ -1,1 +1,2 @@
-export * from './magic-link-login.constant';
+export const magicLinkLogin = 'magic-link-login';
+export const jwt = 'jwt';

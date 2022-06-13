@@ -21,8 +21,10 @@ export const appEnvironmentVariablesSchema = Joi.object({
   COCKROACHDB_URL: Joi.string().required(),
   COCKROACHDB_CLUSTER: Joi.string().required(),
 
+  // JWT
+  JWT_SECRET: Joi.string().required(),
+
   // AUTH: Magic Link Login Strategy
-  MAGIC_LINK_LOGIN_SECRET: Joi.string().required(),
   MAGIC_LINK_LOGIN_VERIFY_LINK: Joi.string().required(),
 
   // SMTP

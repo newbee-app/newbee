@@ -9,14 +9,19 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { MagicLinkLoginStrategy } from '@newbee/api/auth/data-access';
 import {
+  AuthService,
+  MagicLinkLoginStrategy,
+} from '@newbee/api/auth/data-access';
+import {
+  AccessTokenDto,
   magicLinkLogin,
   MagicLinkLoginAuthGuard,
   MagicLinkLoginLoginDto,
+  UserJwtDto,
 } from '@newbee/api/auth/util';
 import { User as UserEntity } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import { Public, User } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import { CreateUserDto } from '@newbee/api/user/util';
 
@@ -26,9 +31,11 @@ export class AuthController {
 
   constructor(
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy
   ) {}
 
+  @Public()
   @Post(`${magicLinkLogin}/login`)
   async checkAndLogin(
     @Body() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
@@ -50,6 +57,7 @@ export class AuthController {
     await this.trySendMagicLink(email);
   }
 
+  @Public()
   @Post(`${magicLinkLogin}/register`)
   async checkAndRegister(@Body() createUserDto: CreateUserDto): Promise<void> {
     const createUserDtoString = JSON.stringify(createUserDto);
@@ -77,9 +85,34 @@ export class AuthController {
     await this.trySendMagicLink(email);
   }
 
+  @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)
-  async magicLinkLoginVerify(@User() user: UserEntity): Promise<UserEntity> {
+  magicLinkLogin(@User() user: UserEntity): AccessTokenDto {
+    this.logger.log(
+      `Generating access token for user: ${JSON.stringify(user)}`
+    );
+    const accessTokenDto = this.authService.generateAccessToken(user);
+    this.logger.log(
+      `Access token generated: ${JSON.stringify(accessTokenDto.access_token)}`
+    );
+    return accessTokenDto;
+  }
+
+  @Get('profile')
+  async profile(@User() userJwtDto: UserJwtDto): Promise<UserEntity> {
+    this.logger.log(
+      `Profile request received for user: ${JSON.stringify(userJwtDto)}`
+    );
+    const { sub: id } = userJwtDto;
+    const user = await this.userService.findOneById(id);
+    if (!user) {
+      const errorMsg = `User not found for id: ${id}`;
+      this.logger.error(errorMsg);
+      throw new NotFoundException(errorMsg);
+    }
+
+    this.logger.log(`User found for id: ${id}`);
     return user;
   }
 
