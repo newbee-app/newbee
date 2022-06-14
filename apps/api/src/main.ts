@@ -14,7 +14,7 @@ async function bootstrap() {
   // Set up Helmet
   app.use(helmet());
 
-  // Set up versioning
+  // Set up global versioning
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: VERSION_NEUTRAL,
