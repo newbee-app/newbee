@@ -23,40 +23,6 @@
       }
     }
   },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      },
-      {
-        "target": "test",
-        "projects": "self"
-      }
-    ],
-    "test": [
-      {
-        "target": "test",
-        "projects": "dependencies"
-      },
-      {
-        "target": "lint",
-        "projects": "self"
-      }
-    ],
-    "lint": [
-      {
-        "target": "lint",
-        "projects": "dependencies"
-      }
-    ],
-    "serve": [
-      {
-        "target": "build",
-        "projects": "self"
-      }
-    ]
-  },
   "generators": {
     "@nrwl/angular:application": {
       "style": "scss",
@@ -75,5 +41,19 @@
       "buildable": true
     }
   },
-  "defaultProject": "newbee"
+  "defaultProject": "newbee",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build", "test"]
+    },
+    "test": {
+      "dependsOn": ["^test", "lint"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "serve": {
+      "dependsOn": ["build"]
+    }
+  }
 }
