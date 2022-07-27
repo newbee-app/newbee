@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/newbee",
         "index": "apps/newbee/src/index.html",
@@ -14,9 +16,17 @@
         "polyfills": "apps/newbee/src/polyfills.ts",
         "tsConfig": "apps/newbee/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/newbee/src/favicon.ico", "apps/newbee/src/assets"],
-        "styles": ["apps/newbee/src/styles.scss"],
-        "scripts": []
+        "assets": [
+          "apps/newbee/src/favicon.ico",
+          "apps/newbee/src/assets",
+          "apps/newbee/src/manifest.webmanifest"
+        ],
+        "styles": [
+          "apps/newbee/src/styles.scss"
+        ],
+        "scripts": [],
+        "serviceWorker": true,
+        "ngswConfigPath": "apps/newbee/ngsw-config.json"
       },
       "configurations": {
         "production": {
@@ -75,12 +85,17 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/newbee/**/*.ts", "apps/newbee/**/*.html"]
+        "lintFilePatterns": [
+          "apps/newbee/**/*.ts",
+          "apps/newbee/**/*.html"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/newbee"],
+      "outputs": [
+        "coverage/apps/newbee"
+      ],
       "options": {
         "jestConfig": "apps/newbee/jest.config.ts",
         "passWithNoTests": true

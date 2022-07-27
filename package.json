@@ -1,6 +1,6 @@
 {
   "name": "newbee",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
@@ -62,6 +62,7 @@
     "@angular/cli": "14.1.0",
     "@angular/compiler-cli": "14.1.0",
     "@angular/language-service": "14.1.0",
+    "@angular/pwa": "14.1.0",
     "@golevelup/ts-jest": "0.3.3",
     "@nestjs/schematics": "9.0.1",
     "@nestjs/testing": "9.0.5",

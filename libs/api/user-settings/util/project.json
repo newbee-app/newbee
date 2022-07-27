@@ -5,25 +5,35 @@
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/api/user-settings/util",
         "tsConfig": "libs/api/user-settings/util/tsconfig.lib.json",
         "packageJson": "libs/api/user-settings/util/package.json",
         "main": "libs/api/user-settings/util/src/index.ts",
-        "assets": ["libs/api/user-settings/util/*.md"]
+        "assets": [
+          "libs/api/user-settings/util/*.md"
+        ]
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/api/user-settings/util/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/api/user-settings/util/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/api/user-settings/util"],
+      "outputs": [
+        "coverage/libs/api/user-settings/util"
+      ],
       "options": {
         "jestConfig": "libs/api/user-settings/util/jest.config.ts",
         "passWithNoTests": true
