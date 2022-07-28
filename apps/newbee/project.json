@@ -10,7 +10,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/apps/newbee",
+        "outputPath": "dist/newbee/browser",
         "index": "apps/newbee/src/index.html",
         "main": "apps/newbee/src/main.ts",
         "polyfills": "apps/newbee/src/polyfills.ts",
@@ -100,6 +100,65 @@
         "jestConfig": "apps/newbee/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "server": {
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/newbee/server",
+        "main": "apps/newbee/server.ts",
+        "tsConfig": "apps/newbee/tsconfig.server.json",
+        "inlineStyleLanguage": "scss"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media",
+          "fileReplacements": [
+            {
+              "replace": "apps/newbee/src/environments/environment.ts",
+              "with": "apps/newbee/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@nguniversal/builders:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "newbee:build:development",
+          "serverTarget": "newbee:server:development"
+        },
+        "production": {
+          "browserTarget": "newbee:build:production",
+          "serverTarget": "newbee:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@nguniversal/builders:prerender",
+      "options": {
+        "routes": [
+          "/"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "newbee:build:production",
+          "serverTarget": "newbee:server:production"
+        },
+        "development": {
+          "browserTarget": "newbee:build:development",
+          "serverTarget": "newbee:server:development"
+        }
+      },
+      "defaultConfiguration": "production"
     }
   },
   "tags": []
