@@ -3,12 +3,12 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { StoreModule } from '@ngrx/store';
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
-import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
+import { metaReducers, reducers } from './reducers';
 
 @NgModule({
   declarations: [AppComponent, NxWelcomeComponent],
@@ -22,10 +22,14 @@ import { reducers, metaReducers } from './reducers';
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: 'registerWhenStable:30000',
     }),
     StoreModule.forRoot(reducers, {
-      metaReducers
+      metaReducers,
+      runtimeChecks: {
+        strictActionWithinNgZone: true,
+        strictActionTypeUniqueness: true,
+      },
     }),
   ],
   providers: [],
