@@ -9,6 +9,7 @@ import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
 import { metaReducers, reducers } from './reducers';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent, NxWelcomeComponent],
@@ -31,6 +32,7 @@ import { metaReducers, reducers } from './reducers';
         strictActionTypeUniqueness: true,
       },
     }),
+    EffectsModule.forRoot([]),
   ],
   providers: [],
   bootstrap: [AppComponent],
