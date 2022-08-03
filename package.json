@@ -16,11 +16,13 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "14.1.0",
+    "@angular/cdk": "14.1.1",
     "@angular/common": "14.1.0",
     "@angular/compiler": "14.1.0",
     "@angular/core": "14.1.0",
     "@angular/forms": "14.1.0",
     "@angular/localize": "14.1.0",
+    "@angular/material": "14.1.1",
     "@angular/platform-browser": "14.1.0",
     "@angular/platform-browser-dynamic": "14.1.0",
     "@angular/platform-server": "14.1.0",
@@ -40,6 +42,7 @@
     "@ngrx/entity": "14.0.2",
     "@ngrx/router-store": "14.0.2",
     "@ngrx/store": "14.0.2",
+    "@ngrx/store-devtools": "14.0.2",
     "@nguniversal/express-engine": "^14.0.3",
     "@nrwl/angular": "14.4.3",
     "cache-manager": "4.1.0",
@@ -64,8 +67,7 @@
     "tslib": "2.4.0",
     "typeorm": "0.3.7",
     "winston": "3.8.1",
-    "zone.js": "0.11.7",
-    "@ngrx/store-devtools": "^14.0.2"
+    "zone.js": "0.11.7"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "14.1.0",
@@ -80,7 +82,6 @@
     "@nestjs/schematics": "9.0.1",
     "@nestjs/testing": "9.0.5",
     "@ngrx/eslint-plugin": "^14.0.2",
-    "@ngrx/store-devtools": "14.0.2",
     "@nguniversal/builders": "^14.0.3",
     "@nrwl/cli": "14.4.3",
     "@nrwl/cypress": "14.4.3",
