@@ -91,6 +91,7 @@
     "@nrwl/nest": "14.4.3",
     "@nrwl/node": "14.4.3",
     "@nrwl/nx-cloud": "14.2.0",
+    "@nrwl/storybook": "14.4.3",
     "@nrwl/workspace": "14.4.3",
     "@types/cache-manager": "4.0.1",
     "@types/cookie-parser": "1.4.3",
