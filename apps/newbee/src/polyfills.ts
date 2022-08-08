@@ -54,3 +54,6 @@ import 'zone.js'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// For Storybook
+import '@angular/localize/init';
