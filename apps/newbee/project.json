@@ -6,9 +6,7 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/newbee/browser",
         "index": "apps/newbee/src/index.html",
@@ -21,9 +19,7 @@
           "apps/newbee/src/assets",
           "apps/newbee/src/manifest.webmanifest"
         ],
-        "styles": [
-          "apps/newbee/src/styles.scss"
-        ],
+        "styles": ["apps/newbee/src/styles.scss"],
         "scripts": [],
         "serviceWorker": true,
         "ngswConfigPath": "apps/newbee/ngsw-config.json"
@@ -85,17 +81,12 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/newbee/**/*.ts",
-          "apps/newbee/**/*.html"
-        ]
+        "lintFilePatterns": ["apps/newbee/**/*.ts", "apps/newbee/**/*.html"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/newbee"
-      ],
+      "outputs": ["coverage/apps/newbee"],
       "options": {
         "jestConfig": "apps/newbee/jest.config.ts",
         "passWithNoTests": true
@@ -144,9 +135,7 @@
     "prerender": {
       "executor": "@nguniversal/builders:prerender",
       "options": {
-        "routes": [
-          "/"
-        ]
+        "routes": ["/"]
       },
       "configurations": {
         "production": {
@@ -159,6 +148,35 @@
         }
       },
       "defaultConfiguration": "production"
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "apps/newbee/.storybook",
+        "browserTarget": "newbee:build",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee",
+        "configDir": "apps/newbee/.storybook",
+        "browserTarget": "newbee:build",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
     }
   },
   "tags": []
