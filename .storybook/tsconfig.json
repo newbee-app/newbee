@@ -8,13 +8,7 @@
     "../**/*.spec.tsx",
     "../**/*.test.tsx",
     "../**/*.spec.jsx",
-    "../**/*.test.jsx",
-    "../*.js",
-    "../*.ts",
-    "../dist",
-    "../node_modules",
-    "../tmp",
-    "../**/*.mjs"
+    "../**/*.test.jsx"
   ],
   "include": ["../**/*"]
 }
