@@ -8,7 +8,16 @@
     "../**/*.spec.tsx",
     "../**/*.test.tsx",
     "../**/*.spec.jsx",
-    "../**/*.test.jsx"
+    "../**/*.test.jsx",
+    "../node_modules",
+    "../dist",
+    "../tmp"
   ],
-  "include": ["../**/*"]
+  "include": [
+    "../**/*.stories.ts",
+    "../**/*.stories.js",
+    "../**/*.stories.jsx",
+    "../**/*.stories.tsx",
+    "../**/*.stories.mdx"
+  ]
 }
