@@ -1,6 +1,10 @@
 {
   "name": "newbee",
   "version": "0.0.1",
+  "engines": {
+    "npm": ">=8.1.4",
+    "node": ">=17.2.0"
+  },
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
@@ -93,6 +97,7 @@
     "@nrwl/nx-cloud": "14.3.0",
     "@nrwl/storybook": "14.5.4",
     "@nrwl/workspace": "14.5.4",
+    "@storybook/addon-a11y": "6.5.10",
     "@storybook/addon-essentials": "6.5.10",
     "@storybook/angular": "6.5.10",
     "@storybook/builder-webpack5": "6.5.10",
