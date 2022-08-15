@@ -4,10 +4,13 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import { LoginDto, MagicLinkLoginLoginDto } from '@newbee/api/auth/util';
-import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { CreateUserDto } from '@newbee/api/user/util';
+import {
+  CreateUserDto,
+  LoginDto,
+  MagicLinkLoginLoginDto,
+  User,
+} from '@newbee/shared/data-access';
 import { AuthController } from './auth.controller';
 
 const testId1 = '1';

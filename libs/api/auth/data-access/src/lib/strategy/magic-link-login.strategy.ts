@@ -3,7 +3,6 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthConfigInterface } from '@newbee/api/auth/util';
-import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   MagicLinkLoginStrategy as Strategy,
@@ -11,6 +10,7 @@ import {
   SendPayload,
   ValidatePayload,
 } from '@newbee/passport-magic-link-login';
+import { User } from '@newbee/shared/data-access';
 
 @Injectable()
 export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {

@@ -1,10 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User, UserSettings } from '@newbee/api/shared/data-access';
-import { NameDisplayFormat } from '@newbee/api/shared/util';
-import { UpdateUserSettingsDto } from '@newbee/api/user-settings/util';
 import { UserService } from '@newbee/api/user/data-access';
+import {
+  UpdateUserSettingsDto,
+  User,
+  UserSettings,
+} from '@newbee/shared/data-access';
+import { NameDisplayFormat } from '@newbee/shared/util';
 import { Repository } from 'typeorm';
 import { UserSettingsService } from './user-settings.service';
 

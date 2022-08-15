@@ -6,9 +6,11 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
-import { UserSettings } from '@newbee/api/shared/data-access';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
-import { UpdateUserSettingsDto } from '@newbee/api/user-settings/util';
+import {
+  UpdateUserSettingsDto,
+  UserSettings,
+} from '@newbee/shared/data-access';
 
 @Controller({ path: 'user-settings', version: '1' })
 export class UserSettingsController {

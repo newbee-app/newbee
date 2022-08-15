@@ -13,16 +13,15 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import {
-  LoginDto,
-  magicLinkLogin,
-  MagicLinkLoginAuthGuard,
-  MagicLinkLoginLoginDto,
-} from '@newbee/api/auth/util';
-import { User as UserEntity } from '@newbee/api/shared/data-access';
+import { magicLinkLogin, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
 import { Public, User } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
-import { CreateUserDto } from '@newbee/api/user/util';
+import {
+  CreateUserDto,
+  LoginDto,
+  MagicLinkLoginLoginDto,
+  User as UserEntity,
+} from '@newbee/shared/data-access';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {

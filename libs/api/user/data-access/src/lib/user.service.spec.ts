@@ -1,8 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '@newbee/api/shared/data-access';
-import { CreateUserDto, UpdateUserDto } from '@newbee/api/user/util';
+import { CreateUserDto, UpdateUserDto, User } from '@newbee/shared/data-access';
 import { DataSource, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { UserService } from './user.service';
 

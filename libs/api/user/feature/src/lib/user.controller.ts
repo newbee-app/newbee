@@ -8,9 +8,8 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
-import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserDto } from '@newbee/api/user/util';
+import { UpdateUserDto, User } from '@newbee/shared/data-access';
 
 @Controller({ path: 'user', version: '1' })
 export class UserController {

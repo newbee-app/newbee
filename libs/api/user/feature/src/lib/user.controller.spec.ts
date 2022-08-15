@@ -1,8 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { User } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserDto } from '@newbee/api/user/util';
+import { UpdateUserDto, User } from '@newbee/shared/data-access';
 import { UserController } from './user.controller';
 
 const testId1 = '1';

@@ -1,8 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserSettings } from '@newbee/api/shared/data-access';
-import { NameDisplayFormat } from '@newbee/api/shared/util';
-import { CreateUserDto, UpdateUserDto } from '@newbee/api/user/util';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  User,
+  UserSettings,
+} from '@newbee/shared/data-access';
+import { NameDisplayFormat } from '@newbee/shared/util';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()

@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserSettings } from '@newbee/api/shared/data-access';
-import { UpdateUserSettingsDto } from '@newbee/api/user-settings/util';
 import { UserService } from '@newbee/api/user/data-access';
+import {
+  UpdateUserSettingsDto,
+  UserSettings,
+} from '@newbee/shared/data-access';
 import { Repository } from 'typeorm';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, UserJwtPayload } from '@newbee/api/auth/util';
-import { User } from '@newbee/api/shared/data-access';
+import { UserJwtPayload } from '@newbee/api/auth/util';
+import { LoginDto, User } from '@newbee/shared/data-access';
 
 @Injectable()
 export class AuthService {

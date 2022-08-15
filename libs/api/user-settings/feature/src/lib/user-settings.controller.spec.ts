@@ -1,9 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { User, UserSettings } from '@newbee/api/shared/data-access';
-import { NameDisplayFormat } from '@newbee/api/shared/util';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
-import { UpdateUserSettingsDto } from '@newbee/api/user-settings/util';
+import {
+  UpdateUserSettingsDto,
+  User,
+  UserSettings,
+} from '@newbee/shared/data-access';
+import { NameDisplayFormat } from '@newbee/shared/util';
 import { UserSettingsController } from './user-settings.controller';
 
 const testId1 = '1';

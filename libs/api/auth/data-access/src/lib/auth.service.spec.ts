@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
-import { LoginDto, UserJwtPayload } from '@newbee/api/auth/util';
-import { User } from '@newbee/api/shared/data-access';
+import { UserJwtPayload } from '@newbee/api/auth/util';
+import { LoginDto, User } from '@newbee/shared/data-access';
 import { AuthService } from './auth.service';
 
 const testId1 = '1';
