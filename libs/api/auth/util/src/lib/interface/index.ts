@@ -1,1 +1,4 @@
-export * from './user-jwt-payload.interface';
+export interface UserJwtPayload {
+  email: string;
+  sub: string;
+}

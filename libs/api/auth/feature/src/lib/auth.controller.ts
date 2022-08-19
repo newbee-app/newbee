@@ -17,6 +17,7 @@ import { MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
 import { Public, User } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import {
+  authVersion,
   CreateUserDto,
   LoginDto,
   MagicLinkLoginLoginDto,
@@ -24,7 +25,7 @@ import {
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
 
-@Controller({ path: 'auth', version: '1' })
+@Controller({ path: 'auth', version: authVersion })
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
