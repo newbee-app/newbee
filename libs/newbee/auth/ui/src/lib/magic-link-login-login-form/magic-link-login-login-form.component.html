@@ -1,0 +1,11 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
+  <mat-form-field appearance="fill" class="form-row">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email" required>
+    <mat-error *ngIf="!email.valid">{{errorMessage}}</mat-error>
+  </mat-form-field>
+
+  <div class="form-row">
+    <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid"></button>
+  </div>
+</form>
