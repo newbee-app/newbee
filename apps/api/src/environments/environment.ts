@@ -64,7 +64,7 @@ export default () => ({
     ],
   },
   database: {
-    type: 'postgres',
+    type: 'postgres', // needs to be 'postgres' to work with enums, not 'cockroachdb'
     url: process.env['COCKROACHDB_URL'],
     ssl: true,
     extra: {

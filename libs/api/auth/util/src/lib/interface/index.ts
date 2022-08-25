@@ -1,4 +1,4 @@
 export interface UserJwtPayload {
   email: string;
-  sub: string;
+  sub: string; // user.id
 }
