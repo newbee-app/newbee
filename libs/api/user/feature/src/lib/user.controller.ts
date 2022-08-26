@@ -8,8 +8,9 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
+import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserDto, User } from '@newbee/shared/data-access';
+import { UpdateUserDto } from '@newbee/shared/data-access';
 
 @Controller({ path: 'user', version: '1' })
 export class UserController {
@@ -18,7 +19,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(':id')
-  async findOneById(@Param('id') id: string): Promise<User> {
+  async findOneById(@Param('id') id: string): Promise<UserEntity> {
     this.logger.log(`Find user by id request received for id: ${id}`);
     const user = await this.userService.findOneById(id);
     if (!user) {
@@ -35,7 +36,7 @@ export class UserController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     this.logger.log(
       `Update user request received for id: ${id}: ${JSON.stringify(
         updateUserDto

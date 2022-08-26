@@ -3,6 +3,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthConfigInterface } from '@newbee/api/auth/util';
+import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   MagicLinkLoginStrategy as Strategy,
@@ -10,7 +11,6 @@ import {
   SendPayload,
   ValidatePayload,
 } from '@newbee/passport-magic-link-login';
-import { User } from '@newbee/shared/data-access';
 
 @Injectable()
 export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
@@ -42,7 +42,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: ValidatePayload): Promise<User> {
+  async validate(payload: ValidatePayload): Promise<UserEntity> {
     this.logger.log(
       `Magic Link Login validate request received for payload: ${JSON.stringify(
         payload

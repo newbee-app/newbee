@@ -1,35 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserSettingsEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import {
-  UpdateUserSettingsDto,
-  UserSettings,
-} from '@newbee/shared/data-access';
+import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserSettingsService {
   constructor(
-    @InjectRepository(UserSettings)
-    private readonly userSettingsRepository: Repository<UserSettings>,
+    @InjectRepository(UserSettingsEntity)
+    private readonly userSettingsRepository: Repository<UserSettingsEntity>,
     private readonly userService: UserService
   ) {}
 
-  async findOneById(id: string): Promise<UserSettings | null> {
+  async findOneById(id: string): Promise<UserSettingsEntity | null> {
     return await this.userSettingsRepository.findOne({ where: { id } });
   }
 
   async update(
     id: string,
     updateUserSettingsDto: UpdateUserSettingsDto
-  ): Promise<UserSettings | null> {
+  ): Promise<UserSettingsEntity | null> {
     const user = await this.userService.findOneById(id);
     if (!user) {
       return null;
     }
 
     return await this.userSettingsRepository.save(
-      new UserSettings({ ...updateUserSettingsDto, user })
+      new UserSettingsEntity({ ...updateUserSettingsDto, user })
     );
   }
 }

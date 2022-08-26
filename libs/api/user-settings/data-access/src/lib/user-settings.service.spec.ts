@@ -1,36 +1,25 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserEntity, UserSettingsEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
+import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
 import {
-  UpdateUserSettingsDto,
-  User,
-  UserSettings,
-} from '@newbee/shared/data-access';
-import { NameDisplayFormat } from '@newbee/shared/util';
+  NameDisplayFormat,
+  testUser1,
+  testUserSettings1,
+} from '@newbee/shared/util';
 import { Repository } from 'typeorm';
 import { UserSettingsService } from './user-settings.service';
 
-const testId1 = '1';
-const testEmail1 = 'johndoe@gmail.com';
-const testFirstName1 = 'John';
-const testLastName1 = 'Doe';
-
-const oneUser = new User({
-  id: testId1,
-  email: testEmail1,
-  firstName: testFirstName1,
-  lastName: testLastName1,
-});
-
-const oneUserSettings = new UserSettings({
-  user: oneUser,
-  nameDisplayFormat: NameDisplayFormat.FIRST_LAST,
-});
+const { fullName, ...rest } = testUser1;
+fullName; // to shut up the unused var warning
+const testUserEntity1 = new UserEntity(rest);
+const testUserSettingsEntity1 = new UserSettingsEntity(testUserSettings1);
 
 describe('UserSettingsService', () => {
   let service: UserSettingsService;
-  let repository: Repository<UserSettings>;
+  let repository: Repository<UserSettingsEntity>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -39,22 +28,22 @@ describe('UserSettingsService', () => {
         {
           provide: UserService,
           useValue: createMock<UserService>({
-            findOneById: jest.fn().mockResolvedValue(oneUser),
+            findOneById: jest.fn().mockResolvedValue(testUserEntity1),
           }),
         },
         {
-          provide: getRepositoryToken(UserSettings),
-          useValue: createMock<Repository<UserSettings>>({
-            findOne: jest.fn().mockResolvedValue(oneUserSettings),
-            save: jest.fn().mockResolvedValue(oneUserSettings),
+          provide: getRepositoryToken(UserSettingsEntity),
+          useValue: createMock<Repository<UserSettingsEntity>>({
+            findOne: jest.fn().mockResolvedValue(testUserSettingsEntity1),
+            save: jest.fn().mockResolvedValue(testUserSettingsEntity1),
           }),
         },
       ],
     }).compile();
 
     service = module.get<UserSettingsService>(UserSettingsService);
-    repository = module.get<Repository<UserSettings>>(
-      getRepositoryToken(UserSettings)
+    repository = module.get<Repository<UserSettingsEntity>>(
+      getRepositoryToken(UserSettingsEntity)
     );
   });
 
@@ -64,11 +53,13 @@ describe('UserSettingsService', () => {
 
   describe('findOneById()', () => {
     it(`should get a single user's settings by id`, async () => {
-      await expect(service.findOneById(testId1)).resolves.toEqual(
-        oneUserSettings
+      await expect(service.findOneById(testUserSettings1.id)).resolves.toEqual(
+        testUserSettingsEntity1
       );
       expect(repository.findOne).toBeCalledTimes(1);
-      expect(repository.findOne).toBeCalledWith({ where: { id: testId1 } });
+      expect(repository.findOne).toBeCalledWith({
+        where: { id: testUserSettings1.id },
+      });
     });
   });
 
@@ -78,13 +69,13 @@ describe('UserSettingsService', () => {
         nameDisplayFormat: NameDisplayFormat.FIRST_LAST,
       };
       await expect(
-        service.update(testId1, updateUserSettingsDto)
-      ).resolves.toEqual(oneUserSettings);
+        service.update(testUserSettings1.id, updateUserSettingsDto)
+      ).resolves.toEqual(testUserSettingsEntity1);
       expect(repository.findOne).toBeCalledTimes(0);
       expect(repository.save).toBeCalledTimes(1);
       expect(repository.save).toBeCalledWith({
         ...updateUserSettingsDto,
-        user: oneUser,
+        user: testUserEntity1,
       });
     });
   });

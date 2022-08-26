@@ -38,6 +38,9 @@
       ],
       "@newbee/api/auth/feature": ["libs/api/auth/feature/src/index.ts"],
       "@newbee/api/auth/util": ["libs/api/auth/util/src/index.ts"],
+      "@newbee/api/shared/data-access": [
+        "libs/api/shared/data-access/src/index.ts"
+      ],
       "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"],
       "@newbee/api/user-settings/data-access": [
         "libs/api/user-settings/data-access/src/index.ts"

@@ -1,3 +1,4 @@
+import { User } from '@newbee/shared/util';
 import { Expose } from 'class-transformer';
 import {
   Column,
@@ -7,10 +8,10 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { UserSettings } from './user-settings.entity';
+import { UserSettingsEntity } from './user-settings.entity';
 
 @Entity()
-export class User {
+export class UserEntity implements User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -35,17 +36,15 @@ export class User {
   @Column()
   online!: boolean;
 
-  @OneToOne(() => UserSettings, (userSettings) => userSettings.user, {
-    cascade: ['update'],
-  })
-  settings!: Relation<UserSettings>;
+  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
+  settings!: Relation<UserSettingsEntity>;
 
   @Expose()
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  constructor(partial?: DeepPartial<User>) {
+  constructor(partial?: DeepPartial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

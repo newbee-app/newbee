@@ -1,5 +1,5 @@
+import { User } from '@newbee/shared/util';
 import { IsDefined, IsJWT, IsObject } from 'class-validator';
-import { User } from '../../entity';
 
 export class LoginDto {
   @IsDefined()

@@ -7,6 +7,7 @@
     "api-auth-feature": "libs/api/auth/feature",
     "api-auth-util": "libs/api/auth/util",
     "api-interfaces": "libs/api-interfaces",
+    "api-shared-data-access": "libs/api/shared/data-access",
     "api-shared-util": "libs/api/shared/util",
     "api-user-data-access": "libs/api/user/data-access",
     "api-user-feature": "libs/api/user/feature",

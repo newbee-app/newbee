@@ -1,4 +1,4 @@
-import { NameDisplayFormat } from '@newbee/shared/util';
+import { NameDisplayFormat, UserSettings } from '@newbee/shared/util';
 import {
   Column,
   DeepPartial,
@@ -8,16 +8,18 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 
 @Entity()
-export class UserSettings {
+export class UserSettingsEntity implements UserSettings {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @OneToOne(() => User, (user) => user.settings)
+  @OneToOne(() => UserEntity, (user) => user.settings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
-  user!: Relation<User>;
+  user!: Relation<UserEntity>;
 
   @Column({
     type: 'enum',
@@ -26,7 +28,7 @@ export class UserSettings {
   })
   nameDisplayFormat!: NameDisplayFormat;
 
-  constructor(partial?: DeepPartial<UserSettings>) {
+  constructor(partial?: DeepPartial<UserSettingsEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

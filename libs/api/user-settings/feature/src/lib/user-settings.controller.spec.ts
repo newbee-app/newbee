@@ -1,31 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
+import { UserSettingsEntity } from '@newbee/api/shared/data-access';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
-import {
-  UpdateUserSettingsDto,
-  User,
-  UserSettings,
-} from '@newbee/shared/data-access';
-import { NameDisplayFormat } from '@newbee/shared/util';
+import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
+import { testUserSettings1 } from '@newbee/shared/util';
 import { UserSettingsController } from './user-settings.controller';
 
-const testId1 = '1';
-const testEmail1 = 'johndoe@gmail.com';
-const testFirstName1 = 'John';
-const testLastName1 = 'Doe';
-const testNameDisplayFormat1 = NameDisplayFormat.FIRST_LAST;
-
-const oneUser = new User({
-  id: testId1,
-  email: testEmail1,
-  firstName: testFirstName1,
-  lastName: testLastName1,
-});
-
-const oneUserSettings = new UserSettings({
-  user: oneUser,
-  nameDisplayFormat: testNameDisplayFormat1,
-});
+const testUserSettingsEntity1 = new UserSettingsEntity(testUserSettings1);
 
 describe('UserSettingsController', () => {
   let controller: UserSettingsController;
@@ -38,7 +19,7 @@ describe('UserSettingsController', () => {
         {
           provide: UserSettingsService,
           useValue: createMock<UserSettingsService>({
-            update: jest.fn().mockResolvedValue(oneUserSettings),
+            update: jest.fn().mockResolvedValue(testUserSettingsEntity1),
           }),
         },
       ],
@@ -55,13 +36,16 @@ describe('UserSettingsController', () => {
   describe('update()', () => {
     it(`should try to find and update a user's settings by id`, async () => {
       const updateUserSettingsDto: UpdateUserSettingsDto = {
-        nameDisplayFormat: testNameDisplayFormat1,
+        nameDisplayFormat: testUserSettings1.nameDisplayFormat,
       };
       await expect(
-        controller.update(testId1, updateUserSettingsDto)
-      ).resolves.toEqual(oneUserSettings);
+        controller.update(testUserSettings1.id, updateUserSettingsDto)
+      ).resolves.toEqual(testUserSettingsEntity1);
       expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(testId1, updateUserSettingsDto);
+      expect(service.update).toBeCalledWith(
+        testUserSettings1.id,
+        updateUserSettingsDto
+      );
     });
   });
 });
