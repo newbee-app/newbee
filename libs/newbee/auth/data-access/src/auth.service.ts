@@ -16,7 +16,7 @@ export class AuthService {
     magicLinkLoginLoginDto: MagicLinkLoginLoginDto
   ): Observable<HttpResponse<unknown>> {
     return this.http.post(
-      `/api/auth/${authVersion}/${magicLinkLogin}/login`,
+      `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
       magicLinkLoginLoginDto,
       { observe: 'response' }
     );
@@ -24,7 +24,7 @@ export class AuthService {
 
   register(createUserDto: CreateUserDto): Observable<HttpResponse<unknown>> {
     return this.http.post(
-      `/api/auth/${authVersion}/${magicLinkLogin}/register`,
+      `/api/v${authVersion}/auth/${magicLinkLogin}/register`,
       createUserDto,
       { observe: 'response' }
     );
