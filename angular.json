@@ -15,6 +15,7 @@
     "api-user-settings-feature": "libs/api/user-settings/feature",
     "newbee": "apps/newbee",
     "newbee-auth-data-access": "libs/newbee/auth/data-access",
+    "newbee-auth-feature": "libs/newbee/auth/feature",
     "newbee-auth-ui": "libs/newbee/auth/ui",
     "newbee-auth-util": "libs/newbee/auth/util",
     "newbee-e2e": "apps/newbee-e2e",

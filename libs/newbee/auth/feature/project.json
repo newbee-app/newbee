@@ -1,0 +1,41 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/newbee/auth/feature/src",
+  "prefix": "newbee",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/newbee/auth/feature"],
+      "options": {
+        "project": "libs/newbee/auth/feature/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/auth/feature/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/auth/feature/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/newbee/auth/feature"],
+      "options": {
+        "jestConfig": "libs/newbee/auth/feature/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/auth/feature/**/*.ts",
+          "libs/newbee/auth/feature/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
