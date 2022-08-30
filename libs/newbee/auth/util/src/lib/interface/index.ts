@@ -1,3 +1,3 @@
 export interface MagicLinkLoginLoginForm {
-  email?: string | null;
+  email?: string | null | undefined;
 }

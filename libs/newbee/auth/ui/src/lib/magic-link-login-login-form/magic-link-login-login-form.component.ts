@@ -10,7 +10,7 @@ export class MagicLinkLoginLoginFormComponent {
   @Input() onSubmit!: (formValues: MagicLinkLoginLoginForm) => void;
 
   loginForm = this.fb.group({
-    email: ['', Validators.required, Validators.email],
+    email: ['', [Validators.required, Validators.email]],
   });
 
   constructor(private readonly fb: FormBuilder) {}

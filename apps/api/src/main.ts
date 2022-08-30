@@ -2,7 +2,6 @@ import { Logger, VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
-import csurf from 'csurf';
 import helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app/app.module';
@@ -23,7 +22,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Set up CSRF/XSRF protection
-  app.use(csurf({ cookie: true }));
+  // app.use(csurf({ cookie: true }));
 
   // Set up global versioning
   app.enableVersioning({

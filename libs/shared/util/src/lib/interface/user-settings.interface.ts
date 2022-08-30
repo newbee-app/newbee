@@ -1,4 +1,4 @@
-import { NameDisplayFormat } from '@newbee/shared/util';
+import { NameDisplayFormat } from '../enum';
 
 export interface UserSettings {
   id: string;
