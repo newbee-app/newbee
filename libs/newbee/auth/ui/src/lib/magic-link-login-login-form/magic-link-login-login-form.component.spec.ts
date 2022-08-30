@@ -8,6 +8,7 @@ import { testUser1 } from '@newbee/shared/util';
 import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
 
 const testEmail1 = testUser1.email;
+const testButtonText = 'Submit';
 
 describe('MagicLinkLoginLoginFormComponent', () => {
   let fixture: ComponentFixture<MagicLinkLoginLoginFormComponent>;
@@ -33,6 +34,7 @@ describe('MagicLinkLoginLoginFormComponent', () => {
     component.onSubmit = (formValues) => {
       expect(formValues.email).toEqual(expectedEmail);
     };
+    component.buttonText = testButtonText;
 
     fixture.detectChanges();
 
@@ -46,8 +48,17 @@ describe('MagicLinkLoginLoginFormComponent', () => {
     expect(fixture).toBeDefined();
     expect(component).toBeDefined();
     expect(component.onSubmit).toBeDefined();
+    expect(component.buttonText).toBeDefined();
     expect(emailElement).toBeDefined();
     expect(errorMessageElement).toBeDefined();
+  });
+
+  describe('button', () => {
+    it('should use buttonText', () => {
+      const buttonElement: HTMLButtonElement | null =
+        fixture.nativeElement.querySelector('#submit-button');
+      expect(buttonElement?.textContent).toEqual(testButtonText);
+    });
   });
 
   describe('email()', () => {

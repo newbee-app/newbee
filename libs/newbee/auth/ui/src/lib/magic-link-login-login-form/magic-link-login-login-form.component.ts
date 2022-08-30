@@ -8,6 +8,7 @@ import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
 })
 export class MagicLinkLoginLoginFormComponent {
   @Input() onSubmit!: (formValues: MagicLinkLoginLoginForm) => void;
+  @Input() buttonText!: string;
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
