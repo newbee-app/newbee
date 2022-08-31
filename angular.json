@@ -13,12 +13,12 @@
     "api-user-feature": "libs/api/user/feature",
     "api-user-settings-data-access": "libs/api/user-settings/data-access",
     "api-user-settings-feature": "libs/api/user-settings/feature",
+    "e2e-newbee-e2e": "apps/e2e/newbee-e2e",
     "newbee": "apps/newbee",
     "newbee-auth-data-access": "libs/newbee/auth/data-access",
     "newbee-auth-feature": "libs/newbee/auth/feature",
     "newbee-auth-ui": "libs/newbee/auth/ui",
     "newbee-auth-util": "libs/newbee/auth/util",
-    "newbee-e2e": "apps/newbee-e2e",
     "publishable-passport-magic-link-login": "libs/publishable/passport-magic-link-login",
     "shared-data-access": "libs/shared/data-access",
     "shared-util": "libs/shared/util"
