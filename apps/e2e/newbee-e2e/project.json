@@ -1,12 +1,12 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/newbee-e2e/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/e2e/newbee-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/newbee-e2e/cypress.json",
+        "cypressConfig": "apps/e2e/newbee-e2e/cypress.json",
         "devServerTarget": "newbee:serve:development"
       },
       "configurations": {
@@ -17,18 +17,12 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "apps/newbee-e2e/**/*.{js,ts}"
-        ]
+        "lintFilePatterns": ["apps/e2e/newbee-e2e/**/*.{js,ts}"]
       }
     }
   },
   "tags": [],
-  "implicitDependencies": [
-    "newbee"
-  ]
+  "implicitDependencies": ["newbee"]
 }
