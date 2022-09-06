@@ -110,7 +110,7 @@ export class MagicLinkLoginStrategy extends Strategy {
     }
   }
 
-  async send(payload: SendPayload): Promise<void> {
+  async send(payload: SendPayload): Promise<string> {
     if (!payload.email) {
       throw new TypeError(`'email' is a required property`);
     }
@@ -127,6 +127,7 @@ export class MagicLinkLoginStrategy extends Strategy {
         `${this.verifyLink}?token=${token}`,
         jwtid
       );
+      return jwtid;
     } catch (err: unknown) {
       throw new EvalError(`Failed to send magic link: ${err}`);
     }
