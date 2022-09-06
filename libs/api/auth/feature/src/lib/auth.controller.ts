@@ -21,6 +21,7 @@ import {
   authVersion,
   CreateUserDto,
   LoginDto,
+  MagicLinkLoginDto,
   MagicLinkLoginLoginDto,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
@@ -39,13 +40,13 @@ export class AuthController {
   @Post(`${magicLinkLogin}/login`)
   async checkAndLogin(
     @Body() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
-  ): Promise<void> {
+  ): Promise<MagicLinkLoginDto> {
     this.logger.log(
       `Check and login request received: ${JSON.stringify(
         magicLinkLoginLoginDto
       )}`
     );
-    const email = magicLinkLoginLoginDto.email;
+    const { email } = magicLinkLoginLoginDto;
     const user = await this.userService.findOneByEmail(email);
     if (!user) {
       const errorMsg = `User not found for email: ${email}`;
@@ -54,12 +55,15 @@ export class AuthController {
     }
 
     this.logger.log(`Valid email found for email: ${email}`);
-    await this.trySendMagicLink(email);
+    const jwtId = await this.trySendMagicLink(email);
+    return { jwtId };
   }
 
   @Public()
   @Post(`${magicLinkLogin}/register`)
-  async checkAndRegister(@Body() createUserDto: CreateUserDto): Promise<void> {
+  async checkAndRegister(
+    @Body() createUserDto: CreateUserDto
+  ): Promise<MagicLinkLoginDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
       `Check and register request received: ${createUserDtoString}`
@@ -82,7 +86,8 @@ export class AuthController {
     }
 
     this.logger.log(`Created user: ${JSON.stringify(user)}`);
-    await this.trySendMagicLink(email);
+    const jwtId = await this.trySendMagicLink(email);
+    return { jwtId };
   }
 
   @Public()
@@ -99,10 +104,10 @@ export class AuthController {
     return loginDto;
   }
 
-  private async trySendMagicLink(email: string): Promise<void> {
+  private async trySendMagicLink(email: string): Promise<string> {
     this.logger.log(`Sending magic link to email: ${email}`);
     try {
-      this.magicLinkLoginStrategy.send({ email });
+      return await this.magicLinkLoginStrategy.send({ email });
     } catch (err: unknown) {
       const errorMsg = `Magic link could not be sent to email: ${email}, error: ${err}`;
       this.logger.error(errorMsg);
