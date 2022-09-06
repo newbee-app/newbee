@@ -9,6 +9,7 @@ import { UserService } from '@newbee/api/user/data-access';
 import {
   CreateUserDto,
   LoginDto,
+  MagicLinkLoginDto,
   MagicLinkLoginLoginDto,
 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
@@ -23,6 +24,8 @@ const testLoginDto1: LoginDto = {
   access_token: accessToken1,
   user: testUserEntity1,
 };
+const testJwtId1 = '1234';
+const testMagicLinkLoginDto1: MagicLinkLoginDto = { jwtId: testJwtId1 };
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -50,7 +53,7 @@ describe('AuthController', () => {
         {
           provide: MagicLinkLoginStrategy,
           useValue: createMock<MagicLinkLoginStrategy>({
-            send: jest.fn().mockResolvedValue(undefined),
+            send: jest.fn().mockResolvedValue(testJwtId1),
           }),
         },
       ],
@@ -73,7 +76,7 @@ describe('AuthController', () => {
       };
       await expect(
         controller.checkAndLogin(magicLoginLoginDto)
-      ).resolves.toBeUndefined();
+      ).resolves.toEqual(testMagicLinkLoginDto1);
       expect(userService.findOneByEmail).toBeCalledTimes(1);
       expect(userService.findOneByEmail).toBeCalledWith(testUser1.email);
       expect(strategy.send).toBeCalledTimes(1);
@@ -111,7 +114,7 @@ describe('AuthController', () => {
           {
             provide: MagicLinkLoginStrategy,
             useValue: createMock<MagicLinkLoginStrategy>({
-              send: jest.fn().mockResolvedValue(undefined),
+              send: jest.fn().mockResolvedValue(testJwtId1),
             }),
           },
         ],
@@ -124,7 +127,7 @@ describe('AuthController', () => {
     it('should create a user and send a link', async () => {
       await expect(
         controller.checkAndRegister(testCreateUserDto1)
-      ).resolves.toBeUndefined();
+      ).resolves.toEqual(testMagicLinkLoginDto1);
       expect(userService.findOneByEmail).toBeCalledTimes(1);
       expect(userService.findOneByEmail).toBeCalledWith(testUser1.email);
       expect(userService.create).toBeCalledTimes(1);
