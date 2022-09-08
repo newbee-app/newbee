@@ -8,9 +8,9 @@ import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   CreateUserDto,
-  LoginDto,
-  MagicLinkLoginDto,
   MagicLinkLoginLoginDto,
+  testLoginDto1,
+  testMagicLinkLoginDto1,
 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { AuthController } from './auth.controller';
@@ -19,13 +19,6 @@ const { fullName, ...rest } = testUser1;
 fullName; // to shut up the unused var warning
 const testUserEntity1 = new UserEntity(rest);
 const testCreateUserDto1: CreateUserDto = Object.assign({}, testUser1);
-const accessToken1 = 'access_token1';
-const testLoginDto1: LoginDto = {
-  access_token: accessToken1,
-  user: testUserEntity1,
-};
-const testJwtId1 = '1234';
-const testMagicLinkLoginDto1: MagicLinkLoginDto = { jwtId: testJwtId1 };
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -53,7 +46,7 @@ describe('AuthController', () => {
         {
           provide: MagicLinkLoginStrategy,
           useValue: createMock<MagicLinkLoginStrategy>({
-            send: jest.fn().mockResolvedValue(testJwtId1),
+            send: jest.fn().mockResolvedValue(testMagicLinkLoginDto1.jwtId),
           }),
         },
       ],
@@ -114,7 +107,7 @@ describe('AuthController', () => {
           {
             provide: MagicLinkLoginStrategy,
             useValue: createMock<MagicLinkLoginStrategy>({
-              send: jest.fn().mockResolvedValue(testJwtId1),
+              send: jest.fn().mockResolvedValue(testMagicLinkLoginDto1.jwtId),
             }),
           },
         ],
