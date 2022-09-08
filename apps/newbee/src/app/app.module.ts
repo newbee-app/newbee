@@ -1,6 +1,5 @@
 import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -11,6 +10,7 @@ import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
 import { metaReducers, reducers } from './reducers';
+import { AppRoutingModule } from './routing';
 
 @NgModule({
   declarations: [AppComponent, NxWelcomeComponent],
@@ -19,7 +19,6 @@ import { metaReducers, reducers } from './reducers';
     BrowserAnimationsModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    ReactiveFormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -36,6 +35,7 @@ import { metaReducers, reducers } from './reducers';
     EffectsModule.forRoot([]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
