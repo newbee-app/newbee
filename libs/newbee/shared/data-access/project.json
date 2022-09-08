@@ -1,0 +1,41 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/newbee/shared/data-access/src",
+  "prefix": "newbee",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/newbee/shared/data-access"],
+      "options": {
+        "project": "libs/newbee/shared/data-access/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/shared/data-access/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/shared/data-access/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/newbee/shared/data-access"],
+      "options": {
+        "jestConfig": "libs/newbee/shared/data-access/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/shared/data-access/**/*.ts",
+          "libs/newbee/shared/data-access/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
