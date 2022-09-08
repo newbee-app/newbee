@@ -5,13 +5,12 @@ import {
 import { TestBed } from '@angular/core/testing';
 import {
   authVersion,
-  CreateUserDto,
-  MagicLinkLoginLoginDto,
+  testCreateUserDto1,
+  testMagicLinkLoginDto1,
+  testMagicLinkLoginLoginDto1,
 } from '@newbee/shared/data-access';
-import { magicLinkLogin, testUser1 } from '@newbee/shared/util';
+import { magicLinkLogin } from '@newbee/shared/util';
 import { AuthService } from './auth.service';
-
-const testEmail1 = testUser1.email;
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -29,38 +28,43 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(httpController).toBeDefined();
   });
 
   describe('login()', () => {
-    it('should send out a post request', () => {
-      const magicLinkLoginLoginDto: MagicLinkLoginLoginDto = {
-        email: testEmail1,
-      };
-      service
-        .login(magicLinkLoginLoginDto)
-        .subscribe((httpResponse) => expect(httpResponse.ok).toBeTruthy());
+    it('should send out a post request', (done) => {
+      service.login(testMagicLinkLoginLoginDto1).subscribe({
+        next: (magicLinkLoginDto) => {
+          expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+          done();
+        },
+        error: done.fail,
+      });
       const req = httpController.expectOne(
         `/api/v${authVersion}/auth/${magicLinkLogin}/login`
       );
       expect(req.request.method).toEqual('POST');
 
-      req.flush(null);
+      req.flush(testMagicLinkLoginDto1);
       httpController.verify();
     });
   });
 
   describe('register()', () => {
-    it('should send out a post request', () => {
-      const createUserDto: CreateUserDto = Object.assign({}, testUser1);
-      service
-        .register(createUserDto)
-        .subscribe((httpResponse) => expect(httpResponse.ok).toBeTruthy());
+    it('should send out a post request', (done) => {
+      service.register(testCreateUserDto1).subscribe({
+        next: (magicLinkLoginDto) => {
+          expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+          done();
+        },
+        error: done.fail,
+      });
       const req = httpController.expectOne(
         `/api/v${authVersion}/auth/${magicLinkLogin}/register`
       );
       expect(req.request.method).toEqual('POST');
 
-      req.flush(null);
+      req.flush(testMagicLinkLoginDto1);
       httpController.verify();
     });
   });

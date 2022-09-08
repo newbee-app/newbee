@@ -1,8 +1,9 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   authVersion,
   CreateUserDto,
+  MagicLinkLoginDto,
   MagicLinkLoginLoginDto,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
@@ -14,19 +15,17 @@ export class AuthService {
 
   login(
     magicLinkLoginLoginDto: MagicLinkLoginLoginDto
-  ): Observable<HttpResponse<unknown>> {
-    return this.http.post(
+  ): Observable<MagicLinkLoginDto> {
+    return this.http.post<MagicLinkLoginDto>(
       `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
-      magicLinkLoginLoginDto,
-      { observe: 'response' }
+      magicLinkLoginLoginDto
     );
   }
 
-  register(createUserDto: CreateUserDto): Observable<HttpResponse<unknown>> {
-    return this.http.post(
+  register(createUserDto: CreateUserDto): Observable<MagicLinkLoginDto> {
+    return this.http.post<MagicLinkLoginDto>(
       `/api/v${authVersion}/auth/${magicLinkLogin}/register`,
-      createUserDto,
-      { observe: 'response' }
+      createUserDto
     );
   }
 }
