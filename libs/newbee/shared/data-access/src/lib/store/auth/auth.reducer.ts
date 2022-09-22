@@ -4,15 +4,17 @@ import { AppState } from '../app.reducer';
 import { AuthActions } from './auth.actions';
 
 export interface AuthState {
-  accessToken: string;
+  accessToken: string | null;
   user: User | null;
   pendingMagicLink: boolean;
+  jwtId: string | null;
 }
 
 export const initialAuthState: AuthState = {
-  accessToken: '',
+  accessToken: null,
   user: null,
   pendingMagicLink: false,
+  jwtId: null,
 };
 
 export const authFeature = createFeature<AppState>({
@@ -20,10 +22,12 @@ export const authFeature = createFeature<AppState>({
   reducer: createReducer(
     initialAuthState,
     on(
-      AuthActions.sendMagicLinkSuccess,
-      (state): AuthState => ({
+      AuthActions.sendLoginMagicLinkSuccess,
+      AuthActions.sendRegisterMagicLinkSuccess,
+      (state, { jwtId }): AuthState => ({
         ...state,
         pendingMagicLink: true,
+        jwtId,
       })
     ),
     on(
@@ -33,6 +37,15 @@ export const authFeature = createFeature<AppState>({
         accessToken: access_token,
         user,
         pendingMagicLink: false,
+        jwtId: null,
+      })
+    ),
+    on(
+      AuthActions.loginError,
+      (state): AuthState => ({
+        ...state,
+        pendingMagicLink: false,
+        jwtId: null,
       })
     )
   ),

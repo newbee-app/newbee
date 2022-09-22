@@ -2,59 +2,59 @@ import {
   testLoginDto1,
   testMagicLinkLoginDto1,
 } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
 import { AuthActions } from './auth.actions';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
-const testAuthState1: AuthState = initialAuthState;
-
 describe('AuthReducer', () => {
-  describe('reducer', () => {
+  const stateAfterMagicLinkSuccess: AuthState = {
+    ...initialAuthState,
+    pendingMagicLink: true,
+    jwtId: testMagicLinkLoginDto1.jwtId,
+  };
+  const stateAfterLoginSuccess: AuthState = {
+    ...stateAfterMagicLinkSuccess,
+    accessToken: testLoginDto1.access_token,
+    user: testLoginDto1.user,
+    pendingMagicLink: false,
+    jwtId: null,
+  };
+  const stateAfterLoginError: AuthState = {
+    ...stateAfterMagicLinkSuccess,
+    pendingMagicLink: false,
+    jwtId: null,
+  };
+
+  describe('start from initial state', () => {
     it('unknown action should not affect state', () => {
       const action = { type: 'Unknown' };
-      const updatedState = authFeature.reducer(testAuthState1, action);
-      expect(updatedState).toEqual(testAuthState1);
+      const updatedState = authFeature.reducer(initialAuthState, action);
+      expect(updatedState).toEqual(initialAuthState);
     });
 
-    it('sendMagicLinkSuccess should update state', () => {
+    it('sendLoginMagicLinkSuccess and sendRegisterMagicLinkSuccess should update state', () => {
       const updatedState = authFeature.reducer(
-        testAuthState1,
-        AuthActions.sendMagicLinkSuccess(testMagicLinkLoginDto1)
+        initialAuthState,
+        AuthActions.sendLoginMagicLinkSuccess(testMagicLinkLoginDto1)
       );
-      expect(updatedState).toEqual({
-        ...testAuthState1,
-        pendingMagicLink: true,
-      });
+      expect(updatedState).toEqual(stateAfterMagicLinkSuccess);
     });
+  });
 
+  describe('start after sending magic link', () => {
     it('loginSuccess should update state', () => {
       const updatedState = authFeature.reducer(
-        testAuthState1,
+        stateAfterMagicLinkSuccess,
         AuthActions.loginSuccess(testLoginDto1)
       );
-      expect(updatedState).toEqual({
-        ...testAuthState1,
-        accessToken: testLoginDto1.access_token,
-        user: testLoginDto1.user,
-      });
+      expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
 
-    it('unrelated action should not affect state', () => {
-      let updatedState = authFeature.reducer(
-        testAuthState1,
-        AuthActions.sendMagicLink({ email: testUser1.email })
-      );
-      expect(updatedState).toEqual(testAuthState1);
-      updatedState = authFeature.reducer(
-        testAuthState1,
-        AuthActions.sendMagicLinkError()
-      );
-      expect(updatedState).toEqual(testAuthState1);
-      updatedState = authFeature.reducer(
-        testAuthState1,
+    it('loginError should update state', () => {
+      const updatedState = authFeature.reducer(
+        stateAfterMagicLinkSuccess,
         AuthActions.loginError()
       );
-      expect(updatedState).toEqual(testAuthState1);
+      expect(updatedState).toEqual(stateAfterLoginError);
     });
   });
 });
