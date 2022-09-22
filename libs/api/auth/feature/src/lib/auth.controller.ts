@@ -1,12 +1,11 @@
 import {
   Body,
-  ConflictException,
   Controller,
   Get,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -37,48 +36,37 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Post(`${magicLinkLogin}/login`)
-  async checkAndLogin(
-    @Body() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
+  @Get(`${magicLinkLogin}/login`)
+  async login(
+    @Query() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
   ): Promise<MagicLinkLoginDto> {
-    this.logger.log(
-      `Check and login request received: ${JSON.stringify(
-        magicLinkLoginLoginDto
-      )}`
-    );
     const { email } = magicLinkLoginLoginDto;
+    this.logger.log(`Check email request received for: ${email}`);
     const user = await this.userService.findOneByEmail(email);
     if (!user) {
-      const errorMsg = `User not found for email: ${email}`;
-      this.logger.error(errorMsg);
-      throw new NotFoundException(errorMsg);
+      this.logger.log(`User not found for email: ${email}`);
+      return { jwtId: null };
     }
 
-    this.logger.log(`Valid email found for email: ${email}`);
+    this.logger.log(`User found for email: ${email}`);
     const jwtId = await this.trySendMagicLink(email);
     return { jwtId };
   }
 
   @Public()
   @Post(`${magicLinkLogin}/register`)
-  async checkAndRegister(
+  async register(
     @Body() createUserDto: CreateUserDto
   ): Promise<MagicLinkLoginDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
-    this.logger.log(
-      `Check and register request received: ${createUserDtoString}`
-    );
-    const email = createUserDto.email;
-
-    let user = await this.userService.findOneByEmail(email);
-    if (user) {
-      const errorMsg = `User found for email: ${email}, sending user login magic link instead of registering`;
-      this.logger.error(errorMsg);
-      await this.magicLinkLoginStrategy.send({ email });
-      throw new ConflictException(errorMsg);
+    this.logger.log(`Register request received: ${createUserDtoString}`);
+    const { email } = createUserDto;
+    const magicLinkLoginDto = await this.login({ email });
+    if (magicLinkLoginDto.jwtId) {
+      return magicLinkLoginDto;
     }
 
-    user = await this.userService.create(createUserDto);
+    const user = await this.userService.create(createUserDto);
     if (!user) {
       const errorMsg = `User could not be created for: ${createUserDtoString}`;
       this.logger.error(errorMsg);

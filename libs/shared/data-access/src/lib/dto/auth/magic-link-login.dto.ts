@@ -1,7 +1,7 @@
-import { IsDefined, IsNumberString } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
 
 export class MagicLinkLoginDto {
-  @IsDefined()
+  @IsOptional()
   @IsNumberString()
-  jwtId!: string;
+  jwtId!: string | null;
 }
