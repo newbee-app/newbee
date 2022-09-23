@@ -4,7 +4,7 @@ import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
 
 @Component({
   selector: 'newbee-magic-link-login-login-form',
-  templateUrl: './magic-link-login-login-form.component.html',
+  templateUrl: './magic-link-login.login-form.component.html',
 })
 export class MagicLinkLoginLoginFormComponent {
   @Input() onSubmit!: (formValues: MagicLinkLoginLoginForm) => void;

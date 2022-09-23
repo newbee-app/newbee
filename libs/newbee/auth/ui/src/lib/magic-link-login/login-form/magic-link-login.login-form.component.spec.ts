@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { testUser1 } from '@newbee/shared/util';
-import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
+import { MagicLinkLoginLoginFormComponent } from './magic-link-login.login-form.component';
 
 const testEmail1 = testUser1.email;
 const testButtonText = 'Submit';

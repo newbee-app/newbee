@@ -48,7 +48,7 @@ describe('AuthEffects', () => {
         actions$ = hot('a', {
           a: AuthActions.sendMagicLink(testMagicLinkLoginLoginForm1),
         });
-        expectObservable(effects.sendMagicLink$).toBe('a', {
+        expectObservable(effects.sendLoginMagicLink$).toBe('a', {
           a: AuthActions.sendMagicLinkSuccess(testMagicLinkLoginDto1),
         });
 
@@ -61,7 +61,7 @@ describe('AuthEffects', () => {
     it('should not fire when unrelated actions are dispatched', () => {
       testScheduler.run(({ hot, expectObservable, flush }) => {
         actions$ = hot('a', { a: { type: 'Unknown' } });
-        expectObservable(effects.sendMagicLink$).toBe('-');
+        expectObservable(effects.sendLoginMagicLink$).toBe('-');
 
         flush();
         expect(service.login).not.toBeCalled();

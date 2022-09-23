@@ -6,15 +6,15 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthEffects {
-  sendMagicLink$ = createEffect(() => {
+  sendLoginMagicLink$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.sendMagicLink),
+      ofType(AuthActions.sendLoginMagicLink),
       mergeMap(({ email }) => {
         return this.authService.login({ email: email ?? '' }).pipe(
           map((magicLinkLoginDto) => {
-            return AuthActions.sendMagicLinkSuccess(magicLinkLoginDto);
+            return AuthActions.sendLoginMagicLinkSuccess(magicLinkLoginDto);
           }),
-          catchError(() => of(AuthActions.sendMagicLinkError()))
+          catchError(() => of(AuthActions.sendLoginMagicLinkError()))
         );
       })
     );
