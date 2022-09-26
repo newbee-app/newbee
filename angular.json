@@ -20,6 +20,7 @@
     "newbee-auth-ui": "libs/newbee/auth/ui",
     "newbee-auth-util": "libs/newbee/auth/util",
     "newbee-shared-data-access": "libs/newbee/shared/data-access",
+    "newbee-shared-ui": "libs/newbee/shared/ui",
     "publishable-passport-magic-link-login": "libs/publishable/passport-magic-link-login",
     "shared-data-access": "libs/shared/data-access",
     "shared-util": "libs/shared/util",
