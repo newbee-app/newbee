@@ -5,7 +5,7 @@
   "prefix": "newbee",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nrwl/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/newbee/browser",
@@ -13,13 +13,13 @@
         "main": "apps/newbee/src/main.ts",
         "polyfills": "apps/newbee/src/polyfills.ts",
         "tsConfig": "apps/newbee/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
+        "inlineStyleLanguage": "css",
         "assets": [
           "apps/newbee/src/favicon.ico",
           "apps/newbee/src/assets",
           "apps/newbee/src/manifest.webmanifest"
         ],
-        "styles": ["apps/newbee/src/styles.scss"],
+        "styles": ["apps/newbee/src/styles.css"],
         "scripts": [],
         "serviceWorker": true,
         "ngswConfigPath": "apps/newbee/ngsw-config.json"
@@ -58,7 +58,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nrwl/web:file-server",
       "configurations": {
         "production": {
           "browserTarget": "newbee:build:production"
@@ -98,7 +98,7 @@
         "outputPath": "dist/newbee/server",
         "main": "apps/newbee/server.ts",
         "tsConfig": "apps/newbee/tsconfig.server.json",
-        "inlineStyleLanguage": "scss"
+        "inlineStyleLanguage": "css"
       },
       "configurations": {
         "production": {

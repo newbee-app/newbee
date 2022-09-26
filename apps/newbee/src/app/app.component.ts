@@ -5,7 +5,7 @@ import { Message } from '@newbee/api-interfaces';
 @Component({
   selector: 'newbee-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   hello$ = this.http.get<Message>('/api/hello');

@@ -25,7 +25,7 @@
   },
   "generators": {
     "@nrwl/angular:application": {
-      "style": "scss",
+      "style": "css",
       "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
@@ -36,7 +36,7 @@
       "buildable": true
     },
     "@nrwl/angular:component": {
-      "style": "scss"
+      "style": "css"
     },
     "@nrwl/nest:library": {
       "buildable": true
