@@ -1,0 +1,14 @@
+<newbee-magic-link-login-base-form>
+  <div id="login-form" class="flex flex-col flex-nowrap gap-3 justify-start content-center">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
+      <div id="email">
+        <label>Email</label>
+        <input id="email-input" formControlName="email" type="email" placeholder="johndoe@example.com" required class="placeholder:italic placeholder:text-slate-400">
+        <div id="error-message" *ngIf="showErrorMessage" class="text-sm text-red-400 italic">{{errorMessage}}</div>
+      </div>
+      <div class="justify-self-end">
+        <button id="submit-button" type="submit" [disabled]="!loginForm.valid">{{buttonText}}</button>
+      </div>
+    </form>
+  </div>
+</newbee-magic-link-login-base-form>
