@@ -17,7 +17,7 @@ export const initialAuthState: AuthState = {
   jwtId: null,
 };
 
-export const authFeature = createFeature<AppState>({
+export const authFeature = createFeature<AppState, 'auth'>({
   name: 'auth',
   reducer: createReducer(
     initialAuthState,
