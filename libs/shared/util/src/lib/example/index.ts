@@ -9,9 +9,7 @@ export const testUserSettings1: UserSettings = {
 export const testUser1: User = {
   id: '1',
   email: 'johndoe@example.com',
-  firstName: 'John',
-  lastName: 'Doe',
+  name: 'John Doe',
   active: true,
   online: false,
-  fullName: 'John Doe',
 };

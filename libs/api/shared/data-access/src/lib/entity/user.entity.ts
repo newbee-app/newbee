@@ -1,5 +1,4 @@
 import { User } from '@newbee/shared/util';
-import { Expose } from 'class-transformer';
 import {
   Column,
   DeepPartial,
@@ -19,10 +18,7 @@ export class UserEntity implements User {
   email!: string;
 
   @Column()
-  firstName!: string;
-
-  @Column()
-  lastName!: string;
+  name!: string;
 
   @Column({ nullable: true })
   displayName!: string;
@@ -38,11 +34,6 @@ export class UserEntity implements User {
 
   @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
   settings!: Relation<UserSettingsEntity>;
-
-  @Expose()
-  get fullName(): string {
-    return `${this.firstName} ${this.lastName}`;
-  }
 
   constructor(partial?: DeepPartial<UserEntity>) {
     if (partial) {

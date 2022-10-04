@@ -2,14 +2,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { testUserJwtPayload1 } from '@newbee/api/auth/util';
-import { UserEntity } from '@newbee/api/shared/data-access';
+import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { testLoginDto1 } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
 import { AuthService } from './auth.service';
-
-const { fullName, ...rest } = testUser1;
-fullName; // to shut up the unused var warning
-const testUserEntity1 = new UserEntity(rest);
 
 describe('AuthService', () => {
   let service: AuthService;

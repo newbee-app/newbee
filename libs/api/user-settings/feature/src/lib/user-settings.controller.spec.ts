@@ -1,12 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { UserSettingsEntity } from '@newbee/api/shared/data-access';
+import { testUserSettingsEntity1 } from '@newbee/api/shared/data-access';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
 import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
 import { testUserSettings1 } from '@newbee/shared/util';
 import { UserSettingsController } from './user-settings.controller';
-
-const testUserSettingsEntity1 = new UserSettingsEntity(testUserSettings1);
 
 describe('UserSettingsController', () => {
   let controller: UserSettingsController;

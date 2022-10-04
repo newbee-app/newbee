@@ -1,14 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
-import { UserEntity } from '@newbee/api/shared/data-access';
+import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserDto } from '@newbee/shared/data-access';
+import { testUpdateUserDto1 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { UserController } from './user.controller';
-
-const { fullName, ...rest } = testUser1;
-fullName; // to shut up the unused var warning
-const testUserEntity1 = new UserEntity(rest);
 
 describe('UserController', () => {
   let controller: UserController;
@@ -23,7 +19,9 @@ describe('UserController', () => {
           useValue: createMock<UserService>({
             create: jest.fn().mockResolvedValue(testUserEntity1),
             findOneById: jest.fn().mockResolvedValue(testUserEntity1),
-            update: jest.fn().mockResolvedValue(testUserEntity1),
+            update: jest
+              .fn()
+              .mockResolvedValue({ ...testUserEntity1, ...testUpdateUserDto1 }),
           }),
         },
       ],
@@ -49,16 +47,11 @@ describe('UserController', () => {
 
   describe('update()', () => {
     it('should try to find and update a user by id', async () => {
-      const updateUserDto: UpdateUserDto = {
-        email: testUser1.email,
-        firstName: testUser1.firstName,
-        lastName: testUser1.lastName,
-      };
       await expect(
-        controller.update(testUser1.id, updateUserDto)
-      ).resolves.toEqual(testUserEntity1);
+        controller.update(testUser1.id, testUpdateUserDto1)
+      ).resolves.toEqual({ ...testUserEntity1, ...testUpdateUserDto1 });
       expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(testUser1.id, updateUserDto);
+      expect(service.update).toBeCalledWith(testUser1.id, testUpdateUserDto1);
     });
   });
 

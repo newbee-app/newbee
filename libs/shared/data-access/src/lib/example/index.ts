@@ -4,6 +4,7 @@ import {
   LoginDto,
   MagicLinkLoginDto,
   MagicLinkLoginLoginDto,
+  UpdateUserDto,
   UpdateUserSettingsDto,
 } from '../dto';
 
@@ -22,8 +23,12 @@ export const testMagicLinkLoginDto1: MagicLinkLoginDto = {
 
 export const testCreateUserDto1: CreateUserDto = {
   email: testUser1.email,
-  firstName: testUser1.firstName,
-  lastName: testUser1.lastName,
+  name: testUser1.name,
+};
+
+export const testUpdateUserDto1: UpdateUserDto = {
+  email: testUser1.email,
+  name: 'Jane Doe',
 };
 
 export const testUpdateUserSettingsDto1: UpdateUserSettingsDto = {
