@@ -62,6 +62,7 @@
         "libs/newbee/shared/data-access/src/index.ts"
       ],
       "@newbee/newbee/shared/ui": ["libs/newbee/shared/ui/src/index.ts"],
+      "@newbee/newbee/shared/util": ["libs/newbee/shared/util/src/index.ts"],
       "@newbee/passport-magic-link-login": [
         "libs/publishable/passport-magic-link-login/src/index.ts"
       ],
