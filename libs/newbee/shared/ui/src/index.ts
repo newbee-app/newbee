@@ -1,1 +1,1 @@
-export * from './lib/newbee-shared-ui.module';
+export * from './lib/tooltip/tooltip.component';
