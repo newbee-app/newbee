@@ -13,6 +13,12 @@ export default {
   parameters: {
     layout: 'centered',
   },
+  args: {
+    containerId: 'container',
+    tooltipId: 'tooltip',
+    messageId: 'tooltip-message',
+    tailId: 'tooltip-tail',
+  },
 } as Meta<TooltipComponent>;
 
 const Template: Story<TooltipComponent> = (args: TooltipComponent) => ({
@@ -26,30 +32,18 @@ const Template: Story<TooltipComponent> = (args: TooltipComponent) => ({
 
 export const LongMessage = Template.bind({});
 LongMessage.args = {
-  containerId: 'container',
-  tooltipId: 'tooltip',
-  messageId: 'message',
-  tailId: 'tail',
   message: 'This is a really long sample tooltip message',
   displayTooltip: true,
 };
 
 export const ShortMessage = Template.bind({});
 ShortMessage.args = {
-  containerId: 'container',
-  tooltipId: 'tooltip',
-  messageId: 'message',
-  tailId: 'tail',
   message: 'Short',
   displayTooltip: true,
 };
 
 export const NoDisplay = Template.bind({});
 NoDisplay.args = {
-  containerId: 'container',
-  tooltipId: 'tooltip',
-  messageId: 'message',
-  tailId: 'tail',
   message: 'This will not be displayed',
   displayTooltip: false,
 };
