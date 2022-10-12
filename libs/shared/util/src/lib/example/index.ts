@@ -10,6 +10,7 @@ export const testUser1: User = {
   id: '1',
   email: 'johndoe@example.com',
   name: 'John Doe',
+  displayName: 'John',
   active: true,
   online: false,
 };
