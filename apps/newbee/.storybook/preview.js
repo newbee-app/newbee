@@ -1,7 +1,1 @@
-export const parameters = {
-  options: {
-    storySort: {
-      method: 'alphabetical',
-    },
-  },
-};
+export * from '../../../.storybook/preview';
