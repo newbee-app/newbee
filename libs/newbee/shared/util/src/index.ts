@@ -1,3 +1,4 @@
+export * from './lib/class';
 export * from './lib/enum';
 export * from './lib/example';
 export * from './lib/helper-method';

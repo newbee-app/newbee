@@ -8,8 +8,8 @@ export class CountryService {
   private readonly phoneUtil = PhoneNumberUtil.getInstance();
   private readonly regionNames: Intl.DisplayNames;
 
-  private readonly _localeLanguage: string;
-  private readonly _localeRegion: string;
+  private readonly _currentRegion: string;
+  private readonly _currentCountry: Country;
   private readonly _supportedLocales: string[] = Object.values(SupportedLocale);
   private readonly _supportedRegions: string[] = Object.keys(SupportedLocale);
   private readonly _supportedPhoneRegions: string[];
@@ -17,9 +17,8 @@ export class CountryService {
   constructor(@Inject(LOCALE_ID) localeId: string) {
     this.regionNames = new Intl.DisplayNames(localeId, { type: 'region' });
 
-    const localeParts = localeId.split('-');
-    this._localeLanguage = localeParts[0];
-    this._localeRegion = localeParts[1];
+    this._currentRegion = localeId.split('-')[1];
+    this._currentCountry = this.getCountry(this._currentRegion);
 
     const supportedRegionsSet = new Set(this._supportedRegions);
     this._supportedPhoneRegions = this._supportedRegions.concat(
@@ -29,14 +28,9 @@ export class CountryService {
     );
   }
 
-  getRegionName(regionCode: string): string {
-    const ucRegionCode = regionCode.toUpperCase();
-    return this.regionNames.of(ucRegionCode) ?? ucRegionCode;
-  }
-
   getCountry(regionCode: string): Country {
     const ucRegionCode = regionCode.toUpperCase();
-    const name = this.getRegionName(ucRegionCode);
+    const name = this.regionNames.of(ucRegionCode) ?? ucRegionCode;
     const dialingCode = this.phoneUtil.getCountryCodeForRegion(ucRegionCode);
 
     return {
@@ -46,12 +40,12 @@ export class CountryService {
     };
   }
 
-  get localeLanguage(): string {
-    return this._localeLanguage;
+  get currentRegion(): string {
+    return this._currentRegion;
   }
 
-  get localeRegion(): string {
-    return this._localeRegion;
+  get currentCountry(): Country {
+    return this._currentCountry;
   }
 
   get supportedLocales(): string[] {

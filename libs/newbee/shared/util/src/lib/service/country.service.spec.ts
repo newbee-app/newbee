@@ -17,17 +17,18 @@ describe('CountryService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getRegionName', () => {
-    it('should convert region codes to names', () => {
-      expect(service.getRegionName('us')).toEqual('United States');
-      expect(service.getRegionName('US')).toEqual('United States');
-    });
-  });
-
   describe('getCountry', () => {
     it('should convert region codes to Country objects', () => {
       expect(service.getCountry('us')).toEqual(testCountry1);
       expect(service.getCountry('US')).toEqual(testCountry1);
+    });
+
+    it('should handle failure gracefully', () => {
+      expect(service.getCountry('xx')).toEqual({
+        name: 'XX',
+        regionCode: 'XX',
+        dialingCode: 0,
+      });
     });
   });
 });
