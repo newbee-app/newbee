@@ -1,0 +1,7 @@
+<div id="phone-input-container" class="flex flex-row flex-wrap gap-2 w-full">
+  <newbee-searchable-select [options]="countryOptions" [defaultOption]="defaultCountry" optionName="Country" (selected)="selectCountry($event)" class="w-fit max-w-full"></newbee-searchable-select>
+  <div id="phone-number-input" class="grow">
+    <label for="phone-number-input" class="sr-only">Phone number (optional)</label>
+    <input type="tel" id="phone-number-input" [formControl]="phoneNumberControl" placeholder="Phone number (optional)" class="form-input rounded-md w-full truncate placeholder:italic">
+  </div>
+</div>

@@ -43,8 +43,7 @@
         "port": 4400,
         "configDir": "libs/newbee/shared/ui/.storybook",
         "browserTarget": "newbee-shared-ui:build-storybook",
-        "compodoc": false,
-        "styles": ["apps/newbee/src/styles.css"]
+        "compodoc": false
       },
       "configurations": {
         "ci": {
