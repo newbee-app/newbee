@@ -1,5 +1,6 @@
-export interface Country {
-  name: string;
-  regionCode: string;
-  dialingCode: number;
+import { Country } from '../class';
+
+export interface PhoneInput {
+  country: Country | null;
+  number: string | null;
 }

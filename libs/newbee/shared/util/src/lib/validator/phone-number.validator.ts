@@ -1,29 +1,39 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { PhoneNumberUtil } from 'google-libphonenumber';
-
-const phoneUtil = PhoneNumberUtil.getInstance();
+import { PhoneInput } from '../interface';
 
 export function phoneNumberValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const region: string = control.get('region')?.value ?? '';
-    const number = control.get('number')?.value ?? '';
-    const phoneNumber = phoneUtil.parse(
-      control.get('number')?.value ?? '',
-      region
-    );
+  const phoneUtil = PhoneNumberUtil.getInstance();
 
-    const missingRegion = number && !region;
-    const invalid =
-      !phoneUtil.isPossibleNumber(phoneNumber) ||
-      !phoneUtil.isValidNumber(phoneNumber);
+  return (
+    control: AbstractControl<Partial<PhoneInput>>
+  ): ValidationErrors | null => {
+    const { country, number } = control.value;
 
-    return missingRegion || invalid
-      ? {
-          phoneNumber: {
-            ...(missingRegion && { missingRegion }),
-            ...(invalid && { invalid }),
-          },
-        }
-      : null;
+    if (!number) {
+      return null;
+    }
+
+    if (!country) {
+      return {
+        phoneNumber: {
+          missingCountry: true,
+        },
+      };
+    }
+
+    try {
+      const phoneNumber = phoneUtil.parse(number, country.regionCode);
+      if (
+        !phoneUtil.isPossibleNumber(phoneNumber) ||
+        !phoneUtil.isValidNumber(phoneNumber)
+      ) {
+        return { phoneNumber: { invalidNumber: true } };
+      }
+    } catch (err) {
+      return { phoneNumber: { invalid: true } };
+    }
+
+    return null;
   };
 }

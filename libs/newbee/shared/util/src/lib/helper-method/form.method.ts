@@ -7,10 +7,12 @@ export function getErrorMessage(control: AbstractControl | null): string {
     return 'Not a valid email';
   } else if (control?.hasError('phoneNumber')) {
     const phoneNumberError = control.getError('phoneNumber');
-    if (phoneNumberError.missingRegion) {
-      return 'Missing country code';
-    } else if (phoneNumberError.invalid) {
+    if (phoneNumberError.missingCountry) {
+      return 'You must select a country';
+    } else if (phoneNumberError.invalidNumber) {
       return 'Not a valid phone number';
+    } else if (phoneNumberError.invalid) {
+      return 'Not a valid phone number or country';
     }
   }
 
