@@ -2,4 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* You can add global styles to this file, and also import other style files */
+@layer utilities {
+  .default-form {
+    @apply border-outline-primary-light dark:border-outline-primary-dark text-black dark:text-white placeholder-outline-primary-light dark:placeholder-outline-primary-dark bg-bg-primary-light dark:bg-bg-primary-dark;
+  }
+
+  .error-highlight {
+    @apply border-error-primary focus:border-error-primary focus:ring-error-primary;
+  }
+}
