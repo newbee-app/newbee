@@ -6,10 +6,10 @@ import { Component, Input, NgModule } from '@angular/core';
   templateUrl: './tooltip.component.html',
 })
 export class TooltipComponent {
-  @Input() containerId!: string;
-  @Input() tooltipId!: string;
-  @Input() messageId!: string;
-  @Input() tailId!: string;
+  @Input() containerId?: string;
+  @Input() tooltipId?: string;
+  @Input() messageId?: string;
+  @Input() tailId?: string;
 
   @Input() message!: string;
   @Input() displayTooltip!: boolean;
@@ -20,4 +20,4 @@ export class TooltipComponent {
   declarations: [TooltipComponent],
   exports: [TooltipComponent],
 })
-export class TooltipModule {}
+export class TooltipComponentModule {}

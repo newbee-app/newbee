@@ -1,0 +1,11 @@
+<div id="phone-input-container" [formGroup]="phoneNumber" class="flex flex-row flex-wrap gap-2 w-full">
+  <newbee-tooltip [containerId]="tooltipIds.country.container" [tooltipId]="tooltipIds.country.tooltip" [messageId]="tooltipIds.country.message" [tailId]="tooltipIds.country.tail" [message]="errorMessage" [displayTooltip]="hasError('country') && !clean">
+    <newbee-searchable-select id="country-input" [options]="countryOptions" optionName="Country" formControlName="country" [valid]="!hasError('country') || clean" (exited)="onTouched(); formatNumber();" class="w-fit max-w-full"></newbee-searchable-select>
+  </newbee-tooltip>
+  <newbee-tooltip [containerId]="tooltipIds.number.container" [tooltipId]="tooltipIds.number.tooltip" [messageId]="tooltipIds.number.message" [tailId]="tooltipIds.number.tail" [message]="errorMessage" [displayTooltip]="hasError('number') && !clean">
+    <div id="phone-number-input-container" class="grow">
+      <label for="phone-number-input" class="sr-only">Phone number (optional)</label>
+      <input type="tel" id="phone-number-input" formControlName="number" placeholder="Phone number" newbeePhoneNumberInput [country]="value.country ?? null" (blur)="onTouched()" class="form-input default-form rounded-md w-full truncate" [ngClass]="{'error-highlight': hasError('number') && !clean}">
+    </div>
+  </newbee-tooltip>
+</div>

@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { createMock } from '@golevelup/ts-jest';
 import {
   ClickService,
+  Country,
   testSelectOption1,
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
@@ -13,8 +14,8 @@ import { SearchableSelectComponent } from './searchable-select.component';
 const testOptions = [testSelectOption1, testSelectOption2];
 
 describe('SearchableSelectComponent', () => {
-  let component: SearchableSelectComponent;
-  let fixture: ComponentFixture<SearchableSelectComponent>;
+  let component: SearchableSelectComponent<Country>;
+  let fixture: ComponentFixture<SearchableSelectComponent<Country>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -33,11 +34,14 @@ describe('SearchableSelectComponent', () => {
       declarations: [SearchableSelectComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchableSelectComponent);
+    fixture = TestBed.createComponent(SearchableSelectComponent<Country>);
     component = fixture.componentInstance;
 
     component.options = testOptions;
     component.optionName = 'Country';
+    component.registerOnChange(jest.fn());
+    component.registerOnTouched(jest.fn());
+    jest.spyOn(component.exited, 'emit');
 
     fixture.detectChanges();
   });
@@ -49,23 +53,18 @@ describe('SearchableSelectComponent', () => {
 
   describe('init', () => {
     it('should initialize with expected values', () => {
-      expect(component.defaultOption).toBeUndefined();
-      expect(component.expand).toBeFalsy();
-      expect(component.selectedOption).toBeNull();
-      expect(component.searchbox).toBeDefined();
+      expect(component.valid).toBeTruthy();
+      expect(component.expanded).toBeFalsy();
+      expect(component.searchbox.value).toEqual('');
+      expect(component.value).toBeNull();
+      expect(component.disabled).toBeFalsy();
+      expect(component.onChange).toBeDefined();
+      expect(component.onTouched).toBeDefined();
       expect(
         component.clickService.documentClickTarget.subscribe
       ).toBeCalledTimes(1);
       expect(component.selectedText).toEqual(`Select ${component.optionName}`);
       expect(component.optionsWithSearch).toEqual(component.options);
-    });
-
-    it('should call selectOption if defaultOption is specified', () => {
-      jest.spyOn(component, 'selectOption');
-      component.defaultOption = testSelectOption1;
-      component.ngOnInit();
-      expect(component.selectOption).toBeCalledTimes(1);
-      expect(component.selectOption).toBeCalledWith(testSelectOption1);
     });
   });
 
@@ -93,7 +92,7 @@ describe('SearchableSelectComponent', () => {
     it('should toggle expand and become visible', () => {
       component.toggleExpand();
       fixture.detectChanges();
-      expect(component.expand).toBeTruthy();
+      expect(component.expanded).toBeTruthy();
       expect(optionsElement()).not.toBeNull();
     });
 
@@ -104,11 +103,42 @@ describe('SearchableSelectComponent', () => {
       dropdownButtonElement.click();
       expect(component.toggleExpand).toBeCalledTimes(1);
     });
+
+    it('should call onTouched and emit exited if closing an expanded toggle', () => {
+      component.toggleExpand();
+      component.toggleExpand();
+      expect(component.onTouched).toBeCalledTimes(1);
+      expect(component.exited.emit).toBeCalledTimes(1);
+    });
+  });
+
+  describe('expand', () => {
+    it('should set expanded to true', () => {
+      component.expand();
+      expect(component.expanded).toBeTruthy();
+    });
+  });
+
+  describe('shrink', () => {
+    it('should set expanded to false, call onTouched, and emit exited', () => {
+      component.expand();
+      component.shrink();
+      expect(component.expanded).toBeFalsy();
+      expect(component.onTouched).toBeCalledTimes(1);
+      expect(component.exited.emit).toBeCalledTimes(1);
+    });
+
+    it('should not call onTouched nor emit exited if emitEvent is false', () => {
+      component.expand();
+      component.shrink(false);
+      expect(component.onTouched).not.toBeCalled();
+      expect(component.exited.emit).not.toBeCalled();
+    });
   });
 
   describe('selectedText', () => {
     it('should ouput the selected value', () => {
-      component.selectedOption = testSelectOption1;
+      component.writeValue(testSelectOption1.value);
       expect(component.selectedText).toEqual(testSelectOption1.selectedValue);
     });
 
@@ -120,51 +150,60 @@ describe('SearchableSelectComponent', () => {
   });
 
   describe('optionsWithSearch', () => {
-    let koreaOptionElement: () => HTMLButtonElement | null;
+    let option1Element: () => HTMLButtonElement | null;
 
     beforeEach(() => {
-      koreaOptionElement = () =>
-        fixture.nativeElement.querySelector('#KR-option');
+      option1Element = () => fixture.nativeElement.querySelector('#option-1');
       component.toggleExpand();
       fixture.detectChanges();
     });
 
     it('should output options restricted by searchbox', () => {
-      expect(koreaOptionElement()).not.toBeNull();
+      expect(option1Element()).not.toBeNull();
       component.searchbox.setValue('united');
       fixture.detectChanges();
       expect(component.optionsWithSearch).toEqual([testSelectOption1]);
-      expect(koreaOptionElement()).toBeNull();
+      expect(option1Element()).toBeNull();
+    });
+  });
+
+  describe('writeValue', () => {
+    it('should change selectedOption without calling onChange or onTouched', () => {
+      component.expand();
+      component.writeValue(testSelectOption2.value);
+      expect(component.value).toEqual(testSelectOption2.value);
+      expect(component.expanded).toBeFalsy();
+      expect(component.onChange).not.toBeCalled();
+      expect(component.onTouched).not.toBeCalled();
+    });
+
+    it('should do nothing if option does not exist', () => {
+      component.writeValue({
+        regionCode: 'XX',
+        name: 'Unknown',
+        dialingCode: 0,
+      });
+      expect(component.value).toBeNull();
     });
   });
 
   describe('selectOption', () => {
-    beforeEach(() => {
-      jest.spyOn(component.selected, 'emit');
-    });
-
-    it('should work with SelectOption', () => {
-      component.expand = true;
-      component.selectOption(testSelectOption1);
-      expect(component.selectedOption).toEqual(testSelectOption1);
-      expect(component.selected.emit).toBeCalledTimes(1);
-      expect(component.selected.emit).toBeCalledWith(testSelectOption1.value);
-      expect(component.expand).toBeFalsy();
-    });
-
-    it('should work with string', () => {
-      component.expand = true;
+    it('should change selectedOption while calling onChange and onTouched', () => {
+      component.expand();
       component.selectOption(testSelectOption2.value);
-      expect(component.selectedOption).toEqual(testSelectOption2);
-      expect(component.selected.emit).toBeCalledTimes(1);
-      expect(component.selected.emit).toBeCalledWith(testSelectOption2.value);
-      expect(component.expand).toBeFalsy();
+      expect(component.value).toEqual(testSelectOption2.value);
+      expect(component.expanded).toBeFalsy();
+      expect(component.onChange).toBeCalledTimes(1);
+      expect(component.onTouched).toBeCalledTimes(1);
     });
 
     it('should do nothing if option does not exist', () => {
-      component.selectOption('XX');
-      expect(component.selectedOption).toBeNull();
-      expect(component.selected.emit).not.toBeCalled();
+      component.selectOption({
+        regionCode: 'XX',
+        name: 'Unknown',
+        dialingCode: 0,
+      });
+      expect(component.value).toBeNull();
     });
   });
 });

@@ -3,7 +3,7 @@ import { ClickService } from '@newbee/newbee/shared/util';
 
 @Component({
   selector: 'newbee-click-wrapper',
-  template: '<ng-content></ng-content>',
+  template: `<div id="click-wrapper"><ng-content></ng-content></div>`,
 })
 export class ClickWrapperComponent {
   @HostListener('document:click', ['$event.target']) clickEvent(
@@ -19,4 +19,4 @@ export class ClickWrapperComponent {
   declarations: [ClickWrapperComponent],
   exports: [ClickWrapperComponent],
 })
-export class ClickWrapperModule {}
+export class ClickWrapperComponentModule {}

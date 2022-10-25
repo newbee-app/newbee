@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
+  Country,
   testSelectOption1,
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
@@ -11,7 +12,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { ClickWrapperModule } from '../../storybook-wrapper';
+import { ClickWrapperComponentModule } from '../../testing-wrapper';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
@@ -19,7 +20,7 @@ export default {
   component: SearchableSelectComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, ReactiveFormsModule, ClickWrapperModule],
+      imports: [CommonModule, ReactiveFormsModule, ClickWrapperComponentModule],
     }),
     componentWrapperDecorator(
       (story) => `
@@ -31,14 +32,14 @@ export default {
   ],
   args: {
     optionName: 'Country',
-    expand: false,
+    valid: true,
   },
-} as Meta<SearchableSelectComponent>;
+} as Meta<SearchableSelectComponent<Country>>;
 
-const Template: Story<SearchableSelectComponent> = (
-  args: SearchableSelectComponent
+const Template: Story<SearchableSelectComponent<Country>> = (
+  args: SearchableSelectComponent<Country>
 ) => ({
-  props: { ...args, selected: action('selected') },
+  props: { ...args, exited: action('exited') },
 });
 
 export const Short = Template.bind({});
@@ -64,14 +65,8 @@ Long.args = {
   ],
 };
 
-export const DefaultSelectOption = Template.bind({});
-DefaultSelectOption.args = {
+export const Invalid = Template.bind({});
+Invalid.args = {
   options: [testSelectOption1, testSelectOption2],
-  defaultOption: testSelectOption1,
-};
-
-export const DefaultString = Template.bind({});
-DefaultString.args = {
-  options: [testSelectOption1, testSelectOption2],
-  defaultOption: testSelectOption1.value,
+  valid: false,
 };

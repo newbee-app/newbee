@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { action } from '@storybook/addon-actions';
+import {
+  PhoneNumberInputDirectiveModule,
+  PhoneNumberPipeModule,
+} from '@newbee/newbee/shared/util';
 import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { ClickWrapperModule } from '../../storybook-wrapper';
-import { SearchableSelectModule } from '../searchable-select/searchable-select.component';
+import { ClickWrapperComponentModule } from '../../testing-wrapper';
+import { TooltipComponentModule } from '../../tooltip/tooltip.component';
+import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';
 
 export default {
@@ -19,8 +23,11 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        SearchableSelectModule,
-        ClickWrapperModule,
+        SearchableSelectComponentModule,
+        TooltipComponentModule,
+        PhoneNumberInputDirectiveModule,
+        PhoneNumberPipeModule,
+        ClickWrapperComponentModule,
       ],
     }),
     componentWrapperDecorator(
@@ -31,10 +38,13 @@ export default {
       `
     ),
   ],
+  parameters: {
+    layout: 'centered',
+  },
 } as Meta<PhoneInputComponent>;
 
 const Template: Story<PhoneInputComponent> = (args: PhoneInputComponent) => ({
-  props: { ...args, phoneNumber: action('phoneNumber') },
+  props: args,
 });
 
 export const Primary = Template.bind({});

@@ -1,7 +1,7 @@
 <div [id]="containerId" class="relative group">
   <ng-content></ng-content>
 
-  <div [id]="tooltipId" *ngIf="displayTooltip" class="flex flex-col items-center absolute inset-x-0 mx-auto bottom-[calc(100%+0.5rem)] rounded-md bg-gray-600 w-fit invisible group-focus-within:visible group-hover:visible">
+  <div [id]="tooltipId" *ngIf="displayTooltip" class="flex flex-col items-center absolute inset-x-0 mx-auto bottom-[calc(100%+0.5rem)] rounded-md bg-outline-primary-light dark:bg-outline-primary-dark w-fit invisible group-focus-within:visible group-hover:visible">
     <div [id]="messageId" class="relative bg-inherit rounded-md w-full px-4 py-1 text-sm text-white text-center italic inset-x-0">{{message}}</div>
     <div [id]="tailId" class="absolute bg-inherit origin-center rotate-45 w-2 h-2 -bottom-1"></div>
   </div>
