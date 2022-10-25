@@ -55,6 +55,9 @@
     },
     "serve": {
       "dependsOn": ["build"]
+    },
+    "storybook": {
+      "dependsOn": ["build-storybook"]
     }
   }
 }
