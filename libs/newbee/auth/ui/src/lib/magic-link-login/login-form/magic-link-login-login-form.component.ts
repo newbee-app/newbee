@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
 import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
 import { getErrorMessage } from '@newbee/newbee/shared/util';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 
 @Component({
   selector: 'newbee-magic-link-login-login-form',
@@ -56,10 +56,10 @@ export class MagicLinkLoginLoginFormComponent {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MagicLinkLoginBaseFormModule,
+    MagicLinkLoginBaseFormComponentModule,
     TooltipComponentModule,
   ],
   declarations: [MagicLinkLoginLoginFormComponent],
   exports: [MagicLinkLoginLoginFormComponent],
 })
-export class MagicLinkLoginLoginFormModule {}
+export class MagicLinkLoginLoginFormComponentModule {}

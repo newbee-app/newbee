@@ -11,7 +11,7 @@ import {
   getErrorMessage,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 
 @Component({
   selector: 'newbee-magic-link-login-register-form',
@@ -76,11 +76,11 @@ export class MagicLinkLoginRegisterFormComponent {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MagicLinkLoginBaseFormModule,
+    MagicLinkLoginBaseFormComponentModule,
     TooltipComponentModule,
     PhoneInputComponentModule,
   ],
   declarations: [MagicLinkLoginRegisterFormComponent],
   exports: [MagicLinkLoginRegisterFormComponent],
 })
-export class MagicLinkLoginRegisterFormModule {}
+export class MagicLinkLoginRegisterFormComponentModule {}

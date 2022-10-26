@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
 
 const testEmail1 = testUser1.email;
@@ -15,7 +15,7 @@ describe('MagicLinkLoginLoginFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        MagicLinkLoginBaseFormModule,
+        MagicLinkLoginBaseFormComponentModule,
         TooltipComponentModule,
         CommonModule,
         ReactiveFormsModule,

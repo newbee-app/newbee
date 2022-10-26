@@ -10,4 +10,4 @@ export class MagicLinkLoginBaseFormComponent {}
   declarations: [MagicLinkLoginBaseFormComponent],
   exports: [MagicLinkLoginBaseFormComponent],
 })
-export class MagicLinkLoginBaseFormModule {}
+export class MagicLinkLoginBaseFormComponentModule {}

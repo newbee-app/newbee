@@ -42,14 +42,14 @@ describe('AuthEffects', () => {
     expect(service).toBeDefined();
   });
 
-  describe('sendMagicLink$', () => {
+  describe('sendLoginMagicLink$', () => {
     it('should fire when the sendMagicLink action is dispatched', () => {
       testScheduler.run(({ hot, expectObservable, flush }) => {
         actions$ = hot('a', {
-          a: AuthActions.sendMagicLink(testMagicLinkLoginLoginForm1),
+          a: AuthActions.sendLoginMagicLink(testMagicLinkLoginLoginForm1),
         });
         expectObservable(effects.sendLoginMagicLink$).toBe('a', {
-          a: AuthActions.sendMagicLinkSuccess(testMagicLinkLoginDto1),
+          a: AuthActions.sendLoginMagicLinkSuccess(testMagicLinkLoginDto1),
         });
 
         flush();

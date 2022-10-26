@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MagicLinkLoginRegisterForm } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
@@ -8,9 +9,22 @@ import { Store } from '@ngrx/store';
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
-  onSubmit(formValues: MagicLinkLoginLoginForm): void {
-    this.store.dispatch(AuthActions.sendMagicLink(formValues));
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) {}
+
+  onRegister(partialFormValues: Partial<MagicLinkLoginRegisterForm>): void {
+    const formValues: MagicLinkLoginRegisterForm = {
+      ...partialFormValues,
+      email: partialFormValues.email ?? '',
+      name: partialFormValues.name ?? '',
+    };
+    this.store.dispatch(AuthActions.sendRegisterMagicLink(formValues));
   }
 
-  constructor(private readonly store: Store) {}
+  onNavigateToLogin(): void {
+    this.router.navigate(['../login'], { relativeTo: this.route });
+  }
 }

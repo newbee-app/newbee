@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatListModule } from '@angular/material/list';
-import { MagicLinkLoginLoginFormModule } from '@newbee/newbee/auth/ui';
+import { MagicLinkLoginLoginFormComponentModule } from '@newbee/newbee/auth/ui';
 import { testMagicLinkLoginLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -13,7 +12,7 @@ describe('RegisterComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MagicLinkLoginLoginFormModule, MatListModule],
+      imports: [MagicLinkLoginLoginFormComponentModule],
       declarations: [RegisterComponent],
       providers: [provideMockStore()],
     });
@@ -31,13 +30,13 @@ describe('RegisterComponent', () => {
     expect(store).toBeDefined();
   });
 
-  describe('onSubmit()', () => {
+  describe('onRegister', () => {
     it('should dispatch sendMagicLink action', (done) => {
-      component.onSubmit(testMagicLinkLoginLoginForm1);
+      component.onRegister(testMagicLinkLoginLoginForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           expect(scannedAction).toEqual(
-            AuthActions.sendMagicLink(testMagicLinkLoginLoginForm1)
+            AuthActions.sendRegisterMagicLink(testMagicLinkLoginLoginForm1)
           );
           done();
         },

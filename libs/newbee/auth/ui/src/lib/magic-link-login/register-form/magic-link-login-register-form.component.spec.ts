@@ -6,7 +6,7 @@ import {
   TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 import { MagicLinkLoginRegisterFormComponent } from './magic-link-login-register-form.component';
 
 const {
@@ -27,7 +27,7 @@ describe('MagicLinkLoginRegisterFormComponent', () => {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormModule,
+        MagicLinkLoginBaseFormComponentModule,
         TooltipComponentModule,
         PhoneInputComponentModule,
       ],
