@@ -2,12 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .newbee-btn-primary {
+    @apply bg-primary-light dark:bg-primary-dark text-black font-semibold py-2 disabled:opacity-50 enabled:hover:cursor-pointer disabled:hover:cursor-not-allowed;
+  }
+
+  .newbee-link {
+    @apply text-highlight-primary-light dark:text-highlight-primary-dark visited:text-highlight-secondary-light dark:visited:text-highlight-secondary-dark hover:underline hover:cursor-pointer;
+  }
+}
+
 @layer utilities {
-  .default-form {
+  .newbee-form-input {
     @apply border-outline-primary-light dark:border-outline-primary-dark text-black dark:text-white placeholder-outline-primary-light dark:placeholder-outline-primary-dark bg-bg-primary-light dark:bg-bg-primary-dark;
   }
 
-  .error-highlight {
+  .newbee-error-outline {
     @apply border-error-primary focus:border-error-primary focus:ring-error-primary;
   }
 }

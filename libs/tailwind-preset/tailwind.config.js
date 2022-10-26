@@ -29,9 +29,17 @@ module.exports = {
             light: colors.blue['500'],
             dark: colors.blue['300'],
           },
+          secondary: {
+            light: colors.purple['700'],
+            dark: colors.purple['400'],
+          },
         },
         error: {
           primary: colors.red['500'],
+        },
+        logo: {
+          light: colors.yellow['500'],
+          dark: colors.yellow['400'],
         },
         primary: {
           light: colors.yellow['300'],
