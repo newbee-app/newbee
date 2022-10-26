@@ -1,19 +1,29 @@
-import { Component, Input, NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, NgModule, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
-import { MagicLinkLoginBaseFormModule } from '../base-form';
+import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
+import { getErrorMessage } from '@newbee/newbee/shared/util';
+import { MagicLinkLoginBaseFormModule } from '../../base-form';
 
 @Component({
   selector: 'newbee-magic-link-login-login-form',
   templateUrl: './magic-link-login-login-form.component.html',
 })
 export class MagicLinkLoginLoginFormComponent {
-  @Input() onSubmit!: (formValues: MagicLinkLoginLoginForm) => void;
-  @Input() buttonText!: string;
+  @Output() login = new EventEmitter<Partial<MagicLinkLoginLoginForm>>();
+  @Output() navigateToRegister = new EventEmitter<void>();
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
   });
+
+  tooltipIds = {
+    container: 'email-container',
+    tooltip: 'email-tooltip',
+    message: 'email-tooltip-message',
+    tail: 'email-tooltip-tail',
+  };
 
   constructor(private readonly fb: FormBuilder) {}
 
@@ -21,34 +31,34 @@ export class MagicLinkLoginLoginFormComponent {
     return this.loginForm.get('email');
   }
 
-  get showErrorMessage(): boolean {
-    if (!this.email?.dirty || !this.email?.touched) {
-      return false;
-    }
-
-    const errors = ['required', 'email'];
-    for (const err of errors) {
-      if (this.email?.hasError(err)) {
-        return true;
-      }
-    }
-
-    return false;
+  get emailInputIsClean(): boolean {
+    return !!this.email?.pristine && !!this.email?.untouched;
   }
 
-  get errorMessage(): string {
-    if (this.email?.hasError('required')) {
-      return 'You must enter a value';
-    } else if (this.email?.hasError('email')) {
-      return 'Not a valid email';
-    }
+  get emailInputIsValid(): boolean {
+    return !!this.email?.valid;
+  }
 
-    return '';
+  get emailErrorMessage(): string {
+    return getErrorMessage(this.email);
+  }
+
+  emitLogin(formValue: Partial<MagicLinkLoginLoginForm>): void {
+    this.login.emit(formValue);
+  }
+
+  emitNavigateToRegister(): void {
+    this.navigateToRegister.emit();
   }
 }
 
 @NgModule({
-  imports: [MagicLinkLoginBaseFormModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MagicLinkLoginBaseFormModule,
+    TooltipComponentModule,
+  ],
   declarations: [MagicLinkLoginLoginFormComponent],
   exports: [MagicLinkLoginLoginFormComponent],
 })

@@ -7,7 +7,8 @@
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": ["dist/libs/newbee/auth/ui"],
       "options": {
-        "project": "libs/newbee/auth/ui/ng-package.json"
+        "project": "libs/newbee/auth/ui/ng-package.json",
+        "tailwindConfig": "libs/newbee/auth/ui/tailwind.config.js"
       },
       "configurations": {
         "production": {
@@ -34,6 +35,36 @@
           "libs/newbee/auth/ui/**/*.ts",
           "libs/newbee/auth/ui/**/*.html"
         ]
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/newbee/auth/ui/.storybook",
+        "browserTarget": "newbee-auth-ui:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee-auth-ui",
+        "configDir": "libs/newbee/auth/ui/.storybook",
+        "browserTarget": "newbee-auth-ui:build-storybook",
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
       }
     }
   },

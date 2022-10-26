@@ -1,0 +1,33 @@
+<newbee-magic-link-login-base-form>
+  <div class="space-y-5">
+    <h2 class="text-2xl font-medium text-center">Getting started is free, always</h2>
+
+    <form id="register-form" [formGroup]="registerForm" (ngSubmit)="emitRegister(registerForm.value)" class="space-y-5">
+      <div class="flex flex-col gap-y-2">
+        <newbee-tooltip [containerId]="tooltipIds.email.container" [tooltipId]="tooltipIds.email.tooltip" [messageId]="tooltipIds.email.message" [tailId]="tooltipIds.email.tail" [message]="inputErrorMessage('email')" [displayTooltip]="!inputIsClean('email') && !inputIsValid('email')">
+          <label for="email-input" class="sr-only">Email address</label>
+          <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="form-input newbee-form-input rounded-md w-full" [ngClass]="{'newbee-error-outline': !inputIsValid('email') && !inputIsClean('email')}">
+        </newbee-tooltip>
+
+        <newbee-tooltip [containerId]="tooltipIds.name.container" [tooltipId]="tooltipIds.name.tooltip" [messageId]="tooltipIds.name.message" [tailId]="tooltipIds.name.tail" [message]="inputErrorMessage('name')" [displayTooltip]="!inputIsClean('name') && !inputIsValid('name')">
+          <label for="name-input" class="sr-only">Full name</label>
+          <input type="text" id="name-input" formControlName="name" placeholder="Name*" required class="form-input newbee-form-input rounded-md w-full" [ngClass]="{'newbee-error-outline': !inputIsValid('name') && !inputIsClean('name')}">
+        </newbee-tooltip>
+
+        <label for="display-name-input" class="sr-only">Display name (optional)</label>
+        <input type="text" id="display-name-input" formControlName="displayName" placeholder="Display name" class="form-input newbee-form-input rounded-md w-full">
+
+        <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
+      </div>
+
+      <button id="submit-button" type="submit" [disabled]="registerForm.invalid" class="newbee-btn-primary w-full rounded-md">Create Account</button>
+    </form>
+  </div>
+
+  <div class="text-center text-sm">
+    <p>Already using NewBee?</p>
+    <a id="login-link" (click)="emitNavigateToLogin()" class="newbee-link">
+      Log in to an existing account
+    </a>
+  </div>
+</newbee-magic-link-login-base-form>
