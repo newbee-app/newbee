@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { Message } from '@newbee/api-interfaces';
+import { Component, HostListener } from '@angular/core';
+import { ClickService } from '@newbee/newbee/shared/util';
 
 @Component({
   selector: 'newbee-root',
@@ -8,6 +7,11 @@ import { Message } from '@newbee/api-interfaces';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  hello$ = this.http.get<Message>('/api/hello');
-  constructor(private http: HttpClient) {}
+  @HostListener('document:click', ['$event.target']) clickEvent(
+    target: HTMLElement
+  ): void {
+    this.clickService.documentClickTarget.next(target);
+  }
+
+  constructor(private readonly clickService: ClickService) {}
 }
