@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthActions } from '@newbee/newbee/auth/data-access';
 import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
 @Component({

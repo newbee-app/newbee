@@ -1,6 +1,5 @@
 import { User } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { AppState } from '../app.reducer';
 import { AuthActions } from './auth.actions';
 
 export interface AuthState {
@@ -17,7 +16,7 @@ export const initialAuthState: AuthState = {
   jwtId: null,
 };
 
-export const authFeature = createFeature<AppState, 'auth'>({
+export const authFeature = createFeature({
   name: 'auth',
   reducer: createReducer(
     initialAuthState,

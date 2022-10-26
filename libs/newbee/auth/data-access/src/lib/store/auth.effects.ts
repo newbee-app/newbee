@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of } from 'rxjs';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
+import { AuthActions } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {

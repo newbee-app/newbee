@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuthActions } from '@newbee/newbee/auth/data-access';
 import { MagicLinkLoginLoginFormComponentModule } from '@newbee/newbee/auth/ui';
 import { testMagicLinkLoginLoginForm1 } from '@newbee/newbee/auth/util';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 

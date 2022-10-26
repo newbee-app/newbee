@@ -7,8 +7,8 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
+import { AuthService } from '../auth.service';
 import { AuthEffects } from './auth.effects';
-import { AuthService } from './auth.service';
 
 describe('AuthEffects', () => {
   let actions$ = new Observable<Action>();
