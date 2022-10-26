@@ -35,8 +35,12 @@ describe('AuthService', () => {
     it('should send out a post request', (done) => {
       service.login(testMagicLinkLoginLoginDto1).subscribe({
         next: (magicLinkLoginDto) => {
-          expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
-          done();
+          try {
+            expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+            done();
+          } catch (err) {
+            done(err);
+          }
         },
         error: done.fail,
       });
@@ -54,8 +58,12 @@ describe('AuthService', () => {
     it('should send out a post request', (done) => {
       service.register(testCreateUserDto1).subscribe({
         next: (magicLinkLoginDto) => {
-          expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
-          done();
+          try {
+            expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+            done();
+          } catch (err) {
+            done(err);
+          }
         },
         error: done.fail,
       });

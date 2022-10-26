@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { testMagicLinkLoginLoginForm1 } from '@newbee/newbee/auth/util';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { testMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { AuthService } from '../auth.service';
+import { AuthActions } from './auth.actions';
 import { AuthEffects } from './auth.effects';
 
 describe('AuthEffects', () => {

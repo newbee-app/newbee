@@ -35,10 +35,14 @@ describe('LoginComponent', () => {
       component.onLogin(testMagicLinkLoginLoginForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
-          expect(scannedAction).toEqual(
-            AuthActions.sendLoginMagicLink(testMagicLinkLoginLoginForm1)
-          );
-          done();
+          try {
+            expect(scannedAction).toEqual(
+              AuthActions.sendLoginMagicLink(testMagicLinkLoginLoginForm1)
+            );
+            done();
+          } catch (err) {
+            done(err);
+          }
         },
         error: done.fail,
       });

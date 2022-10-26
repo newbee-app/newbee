@@ -1,4 +1,4 @@
-import { User } from '@newbee/shared/util';
+import type { User } from '@newbee/shared/util';
 import { IsDefined, IsJWT, IsObject } from 'class-validator';
 
 export class LoginDto {
