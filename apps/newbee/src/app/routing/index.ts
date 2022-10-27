@@ -29,6 +29,10 @@ const routes: Routes = [
     loadChildren: () =>
       import('@newbee/newbee/auth/feature').then((m) => m.AuthModule),
   },
+  {
+    path: '',
+    redirectTo: '/auth/login',
+  },
 ];
 
 @NgModule({
