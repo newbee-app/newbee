@@ -18,7 +18,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 
 @Component({
   selector: 'newbee-searchable-select',

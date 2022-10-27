@@ -1,6 +1,8 @@
-import { PickType } from '@nestjs/swagger';
-import { CreateUserDto } from '../user';
+import { User } from '@newbee/shared/util';
+import { IsDefined, IsEmail } from 'class-validator';
 
-export class MagicLinkLoginLoginDto extends PickType(CreateUserDto, [
-  'email',
-] as const) {}
+export class MagicLinkLoginLoginDto implements Pick<User, 'email'> {
+  @IsDefined()
+  @IsEmail()
+  email!: string;
+}
