@@ -11,6 +11,7 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.stories.ts",
-    "**/*.stories.js"
+    "**/*.stories.js",
+    "jest.config.ts"
   ]
 }
