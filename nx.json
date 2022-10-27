@@ -42,7 +42,8 @@
       "inputs": ["production", "^production"]
     },
     "test": {
-      "dependsOn": ["^test", "lint"]
+      "dependsOn": ["^test", "lint"],
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -60,6 +61,11 @@
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": [],
-    "production": ["default"]
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s"
+    ]
   }
 }
