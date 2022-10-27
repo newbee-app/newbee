@@ -5,7 +5,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/libs/newbee/auth/data-access"],
+      "outputs": ["{workspaceRoot}/dist/libs/newbee/auth/data-access"],
       "options": {
         "project": "libs/newbee/auth/data-access/ng-package.json"
       },
@@ -21,7 +21,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/newbee/auth/data-access"],
+      "outputs": ["{workspaceRoot}/coverage/libs/newbee/auth/data-access"],
       "options": {
         "jestConfig": "libs/newbee/auth/data-access/jest.config.ts",
         "passWithNoTests": true

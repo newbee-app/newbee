@@ -5,7 +5,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/libs/newbee/auth/util"],
+      "outputs": ["{workspaceRoot}/dist/libs/newbee/auth/util"],
       "options": {
         "project": "libs/newbee/auth/util/ng-package.json"
       },
@@ -21,7 +21,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/newbee/auth/util"],
+      "outputs": ["{workspaceRoot}/coverage/libs/newbee/auth/util"],
       "options": {
         "jestConfig": "libs/newbee/auth/util/jest.config.ts",
         "passWithNoTests": true

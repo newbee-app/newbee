@@ -5,7 +5,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/libs/newbee/shared/ui"],
+      "outputs": ["{workspaceRoot}/dist/libs/newbee/shared/ui"],
       "options": {
         "project": "libs/newbee/shared/ui/ng-package.json",
         "tailwindConfig": "libs/newbee/shared/ui/tailwind.config.js"
@@ -22,7 +22,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/newbee/shared/ui"],
+      "outputs": ["{workspaceRoot}/coverage/libs/newbee/shared/ui"],
       "options": {
         "jestConfig": "libs/newbee/shared/ui/jest.config.ts",
         "passWithNoTests": true

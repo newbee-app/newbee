@@ -86,7 +86,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/newbee"],
+      "outputs": ["{workspaceRoot}/coverage/apps/newbee"],
       "options": {
         "jestConfig": "apps/newbee/jest.config.ts",
         "passWithNoTests": true

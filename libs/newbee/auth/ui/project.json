@@ -5,7 +5,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/libs/newbee/auth/ui"],
+      "outputs": ["{workspaceRoot}/dist/libs/newbee/auth/ui"],
       "options": {
         "project": "libs/newbee/auth/ui/ng-package.json",
         "tailwindConfig": "libs/newbee/auth/ui/tailwind.config.js"
@@ -22,7 +22,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/newbee/auth/ui"],
+      "outputs": ["{workspaceRoot}/coverage/libs/newbee/auth/ui"],
       "options": {
         "jestConfig": "libs/newbee/auth/ui/jest.config.ts",
         "passWithNoTests": true
