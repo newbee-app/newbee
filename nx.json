@@ -52,6 +52,9 @@
     },
     "storybook": {
       "dependsOn": ["build-storybook"]
+    },
+    "e2e": {
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
