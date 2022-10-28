@@ -61,16 +61,13 @@
       "executor": "@nrwl/web:file-server",
       "configurations": {
         "production": {
-          "browserTarget": "newbee:build:production"
+          "buildTarget": "newbee:build:production"
         },
         "development": {
-          "browserTarget": "newbee:build:development"
+          "buildTarget": "newbee:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "options": {
-        "proxyConfig": "apps/newbee/proxy.conf.json"
-      }
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
