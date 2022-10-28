@@ -41,6 +41,9 @@
       "dependsOn": ["^build", "test"],
       "inputs": ["production", "^production"]
     },
+    "server": {
+      "dependsOn": ["build"]
+    },
     "test": {
       "dependsOn": ["^test", "lint"],
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
@@ -51,6 +54,9 @@
     },
     "serve": {
       "dependsOn": ["build"]
+    },
+    "serve-ssr": {
+      "dependsOn": ["server"]
     },
     "storybook": {
       "dependsOn": ["build-storybook"]
