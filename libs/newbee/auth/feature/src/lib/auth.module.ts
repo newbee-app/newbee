@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
-import { AuthEffects, authFeature } from '@newbee/newbee/auth/data-access';
+import {
+  AuthEffects,
+  authFeature,
+  AuthService,
+} from '@newbee/newbee/auth/data-access';
 import {
   MagicLinkLoginLoginFormComponentModule,
   MagicLinkLoginRegisterFormComponentModule,
@@ -18,6 +22,7 @@ import { AuthRoutingModule } from './routing';
     MagicLinkLoginLoginFormComponentModule,
     MagicLinkLoginRegisterFormComponentModule,
   ],
+  providers: [AuthService],
   declarations: [LoginComponent, RegisterComponent],
 })
 export class AuthModule {}
