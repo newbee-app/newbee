@@ -1,7 +1,7 @@
+import { BaseUpdateUserDto } from '@newbee/shared/data-access';
 import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDto implements Partial<CreateUserDto> {
+export class UpdateUserDto implements BaseUpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;

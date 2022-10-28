@@ -7,8 +7,8 @@ import {
   UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
-import { NameDisplayFormat, testUserSettings1 } from '@newbee/shared/util';
+import { testUpdateUserSettingsDto1 } from '@newbee/shared/data-access';
+import { testUserSettings1 } from '@newbee/shared/util';
 import { Repository } from 'typeorm';
 import { UserSettingsService } from './user-settings.service';
 
@@ -60,16 +60,13 @@ describe('UserSettingsService', () => {
 
   describe('update()', () => {
     it(`should try to find and update a user's settings by id`, async () => {
-      const updateUserSettingsDto: UpdateUserSettingsDto = {
-        nameDisplayFormat: NameDisplayFormat.FIRST_LAST,
-      };
       await expect(
-        service.update(testUserSettings1.id, updateUserSettingsDto)
+        service.update(testUserSettings1.id, testUpdateUserSettingsDto1)
       ).resolves.toEqual(testUserSettingsEntity1);
       expect(repository.findOne).toBeCalledTimes(0);
       expect(repository.save).toBeCalledTimes(1);
       expect(repository.save).toBeCalledWith({
-        ...updateUserSettingsDto,
+        ...testUpdateUserSettingsDto1,
         user: testUserEntity1,
       });
     });

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserDto } from '@newbee/shared/data-access';
+import { BaseUpdateUserDto } from '@newbee/shared/data-access';
 
 @Controller({ path: 'user', version: '1' })
 export class UserController {
@@ -35,7 +35,7 @@ export class UserController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserDto: BaseUpdateUserDto
   ): Promise<UserEntity> {
     this.logger.log(
       `Update user request received for id: ${id}: ${JSON.stringify(

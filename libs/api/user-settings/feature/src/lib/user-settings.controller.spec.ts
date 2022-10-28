@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { testUserSettingsEntity1 } from '@newbee/api/shared/data-access';
 import { UserSettingsService } from '@newbee/api/user-settings/data-access';
-import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
+import { testUpdateUserSettingsDto1 } from '@newbee/shared/data-access';
 import { testUserSettings1 } from '@newbee/shared/util';
 import { UserSettingsController } from './user-settings.controller';
 
@@ -33,16 +33,13 @@ describe('UserSettingsController', () => {
 
   describe('update()', () => {
     it(`should try to find and update a user's settings by id`, async () => {
-      const updateUserSettingsDto: UpdateUserSettingsDto = {
-        nameDisplayFormat: testUserSettings1.nameDisplayFormat,
-      };
       await expect(
-        controller.update(testUserSettings1.id, updateUserSettingsDto)
+        controller.update(testUserSettings1.id, testUpdateUserSettingsDto1)
       ).resolves.toEqual(testUserSettingsEntity1);
       expect(service.update).toBeCalledTimes(1);
       expect(service.update).toBeCalledWith(
         testUserSettings1.id,
-        updateUserSettingsDto
+        testUpdateUserSettingsDto1
       );
     });
   });

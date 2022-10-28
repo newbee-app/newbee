@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSettingsEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { UpdateUserSettingsDto } from '@newbee/shared/data-access';
 import { Repository } from 'typeorm';
+import { UpdateUserSettingsDto } from './dto';
 
 @Injectable()
 export class UserSettingsService {

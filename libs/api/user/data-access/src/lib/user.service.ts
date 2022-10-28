@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity, UserSettingsEntity } from '@newbee/api/shared/data-access';
-import { CreateUserDto, UpdateUserDto } from '@newbee/shared/data-access';
 import { NameDisplayFormat } from '@newbee/shared/util';
 import { DataSource, Repository } from 'typeorm';
+import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
 export class UserService {

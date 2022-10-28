@@ -1,7 +1,7 @@
-import { User } from '@newbee/shared/util';
+import { BaseCreateUserDto } from '@newbee/shared/data-access';
 import { IsDefined, IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
 
-export class CreateUserDto implements Omit<User, 'id' | 'active' | 'online'> {
+export class CreateUserDto implements BaseCreateUserDto {
   @IsDefined()
   @IsEmail()
   email!: string;

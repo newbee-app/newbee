@@ -10,18 +10,17 @@ import {
 } from '@nestjs/common';
 import {
   AuthService,
+  MagicLinkLoginLoginDto,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
 import { MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import { Public, User } from '@newbee/api/shared/util';
-import { UserService } from '@newbee/api/user/data-access';
+import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
   authVersion,
-  CreateUserDto,
-  LoginDto,
-  MagicLinkLoginDto,
-  MagicLinkLoginLoginDto,
+  BaseLoginDto,
+  BaseMagicLinkLoginDto,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
 
@@ -39,7 +38,7 @@ export class AuthController {
   @Get(`${magicLinkLogin}/login`)
   async login(
     @Query() magicLinkLoginLoginDto: MagicLinkLoginLoginDto
-  ): Promise<MagicLinkLoginDto> {
+  ): Promise<BaseMagicLinkLoginDto> {
     const { email } = magicLinkLoginLoginDto;
     this.logger.log(`Check email request received for: ${email}`);
     const user = await this.userService.findOneByEmail(email);
@@ -57,7 +56,7 @@ export class AuthController {
   @Post(`${magicLinkLogin}/register`)
   async register(
     @Body() createUserDto: CreateUserDto
-  ): Promise<MagicLinkLoginDto> {
+  ): Promise<BaseMagicLinkLoginDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(`Register request received: ${createUserDtoString}`);
     const { email } = createUserDto;
@@ -81,7 +80,7 @@ export class AuthController {
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)
-  magicLinkLogin(@User() user: UserEntity): LoginDto {
+  magicLinkLogin(@User() user: UserEntity): BaseLoginDto {
     this.logger.log(
       `Generating access token for user: ${JSON.stringify(user)}`
     );
