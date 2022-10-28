@@ -30,6 +30,11 @@ describe('FormMethod', () => {
         expect(getErrorMessage(control)).toEqual('Not a valid phone number');
       });
 
+      it('should work for invalidCountry', () => {
+        control.setErrors({ phoneNumber: { invalidCountry: true } });
+        expect(getErrorMessage(control)).toEqual('Not a valid country');
+      });
+
       it('should work for invalid', () => {
         control.setErrors({ phoneNumber: { invalid: true } });
         expect(getErrorMessage(control)).toEqual(

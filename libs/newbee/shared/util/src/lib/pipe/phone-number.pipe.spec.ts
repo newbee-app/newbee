@@ -1,4 +1,3 @@
-import { PhoneNumberFormat } from 'google-libphonenumber';
 import { testCountry1 } from '../example';
 import { PhoneNumberPipe } from './phone-number.pipe';
 
@@ -18,9 +17,9 @@ describe('PhoneNumberPipe', () => {
       expect(pipe.transform('5555555555', testCountry1)).toEqual(
         '(555) 555-5555'
       );
-      expect(
-        pipe.transform('5555555555', testCountry1, PhoneNumberFormat.E164)
-      ).toEqual('+15555555555');
+      expect(pipe.transform('5555555555', testCountry1, 'E.164')).toEqual(
+        '+15555555555'
+      );
     });
 
     it('should fail gracefully without country', () => {

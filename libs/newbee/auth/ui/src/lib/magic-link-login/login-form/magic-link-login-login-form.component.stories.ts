@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
 
 export default {
@@ -14,7 +14,7 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormModule,
+        MagicLinkLoginBaseFormComponentModule,
         TooltipComponentModule,
       ],
     }),

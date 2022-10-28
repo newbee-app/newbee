@@ -1,11 +1,11 @@
 import { Inject, Injectable, LOCALE_ID } from '@angular/core';
-import { PhoneNumberUtil } from 'google-libphonenumber';
+import type { CountryCode } from 'libphonenumber-js';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import { Country } from '../class';
 import { SupportedLocale } from '../enum';
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
-  private readonly phoneUtil = PhoneNumberUtil.getInstance();
   private readonly regionNames: Intl.DisplayNames;
 
   private readonly _currentRegion: string;
@@ -23,9 +23,7 @@ export class CountryService {
 
     const supportedRegionsSet = new Set(this._supportedRegions);
     this._supportedPhoneRegions = this._supportedRegions.concat(
-      this.phoneUtil
-        .getSupportedRegions()
-        .filter((region) => !supportedRegionsSet.has(region))
+      getCountries().filter((region) => !supportedRegionsSet.has(region))
     );
     this._supportedPhoneCountries = this._supportedPhoneRegions.map((region) =>
       this.getCountry(region)
@@ -35,9 +33,12 @@ export class CountryService {
   getCountry(regionCode: string): Country {
     const ucRegionCode = regionCode.toUpperCase();
     const name = this.regionNames.of(ucRegionCode) ?? ucRegionCode;
-    const dialingCode = this.phoneUtil.getCountryCodeForRegion(ucRegionCode);
-
-    return new Country(name, ucRegionCode, dialingCode);
+    try {
+      const dialingCode = getCountryCallingCode(ucRegionCode as CountryCode);
+      return new Country(name, ucRegionCode, dialingCode);
+    } catch (err) {
+      return new Country(name, ucRegionCode, '0');
+    }
   }
 
   get currentRegion(): string {

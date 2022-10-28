@@ -12,7 +12,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { MagicLinkLoginBaseFormModule } from '../../base-form';
+import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
 import { MagicLinkLoginRegisterFormComponent } from './magic-link-login-register-form.component';
 
 export default {
@@ -23,7 +23,7 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormModule,
+        MagicLinkLoginBaseFormComponentModule,
         TooltipComponentModule,
         PhoneInputComponentModule,
         ClickWrapperComponentModule,

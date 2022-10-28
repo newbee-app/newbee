@@ -11,6 +11,8 @@ export function getErrorMessage(control: AbstractControl | null): string {
       return 'You must select a country';
     } else if (phoneNumberError.invalidNumber) {
       return 'Not a valid phone number';
+    } else if (phoneNumberError.invalidCountry) {
+      return 'Not a valid country';
     } else if (phoneNumberError.invalid) {
       return 'Not a valid phone number or country';
     }

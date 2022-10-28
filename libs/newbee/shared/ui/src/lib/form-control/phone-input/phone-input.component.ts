@@ -166,7 +166,10 @@ export class PhoneInputComponent
       return false;
     }
 
-    if (inputName === 'country' && phoneNumberError.missingCountry) {
+    if (
+      inputName === 'country' &&
+      (phoneNumberError.missingCountry || phoneNumberError.invalidCountry)
+    ) {
       return true;
     } else if (
       inputName === 'number' &&

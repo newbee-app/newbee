@@ -27,7 +27,7 @@ describe('CountryService', () => {
       expect(service.getCountry('xx')).toEqual({
         name: 'XX',
         regionCode: 'XX',
-        dialingCode: 0,
+        dialingCode: '0',
       });
     });
   });

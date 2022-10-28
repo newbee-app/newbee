@@ -122,22 +122,24 @@ describe('PhoneInputComponent', () => {
   });
 
   describe('hasError', () => {
-    it('should only display country-related errors when fed in country', () => {
+    it('should display country-related errors for missingCountry or invalidCountry', () => {
       expect(component.hasError('country')).toBeFalsy();
       component.phoneNumber.patchValue({ number: '5' });
+      expect(component.hasError('country')).toBeTruthy();
+      component.phoneNumber.patchValue({
+        country: { name: 'XX', dialingCode: '0', regionCode: 'XX' },
+      });
       expect(component.hasError('country')).toBeTruthy();
       component.phoneNumber.patchValue({ country: testCountry1 });
       expect(component.hasError('country')).toBeFalsy();
     });
 
-    it('should only display number-related errors when fed in number', () => {
+    it('should only display number-related errors for invalidNumber or invalid', () => {
       expect(component.hasError('number')).toBeFalsy();
       component.phoneNumber.patchValue({ country: testCountry1, number: '5' });
       expect(component.hasError('number')).toBeTruthy();
-      component.phoneNumber.patchValue({
-        country: { name: 'XX', dialingCode: 0, regionCode: 'XX' },
-      });
-      expect(component.hasError('number')).toBeTruthy();
+      expect(component.phoneNumber.patchValue({ number: '2345678901' }));
+      expect(component.hasError('number')).toBeFalsy();
     });
   });
 

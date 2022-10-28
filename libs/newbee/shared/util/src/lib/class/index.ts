@@ -2,7 +2,7 @@ export class Country {
   constructor(
     public readonly name: string,
     public readonly regionCode: string,
-    public readonly dialingCode: number
+    public readonly dialingCode: string
   ) {}
 }
 

@@ -181,7 +181,7 @@ describe('SearchableSelectComponent', () => {
       component.writeValue({
         regionCode: 'XX',
         name: 'Unknown',
-        dialingCode: 0,
+        dialingCode: '0',
       });
       expect(component.value).toBeNull();
     });
@@ -201,7 +201,7 @@ describe('SearchableSelectComponent', () => {
       component.selectOption({
         regionCode: 'XX',
         name: 'Unknown',
-        dialingCode: 0,
+        dialingCode: '0',
       });
       expect(component.value).toBeNull();
     });
