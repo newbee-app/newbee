@@ -26,8 +26,10 @@ export class AppTitleStrategy extends TitleStrategy {
 const routes: Routes = [
   {
     path: 'auth',
-    loadChildren: () =>
-      import('@newbee/newbee/auth/feature').then((m) => m.AuthModule),
+    loadChildren: async () => {
+      const m = await import('@newbee/newbee/auth/feature');
+      return m.AuthModule;
+    },
   },
   {
     path: '',

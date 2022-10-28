@@ -11,7 +11,6 @@ import { reducers } from './reducer';
 import { AppRoutingModule } from './routing';
 
 @NgModule({
-  declarations: [AppComponent],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HttpClientXsrfModule,
@@ -32,7 +31,7 @@ import { AppRoutingModule } from './routing';
     extModules,
     AppRoutingModule,
   ],
-  providers: [],
+  declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
