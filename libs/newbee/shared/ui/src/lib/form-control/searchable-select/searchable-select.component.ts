@@ -19,6 +19,7 @@ import {
 } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'newbee-searchable-select',
@@ -43,6 +44,7 @@ export class SearchableSelectComponent<T>
   private _expanded = false;
   private selectedOption: SelectOption<T> | null = null;
 
+  private readonly unsubscribe$ = new Subject<void>();
   private _disabled = false;
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,20 +64,23 @@ export class SearchableSelectComponent<T>
     readonly clickService: ClickService,
     readonly elementRef: ElementRef<HTMLElement>
   ) {
-    clickService.documentClickTarget.subscribe({
-      next: (target) => {
-        if (
-          !elementRef.nativeElement.contains(target) &&
-          !target.id.includes('option-')
-        ) {
-          this.shrink();
-        }
-      },
-    });
+    clickService.documentClickTarget
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (target) => {
+          if (
+            !elementRef.nativeElement.contains(target) &&
+            !target.id.includes('option-')
+          ) {
+            this.shrink();
+          }
+        },
+      });
   }
 
   ngOnDestroy(): void {
-    this.clickService.documentClickTarget.unsubscribe();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   writeValue(val: T): void {

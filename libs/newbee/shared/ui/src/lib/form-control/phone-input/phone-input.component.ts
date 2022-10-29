@@ -23,7 +23,7 @@ import {
   phoneNumberValidator,
   SelectOption,
 } from '@newbee/newbee/shared/util';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { TooltipComponentModule } from '../../tooltip/tooltip.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 
@@ -78,7 +78,7 @@ export class PhoneInputComponent
     },
   };
 
-  private phoneNumberSubscription: Subscription;
+  private readonly unsubscribe$ = new Subject<void>();
   private _dirty = false;
   private _touched = false;
   // @ts-ignore
@@ -96,7 +96,7 @@ export class PhoneInputComponent
     private readonly fb: FormBuilder,
     private readonly phoneNumberPipe: PhoneNumberPipe
   ) {
-    this.phoneNumberSubscription = this.phoneNumber.valueChanges.subscribe({
+    this.phoneNumber.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (val) => {
         this._onChange(val);
       },
@@ -104,7 +104,8 @@ export class PhoneInputComponent
   }
 
   ngOnDestroy(): void {
-    this.phoneNumberSubscription.unsubscribe();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   writeValue(val: Partial<PhoneInput>): void {
