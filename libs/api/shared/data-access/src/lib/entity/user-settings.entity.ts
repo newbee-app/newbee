@@ -5,15 +5,15 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Relation,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity()
 export class UserSettingsEntity implements UserSettings {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryColumn()
+  userId!: string;
 
   @OneToOne(() => UserEntity, (user) => user.settings, {
     onDelete: 'CASCADE',

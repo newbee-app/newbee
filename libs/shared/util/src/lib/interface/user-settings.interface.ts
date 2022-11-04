@@ -1,6 +1,6 @@
 import { NameDisplayFormat } from '../enum';
 
 export interface UserSettings {
-  id: string;
+  userId: string;
   nameDisplayFormat: NameDisplayFormat;
 }

@@ -1,8 +1,17 @@
 import { NameDisplayFormat } from '../enum';
-import { User, UserSettings } from '../interface';
+import { Authenticator, User, UserSettings } from '../interface';
+
+export const testAuthenticator1: Authenticator = {
+  id: '1',
+  credentialId: 'cred1',
+  credentialPublicKey: Buffer.from('credpk1', 'utf-8'),
+  counter: 0,
+  credentialDeviceType: 'singleDevice',
+  credentialBackedUp: true,
+};
 
 export const testUserSettings1: UserSettings = {
-  id: '1',
+  userId: '1',
   nameDisplayFormat: NameDisplayFormat.FIRST_LAST,
 };
 
