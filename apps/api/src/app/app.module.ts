@@ -11,16 +11,14 @@ import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
-import { UserSettingsModule } from '@newbee/api/user-settings/feature';
-import { UserModule } from '@newbee/api/user/feature';
-import { WinstonModule } from 'nest-winston';
 import {
   AppConfigInterface,
   appEnvironmentVariablesSchema,
-  default as appConfig,
-} from '../environments/environment';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+} from '@newbee/api/shared/util';
+import { UserSettingsModule } from '@newbee/api/user-settings/feature';
+import { UserModule } from '@newbee/api/user/feature';
+import { WinstonModule } from 'nest-winston';
+import { default as appConfig } from '../environments/environment';
 
 @Module({
   imports: [
@@ -51,15 +49,10 @@ import { AppService } from './app.service';
     UserModule,
     UserSettingsModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_PIPE,
-      useValue: new ValidationPipe({
-        transform: true,
-        whitelist: true,
-      }),
+      useValue: new ValidationPipe({ transform: true }),
     },
     {
       provide: APP_INTERCEPTOR,

@@ -121,15 +121,11 @@ export class MagicLinkLoginStrategy extends Strategy {
       jwtid,
     });
 
-    try {
-      await this.sendMagicLink(
-        payload,
-        `${this.verifyLink}?token=${token}`,
-        jwtid
-      );
-      return jwtid;
-    } catch (err: unknown) {
-      throw new Error(`Failed to send magic link: ${err}`);
-    }
+    await this.sendMagicLink(
+      payload,
+      `${this.verifyLink}?token=${token}`,
+      jwtid
+    );
+    return jwtid;
   }
 }

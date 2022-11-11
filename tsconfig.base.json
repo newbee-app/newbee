@@ -32,16 +32,27 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@newbee/api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@newbee/api/auth/data-access": [
         "libs/api/auth/data-access/src/index.ts"
       ],
       "@newbee/api/auth/feature": ["libs/api/auth/feature/src/index.ts"],
       "@newbee/api/auth/util": ["libs/api/auth/util/src/index.ts"],
+      "@newbee/api/authenticator/data-access": [
+        "libs/api/authenticator/data-access/src/index.ts"
+      ],
+      "@newbee/api/authenticator/feature": [
+        "libs/api/authenticator/feature/src/index.ts"
+      ],
       "@newbee/api/shared/data-access": [
         "libs/api/shared/data-access/src/index.ts"
       ],
       "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"],
+      "@newbee/api/user-challenge/data-access": [
+        "libs/api/user-challenge/data-access/src/index.ts"
+      ],
+      "@newbee/api/user-challenge/feature": [
+        "libs/api/user-challenge/feature/src/index.ts"
+      ],
       "@newbee/api/user-settings/data-access": [
         "libs/api/user-settings/data-access/src/index.ts"
       ],
@@ -52,6 +63,7 @@
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
+      "@newbee/api/user/util": ["libs/api/user/util/src/index.ts"],
       "@newbee/newbee/auth/data-access": [
         "libs/newbee/auth/data-access/src/index.ts"
       ],
@@ -67,7 +79,10 @@
         "libs/publishable/passport-magic-link-login/src/index.ts"
       ],
       "@newbee/shared/data-access": ["libs/shared/data-access/src/index.ts"],
-      "@newbee/shared/util": ["libs/shared/util/src/index.ts"]
+      "@newbee/shared/util": ["libs/shared/util/src/index.ts"],
+      "@newbee/simple-webauthn": [
+        "libs/publishable/simple-webauthn/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp", "dist"]

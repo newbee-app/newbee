@@ -1,5 +1,8 @@
-import { NameDisplayFormat } from '../enum';
-import { Authenticator, User, UserSettings } from '../interface';
+import type {
+  PublicKeyCredentialCreationOptionsJSON,
+  RegistrationCredentialJSON,
+} from '@simplewebauthn/typescript-types';
+import { Authenticator, User, UserChallenge, UserSettings } from '../interface';
 
 export const testAuthenticator1: Authenticator = {
   id: '1',
@@ -10,9 +13,13 @@ export const testAuthenticator1: Authenticator = {
   credentialBackedUp: true,
 };
 
+export const testUserChallenge1: UserChallenge = {
+  userId: '1',
+  challenge: 'challenge1',
+};
+
 export const testUserSettings1: UserSettings = {
   userId: '1',
-  nameDisplayFormat: NameDisplayFormat.FIRST_LAST,
 };
 
 export const testUser1: User = {
@@ -22,4 +29,30 @@ export const testUser1: User = {
   displayName: 'John',
   active: true,
   online: false,
+};
+
+export const testPublicKeyCredentialCreationOptions1: PublicKeyCredentialCreationOptionsJSON =
+  {
+    user: {
+      id: testUser1.id,
+      name: testUser1.email,
+      displayName: testUser1.displayName ?? testUser1.name,
+    },
+    challenge: 'challenge1',
+    excludeCredentials: [],
+    rp: {
+      name: 'rp1',
+    },
+    pubKeyCredParams: [],
+  };
+
+export const testRegistrationCredential1: RegistrationCredentialJSON = {
+  rawId: 'rawId1',
+  id: testAuthenticator1.id,
+  type: 'public-key',
+  clientExtensionResults: {},
+  response: {
+    clientDataJSON: 'clientData1',
+    attestationObject: 'attestation1',
+  },
 };

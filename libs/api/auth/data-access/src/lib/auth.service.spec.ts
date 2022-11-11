@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
-import { testUserJwtPayload1 } from '@newbee/api/auth/util';
 import { testUserEntity1 } from '@newbee/api/shared/data-access';
+import { testUserJwtPayload1 } from '@newbee/api/shared/util';
 import { testLoginDto1 } from '@newbee/shared/data-access';
 import { AuthService } from './auth.service';
 
@@ -29,14 +29,12 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(jwtService).toBeDefined();
   });
 
   describe('generateAccessToken()', () => {
     it('should return access token', () => {
-      expect(service.login(testUserEntity1)).toEqual({
-        access_token: testLoginDto1.access_token,
-        user: testUserEntity1,
-      });
+      expect(service.login(testUserEntity1)).toEqual(testLoginDto1);
       expect(jwtService.sign).toBeCalledTimes(1);
       expect(jwtService.sign).toBeCalledWith(testUserJwtPayload1);
     });

@@ -1,6 +1,5 @@
-import { NameDisplayFormat, UserSettings } from '@newbee/shared/util';
+import { UserSettings } from '@newbee/shared/util';
 import {
-  Column,
   DeepPartial,
   Entity,
   JoinColumn,
@@ -20,13 +19,6 @@ export class UserSettingsEntity implements UserSettings {
   })
   @JoinColumn()
   user!: Relation<UserEntity>;
-
-  @Column({
-    type: 'enum',
-    enum: NameDisplayFormat,
-    default: NameDisplayFormat.FIRST_LAST,
-  })
-  nameDisplayFormat!: NameDisplayFormat;
 
   constructor(partial?: DeepPartial<UserSettingsEntity>) {
     if (partial) {

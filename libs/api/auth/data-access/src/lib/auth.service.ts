@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserJwtPayload } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
+import type { UserJwtPayload } from '@newbee/api/shared/util';
 import { BaseLoginDto } from '@newbee/shared/data-access';
 
 @Injectable()

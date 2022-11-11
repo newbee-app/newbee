@@ -9,6 +9,7 @@ import {
   Relation,
 } from 'typeorm';
 import { AuthenticatorEntity } from './authenticator.entity';
+import { UserChallengeEntity } from './user-challenge.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 @Entity()
@@ -23,10 +24,10 @@ export class UserEntity implements User {
   name!: string;
 
   @Column({ nullable: true })
-  displayName!: string;
+  displayName?: string | null;
 
   @Column({ nullable: true, length: 32 })
-  phoneNumber!: string;
+  phoneNumber?: string | null;
 
   @Column()
   active!: boolean;
@@ -36,6 +37,9 @@ export class UserEntity implements User {
 
   @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
   settings!: Relation<UserSettingsEntity>;
+
+  @OneToOne(() => UserChallengeEntity, (challenge) => challenge.user)
+  challenge!: Relation<UserChallengeEntity>;
 
   @OneToMany(() => AuthenticatorEntity, (authenticator) => authenticator.user)
   authenticators!: Relation<AuthenticatorEntity[]>;

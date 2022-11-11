@@ -37,9 +37,11 @@ export class AuthenticatorEntity implements Authenticator {
   credentialBackedUp!: boolean;
 
   @Column({ nullable: true })
-  transports?: AuthenticatorTransportFuture[];
+  transports?: AuthenticatorTransportFuture[] | null;
 
-  @ManyToOne(() => UserEntity, (user) => user.authenticators)
+  @ManyToOne(() => UserEntity, (user) => user.authenticators, {
+    onDelete: 'CASCADE',
+  })
   user!: Relation<UserEntity>;
 
   constructor(partial?: DeepPartial<AuthenticatorEntity>) {

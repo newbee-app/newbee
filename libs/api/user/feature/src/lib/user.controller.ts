@@ -9,10 +9,11 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import { UserService } from '@newbee/api/user/data-access';
-import { BaseUpdateUserDto } from '@newbee/shared/data-access';
+import { idNotFoundErrorMsg } from '@newbee/api/shared/util';
+import { UpdateUserDto, UserService } from '@newbee/api/user/data-access';
+import { userVersion } from '@newbee/shared/data-access';
 
-@Controller({ path: 'user', version: '1' })
+@Controller({ path: 'user', version: userVersion })
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
@@ -20,12 +21,11 @@ export class UserController {
 
   @Get(':id')
   async findOneById(@Param('id') id: string): Promise<UserEntity> {
-    this.logger.log(`Find user by id request received for id: ${id}`);
+    this.logger.log(`Find user by id request received for ID: ${id}`);
     const user = await this.userService.findOneById(id);
     if (!user) {
-      const errorMsg = `User not found for id: ${id}`;
-      this.logger.error(errorMsg);
-      throw new NotFoundException(errorMsg);
+      this.logger.error(`Attempted to find user with invalid ID: ${id}`);
+      throw new NotFoundException(idNotFoundErrorMsg('a', 'user', id));
     }
 
     this.logger.log(`Found user: ${JSON.stringify(user)}`);
@@ -35,7 +35,7 @@ export class UserController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateUserDto: BaseUpdateUserDto
+    @Body() updateUserDto: UpdateUserDto
   ): Promise<UserEntity> {
     this.logger.log(
       `Update user request received for id: ${id}: ${JSON.stringify(
@@ -43,12 +43,6 @@ export class UserController {
       )}`
     );
     const user = await this.userService.update(id, updateUserDto);
-    if (!user) {
-      const errorMsg = `User not found for id: ${id}`;
-      this.logger.error(errorMsg);
-      throw new NotFoundException(`User not found for id: ${id}`);
-    }
-
     this.logger.log(`Updated user: ${JSON.stringify(user)}`);
     return user;
   }
@@ -56,13 +50,7 @@ export class UserController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     this.logger.log(`Delete user request received for id: ${id}`);
-    const deleted = await this.userService.delete(id);
-    if (!deleted) {
-      const errorMsg = `User not found for id: ${id}`;
-      this.logger.error(errorMsg);
-      throw new NotFoundException(errorMsg);
-    }
-
+    await this.userService.delete(id);
     this.logger.log(`Deleted user for id: ${id}`);
   }
 }
