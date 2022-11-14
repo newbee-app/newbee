@@ -77,7 +77,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       this.logger.error(`User not found for email: ${email}`);
       throw new UnauthorizedException(
-        'You are not authorized to access this content.'
+        'There is an issue with your credentials, please try logging in again.'
       );
     }
 

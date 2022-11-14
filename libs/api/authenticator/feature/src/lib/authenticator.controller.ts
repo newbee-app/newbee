@@ -1,15 +1,10 @@
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Logger,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
-import { AuthenticatorEntity } from '@newbee/api/shared/data-access';
-import type { UserJwtPayload } from '@newbee/api/shared/util';
-import { internalServerErrorMsg, User } from '@newbee/api/shared/util';
-import { UserService } from '@newbee/api/user/data-access';
+import {
+  AuthenticatorEntity,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
+import { User } from '@newbee/api/shared/util';
 import { authenticatorVersion } from '@newbee/shared/data-access';
 import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
 
@@ -17,29 +12,17 @@ import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
 export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 
-  constructor(
-    private readonly authenticatorService: AuthenticatorService,
-    private readonly userService: UserService
-  ) {}
+  constructor(private readonly authenticatorService: AuthenticatorService) {}
 
   @Post('create')
   async create(
     @Body() credential: RegistrationCredentialJSON,
-    @User() userJwtPayload: UserJwtPayload
+    @User() user: UserEntity
   ): Promise<AuthenticatorEntity> {
     const credentialString = JSON.stringify(credential);
-    const { sub: userId } = userJwtPayload;
     this.logger.log(
-      `Create authenticator request received for user id: ${userId}, credential: ${credentialString}`
+      `Create authenticator request received for user id: ${user.id}, credential: ${credentialString}`
     );
-
-    const user = await this.userService.findOneById(userId);
-    if (!user) {
-      this.logger.error(
-        `Could not find user with id ${userId} even though JwtAuthGuard passed`
-      );
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
 
     return await this.authenticatorService.create(credential, user);
   }
