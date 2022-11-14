@@ -33,15 +33,28 @@ export class UserChallengeService {
     }
   }
 
-  async update(
-    id: string,
+  async findOneByEmail(email: string): Promise<UserChallengeEntity | null> {
+    try {
+      return await this.userChallengeRepository.findOne({
+        where: { user: { email } },
+      });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerErrorMsg);
+    }
+  }
+
+  async updateByEmail(
+    email: string,
     challenge: string | null
   ): Promise<UserChallengeEntity> {
-    const userChallenge = await this.findOneById(id);
+    const userChallenge = await this.findOneByEmail(email);
     if (!userChallenge) {
-      this.logger.error(idNotFoundLogMsg('update', 'a', 'user challenge', id));
+      this.logger.error(
+        idNotFoundLogMsg('update', 'a', 'user challenge', 'email', email)
+      );
       throw new NotFoundException(
-        idNotFoundErrorMsg('a', 'user challenge', id)
+        idNotFoundErrorMsg('a', 'user challenge', 'an', 'email', email)
       );
     }
 

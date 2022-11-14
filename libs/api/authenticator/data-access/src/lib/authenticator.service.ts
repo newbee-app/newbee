@@ -111,10 +111,10 @@ export class AuthenticatorService {
     }
   }
 
-  async findAllByUserId(userId: string): Promise<AuthenticatorEntity[]> {
+  async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
     try {
       return await this.authenticatorRepository.find({
-        where: { user: { id: userId } },
+        where: { user: { email } },
       });
     } catch (err) {
       throw new InternalServerErrorException(internalServerErrorMsg);
@@ -143,9 +143,11 @@ export class AuthenticatorService {
   async deleteOneById(id: string): Promise<void> {
     const authenticator = await this.findOneById(id);
     if (!authenticator) {
-      this.logger.error(idNotFoundLogMsg('delete', 'an', 'authenticator', id));
+      this.logger.error(
+        idNotFoundLogMsg('delete', 'an', 'authenticator', 'ID', id)
+      );
       throw new NotFoundException(
-        idNotFoundErrorMsg('an', 'authenticator', id)
+        idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
       );
     }
 

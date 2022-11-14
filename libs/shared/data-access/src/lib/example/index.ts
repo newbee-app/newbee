@@ -4,9 +4,9 @@ import {
 } from '@newbee/shared/util';
 import {
   BaseCreateUserDto,
+  BaseEmailDto,
   BaseLoginDto,
   BaseMagicLinkLoginDto,
-  BaseMagicLinkLoginLoginDto,
   BaseUpdateUserDto,
   BaseUserCreatedDto,
 } from '../dto';
@@ -21,7 +21,7 @@ export const testUserCreatedDto1: BaseUserCreatedDto = {
   options: testPublicKeyCredentialCreationOptions1,
 };
 
-export const testMagicLinkLoginLoginDto1: BaseMagicLinkLoginLoginDto = {
+export const testEmailDto1: BaseEmailDto = {
   email: testUser1.email,
 };
 

@@ -1,1 +1,1 @@
-export * from './magic-link-login.dto';
+export * from './email.dto';

@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
-import { JwtModuleOptions } from '@nestjs/jwt';
-import { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
+import type { JwtModuleOptions } from '@nestjs/jwt';
+import type { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
 import { magicLinkLogin } from '@newbee/shared/util';
 import {
   ExtractJwt,
@@ -8,11 +8,9 @@ import {
 } from 'passport-jwt';
 
 export interface AuthConfigInterface {
-  auth: {
-    jwtModule: JwtModuleOptions;
-    magicLinkLogin: MagicLinkLoginStrategyOtions;
-    jwtStrategy: JwtStrategyOptions;
-  };
+  jwtModule: JwtModuleOptions;
+  magicLinkLogin: MagicLinkLoginStrategyOtions;
+  jwtStrategy: JwtStrategyOptions;
 }
 
 export default registerAs('auth', () => ({

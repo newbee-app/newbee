@@ -7,21 +7,25 @@ import {
   JwtStrategy,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import { authConfig, AuthConfigInterface } from '@newbee/api/auth/util';
+import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
+import { AppConfigInterface, authConfig } from '@newbee/api/shared/util';
+import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
-    UserModule,
     PassportModule,
     ConfigModule.forFeature(authConfig),
     JwtModule.registerAsync({
       useFactory: async (
-        configService: ConfigService<AuthConfigInterface, true>
+        configService: ConfigService<AppConfigInterface, true>
       ) => configService.get('auth.jwtModule', { infer: true }),
       inject: [ConfigService],
     }),
+    UserModule,
+    AuthenticatorModule,
+    UserChallengeModule,
   ],
   controllers: [AuthController],
   providers: [MagicLinkLoginStrategy, AuthService, JwtStrategy],

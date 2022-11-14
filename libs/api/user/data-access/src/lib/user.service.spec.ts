@@ -18,15 +18,16 @@ import {
   testUpdateUserDto1,
 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
+import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { DataSource, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { UserService } from './user.service';
 
 jest.mock('@simplewebauthn/server', () => ({
   __esModule: true,
-  generateRegistrationOptions: jest
-    .fn()
-    .mockReturnValue(testUserAndOptions1.options),
+  generateRegistrationOptions: jest.fn(),
 }));
+const mockGenerateRegistrationOptions =
+  generateRegistrationOptions as jest.Mock;
 
 describe('UserService', () => {
   let service: UserService;
@@ -68,6 +69,10 @@ describe('UserService', () => {
       getRepositoryToken(UserEntity)
     );
     dataSource = module.get<DataSource>(getDataSourceToken());
+
+    mockGenerateRegistrationOptions.mockReturnValue(
+      testUserAndOptions1.options
+    );
   });
 
   it('should be defined', () => {
@@ -103,6 +108,7 @@ describe('UserService', () => {
           testUserAndOptions1
         );
         expect(dataSource.createQueryRunner).toBeCalledTimes(1);
+        expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
       });
 
       it('should throw an error if querryRunner throws an error', async () => {
@@ -192,7 +198,9 @@ describe('UserService', () => {
       await expect(
         service.update(testUser1.id, testUpdateUserDto1)
       ).rejects.toThrow(
-        new NotFoundException(idNotFoundErrorMsg('a', 'user', testUser1.id))
+        new NotFoundException(
+          idNotFoundErrorMsg('a', 'user', 'an', 'ID', testUser1.id)
+        )
       );
       expect(repository.save).not.toBeCalled();
     });
@@ -239,7 +247,9 @@ describe('UserService', () => {
     it('should throw a NotFoundException if user does not exist', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
       await expect(service.delete(testUser1.id)).rejects.toThrow(
-        new NotFoundException(idNotFoundErrorMsg('a', 'user', testUser1.id))
+        new NotFoundException(
+          idNotFoundErrorMsg('a', 'user', 'an', 'ID', testUser1.id)
+        )
       );
       expect(repository.remove).not.toBeCalled();
     });

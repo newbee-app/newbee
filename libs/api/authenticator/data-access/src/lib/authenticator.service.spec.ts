@@ -204,23 +204,25 @@ describe('AuthenticatorService', () => {
     });
   });
 
-  describe('findAllByUserId', () => {
+  describe('findAllByEmail', () => {
     afterEach(() => {
       expect(repository.find).toBeCalledTimes(1);
       expect(repository.find).toBeCalledWith({
-        where: { user: { id: testUserEntity1.id } },
+        where: { user: { email: testUserEntity1.email } },
       });
     });
 
     it('should get an array of authenticators by user ID', async () => {
       await expect(
-        service.findAllByUserId(testUserEntity1.id)
+        service.findAllByEmail(testUserEntity1.email)
       ).resolves.toEqual([testAuthenticatorEntity1]);
     });
 
     it('should throw an InternalServerErrorException if find throws an error', async () => {
       jest.spyOn(repository, 'find').mockRejectedValue(new Error('find'));
-      await expect(service.findAllByUserId(testUserEntity1.id)).rejects.toThrow(
+      await expect(
+        service.findAllByEmail(testUserEntity1.email)
+      ).rejects.toThrow(
         new InternalServerErrorException(internalServerErrorMsg)
       );
     });

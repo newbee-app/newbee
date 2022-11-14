@@ -6,8 +6,8 @@ import { TestBed } from '@angular/core/testing';
 import {
   authVersion,
   testCreateUserDto1,
+  testEmailDto1,
   testMagicLinkLoginDto1,
-  testMagicLinkLoginLoginDto1,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { AuthService } from './auth.service';
@@ -33,7 +33,7 @@ describe('AuthService', () => {
 
   describe('login()', () => {
     it('should send out a post request', (done) => {
-      service.login(testMagicLinkLoginLoginDto1).subscribe({
+      service.login(testEmailDto1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
             expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);

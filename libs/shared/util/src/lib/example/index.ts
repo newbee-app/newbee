@@ -1,5 +1,6 @@
 import type {
   PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
 import { Authenticator, User, UserChallenge, UserSettings } from '../interface';
@@ -44,6 +45,11 @@ export const testPublicKeyCredentialCreationOptions1: PublicKeyCredentialCreatio
       name: 'rp1',
     },
     pubKeyCredParams: [],
+  };
+
+export const testPublicKeyCredentialRequestOptions1: PublicKeyCredentialRequestOptionsJSON =
+  {
+    challenge: 'challenge1',
   };
 
 export const testRegistrationCredential1: RegistrationCredentialJSON = {

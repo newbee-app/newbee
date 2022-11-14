@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import {
   authVersion,
   BaseCreateUserDto,
+  BaseEmailDto,
   BaseMagicLinkLoginDto,
-  BaseMagicLinkLoginLoginDto,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
@@ -13,12 +13,10 @@ import { Observable } from 'rxjs';
 export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
-  login(
-    magicLinkLoginLoginDto: BaseMagicLinkLoginLoginDto
-  ): Observable<BaseMagicLinkLoginDto> {
+  login(emailDto: BaseEmailDto): Observable<BaseMagicLinkLoginDto> {
     return this.http.post<BaseMagicLinkLoginDto>(
       `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
-      magicLinkLoginLoginDto
+      emailDto
     );
   }
 

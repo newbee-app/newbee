@@ -1,9 +1,11 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import type { AuthConfigInterface } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import type { UserJwtPayload } from '@newbee/api/shared/util';
+import type {
+  AppConfigInterface,
+  UserJwtPayload,
+} from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import { Strategy } from 'passport-jwt';
 
@@ -12,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(
-    configService: ConfigService<AuthConfigInterface, true>,
+    configService: ConfigService<AppConfigInterface, true>,
     private readonly userService: UserService
   ) {
     super(configService.get('auth.jwtStrategy', { infer: true }));

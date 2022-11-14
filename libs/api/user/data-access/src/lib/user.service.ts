@@ -98,8 +98,10 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findOneById(id);
     if (!user) {
-      this.logger.error(idNotFoundLogMsg('update', 'a', 'user', id));
-      throw new NotFoundException(idNotFoundErrorMsg('a', 'user', id));
+      this.logger.error(idNotFoundLogMsg('update', 'a', 'user', 'ID', id));
+      throw new NotFoundException(
+        idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
+      );
     }
 
     try {
@@ -115,8 +117,10 @@ export class UserService {
   async delete(id: string): Promise<void> {
     const user = await this.findOneById(id);
     if (!user) {
-      this.logger.error(idNotFoundLogMsg('delete', 'a', 'user', id));
-      throw new NotFoundException(idNotFoundErrorMsg('a', 'user', id));
+      this.logger.error(idNotFoundLogMsg('delete', 'a', 'user', 'ID', id));
+      throw new NotFoundException(
+        idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
+      );
     }
 
     try {
