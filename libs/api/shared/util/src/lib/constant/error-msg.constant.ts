@@ -26,13 +26,3 @@ export function createConflictLogMsg(
 ): string {
   return `Attempted to create ${article} ${type} with an existing ${idType}: ${id}`;
 }
-
-export function unauthorizedLogMsg(
-  operation: string,
-  userId: string,
-  attemptedId: string
-): string {
-  return `Attempted to ${operation} for user ${userId}, even though user is logged in as ${attemptedId}`;
-}
-
-export const unauthorizedErrorMsg = 'You do not have permissions to do this.';
