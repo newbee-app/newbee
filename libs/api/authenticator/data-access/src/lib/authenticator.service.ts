@@ -21,8 +21,15 @@ import {
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
-import { verifyRegistrationResponse } from '@simplewebauthn/server';
-import type { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
+import {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+} from '@simplewebauthn/server';
+import type {
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialDescriptorFuture,
+  RegistrationCredentialJSON,
+} from '@simplewebauthn/typescript-types';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -35,6 +42,35 @@ export class AuthenticatorService {
     private readonly configService: ConfigService<AppConfigInterface, true>,
     private readonly userChallengeService: UserChallengeService
   ) {}
+
+  async generateChallenge(
+    user: UserEntity
+  ): Promise<PublicKeyCredentialCreationOptionsJSON> {
+    const authenticators: PublicKeyCredentialDescriptorFuture[] = (
+      await this.findAllByEmail(user.email)
+    ).map(({ credentialId, transports }) => ({
+      id: Buffer.from(credentialId, 'base64url'),
+      type: 'public-key',
+      ...(transports && { transports }),
+    }));
+
+    const rpInfo = this.configService.get('rpInfo', { infer: true });
+    const options = generateRegistrationOptions({
+      rpName: rpInfo.name,
+      rpID: rpInfo.id,
+      userID: user.id,
+      userName: user.email,
+      userDisplayName: user.displayName ?? user.name,
+      excludeCredentials: authenticators,
+    });
+
+    await this.userChallengeService.updateByEmail(
+      user.email,
+      options.challenge
+    );
+
+    return options;
+  }
 
   async create(
     credential: RegistrationCredentialJSON,

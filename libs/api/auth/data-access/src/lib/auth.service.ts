@@ -62,8 +62,8 @@ export class AuthService {
       userVerification: 'preferred',
       rpID: this.configService.get('rpInfo.id', { infer: true }),
     });
-    const { challenge } = options;
-    await this.userChallengeService.updateByEmail(email, challenge);
+
+    await this.userChallengeService.updateByEmail(email, options.challenge);
 
     return options;
   }

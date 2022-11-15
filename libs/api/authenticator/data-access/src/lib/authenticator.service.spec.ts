@@ -19,15 +19,24 @@ import {
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
-import { testRegistrationCredential1 } from '@newbee/shared/util';
-import { verifyRegistrationResponse } from '@simplewebauthn/server';
+import {
+  testPublicKeyCredentialCreationOptions1,
+  testRegistrationCredential1,
+} from '@newbee/shared/util';
+import {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+} from '@simplewebauthn/server';
 import { Repository } from 'typeorm';
 import { AuthenticatorService } from './authenticator.service';
 
 jest.mock('@simplewebauthn/server', () => ({
   __esModule: true,
+  generateRegistrationOptions: jest.fn(),
   verifyRegistrationResponse: jest.fn(),
 }));
+const mockGenerateRegistrationOptions =
+  generateRegistrationOptions as jest.Mock;
 const mockVerifyRegistrationResponse = verifyRegistrationResponse as jest.Mock;
 
 describe('AuthenticatorService', () => {
@@ -75,6 +84,9 @@ describe('AuthenticatorService', () => {
     userChallengeService =
       module.get<UserChallengeService>(UserChallengeService);
 
+    mockGenerateRegistrationOptions.mockReturnValue(
+      testPublicKeyCredentialCreationOptions1
+    );
     mockVerifyRegistrationResponse.mockResolvedValue({
       verified: true,
       registrationInfo: testRegistrationInfo,
@@ -85,6 +97,23 @@ describe('AuthenticatorService', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
     expect(userChallengeService).toBeDefined();
+  });
+
+  describe('generateChallenge', () => {
+    it('should generate a challenge', async () => {
+      await expect(service.generateChallenge(testUserEntity1)).resolves.toEqual(
+        testPublicKeyCredentialCreationOptions1
+      );
+      expect(repository.find).toBeCalledTimes(1);
+      expect(repository.find).toBeCalledWith({
+        where: { user: { email: testUserEntity1.email } },
+      });
+      expect(userChallengeService.updateByEmail).toBeCalledTimes(1);
+      expect(userChallengeService.updateByEmail).toBeCalledWith(
+        testUserEntity1.email,
+        testPublicKeyCredentialCreationOptions1.challenge
+      );
+    });
   });
 
   describe('create', () => {
@@ -286,12 +315,10 @@ describe('AuthenticatorService', () => {
     });
 
     it('should update an authenticator by ID', async () => {
-      jest
-        .spyOn(repository, 'save')
-        .mockResolvedValue({
-          ...testAuthenticatorEntity1,
-          counter: testCounter,
-        });
+      jest.spyOn(repository, 'save').mockResolvedValue({
+        ...testAuthenticatorEntity1,
+        counter: testCounter,
+      });
       await expect(
         service.updateById(testAuthenticatorEntity1.id, testCounter)
       ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });

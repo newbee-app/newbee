@@ -5,7 +5,10 @@ import {
   testAuthenticatorEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { testRegistrationCredential1 } from '@newbee/shared/util';
+import {
+  testPublicKeyCredentialCreationOptions1,
+  testRegistrationCredential1,
+} from '@newbee/shared/util';
 import { AuthenticatorController } from './authenticator.controller';
 
 describe('AuthenticatorController', () => {
@@ -19,6 +22,9 @@ describe('AuthenticatorController', () => {
         {
           provide: AuthenticatorService,
           useValue: createMock<AuthenticatorService>({
+            generateChallenge: jest
+              .fn()
+              .mockResolvedValue(testPublicKeyCredentialCreationOptions1),
             create: jest.fn().mockResolvedValue(testAuthenticatorEntity1),
           }),
         },
@@ -34,10 +40,20 @@ describe('AuthenticatorController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create', () => {
+  describe('createGet', () => {
+    it('should create a challenge', async () => {
+      await expect(controller.createGet(testUserEntity1)).resolves.toEqual(
+        testPublicKeyCredentialCreationOptions1
+      );
+      expect(service.generateChallenge).toBeCalledTimes(1);
+      expect(service.generateChallenge).toBeCalledWith(testUserEntity1);
+    });
+  });
+
+  describe('createPost', () => {
     it('should create an authenticator', async () => {
       await expect(
-        controller.create(testRegistrationCredential1, testUserEntity1)
+        controller.createPost(testRegistrationCredential1, testUserEntity1)
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
