@@ -13,6 +13,8 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   AppConfigInterface,
+  badRequestAuthenticatorErrorMsg,
+  challengeFalsyLogMsg,
   createConflictLogMsg,
   idNotFoundErrorMsg,
   idNotFoundLogMsg,
@@ -38,7 +40,6 @@ export class AuthenticatorService {
     credential: RegistrationCredentialJSON,
     user: UserEntity
   ): Promise<AuthenticatorEntity> {
-    const userString = JSON.stringify(user);
     if (await this.findOneByCredentialId(credential.id)) {
       this.logger.error(
         createConflictLogMsg(
@@ -56,7 +57,7 @@ export class AuthenticatorService {
     const userChallenge = await this.userChallengeService.findOneById(user.id);
     if (!userChallenge) {
       this.logger.error(
-        `User challenge not defined although user is: ${userString}`
+        `User challenge not defined although user is for ID: ${user.id}`
       );
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
@@ -64,11 +65,9 @@ export class AuthenticatorService {
     const { challenge } = userChallenge;
     if (!challenge) {
       this.logger.error(
-        `Attempted to verify a registration response even though user's challenge string is ${challenge} for user: ${userString}`
+        challengeFalsyLogMsg('registration', challenge, user.id)
       );
-      throw new BadRequestException(
-        'We could not verify this authenticator, please try the process over from the beginning!'
-      );
+      throw new BadRequestException(badRequestAuthenticatorErrorMsg);
     }
 
     const rpInfo = this.configService.get('rpInfo', { infer: true });
@@ -81,9 +80,7 @@ export class AuthenticatorService {
     const { verified, registrationInfo } = verification;
     if (!verified || !registrationInfo) {
       this.logger.error(`Could not verify credentials for user: ${user.id}`);
-      throw new BadRequestException(
-        'We could not verify this authenticator, please try the process over from the beginning!'
-      );
+      throw new BadRequestException(badRequestAuthenticatorErrorMsg);
     }
     const {
       credentialID,
@@ -134,6 +131,27 @@ export class AuthenticatorService {
       return await this.authenticatorRepository.findOne({
         where: { credentialId: id },
       });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerErrorMsg);
+    }
+  }
+
+  async updateById(id: string, counter: number): Promise<AuthenticatorEntity> {
+    const authenticator = await this.findOneById(id);
+    if (!authenticator) {
+      this.logger.error(
+        idNotFoundLogMsg('update', 'an', 'authenticator', 'ID', id)
+      );
+      throw new NotFoundException(
+        idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
+      );
+    }
+
+    try {
+      return await this.authenticatorRepository.save(
+        new AuthenticatorEntity({ ...authenticator, counter })
+      );
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerErrorMsg);

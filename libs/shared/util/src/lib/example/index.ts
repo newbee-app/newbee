@@ -1,4 +1,5 @@
 import type {
+  AuthenticationCredentialJSON,
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationCredentialJSON,
@@ -60,5 +61,17 @@ export const testRegistrationCredential1: RegistrationCredentialJSON = {
   response: {
     clientDataJSON: 'clientData1',
     attestationObject: 'attestation1',
+  },
+};
+
+export const testAuthenticationCredential1: AuthenticationCredentialJSON = {
+  rawId: 'rawId1',
+  id: testAuthenticator1.id,
+  type: 'public-key',
+  clientExtensionResults: {},
+  response: {
+    authenticatorData: 'authenticatorData1',
+    clientDataJSON: 'clientData1',
+    signature: 'signature1',
   },
 };

@@ -1,4 +1,5 @@
 import {
+  testAuthenticationCredential1,
   testPublicKeyCredentialCreationOptions1,
   testUser1,
 } from '@newbee/shared/util';
@@ -9,6 +10,7 @@ import {
   BaseMagicLinkLoginDto,
   BaseUpdateUserDto,
   BaseUserCreatedDto,
+  BaseWebAuthnLoginDto,
 } from '../dto';
 
 export const testLoginDto1: BaseLoginDto = {
@@ -37,4 +39,9 @@ export const testCreateUserDto1: BaseCreateUserDto = {
 export const testUpdateUserDto1: BaseUpdateUserDto = {
   email: testUser1.email,
   name: 'Jane Doe',
+};
+
+export const testWebAuthnLoginDto1: BaseWebAuthnLoginDto = {
+  email: testUser1.email,
+  credential: testAuthenticationCredential1,
 };

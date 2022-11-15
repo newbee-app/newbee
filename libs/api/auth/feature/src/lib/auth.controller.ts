@@ -1,15 +1,21 @@
-import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   AuthService,
   EmailDto,
   MagicLinkLoginStrategy,
+  WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
 import { MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import { AppConfigInterface, Public, User } from '@newbee/api/shared/util';
-import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
+import { Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
   authVersion,
@@ -18,11 +24,7 @@ import {
   BaseUserCreatedDto,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin, webauthn } from '@newbee/shared/util';
-import { generateAuthenticationOptions } from '@simplewebauthn/server';
-import type {
-  PublicKeyCredentialDescriptorFuture,
-  PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/typescript-types';
+import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
 @Controller({ path: 'auth', version: authVersion })
 export class AuthController {
@@ -31,9 +33,6 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-    private readonly authenticatorService: AuthenticatorService,
-    private readonly userChallengeService: UserChallengeService,
-    private readonly configService: ConfigService<AppConfigInterface, true>,
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy
   ) {}
 
@@ -58,36 +57,29 @@ export class AuthController {
 
   @Public()
   @Get(`${webauthn}/login`)
-  async webauthnLogin(
+  async webauthnLoginGet(
     @Query() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const { email } = emailDto;
     this.logger.log(`WebAuthn login request received for email: ${email}`);
 
-    this.logger.log(`Getting authenticators for user email: ${email}`);
-    const allowCredentials: PublicKeyCredentialDescriptorFuture[] = (
-      await this.authenticatorService.findAllByEmail(email)
-    ).map(({ credentialId, transports }) => ({
-      id: Buffer.from(credentialId, 'base64url'),
-      type: 'public-key',
-      ...(transports && { transports }),
-    }));
+    return await this.authService.generateLoginChallenge(email);
+  }
 
+  @Post(`${webauthn}/login`)
+  async webauthnLoginPost(
+    @Body() webauthnLoginDto: WebAuthnLoginDto
+  ): Promise<BaseLoginDto> {
+    const { email, credential } = webauthnLoginDto;
     this.logger.log(
-      `Generating authentication options for user email: ${email}`
+      `WebAuthn login verify request received for email: ${email}`
     );
-    const options = generateAuthenticationOptions({
-      allowCredentials,
-      userVerification: 'preferred',
-      rpID: this.configService.get('rpInfo.id', { infer: true }),
-    });
 
-    const { challenge } = options;
-    this.logger.log(
-      `Setting user challenge for user email: ${email}, challenge: ${challenge}`
-    );
-    await this.userChallengeService.updateByEmail(email, challenge);
-    return options;
+    const user = await this.authService.verifyLoginChallenge(email, credential);
+    const loginDto = this.authService.login(user);
+    this.logger.log(`Access token created: ${loginDto.access_token}`);
+
+    return loginDto;
   }
 
   @Public()

@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,7 +13,11 @@ import {
   testUserChallengeEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { internalServerErrorMsg } from '@newbee/api/shared/util';
+import {
+  badRequestAuthenticatorErrorMsg,
+  idNotFoundErrorMsg,
+  internalServerErrorMsg,
+} from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
 import { testRegistrationCredential1 } from '@newbee/shared/util';
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
@@ -150,9 +155,7 @@ describe('AuthenticatorService', () => {
         await expect(
           service.create(testRegistrationCredential1, testUserEntity1)
         ).rejects.toThrow(
-          new BadRequestException(
-            'We could not verify this authenticator, please try the process over from the beginning!'
-          )
+          new BadRequestException(badRequestAuthenticatorErrorMsg)
         );
       });
 
@@ -161,9 +164,7 @@ describe('AuthenticatorService', () => {
         await expect(
           service.create(testRegistrationCredential1, testUserEntity1)
         ).rejects.toThrow(
-          new BadRequestException(
-            'We could not verify this authenticator, please try the process over from the beginning!'
-          )
+          new BadRequestException(badRequestAuthenticatorErrorMsg)
         );
       });
 
@@ -172,9 +173,7 @@ describe('AuthenticatorService', () => {
         await expect(
           service.create(testRegistrationCredential1, testUserEntity1)
         ).rejects.toThrow(
-          new BadRequestException(
-            'We could not verify this authenticator, please try the process over from the beginning!'
-          )
+          new BadRequestException(badRequestAuthenticatorErrorMsg)
         );
       });
 
@@ -273,6 +272,65 @@ describe('AuthenticatorService', () => {
       ).rejects.toThrow(
         new InternalServerErrorException(internalServerErrorMsg)
       );
+    });
+  });
+
+  describe('updateById', () => {
+    const testCounter = 100;
+
+    afterEach(() => {
+      expect(repository.findOne).toBeCalledTimes(1);
+      expect(repository.findOne).toBeCalledWith({
+        where: { id: testAuthenticatorEntity1.id },
+      });
+    });
+
+    it('should update an authenticator by ID', async () => {
+      jest
+        .spyOn(repository, 'save')
+        .mockResolvedValue({
+          ...testAuthenticatorEntity1,
+          counter: testCounter,
+        });
+      await expect(
+        service.updateById(testAuthenticatorEntity1.id, testCounter)
+      ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
+      expect(repository.save).toBeCalledTimes(1);
+      expect(repository.save).toBeCalledWith({
+        ...testAuthenticatorEntity1,
+        counter: testCounter,
+      });
+    });
+
+    it('should throw a NotFoundException if authenticator does not exist', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      await expect(
+        service.updateById(testAuthenticatorEntity1.id, testCounter)
+      ).rejects.toThrow(
+        new NotFoundException(
+          idNotFoundErrorMsg(
+            'an',
+            'authenticator',
+            'an',
+            'ID',
+            testAuthenticatorEntity1.id
+          )
+        )
+      );
+    });
+
+    it('should throw an InternalServerErrorException if save throws an exception', async () => {
+      jest.spyOn(repository, 'save').mockRejectedValue(new Error('save'));
+      await expect(
+        service.updateById(testAuthenticatorEntity1.id, testCounter)
+      ).rejects.toThrow(
+        new InternalServerErrorException(internalServerErrorMsg)
+      );
+      expect(repository.save).toBeCalledTimes(1);
+      expect(repository.save).toBeCalledWith({
+        ...testAuthenticatorEntity1,
+        counter: testCounter,
+      });
     });
   });
 

@@ -29,3 +29,14 @@ export function createConflictLogMsg(
 ): string {
   return `Attempted to create ${article} ${type} with an existing ${idType}: ${id}`;
 }
+
+export const badRequestAuthenticatorErrorMsg =
+  'We could not verify this authenticator, please ensure you are using a previously registered authenticator and try again.';
+
+export function challengeFalsyLogMsg(
+  operation: 'login' | 'registration',
+  challenge: string | undefined | null,
+  userId: string
+): string {
+  return `Attempted to verify a ${operation} response even though user's challenge string is ${challenge} for user: ${userId}`;
+}

@@ -108,7 +108,6 @@ describe('UserService', () => {
           testUserAndOptions1
         );
         expect(dataSource.createQueryRunner).toBeCalledTimes(1);
-        expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
       });
 
       it('should throw an error if querryRunner throws an error', async () => {
