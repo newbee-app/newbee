@@ -15,22 +15,20 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity
   ): Promise<UserEntity> {
-    const { id } = user;
     this.logger.log(
-      `Update user request received for user ID: ${id}: ${JSON.stringify(
+      `Update user request received for user ID: ${user.id}: ${JSON.stringify(
         updateUserDto
       )}`
     );
-    const updatedUser = await this.userService.update(id, updateUserDto);
+    const updatedUser = await this.userService.update(user, updateUserDto);
     this.logger.log(`Updated user: ${JSON.stringify(updatedUser)}`);
     return updatedUser;
   }
 
   @Delete()
   async delete(@User() user: UserEntity): Promise<void> {
-    const { id } = user;
-    this.logger.log(`Delete user request received for id: ${id}`);
-    await this.userService.delete(id);
-    this.logger.log(`Deleted user for id: ${id}`);
+    this.logger.log(`Delete user request received for ID: ${user.id}`);
+    await this.userService.delete(user);
+    this.logger.log(`Deleted user for ID: ${user.id}`);
   }
 }

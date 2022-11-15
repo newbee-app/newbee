@@ -86,7 +86,7 @@ export class AuthenticatorService {
         )
       );
       throw new BadRequestException(
-        'The authenticator you are trying to register has already been registered to your account, try logging in instead!'
+        'The authenticator you are trying to register has already been registered to your account.'
       );
     }
 
@@ -162,10 +162,12 @@ export class AuthenticatorService {
     }
   }
 
-  async findOneByCredentialId(id: string): Promise<AuthenticatorEntity | null> {
+  async findOneByCredentialId(
+    credentialId: string
+  ): Promise<AuthenticatorEntity | null> {
     try {
       return await this.authenticatorRepository.findOne({
-        where: { credentialId: id },
+        where: { credentialId },
       });
     } catch (err) {
       this.logger.error(err);

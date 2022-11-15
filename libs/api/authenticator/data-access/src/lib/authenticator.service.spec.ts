@@ -129,7 +129,7 @@ describe('AuthenticatorService', () => {
         service.create(testRegistrationCredential1, testUserEntity1)
       ).rejects.toThrow(
         new BadRequestException(
-          'The authenticator you are trying to register has already been registered to your account, try logging in instead!'
+          'The authenticator you are trying to register has already been registered to your account.'
         )
       );
     });

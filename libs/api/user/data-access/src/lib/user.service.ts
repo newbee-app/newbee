@@ -3,7 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,8 +14,6 @@ import {
 import {
   AppConfigInterface,
   createConflictLogMsg,
-  idNotFoundErrorMsg,
-  idNotFoundLogMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 import type { UserAndOptions } from '@newbee/api/user/util';
@@ -95,15 +92,10 @@ export class UserService {
     }
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    const user = await this.findOneById(id);
-    if (!user) {
-      this.logger.error(idNotFoundLogMsg('update', 'a', 'user', 'ID', id));
-      throw new NotFoundException(
-        idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
-      );
-    }
-
+  async update(
+    user: UserEntity,
+    updateUserDto: UpdateUserDto
+  ): Promise<UserEntity> {
     try {
       return await this.userRepository.save(
         new UserEntity({ ...user, ...updateUserDto })
@@ -114,15 +106,7 @@ export class UserService {
     }
   }
 
-  async delete(id: string): Promise<void> {
-    const user = await this.findOneById(id);
-    if (!user) {
-      this.logger.error(idNotFoundLogMsg('delete', 'a', 'user', 'ID', id));
-      throw new NotFoundException(
-        idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
-      );
-    }
-
+  async delete(user: UserEntity): Promise<void> {
     try {
       await this.userRepository.remove(user);
     } catch (err) {

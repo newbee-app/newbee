@@ -36,24 +36,24 @@ describe('UserController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('update()', () => {
-    it('should find and update a user by id', async () => {
+  describe('update', () => {
+    it('should find and update a user', async () => {
       await expect(
         controller.update(testUpdateUserDto1, testUserEntity1)
       ).resolves.toEqual({ ...testUserEntity1, ...testUpdateUserDto1 });
       expect(service.update).toBeCalledTimes(1);
       expect(service.update).toBeCalledWith(
-        testUserEntity1.id,
+        testUserEntity1,
         testUpdateUserDto1
       );
     });
   });
 
-  describe('delete()', () => {
-    it('should find and delete a user by id', async () => {
+  describe('delete', () => {
+    it('should find and delete a user', async () => {
       await expect(controller.delete(testUserEntity1)).resolves.toBeUndefined();
       expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testUserEntity1.id);
+      expect(service.delete).toBeCalledWith(testUserEntity1);
     });
   });
 });

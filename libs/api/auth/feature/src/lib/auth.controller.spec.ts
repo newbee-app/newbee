@@ -79,7 +79,7 @@ describe('AuthController', () => {
   });
 
   describe('webauthnLoginGet', () => {
-    it('should create a PublicKeyCredentialRequestOptionsJSON', async () => {
+    it('should create login challenge options', async () => {
       await expect(controller.webauthnLoginGet(testEmailDto1)).resolves.toEqual(
         testPublicKeyCredentialRequestOptions1
       );

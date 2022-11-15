@@ -61,9 +61,15 @@ export class AuthController {
     @Query() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const { email } = emailDto;
-    this.logger.log(`WebAuthn login request received for email: ${email}`);
+    this.logger.log(
+      `WebAuthn login challenge request received for email: ${email}`
+    );
 
-    return await this.authService.generateLoginChallenge(email);
+    const options = await this.authService.generateLoginChallenge(email);
+    this.logger.log(
+      `WebAuthn login challenge options generated: ${JSON.stringify(options)}`
+    );
+    return options;
   }
 
   @Post(`${webauthn}/login`)
@@ -77,7 +83,9 @@ export class AuthController {
 
     const user = await this.authService.verifyLoginChallenge(email, credential);
     const loginDto = this.authService.login(user);
-    this.logger.log(`Access token created: ${loginDto.access_token}`);
+    this.logger.log(
+      `Credentials verified and access token created: ${loginDto.access_token}`
+    );
 
     return loginDto;
   }
@@ -90,7 +98,6 @@ export class AuthController {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
 
-    this.logger.log(`Sending magic link to email: ${email}`);
     const jwtId = await this.magicLinkLoginStrategy.send({ email });
     this.logger.log(`Magic link sent to email: ${email}`);
 

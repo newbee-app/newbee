@@ -27,6 +27,7 @@ export class AuthenticatorController {
 
     const options = await this.authenticatorService.generateChallenge(user);
     this.logger.log(`Challenge created: ${JSON.stringify(options)}`);
+
     return options;
   }
 
@@ -37,7 +38,7 @@ export class AuthenticatorController {
   ): Promise<AuthenticatorEntity> {
     const credentialString = JSON.stringify(credential);
     this.logger.log(
-      `Create authenticator request received for user ID: ${user.id}, credential: ${credentialString}`
+      `Create authenticator verify request received for user ID: ${user.id}, credential: ${credentialString}`
     );
 
     const authenticator = await this.authenticatorService.create(
@@ -45,6 +46,7 @@ export class AuthenticatorController {
       user
     );
     this.logger.log(`Authenticator created: ${JSON.stringify(authenticator)}`);
+
     return authenticator;
   }
 }
