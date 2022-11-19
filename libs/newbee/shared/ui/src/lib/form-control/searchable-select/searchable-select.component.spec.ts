@@ -16,6 +16,7 @@ const testOptions = [testSelectOption1, testSelectOption2];
 describe('SearchableSelectComponent', () => {
   let component: SearchableSelectComponent<Country>;
   let fixture: ComponentFixture<SearchableSelectComponent<Country>>;
+  let clickService: ClickService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -24,10 +25,7 @@ describe('SearchableSelectComponent', () => {
         {
           provide: ClickService,
           useValue: createMock<ClickService>({
-            documentClickTarget: createMock<Subject<HTMLElement>>({
-              subscribe: jest.fn(),
-              unsubscribe: jest.fn(),
-            }),
+            documentClickTarget: createMock<Subject<HTMLElement>>(),
           }),
         },
       ],
@@ -36,6 +34,7 @@ describe('SearchableSelectComponent', () => {
 
     fixture = TestBed.createComponent(SearchableSelectComponent<Country>);
     component = fixture.componentInstance;
+    clickService = TestBed.inject(ClickService);
 
     component.options = testOptions;
     component.optionName = 'Country';
@@ -49,6 +48,7 @@ describe('SearchableSelectComponent', () => {
   it('should be defined', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
+    expect(clickService).toBeDefined();
   });
 
   describe('init', () => {
@@ -60,20 +60,9 @@ describe('SearchableSelectComponent', () => {
       expect(component.disabled).toBeFalsy();
       expect(component.onChange).toBeDefined();
       expect(component.onTouched).toBeDefined();
-      expect(
-        component.clickService.documentClickTarget.subscribe
-      ).toBeCalledTimes(1);
+      expect(clickService.documentClickTarget.pipe).toBeCalledTimes(1);
       expect(component.selectedText).toEqual(`Select ${component.optionName}`);
       expect(component.optionsWithSearch).toEqual(component.options);
-    });
-  });
-
-  describe('destroy', () => {
-    it('should unsubscribe from infinite observables', () => {
-      component.ngOnDestroy();
-      expect(
-        component.clickService.documentClickTarget.unsubscribe
-      ).toBeCalledTimes(1);
     });
   });
 

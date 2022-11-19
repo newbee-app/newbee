@@ -38,7 +38,7 @@ export class AuthController {
 
   @Public()
   @Get(`${webauthn}/register`)
-  async webauthnRegister(
+  async webAuthnRegister(
     @Query() createUserDto: CreateUserDto
   ): Promise<BaseUserCreatedDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
@@ -57,7 +57,7 @@ export class AuthController {
 
   @Public()
   @Get(`${webauthn}/login`)
-  async webauthnLoginGet(
+  async webAuthnLoginGet(
     @Query() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const { email } = emailDto;
@@ -73,10 +73,10 @@ export class AuthController {
   }
 
   @Post(`${webauthn}/login`)
-  async webauthnLoginPost(
-    @Body() webauthnLoginDto: WebAuthnLoginDto
+  async webAuthnLoginPost(
+    @Body() webAuthnLoginDto: WebAuthnLoginDto
   ): Promise<BaseLoginDto> {
-    const { email, credential } = webauthnLoginDto;
+    const { email, credential } = webAuthnLoginDto;
     this.logger.log(
       `WebAuthn login verify request received for email: ${email}`
     );

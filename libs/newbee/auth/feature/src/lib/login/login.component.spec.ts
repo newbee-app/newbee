@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/auth/data-access';
-import { MagicLinkLoginLoginFormComponentModule } from '@newbee/newbee/auth/ui';
-import { testMagicLinkLoginLoginForm1 } from '@newbee/newbee/auth/util';
+import { LoginFormComponentModule } from '@newbee/newbee/auth/ui';
+import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 
@@ -16,7 +16,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MagicLinkLoginLoginFormComponentModule],
+      imports: [LoginFormComponentModule],
       declarations: [LoginComponent],
       providers: [
         provideMockStore(),
@@ -47,14 +47,35 @@ describe('LoginComponent', () => {
     expect(route).toBeDefined();
   });
 
-  describe('onLogin', () => {
-    it('should dispatch sendLoginMagicLink action', (done) => {
-      component.onLogin(testMagicLinkLoginLoginForm1);
+  describe('onWebAuthn', () => {
+    it('should dispatch getWebauthnLoginChallenge', (done) => {
+      component.onWebAuthn(testLoginForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.sendLoginMagicLink(testMagicLinkLoginLoginForm1)
+              AuthActions.getWebauthnLoginChallenge({
+                loginForm: testLoginForm1,
+              })
+            );
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+    });
+  });
+
+  describe('onMagicLinkLogin', () => {
+    it('should dispatch sendLoginMagicLink action', (done) => {
+      component.onMagicLinkLogin(testLoginForm1);
+      store.scannedActions$.subscribe({
+        next: (scannedAction) => {
+          try {
+            expect(scannedAction).toEqual(
+              AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 })
             );
             done();
           } catch (err) {

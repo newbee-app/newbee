@@ -3,30 +3,29 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
-import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
-import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
+import { BaseFormComponentModule } from '../base-form';
+import { LoginFormComponent } from './login-form.component';
 
 export default {
-  title: 'MagicLinkLoginLoginFormComponent',
-  component: MagicLinkLoginLoginFormComponent,
+  title: 'LoginFormComponent',
+  component: LoginFormComponent,
   decorators: [
     moduleMetadata({
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormComponentModule,
         TooltipComponentModule,
+        BaseFormComponentModule,
       ],
     }),
   ],
-} as Meta<MagicLinkLoginLoginFormComponent>;
+} as Meta<LoginFormComponent>;
 
-const Template: Story<MagicLinkLoginLoginFormComponent> = (
-  args: MagicLinkLoginLoginFormComponent
-) => ({
+const Template: Story<LoginFormComponent> = (args: LoginFormComponent) => ({
   props: {
     ...args,
-    login: action('login'),
+    magicLinkLogin: action('magicLinkLogin'),
+    webauthn: action('webauthn'),
     navigateToRegister: action('navigateToRegister'),
   },
 });

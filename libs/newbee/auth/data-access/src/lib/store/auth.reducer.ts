@@ -22,27 +22,26 @@ export const authFeature = createFeature({
     initialAuthState,
     on(
       AuthActions.sendLoginMagicLinkSuccess,
-      AuthActions.sendRegisterMagicLinkSuccess,
-      (state, { jwtId }): AuthState => ({
+      (state, { magicLinkLoginDto }): AuthState => ({
         ...state,
         pendingMagicLink: true,
-        jwtId,
+        jwtId: magicLinkLoginDto.jwtId,
+      })
+    ),
+    on(
+      AuthActions.getWebauthnRegisterChallengeSuccess,
+      (state, { userCreatedDto }): AuthState => ({
+        ...state,
+        accessToken: userCreatedDto.access_token,
+        user: userCreatedDto.user,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { access_token, user }): AuthState => ({
+      (state, { loginDto }): AuthState => ({
         ...state,
-        accessToken: access_token,
-        user,
-        pendingMagicLink: false,
-        jwtId: null,
-      })
-    ),
-    on(
-      AuthActions.loginError,
-      (state): AuthState => ({
-        ...state,
+        accessToken: loginDto.access_token,
+        user: loginDto.user,
         pendingMagicLink: false,
         jwtId: null,
       })

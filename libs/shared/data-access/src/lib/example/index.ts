@@ -34,6 +34,8 @@ export const testMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
 export const testCreateUserDto1: BaseCreateUserDto = {
   email: testUser1.email,
   name: testUser1.name,
+  ...(testUser1.displayName && { displayName: testUser1.displayName }),
+  ...(testUser1.phoneNumber && { phoneNumber: testUser1.phoneNumber }),
 };
 
 export const testUpdateUserDto1: BaseUpdateUserDto = {

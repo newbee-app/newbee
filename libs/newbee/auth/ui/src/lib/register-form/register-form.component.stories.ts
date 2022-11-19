@@ -12,18 +12,18 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
-import { MagicLinkLoginRegisterFormComponent } from './magic-link-login-register-form.component';
+import { BaseFormComponentModule } from '../base-form';
+import { RegisterFormComponent } from './register-form.component';
 
 export default {
-  title: 'MagicLinkLoginRegisterFormComponent',
-  component: MagicLinkLoginRegisterFormComponent,
+  title: 'RegisterFormComponent',
+  component: RegisterFormComponent,
   decorators: [
     moduleMetadata({
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormComponentModule,
+        BaseFormComponentModule,
         TooltipComponentModule,
         PhoneInputComponentModule,
         ClickWrapperComponentModule,
@@ -37,10 +37,10 @@ export default {
     `
     ),
   ],
-} as Meta<MagicLinkLoginRegisterFormComponent>;
+} as Meta<RegisterFormComponent>;
 
-const Template: Story<MagicLinkLoginRegisterFormComponent> = (
-  args: MagicLinkLoginRegisterFormComponent
+const Template: Story<RegisterFormComponent> = (
+  args: RegisterFormComponent
 ) => ({
   props: {
     ...args,

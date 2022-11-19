@@ -1,0 +1,24 @@
+<newbee-base-form>
+  <div class="space-y-5">
+    <h2 class="text-2xl font-medium text-center">Sign in to your NewBee account</h2>
+
+    <form id="login-form" [formGroup]="loginForm" class="space-y-5">
+      <newbee-tooltip [containerId]="tooltipIds.email.container" [tooltipId]="tooltipIds.email.tooltip" [messageId]="tooltipIds.email.message" [tailId]="tooltipIds.email.tail" [message]="emailErrorMessage" [displayTooltip]="showEmailError">
+        <label for="email-input" id="sr-only">Email address</label>
+        <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="form-input newbee-form-input rounded-md w-full" [ngClass]="{'newbee-error-outline': showEmailError}">
+      </newbee-tooltip>
+
+      <div id="buttons" class="space-y-2">
+        <button id="webauthn-button" type="button" [disabled]="loginForm.invalid" (click)="emitWebAuthn(loginForm.value)" class="newbee-btn-primary w-full rounded-md">Log In</button>
+        <button id="magic-link-login-button" type="button" [disabled]="loginForm.invalid" (click)="emitMagicLinkLogin(loginForm.value)" class="newbee-btn-primary w-full rounded-md">Send Magic Link to Email</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="text-center text-sm">
+    <p>New to NewBee?</p>
+    <a id="register-link" (click)="emitNavigateToRegister()" class="newbee-link">
+      Get started for free!
+    </a>
+  </div>
+</newbee-base-form>

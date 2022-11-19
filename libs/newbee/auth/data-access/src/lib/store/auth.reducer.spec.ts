@@ -1,25 +1,26 @@
 import {
   testLoginDto1,
   testMagicLinkLoginDto1,
+  testUserCreatedDto1,
 } from '@newbee/shared/data-access';
 import { AuthActions } from './auth.actions';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
-  const stateAfterMagicLinkSuccess: AuthState = {
+  const stateAfterLoginMagicLinkSuccess: AuthState = {
     ...initialAuthState,
     pendingMagicLink: true,
     jwtId: testMagicLinkLoginDto1.jwtId,
   };
+  const stateAfterWebauthnRegisterChallengeSuccess: AuthState = {
+    ...initialAuthState,
+    accessToken: testUserCreatedDto1.access_token,
+    user: testUserCreatedDto1.user,
+  };
   const stateAfterLoginSuccess: AuthState = {
-    ...stateAfterMagicLinkSuccess,
+    ...initialAuthState,
     accessToken: testLoginDto1.access_token,
     user: testLoginDto1.user,
-    pendingMagicLink: false,
-    jwtId: null,
-  };
-  const stateAfterLoginError: AuthState = {
-    ...stateAfterMagicLinkSuccess,
     pendingMagicLink: false,
     jwtId: null,
   };
@@ -31,30 +32,34 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(initialAuthState);
     });
 
-    it('sendLoginMagicLinkSuccess and sendRegisterMagicLinkSuccess should update state', () => {
+    it('sendLoginMagicLinkSuccess should update state', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.sendLoginMagicLinkSuccess(testMagicLinkLoginDto1)
+        AuthActions.sendLoginMagicLinkSuccess({
+          magicLinkLoginDto: testMagicLinkLoginDto1,
+        })
       );
-      expect(updatedState).toEqual(stateAfterMagicLinkSuccess);
+      expect(updatedState).toEqual(stateAfterLoginMagicLinkSuccess);
+    });
+
+    it('getWebauthnRegisterChallengeSuccess should update state', () => {
+      const updatedState = authFeature.reducer(
+        initialAuthState,
+        AuthActions.getWebauthnRegisterChallengeSuccess({
+          userCreatedDto: testUserCreatedDto1,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterWebauthnRegisterChallengeSuccess);
     });
   });
 
   describe('start after sending magic link', () => {
     it('loginSuccess should update state', () => {
       const updatedState = authFeature.reducer(
-        stateAfterMagicLinkSuccess,
-        AuthActions.loginSuccess(testLoginDto1)
+        stateAfterLoginMagicLinkSuccess,
+        AuthActions.loginSuccess({ loginDto: testLoginDto1 })
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
-    });
-
-    it('loginError should update state', () => {
-      const updatedState = authFeature.reducer(
-        stateAfterMagicLinkSuccess,
-        AuthActions.loginError()
-      );
-      expect(updatedState).toEqual(stateAfterLoginError);
     });
   });
 });

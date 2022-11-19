@@ -60,10 +60,7 @@ export class SearchableSelectComponent<T>
     this.shrink();
   }
 
-  constructor(
-    readonly clickService: ClickService,
-    readonly elementRef: ElementRef<HTMLElement>
-  ) {
+  constructor(clickService: ClickService, elementRef: ElementRef<HTMLElement>) {
     clickService.documentClickTarget
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({

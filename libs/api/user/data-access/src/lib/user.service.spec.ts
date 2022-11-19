@@ -65,6 +65,7 @@ describe('UserService', () => {
     );
     dataSource = module.get<DataSource>(getDataSourceToken());
 
+    jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
       testUserAndOptions1.options
     );

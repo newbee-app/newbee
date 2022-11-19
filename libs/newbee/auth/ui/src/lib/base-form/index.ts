@@ -1,1 +1,1 @@
-export * from './magic-link-login-base-form.component';
+export * from './base-form.component';

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, NgModule, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MagicLinkLoginRegisterForm } from '@newbee/newbee/auth/util';
+import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
   PhoneInputComponentModule,
   TooltipComponentModule,
@@ -11,14 +11,14 @@ import {
   getErrorMessage,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
-import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
+import { BaseFormComponentModule } from '../base-form';
 
 @Component({
-  selector: 'newbee-magic-link-login-register-form',
-  templateUrl: './magic-link-login-register-form.component.html',
+  selector: 'newbee-register-form',
+  templateUrl: './register-form.component.html',
 })
-export class MagicLinkLoginRegisterFormComponent {
-  @Output() register = new EventEmitter<Partial<MagicLinkLoginRegisterForm>>();
+export class RegisterFormComponent {
+  @Output() register = new EventEmitter<Partial<RegisterForm>>();
   @Output() navigateToLogin = new EventEmitter<void>();
 
   registerForm = this.fb.group({
@@ -63,7 +63,7 @@ export class MagicLinkLoginRegisterFormComponent {
     return getErrorMessage(this.registerForm.get(inputName));
   }
 
-  emitRegister(formValue: Partial<MagicLinkLoginRegisterForm>): void {
+  emitRegister(formValue: Partial<RegisterForm>): void {
     this.register.emit(formValue);
   }
 
@@ -76,11 +76,11 @@ export class MagicLinkLoginRegisterFormComponent {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MagicLinkLoginBaseFormComponentModule,
+    BaseFormComponentModule,
     TooltipComponentModule,
     PhoneInputComponentModule,
   ],
-  declarations: [MagicLinkLoginRegisterFormComponent],
-  exports: [MagicLinkLoginRegisterFormComponent],
+  declarations: [RegisterFormComponent],
+  exports: [RegisterFormComponent],
 })
-export class MagicLinkLoginRegisterFormComponentModule {}
+export class RegisterFormComponentModule {}

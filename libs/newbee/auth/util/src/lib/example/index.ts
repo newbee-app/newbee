@@ -1,16 +1,11 @@
 import { testUser1 } from '@newbee/shared/util';
-import {
-  MagicLinkLoginLoginForm,
-  MagicLinkLoginRegisterForm,
-} from '../interface';
+import { LoginForm, RegisterForm } from '../interface';
 
 const { email, name, displayName } = testUser1;
 
-export const testMagicLinkLoginLoginForm1: MagicLinkLoginLoginForm = {
-  email,
-};
+export const testLoginForm1: LoginForm = { email };
 
-export const testMagicLinkLoginRegisterForm1: MagicLinkLoginRegisterForm = {
+export const testRegisterForm1: RegisterForm = {
   email,
   name,
   ...(displayName ? { displayName } : {}),

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthActions } from '@newbee/newbee/auth/data-access';
-import { MagicLinkLoginRegisterForm } from '@newbee/newbee/auth/util';
+import { RegisterForm } from '@newbee/newbee/auth/util';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -15,16 +15,21 @@ export class RegisterComponent {
     private readonly route: ActivatedRoute
   ) {}
 
-  onRegister(partialFormValues: Partial<MagicLinkLoginRegisterForm>): void {
-    const formValues: MagicLinkLoginRegisterForm = {
-      ...partialFormValues,
-      email: partialFormValues.email ?? '',
-      name: partialFormValues.name ?? '',
-    };
-    this.store.dispatch(AuthActions.sendRegisterMagicLink(formValues));
+  onRegister(partialRegisterForm: Partial<RegisterForm>): void {
+    const registerForm = this.partialToRegisterForm(partialRegisterForm);
+    this.store.dispatch(
+      AuthActions.getWebauthnRegisterChallenge({ registerForm })
+    );
   }
 
   onNavigateToLogin(): void {
     this.router.navigate(['../login'], { relativeTo: this.route });
+  }
+
+  private partialToRegisterForm(
+    partialRegisterForm: Partial<RegisterForm>
+  ): RegisterForm {
+    const { email, name } = partialRegisterForm;
+    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
   }
 }

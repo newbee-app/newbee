@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/auth/data-access';
-import { MagicLinkLoginRegisterFormComponentModule } from '@newbee/newbee/auth/ui';
-import { testMagicLinkLoginRegisterForm1 } from '@newbee/newbee/auth/util';
+import { RegisterFormComponentModule } from '@newbee/newbee/auth/ui';
+import { testRegisterForm1 } from '@newbee/newbee/auth/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -16,7 +16,7 @@ describe('RegisterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MagicLinkLoginRegisterFormComponentModule],
+      imports: [RegisterFormComponentModule],
       declarations: [RegisterComponent],
       providers: [
         provideMockStore(),
@@ -49,12 +49,14 @@ describe('RegisterComponent', () => {
 
   describe('onRegister', () => {
     it('should dispatch sendMagicLink action', (done) => {
-      component.onRegister(testMagicLinkLoginRegisterForm1);
+      component.onRegister(testRegisterForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.sendRegisterMagicLink(testMagicLinkLoginRegisterForm1)
+              AuthActions.getWebauthnRegisterChallenge({
+                registerForm: testRegisterForm1,
+              })
             );
             done();
           } catch (err) {

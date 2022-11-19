@@ -6,8 +6,8 @@ import {
   TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
-import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
-import { MagicLinkLoginRegisterFormComponent } from './magic-link-login-register-form.component';
+import { BaseFormComponentModule } from '../base-form';
+import { RegisterFormComponent } from './register-form.component';
 
 const {
   email: testEmail1,
@@ -15,9 +15,9 @@ const {
   displayName: testDisplayName1,
 } = testUser1;
 
-describe('MagicLinkLoginRegisterFormComponent', () => {
-  let component: MagicLinkLoginRegisterFormComponent;
-  let fixture: ComponentFixture<MagicLinkLoginRegisterFormComponent>;
+describe('RegisterFormComponent', () => {
+  let component: RegisterFormComponent;
+  let fixture: ComponentFixture<RegisterFormComponent>;
   let emailControl: AbstractControl | null;
   let nameControl: AbstractControl | null;
   let displayNameControl: AbstractControl | null;
@@ -27,14 +27,14 @@ describe('MagicLinkLoginRegisterFormComponent', () => {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        MagicLinkLoginBaseFormComponentModule,
+        BaseFormComponentModule,
         TooltipComponentModule,
         PhoneInputComponentModule,
       ],
-      declarations: [MagicLinkLoginRegisterFormComponent],
+      declarations: [RegisterFormComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MagicLinkLoginRegisterFormComponent);
+    fixture = TestBed.createComponent(RegisterFormComponent);
     component = fixture.componentInstance;
 
     fixture.detectChanges();

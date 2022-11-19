@@ -3,41 +3,39 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
-import { MagicLinkLoginBaseFormComponentModule } from '../../base-form';
-import { MagicLinkLoginLoginFormComponent } from './magic-link-login-login-form.component';
+import { BaseFormComponentModule } from '../base-form';
 
-const testEmail1 = testUser1.email;
+import { LoginFormComponent } from './login-form.component';
 
-describe('MagicLinkLoginLoginFormComponent', () => {
-  let component: MagicLinkLoginLoginFormComponent;
-  let fixture: ComponentFixture<MagicLinkLoginLoginFormComponent>;
+describe('LoginFormComponent', () => {
+  let component: LoginFormComponent;
+  let fixture: ComponentFixture<LoginFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        MagicLinkLoginBaseFormComponentModule,
-        TooltipComponentModule,
         CommonModule,
         ReactiveFormsModule,
+        TooltipComponentModule,
+        BaseFormComponentModule,
       ],
-      declarations: [MagicLinkLoginLoginFormComponent],
+      declarations: [LoginFormComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MagicLinkLoginLoginFormComponent);
+    fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
 
     fixture.detectChanges();
   });
 
-  it('should be defined', () => {
+  it('should bedefined', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
   });
 
   describe('email control', () => {
     it('should be empty initially', () => {
-      expect(component.emailInputIsClean).toBeTruthy();
-      expect(component.emailInputIsValid).toBeFalsy();
+      expect(component.showEmailError).toBeFalsy();
       expect(component.email?.hasError('required')).toBeTruthy();
       expect(component.email?.value).toEqual('');
     });
@@ -51,8 +49,8 @@ describe('MagicLinkLoginLoginFormComponent', () => {
     });
 
     it('should accept valid email input', () => {
-      component.email?.setValue(testEmail1);
-      expect(component.email?.value).toEqual(testEmail1);
+      component.email?.setValue(testUser1.email);
+      expect(component.email?.value).toEqual(testUser1.email);
       expect(component.email?.valid).toBeTruthy();
       expect(component.email?.errors).toBeNull();
     });
@@ -63,7 +61,9 @@ describe('MagicLinkLoginLoginFormComponent', () => {
 
     beforeEach(() => {
       emailErrorElement = () =>
-        fixture.nativeElement.querySelector(`#${component.tooltipIds.message}`);
+        fixture.nativeElement.querySelector(
+          `#${component.tooltipIds.email.message}`
+        );
     });
 
     it('should be defined', () => {
@@ -108,7 +108,7 @@ describe('MagicLinkLoginLoginFormComponent', () => {
     });
 
     it('should accept valid email input', () => {
-      component.email?.setValue(testEmail1);
+      component.email?.setValue(testUser1.email);
       fixture.detectChanges();
       expect(emailErrorElement()).toBeNull();
       expect(component.emailErrorMessage).toEqual('');
@@ -116,31 +116,59 @@ describe('MagicLinkLoginLoginFormComponent', () => {
   });
 
   describe('outputs', () => {
-    describe('login', () => {
-      let loginEmitSpy: jest.SpyInstance;
+    describe('magicLinkLogin', () => {
+      let magicLinkLoginEmitSpy: jest.SpyInstance;
 
       beforeEach(() => {
-        loginEmitSpy = jest.spyOn(component.login, 'emit');
-        component.email?.setValue(testEmail1);
+        magicLinkLoginEmitSpy = jest.spyOn(component.magicLinkLogin, 'emit');
+        component.email?.setValue(testUser1.email);
         fixture.detectChanges();
       });
 
       it('should be defined', () => {
-        expect(loginEmitSpy).toBeDefined();
+        expect(magicLinkLoginEmitSpy).toBeDefined();
       });
 
-      it('should emit the form value using emitLogin()', () => {
-        component.emitLogin(component.loginForm.value);
-        expect(loginEmitSpy).toBeCalledTimes(1);
-        expect(loginEmitSpy).toBeCalledWith(component.loginForm.value);
+      it('should emit the form value using emitMagicLinkLogin()', () => {
+        component.emitMagicLinkLogin(component.loginForm.value);
+        expect(magicLinkLoginEmitSpy).toBeCalledTimes(1);
+        expect(magicLinkLoginEmitSpy).toBeCalledWith(component.loginForm.value);
       });
 
-      it('should emit the form value with submit button click', () => {
-        const submitElement: HTMLButtonElement | null =
-          fixture.nativeElement.querySelector('#submit-button');
-        submitElement?.click();
-        expect(loginEmitSpy).toBeCalledTimes(1);
-        expect(loginEmitSpy).toBeCalledWith(component.loginForm.value);
+      it('should emit the form value with button click', () => {
+        const magicLinkLoginElement: HTMLButtonElement | null =
+          fixture.nativeElement.querySelector('#magic-link-login-button');
+        magicLinkLoginElement?.click();
+        expect(magicLinkLoginEmitSpy).toBeCalledTimes(1);
+        expect(magicLinkLoginEmitSpy).toBeCalledWith(component.loginForm.value);
+      });
+    });
+
+    describe('webauthn', () => {
+      let webauthnEmitSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        webauthnEmitSpy = jest.spyOn(component.webauthn, 'emit');
+        component.email?.setValue(testUser1.email);
+        fixture.detectChanges();
+      });
+
+      it('should be defined', () => {
+        expect(webauthnEmitSpy).toBeDefined();
+      });
+
+      it('should emit the form value using emitWebAuthn()', () => {
+        component.emitWebAuthn(component.loginForm.value);
+        expect(webauthnEmitSpy).toBeCalledTimes(1);
+        expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);
+      });
+
+      it('should emit the form value with button click', () => {
+        const webauthnElement: HTMLButtonElement | null =
+          fixture.nativeElement.querySelector('#webauthn-button');
+        webauthnElement?.click();
+        expect(webauthnEmitSpy).toBeCalledTimes(1);
+        expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);
       });
     });
 

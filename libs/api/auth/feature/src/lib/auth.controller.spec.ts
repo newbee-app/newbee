@@ -66,10 +66,10 @@ describe('AuthController', () => {
     expect(strategy).toBeDefined();
   });
 
-  describe('webauthnRegister', () => {
+  describe('webAuthnRegister', () => {
     it('should create a new user and options', async () => {
       await expect(
-        controller.webauthnRegister(testCreateUserDto1)
+        controller.webAuthnRegister(testCreateUserDto1)
       ).resolves.toEqual(testUserCreatedDto1);
       expect(userService.create).toBeCalledTimes(1);
       expect(userService.create).toBeCalledWith(testCreateUserDto1);
@@ -78,9 +78,9 @@ describe('AuthController', () => {
     });
   });
 
-  describe('webauthnLoginGet', () => {
+  describe('webAuthnLoginGet', () => {
     it('should create login challenge options', async () => {
-      await expect(controller.webauthnLoginGet(testEmailDto1)).resolves.toEqual(
+      await expect(controller.webAuthnLoginGet(testEmailDto1)).resolves.toEqual(
         testPublicKeyCredentialRequestOptions1
       );
       expect(service.generateLoginChallenge).toBeCalledTimes(1);
@@ -90,10 +90,10 @@ describe('AuthController', () => {
     });
   });
 
-  describe('webauthnLoginPost', () => {
+  describe('webAuthnLoginPost', () => {
     it('should return a LoginDto', async () => {
       await expect(
-        controller.webauthnLoginPost(testWebAuthnLoginDto1)
+        controller.webAuthnLoginPost(testWebAuthnLoginDto1)
       ).resolves.toEqual(testLoginDto1);
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(

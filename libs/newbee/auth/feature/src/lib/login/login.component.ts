@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthActions } from '@newbee/newbee/auth/data-access';
-import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
+import { LoginForm } from '@newbee/newbee/auth/util';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -15,14 +15,22 @@ export class LoginComponent {
     private readonly route: ActivatedRoute
   ) {}
 
-  onLogin(partialFormValues: Partial<MagicLinkLoginLoginForm>): void {
-    const formValues: MagicLinkLoginLoginForm = {
-      email: partialFormValues.email ?? '',
-    };
-    this.store.dispatch(AuthActions.sendLoginMagicLink(formValues));
+  onWebAuthn(partialLoginForm: Partial<LoginForm>): void {
+    const loginForm = this.partialToLoginForm(partialLoginForm);
+    this.store.dispatch(AuthActions.getWebauthnLoginChallenge({ loginForm }));
   }
 
-  onNavigateToRegister(): void {
-    this.router.navigate(['../register'], { relativeTo: this.route });
+  onMagicLinkLogin(partialLoginForm: Partial<LoginForm>): void {
+    const loginForm = this.partialToLoginForm(partialLoginForm);
+    this.store.dispatch(AuthActions.sendLoginMagicLink({ loginForm }));
+  }
+
+  async onNavigateToRegister(): Promise<void> {
+    await this.router.navigate(['../register'], { relativeTo: this.route });
+  }
+
+  private partialToLoginForm(partialLoginForm: Partial<LoginForm>): LoginForm {
+    const { email } = partialLoginForm;
+    return { email: email ?? '' };
   }
 }

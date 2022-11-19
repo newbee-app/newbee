@@ -1,10 +1,10 @@
 import { PhoneInput } from '@newbee/newbee/shared/util';
 
-export interface MagicLinkLoginLoginForm {
+export interface LoginForm {
   email: string | null;
 }
 
-export interface MagicLinkLoginRegisterForm {
+export interface RegisterForm {
   email: string | null;
   name: string | null;
   displayName?: string | null;

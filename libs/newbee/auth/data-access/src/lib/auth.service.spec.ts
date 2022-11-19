@@ -1,16 +1,34 @@
+import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
   authVersion,
   testCreateUserDto1,
   testEmailDto1,
+  testLoginDto1,
   testMagicLinkLoginDto1,
+  testUserCreatedDto1,
+  testWebAuthnLoginDto1,
 } from '@newbee/shared/data-access';
-import { magicLinkLogin } from '@newbee/shared/util';
+import {
+  magicLinkLogin,
+  testAuthenticationCredential1,
+  testPublicKeyCredentialRequestOptions1,
+  webauthn,
+} from '@newbee/shared/util';
+import { startAuthentication } from '@simplewebauthn/browser';
+import { of } from 'rxjs';
 import { AuthService } from './auth.service';
+
+jest.mock('@simplewebauthn/browser', () => ({
+  __esModule: true,
+  startAuthentication: jest.fn(),
+}));
+const mockStartAuthentication = startAuthentication as jest.Mock;
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -24,16 +42,18 @@ describe('AuthService', () => {
 
     service = TestBed.inject(AuthService);
     httpController = TestBed.inject(HttpTestingController);
+
+    jest.clearAllMocks();
+    mockStartAuthentication.mockReturnValue(of(testAuthenticationCredential1));
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-    expect(httpController).toBeDefined();
+  afterEach(() => {
+    httpController.verify();
   });
 
-  describe('login()', () => {
+  describe('magicLinkLoginLogin', () => {
     it('should send out a post request', (done) => {
-      service.login(testEmailDto1).subscribe({
+      service.magicLinkLoginLogin(testLoginForm1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
             expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
@@ -44,22 +64,23 @@ describe('AuthService', () => {
         },
         error: done.fail,
       });
+
       const req = httpController.expectOne(
         `/api/v${authVersion}/auth/${magicLinkLogin}/login`
       );
       expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testEmailDto1);
 
       req.flush(testMagicLinkLoginDto1);
-      httpController.verify();
     });
   });
 
-  describe('register()', () => {
-    it('should send out a post request', (done) => {
-      service.register(testCreateUserDto1).subscribe({
-        next: (magicLinkLoginDto) => {
+  describe('webAuthnRegister', () => {
+    it('should send out a get request', (done) => {
+      service.webAuthnRegister(testRegisterForm1).subscribe({
+        next: (userCreatedDto) => {
           try {
-            expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+            expect(userCreatedDto).toEqual(testUserCreatedDto1);
             done();
           } catch (err) {
             done(err);
@@ -67,13 +88,72 @@ describe('AuthService', () => {
         },
         error: done.fail,
       });
+
+      const params = new HttpParams({ fromObject: { ...testCreateUserDto1 } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/auth/${magicLinkLogin}/register`
+        `/api/v${authVersion}/auth/${webauthn}/register?${params.toString()}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testUserCreatedDto1);
+    });
+  });
+
+  describe('webAuthnLoginGet', () => {
+    it('should send out a get request', (done) => {
+      service.webAuthnLoginGet(testLoginForm1).subscribe({
+        next: (options) => {
+          try {
+            expect(options).toEqual(testPublicKeyCredentialRequestOptions1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const params = new HttpParams({ fromObject: { ...testEmailDto1 } });
+      const req = httpController.expectOne(
+        `/api/v${authVersion}/auth/${webauthn}/login?${params.toString()}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPublicKeyCredentialRequestOptions1);
+    });
+  });
+
+  describe('webauthnLoginPost', () => {
+    it('should send out a post request', (done) => {
+      service
+        .webAuthnLoginPost(
+          testLoginForm1,
+          testPublicKeyCredentialRequestOptions1
+        )
+        .subscribe({
+          next: (loginDto) => {
+            try {
+              expect(loginDto).toEqual(testLoginDto1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      expect(mockStartAuthentication).toBeCalledTimes(1);
+      expect(mockStartAuthentication).toBeCalledWith(
+        testPublicKeyCredentialRequestOptions1
+      );
+
+      const req = httpController.expectOne(
+        `/api/v${authVersion}/auth/${webauthn}/login`
       );
       expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testWebAuthnLoginDto1);
 
-      req.flush(testMagicLinkLoginDto1);
-      httpController.verify();
+      req.flush(testLoginDto1);
     });
   });
 });

@@ -1,6 +1,2 @@
-import { Country } from '../class';
-
-export interface PhoneInput {
-  country: Country | null;
-  number: string | null;
-}
+export * from './http-client-error.interface';
+export * from './phone-input.interface';

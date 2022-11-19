@@ -1,20 +1,30 @@
-import { MagicLinkLoginLoginForm } from '@newbee/newbee/auth/util';
+import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
+import type { HttpClientError } from '@newbee/newbee/shared/util';
 import {
   BaseLoginDto,
   BaseMagicLinkLoginDto,
+  BaseUserCreatedDto,
 } from '@newbee/shared/data-access';
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { createActionGroup, props } from '@ngrx/store';
+import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
 export const AuthActions = createActionGroup({
   source: 'Auth',
   events: {
-    'Send Login Magic Link': props<MagicLinkLoginLoginForm>(),
-    'Send Login Magic Link Success': props<BaseMagicLinkLoginDto>(),
-    'Send Login Magic Link Error': emptyProps(),
-    'Send Register Magic Link': props<MagicLinkLoginLoginForm>(),
-    'Send Register Magic Link Success': props<BaseMagicLinkLoginDto>(),
-    'Send Register Magic Link Error': emptyProps(),
-    'Login Success': props<BaseLoginDto>(),
-    'Login Error': emptyProps(),
+    'HTTP Client Error': props<{ httpClientError: HttpClientError }>(),
+    'Send Login Magic Link': props<{ loginForm: LoginForm }>(),
+    'Send Login Magic Link Success': props<{
+      magicLinkLoginDto: BaseMagicLinkLoginDto;
+    }>(),
+    'Get WebAuthn Register Challenge': props<{ registerForm: RegisterForm }>(),
+    'Get WebAuthn Register Challenge Success': props<{
+      userCreatedDto: BaseUserCreatedDto;
+    }>(),
+    'Get WebAuthn Login Challenge': props<{ loginForm: LoginForm }>(),
+    'Verify WebAuthn Login': props<{
+      loginForm: LoginForm;
+      options: PublicKeyCredentialRequestOptionsJSON;
+    }>(),
+    'Login Success': props<{ loginDto: BaseLoginDto }>(),
   },
 });

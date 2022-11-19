@@ -5,8 +5,8 @@ import {
   AuthService,
 } from '@newbee/newbee/auth/data-access';
 import {
-  MagicLinkLoginLoginFormComponentModule,
-  MagicLinkLoginRegisterFormComponentModule,
+  LoginFormComponentModule,
+  RegisterFormComponentModule,
 } from '@newbee/newbee/auth/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -19,8 +19,8 @@ import { AuthRoutingModule } from './routing';
     AuthRoutingModule,
     StoreModule.forFeature(authFeature),
     EffectsModule.forFeature([AuthEffects]),
-    MagicLinkLoginLoginFormComponentModule,
-    MagicLinkLoginRegisterFormComponentModule,
+    LoginFormComponentModule,
+    RegisterFormComponentModule,
   ],
   providers: [AuthService],
   declarations: [LoginComponent, RegisterComponent],

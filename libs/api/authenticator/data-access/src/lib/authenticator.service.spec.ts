@@ -84,6 +84,7 @@ describe('AuthenticatorService', () => {
     userChallengeService =
       module.get<UserChallengeService>(UserChallengeService);
 
+    jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
       testPublicKeyCredentialCreationOptions1
     );
