@@ -28,7 +28,7 @@ describe('LoginFormComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should bedefined', () => {
+  it('should be defined', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
   });
@@ -157,7 +157,7 @@ describe('LoginFormComponent', () => {
         expect(webauthnEmitSpy).toBeDefined();
       });
 
-      it('should emit the form value using emitWebAuthn()', () => {
+      it('should emit the form value using emitWebAuthn', () => {
         component.emitWebAuthn(component.loginForm.value);
         expect(webauthnEmitSpy).toBeCalledTimes(1);
         expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);

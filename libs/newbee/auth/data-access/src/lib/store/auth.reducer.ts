@@ -5,14 +5,12 @@ import { AuthActions } from './auth.actions';
 export interface AuthState {
   accessToken: string | null;
   user: User | null;
-  pendingMagicLink: boolean;
   jwtId: string | null;
 }
 
 export const initialAuthState: AuthState = {
   accessToken: null,
   user: null,
-  pendingMagicLink: false,
   jwtId: null,
 };
 
@@ -24,7 +22,6 @@ export const authFeature = createFeature({
       AuthActions.sendLoginMagicLinkSuccess,
       (state, { magicLinkLoginDto }): AuthState => ({
         ...state,
-        pendingMagicLink: true,
         jwtId: magicLinkLoginDto.jwtId,
       })
     ),
@@ -42,7 +39,6 @@ export const authFeature = createFeature({
         ...state,
         accessToken: loginDto.access_token,
         user: loginDto.user,
-        pendingMagicLink: false,
         jwtId: null,
       })
     )

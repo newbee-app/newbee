@@ -1,0 +1,10 @@
+<newbee-base-form>
+  <div id="check-email" class="space-y-5 w-4/5">
+    <h1 class="font-bold text-3xl text-center">Check your email for a login link</h1>
+    <p class="text-center font-light">We've sent a magic link to <span class="font-bold">{{email}}</span>. Look for an email with the verification code <span class="font-bold">{{jwtId}}</span>. The link expires shortly, so please click on it soon.</p>
+  </div>
+
+  <div id="resend-email" class="w-4/5">
+    <p class="text-sm text-center text-outline-primary-light dark:text-outline-primary-dark">Can't find your link? Check your spam folder! Or, <a id="resend-link" (click)="emitResendLink(email)" class="newbee-link">send a new link!</a></p>
+  </div>
+</newbee-base-form>
