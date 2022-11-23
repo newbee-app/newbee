@@ -1,4 +1,5 @@
 {
+  "name": "newbee-auth-ui",
   "projectType": "library",
   "sourceRoot": "libs/newbee/auth/ui/src",
   "prefix": "newbee",

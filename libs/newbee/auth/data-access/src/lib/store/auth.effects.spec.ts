@@ -2,6 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
+import {
+  AuthActions,
+  AuthenticatorActions,
+  HttpActions,
+} from '@newbee/newbee/shared/data-access';
 import { HttpClientError } from '@newbee/newbee/shared/util';
 import {
   testLoginDto1,
@@ -14,7 +19,6 @@ import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthService } from '../auth.service';
-import { AuthActions } from './auth.actions';
 import { AuthEffects } from './auth.effects';
 
 describe('AuthEffects', () => {
@@ -32,6 +36,7 @@ describe('AuthEffects', () => {
             magicLinkLoginLogin: jest
               .fn()
               .mockReturnValue(of(testMagicLinkLoginDto1)),
+            magicLinkLogin: jest.fn().mockReturnValue(of(testLoginDto1)),
             webAuthnRegister: jest
               .fn()
               .mockReturnValue(of(testUserCreatedDto1)),
@@ -100,7 +105,7 @@ describe('AuthEffects', () => {
         error: testError,
       };
       const expected$ = hot('a', {
-        a: AuthActions.httpClientError({
+        a: HttpActions.clientError({
           httpClientError: testHttpClientError,
         }),
       });
@@ -108,6 +113,63 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.magicLinkLoginLogin).toBeCalledTimes(1);
         expect(service.magicLinkLoginLogin).toBeCalledWith(testLoginForm1);
+      });
+    });
+  });
+
+  describe('confirmMagicLink$', () => {
+    it('should fire loginSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: AuthActions.confirmMagicLink({ token: '1234' }),
+      });
+      const expected$ = hot('a', {
+        a: AuthActions.loginSuccess({ loginDto: testLoginDto1 }),
+      });
+      expect(effects.confirmMagicLink$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.magicLinkLogin).toBeCalledTimes(1);
+        expect(service.magicLinkLogin).toBeCalledWith('1234');
+      });
+    });
+
+    it('should not fire when unrelated actions are dispatched', () => {
+      actions$ = hot('a', { a: { type: 'Unknown' } });
+      expect(effects.confirmMagicLink$).toBeMarble('-');
+      expect(actions$).toSatisfyOnFlush(() => {
+        expect(service.magicLinkLogin).not.toBeCalled();
+      });
+    });
+
+    it('should fire a httpClientError if service throws an error', () => {
+      const testError = new Error('magicLinkLogin');
+      jest.spyOn(service, 'magicLinkLogin').mockReturnValue(
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              error: testError,
+              status: 400,
+            })
+        )
+      );
+
+      actions$ = hot('a', {
+        a: AuthActions.confirmMagicLink({
+          token: '1234',
+        }),
+      });
+      const testHttpClientError: HttpClientError = {
+        status: 400,
+        error: testError,
+      };
+      const expected$ = hot('a', {
+        a: HttpActions.clientError({
+          httpClientError: testHttpClientError,
+        }),
+      });
+      expect(effects.confirmMagicLink$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.magicLinkLogin).toBeCalledTimes(1);
+        expect(service.magicLinkLogin).toBeCalledWith('1234');
       });
     });
   });
@@ -161,7 +223,7 @@ describe('AuthEffects', () => {
         error: testError,
       };
       const expected$ = hot('a', {
-        a: AuthActions.httpClientError({
+        a: HttpActions.clientError({
           httpClientError: testHttpClientError,
         }),
       });
@@ -173,15 +235,38 @@ describe('AuthEffects', () => {
     });
   });
 
+  describe('getWebAuthnRegisterChallengeSuccess$', () => {
+    it('should fire verifyRegisterChallenge if successful', () => {
+      actions$ = hot('a', {
+        a: AuthActions.getWebauthnRegisterChallengeSuccess({
+          userCreatedDto: testUserCreatedDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: AuthenticatorActions.verifyRegisterChallenge({
+          options: testUserCreatedDto1.options,
+        }),
+      });
+      expect(effects.getWebAuthnRegisterChallengeSuccess$).toBeObservable(
+        expected$
+      );
+    });
+
+    it('should not fire when unrelated actions are dispatched', () => {
+      actions$ = hot('a', { a: { type: 'Unknown' } });
+      expect(effects.getWebAuthnRegisterChallengeSuccess$).toBeMarble('-');
+    });
+  });
+
   describe('getWebAuthnLoginChallenge$', () => {
-    it('should fire verifyWebauthnLogin if successful', () => {
+    it('should fire verifyWebauthnLogiChallenge if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.getWebauthnLoginChallenge({
           loginForm: testLoginForm1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.verifyWebauthnLogin({
+        a: AuthActions.verifyWebauthnLoginChallenge({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -223,7 +308,7 @@ describe('AuthEffects', () => {
         error: testError,
       };
       const expected$ = hot('a', {
-        a: AuthActions.httpClientError({
+        a: HttpActions.clientError({
           httpClientError: testHttpClientError,
         }),
       });
@@ -235,10 +320,10 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('verifyWebAuthnLogin$', () => {
+  describe('verifyWebAuthnLoginChallenge$', () => {
     it('should fire loginSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.verifyWebauthnLogin({
+        a: AuthActions.verifyWebauthnLoginChallenge({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -248,7 +333,7 @@ describe('AuthEffects', () => {
           loginDto: testLoginDto1,
         }),
       });
-      expect(effects.verifyWebAuthnLogin$).toBeObservable(expected$);
+      expect(effects.verifyWebAuthnLoginChallenge$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginPost).toBeCalledTimes(1);
         expect(service.webAuthnLoginPost).toBeCalledWith(
@@ -260,7 +345,7 @@ describe('AuthEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.verifyWebAuthnLogin$).toBeMarble('-');
+      expect(effects.verifyWebAuthnLoginChallenge$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginPost).not.toBeCalled();
       });
@@ -279,7 +364,7 @@ describe('AuthEffects', () => {
       );
 
       actions$ = hot('a', {
-        a: AuthActions.verifyWebauthnLogin({
+        a: AuthActions.verifyWebauthnLoginChallenge({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -289,11 +374,11 @@ describe('AuthEffects', () => {
         error: testError,
       };
       const expected$ = hot('a', {
-        a: AuthActions.httpClientError({
+        a: HttpActions.clientError({
           httpClientError: testHttpClientError,
         }),
       });
-      expect(effects.verifyWebAuthnLogin$).toBeObservable(expected$);
+      expect(effects.verifyWebAuthnLoginChallenge$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginPost).toBeCalledTimes(1);
         expect(service.webAuthnLoginPost).toBeCalledWith(

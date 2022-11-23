@@ -1,4 +1,5 @@
 {
+  "name": "newbee-auth-data-access",
   "projectType": "library",
   "sourceRoot": "libs/newbee/auth/data-access/src",
   "prefix": "newbee",

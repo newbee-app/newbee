@@ -1,4 +1,5 @@
 {
+  "name": "publishable-passport-magic-link-login",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/publishable/passport-magic-link-login/src",
   "projectType": "library",

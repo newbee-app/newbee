@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
-import { getErrorMessage } from './form.method';
+import { getErrorMessage } from './form.function';
 
-describe('FormMethod', () => {
+describe('FormFunction', () => {
   describe('getErrorMessage', () => {
     let control: FormControl<string | null>;
 

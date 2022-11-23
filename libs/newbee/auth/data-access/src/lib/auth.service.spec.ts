@@ -75,6 +75,30 @@ describe('AuthService', () => {
     });
   });
 
+  describe('magicLinkLogin', () => {
+    it('should send out a get request', (done) => {
+      service.magicLinkLogin('1234').subscribe({
+        next: (loginDto) => {
+          try {
+            expect(loginDto).toEqual(testLoginDto1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const params = new HttpParams({ fromObject: { token: '1234' } });
+      const req = httpController.expectOne(
+        `/api/v${authVersion}/auth/${magicLinkLogin}?${params.toString()}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testLoginDto1);
+    });
+  });
+
   describe('webAuthnRegister', () => {
     it('should send out a get request', (done) => {
       service.webAuthnRegister(testRegisterForm1).subscribe({

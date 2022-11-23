@@ -1,3 +1,4 @@
 export class BaseMagicLinkLoginDto {
-  jwtId!: string | null;
+  jwtId!: string;
+  email!: string;
 }

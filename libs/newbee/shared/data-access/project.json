@@ -1,4 +1,5 @@
 {
+  "name": "newbee-shared-data-access",
   "projectType": "library",
   "sourceRoot": "libs/newbee/shared/data-access/src",
   "prefix": "newbee",

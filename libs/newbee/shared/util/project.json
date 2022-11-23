@@ -1,4 +1,5 @@
 {
+  "name": "newbee-shared-util",
   "projectType": "library",
   "sourceRoot": "libs/newbee/shared/util/src",
   "prefix": "newbee",

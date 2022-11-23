@@ -1,26 +1,45 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClientError } from '@newbee/newbee/shared/util';
+import { Router } from '@angular/router';
+import {
+  AuthActions,
+  AuthenticatorActions,
+  catchHttpError,
+} from '@newbee/newbee/shared/data-access';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, mergeMap, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
-import { AuthActions } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
   sendLoginMagicLink$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.sendLoginMagicLink),
-      mergeMap(({ loginForm }) => {
+      switchMap(({ loginForm }) => {
         return this.authService.magicLinkLoginLogin(loginForm).pipe(
           map((magicLinkLoginDto) => {
             return AuthActions.sendLoginMagicLinkSuccess({ magicLinkLoginDto });
           }),
-          catchError((err: HttpErrorResponse) => {
-            const { status, error } = err;
-            const httpClientError: HttpClientError = { status, error };
-            return of(AuthActions.httpClientError({ httpClientError }));
-          })
+          tap(async () => {
+            await this.router.navigate(['../confirm-email']);
+          }),
+          catchError(catchHttpError)
+        );
+      })
+    );
+  });
+
+  confirmMagicLink$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.confirmMagicLink),
+      switchMap(({ token }) => {
+        return this.authService.magicLinkLogin(token).pipe(
+          map((loginDto) => {
+            return AuthActions.loginSuccess({ loginDto });
+          }),
+          tap(async () => {
+            await this.router.navigate(['/']);
+          }),
+          catchError(catchHttpError)
         );
       })
     );
@@ -29,19 +48,29 @@ export class AuthEffects {
   getWebAuthnRegisterChallenge$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.getWebauthnRegisterChallenge),
-      mergeMap(({ registerForm }) => {
+      switchMap(({ registerForm }) => {
         return this.authService.webAuthnRegister(registerForm).pipe(
           map((userCreatedDto) => {
             return AuthActions.getWebauthnRegisterChallengeSuccess({
               userCreatedDto,
             });
           }),
-          catchError((err: HttpErrorResponse) => {
-            const { status, error } = err;
-            const httpClientError: HttpClientError = { status, error };
-            return of(AuthActions.httpClientError({ httpClientError }));
-          })
+          catchError(catchHttpError)
         );
+      })
+    );
+  });
+
+  getWebAuthnRegisterChallengeSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.getWebauthnRegisterChallengeSuccess),
+      map(({ userCreatedDto }) => {
+        return AuthenticatorActions.verifyRegisterChallenge({
+          options: userCreatedDto.options,
+        });
+      }),
+      tap(async () => {
+        await this.router.navigate(['/']);
       })
     );
   });
@@ -49,34 +78,29 @@ export class AuthEffects {
   getWebAuthnLoginChallenge$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.getWebauthnLoginChallenge),
-      mergeMap(({ loginForm }) => {
+      switchMap(({ loginForm }) => {
         return this.authService.webAuthnLoginGet(loginForm).pipe(
           map((options) => {
-            return AuthActions.verifyWebauthnLogin({ loginForm, options });
+            return AuthActions.verifyWebauthnLoginChallenge({
+              loginForm,
+              options,
+            });
           }),
-          catchError((err: HttpErrorResponse) => {
-            const { status, error } = err;
-            const httpClientError: HttpClientError = { status, error };
-            return of(AuthActions.httpClientError({ httpClientError }));
-          })
+          catchError(catchHttpError)
         );
       })
     );
   });
 
-  verifyWebAuthnLogin$ = createEffect(() => {
+  verifyWebAuthnLoginChallenge$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.verifyWebauthnLogin),
-      mergeMap(({ loginForm, options }) => {
+      ofType(AuthActions.verifyWebauthnLoginChallenge),
+      switchMap(({ loginForm, options }) => {
         return this.authService.webAuthnLoginPost(loginForm, options).pipe(
           map((loginDto) => {
             return AuthActions.loginSuccess({ loginDto });
           }),
-          catchError((err: HttpErrorResponse) => {
-            const { status, error } = err;
-            const httpClientError: HttpClientError = { status, error };
-            return of(AuthActions.httpClientError({ httpClientError }));
-          })
+          catchError(catchHttpError)
         );
       })
     );
@@ -84,6 +108,7 @@ export class AuthEffects {
 
   constructor(
     private readonly actions$: Actions,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
 }

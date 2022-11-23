@@ -101,7 +101,7 @@ export class AuthController {
     const jwtId = await this.magicLinkLoginStrategy.send({ email });
     this.logger.log(`Magic link sent to email: ${email}`);
 
-    return { jwtId };
+    return { jwtId, email };
   }
 
   @Public()

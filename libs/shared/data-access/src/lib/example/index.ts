@@ -29,6 +29,7 @@ export const testEmailDto1: BaseEmailDto = {
 
 export const testMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
   jwtId: '1234',
+  email: testUser1.email,
 };
 
 export const testCreateUserDto1: BaseCreateUserDto = {

@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { AuthActions } from '@newbee/newbee/auth/data-access';
 import { RegisterFormComponentModule } from '@newbee/newbee/auth/ui';
 import { testRegisterForm1 } from '@newbee/newbee/auth/util';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -12,7 +12,6 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let store: MockStore;
   let router: Router;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,7 +25,6 @@ describe('RegisterComponent', () => {
             navigate: jest.fn().mockResolvedValue(true),
           }),
         },
-        { provide: ActivatedRoute, useValue: createMock<ActivatedRoute>() },
       ],
     }).compileComponents();
 
@@ -34,7 +32,6 @@ describe('RegisterComponent', () => {
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    route = TestBed.inject(ActivatedRoute);
 
     fixture.detectChanges();
   });
@@ -44,7 +41,6 @@ describe('RegisterComponent', () => {
     expect(component).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(route).toBeDefined();
   });
 
   describe('onRegister', () => {
@@ -72,9 +68,7 @@ describe('RegisterComponent', () => {
     it('should call navigate', () => {
       component.onNavigateToLogin();
       expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../login'], {
-        relativeTo: route,
-      });
+      expect(router.navigate).toBeCalledWith(['../login']);
     });
   });
 });

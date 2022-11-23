@@ -1,15 +1,35 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ConfirmEmailComponent } from '../confirm-email';
 import { LoginComponent } from '../login/login.component';
+import { MagicLinkLoginComponent } from '../magic-link-login';
 import { RegisterComponent } from '../register/register.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'login',
+    title: 'Login',
+    component: LoginComponent,
     children: [
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
+      {
+        path: 'confirm-email',
+        component: ConfirmEmailComponent,
+      },
+      {
+        path: 'magic-link-login',
+        component: MagicLinkLoginComponent,
+      },
     ],
+  },
+  {
+    path: 'register',
+    title: 'Register',
+    component: RegisterComponent,
+  },
+  {
+    path: '',
+    redirectTo: './login',
+    pathMatch: 'full',
   },
 ];
 

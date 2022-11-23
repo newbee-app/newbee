@@ -1,17 +1,14 @@
-import { User } from '@newbee/shared/util';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { AuthActions } from './auth.actions';
 
 export interface AuthState {
-  accessToken: string | null;
-  user: User | null;
   jwtId: string | null;
+  email: string | null;
 }
 
 export const initialAuthState: AuthState = {
-  accessToken: null,
-  user: null,
   jwtId: null,
+  email: null,
 };
 
 export const authFeature = createFeature({
@@ -20,26 +17,18 @@ export const authFeature = createFeature({
     initialAuthState,
     on(
       AuthActions.sendLoginMagicLinkSuccess,
-      (state, { magicLinkLoginDto }): AuthState => ({
+      (state, { magicLinkLoginDto: { jwtId, email } }): AuthState => ({
         ...state,
-        jwtId: magicLinkLoginDto.jwtId,
-      })
-    ),
-    on(
-      AuthActions.getWebauthnRegisterChallengeSuccess,
-      (state, { userCreatedDto }): AuthState => ({
-        ...state,
-        accessToken: userCreatedDto.access_token,
-        user: userCreatedDto.user,
+        jwtId,
+        email,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { loginDto }): AuthState => ({
+      (state): AuthState => ({
         ...state,
-        accessToken: loginDto.access_token,
-        user: loginDto.user,
         jwtId: null,
+        email: null,
       })
     )
   ),

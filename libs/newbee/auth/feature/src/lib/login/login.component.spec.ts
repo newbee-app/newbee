@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { AuthActions } from '@newbee/newbee/auth/data-access';
 import { LoginFormComponentModule } from '@newbee/newbee/auth/ui';
 import { testLoginForm1 } from '@newbee/newbee/auth/util';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 
@@ -12,7 +12,6 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let store: MockStore;
   let router: Router;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,7 +25,6 @@ describe('LoginComponent', () => {
             navigate: jest.fn().mockResolvedValue(true),
           }),
         },
-        { provide: ActivatedRoute, useValue: createMock<ActivatedRoute>() },
       ],
     }).compileComponents();
 
@@ -34,7 +32,6 @@ describe('LoginComponent', () => {
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    route = TestBed.inject(ActivatedRoute);
 
     fixture.detectChanges();
   });
@@ -44,7 +41,6 @@ describe('LoginComponent', () => {
     expect(component).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(route).toBeDefined();
   });
 
   describe('onWebAuthn', () => {
@@ -92,9 +88,7 @@ describe('LoginComponent', () => {
       expect(component).toBeDefined();
       component.onNavigateToRegister();
       expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../register'], {
-        relativeTo: route,
-      });
+      expect(router.navigate).toBeCalledWith(['../register']);
     });
   });
 });

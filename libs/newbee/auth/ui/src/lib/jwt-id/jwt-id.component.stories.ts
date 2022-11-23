@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { testMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { BaseFormComponentModule } from '../base-form';
@@ -23,6 +24,6 @@ const Template: Story<JwtIdComponent> = (args: JwtIdComponent) => ({
 
 export const Primary = Template.bind({});
 Primary.args = {
-  jwtId: '1234',
-  email: 'johndoe@example.com',
+  jwtId: testMagicLinkLoginDto1.jwtId,
+  email: testMagicLinkLoginDto1.email,
 };

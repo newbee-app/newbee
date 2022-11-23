@@ -15,7 +15,7 @@ import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { CountryCode } from 'libphonenumber-js';
 import parsePhoneNumber from 'libphonenumber-js';
-import { from, mergeMap, Observable } from 'rxjs';
+import { from, Observable, switchMap } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +27,14 @@ export class AuthService {
     return this.http.post<BaseMagicLinkLoginDto>(
       `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
       emailDto
+    );
+  }
+
+  magicLinkLogin(token: string): Observable<BaseLoginDto> {
+    const params = new HttpParams({ fromObject: { token } });
+    return this.http.get<BaseLoginDto>(
+      `/api/v${authVersion}/auth/${magicLinkLogin}`,
+      { params }
     );
   }
 
@@ -74,7 +82,7 @@ export class AuthService {
   ): Observable<BaseLoginDto> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
-      mergeMap((credential) => {
+      switchMap((credential) => {
         const webAuthnLoginDto: BaseWebAuthnLoginDto = {
           ...emailDto,
           credential,

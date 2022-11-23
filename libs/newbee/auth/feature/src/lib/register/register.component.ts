@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthActions } from '@newbee/newbee/auth/data-access';
+import { Router } from '@angular/router';
 import { RegisterForm } from '@newbee/newbee/auth/util';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -9,11 +9,7 @@ import { Store } from '@ngrx/store';
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
-  constructor(
-    private readonly store: Store,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute
-  ) {}
+  constructor(private readonly store: Store, private readonly router: Router) {}
 
   onRegister(partialRegisterForm: Partial<RegisterForm>): void {
     const registerForm = this.partialToRegisterForm(partialRegisterForm);
@@ -23,7 +19,7 @@ export class RegisterComponent {
   }
 
   onNavigateToLogin(): void {
-    this.router.navigate(['../login'], { relativeTo: this.route });
+    this.router.navigate(['../login']);
   }
 
   private partialToRegisterForm(
