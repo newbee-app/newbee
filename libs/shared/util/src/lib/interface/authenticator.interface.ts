@@ -6,7 +6,7 @@ import type {
 export interface Authenticator {
   id: string;
   credentialId: string;
-  credentialPublicKey: Buffer;
+  credentialPublicKey: string;
   counter: number;
   credentialDeviceType: CredentialDeviceType;
   credentialBackedUp: boolean;

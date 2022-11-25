@@ -100,7 +100,7 @@ export class AuthService {
     const { credentialPublicKey, credentialId, counter, transports } =
       authenticator;
     const authenticatorDevice: AuthenticatorDevice = {
-      credentialPublicKey,
+      credentialPublicKey: Buffer.from(credentialPublicKey, 'base64url'),
       credentialID: Buffer.from(credentialId, 'base64url'),
       counter,
       ...(transports && { transports }),

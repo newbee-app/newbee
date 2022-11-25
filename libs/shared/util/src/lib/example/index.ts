@@ -9,7 +9,7 @@ import { Authenticator, User, UserChallenge, UserSettings } from '../interface';
 export const testAuthenticator1: Authenticator = {
   id: '1',
   credentialId: 'cred1',
-  credentialPublicKey: Buffer.from('credpk1', 'utf-8'),
+  credentialPublicKey: 'credpk1',
   counter: 0,
   credentialDeviceType: 'singleDevice',
   credentialBackedUp: true,

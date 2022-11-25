@@ -24,8 +24,8 @@ export class AuthenticatorEntity implements Authenticator {
   })
   credentialId!: string;
 
-  @Column({ type: 'bytea' })
-  credentialPublicKey!: Buffer;
+  @Column({ type: 'text' })
+  credentialPublicKey!: string;
 
   @Column({ type: 'bigint' })
   counter!: number;

@@ -130,7 +130,7 @@ export class AuthenticatorService {
       return await this.authenticatorRepository.save(
         new AuthenticatorEntity({
           credentialId: credentialID.toString('base64url'),
-          credentialPublicKey,
+          credentialPublicKey: credentialPublicKey.toString('base64url'),
           counter,
           credentialDeviceType,
           credentialBackedUp,

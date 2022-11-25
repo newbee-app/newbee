@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginForm } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
@@ -9,7 +9,11 @@ import { Store } from '@ngrx/store';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  constructor(private readonly store: Store, private readonly router: Router) {}
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) {}
 
   onWebAuthn(partialLoginForm: Partial<LoginForm>): void {
     const loginForm = this.partialToLoginForm(partialLoginForm);
@@ -22,7 +26,7 @@ export class LoginComponent {
   }
 
   async onNavigateToRegister(): Promise<void> {
-    await this.router.navigate(['../register']);
+    await this.router.navigate(['../register'], { relativeTo: this.route });
   }
 
   private partialToLoginForm(partialLoginForm: Partial<LoginForm>): LoginForm {
