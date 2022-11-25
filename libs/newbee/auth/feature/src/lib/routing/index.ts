@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import {
+  confirmEmailGuard,
+  magicLinkLoginGuard,
+} from '@newbee/newbee/auth/data-access';
 import { ConfirmEmailComponent } from '../confirm-email';
 import { LoginComponent } from '../login/login.component';
 import { MagicLinkLoginComponent } from '../magic-link-login';
@@ -14,10 +18,12 @@ const routes: Routes = [
       {
         path: 'confirm-email',
         component: ConfirmEmailComponent,
+        canActivate: [confirmEmailGuard],
       },
       {
         path: 'magic-link-login',
         component: MagicLinkLoginComponent,
+        canActivate: [magicLinkLoginGuard],
       },
     ],
   },

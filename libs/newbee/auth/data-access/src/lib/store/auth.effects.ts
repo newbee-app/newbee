@@ -20,7 +20,7 @@ export class AuthEffects {
             return AuthActions.sendLoginMagicLinkSuccess({ magicLinkLoginDto });
           }),
           tap(async () => {
-            await this.router.navigate(['../confirm-email']);
+            await this.router.navigate(['/auth/login/confirm-email']);
           }),
           catchError(catchHttpError)
         );

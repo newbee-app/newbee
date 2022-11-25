@@ -1,43 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, NgModule } from '@angular/core';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { JwtIdComponentModule } from '@newbee/newbee/auth/ui';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'newbee-confirm-email',
   templateUrl: './confirm-email.component.html',
 })
-export class ConfirmEmailComponent implements OnDestroy {
-  jwtId!: string;
-  email!: string;
+export class ConfirmEmailComponent {
+  jwtId$ = this.store.select(authFeature.selectJwtId);
+  email$ = this.store.select(authFeature.selectEmail);
 
-  private readonly unsubscribe$ = new Subject<void>();
-
-  constructor(private readonly store: Store, router: Router) {
-    store
-      .select(authFeature.selectAuthState)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: async ({ jwtId, email }) => {
-          if (!jwtId || !email) {
-            await router.navigate(['../']);
-            return;
-          }
-
-          this.jwtId = jwtId;
-          this.email = email;
-        },
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
+  constructor(private readonly store: Store) {}
 
   onResendLink(email: string): void {
     this.store.dispatch(

@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, ParamMap } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import {
-  AuthActions,
-  selectQueryParams,
-} from '@newbee/newbee/shared/data-access';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { MagicLinkLoginComponent } from './magic-link-login.component';
 
@@ -12,7 +9,7 @@ describe('MagicLinkLoginComponent', () => {
   let component: MagicLinkLoginComponent;
   let fixture: ComponentFixture<MagicLinkLoginComponent>;
   let store: MockStore;
-  let router: Router;
+  let route: ActivatedRouteSnapshot;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -20,9 +17,11 @@ describe('MagicLinkLoginComponent', () => {
       providers: [
         provideMockStore(),
         {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
+          provide: ActivatedRouteSnapshot,
+          useValue: createMock<ActivatedRouteSnapshot>({
+            queryParamMap: createMock<ParamMap>({
+              get: jest.fn().mockReturnValue('1234'),
+            }),
           }),
         },
       ],
@@ -31,33 +30,20 @@ describe('MagicLinkLoginComponent', () => {
     fixture = TestBed.createComponent(MagicLinkLoginComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
-    router = TestBed.inject(Router);
+    route = TestBed.inject(ActivatedRouteSnapshot);
 
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    store.resetSelectors();
   });
 
   it('should be defined', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
     expect(store).toBeDefined();
-    expect(router).toBeDefined();
+    expect(route).toBeDefined();
   });
 
   describe('selectQueryParams', () => {
-    it('should navigate if query params does not have a token property', () => {
-      store.overrideSelector(selectQueryParams, {});
-      store.refreshState();
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../']);
-    });
-
-    it('should dispatch confirmMagicLink if query params has a token property', (done) => {
-      store.overrideSelector(selectQueryParams, { token: '1234' });
-      store.refreshState();
+    it('should dispatch confirmMagicLink', (done) => {
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
@@ -71,6 +57,9 @@ describe('MagicLinkLoginComponent', () => {
         },
         error: done.fail,
       });
+
+      expect(route.queryParamMap.get).toBeCalledTimes(1);
+      expect(route.queryParamMap.get).toBeCalledWith('token');
     });
   });
 });
