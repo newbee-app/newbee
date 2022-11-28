@@ -10,7 +10,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { ClickWrapperComponentModule } from '../../testing-wrapper';
+import { ClickWrapperComponentModule } from '../../testing';
 import { TooltipComponentModule } from '../../tooltip/tooltip.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';

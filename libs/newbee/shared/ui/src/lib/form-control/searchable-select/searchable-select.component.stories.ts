@@ -12,7 +12,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
-import { ClickWrapperComponentModule } from '../../testing-wrapper';
+import { ClickWrapperComponentModule } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
