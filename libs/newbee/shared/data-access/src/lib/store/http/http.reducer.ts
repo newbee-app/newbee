@@ -21,6 +21,10 @@ export const httpFeature = createFeature<AppState, 'http'>({
         ...state,
         error: httpClientError,
       })
+    ),
+    on(
+      HttpActions.resetError,
+      (state): HttpState => ({ ...state, error: null })
     )
   ),
 });

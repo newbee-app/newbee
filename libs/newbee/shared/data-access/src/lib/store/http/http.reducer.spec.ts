@@ -21,4 +21,12 @@ describe('HttpReducer', () => {
     );
     expect(updatedState).toEqual(stateAfterClientError);
   });
+
+  it('resetError should update state', () => {
+    const updatedState = httpFeature.reducer(
+      stateAfterClientError,
+      HttpActions.resetError()
+    );
+    expect(updatedState).toEqual(initialHttpState);
+  });
 });
