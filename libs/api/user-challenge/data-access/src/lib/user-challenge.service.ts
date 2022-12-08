@@ -1,17 +1,16 @@
+import { EntityRepository, NotFoundError } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserChallengeEntity } from '@newbee/api/shared/data-access';
 import {
   idNotFoundErrorMsg,
-  idNotFoundLogMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserChallengeService {
@@ -19,53 +18,70 @@ export class UserChallengeService {
 
   constructor(
     @InjectRepository(UserChallengeEntity)
-    private readonly userChallengeRepository: Repository<UserChallengeEntity>
+    private readonly userChallengeRepository: EntityRepository<UserChallengeEntity>
   ) {}
 
-  async findOneById(id: string): Promise<UserChallengeEntity | null> {
+  async findOneById(id: string): Promise<UserChallengeEntity> {
     try {
-      return await this.userChallengeRepository.findOne({
-        where: { userId: id },
-      });
+      return await this.userChallengeRepository.findOneOrFail(id);
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('a', 'user challenge', 'an', 'ID', id)
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
 
-  async findOneByEmail(email: string): Promise<UserChallengeEntity | null> {
+  async findOneByEmail(email: string): Promise<UserChallengeEntity> {
     try {
-      return await this.userChallengeRepository.findOne({
-        where: { user: { email } },
+      return await this.userChallengeRepository.findOneOrFail({
+        user: { email },
       });
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('a', 'user challenge', 'an', 'email', email)
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
+  }
+
+  async update(
+    userChallenge: UserChallengeEntity,
+    challenge: string | null
+  ): Promise<UserChallengeEntity> {
+    const updatedUserChallenge = this.userChallengeRepository.assign(
+      userChallenge,
+      { challenge }
+    );
+    await this.userChallengeRepository.flush();
+    return updatedUserChallenge;
+  }
+
+  async updateById(
+    id: string,
+    challenge: string | null
+  ): Promise<UserChallengeEntity> {
+    let userChallenge = await this.findOneById(id);
+    userChallenge = await this.update(userChallenge, challenge);
+    return userChallenge;
   }
 
   async updateByEmail(
     email: string,
     challenge: string | null
   ): Promise<UserChallengeEntity> {
-    const userChallenge = await this.findOneByEmail(email);
-    if (!userChallenge) {
-      this.logger.error(
-        idNotFoundLogMsg('update', 'a', 'user challenge', 'email', email)
-      );
-      throw new NotFoundException(
-        idNotFoundErrorMsg('a', 'user challenge', 'an', 'email', email)
-      );
-    }
-
-    try {
-      return await this.userChallengeRepository.save({
-        ...userChallenge,
-        challenge,
-      });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    let userChallenge = await this.findOneByEmail(email);
+    userChallenge = await this.update(userChallenge, challenge);
+    return userChallenge;
   }
 }

@@ -2,7 +2,6 @@ import {
   testAuthenticator1,
   testUser1,
   testUserChallenge1,
-  testUserSettings1,
 } from '@newbee/shared/util';
 import {
   AuthenticatorEntity,
@@ -18,11 +17,10 @@ export const testAuthenticatorEntity1 = new AuthenticatorEntity(
 export const testUserEntity1 = new UserEntity(testUser1);
 
 export const testUserChallengeEntity1 = new UserChallengeEntity({
-  ...testUserChallenge1,
+  challenge: testUserChallenge1.challenge,
   user: testUserEntity1,
 });
 
 export const testUserSettingsEntity1 = new UserSettingsEntity({
-  ...testUserSettings1,
   user: testUserEntity1,
 });

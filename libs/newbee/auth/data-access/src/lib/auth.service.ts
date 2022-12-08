@@ -22,11 +22,11 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
-    const { email } = loginForm;
-    const emailDto: BaseEmailDto = { email: email ?? '' };
-    return this.http.post<BaseMagicLinkLoginDto>(
+    const emailDto = this.loginFormToEmailDto(loginForm);
+    const params = new HttpParams({ fromObject: { ...emailDto } });
+    return this.http.get<BaseMagicLinkLoginDto>(
       `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
-      emailDto
+      { params }
     );
   }
 
@@ -40,7 +40,6 @@ export class AuthService {
 
   webAuthnRegister(registerForm: RegisterForm): Observable<BaseUserCreatedDto> {
     const { email, name, displayName, phoneNumber } = registerForm;
-
     let phoneNumberString: string | undefined = undefined;
     if (phoneNumber && phoneNumber.number && phoneNumber.country) {
       const { number, country } = phoneNumber;
@@ -54,14 +53,12 @@ export class AuthService {
     const createUserDto: BaseCreateUserDto = {
       email: email ?? '',
       name: name ?? '',
-      ...(displayName && { displayName }),
-      ...(phoneNumberString && { phoneNumber: phoneNumberString }),
+      displayName: displayName ?? null,
+      phoneNumber: phoneNumberString ?? null,
     };
-    const params = new HttpParams({ fromObject: { ...createUserDto } });
-
-    return this.http.get<BaseUserCreatedDto>(
+    return this.http.post<BaseUserCreatedDto>(
       `/api/v${authVersion}/auth/${webauthn}/register`,
-      { params }
+      createUserDto
     );
   }
 

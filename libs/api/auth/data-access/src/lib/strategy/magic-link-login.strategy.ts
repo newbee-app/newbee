@@ -3,8 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -28,28 +26,20 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     mailerService: MailerService,
     configService: ConfigService<AppConfigInterface, true>
   ) {
-    const magicLinkLoginConfig = configService.get('auth.magicLinkLogin', {
+    const magicLinkLoginConfig = configService.get('auth', {
       infer: true,
-    });
+    }).magicLinkLogin;
     const sendMagicLink: SendMagicLinkFunction = async (
       payload: SendPayload,
       link: string,
       code: string
     ): Promise<void> => {
       const { email } = payload;
-      if (!(await this.userService.findOneByEmail(email))) {
-        this.logger.error(
-          `Cannot send magic link to email ${email} as no user with that email exists`
-        );
-        throw new NotFoundException(
-          `We could not send a login email to ${email} as no user with that email exists. Please check the email and try again!`
-        );
-      }
-
+      await this.userService.findOneByEmail(email);
       try {
         await mailerService.sendMail({
           to: payload.email,
-          subject: 'Your NewBee Magic Login Link 🪄🎩',
+          subject: 'Your NewBee Magic Login Link',
           text: `Code: ${code}\nPlease click the link below to login to your NewBee account: ${link}`,
           html: `<p>Code: ${code}</p><p>Please click the link below to login to your NewBee account: <a href="${link}">${link}</a></p>`,
         });
@@ -74,14 +64,6 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
 
     const { email } = payload;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) {
-      this.logger.error(`User not found for email: ${email}`);
-      throw new UnauthorizedException(
-        'There is an issue with your credentials, please try logging in again.'
-      );
-    }
-
-    this.logger.log(`User found for email: ${email}`);
     return user;
   }
 }

@@ -1,10 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
+import { EntityRepository, NotFoundError } from '@mikro-orm/core';
+import { getRepositoryToken } from '@mikro-orm/nestjs';
 import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   testUserChallengeEntity1,
   testUserEntity1,
@@ -14,14 +15,17 @@ import {
   idNotFoundErrorMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
-import { Repository } from 'typeorm';
 import { UserChallengeService } from './user-challenge.service';
 
 const testChallenge2 = 'challenge2';
+const testUpdatedUserChallengeEntity = {
+  ...testUserChallengeEntity1,
+  challenge: testChallenge2,
+};
 
 describe('UserChallengeService', () => {
   let service: UserChallengeService;
-  let repository: Repository<UserChallengeEntity>;
+  let repository: EntityRepository<UserChallengeEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,19 +33,19 @@ describe('UserChallengeService', () => {
         UserChallengeService,
         {
           provide: getRepositoryToken(UserChallengeEntity),
-          useValue: createMock<Repository<UserChallengeEntity>>({
-            findOne: jest.fn().mockResolvedValue(testUserChallengeEntity1),
-            save: jest.fn().mockResolvedValue({
-              ...testUserChallengeEntity1,
-              challenge: testChallenge2,
-            }),
+          useValue: createMock<EntityRepository<UserChallengeEntity>>({
+            getReference: jest.fn().mockReturnValue(testUserChallengeEntity1),
+            findOneOrFail: jest
+              .fn()
+              .mockResolvedValue(testUserChallengeEntity1),
+            assign: jest.fn().mockReturnValue(testUpdatedUserChallengeEntity),
           }),
         },
       ],
     }).compile();
 
     service = module.get<UserChallengeService>(UserChallengeService);
-    repository = module.get<Repository<UserChallengeEntity>>(
+    repository = module.get<EntityRepository<UserChallengeEntity>>(
       getRepositoryToken(UserChallengeEntity)
     );
   });
@@ -53,22 +57,43 @@ describe('UserChallengeService', () => {
 
   describe('findOneById', () => {
     afterEach(() => {
-      expect(repository.findOne).toBeCalledTimes(1);
-      expect(repository.findOne).toBeCalledWith({
-        where: { userId: testUserChallengeEntity1.userId },
-      });
+      expect(repository.findOneOrFail).toBeCalledTimes(1);
+      expect(repository.findOneOrFail).toBeCalledWith(
+        testUserChallengeEntity1.id
+      );
     });
 
     it('should get a single user challenge by user id', async () => {
       await expect(
-        service.findOneById(testUserChallengeEntity1.userId)
+        service.findOneById(testUserChallengeEntity1.id)
       ).resolves.toEqual(testUserChallengeEntity1);
     });
 
-    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
-      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+    it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneById(testUserChallengeEntity1.userId)
+        service.findOneById(testUserChallengeEntity1.id)
+      ).rejects.toThrow(
+        new NotFoundException(
+          idNotFoundErrorMsg(
+            'a',
+            'user challenge',
+            'an',
+            'ID',
+            testUserChallengeEntity1.id
+          )
+        )
+      );
+    });
+
+    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new Error('findOneOrFail'));
+      await expect(
+        service.findOneById(testUserChallengeEntity1.id)
       ).rejects.toThrow(
         new InternalServerErrorException(internalServerErrorMsg)
       );
@@ -77,9 +102,9 @@ describe('UserChallengeService', () => {
 
   describe('findOneByEmail', () => {
     afterEach(() => {
-      expect(repository.findOne).toBeCalledTimes(1);
-      expect(repository.findOne).toBeCalledWith({
-        where: { user: { email: testUserEntity1.email } },
+      expect(repository.findOneOrFail).toBeCalledTimes(1);
+      expect(repository.findOneOrFail).toBeCalledWith({
+        user: { email: testUserEntity1.email },
       });
     });
 
@@ -89,42 +114,12 @@ describe('UserChallengeService', () => {
       ).resolves.toEqual(testUserChallengeEntity1);
     });
 
-    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
-      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+    it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
         service.findOneByEmail(testUserEntity1.email)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
-    });
-  });
-
-  describe('updateByEmail', () => {
-    afterEach(() => {
-      expect(repository.findOne).toBeCalledTimes(1);
-      expect(repository.findOne).toBeCalledWith({
-        where: { user: { email: testUserEntity1.email } },
-      });
-    });
-
-    it('should find and update a user challenge by user id', async () => {
-      await expect(
-        service.updateByEmail(testUserEntity1.email, testChallenge2)
-      ).resolves.toEqual({
-        ...testUserChallengeEntity1,
-        challenge: testChallenge2,
-      });
-      expect(repository.save).toBeCalledTimes(1);
-      expect(repository.save).toBeCalledWith({
-        ...testUserChallengeEntity1,
-        challenge: testChallenge2,
-      });
-    });
-
-    it('should throw a NotFoundException if user challenge does not exist', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
-      await expect(
-        service.updateByEmail(testUserEntity1.email, testChallenge2)
       ).rejects.toThrow(
         new NotFoundException(
           idNotFoundErrorMsg(
@@ -136,33 +131,56 @@ describe('UserChallengeService', () => {
           )
         )
       );
-      expect(repository.save).not.toBeCalled();
     });
 
-    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
-      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.updateByEmail(testUserEntity1.email, testChallenge2)
+        service.findOneByEmail(testUserEntity1.email)
       ).rejects.toThrow(
         new InternalServerErrorException(internalServerErrorMsg)
       );
-      expect(repository.save).not.toBeCalled();
+    });
+  });
+
+  describe('update', () => {
+    afterEach(() => {
+      expect(repository.assign).toBeCalledTimes(1);
+      expect(repository.assign).toBeCalledWith(testUserChallengeEntity1, {
+        challenge: testChallenge2,
+      });
     });
 
-    it('should throw an InternalServerErrorException if save throws an error', async () => {
-      jest.spyOn(repository, 'save').mockRejectedValue(new Error('save'));
+    it('should update a user challenge', async () => {
       await expect(
-        service.updateByEmail(testUserEntity1.email, testChallenge2)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
-      expect(repository.save).toBeCalledTimes(1);
-      expect(repository.save).toBeCalledWith(
-        new UserChallengeEntity({
-          ...testUserChallengeEntity1,
-          challenge: testChallenge2,
-        })
-      );
+        service.update(testUserChallengeEntity1, testChallenge2)
+      ).resolves.toEqual(testUpdatedUserChallengeEntity);
+    });
+
+    describe('byId', () => {
+      it('should find and update a user challenge by ID', async () => {
+        await expect(
+          service.updateById(testUserChallengeEntity1.id, testChallenge2)
+        ).resolves.toEqual(testUpdatedUserChallengeEntity);
+        expect(repository.findOneOrFail).toBeCalledTimes(1);
+        expect(repository.findOneOrFail).toBeCalledWith(
+          testUserChallengeEntity1.id
+        );
+      });
+    });
+
+    describe('byEmail', () => {
+      it('should find and update a user challenge by email', async () => {
+        await expect(
+          service.updateByEmail(testUserEntity1.email, testChallenge2)
+        ).resolves.toEqual(testUpdatedUserChallengeEntity);
+        expect(repository.findOneOrFail).toBeCalledTimes(1);
+        expect(repository.findOneOrFail).toBeCalledWith({
+          user: { email: testUserEntity1.email },
+        });
+      });
     });
   });
 });

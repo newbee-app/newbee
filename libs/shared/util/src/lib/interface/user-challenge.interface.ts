@@ -1,4 +1,4 @@
 export interface UserChallenge {
-  userId: string;
-  challenge?: string | null;
+  id: string;
+  challenge: string | null;
 }

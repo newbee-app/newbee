@@ -10,5 +10,5 @@ export interface Authenticator {
   counter: number;
   credentialDeviceType: CredentialDeviceType;
   credentialBackedUp: boolean;
-  transports?: AuthenticatorTransportFuture[] | null;
+  transports: AuthenticatorTransportFuture[] | null;
 }

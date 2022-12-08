@@ -2,12 +2,17 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { testUpdateUserDto1 } from '@newbee/shared/data-access';
+import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
 import { UserController } from './user.controller';
 
 describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
+
+  const testUpdatedUserEntity = {
+    ...testUserEntity1,
+    ...testBaseUpdateUserDto1,
+  };
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -18,9 +23,7 @@ describe('UserController', () => {
           useValue: createMock<UserService>({
             create: jest.fn().mockResolvedValue(testUserEntity1),
             findOneById: jest.fn().mockResolvedValue(testUserEntity1),
-            update: jest
-              .fn()
-              .mockResolvedValue({ ...testUserEntity1, ...testUpdateUserDto1 }),
+            update: jest.fn().mockResolvedValue(testUpdatedUserEntity),
             delete: jest.fn().mockResolvedValue(true),
           }),
         },
@@ -39,12 +42,12 @@ describe('UserController', () => {
   describe('update', () => {
     it('should find and update a user', async () => {
       await expect(
-        controller.update(testUpdateUserDto1, testUserEntity1)
-      ).resolves.toEqual({ ...testUserEntity1, ...testUpdateUserDto1 });
+        controller.update(testBaseUpdateUserDto1, testUserEntity1)
+      ).resolves.toEqual(testUpdatedUserEntity);
       expect(service.update).toBeCalledTimes(1);
       expect(service.update).toBeCalledWith(
         testUserEntity1,
-        testUpdateUserDto1
+        testBaseUpdateUserDto1
       );
     });
   });

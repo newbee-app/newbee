@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserEntity } from '@newbee/api/shared/data-access';
@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     configService: ConfigService<AppConfigInterface, true>,
     private readonly userService: UserService
   ) {
-    super(configService.get('auth.jwtStrategy', { infer: true }));
+    super(configService.get('auth', { infer: true }).jwtStrategy);
   }
 
   async validate(payload: UserJwtPayload): Promise<UserEntity> {
@@ -27,14 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const { sub: id } = payload;
     const user = await this.userService.findOneById(id);
-    if (!user) {
-      this.logger.error(`User not found for ID: ${id}`);
-      throw new UnauthorizedException(
-        'There is an issue with your credentials, please try logging in again.'
-      );
-    }
-
-    this.logger.log(`User found with ID: ${id}`);
     return user;
   }
 }

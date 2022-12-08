@@ -20,7 +20,7 @@ import { AuthController } from './auth.controller';
     JwtModule.registerAsync({
       useFactory: async (
         configService: ConfigService<AppConfigInterface, true>
-      ) => configService.get('auth.jwtModule', { infer: true }),
+      ) => configService.get('auth', { infer: true }).jwtModule,
       inject: [ConfigService],
     }),
     UserModule,

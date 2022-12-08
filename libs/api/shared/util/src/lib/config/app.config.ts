@@ -1,20 +1,19 @@
-import { MailerOptions } from '@nestjs-modules/mailer';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+import type { MailerOptions } from '@nestjs-modules/mailer';
 import Joi from 'joi';
 import winston from 'winston';
-import { AuthConfigInterface } from './auth.config';
+import type { AuthConfigInterface } from './auth.config';
 
 export interface AppConfigInterface {
   logging: winston.LoggerOptions;
-  database: TypeOrmModuleOptions;
+  database: MikroOrmModuleOptions;
   mailer: MailerOptions;
   rpInfo: {
     name: string;
     id: string;
     origin: string;
   };
-
-  auth: AuthConfigInterface;
+  auth?: AuthConfigInterface;
 }
 
 export const appEnvironmentVariablesSchema = Joi.object({
@@ -28,7 +27,6 @@ export const appEnvironmentVariablesSchema = Joi.object({
 
   // CockroachDB
   COCKROACHDB_URL: Joi.string().required(),
-  COCKROACHDB_CLUSTER: Joi.string().required(),
 
   // JWT
   JWT_SECRET: Joi.string().required(),

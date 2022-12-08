@@ -1,11 +1,17 @@
 import {
+  EntityRepository,
+  NotFoundError,
+  UniqueConstraintViolationException,
+} from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   UserChallengeEntity,
   UserEntity,
@@ -13,12 +19,12 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   AppConfigInterface,
-  createConflictLogMsg,
+  idNotFoundErrorMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 import type { UserAndOptions } from '@newbee/api/user/util';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
-import { DataSource, Repository } from 'typeorm';
+import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
@@ -27,67 +33,74 @@ export class UserService {
 
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    private readonly dataSource: DataSource,
+    private readonly userRepository: EntityRepository<UserEntity>,
     private readonly configService: ConfigService<AppConfigInterface, true>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
     const { email } = createUserDto;
-    if (await this.findOneByEmail(email)) {
-      this.logger.error(createConflictLogMsg('a', 'user', 'email', email));
-      throw new BadRequestException(
-        `The email ${email} is already taken, please use a different email or log in to your existing account!`
-      );
-    }
+    const id = v4();
+    const { displayName, name } = createUserDto;
+    const rpInfo = this.configService.get('rpInfo', { infer: true });
+    const options = generateRegistrationOptions({
+      rpName: rpInfo.name,
+      rpID: rpInfo.id,
+      userID: id,
+      userName: email,
+      userDisplayName: displayName ?? name,
+    });
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const user = this.userRepository.create({
+      ...createUserDto,
+      id,
+      settings: new UserSettingsEntity(),
+      challenge: new UserChallengeEntity({ challenge: options.challenge }),
+    });
 
     try {
-      const user = await queryRunner.manager.save(
-        new UserEntity({ ...createUserDto, active: true, online: false })
-      );
-      await queryRunner.manager.save(new UserSettingsEntity({ user }));
-
-      const rpInfo = this.configService.get('rpInfo', { infer: true });
-      const options = generateRegistrationOptions({
-        rpName: rpInfo.name,
-        rpID: rpInfo.id,
-        userID: user.id,
-        userName: user.email,
-        userDisplayName: user.displayName ?? user.name,
-      });
-      await queryRunner.manager.save(
-        new UserChallengeEntity({ user, challenge: options.challenge })
-      );
-
-      await queryRunner.commitTransaction();
+      await this.userRepository.flush();
       return { user, options };
     } catch (err) {
-      await queryRunner.rollbackTransaction();
       this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    } finally {
-      queryRunner.release();
-    }
-  }
 
-  async findOneById(id: string): Promise<UserEntity | null> {
-    try {
-      return await this.userRepository.findOne({ where: { id } });
-    } catch (err) {
-      this.logger.error(err);
+      if (err instanceof UniqueConstraintViolationException) {
+        throw new BadRequestException(
+          `The email ${email} is already taken, please use a different email or log in to your existing account.`
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
+  async findOneById(id: string): Promise<UserEntity> {
     try {
-      return await this.userRepository.findOne({ where: { email } });
+      return await this.userRepository.findOneOrFail(id);
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
+        );
+      }
+
+      throw new InternalServerErrorException(internalServerErrorMsg);
+    }
+  }
+
+  async findOneByEmail(email: string): Promise<UserEntity> {
+    try {
+      return await this.userRepository.findOneOrFail({ email });
+    } catch (err) {
+      this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('a', 'user', 'an', 'email', email)
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
@@ -96,22 +109,12 @@ export class UserService {
     user: UserEntity,
     updateUserDto: UpdateUserDto
   ): Promise<UserEntity> {
-    try {
-      return await this.userRepository.save(
-        new UserEntity({ ...user, ...updateUserDto })
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    const updatedUser = this.userRepository.assign(user, updateUserDto);
+    await this.userRepository.flush();
+    return updatedUser;
   }
 
   async delete(user: UserEntity): Promise<void> {
-    try {
-      await this.userRepository.remove(user);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    await this.userRepository.removeAndFlush(user);
   }
 }

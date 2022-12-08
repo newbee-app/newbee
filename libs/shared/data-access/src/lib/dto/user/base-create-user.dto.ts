@@ -5,6 +5,6 @@ export class BaseCreateUserDto
 {
   email!: string;
   name!: string;
-  displayName?: string;
-  phoneNumber?: string;
+  displayName: string | null = null;
+  phoneNumber: string | null = null;
 }

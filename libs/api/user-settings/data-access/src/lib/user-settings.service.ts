@@ -1,12 +1,16 @@
+import { EntityRepository, NotFoundError } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserSettingsEntity } from '@newbee/api/shared/data-access';
-import { internalServerErrorMsg } from '@newbee/api/shared/util';
-import { Repository } from 'typeorm';
+import {
+  idNotFoundErrorMsg,
+  internalServerErrorMsg,
+} from '@newbee/api/shared/util';
 
 @Injectable()
 export class UserSettingsService {
@@ -14,16 +18,21 @@ export class UserSettingsService {
 
   constructor(
     @InjectRepository(UserSettingsEntity)
-    private readonly userSettingsRepository: Repository<UserSettingsEntity>
+    private readonly userSettingsRepository: EntityRepository<UserSettingsEntity>
   ) {}
 
-  async findOneById(id: string): Promise<UserSettingsEntity | null> {
+  async findOneById(id: string): Promise<UserSettingsEntity> {
     try {
-      return await this.userSettingsRepository.findOne({
-        where: { userId: id },
-      });
+      return await this.userSettingsRepository.findOneOrFail(id);
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('a', 'user settings', 'an', 'ID', id)
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }

@@ -9,21 +9,24 @@ import {
 
 export interface AuthConfigInterface {
   jwtModule: JwtModuleOptions;
-  magicLinkLogin: MagicLinkLoginStrategyOtions;
+  magicLinkLogin: Omit<MagicLinkLoginStrategyOtions, 'sendMagicLink'>;
   jwtStrategy: JwtStrategyOptions;
 }
 
-export default registerAs('auth', () => ({
-  jwtModule: {
-    secret: process.env['JWT_SECRET'],
-  },
-  magicLinkLogin: {
-    secret: process.env['JWT_SECRET'],
-    verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'],
-    name: magicLinkLogin,
-  },
-  jwtStrategy: {
-    secretOrKey: process.env['JWT_SECRET'],
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  },
-}));
+export default registerAs(
+  'auth',
+  (): AuthConfigInterface => ({
+    jwtModule: {
+      secret: process.env['JWT_SECRET'] as string,
+    },
+    magicLinkLogin: {
+      secret: process.env['JWT_SECRET'] as string,
+      verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'] as string,
+      name: magicLinkLogin,
+    },
+    jwtStrategy: {
+      secretOrKey: process.env['JWT_SECRET'] as string,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    },
+  })
+);

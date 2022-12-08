@@ -1,28 +1,27 @@
+import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { UserChallenge } from '@newbee/shared/util';
-import {
-  Column,
-  DeepPartial,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn,
-  Relation,
-} from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity()
 export class UserChallengeEntity implements UserChallenge {
-  @PrimaryColumn()
-  userId!: string;
+  @Property({ persist: false })
+  get id(): string {
+    return this.user.id;
+  }
 
-  @Column({ nullable: true })
-  challenge?: string | null;
+  @Property({ type: 'string', nullable: true })
+  challenge: string | null = null;
 
-  @OneToOne(() => UserEntity, (user) => user.challenge, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  user!: Relation<UserEntity>;
+  @OneToOne(() => UserEntity, (user) => user.challenge, {
+    owner: true,
+    primary: true,
+    hidden: true,
+  })
+  user!: UserEntity;
 
-  constructor(partial?: DeepPartial<UserChallengeEntity>) {
+  [PrimaryKeyType]?: string;
+
+  constructor(partial?: Partial<UserChallengeEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

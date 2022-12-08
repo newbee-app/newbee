@@ -7,12 +7,12 @@ import { TestBed } from '@angular/core/testing';
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
   authVersion,
-  testCreateUserDto1,
-  testEmailDto1,
-  testLoginDto1,
-  testMagicLinkLoginDto1,
-  testUserCreatedDto1,
-  testWebAuthnLoginDto1,
+  testBaseCreateUserDto1,
+  testBaseEmailDto1,
+  testBaseLoginDto1,
+  testBaseMagicLinkLoginDto1,
+  testBaseUserCreatedDto1,
+  testBaseWebAuthnLoginDto1,
 } from '@newbee/shared/data-access';
 import {
   magicLinkLogin,
@@ -52,11 +52,11 @@ describe('AuthService', () => {
   });
 
   describe('magicLinkLoginLogin', () => {
-    it('should send out a post request', (done) => {
+    it('should send out a get request', (done) => {
       service.magicLinkLoginLogin(testLoginForm1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
-            expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
+            expect(magicLinkLoginDto).toEqual(testBaseMagicLinkLoginDto1);
             done();
           } catch (err) {
             done(err);
@@ -65,13 +65,13 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
+      const params = new HttpParams({ fromObject: { ...testBaseEmailDto1 } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/auth/${magicLinkLogin}/login`
+        `/api/v${authVersion}/auth/${magicLinkLogin}/login?${params.toString()}`
       );
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testEmailDto1);
+      expect(req.request.method).toEqual('GET');
 
-      req.flush(testMagicLinkLoginDto1);
+      req.flush(testBaseMagicLinkLoginDto1);
     });
   });
 
@@ -80,7 +80,7 @@ describe('AuthService', () => {
       service.magicLinkLogin('1234').subscribe({
         next: (loginDto) => {
           try {
-            expect(loginDto).toEqual(testLoginDto1);
+            expect(loginDto).toEqual(testBaseLoginDto1);
             done();
           } catch (err) {
             done(err);
@@ -95,7 +95,7 @@ describe('AuthService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testLoginDto1);
+      req.flush(testBaseLoginDto1);
     });
   });
 
@@ -104,7 +104,7 @@ describe('AuthService', () => {
       service.webAuthnRegister(testRegisterForm1).subscribe({
         next: (userCreatedDto) => {
           try {
-            expect(userCreatedDto).toEqual(testUserCreatedDto1);
+            expect(userCreatedDto).toEqual(testBaseUserCreatedDto1);
             done();
           } catch (err) {
             done(err);
@@ -113,13 +113,13 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testCreateUserDto1 } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/auth/${webauthn}/register?${params.toString()}`
+        `/api/v${authVersion}/auth/${webauthn}/register`
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseCreateUserDto1);
 
-      req.flush(testUserCreatedDto1);
+      req.flush(testBaseUserCreatedDto1);
     });
   });
 
@@ -137,7 +137,7 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testEmailDto1 } });
+      const params = new HttpParams({ fromObject: { ...testBaseEmailDto1 } });
       const req = httpController.expectOne(
         `/api/v${authVersion}/auth/${webauthn}/login?${params.toString()}`
       );
@@ -157,7 +157,7 @@ describe('AuthService', () => {
         .subscribe({
           next: (loginDto) => {
             try {
-              expect(loginDto).toEqual(testLoginDto1);
+              expect(loginDto).toEqual(testBaseLoginDto1);
               done();
             } catch (err) {
               done(err);
@@ -175,9 +175,9 @@ describe('AuthService', () => {
         `/api/v${authVersion}/auth/${webauthn}/login`
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testWebAuthnLoginDto1);
+      expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);
 
-      req.flush(testLoginDto1);
+      req.flush(testBaseLoginDto1);
     });
   });
 });

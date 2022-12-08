@@ -1,50 +1,49 @@
+import {
+  Entity,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+  types,
+  Unique,
+} from '@mikro-orm/core';
 import { Authenticator } from '@newbee/shared/util';
 import {
   AuthenticatorTransportFuture,
   CredentialDeviceType,
 } from '@simplewebauthn/typescript-types';
-import {
-  Column,
-  DeepPartial,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+import { v4 } from 'uuid';
 import { UserEntity } from './user.entity';
 
 @Entity()
 export class AuthenticatorEntity implements Authenticator {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryKey()
+  id: string = v4();
 
-  @Column({
-    type: 'text',
-    unique: true,
-  })
+  @Property({ type: 'text' })
+  @Unique()
   credentialId!: string;
 
-  @Column({ type: 'text' })
+  @Property({ type: 'text' })
   credentialPublicKey!: string;
 
-  @Column({ type: 'bigint' })
+  @Property({ type: 'bigint' })
   counter!: number;
 
-  @Column({ length: 32 })
+  @Property({ type: 'string', length: 32 })
   credentialDeviceType!: CredentialDeviceType;
 
-  @Column()
+  @Property()
   credentialBackedUp!: boolean;
 
-  @Column({ nullable: true })
-  transports?: AuthenticatorTransportFuture[] | null;
+  @Property({ type: types.array, nullable: true })
+  transports: AuthenticatorTransportFuture[] | null = null;
 
-  @ManyToOne(() => UserEntity, (user) => user.authenticators, {
-    onDelete: 'CASCADE',
+  @ManyToOne(() => UserEntity, {
+    hidden: true,
   })
-  user!: Relation<UserEntity>;
+  user!: UserEntity;
 
-  constructor(partial?: DeepPartial<AuthenticatorEntity>) {
+  constructor(partial?: Partial<AuthenticatorEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

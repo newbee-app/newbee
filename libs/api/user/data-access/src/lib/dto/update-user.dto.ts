@@ -1,5 +1,5 @@
 import { BaseUpdateUserDto } from '@newbee/shared/data-access';
-import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
 
 export class UpdateUserDto implements BaseUpdateUserDto {
   @IsOptional()
@@ -10,9 +10,15 @@ export class UpdateUserDto implements BaseUpdateUserDto {
   name?: string;
 
   @IsOptional()
-  displayName?: string;
+  displayName?: string | null;
 
   @IsOptional()
   @IsPhoneNumber()
-  phoneNumber?: string;
+  phoneNumber?: string | null;
+
+  @IsBoolean()
+  active?: boolean;
+
+  @IsBoolean()
+  online?: boolean;
 }

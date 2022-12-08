@@ -1,15 +1,15 @@
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import {
-  testLoginDto1,
-  testMagicLinkLoginDto1,
+  testBaseLoginDto1,
+  testBaseMagicLinkLoginDto1,
 } from '@newbee/shared/data-access';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
   const stateAfterLoginMagicLinkSuccess: AuthState = {
     ...initialAuthState,
-    jwtId: testMagicLinkLoginDto1.jwtId,
-    email: testMagicLinkLoginDto1.email,
+    jwtId: testBaseMagicLinkLoginDto1.jwtId,
+    email: testBaseMagicLinkLoginDto1.email,
   };
 
   describe('start from initial state', () => {
@@ -23,7 +23,7 @@ describe('AuthReducer', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
         AuthActions.sendLoginMagicLinkSuccess({
-          magicLinkLoginDto: testMagicLinkLoginDto1,
+          magicLinkLoginDto: testBaseMagicLinkLoginDto1,
         })
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLinkSuccess);
@@ -34,7 +34,7 @@ describe('AuthReducer', () => {
     it('should update state for loginSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        AuthActions.loginSuccess({ loginDto: testLoginDto1 })
+        AuthActions.loginSuccess({ loginDto: testBaseLoginDto1 })
       );
       expect(updatedState).toEqual(initialAuthState);
     });

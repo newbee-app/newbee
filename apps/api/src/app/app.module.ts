@@ -1,3 +1,4 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MailerModule } from '@nestjs-modules/mailer';
 import {
   CacheInterceptor,
@@ -8,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import {
@@ -35,7 +35,7 @@ import { default as appConfig } from '../environments/environment';
         configService.get('logging', { infer: true }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forRootAsync({
+    MikroOrmModule.forRootAsync({
       useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
         configService.get('database', { infer: true }),
       inject: [ConfigService],

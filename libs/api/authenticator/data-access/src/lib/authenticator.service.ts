@@ -1,4 +1,10 @@
 import {
+  EntityRepository,
+  NotFoundError,
+  UniqueConstraintViolationException,
+} from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
@@ -6,7 +12,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AuthenticatorEntity,
   UserEntity,
@@ -15,9 +20,7 @@ import {
   AppConfigInterface,
   badRequestAuthenticatorErrorMsg,
   challengeFalsyLogMsg,
-  createConflictLogMsg,
   idNotFoundErrorMsg,
-  idNotFoundLogMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
@@ -30,7 +33,6 @@ import type {
   PublicKeyCredentialDescriptorFuture,
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthenticatorService {
@@ -38,7 +40,7 @@ export class AuthenticatorService {
 
   constructor(
     @InjectRepository(AuthenticatorEntity)
-    private readonly authenticatorRepository: Repository<AuthenticatorEntity>,
+    private readonly authenticatorRepository: EntityRepository<AuthenticatorEntity>,
     private readonly configService: ConfigService<AppConfigInterface, true>,
     private readonly userChallengeService: UserChallengeService
   ) {}
@@ -63,12 +65,7 @@ export class AuthenticatorService {
       userDisplayName: user.displayName ?? user.name,
       excludeCredentials: authenticators,
     });
-
-    await this.userChallengeService.updateByEmail(
-      user.email,
-      options.challenge
-    );
-
+    await this.userChallengeService.updateById(user.id, options.challenge);
     return options;
   }
 
@@ -76,28 +73,7 @@ export class AuthenticatorService {
     credential: RegistrationCredentialJSON,
     user: UserEntity
   ): Promise<AuthenticatorEntity> {
-    if (await this.findOneByCredentialId(credential.id)) {
-      this.logger.error(
-        createConflictLogMsg(
-          'an',
-          'authenticator',
-          'credential ID',
-          credential.id
-        )
-      );
-      throw new BadRequestException(
-        'The authenticator you are trying to register has already been registered to your account.'
-      );
-    }
-
     const userChallenge = await this.userChallengeService.findOneById(user.id);
-    if (!userChallenge) {
-      this.logger.error(
-        `User challenge not defined although user is for ID: ${user.id}`
-      );
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
-
     const { challenge } = userChallenge;
     if (!challenge) {
       this.logger.error(
@@ -127,91 +103,85 @@ export class AuthenticatorService {
     } = registrationInfo;
 
     try {
-      return await this.authenticatorRepository.save(
-        new AuthenticatorEntity({
-          credentialId: credentialID.toString('base64url'),
-          credentialPublicKey: credentialPublicKey.toString('base64url'),
-          counter,
-          credentialDeviceType,
-          credentialBackedUp,
-          ...(credential.transports && { transports: credential.transports }),
-          user,
-        })
-      );
+      const authenticator = this.authenticatorRepository.create({
+        credentialId: credentialID.toString('base64url'),
+        credentialPublicKey: credentialPublicKey.toString('base64url'),
+        counter,
+        credentialDeviceType,
+        credentialBackedUp,
+        ...(credential.transports && { transports: credential.transports }),
+        user,
+      });
+      await this.authenticatorRepository.flush();
+      return authenticator;
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof UniqueConstraintViolationException) {
+        throw new BadRequestException(
+          'The authenticator you are trying to register has already been registered to an account.'
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
 
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
-    try {
-      return await this.authenticatorRepository.find({
-        where: { user: { email } },
-      });
-    } catch (err) {
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    return await this.authenticatorRepository.find({ user: { email } });
   }
 
-  async findOneById(id: string): Promise<AuthenticatorEntity | null> {
+  async findOneById(id: string): Promise<AuthenticatorEntity> {
     try {
-      return await this.authenticatorRepository.findOne({ where: { id } });
+      return await this.authenticatorRepository.findOneOrFail(id);
     } catch (err) {
+      this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
 
   async findOneByCredentialId(
     credentialId: string
-  ): Promise<AuthenticatorEntity | null> {
+  ): Promise<AuthenticatorEntity> {
     try {
-      return await this.authenticatorRepository.findOne({
-        where: { credentialId },
-      });
+      return await this.authenticatorRepository.findOneOrFail({ credentialId });
     } catch (err) {
       this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundException(
+          idNotFoundErrorMsg(
+            'an',
+            'authenticator',
+            'a',
+            'credential ID',
+            credentialId
+          )
+        );
+      }
+
       throw new InternalServerErrorException(internalServerErrorMsg);
     }
   }
 
   async updateById(id: string, counter: number): Promise<AuthenticatorEntity> {
-    const authenticator = await this.findOneById(id);
-    if (!authenticator) {
-      this.logger.error(
-        idNotFoundLogMsg('update', 'an', 'authenticator', 'ID', id)
-      );
-      throw new NotFoundException(
-        idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
-      );
-    }
-
-    try {
-      return await this.authenticatorRepository.save(
-        new AuthenticatorEntity({ ...authenticator, counter })
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    let authenticator = await this.findOneById(id);
+    authenticator = this.authenticatorRepository.assign(authenticator, {
+      counter,
+    });
+    await this.authenticatorRepository.flush();
+    return authenticator;
   }
 
   async deleteOneById(id: string): Promise<void> {
-    const authenticator = await this.findOneById(id);
-    if (!authenticator) {
-      this.logger.error(
-        idNotFoundLogMsg('delete', 'an', 'authenticator', 'ID', id)
-      );
-      throw new NotFoundException(
-        idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
-      );
-    }
-
-    try {
-      await this.authenticatorRepository.remove(authenticator);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
+    const authenticator = this.authenticatorRepository.getReference(id);
+    await this.authenticatorRepository.removeAndFlush(authenticator);
   }
 }

@@ -37,7 +37,7 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Get(`${webauthn}/register`)
+  @Post(`${webauthn}/register`)
   async webAuthnRegister(
     @Query() createUserDto: CreateUserDto
   ): Promise<BaseUserCreatedDto> {

@@ -1,50 +1,62 @@
-import { User } from '@newbee/shared/util';
 import {
-  Column,
-  DeepPartial,
+  Cascade,
+  Collection,
   Entity,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+  OptionalProps,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 @Entity()
 export class UserEntity implements User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryKey()
   id!: string;
 
-  @Column({ unique: true })
+  @Property({ unique: true })
   email!: string;
 
-  @Column()
+  @Property()
   name!: string;
 
-  @Column({ nullable: true })
-  displayName?: string | null;
+  @Property({ type: 'string', nullable: true })
+  displayName: string | null = null;
 
-  @Column({ nullable: true, length: 32 })
-  phoneNumber?: string | null;
+  @Property({ type: 'string', nullable: true })
+  phoneNumber: string | null = null;
 
-  @Column()
-  active!: boolean;
+  @Property({ type: 'boolean' })
+  active = true;
 
-  @Column()
-  online!: boolean;
+  @Property({ type: 'boolean' })
+  online = false;
 
-  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
-  settings!: Relation<UserSettingsEntity>;
+  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user, {
+    cascade: [Cascade.ALL],
+    hidden: true,
+  })
+  settings!: UserSettingsEntity;
 
-  @OneToOne(() => UserChallengeEntity, (challenge) => challenge.user)
-  challenge!: Relation<UserChallengeEntity>;
+  @OneToOne(() => UserChallengeEntity, (challenge) => challenge.user, {
+    cascade: [Cascade.ALL],
+    hidden: true,
+  })
+  challenge!: UserChallengeEntity;
 
-  @OneToMany(() => AuthenticatorEntity, (authenticator) => authenticator.user)
-  authenticators!: Relation<AuthenticatorEntity[]>;
+  @OneToMany(() => AuthenticatorEntity, (authenticator) => authenticator.user, {
+    orphanRemoval: true,
+    hidden: true,
+  })
+  authenticators = new Collection<AuthenticatorEntity>(this);
 
-  constructor(partial?: DeepPartial<UserEntity>) {
+  [OptionalProps]?: 'active' | 'online';
+
+  constructor(partial?: Partial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

@@ -1,9 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
@@ -12,8 +8,6 @@ import {
   AppConfigInterface,
   badRequestAuthenticatorErrorMsg,
   challengeFalsyLogMsg,
-  idNotFoundLogMsg,
-  internalServerErrorMsg,
   UserJwtPayload,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
@@ -38,7 +32,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly authenticatorService: AuthenticatorService,
     private readonly userChallengeService: UserChallengeService,
-    private readonly configService: ConfigService<AppConfigInterface, true>
+    private readonly configService: ConfigService<AppConfigInterface, true>,
+    private readonly em: EntityManager
   ) {}
 
   login(user: UserEntity): BaseLoginDto {
@@ -62,9 +57,7 @@ export class AuthService {
       userVerification: 'preferred',
       rpID: this.configService.get('rpInfo.id', { infer: true }),
     });
-
     await this.userChallengeService.updateByEmail(email, options.challenge);
-
     return options;
   }
 
@@ -73,13 +66,7 @@ export class AuthService {
     credential: AuthenticationCredentialJSON
   ): Promise<UserEntity> {
     const userChallenge = await this.userChallengeService.findOneByEmail(email);
-    if (!userChallenge) {
-      this.logger.error(
-        `User challenge not defined although user is for email: ${email}`
-      );
-      throw new InternalServerErrorException(internalServerErrorMsg);
-    }
-
+    await this.em.populate(userChallenge, ['user']);
     const { user, challenge } = userChallenge;
     if (!challenge) {
       this.logger.error(challengeFalsyLogMsg('login', challenge, user.id));
@@ -90,13 +77,6 @@ export class AuthService {
     const authenticator = await this.authenticatorService.findOneByCredentialId(
       id
     );
-    if (!authenticator) {
-      this.logger.error(
-        idNotFoundLogMsg('find', 'an', 'authenticator', 'credential ID', id)
-      );
-      throw new BadRequestException(badRequestAuthenticatorErrorMsg);
-    }
-
     const { credentialPublicKey, credentialId, counter, transports } =
       authenticator;
     const authenticatorDevice: AuthenticatorDevice = {

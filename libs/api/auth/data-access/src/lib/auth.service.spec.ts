@@ -1,8 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
@@ -11,14 +9,14 @@ import {
   testAuthenticatorEntity1,
   testUserChallengeEntity1,
   testUserEntity1,
+  UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
 import {
   badRequestAuthenticatorErrorMsg,
-  internalServerErrorMsg,
   testUserJwtPayload1,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
-import { testLoginDto1 } from '@newbee/shared/data-access';
+import { testBaseLoginDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticationCredential1,
   testPublicKeyCredentialRequestOptions1,
@@ -61,7 +59,7 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: createMock<JwtService>({
-            sign: jest.fn().mockReturnValue(testLoginDto1.access_token),
+            sign: jest.fn().mockReturnValue(testBaseLoginDto1.access_token),
           }),
         },
         {
@@ -95,6 +93,10 @@ describe('AuthService', () => {
           provide: ConfigService,
           useValue: createMock<ConfigService>(),
         },
+        {
+          provide: EntityManager,
+          useValue: createMock<EntityManager>(),
+        },
       ],
     }).compile();
 
@@ -124,7 +126,10 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should generate an access token', () => {
-      expect(service.login(testUserEntity1)).toEqual(testLoginDto1);
+      expect(service.login(testUserEntity1)).toEqual({
+        ...testBaseLoginDto1,
+        user: testUserEntity1,
+      });
       expect(jwtService.sign).toBeCalledTimes(1);
       expect(jwtService.sign).toBeCalledWith(testUserJwtPayload1);
     });
@@ -167,6 +172,7 @@ describe('AuthService', () => {
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
         testAuthenticationCredential1.id
       );
+      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
       expect(authenticatorService.updateById).toBeCalledTimes(1);
       expect(authenticatorService.updateById).toBeCalledWith(
         testAuthenticatorEntity1.id,
@@ -174,24 +180,12 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw an InternalServerErrorException if user challenge does not exist', async () => {
-      jest
-        .spyOn(userChallengeService, 'findOneByEmail')
-        .mockResolvedValue(null);
-      await expect(
-        service.verifyLoginChallenge(
-          testUserEntity1.email,
-          testAuthenticationCredential1
-        )
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
-    });
-
     it('should throw a BadRequestException if challenge is falsy', async () => {
       jest
         .spyOn(userChallengeService, 'findOneByEmail')
-        .mockResolvedValue({ ...testUserChallengeEntity1, challenge: null });
+        .mockResolvedValue(
+          new UserChallengeEntity({ user: testUserEntity1, challenge: null })
+        );
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,
@@ -199,24 +193,6 @@ describe('AuthService', () => {
         )
       ).rejects.toThrow(
         new BadRequestException(badRequestAuthenticatorErrorMsg)
-      );
-    });
-
-    it('should throw a BadRequestException if authenticator cannot be found', async () => {
-      jest
-        .spyOn(authenticatorService, 'findOneByCredentialId')
-        .mockResolvedValue(null);
-      await expect(
-        service.verifyLoginChallenge(
-          testUserEntity1.email,
-          testAuthenticationCredential1
-        )
-      ).rejects.toThrow(
-        new BadRequestException(badRequestAuthenticatorErrorMsg)
-      );
-      expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
-      expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
-        testAuthenticationCredential1.id
       );
     });
 
@@ -234,6 +210,7 @@ describe('AuthService', () => {
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
         testAuthenticationCredential1.id
       );
+      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
     });
 
     it('should throw a BadRequestException if not verified', async () => {
@@ -253,6 +230,7 @@ describe('AuthService', () => {
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
         testAuthenticationCredential1.id
       );
+      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
     });
   });
 });

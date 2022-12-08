@@ -10,9 +10,9 @@ export class CreateUserDto implements BaseCreateUserDto {
   name!: string;
 
   @IsOptional()
-  displayName?: string;
+  displayName: string | null = null;
 
   @IsOptional()
   @IsPhoneNumber()
-  phoneNumber?: string;
+  phoneNumber: string | null = null;
 }

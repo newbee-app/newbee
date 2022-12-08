@@ -1,8 +1,10 @@
-import { BaseCreateUserDto } from './base-create-user.dto';
+import { User } from '@newbee/shared/util';
 
-export class BaseUpdateUserDto implements Partial<BaseCreateUserDto> {
+export class BaseUpdateUserDto implements Partial<Omit<User, 'id'>> {
   email?: string;
   name?: string;
-  displayName?: string;
-  phoneNumber?: string;
+  displayName?: string | null;
+  phoneNumber?: string | null;
+  active?: boolean;
+  online?: boolean;
 }

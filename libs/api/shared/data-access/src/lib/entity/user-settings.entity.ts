@@ -1,26 +1,24 @@
+import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { UserSettings } from '@newbee/shared/util';
-import {
-  DeepPartial,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn,
-  Relation,
-} from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity()
 export class UserSettingsEntity implements UserSettings {
-  @PrimaryColumn()
-  userId!: string;
+  @Property({ persist: false })
+  get id(): string {
+    return this.user.id;
+  }
 
   @OneToOne(() => UserEntity, (user) => user.settings, {
-    onDelete: 'CASCADE',
+    owner: true,
+    primary: true,
+    hidden: true,
   })
-  @JoinColumn()
-  user!: Relation<UserEntity>;
+  user!: UserEntity;
 
-  constructor(partial?: DeepPartial<UserSettingsEntity>) {
+  [PrimaryKeyType]?: string;
+
+  constructor(partial?: Partial<UserSettingsEntity>) {
     if (partial) {
       Object.assign(this, partial);
     }

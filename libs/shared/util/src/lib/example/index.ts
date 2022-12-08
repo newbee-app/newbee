@@ -13,15 +13,16 @@ export const testAuthenticator1: Authenticator = {
   counter: 0,
   credentialDeviceType: 'singleDevice',
   credentialBackedUp: true,
+  transports: null,
 };
 
 export const testUserChallenge1: UserChallenge = {
-  userId: '1',
+  id: '1',
   challenge: 'challenge1',
 };
 
 export const testUserSettings1: UserSettings = {
-  userId: '1',
+  id: '1',
 };
 
 export const testUser1: User = {
@@ -29,6 +30,7 @@ export const testUser1: User = {
   email: 'johndoe@example.com',
   name: 'John Doe',
   displayName: 'John',
+  phoneNumber: null,
   active: true,
   online: false,
 };

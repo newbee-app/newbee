@@ -1,10 +1,13 @@
+import { Logger } from '@nestjs/common';
+import { AppConfigInterface } from '@newbee/api/shared/util';
 import winston from 'winston';
 
 export const environment = {
   production: false,
 };
 
-export default () => ({
+const logger = new Logger('MikroORM');
+export default (): AppConfigInterface => ({
   logging: {
     level: 'info',
     format: winston.format.combine(
@@ -31,13 +34,11 @@ export default () => ({
     ],
   },
   database: {
-    type: 'postgres', // needs to be 'postgres' to work with enums, not 'cockroachdb'
-    url: process.env['COCKROACHDB_URL'],
-    ssl: true,
-    extra: {
-      options: `--cluster=${process.env['COCKROACHDB_CLUSTER']}`,
-    },
+    type: 'postgresql',
+    clientUrl: process.env['COCKROACHDB_URL'] as string,
+    forceUtcTimezone: true,
     autoLoadEntities: true,
+    logger: logger.log.bind(logger),
   },
   mailer: {
     transport: `smtps://${process.env['SMTP_USERNAME']}:${process.env['SMTP_PASSWORD']}@${process.env['SMTP_HOST']}`,
@@ -46,8 +47,8 @@ export default () => ({
     },
   },
   rpInfo: {
-    name: process.env['APP_NAME'],
-    id: process.env['APP_DOMAIN'],
-    origin: process.env['APP_URL'],
+    name: process.env['APP_NAME'] as string,
+    id: process.env['APP_DOMAIN'] as string,
+    origin: process.env['APP_URL'] as string,
   },
 });
