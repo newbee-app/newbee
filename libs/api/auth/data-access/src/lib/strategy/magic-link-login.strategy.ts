@@ -12,9 +12,8 @@ import { internalServerErrorMsg } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   MagicLinkLoginStrategy as Strategy,
+  Payload,
   SendMagicLinkFunction,
-  SendPayload,
-  ValidatePayload,
 } from '@newbee/passport-magic-link-login';
 
 @Injectable()
@@ -30,7 +29,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
       infer: true,
     }).magicLinkLogin;
     const sendMagicLink: SendMagicLinkFunction = async (
-      payload: SendPayload,
+      payload: Payload,
       link: string,
       code: string
     ): Promise<void> => {
@@ -55,7 +54,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: ValidatePayload): Promise<UserEntity> {
+  async validate(payload: Payload): Promise<UserEntity> {
     this.logger.log(
       `Magic Link Login validate request received for payload: ${JSON.stringify(
         payload

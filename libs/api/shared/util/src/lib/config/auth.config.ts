@@ -13,11 +13,18 @@ export interface AuthConfigInterface {
   jwtStrategy: JwtStrategyOptions;
 }
 
+const tokenExpiration = '7d';
 export default registerAs(
   'auth',
   (): AuthConfigInterface => ({
     jwtModule: {
       secret: process.env['JWT_SECRET'] as string,
+      signOptions: {
+        expiresIn: tokenExpiration,
+      },
+      verifyOptions: {
+        maxAge: tokenExpiration,
+      },
     },
     magicLinkLogin: {
       secret: process.env['JWT_SECRET'] as string,

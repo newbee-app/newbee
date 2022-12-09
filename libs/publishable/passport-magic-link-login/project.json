@@ -44,6 +44,19 @@
         "jestConfig": "libs/publishable/passport-magic-link-login/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/publishable/passport-magic-link-login/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/publishable-passport-magic-link-login",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []
