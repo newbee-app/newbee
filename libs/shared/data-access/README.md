@@ -1,11 +1,21 @@
 # shared-data-access
 
-This library was generated with [Nx](https://nx.dev).
+This lib contains useful utilities for interacting with data that are shared between the backend Nest project and the frontend Angular project. It includes things like:
 
-## Building
+- DTOs (i.e. Data Transfer Objects)
+- Constant values
+- Example instances of defined classes/interfaces for use in testing.
 
-Run `nx build shared-data-access` to build the library.
+## What to add to this lib
 
-## Running unit tests
+Like other `data-access` libs, `shared-data-access` should only contain classes, interfaces, and functions that work with state in some way.
 
-Run `nx test shared-data-access` to execute the unit tests via [Jest](https://jestjs.io).
+## Where can this lib be imported
+
+Like other `shared` libs, this lib can be used on the back- or front-ends.
+
+Like other `data-access` libs, this lib can only be used by other `data-access` libs or `feature` libs;
+
+## Things to watch out for
+
+As everything in this lib can be used on the frontend, make sure you only use ESM packages to allow Angular to properly tree-shake any unused portions of dependencies.

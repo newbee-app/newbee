@@ -6,6 +6,10 @@ import type {
 } from '@simplewebauthn/typescript-types';
 import { Authenticator, User, UserChallenge, UserSettings } from '../interface';
 
+/**
+ * An example instance of Authenticator.
+ * Strictly for use in testing.
+ */
 export const testAuthenticator1: Authenticator = {
   id: '1',
   credentialId: 'cred1',
@@ -16,15 +20,27 @@ export const testAuthenticator1: Authenticator = {
   transports: null,
 };
 
+/**
+ * An example instance of UserChallenge.
+ * Strictly for use in testing.
+ */
 export const testUserChallenge1: UserChallenge = {
   id: '1',
   challenge: 'challenge1',
 };
 
+/**
+ * An example instance of UserSettings.
+ * Strictly for use in testing.
+ */
 export const testUserSettings1: UserSettings = {
   id: '1',
 };
 
+/**
+ * An example instance of User.
+ * Strictly for use in testing.
+ */
 export const testUser1: User = {
   id: '1',
   email: 'johndoe@example.com',
@@ -35,6 +51,10 @@ export const testUser1: User = {
   online: false,
 };
 
+/**
+ * An example instance of PublicKeyCredentialCreationOptionsJSON, from the `@simplewebauthn` package.
+ * Strictly for use in testing.
+ */
 export const testPublicKeyCredentialCreationOptions1: PublicKeyCredentialCreationOptionsJSON =
   {
     user: {
@@ -50,11 +70,19 @@ export const testPublicKeyCredentialCreationOptions1: PublicKeyCredentialCreatio
     pubKeyCredParams: [],
   };
 
+/**
+ * An example instance of PublicKeyCredentialRequestOptionsJSON, from the `@simplewebauthn` package.
+ * Strictly for use in testing.
+ */
 export const testPublicKeyCredentialRequestOptions1: PublicKeyCredentialRequestOptionsJSON =
   {
     challenge: 'challenge1',
   };
 
+/**
+ * An example instance of RegistrationCredentialJSON, from the `@simplewebauthn` package.
+ * Strictly for use in testing.
+ */
 export const testRegistrationCredential1: RegistrationCredentialJSON = {
   rawId: 'rawId1',
   id: testAuthenticator1.id,
@@ -66,6 +94,10 @@ export const testRegistrationCredential1: RegistrationCredentialJSON = {
   },
 };
 
+/**
+ * An example instance of AuthenticationCredentialJSON, from the `@simplewebauthn` package.
+ * Strictly for use in testing.
+ */
 export const testAuthenticationCredential1: AuthenticationCredentialJSON = {
   rawId: 'rawId1',
   id: testAuthenticator1.id,

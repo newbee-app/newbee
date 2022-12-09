@@ -18,15 +18,19 @@ import { UserEntity } from '@newbee/api/shared/data-access';
 import { Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
+  auth,
   authVersion,
   BaseLoginDto,
   BaseMagicLinkLoginDto,
   BaseUserCreatedDto,
+  login,
+  register,
+  webauthn,
 } from '@newbee/shared/data-access';
-import { magicLinkLogin, webauthn } from '@newbee/shared/util';
+import { magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
-@Controller({ path: 'auth', version: authVersion })
+@Controller({ path: auth, version: authVersion })
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
@@ -37,7 +41,7 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Post(`${webauthn}/register`)
+  @Post(`${webauthn}/${register}`)
   async webAuthnRegister(
     @Query() createUserDto: CreateUserDto
   ): Promise<BaseUserCreatedDto> {
@@ -56,7 +60,7 @@ export class AuthController {
   }
 
   @Public()
-  @Get(`${webauthn}/login`)
+  @Get(`${webauthn}/${login}`)
   async webAuthnLoginGet(
     @Query() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
@@ -72,7 +76,7 @@ export class AuthController {
     return options;
   }
 
-  @Post(`${webauthn}/login`)
+  @Post(`${webauthn}/${login}`)
   async webAuthnLoginPost(
     @Body() webAuthnLoginDto: WebAuthnLoginDto
   ): Promise<BaseLoginDto> {
@@ -91,7 +95,7 @@ export class AuthController {
   }
 
   @Public()
-  @Get(`${magicLinkLogin}/login`)
+  @Get(`${magicLinkLogin}/${login}`)
   async magicLinkLoginLogin(
     @Query() emailDto: EmailDto
   ): Promise<BaseMagicLinkLoginDto> {

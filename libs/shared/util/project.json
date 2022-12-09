@@ -28,6 +28,19 @@
         "jestConfig": "libs/shared/util/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/shared/util/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/shared-util",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []

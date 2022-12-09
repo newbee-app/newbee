@@ -11,9 +11,9 @@ Currently, the only project that NewBee LLC is developing is NewBee, an internal
 3. They are all inspired by each other (Angular was created by and is maintained by Google, Nx was created by a former Google engineer and is based off of Google's proprietary monorepo management tools, Nest is heavily inspired by Angular and follows its conventions), meaning the tools have a high degree of first-class support for each other and maintain compatible philosophies.
 4. They are all well-maintained projects with great documentation and robust developer communities.
 
-> The official Nx docs: <https://nx.dev/getting-started/intro>
-> The official Nest docs: <https://docs.nestjs.com/>
-> The official Angular docs: <https://angular.io/docs>
+> The official Nx docs: <https://nx.dev/getting-started/intro>  
+> The official Nest docs: <https://docs.nestjs.com/>  
+> The official Angular docs: <https://angular.io/docs>  
 
 ## The TypeScript configuration
 
@@ -58,9 +58,13 @@ While Prettier handles formatting code most of the time, it explicitly does not 
 
 ## Unorganized thoughts to organize later
 
-- On the backend, HttpExceptions should be thrown on the controller-level, not on the service-level. If done on the service-level, it's not flexible enough as various controllers might have to throw different exceptions for the same service-level output.
-- As DTOs are simple classes (basically interfaces), they should be put in the `util` library associated with their corresponding feature.
 - Code that does not and will never need to import from other `data-access`, `ui`, or `feature` libraries should be put in the `util` library associated with their corresponding feature.
 - To avoid issues with barrel files and circular dependencies, put all entity files in the `api-shared-data-access` library.
-- If you look at `apps/api/project.json`, you will notice that the `build` target has an option `"tsPlugins": ["@nestjs/swagger/plugin"]`. This opts-in to the Swagger plugin whenever the `api` app is built, automatically annotating the compiled output to include OpenAPI decorators. This allows us to get an informed view of the API through the Swagger UI without having to manually annotate the code.
-- When constructing DTOs, try to make use of the mapped types utilities provided in the `@nestjs/swagger` package.
+- If you look at `apps/api/project.json`, you will notice that the `build` target has an option `"tsPlugins": ["@nestjs/swagger/plugin"]`. This opts-in to the Swagger plugin whenever the `api` app is built, automatically annotating the compiled output to include OpenAPI decorators. This allows us to get an informed view of the API through the Swagger UI without having to manually annotate the code. You can access this view by navigating to the URI for the API endpoint. While this is useful, it does not fully document all endpoints as some DTOs are provided by third-party packages, which Swagger cannot interpret.
+- All projects in this monorepo make use of `compodoc` to transform `jsdoc` comments into pretty, human-readable web pages. All contributors to this project should update `jsdoc` comments whenever they make changes to existing documented code, create `jsdoc` comments for existing undocumented code (if encountered), and add `jsdoc` comments to all new code they write. `compodoc` web pages can be viewed using the `compodoc` task provided by `@twittwer/compodoc`, a third-party Nx plugin. Remember to pass in the `--serve` flag.
+- When adding new packages for use in the repo, it's important not to violate the license of the packages we're using. As, for now, we are creating proprietary software, it's important to ensure that all packages used in the project are under permissive licenses (e.g. `MIT`, `ISC`, `Apache`) and not copyleft licenses (e.g. `GPL`, `AGPL`, `LGPL`). You can make use of the `license-checker` package to check the license of any package in the repo, or any package you might want to add to the repo.
+- While it's okay for the backend Nest project to make use of CJS packages, the frontend Angular project should only use ESM packages to ensure the Angular builder can properly tree-shake any unused portions of imported dependencies. While the Angular builder should give you warnings when you make use of a CJS module on the frontend, you should use the `is-esm` package to preemptively check that any package you use on the frontend is in ESM format.
+- When defining a new dir to store files, prefer creating an `index.ts` file for each dir, which exports all of the files of the dir that can be used outside of that dir. When importing files from the dir, prefer importing the dir itself through the index file rather than importing specific files from the dir.
+- When defining entities, mark all relations as hidden properties using `hidden: true`. This makes it easier to work with the plain interfaces that entity classes should inherit from. If you need to pass in a populated relation from the backend to the frontend, define a DTO that explicitly passes the relation separately.
+- When creating libs, prefer singular over plural nouns.
+  - e.g. Use `interface` instead of `interfaces`.

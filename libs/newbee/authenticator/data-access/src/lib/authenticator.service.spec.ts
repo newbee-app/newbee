@@ -3,7 +3,11 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { authenticatorVersion } from '@newbee/shared/data-access';
+import {
+  authenticator,
+  authenticatorVersion,
+  create,
+} from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
   testPublicKeyCredentialCreationOptions1,
@@ -55,7 +59,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/authenticator/create`
+        `/api/v${authenticatorVersion}/${authenticator}/${create}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -78,7 +82,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/authenticator/create`
+        `/api/v${authenticatorVersion}/${authenticator}/${create}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testRegistrationCredential1);

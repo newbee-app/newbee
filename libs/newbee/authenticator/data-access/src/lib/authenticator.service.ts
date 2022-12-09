@@ -1,6 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { authenticatorVersion } from '@newbee/shared/data-access';
+import {
+  authenticator,
+  authenticatorVersion,
+  create,
+} from '@newbee/shared/data-access';
 import { Authenticator } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -12,7 +16,7 @@ export class AuthenticatorService {
 
   createGet(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.get<PublicKeyCredentialCreationOptionsJSON>(
-      `/api/v${authenticatorVersion}/authenticator/create`
+      `/api/v${authenticatorVersion}/${authenticator}/${create}`
     );
   }
 
@@ -22,7 +26,7 @@ export class AuthenticatorService {
     return from(startRegistration(options)).pipe(
       switchMap((credential) => {
         return this.http.post<Authenticator>(
-          `/api/v${authenticatorVersion}/authenticator/create`,
+          `/api/v${authenticatorVersion}/${authenticator}/${create}`,
           credential
         );
       })

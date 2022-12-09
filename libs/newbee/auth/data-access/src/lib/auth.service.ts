@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
+  auth,
   authVersion,
   BaseCreateUserDto,
   BaseEmailDto,
@@ -9,8 +10,11 @@ import {
   BaseMagicLinkLoginDto,
   BaseUserCreatedDto,
   BaseWebAuthnLoginDto,
+  login,
+  register,
+  webauthn,
 } from '@newbee/shared/data-access';
-import { magicLinkLogin, webauthn } from '@newbee/shared/util';
+import { magicLinkLogin } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { CountryCode } from 'libphonenumber-js';
@@ -25,7 +29,7 @@ export class AuthService {
     const emailDto = this.loginFormToEmailDto(loginForm);
     const params = new HttpParams({ fromObject: { ...emailDto } });
     return this.http.get<BaseMagicLinkLoginDto>(
-      `/api/v${authVersion}/auth/${magicLinkLogin}/login`,
+      `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}`,
       { params }
     );
   }
@@ -33,7 +37,7 @@ export class AuthService {
   magicLinkLogin(token: string): Observable<BaseLoginDto> {
     const params = new HttpParams({ fromObject: { token } });
     return this.http.get<BaseLoginDto>(
-      `/api/v${authVersion}/auth/${magicLinkLogin}`,
+      `/api/v${authVersion}/${auth}/${magicLinkLogin}`,
       { params }
     );
   }
@@ -57,7 +61,7 @@ export class AuthService {
       phoneNumber: phoneNumberString ?? null,
     };
     return this.http.post<BaseUserCreatedDto>(
-      `/api/v${authVersion}/auth/${webauthn}/register`,
+      `/api/v${authVersion}/${auth}/${webauthn}/${register}`,
       createUserDto
     );
   }
@@ -68,7 +72,7 @@ export class AuthService {
     const emailDto = this.loginFormToEmailDto(loginForm);
     const params = new HttpParams({ fromObject: { ...emailDto } });
     return this.http.get<PublicKeyCredentialRequestOptionsJSON>(
-      `/api/v${authVersion}/auth/${webauthn}/login`,
+      `/api/v${authVersion}/${auth}/${webauthn}/${login}`,
       { params }
     );
   }
@@ -85,7 +89,7 @@ export class AuthService {
           credential,
         };
         return this.http.post<BaseLoginDto>(
-          `/api/v${authVersion}/auth/${webauthn}/login`,
+          `/api/v${authVersion}/${auth}/${webauthn}/${login}`,
           webAuthnLoginDto
         );
       })

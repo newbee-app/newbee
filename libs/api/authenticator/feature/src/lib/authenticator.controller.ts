@@ -5,19 +5,23 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
-import { authenticatorVersion } from '@newbee/shared/data-access';
+import {
+  authenticator,
+  authenticatorVersion,
+  create,
+} from '@newbee/shared/data-access';
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
 
-@Controller({ path: 'authenticator', version: authenticatorVersion })
+@Controller({ path: authenticator, version: authenticatorVersion })
 export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 
   constructor(private readonly authenticatorService: AuthenticatorService) {}
 
-  @Get('create')
+  @Get(create)
   async createGet(
     @User() user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
@@ -31,7 +35,7 @@ export class AuthenticatorController {
     return options;
   }
 
-  @Post('create')
+  @Post(create)
   async createPost(
     @Body() credential: RegistrationCredentialJSON,
     @User() user: UserEntity
