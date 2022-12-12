@@ -12,6 +12,9 @@ import {
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 
+/**
+ * The service that interacts with the `UserSettingsEntity`.
+ */
 @Injectable()
 export class UserSettingsService {
   private readonly logger = new Logger(UserSettingsService.name);
@@ -21,6 +24,15 @@ export class UserSettingsService {
     private readonly userSettingsRepository: EntityRepository<UserSettingsEntity>
   ) {}
 
+  /**
+   * Finds the `UserSettingsEntity` in the database associated with the given ID.
+   *
+   * @param id The user settings ID to look for.
+   *
+   * @returns The associated `UserSettingsEntity` instance.
+   * @throws {NotFoundException} If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneById(id: string): Promise<UserSettingsEntity> {
     try {
       return await this.userSettingsRepository.findOneOrFail(id);

@@ -16,6 +16,9 @@ import {
   SendMagicLinkFunction,
 } from '@newbee/passport-magic-link-login';
 
+/**
+ * The Nest Passport Strategy for the Magic Link Login Strategy.
+ */
 @Injectable()
 export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(MagicLinkLoginStrategy.name);
@@ -54,6 +57,14 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * Called after the user's magic link token has already been verified.
+   * Uses the verified payload to find the corresponding `UserEntity` instance in the database.
+   *
+   * @param payload The payload that's unraveled after verifying the user's authentication token.
+   *
+   * @returns The `UserEntity` instance associated with the payload.
+   */
   async validate(payload: Payload): Promise<UserEntity> {
     this.logger.log(
       `Magic Link Login validate request received for payload: ${JSON.stringify(

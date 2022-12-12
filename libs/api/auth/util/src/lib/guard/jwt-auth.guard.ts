@@ -5,12 +5,22 @@ import { IS_PUBLIC_KEY } from '@newbee/api/shared/util';
 import { Observable } from 'rxjs';
 import { jwt } from '../constant';
 
+/**
+ * The `AuthGuard` for the JWT Strategy.
+ */
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(jwt) {
   constructor(private readonly reflector: Reflector) {
     super();
   }
 
+  /**
+   * Allows users to access a given route if its metadata is decorated with `IS_PUBLIC_KEY`.
+   *
+   * @param context The context of the request.
+   *
+   * @returns Whether the given API route can be activated.
+   */
   override canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {

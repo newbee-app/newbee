@@ -68,3 +68,4 @@ While Prettier handles formatting code most of the time, it explicitly does not 
 - When defining entities, mark all relations as hidden properties using `hidden: true`. This makes it easier to work with the plain interfaces that entity classes should inherit from. If you need to pass in a populated relation from the backend to the frontend, define a DTO that explicitly passes the relation separately.
 - When creating libs, prefer singular over plural nouns.
   - e.g. Use `interface` instead of `interfaces`.
+- If you want to register a new module-specific config to be fed into Nest's `ConfigService`, define it in `api-shared-util`. This is to ensure that the main app's config interface can specify the module-specific config interface as an optional property. Doing so allows us to access the whole of the config service's properties with strong type inferencing.

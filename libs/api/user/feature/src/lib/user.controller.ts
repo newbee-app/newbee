@@ -4,12 +4,23 @@ import { User } from '@newbee/api/shared/util';
 import { UpdateUserDto, UserService } from '@newbee/api/user/data-access';
 import { user, userVersion } from '@newbee/shared/data-access';
 
+/**
+ * The controller that interacts with the `UserEntity`.
+ */
 @Controller({ path: user, version: userVersion })
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * The API route for updating the authenticated user.
+   *
+   * @param updateUserDto The new user details.
+   * @param user The `UserEntity` instance to update.
+   *
+   * @returns The updated `UserEntity` instance.
+   */
   @Patch()
   async update(
     @Body() updateUserDto: UpdateUserDto,
@@ -25,6 +36,11 @@ export class UserController {
     return updatedUser;
   }
 
+  /**
+   * The API route for deleting the authenticated user.
+   *
+   * @param user The `UserEntity` instance to delete.
+   */
   @Delete()
   async delete(@User() user: UserEntity): Promise<void> {
     this.logger.log(`Delete user request received for ID: ${user.id}`);

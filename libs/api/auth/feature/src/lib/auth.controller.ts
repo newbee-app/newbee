@@ -30,6 +30,9 @@ import {
 import { magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
+/**
+ * The controller that provides API routes for logging in and registering users.
+ */
 @Controller({ path: auth, version: authVersion })
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -40,6 +43,13 @@ export class AuthController {
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy
   ) {}
 
+  /**
+   * A publicly-accessible API route for registering a new user.
+   *
+   * @param createUserDto The details for the new user.
+   *
+   * @returns The new user, their access token, and the options needed to register an authenticator for use in WebAuthn authentication.
+   */
   @Public()
   @Post(`${webauthn}/${register}`)
   async webAuthnRegister(
@@ -59,6 +69,13 @@ export class AuthController {
     return { ...loginDto, options: userAndOptions.options };
   }
 
+  /**
+   * A publicly-accessible API route for starting the WebAuthn log in process.
+   *
+   * @param emailDto The user's email as a verified DTO.
+   *
+   * @returns The challenge for the user's authenticator to verify.
+   */
   @Public()
   @Get(`${webauthn}/${login}`)
   async webAuthnLoginGet(
@@ -76,6 +93,14 @@ export class AuthController {
     return options;
   }
 
+  /**
+   * A publicly-accessible API route for completing the WebAuthn log in process.
+   *
+   * @param webAuthnLoginDto The user's authenticator's attempt at verifying the backend's challenge.
+   *
+   * @returns The logged in user and their access token, if verified.
+   */
+  @Public()
   @Post(`${webauthn}/${login}`)
   async webAuthnLoginPost(
     @Body() webAuthnLoginDto: WebAuthnLoginDto
@@ -94,6 +119,13 @@ export class AuthController {
     return loginDto;
   }
 
+  /**
+   * A publicly-accessible API route for sending a magic link login request.
+   *
+   * @param emailDto The email to send the magic link to.
+   *
+   * @returns The JWT ID and email associated with the magic link email.
+   */
   @Public()
   @Get(`${magicLinkLogin}/${login}`)
   async magicLinkLoginLogin(
@@ -108,6 +140,14 @@ export class AuthController {
     return { jwtId, email };
   }
 
+  /**
+   * Called after the user has already been verified using Nest's provided Passport guard.
+   * A publicly-accessible API route for validating a magic link's token and logging in the user, if valid.
+   *
+   * @param user The logged in user.
+   *
+   * @returns The logged in user and their access token.
+   */
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)

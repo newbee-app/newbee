@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
+import { testUserJwtPayload1 } from '@newbee/api/auth/util';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import {
   testAuthenticatorEntity1,
@@ -11,10 +12,7 @@ import {
   testUserEntity1,
   UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  badRequestAuthenticatorErrorMsg,
-  testUserJwtPayload1,
-} from '@newbee/api/shared/util';
+import { badRequestAuthenticatorErrorMsg } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
 import { testBaseLoginDto1 } from '@newbee/shared/data-access';
 import {

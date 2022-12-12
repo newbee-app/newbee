@@ -12,6 +12,9 @@ import {
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
 
+/**
+ * The service that interacts with the `UserChallengeEntity`.
+ */
 @Injectable()
 export class UserChallengeService {
   private readonly logger = new Logger(UserChallengeService.name);
@@ -21,6 +24,15 @@ export class UserChallengeService {
     private readonly userChallengeRepository: EntityRepository<UserChallengeEntity>
   ) {}
 
+  /**
+   * Finds the `UserChallengeEntity` in the database associated with the given ID.
+   *
+   * @param id The user challenge ID to look for.
+   *
+   * @returns The associated `UserChallengeEntity` instance.
+   * @throws {NotFoundException} If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneById(id: string): Promise<UserChallengeEntity> {
     try {
       return await this.userChallengeRepository.findOneOrFail(id);
@@ -37,6 +49,15 @@ export class UserChallengeService {
     }
   }
 
+  /**
+   * Finds the `UserChallengeEntity` in the database associated with the given email.
+   *
+   * @param email The email of the user whose challenge we're looking for.
+   *
+   * @returns The associated `UserChallengeEntity` instance.
+   * @throws {NotFoundException} If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneByEmail(email: string): Promise<UserChallengeEntity> {
     try {
       return await this.userChallengeRepository.findOneOrFail({
@@ -55,6 +76,14 @@ export class UserChallengeService {
     }
   }
 
+  /**
+   * Updates the given `UserChallengeEntity` and saves the changes to the database.
+   *
+   * @param userChallenge The `UserChallengeEntity` instance to update.
+   * @param challenge The new challenge string.
+   *
+   * @returns The updated `UserChallengeEntity` instance.
+   */
   async update(
     userChallenge: UserChallengeEntity,
     challenge: string | null
@@ -67,6 +96,13 @@ export class UserChallengeService {
     return updatedUserChallenge;
   }
 
+  /**
+   * Finds a `UserChallengeEntity` by ID, updates it, and saves the changes to the database.
+   *
+   * @param id The user challenge ID to look for.
+   * @param challenge The new challenge string.
+   * @returns The updated `UserChallengeEntity` instance.
+   */
   async updateById(
     id: string,
     challenge: string | null
@@ -76,6 +112,13 @@ export class UserChallengeService {
     return userChallenge;
   }
 
+  /**
+   * Finds a `UserChallengeEntity` by the user's email, updates it, and saves the changes to the database.
+   *
+   * @param email The email of the user whose challenge we're looking for.
+   * @param challenge The new chllange string.
+   * @returns The updated `UserChallengeEntity` instance.
+   */
   async updateByEmail(
     email: string,
     challenge: string | null

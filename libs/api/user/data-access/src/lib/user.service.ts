@@ -27,6 +27,9 @@ import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
+/**
+ * The service that interacts with the `UserEntity`.
+ */
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -37,6 +40,15 @@ export class UserService {
     private readonly configService: ConfigService<AppConfigInterface, true>
   ) {}
 
+  /**
+   * Creates a new `UserEntity`, `UserChallengeEntity`, and `UserSettingsEntity` with the given information.
+   *
+   * @param createUserDto The information needed to create a new user.
+   *
+   * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.
+   * @throws {BadRequestException} If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
     const { email } = createUserDto;
     const id = v4();
@@ -73,6 +85,15 @@ export class UserService {
     }
   }
 
+  /**
+   * Finds the `UserEntity` in the database associated with the given ID.
+   *
+   * @param id The user ID to look for.
+   *
+   * @returns The associated `UserEntity` instance.
+   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneById(id: string): Promise<UserEntity> {
     try {
       return await this.userRepository.findOneOrFail(id);
@@ -89,6 +110,15 @@ export class UserService {
     }
   }
 
+  /**
+   * Finds the `UserEntity` in the database associated with the given email.
+   *
+   * @param email The email to look for.
+   *
+   * @returns The associated `UserEntity` instance.
+   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneByEmail(email: string): Promise<UserEntity> {
     try {
       return await this.userRepository.findOneOrFail({ email });
@@ -105,6 +135,14 @@ export class UserService {
     }
   }
 
+  /**
+   * Updates the given `UserEntity` and saves the changes to the database.
+   *
+   * @param user The `UserEntity` instance to update.
+   * @param updateUserDto The new details for the user.
+   *
+   * @returns The updated `UserEntity` instance.
+   */
   async update(
     user: UserEntity,
     updateUserDto: UpdateUserDto
@@ -114,6 +152,11 @@ export class UserService {
     return updatedUser;
   }
 
+  /**
+   * Deletes the given `UserEntity` and saves the changes to the database.
+   *
+   * @param user The `UserEntity` instance to delete.
+   */
   async delete(user: UserEntity): Promise<void> {
     await this.userRepository.removeAndFlush(user);
   }

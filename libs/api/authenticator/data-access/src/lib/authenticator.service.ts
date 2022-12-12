@@ -34,6 +34,9 @@ import type {
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
 
+/**
+ * The service that interacts with the `AuthenticatorEntity`.
+ */
 @Injectable()
 export class AuthenticatorService {
   private readonly logger = new Logger(AuthenticatorService.name);
@@ -45,6 +48,13 @@ export class AuthenticatorService {
     private readonly userChallengeService: UserChallengeService
   ) {}
 
+  /**
+   * Generate a challenge for registering a new authenticator for the given user.
+   *
+   * @param user The user to generate a challenge for.
+   *
+   * @returns The options for verifying the registration challenge on the frontend.
+   */
   async generateChallenge(
     user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
@@ -69,6 +79,14 @@ export class AuthenticatorService {
     return options;
   }
 
+  /**
+   * Verifies the user's authenticator's challenge response and saves the authenticator to the backend, if valid.
+   *
+   * @param credential The credential for the user's authenticator.
+   * @param user The user to associate the authenticator with.
+   *
+   * @returns The newly created authenticator.
+   */
   async create(
     credential: RegistrationCredentialJSON,
     user: UserEntity
@@ -127,6 +145,15 @@ export class AuthenticatorService {
     }
   }
 
+  /**
+   * Finds all of the authenticators in the database associated with the given user email.
+   *
+   * @param email The user email to look for.
+   *
+   * @returns The associated authenticator instances.
+   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
     return await this.authenticatorRepository.find({ user: { email } });
   }
@@ -147,6 +174,15 @@ export class AuthenticatorService {
     }
   }
 
+  /**
+   * Finds the authenticator in the database associated with the given credential ID.
+   *
+   * @param credentialId The credential ID to look for.
+   *
+   * @returns The associated authenticator instance.
+   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   */
   async findOneByCredentialId(
     credentialId: string
   ): Promise<AuthenticatorEntity> {
@@ -171,6 +207,14 @@ export class AuthenticatorService {
     }
   }
 
+  /**
+   * Finds an authenticator by ID, updates it, and saves the changes to the database.
+   *
+   * @param id The authenticator ID to look for.
+   * @param counter The new counter value.
+   *
+   * @returns The updated authenticator.
+   */
   async updateById(id: string, counter: number): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
     authenticator = this.authenticatorRepository.assign(authenticator, {
@@ -180,6 +224,11 @@ export class AuthenticatorService {
     return authenticator;
   }
 
+  /**
+   * Deltes an authenticator by ID and saves the changes to the database.
+   *
+   * @param id The authenticator ID to look for.
+   */
   async deleteOneById(id: string): Promise<void> {
     const authenticator = this.authenticatorRepository.getReference(id);
     await this.authenticatorRepository.removeAndFlush(authenticator);

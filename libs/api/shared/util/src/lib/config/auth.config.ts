@@ -7,9 +7,24 @@ import {
   StrategyOptions as JwtStrategyOptions,
 } from 'passport-jwt';
 
+/**
+ * The structure of the auth module's config.
+ */
 export interface AuthConfigInterface {
+  /**
+   * The options to feed into the `JwtModule`.
+   */
   jwtModule: JwtModuleOptions;
+
+  /**
+   * The options to feed into the `MagicLinkLoginStrategy`.
+   * The `sendMagicLink` property is omitted as it's defined apart from the `ConfigService`.
+   */
   magicLinkLogin: Omit<MagicLinkLoginStrategyOtions, 'sendMagicLink'>;
+
+  /**
+   * The options to feed into the `JwtStrategy`.
+   */
   jwtStrategy: JwtStrategyOptions;
 }
 
