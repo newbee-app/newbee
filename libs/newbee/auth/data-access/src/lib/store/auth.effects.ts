@@ -100,6 +100,9 @@ export class AuthEffects {
           map((loginDto) => {
             return AuthActions.loginSuccess({ loginDto });
           }),
+          tap(async () => {
+            await this.router.navigate(['/']);
+          }),
           catchError(catchHttpError)
         );
       })
