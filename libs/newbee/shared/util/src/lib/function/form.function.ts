@@ -1,5 +1,11 @@
 import { AbstractControl } from '@angular/forms';
 
+/**
+ * A helper function for extracting form control input errors for display.
+ *
+ * @param control The control to look for errors.
+ * @returns The form control input's errors if they have any, an empty string if they don't.
+ */
 export function getErrorMessage(control: AbstractControl | null): string {
   if (control?.hasError('required')) {
     return 'You must enter a value';

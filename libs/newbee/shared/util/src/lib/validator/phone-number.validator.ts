@@ -3,6 +3,16 @@ import type { CountryCode } from 'libphonenumber-js';
 import { ParseError, parsePhoneNumber } from 'libphonenumber-js';
 import { PhoneInput } from '../interface';
 
+/**
+ * A form validator for `PhoneInput` that checks whether the input contains a valid phone number.
+ * A phone number is valid if:
+ *
+ * - It has no value for number.
+ * - It has a valid country and a valid number for the country.
+ *
+ * @returns `null` if `PhoneInput` contains a valid phone number.
+ * An error object detailing the error, if there is an error.
+ */
 export function phoneNumberValidator(): ValidatorFn {
   return (
     control: AbstractControl<Partial<PhoneInput>>

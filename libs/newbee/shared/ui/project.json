@@ -67,6 +67,19 @@
           "quiet": true
         }
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/newbee/shared/ui/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/newbee-shared-ui",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []

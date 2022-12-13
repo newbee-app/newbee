@@ -36,6 +36,19 @@
           "libs/newbee/shared/util/**/*.html"
         ]
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/newbee/shared/util/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/newbee-shared-util",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []

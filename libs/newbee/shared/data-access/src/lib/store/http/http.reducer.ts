@@ -3,14 +3,23 @@ import { createFeature, createReducer, on } from '@ngrx/store';
 import { AppState } from '../app.reducer';
 import { HttpActions } from './http.actions';
 
+/**
+ * The piece of state holding any outstanding HTTP errors.
+ */
 export interface HttpState {
   error: HttpClientError | null;
 }
 
+/**
+ * The initial value for `HttpState`.
+ */
 export const initialHttpState: HttpState = {
   error: null,
 };
 
+/**
+ * The reducers and generated selectors for `HttpState`.
+ */
 export const httpFeature = createFeature<AppState, 'http'>({
   name: 'http',
   reducer: createReducer(

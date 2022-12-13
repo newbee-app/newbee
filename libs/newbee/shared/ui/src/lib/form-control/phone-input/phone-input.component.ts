@@ -27,6 +27,16 @@ import { Subject, takeUntil } from 'rxjs';
 import { TooltipComponentModule } from '../../tooltip/tooltip.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 
+/**
+ * A custom phone input component.
+ * Fully compatible with Angular's form controls.
+ * Provides additional features like:
+ *
+ * - Preventing users from inputting or pasting non-number values.
+ * - Including a dropdown to select the phone number's country code.
+ * - Auto-formatting of the phone number.
+ * - Phone number validation.
+ */
 @Component({
   selector: 'newbee-phone-input',
   templateUrl: './phone-input.component.html',
@@ -46,6 +56,10 @@ import { SearchableSelectComponentModule } from '../searchable-select/searchable
 export class PhoneInputComponent
   implements OnDestroy, ControlValueAccessor, Validator
 {
+  /**
+   * The internal form group representing a phone number.
+   * Includes a country and a phone number string.
+   */
   phoneNumber = this.fb.group(
     {
       country: new FormControl<Country | null>(null),
@@ -54,6 +68,9 @@ export class PhoneInputComponent
     { validators: [phoneNumberValidator()] }
   );
 
+  /**
+   * All of the possible phone number countries, represented as `SelectOption`s.
+   */
   readonly countryOptions: SelectOption<Country>[] =
     this.countryService.supportedPhoneCountries.map(
       (country) =>
@@ -63,6 +80,10 @@ export class PhoneInputComponent
           `${country.regionCode} (+${country.dialingCode})`
         )
     );
+
+  /**
+   * All of the ID values for the component's tooltips.
+   */
   readonly tooltipIds = {
     country: {
       container: 'country-container',
@@ -78,14 +99,34 @@ export class PhoneInputComponent
     },
   };
 
+  /**
+   * A Subject to unsubscribe from the component's infinite observables.
+   */
   private readonly unsubscribe$ = new Subject<void>();
+
+  /**
+   * Whether the control is dirty.
+   */
   private _dirty = false;
+
+  /**
+   * Whether the control has been touched.
+   */
   private _touched = false;
+
+  /**
+   * Called to trigger change detection.
+   * @param _ The new value.
+   */
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _onChange: (_: Partial<PhoneInput>) => void = (_) => {
     this._dirty = true;
   };
+
+  /**
+   * Called to mark the control as touched.
+   */
   // @ts-ignore
   private _onTouched: () => void = () => {
     this._touched = true;
@@ -103,15 +144,30 @@ export class PhoneInputComponent
     });
   }
 
+  /**
+   * Unsubscribes from the component's infinite observables.
+   */
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
 
+  /**
+   * Sets the control's internal phone number form group value.
+   * Does not trigger change detection.
+   *
+   * @param val The new value for the internal phone number form group.
+   */
   writeValue(val: Partial<PhoneInput>): void {
     this.phoneNumber.patchValue(val, { emitEvent: false });
   }
 
+  /**
+   * Registers the `_onChange` function.
+   * Makes sure that `_onChange` marks the control as dirty.
+   *
+   * @param fn The function to assign.
+   */
   registerOnChange(fn: (_: Partial<PhoneInput>) => void): void {
     this._onChange = (val) => {
       this._dirty = true;
@@ -119,6 +175,12 @@ export class PhoneInputComponent
     };
   }
 
+  /**
+   * Registers the `_onTouched` function.
+   * Makes sure that `_onTouched` marks the control as touched.
+   *
+   * @param fn The function to assign.
+   */
   registerOnTouched(fn: () => void): void {
     this._onTouched = () => {
       this._touched = true;
@@ -126,6 +188,12 @@ export class PhoneInputComponent
     };
   }
 
+  /**
+   * Disables or enables the control.
+   * Does so by disanbling/enabling the internal form group.
+   *
+   * @param isDisabled Whether to disable the form control.
+   */
   setDisabledState(isDisabled: boolean): void {
     if (isDisabled) {
       this.phoneNumber.disable();
@@ -134,6 +202,13 @@ export class PhoneInputComponent
     }
   }
 
+  /**
+   * Whether the control is valid.
+   *
+   * @param _ The control to validate. Not necessary in this case because it's being used in the control itself.
+   *
+   * @returns `null` if the control is valid, a validation error object if it's not.
+   */
   validate(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _: AbstractControl<Partial<PhoneInput>>
@@ -141,26 +216,48 @@ export class PhoneInputComponent
     return this.phoneNumber.errors;
   }
 
+  /**
+   * The value of the control.
+   */
   get value(): Partial<PhoneInput> {
     return this.phoneNumber.value;
   }
 
+  /**
+   * Whether the control is clean, defined as being not dirty and not touched.
+   */
   get clean(): boolean {
     return !this._dirty && !this._touched;
   }
 
+  /**
+   * Called to trigger change detection.
+   */
   get onChange(): (_: Partial<PhoneInput>) => void {
     return this._onChange;
   }
 
+  /**
+   * Called to mark the control as touched.
+   */
   get onTouched(): () => void {
     return this._onTouched;
   }
 
+  /**
+   * Gets the error message for the control, if one exists.
+   */
   get errorMessage(): string {
     return getErrorMessage(this.phoneNumber);
   }
 
+  /**
+   * Whether the control has an error for the given input.
+   *
+   * @param inputName Whether to look for errors related to the `country` or `number` portion of the control.
+   *
+   * @returns `true` if an error exists for the input, `false` if not.
+   */
   hasError(inputName: 'country' | 'number'): boolean {
     const phoneNumberError = this.phoneNumber.getError('phoneNumber');
     if (!phoneNumberError) {
@@ -182,6 +279,9 @@ export class PhoneInputComponent
     return false;
   }
 
+  /**
+   * Formats the phone number string in the control.
+   */
   formatNumber(): void {
     const { country, number } = this.phoneNumber.value;
     if (!country || !number) {
