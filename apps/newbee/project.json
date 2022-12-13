@@ -175,6 +175,19 @@
           "quiet": true
         }
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "apps/newbee/tsconfig.editor.json",
+        "outputPath": "dist/compodoc/newbee",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []

@@ -8,12 +8,20 @@ import {
   TitleStrategy,
 } from '@angular/router';
 
+/**
+ * How the web page's title should be set for all routes, unless otherwise specified.
+ */
 @Injectable()
 export class AppTitleStrategy extends TitleStrategy {
   constructor(private readonly title: Title) {
     super();
   }
 
+  /**
+   * Use the title specified for the route to generate the web page's title.
+   *
+   * @param routerState A snapshot of the router's state.
+   */
   override updateTitle(routerState: RouterStateSnapshot): void {
     const title = this.buildTitle(routerState);
     if (title !== undefined) {
@@ -22,6 +30,12 @@ export class AppTitleStrategy extends TitleStrategy {
   }
 }
 
+/**
+ * All of the routes of the app.
+ * Some important notes:
+ *
+ * - Favor lazy loading routes whenever possible.
+ */
 // TODO set up a 404 not found page with a wildcard route
 const routes: Routes = [
   {

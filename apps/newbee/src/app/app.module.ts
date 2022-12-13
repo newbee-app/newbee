@@ -10,6 +10,14 @@ import { AppComponent } from './app.component';
 import { reducers } from './reducer';
 import { AppRoutingModule } from './routing';
 
+/**
+ * Imports all of the modules needed at the global scope.
+ * Some important notes:
+ *
+ * - The `HttpClientModule` is imported here, so no need to re-import it in individual modules.
+ * - The `AppRoutingModule` must come last.
+ * - All user-created modules should be defined in `AppRoutingModule`, not here.
+ */
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

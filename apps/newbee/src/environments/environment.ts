@@ -8,6 +8,9 @@ export const environment = {
   production: false,
 };
 
+/**
+ * Modules that should only be included in dev builds.
+ */
 export const extModules = [
   StoreDevtoolsModule.instrument({
     maxAge: 25,
