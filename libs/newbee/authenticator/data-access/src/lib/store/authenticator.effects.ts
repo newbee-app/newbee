@@ -7,6 +7,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap } from 'rxjs';
 import { AuthenticatorService } from '../authenticator.service';
 
+/**
+ * The effects tied to `AuthenticatorActions`.
+ */
 @Injectable()
 export class AuthenticatorEffects {
   getRegisterChallenge$ = createEffect(() => {
