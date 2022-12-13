@@ -9,6 +9,9 @@ import { LoginComponent } from '../login/login.component';
 import { MagicLinkLoginComponent } from '../magic-link-login';
 import { RegisterComponent } from '../register/register.component';
 
+/**
+ * All of the routes associated within the parent `auth` route.
+ */
 const routes: Routes = [
   {
     path: 'login',

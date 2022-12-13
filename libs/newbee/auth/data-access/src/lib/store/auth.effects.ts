@@ -9,6 +9,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
+/**
+ * The effects tied to `AuthActions`.
+ */
 @Injectable()
 export class AuthEffects {
   sendLoginMagicLink$ = createEffect(() => {

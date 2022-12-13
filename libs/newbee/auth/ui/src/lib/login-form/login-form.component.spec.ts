@@ -130,7 +130,7 @@ describe('LoginFormComponent', () => {
       });
 
       it('should emit the form value using emitMagicLinkLogin()', () => {
-        component.emitMagicLinkLogin(component.loginForm.value);
+        component.emitMagicLinkLogin();
         expect(magicLinkLoginEmitSpy).toBeCalledTimes(1);
         expect(magicLinkLoginEmitSpy).toBeCalledWith(component.loginForm.value);
       });
@@ -158,7 +158,7 @@ describe('LoginFormComponent', () => {
       });
 
       it('should emit the form value using emitWebAuthn', () => {
-        component.emitWebAuthn(component.loginForm.value);
+        component.emitWebAuthn();
         expect(webauthnEmitSpy).toBeCalledTimes(1);
         expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);
       });

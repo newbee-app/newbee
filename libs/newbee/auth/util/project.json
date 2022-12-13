@@ -36,6 +36,18 @@
           "libs/newbee/auth/util/**/*.html"
         ]
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/newbee/auth/util/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/newbee-auth-util"
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []

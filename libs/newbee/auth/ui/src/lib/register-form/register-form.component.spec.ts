@@ -238,7 +238,7 @@ describe('RegisterFormComponent', () => {
       });
 
       it('should emit the form value using emitregister()', () => {
-        component.emitRegister(component.registerForm.value);
+        component.emitRegister();
         expect(registerEmitSpy).toBeCalledTimes(1);
         expect(registerEmitSpy).toBeCalledWith(component.registerForm.value);
       });

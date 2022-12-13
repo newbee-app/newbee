@@ -40,7 +40,7 @@ describe('JwtIdComponent', () => {
     });
 
     it('should emit using emitResendLink', () => {
-      component.emitResendLink(component.email);
+      component.emitResendLink();
       expect(resendLinkEmitSpy).toBeCalledTimes(1);
       expect(resendLinkEmitSpy).toBeCalledWith(component.email);
     });

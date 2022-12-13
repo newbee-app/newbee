@@ -8,17 +8,34 @@ import {
 } from '@angular/core';
 import { BaseFormComponentModule } from '../base-form';
 
+/**
+ * The dumb UI for displaying a user their JWT ID after a magic link login request.
+ */
 @Component({
   selector: 'newbee-jwt-id',
   templateUrl: './jwt-id.component.html',
 })
 export class JwtIdComponent {
+  /**
+   * The JWT ID value to display.
+   */
   @Input() jwtId!: string;
+
+  /**
+   * The email the magic link login was sent to for display.
+   */
   @Input() email!: string;
+
+  /**
+   * The emitted request to resend the magic link login request.
+   */
   @Output() resendLink = new EventEmitter<string>();
 
-  emitResendLink(email: string): void {
-    this.resendLink.emit(email);
+  /**
+   * Emit the `resendLink` output.
+   */
+  emitResendLink(): void {
+    this.resendLink.emit(this.email);
   }
 }
 

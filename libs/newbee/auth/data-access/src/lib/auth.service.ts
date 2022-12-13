@@ -21,10 +21,20 @@ import type { CountryCode } from 'libphonenumber-js';
 import parsePhoneNumber from 'libphonenumber-js';
 import { from, Observable, switchMap } from 'rxjs';
 
+/**
+ * The service tied to the API's auth endpoints.
+ * Handles logging in and registering users.
+ */
 @Injectable()
 export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
+  /**
+   * Convert the given login form to a `BaseEmailDto` and send a GET request to send a magic link for login.
+   *
+   * @param loginForm The login form containing the necessary email.
+   * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
+   */
   magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     const params = new HttpParams({ fromObject: { ...emailDto } });
@@ -34,6 +44,12 @@ export class AuthService {
     );
   }
 
+  /**
+   * Sends a GET request to verify the magic link token.
+   *
+   * @param token The token associated with the magic link.
+   * @returns An observable containing the logged in user and their access token.
+   */
   magicLinkLogin(token: string): Observable<BaseLoginDto> {
     const params = new HttpParams({ fromObject: { token } });
     return this.http.get<BaseLoginDto>(
@@ -42,6 +58,12 @@ export class AuthService {
     );
   }
 
+  /**
+   * Converts the given register form to a `BaseCreateUserDto` and sends a POST request to make the backend create a new user, access token, and generate the options needed to register an authenticator.
+   *
+   * @param registerForm The register form containing the necessary information for creating a new user.
+   * @returns An observable containing the newly created user, their access token, and the options needed to register an authenticator.
+   */
   webAuthnRegister(registerForm: RegisterForm): Observable<BaseUserCreatedDto> {
     const { email, name, displayName, phoneNumber } = registerForm;
     let phoneNumberString: string | undefined = undefined;
@@ -66,6 +88,12 @@ export class AuthService {
     );
   }
 
+  /**
+   * Converts the given login form to a `BaseEmailDto` and sends a GET request to create login authenticator options.
+   *
+   * @param loginForm The login form containing the necessary email.
+   * @returns An observable of the options needed to log in with a registered authenticator.
+   */
   webAuthnLoginGet(
     loginForm: LoginForm
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
@@ -77,6 +105,13 @@ export class AuthService {
     );
   }
 
+  /**
+   * Converts the given login form to a `BaseEmailDto` and combines it with the given options to create a `BaseWebAuthnLoginDto`, which it uses to send a POST request to verify the authenticator's response and log the user in.
+   *
+   * @param loginForm The login form containing the necessary email.
+   * @param options The options to feed into the authenticator.
+   * @returns An observable containing the logged in user and their access token.
+   */
   webAuthnLoginPost(
     loginForm: LoginForm,
     options: PublicKeyCredentialRequestOptionsJSON

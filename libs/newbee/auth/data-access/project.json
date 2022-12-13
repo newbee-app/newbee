@@ -36,6 +36,19 @@
           "libs/newbee/auth/data-access/**/*.html"
         ]
       }
+    },
+    "compodoc": {
+      "executor": "@twittwer/compodoc:compodoc",
+      "options": {
+        "tsConfig": "libs/newbee/auth/data-access/tsconfig.lib.json",
+        "outputPath": "dist/compodoc/newbee-auth-data-access",
+        "watch": true
+      },
+      "configurations": {
+        "json": {
+          "exportFormat": "json"
+        }
+      }
     }
   },
   "tags": []
