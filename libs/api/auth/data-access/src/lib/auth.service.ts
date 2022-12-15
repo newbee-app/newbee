@@ -2,11 +2,10 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserJwtPayload } from '@newbee/api/auth/util';
+import { AppAuthConfig, UserJwtPayload } from '@newbee/api/auth/util';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import {
-  AppConfigInterface,
   badRequestAuthenticatorErrorMsg,
   challengeFalsyLogMsg,
 } from '@newbee/api/shared/util';
@@ -35,7 +34,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly authenticatorService: AuthenticatorService,
     private readonly userChallengeService: UserChallengeService,
-    private readonly configService: ConfigService<AppConfigInterface, true>,
+    private readonly configService: ConfigService<AppAuthConfig, true>,
     private readonly em: EntityManager
   ) {}
 

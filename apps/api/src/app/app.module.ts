@@ -12,7 +12,7 @@ import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import {
-  AppConfigInterface,
+  AppConfig,
   appEnvironmentVariablesSchema,
 } from '@newbee/api/shared/util';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
@@ -31,17 +31,17 @@ import { default as appConfig } from '../environments/environment';
     }),
     CacheModule.register({ isGlobal: true }),
     WinstonModule.forRootAsync({
-      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
         configService.get('logging', { infer: true }),
       inject: [ConfigService],
     }),
     MikroOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
         configService.get('database', { infer: true }),
       inject: [ConfigService],
     }),
     MailerModule.forRootAsync({
-      useFactory: (configService: ConfigService<AppConfigInterface, true>) =>
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
         configService.get('mailer', { infer: true }),
       inject: [ConfigService],
     }),

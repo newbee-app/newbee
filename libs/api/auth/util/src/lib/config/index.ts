@@ -1,5 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import type { JwtModuleOptions } from '@nestjs/jwt';
+import type { AppConfig } from '@newbee/api/shared/util';
 import type { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
 import { magicLinkLogin } from '@newbee/shared/util';
 import {
@@ -10,7 +11,7 @@ import {
 /**
  * The structure of the auth module's config.
  */
-export interface AuthConfigInterface {
+export interface AuthConfig {
   /**
    * The options to feed into the `JwtModule`.
    */
@@ -28,10 +29,20 @@ export interface AuthConfigInterface {
   jwtStrategy: JwtStrategyOptions;
 }
 
+/**
+ * The structure of the app config with the auth config.
+ */
+export interface AppAuthConfig extends AppConfig {
+  /**
+   * The auth config, which exists only in the auth module or modules that import the auth module.
+   */
+  auth: AuthConfig;
+}
+
 const tokenExpiration = '7d';
 export default registerAs(
   'auth',
-  (): AuthConfigInterface => ({
+  (): AuthConfig => ({
     jwtModule: {
       secret: process.env['JWT_SECRET'] as string,
       signOptions: {

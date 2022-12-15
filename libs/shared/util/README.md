@@ -8,7 +8,9 @@ This lib contains useful utilities that are shared between the backend Nest proj
 
 ## What to add to this lib
 
-Like other `util` libs, `shared-util` should only contain basic utility classes, interfaces, and functions that do not affect state.
+Like other `shared` libs, everything in this lib should be inteded for use on both the backend and frontend.
+
+Like other `util` libs, this lib should only contain basic utility classes, interfaces, and functions that do not affect state.
 
 ## Where can this lib be imported
 

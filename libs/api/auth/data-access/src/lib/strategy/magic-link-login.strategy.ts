@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { AppAuthConfig } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import type { AppConfigInterface } from '@newbee/api/shared/util';
 import { internalServerErrorMsg } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import {
@@ -26,11 +26,11 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly userService: UserService,
     mailerService: MailerService,
-    configService: ConfigService<AppConfigInterface, true>
+    configService: ConfigService<AppAuthConfig, true>
   ) {
-    const magicLinkLoginConfig = configService.get('auth', {
+    const magicLinkLoginConfig = configService.get('auth.magicLinkLogin', {
       infer: true,
-    }).magicLinkLogin;
+    });
     const sendMagicLink: SendMagicLinkFunction = async (
       payload: Payload,
       link: string,

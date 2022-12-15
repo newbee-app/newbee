@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserJwtPayload } from '@newbee/api/auth/util';
+import { AppAuthConfig, UserJwtPayload } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import type { AppConfigInterface } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import { Strategy } from 'passport-jwt';
 
@@ -15,10 +14,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(
-    configService: ConfigService<AppConfigInterface, true>,
+    configService: ConfigService<AppAuthConfig, true>,
     private readonly userService: UserService
   ) {
-    super(configService.get('auth', { infer: true }).jwtStrategy);
+    super(configService.get('auth.jwtStrategy', { infer: true }));
   }
 
   /**

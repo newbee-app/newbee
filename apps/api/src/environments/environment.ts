@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AppConfigInterface } from '@newbee/api/shared/util';
+import { AppConfig } from '@newbee/api/shared/util';
 import winston from 'winston';
 
 export const environment = {
@@ -7,7 +7,7 @@ export const environment = {
 };
 
 const logger = new Logger('MikroORM');
-export default (): AppConfigInterface => ({
+export default (): AppConfig => ({
   logging: {
     level: 'info',
     format: winston.format.combine(

@@ -2,12 +2,11 @@ import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import type { MailerOptions } from '@nestjs-modules/mailer';
 import Joi from 'joi';
 import winston from 'winston';
-import type { AuthConfigInterface } from './auth.config';
 
 /**
  * The structure of the app-wide config.
  */
-export interface AppConfigInterface {
+export interface AppConfig {
   /**
    * The options to feed into the `WinstonModule` for logging through `winston`.
    */
@@ -31,13 +30,11 @@ export interface AppConfigInterface {
     id: string;
     origin: string;
   };
-
-  /**
-   * The config for the `auth` module. It's optional as it should only be defined and used within the `auth` module.
-   */
-  auth?: AuthConfigInterface;
 }
 
+/**
+ * All of the environment variables we use in NewBee, validated using the `joi` library.
+ */
 export const appEnvironmentVariablesSchema = Joi.object({
   // API port
   PORT: Joi.number(),

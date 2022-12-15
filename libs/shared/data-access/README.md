@@ -8,13 +8,15 @@ This lib contains useful utilities for interacting with data that are shared bet
 
 ## What to add to this lib
 
+Like other `shared` libs, everything in this lib should be intended for use on both the backend and frontend.
+
 Like other `data-access` libs, `shared-data-access` should only contain classes, interfaces, and functions that work with state in some way.
 
 ## Where can this lib be imported
 
 Like other `shared` libs, this lib can be used on the back- or front-ends.
 
-Like other `data-access` libs, this lib can only be used by other `data-access` libs or `feature` libs;
+Like other `data-access` libs, this lib can only be used by other `data-access` libs or `feature` libs.
 
 ## Things to watch out for
 

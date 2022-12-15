@@ -17,7 +17,7 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  AppConfigInterface,
+  AppConfig,
   badRequestAuthenticatorErrorMsg,
   challengeFalsyLogMsg,
   idNotFoundErrorMsg,
@@ -44,7 +44,7 @@ export class AuthenticatorService {
   constructor(
     @InjectRepository(AuthenticatorEntity)
     private readonly authenticatorRepository: EntityRepository<AuthenticatorEntity>,
-    private readonly configService: ConfigService<AppConfigInterface, true>,
+    private readonly configService: ConfigService<AppConfig, true>,
     private readonly userChallengeService: UserChallengeService
   ) {}
 

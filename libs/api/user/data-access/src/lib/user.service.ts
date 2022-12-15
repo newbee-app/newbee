@@ -18,7 +18,7 @@ import {
   UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  AppConfigInterface,
+  AppConfig,
   idNotFoundErrorMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
@@ -37,7 +37,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
-    private readonly configService: ConfigService<AppConfigInterface, true>
+    private readonly configService: ConfigService<AppConfig, true>
   ) {}
 
   /**
