@@ -4,7 +4,9 @@
   </button>
 
   <div id="options-container" *ngIf="expanded && !disabled" class="flex flex-col items-start absolute top-[calc(100%+0.5rem)] border border-outline-secondary-light dark:border-outline-secondary-dark rounded-b-md min-w-full max-w-[200%] max-h-56 overflow-auto divide-y divide-outline-secondary-light dark:divide-outline-secondary-dark z-10">
-    <input type="search" id="options-search" [formControl]="searchbox" placeholder="Search..." class="form-input border-none w-full sticky top-0 bg-bg-secondary-light dark:bg-bg-secondary-dark placeholder-outline-primary-light dark:placeholder-outline-primary-dark dark:text-white focus:ring-0">
+    <div class="w-full sticky top-0">
+      <newbee-searchbar [border]="false" (search)="onSearch($event)"></newbee-searchbar>
+      </div>
     <button type="button" *ngFor="let option of optionsWithSearch; let i = index" id="option-{{i}}" (click)="selectOption(option.value)" class="text-start w-full py-2 px-3 bg-bg-primary-light dark:bg-bg-primary-dark hover:bg-highlight-primary-light hover:dark:bg-highlight-primary-dark hover:text-white hover:dark:text-black">{{option.dropdownValue}}</button>
   </div>
 </div>

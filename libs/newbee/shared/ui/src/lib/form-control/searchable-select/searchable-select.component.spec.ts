@@ -9,6 +9,7 @@ import {
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
 import { Subject } from 'rxjs';
+import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 const testOptions = [testSelectOption1, testSelectOption2];
@@ -20,7 +21,7 @@ describe('SearchableSelectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, ReactiveFormsModule],
+      imports: [CommonModule, ReactiveFormsModule, SearchbarComponentModule],
       providers: [
         {
           provide: ClickService,
@@ -55,7 +56,6 @@ describe('SearchableSelectComponent', () => {
     it('should initialize with expected values', () => {
       expect(component.valid).toBeTruthy();
       expect(component.expanded).toBeFalsy();
-      expect(component.searchbox.value).toEqual('');
       expect(component.value).toBeNull();
       expect(component.disabled).toBeFalsy();
       expect(component.onChange).toBeDefined();
@@ -149,7 +149,7 @@ describe('SearchableSelectComponent', () => {
 
     it('should output options restricted by searchbox', () => {
       expect(option1Element()).not.toBeNull();
-      component.searchbox.setValue('united');
+      component.onSearch('united');
       fixture.detectChanges();
       expect(component.optionsWithSearch).toEqual([testSelectOption1]);
       expect(option1Element()).toBeNull();

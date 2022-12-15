@@ -1,0 +1,15 @@
+<div id="searchbar-container" class="relative w-full">
+  <input id="searchbar-input" type="text" [formControl]="searchbar" [placeholder]="placeholder ? 'Search...' : ''" class="w-full bg-bg-primary-light dark:bg-bg-primary-dark focus:bg-bg-secondary-light focus:dark:bg-bg-secondary-dark placeholder-outline-primary-light dark:placeholder-outline-primary-dark text-black dark:text-white px-10" [ngClass]="{'border rounded-md border-outline-secondary-light dark:border-outline-secondary-dark': border, 'border-none focus:ring-0': !border}">
+
+  <span id="magnifying-glass-span" class="absolute inset-y-0 left-0 flex justify-center items-center p-2 hover:cursor-default" (mousedown)="ignoreMouseEvent($event)">
+    <svg id="magnifying-glass-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 stroke-outline-primary-light dark:stroke-outline-primary-dark">
+      <path id="magnifying-glass-path"stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
+  </span>
+
+  <span id="x-mark-span" class="absolute inset-y-0 right-0 flex justify-center items-center p-2 hover:cursor-pointer" (mousedown)="ignoreMouseEvent($event)" (click)="clear()" *ngIf="searchbar.value">
+    <svg id="x-mark-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 stroke-outline-primary-light dark:stroke-outline-primary-dark">
+      <path id="x-mark-path" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </span>
+</div>

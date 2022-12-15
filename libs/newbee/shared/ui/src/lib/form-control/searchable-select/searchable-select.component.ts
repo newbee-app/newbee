@@ -13,13 +13,13 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  FormControl,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
+import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 
 /**
  * A custom `<select>` component.
@@ -65,9 +65,9 @@ export class SearchableSelectComponent<T>
   @Output() exited = new EventEmitter<void>();
 
   /**
-   * A form control for the searchbox in the custom select.
+   * What to search for in the custom select.
    */
-  searchbox = new FormControl('');
+  private searchTerm = '';
 
   /**
    * Whether the dropdown should be displayed.
@@ -123,7 +123,9 @@ export class SearchableSelectComponent<T>
         next: (target) => {
           if (
             !elementRef.nativeElement.contains(target) &&
-            !target.id.includes('option-')
+            !target.id.startsWith('option-') &&
+            !target.id.startsWith('magnifying-glass-') &&
+            !target.id.startsWith('x-mark-')
           ) {
             this.shrink();
           }
@@ -251,6 +253,15 @@ export class SearchableSelectComponent<T>
   }
 
   /**
+   * Set `searchTerm`.
+   *
+   * @param searchTerm The new value for `searchTerm`.
+   */
+  onSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+  }
+
+  /**
    * The text to display for the control.
    * If an option has been selected, displays the `selectedValue` of the option.
    * Otherwise, prompts the user the select an option.
@@ -266,7 +277,7 @@ export class SearchableSelectComponent<T>
     return this.options.filter((option) => {
       return option.dropdownValue
         .toLowerCase()
-        .includes(this.searchbox.value?.toLowerCase() ?? '');
+        .includes(this.searchTerm.toLowerCase() ?? '');
     });
   }
 
@@ -292,7 +303,7 @@ export class SearchableSelectComponent<T>
 }
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, SearchbarComponentModule],
   declarations: [SearchableSelectComponent],
   exports: [SearchableSelectComponent],
 })

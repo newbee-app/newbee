@@ -12,6 +12,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
+import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 import { ClickWrapperComponentModule } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
@@ -20,7 +21,12 @@ export default {
   component: SearchableSelectComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, ReactiveFormsModule, ClickWrapperComponentModule],
+      imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        SearchbarComponentModule,
+        ClickWrapperComponentModule,
+      ],
     }),
     componentWrapperDecorator(
       (story) => `
