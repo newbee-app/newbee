@@ -1,5 +1,7 @@
-# mikro config
-mikro-orm.config.{j,t}s
+# mikro orm
+mikro-orm.config.ts
+migrations/
+
 
 # logs
 logs

@@ -7,7 +7,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { Authenticator } from '@newbee/shared/util';
-import {
+import type {
   AuthenticatorTransportFuture,
   CredentialDeviceType,
 } from '@simplewebauthn/typescript-types';
