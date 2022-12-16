@@ -9,8 +9,12 @@
       </newbee-tooltip>
 
       <div id="buttons" class="space-y-2">
-        <button id="webauthn-button" type="button" [disabled]="loginForm.invalid" (click)="emitWebAuthn()" class="newbee-btn-primary w-full rounded-md">Log In</button>
-        <button id="magic-link-login-button" type="button" [disabled]="loginForm.invalid" (click)="emitMagicLinkLogin()" class="newbee-btn-primary w-full rounded-md">Send Magic Link to Email</button>
+        <div>
+          <newbee-button-with-spinner buttonId="webauthn-button" buttonText="Log In" [disabled]="loginForm.invalid" [displaySpinner]="loginPending" (buttonClick)="emitWebAuthn()"></newbee-button-with-spinner>
+        </div>
+        <div>
+          <newbee-button-with-spinner buttonId="magic-link-login-button" buttonText="Send Magic Link to Email" [disabled]="loginForm.invalid" [displaySpinner]="magicLinkPending" (buttonClick)="emitMagicLinkLogin()"></newbee-button-with-spinner>
+        </div>
       </div>
     </form>
   </div>

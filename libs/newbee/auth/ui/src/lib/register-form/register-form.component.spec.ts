@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import {
+  ButtonWithSpinnerComponentModule,
   PhoneInputComponentModule,
   TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
@@ -30,6 +31,7 @@ describe('RegisterFormComponent', () => {
         BaseFormComponentModule,
         TooltipComponentModule,
         PhoneInputComponentModule,
+        ButtonWithSpinnerComponentModule,
       ],
       declarations: [RegisterFormComponent],
     }).compileComponents();
@@ -37,6 +39,7 @@ describe('RegisterFormComponent', () => {
     fixture = TestBed.createComponent(RegisterFormComponent);
     component = fixture.componentInstance;
 
+    component.registerPending = false;
     fixture.detectChanges();
 
     emailControl = component.registerForm.get('email');

@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, NgModule, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  NgModule,
+  Output,
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -7,7 +13,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
-import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
+import {
+  ButtonWithSpinnerComponentModule,
+  TooltipComponentModule,
+} from '@newbee/newbee/shared/ui';
 import { getErrorMessage } from '@newbee/newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
 
@@ -19,6 +28,16 @@ import { BaseFormComponentModule } from '../base-form';
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
+  /**
+   * Whether to display the spinner on the login button.
+   */
+  @Input() loginPending!: boolean;
+
+  /**
+   * Whether to display the spinner on the magic link login button.
+   */
+  @Input() magicLinkPending!: boolean;
+
   /**
    * The emitted login form, for use in magic link login.
    */
@@ -106,6 +125,7 @@ export class LoginFormComponent {
     ReactiveFormsModule,
     TooltipComponentModule,
     BaseFormComponentModule,
+    ButtonWithSpinnerComponentModule,
   ],
   declarations: [LoginFormComponent],
   exports: [LoginFormComponent],

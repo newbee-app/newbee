@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
@@ -12,6 +13,11 @@ import { Store } from '@ngrx/store';
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
+  /**
+   * Whether a WebAuthn request is pending.
+   */
+  pendingWebAuthn$ = this.store.select(authFeature.selectPendingWebAuthn);
+
   constructor(
     private readonly store: Store,
     private readonly router: Router,

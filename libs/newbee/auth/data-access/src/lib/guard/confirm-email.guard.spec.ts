@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EmptyComponent, EmptyComponentModule } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authFeature } from '../store';
+import { authFeature, initialAuthState } from '../store';
 import { confirmEmailGuard } from './confirm-email.guard';
 
 describe('ConfirmEmailGuard', () => {
@@ -57,6 +57,8 @@ describe('ConfirmEmailGuard', () => {
       store.overrideSelector(authFeature.selectAuthState, {
         jwtId: '1234',
         email: testUser1.email,
+        pendingMagicLink: false,
+        pendingWebAuthn: false,
       });
       await expect(
         router.navigate(['/auth/login/confirm-email'])
@@ -67,10 +69,7 @@ describe('ConfirmEmailGuard', () => {
 
   describe('invalid jwtId and email', () => {
     it('should redirect to /auth/login', async () => {
-      store.overrideSelector(authFeature.selectAuthState, {
-        jwtId: null,
-        email: null,
-      });
+      store.overrideSelector(authFeature.selectAuthState, initialAuthState);
       await expect(
         router.navigate(['/auth/login/confirm-email'])
       ).resolves.toBeTruthy();

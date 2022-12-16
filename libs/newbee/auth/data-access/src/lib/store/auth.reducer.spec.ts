@@ -1,4 +1,6 @@
-import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
+import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
+import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   testBaseLoginDto1,
   testBaseMagicLinkLoginDto1,
@@ -6,10 +8,23 @@ import {
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
-  const stateAfterLoginMagicLinkSuccess: AuthState = {
+  const stateAfterLoginMagicLink: AuthState = {
     ...initialAuthState,
+    pendingMagicLink: true,
+  };
+  const stateAfterLoginMagicLinkSuccess: AuthState = {
+    ...stateAfterLoginMagicLink,
     jwtId: testBaseMagicLinkLoginDto1.jwtId,
     email: testBaseMagicLinkLoginDto1.email,
+    pendingMagicLink: false,
+  };
+  const stateAfterWebauthnRegisterChallenge: AuthState = {
+    ...initialAuthState,
+    pendingWebAuthn: true,
+  };
+  const stateAfterWebauthnLoginChallenge: AuthState = {
+    ...initialAuthState,
+    pendingWebAuthn: true,
   };
 
   describe('start from initial state', () => {
@@ -19,22 +34,80 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(initialAuthState);
     });
 
-    it('should update state for sendLoginMagicLinkSuccess', () => {
+    it('should update state for sendLoginMagicLink', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
+        AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 })
+      );
+      expect(updatedState).toEqual(stateAfterLoginMagicLink);
+    });
+
+    it('should update state for getWebauthnRegisterChallenge', () => {
+      const updatedState = authFeature.reducer(
+        initialAuthState,
+        AuthActions.getWebauthnRegisterChallenge({
+          registerForm: testRegisterForm1,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterWebauthnRegisterChallenge);
+    });
+
+    it('should update state for getWebauthnLoginChallenge', () => {
+      const updatedState = authFeature.reducer(
+        initialAuthState,
+        AuthActions.getWebauthnLoginChallenge({ loginForm: testLoginForm1 })
+      );
+      expect(updatedState).toEqual(stateAfterWebauthnLoginChallenge);
+    });
+  });
+
+  describe('start from altered state', () => {
+    it('should update state for sendLoginMagicLinkSuccess', () => {
+      const updatedState = authFeature.reducer(
+        stateAfterLoginMagicLink,
         AuthActions.sendLoginMagicLinkSuccess({
           magicLinkLoginDto: testBaseMagicLinkLoginDto1,
         })
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLinkSuccess);
     });
-  });
 
-  describe('start after sending magic link', () => {
     it('should update state for loginSuccess', () => {
-      const updatedState = authFeature.reducer(
+      let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
         AuthActions.loginSuccess({ loginDto: testBaseLoginDto1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnLoginChallenge,
+        AuthActions.loginSuccess({ loginDto: testBaseLoginDto1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnRegisterChallenge,
+        AuthActions.loginSuccess({ loginDto: testBaseLoginDto1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+    });
+
+    it('should update state for clientError', () => {
+      let updatedState = authFeature.reducer(
+        stateAfterLoginMagicLinkSuccess,
+        HttpActions.clientError({ httpClientError: testHttpClientError1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnLoginChallenge,
+        HttpActions.clientError({ httpClientError: testHttpClientError1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnRegisterChallenge,
+        HttpActions.clientError({ httpClientError: testHttpClientError1 })
       );
       expect(updatedState).toEqual(initialAuthState);
     });

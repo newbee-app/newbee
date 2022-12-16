@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
+  ButtonWithSpinnerComponentModule,
   ClickWrapperComponentModule,
   PhoneInputComponentModule,
   TooltipComponentModule,
@@ -27,6 +28,7 @@ export default {
         TooltipComponentModule,
         PhoneInputComponentModule,
         ClickWrapperComponentModule,
+        ButtonWithSpinnerComponentModule,
       ],
     }),
     componentWrapperDecorator(
@@ -37,6 +39,9 @@ export default {
     `
     ),
   ],
+  args: {
+    registerPending: false,
+  },
 } as Meta<RegisterFormComponent>;
 
 const Template: Story<RegisterFormComponent> = (
@@ -50,4 +55,8 @@ const Template: Story<RegisterFormComponent> = (
 });
 
 export const Primary = Template.bind({});
-Primary.args = {};
+
+export const Pending = Template.bind({});
+Pending.args = {
+  registerPending: true,
+};

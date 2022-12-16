@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {
   AuthEffects,
@@ -17,6 +18,7 @@ import { AuthRoutingModule } from './routing';
 
 @NgModule({
   imports: [
+    CommonModule,
     StoreModule.forFeature(authFeature),
     EffectsModule.forFeature([AuthEffects]),
     LoginFormComponentModule,

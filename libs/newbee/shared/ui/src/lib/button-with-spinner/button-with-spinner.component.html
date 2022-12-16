@@ -1,0 +1,9 @@
+<button [id]="buttonId" type="button" [disabled]="disabled" (click)="emitButtonClick()" class="newbee-btn-primary flex flex-row flex-nowrap justify-center items-center gap-x-3 w-full rounded-md">
+  <span [id]="buttonId + '-spinner'" *ngIf="displaySpinner">
+    <newbee-spinner></newbee-spinner>
+  </span>
+
+  <span [id]="buttonId + '-text'">
+    {{buttonText}}
+  </span>
+</button>

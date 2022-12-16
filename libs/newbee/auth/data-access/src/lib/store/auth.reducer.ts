@@ -1,4 +1,4 @@
-import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -14,6 +14,16 @@ export interface AuthState {
    * The email a magic link was sent to during magic link login.
    */
   email: string | null;
+
+  /**
+   * Whether the user is waiting for a response for magic link login.
+   */
+  pendingMagicLink: boolean;
+
+  /**
+   * Whether the user is waiting for a response for WebAuthn login or register.
+   */
+  pendingWebAuthn: boolean;
 }
 
 /**
@@ -22,6 +32,8 @@ export interface AuthState {
 export const initialAuthState: AuthState = {
   jwtId: null,
   email: null,
+  pendingMagicLink: false,
+  pendingWebAuthn: false,
 };
 
 /**
@@ -32,20 +44,39 @@ export const authFeature = createFeature({
   reducer: createReducer(
     initialAuthState,
     on(
+      AuthActions.sendLoginMagicLink,
+      (state): AuthState => ({
+        ...state,
+        pendingMagicLink: true,
+      })
+    ),
+    on(
       AuthActions.sendLoginMagicLinkSuccess,
       (state, { magicLinkLoginDto: { jwtId, email } }): AuthState => ({
         ...state,
         jwtId,
         email,
+        pendingMagicLink: false,
+      })
+    ),
+    on(
+      AuthActions.getWebauthnRegisterChallenge,
+      (state): AuthState => ({
+        ...state,
+        pendingWebAuthn: true,
+      })
+    ),
+    on(
+      AuthActions.getWebauthnLoginChallenge,
+      (state): AuthState => ({
+        ...state,
+        pendingWebAuthn: true,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state): AuthState => ({
-        ...state,
-        jwtId: null,
-        email: null,
-      })
+      HttpActions.clientError,
+      (): AuthState => initialAuthState
     )
   ),
 });

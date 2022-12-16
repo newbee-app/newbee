@@ -1,1 +1,1 @@
-<newbee-register-form (register)="onRegister($event)" (navigateToLogin)="onNavigateToLogin()"></newbee-register-form>
+<newbee-register-form [registerPending]="(pendingWebAuthn$ | async) ?? false" (register)="onRegister($event)" (navigateToLogin)="onNavigateToLogin()"></newbee-register-form>

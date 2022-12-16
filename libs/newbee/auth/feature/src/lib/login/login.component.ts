@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { authFeature } from '@newbee/newbee/auth/data-access';
 import { LoginForm } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
@@ -12,6 +13,16 @@ import { Store } from '@ngrx/store';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
+  /**
+   * Whether a WebAuthn request is pending.
+   */
+  pendingWebAuthn$ = this.store.select(authFeature.selectPendingWebAuthn);
+
+  /**
+   * Whether a magic link login request is pending.
+   */
+  pendingMagicLink$ = this.store.select(authFeature.selectPendingMagicLink);
+
   constructor(
     private readonly store: Store,
     private readonly router: Router,

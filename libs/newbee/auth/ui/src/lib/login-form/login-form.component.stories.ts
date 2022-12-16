@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
+import {
+  ButtonWithSpinnerComponentModule,
+  TooltipComponentModule,
+} from '@newbee/newbee/shared/ui';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { BaseFormComponentModule } from '../base-form';
@@ -16,9 +19,14 @@ export default {
         ReactiveFormsModule,
         TooltipComponentModule,
         BaseFormComponentModule,
+        ButtonWithSpinnerComponentModule,
       ],
     }),
   ],
+  args: {
+    loginPending: false,
+    magicLinkPending: false,
+  },
 } as Meta<LoginFormComponent>;
 
 const Template: Story<LoginFormComponent> = (args: LoginFormComponent) => ({

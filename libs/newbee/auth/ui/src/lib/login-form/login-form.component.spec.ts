@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TooltipComponentModule } from '@newbee/newbee/shared/ui';
+import {
+  ButtonWithSpinnerComponentModule,
+  TooltipComponentModule,
+} from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
 
@@ -18,6 +21,7 @@ describe('LoginFormComponent', () => {
         ReactiveFormsModule,
         TooltipComponentModule,
         BaseFormComponentModule,
+        ButtonWithSpinnerComponentModule,
       ],
       declarations: [LoginFormComponent],
     }).compileComponents();
@@ -25,6 +29,8 @@ describe('LoginFormComponent', () => {
     fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
 
+    component.loginPending = false;
+    component.magicLinkPending = false;
     fixture.detectChanges();
   });
 

@@ -36,7 +36,10 @@
       "buildable": true
     },
     "@nrwl/angular:component": {
-      "style": "css"
+      "style": "none"
+    },
+    "@nrwl/angular:scam": {
+      "style": "none"
     },
     "@nrwl/nest:library": {
       "buildable": true

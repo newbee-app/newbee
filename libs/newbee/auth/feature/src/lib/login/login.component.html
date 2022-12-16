@@ -1,1 +1,1 @@
-<newbee-login-form (magicLinkLogin)="onMagicLinkLogin($event)" (webauthn)="onWebAuthn($event)" (navigateToRegister)="onNavigateToRegister()"></newbee-login-form>
+<newbee-login-form [loginPending]="(pendingWebAuthn$ | async) ?? false" [magicLinkPending]="(pendingMagicLink$ | async) ?? false" (magicLinkLogin)="onMagicLinkLogin($event)" (webauthn)="onWebAuthn($event)" (navigateToRegister)="onNavigateToRegister()"></newbee-login-form>

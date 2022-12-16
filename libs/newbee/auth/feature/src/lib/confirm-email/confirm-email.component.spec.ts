@@ -42,6 +42,8 @@ describe('ConfirmEmailComponent', () => {
       store.overrideSelector(authFeature.selectAuthState, {
         jwtId: '1234',
         email: testUser1.email,
+        pendingMagicLink: false,
+        pendingWebAuthn: false,
       });
       store.refreshState();
 

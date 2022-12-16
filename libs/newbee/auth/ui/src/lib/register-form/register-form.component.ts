@@ -1,8 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, NgModule, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  NgModule,
+  Output,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
+  ButtonWithSpinnerComponentModule,
   PhoneInputComponentModule,
   TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
@@ -21,6 +28,11 @@ import { BaseFormComponentModule } from '../base-form';
   templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent {
+  /**
+   * Whether to display the spinner on the register button.
+   */
+  @Input() registerPending!: boolean;
+
   /**
    * The emitted register form, for use in the smart UI parent.
    */
@@ -119,6 +131,7 @@ export class RegisterFormComponent {
     BaseFormComponentModule,
     TooltipComponentModule,
     PhoneInputComponentModule,
+    ButtonWithSpinnerComponentModule,
   ],
   declarations: [RegisterFormComponent],
   exports: [RegisterFormComponent],
