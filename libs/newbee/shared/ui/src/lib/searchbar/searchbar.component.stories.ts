@@ -15,11 +15,12 @@ export default {
   args: {
     border: true,
     placeholder: true,
+    searchTerm: '',
   },
 } as Meta<SearchbarComponent>;
 
 const Template: Story<SearchbarComponent> = (args: SearchbarComponent) => ({
-  props: { ...args, search: action('search') },
+  props: { ...args, searchChange: action('searchChange') },
 });
 
 export const Primary = Template.bind({});
@@ -32,4 +33,9 @@ NoPlaceholder.args = {
 export const Borderless = Template.bind({});
 Borderless.args = {
   border: false,
+};
+
+export const InitialSearchValue = Template.bind({});
+InitialSearchValue.args = {
+  searchTerm: 'Searching',
 };

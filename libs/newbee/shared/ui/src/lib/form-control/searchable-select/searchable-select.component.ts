@@ -67,7 +67,7 @@ export class SearchableSelectComponent<T>
   /**
    * What to search for in the custom select.
    */
-  private searchTerm = '';
+  searchTerm = '';
 
   /**
    * Whether the dropdown should be displayed.
@@ -250,15 +250,6 @@ export class SearchableSelectComponent<T>
    */
   get onTouched(): () => void {
     return this._onTouched;
-  }
-
-  /**
-   * Set `searchTerm`.
-   *
-   * @param searchTerm The new value for `searchTerm`.
-   */
-  onSearch(searchTerm: string): void {
-    this.searchTerm = searchTerm;
   }
 
   /**

@@ -3,9 +3,9 @@
     <span id="selected-text" [ngClass]="{'text-outline-primary-light dark:text-outline-primary-dark': value === null}">{{selectedText}}</span>
   </button>
 
-  <div id="options-container" *ngIf="expanded && !disabled" class="flex flex-col items-start absolute top-[calc(100%+0.5rem)] border border-outline-secondary-light dark:border-outline-secondary-dark rounded-b-md min-w-full max-w-[200%] max-h-56 overflow-auto divide-y divide-outline-secondary-light dark:divide-outline-secondary-dark z-10">
+  <div id="options-container" *ngIf="expanded && !disabled" class="flex flex-col items-start absolute top-[calc(100%+0.5rem)] border border-outline-secondary-light dark:border-outline-secondary-dark rounded-b-md w-48 min-w-full max-w-[200%] max-h-56 overflow-auto divide-y divide-outline-secondary-light dark:divide-outline-secondary-dark z-10">
     <div class="w-full sticky top-0">
-      <newbee-searchbar [border]="false" (search)="onSearch($event)"></newbee-searchbar>
+      <newbee-searchbar [border]="false" [(searchTerm)]="searchTerm"></newbee-searchbar>
       </div>
     <button type="button" *ngFor="let option of optionsWithSearch; let i = index" id="option-{{i}}" (click)="selectOption(option.value)" class="text-start w-full py-2 px-3 bg-bg-primary-light dark:bg-bg-primary-dark hover:bg-highlight-primary-light hover:dark:bg-highlight-primary-dark hover:text-white hover:dark:text-black">{{option.dropdownValue}}</button>
   </div>

@@ -5,6 +5,7 @@ import {
   Input,
   NgModule,
   OnDestroy,
+  OnInit,
   Output,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -18,7 +19,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-searchbar',
   templateUrl: './searchbar.component.html',
 })
-export class SearchbarComponent implements OnDestroy {
+export class SearchbarComponent implements OnInit, OnDestroy {
   /**
    * Whether to include a border around the input.
    */
@@ -30,9 +31,14 @@ export class SearchbarComponent implements OnDestroy {
   @Input() placeholder = true;
 
   /**
+   * Initial value for the searchbar's value
+   */
+  @Input() searchTerm = '';
+
+  /**
    * What the user is searching for.
    */
-  @Output() search = new EventEmitter<string>();
+  @Output() searchTermChange = new EventEmitter<string>();
 
   /**
    * The internal form control for the searchbar input.
@@ -47,9 +53,16 @@ export class SearchbarComponent implements OnDestroy {
   constructor() {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (value) => {
-        this.search.emit(value ?? '');
+        this.searchTermChange.emit(value ?? '');
       },
     });
+  }
+
+  /**
+   * Initialize the searchbar with the value of `searchTerm`.
+   */
+  ngOnInit(): void {
+    this.searchbar.setValue(this.searchTerm, { emitEvent: false });
   }
 
   /**

@@ -19,7 +19,7 @@ describe('SearchbarComponent', () => {
     fixture = TestBed.createComponent(SearchbarComponent);
     component = fixture.componentInstance;
 
-    jest.spyOn(component.search, 'emit');
+    jest.spyOn(component.searchTermChange, 'emit');
     fixture.detectChanges();
   });
 
@@ -28,11 +28,21 @@ describe('SearchbarComponent', () => {
     expect(fixture).toBeDefined();
   });
 
+  describe('ngOnInit()', () => {
+    it('should initialize the searchbar control value', () => {
+      expect(component.searchTerm).toEqual('');
+      expect(component.searchbar.value).toEqual('');
+      component.searchTerm = 'search';
+      component.ngOnInit();
+      expect(component.searchbar.value).toEqual('search');
+    });
+  });
+
   describe('search', () => {
     it('should emit when the searchbar value canges', () => {
       component.searchbar.setValue(testSearchTerm);
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith(testSearchTerm);
+      expect(component.searchTermChange.emit).toBeCalledTimes(1);
+      expect(component.searchTermChange.emit).toBeCalledWith(testSearchTerm);
     });
   });
 

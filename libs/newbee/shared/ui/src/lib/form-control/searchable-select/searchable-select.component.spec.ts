@@ -149,7 +149,7 @@ describe('SearchableSelectComponent', () => {
 
     it('should output options restricted by searchbox', () => {
       expect(option1Element()).not.toBeNull();
-      component.onSearch('united');
+      component.searchTerm = 'united';
       fixture.detectChanges();
       expect(component.optionsWithSearch).toEqual([testSelectOption1]);
       expect(option1Element()).toBeNull();
