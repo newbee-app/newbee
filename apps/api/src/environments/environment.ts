@@ -33,9 +33,12 @@ export default (): AppConfig => ({
       }),
     ],
   },
+  // TODO update and fix this
   database: {
     type: 'postgresql',
-    clientUrl: process.env['COCKROACHDB_URL'] as string,
+    dbName: process.env['POSTGRES_DB_NAME'] as string,
+    user: process.env['POSTGRES_USER'] as string,
+    password: process.env['POSTGRES_PASSWORD'] as string,
     forceUtcTimezone: true,
     autoLoadEntities: true,
     logger: logger.log.bind(logger),

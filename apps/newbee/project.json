@@ -68,7 +68,10 @@
           "buildTarget": "newbee:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyOptions": "apps/newbee/proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -128,7 +131,10 @@
           "serverTarget": "newbee:server:production"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/newbee/proxy.conf.json"
+      }
     },
     "prerender": {
       "executor": "@nguniversal/builders:prerender",

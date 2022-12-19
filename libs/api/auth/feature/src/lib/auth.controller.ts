@@ -53,7 +53,7 @@ export class AuthController {
   @Public()
   @Post(`${webauthn}/${register}`)
   async webAuthnRegister(
-    @Query() createUserDto: CreateUserDto
+    @Body() createUserDto: CreateUserDto
   ): Promise<BaseUserCreatedDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(

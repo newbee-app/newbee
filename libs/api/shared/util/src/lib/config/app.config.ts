@@ -44,8 +44,10 @@ export const appEnvironmentVariablesSchema = Joi.object({
   APP_DOMAIN: Joi.string().required(),
   APP_URL: Joi.string().required(),
 
-  // CockroachDB
-  COCKROACHDB_URL: Joi.string().required(),
+  // PostgreSQL
+  POSTGRES_DB_NAME: Joi.string().required(),
+  POSTGRES_USER: Joi.string().required(),
+  POSTGRES_PASSWORD: Joi.string().required(),
 
   // JWT
   JWT_SECRET: Joi.string().required(),
