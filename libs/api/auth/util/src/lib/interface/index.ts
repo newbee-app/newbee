@@ -3,11 +3,6 @@
  */
 export interface UserJwtPayload {
   /**
-   * The user's email.
-   */
-  email: string;
-
-  /**
    * The user's ID.
    */
   sub: string;
