@@ -1,13 +1,13 @@
 # mikro orm
-mikro-orm.config.ts
+mikro-orm.config.[jt]s
 migrations/
-
 
 # logs
 logs
 
 # sensitive env variables
 .env
+*.env
 
 # compiled output
 /dist

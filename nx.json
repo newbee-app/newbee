@@ -18,8 +18,7 @@
           "e2e",
           "build-storybook",
           "compodoc"
-        ],
-        "accessToken": "ZTAxYWVkZmEtODU0MC00YzMxLWI1NDYtZDJhZDA1MmQxNjg2fHJlYWQtd3JpdGU="
+        ]
       }
     }
   },
