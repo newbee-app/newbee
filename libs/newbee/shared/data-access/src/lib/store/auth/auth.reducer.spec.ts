@@ -7,7 +7,7 @@ import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
   const stateAfterLoginSuccess: AuthState = {
-    accessToken: testBaseLoginDto1.access_token,
+    accessToken: testBaseLoginDto1.accessToken,
     user: testBaseLoginDto1.user,
   };
 

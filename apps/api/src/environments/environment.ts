@@ -1,10 +1,19 @@
 import { Logger } from '@nestjs/common';
 import { AppConfig } from '@newbee/api/shared/util';
+import { doubleCsrf } from 'csrf-csrf';
 import winston from 'winston';
 
 export const environment = {
   production: false,
 };
+
+const { doubleCsrfProtection, generateToken } = doubleCsrf({
+  getSecret: (req) => req?.get('session-secret') ?? '',
+  cookieName: 'CSRF-TOKEN',
+  cookieOptions: { secure: false },
+  getTokenFromRequest: (req) => req.get('X-CSRF-TOKEN'),
+});
+export { doubleCsrfProtection };
 
 const logger = new Logger('MikroORM');
 export default (): AppConfig => ({
@@ -33,7 +42,6 @@ export default (): AppConfig => ({
       }),
     ],
   },
-  // TODO update and fix this
   database: {
     type: 'postgresql',
     dbName: process.env['POSTGRES_DB_NAME'] as string,
@@ -53,5 +61,8 @@ export default (): AppConfig => ({
     name: process.env['APP_NAME'] as string,
     id: process.env['APP_DOMAIN'] as string,
     origin: process.env['APP_URL'] as string,
+  },
+  csrf: {
+    generateToken,
   },
 });

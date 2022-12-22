@@ -8,6 +8,7 @@
     "api-auth-util": "libs/api/auth/util",
     "api-authenticator-data-access": "libs/api/authenticator/data-access",
     "api-authenticator-feature": "libs/api/authenticator/feature",
+    "api-csrf-feature": "libs/api/csrf/feature",
     "api-shared-data-access": "libs/api/shared/data-access",
     "api-shared-util": "libs/api/shared/util",
     "api-user-challenge-data-access": "libs/api/user-challenge/data-access",

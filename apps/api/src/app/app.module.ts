@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
+import { CsrfModule } from '@newbee/api/csrf/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
@@ -22,6 +23,7 @@ import { default as appConfig } from '../environments/environment';
 
 @Module({
   imports: [
+    // 3rd party modules
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -45,7 +47,10 @@ import { default as appConfig } from '../environments/environment';
         configService.get('mailer', { infer: true }),
       inject: [ConfigService],
     }),
+
+    // In-house modules
     AuthModule,
+    CsrfModule,
     UserModule,
     UserSettingsModule,
   ],

@@ -57,7 +57,7 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: createMock<JwtService>({
-            sign: jest.fn().mockReturnValue(testBaseLoginDto1.access_token),
+            sign: jest.fn().mockReturnValue(testBaseLoginDto1.accessToken),
           }),
         },
         {

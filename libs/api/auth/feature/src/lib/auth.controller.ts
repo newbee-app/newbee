@@ -64,7 +64,7 @@ export class AuthController {
     this.logger.log(`User created: ${JSON.stringify(userAndOptions)}`);
 
     const loginDto = this.authService.login(userAndOptions.user);
-    this.logger.log(`Access token created: ${loginDto.access_token}`);
+    this.logger.log(`Access token created: ${loginDto.accessToken}`);
 
     return { ...loginDto, options: userAndOptions.options };
   }
@@ -113,7 +113,7 @@ export class AuthController {
     const user = await this.authService.verifyLoginChallenge(email, credential);
     const loginDto = this.authService.login(user);
     this.logger.log(
-      `Credentials verified and access token created: ${loginDto.access_token}`
+      `Credentials verified and access token created: ${loginDto.accessToken}`
     );
 
     return loginDto;
@@ -154,7 +154,7 @@ export class AuthController {
   magicLinkLogin(@User() user: UserEntity): BaseLoginDto {
     const loginDto = this.authService.login(user);
     this.logger.log(
-      `Access token generated: ${JSON.stringify(loginDto.access_token)}`
+      `Access token generated: ${JSON.stringify(loginDto.accessToken)}`
     );
     return loginDto;
   }

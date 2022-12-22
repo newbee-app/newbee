@@ -5,6 +5,7 @@ import {
 } from '@newbee/shared/util';
 import {
   BaseCreateUserDto,
+  BaseCsrfTokenDto,
   BaseEmailDto,
   BaseLoginDto,
   BaseMagicLinkLoginDto,
@@ -26,7 +27,7 @@ export const testBaseEmailDto1: BaseEmailDto = {
  * Strictly for use in testing.
  */
 export const testBaseLoginDto1: BaseLoginDto = {
-  access_token: 'access',
+  accessToken: 'access',
   user: testUser1,
 };
 
@@ -55,6 +56,14 @@ export const testBaseUserCreatedDto1: BaseUserCreatedDto = {
 export const testBaseWebAuthnLoginDto1: BaseWebAuthnLoginDto = {
   email: testUser1.email,
   credential: testAuthenticationCredential1,
+};
+
+/**
+ * An example instance of BaseCsrfTokenDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCsrfTokenDto1: BaseCsrfTokenDto = {
+  csrfToken: 'csrf1',
 };
 
 /**

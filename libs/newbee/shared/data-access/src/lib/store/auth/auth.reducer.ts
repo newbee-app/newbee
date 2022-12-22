@@ -35,17 +35,17 @@ export const authFeature = createFeature<AppState, 'auth'>({
     initialAuthState,
     on(
       AuthActions.getWebauthnRegisterChallengeSuccess,
-      (state, { userCreatedDto: { access_token, user } }): AuthState => ({
+      (state, { userCreatedDto: { accessToken, user } }): AuthState => ({
         ...state,
-        accessToken: access_token,
+        accessToken,
         user,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { loginDto: { access_token, user } }): AuthState => ({
+      (state, { loginDto: { accessToken, user } }): AuthState => ({
         ...state,
-        accessToken: access_token,
+        accessToken,
         user,
       })
     )

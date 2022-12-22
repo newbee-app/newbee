@@ -47,7 +47,7 @@ export class AuthService {
    */
   login(user: UserEntity): BaseLoginDto {
     const payload: UserJwtPayload = { sub: user.id };
-    return { access_token: this.jwtService.sign(payload), user };
+    return { accessToken: this.jwtService.sign(payload), user };
   }
 
   /**

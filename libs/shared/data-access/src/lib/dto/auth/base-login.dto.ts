@@ -7,7 +7,7 @@ export class BaseLoginDto {
   /**
    * The JWT the user should include in future requests.
    */
-  access_token!: string;
+  accessToken!: string;
 
   /**
    * The user object for the frontend to use.

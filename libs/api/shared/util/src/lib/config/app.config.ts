@@ -1,5 +1,6 @@
 import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import type { MailerOptions } from '@nestjs-modules/mailer';
+import type { CsrfTokenCreator } from 'csrf-csrf';
 import Joi from 'joi';
 import winston from 'winston';
 
@@ -26,9 +27,27 @@ export interface AppConfig {
    * Relaying Party information for use in WebAuthn.
    */
   rpInfo: {
+    /**
+     * The app's name
+     */
     name: string;
+
+    /**
+     * The app's globally unique ID (domain)
+     */
     id: string;
+
+    /**
+     * The app's URL, including scheme
+     */
     origin: string;
+  };
+
+  /**
+   *
+   */
+  csrf: {
+    generateToken: CsrfTokenCreator;
   };
 }
 
@@ -51,6 +70,9 @@ export const appEnvironmentVariablesSchema = Joi.object({
 
   // JWT
   JWT_SECRET: Joi.string().required(),
+
+  // Cookies
+  COOKIE_SECRET: Joi.string().required(),
 
   // AUTH: Magic Link Login Strategy
   MAGIC_LINK_LOGIN_VERIFY_LINK: Joi.string().required(),
