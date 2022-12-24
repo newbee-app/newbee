@@ -14,7 +14,6 @@ import {
 } from '@newbee/api/shared/data-access';
 import { badRequestAuthenticatorErrorMsg } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
-import { testBaseLoginDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticationCredential1,
   testPublicKeyCredentialRequestOptions1,
@@ -41,6 +40,7 @@ describe('AuthService', () => {
   let authenticatorService: AuthenticatorService;
   let userChallengeService: UserChallengeService;
 
+  const testAccessToken = 'access';
   const testCounter = 100;
   const testAuthenticationInfo = {
     credentialID: Buffer.from(testAuthenticatorEntity1.credentialId),
@@ -57,7 +57,7 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: createMock<JwtService>({
-            sign: jest.fn().mockReturnValue(testBaseLoginDto1.accessToken),
+            sign: jest.fn().mockReturnValue(testAccessToken),
           }),
         },
         {
@@ -124,10 +124,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should generate an access token', () => {
-      expect(service.login(testUserEntity1)).toEqual({
-        ...testBaseLoginDto1,
-        user: testUserEntity1,
-      });
+      expect(service.login(testUserEntity1)).toEqual(testAccessToken);
       expect(jwtService.sign).toBeCalledTimes(1);
       expect(jwtService.sign).toBeCalledWith(testUserJwtPayload1);
     });

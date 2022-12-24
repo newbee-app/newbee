@@ -1,12 +1,9 @@
 import { registerAs } from '@nestjs/config';
 import type { JwtModuleOptions } from '@nestjs/jwt';
-import type { AppConfig } from '@newbee/api/shared/util';
+import { AppConfig, authJwtCookie } from '@newbee/api/shared/util';
 import type { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
 import { magicLinkLogin } from '@newbee/shared/util';
-import {
-  ExtractJwt,
-  StrategyOptions as JwtStrategyOptions,
-} from 'passport-jwt';
+import { StrategyOptions as JwtStrategyOptions } from 'passport-jwt';
 
 /**
  * The structure of the auth module's config.
@@ -59,7 +56,7 @@ export default registerAs(
     },
     jwtStrategy: {
       secretOrKey: process.env['JWT_SECRET'] as string,
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req) => req.signedCookies[authJwtCookie],
     },
   })
 );

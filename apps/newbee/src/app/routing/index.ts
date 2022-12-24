@@ -7,6 +7,7 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
+import { csrfTokenResolver } from '@newbee/newbee/shared/data-access';
 
 /**
  * How the web page's title should be set for all routes, unless otherwise specified.
@@ -39,16 +40,24 @@ export class AppTitleStrategy extends TitleStrategy {
 // TODO set up a 404 not found page with a wildcard route
 const routes: Routes = [
   {
-    path: 'auth',
-    loadChildren: async () => {
-      const m = await import('@newbee/newbee/auth/feature');
-      return m.AuthModule;
-    },
-  },
-  {
     path: '',
-    redirectTo: '/auth/login',
-    pathMatch: 'full',
+    resolve: {
+      csrfToken: csrfTokenResolver,
+    },
+    children: [
+      {
+        path: '',
+        redirectTo: '/auth/login',
+        pathMatch: 'full',
+      },
+      {
+        path: 'auth',
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/auth/feature');
+          return m.AuthModule;
+        },
+      },
+    ],
   },
 ];
 

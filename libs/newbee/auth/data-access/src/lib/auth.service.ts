@@ -6,14 +6,14 @@ import {
   authVersion,
   BaseCreateUserDto,
   BaseEmailDto,
-  BaseLoginDto,
   BaseMagicLinkLoginDto,
-  BaseUserCreatedDto,
+  BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
   login,
   register,
   webauthn,
 } from '@newbee/shared/data-access';
+import type { User } from '@newbee/shared/util';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -48,11 +48,11 @@ export class AuthService {
    * Sends a GET request to verify the magic link token.
    *
    * @param token The token associated with the magic link.
-   * @returns An observable containing the logged in user and their access token.
+   * @returns An observable containing information about the logged in user.
    */
-  magicLinkLogin(token: string): Observable<BaseLoginDto> {
+  magicLinkLogin(token: string): Observable<User> {
     const params = new HttpParams({ fromObject: { token } });
-    return this.http.get<BaseLoginDto>(
+    return this.http.get<User>(
       `/api/v${authVersion}/${auth}/${magicLinkLogin}`,
       { params }
     );
@@ -64,7 +64,9 @@ export class AuthService {
    * @param registerForm The register form containing the necessary information for creating a new user.
    * @returns An observable containing the newly created user, their access token, and the options needed to register an authenticator.
    */
-  webAuthnRegister(registerForm: RegisterForm): Observable<BaseUserCreatedDto> {
+  webAuthnRegister(
+    registerForm: RegisterForm
+  ): Observable<BaseUserAndOptionsDto> {
     const { email, name, displayName, phoneNumber } = registerForm;
     let phoneNumberString: string | undefined = undefined;
     if (phoneNumber && phoneNumber.number && phoneNumber.country) {
@@ -82,7 +84,7 @@ export class AuthService {
       displayName: displayName ?? null,
       phoneNumber: phoneNumberString ?? null,
     };
-    return this.http.post<BaseUserCreatedDto>(
+    return this.http.post<BaseUserAndOptionsDto>(
       `/api/v${authVersion}/${auth}/${webauthn}/${register}`,
       createUserDto
     );
@@ -110,12 +112,12 @@ export class AuthService {
    *
    * @param loginForm The login form containing the necessary email.
    * @param options The options to feed into the authenticator.
-   * @returns An observable containing the logged in user and their access token.
+   * @returns An observable containing information about the logged in user.
    */
   webAuthnLoginPost(
     loginForm: LoginForm,
     options: PublicKeyCredentialRequestOptionsJSON
-  ): Observable<BaseLoginDto> {
+  ): Observable<User> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
       switchMap((credential) => {
@@ -123,7 +125,7 @@ export class AuthService {
           ...emailDto,
           credential,
         };
-        return this.http.post<BaseLoginDto>(
+        return this.http.post<User>(
           `/api/v${authVersion}/${auth}/${webauthn}/${login}`,
           webAuthnLoginDto
         );

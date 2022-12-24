@@ -5,30 +5,31 @@ import {
   Logger,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
   EmailDto,
   MagicLinkLoginStrategy,
   WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
-import { MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import { UserEntity } from '@newbee/api/shared/data-access';
-import { Public, User } from '@newbee/api/shared/util';
+import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
+import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
+import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
   auth,
   authVersion,
-  BaseLoginDto,
   BaseMagicLinkLoginDto,
-  BaseUserCreatedDto,
   login,
   register,
   webauthn,
 } from '@newbee/shared/data-access';
 import { magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
+import type { Response } from 'express';
 
 /**
  * The controller that provides API routes for logging in and registering users.
@@ -40,7 +41,8 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-    private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy
+    private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy,
+    private readonly configService: ConfigService<AppAuthConfig, true>
   ) {}
 
   /**
@@ -53,20 +55,26 @@ export class AuthController {
   @Public()
   @Post(`${webauthn}/${register}`)
   async webAuthnRegister(
+    @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto
-  ): Promise<BaseUserCreatedDto> {
+  ): Promise<UserAndOptionsDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
       `WebAuthn register request received for: ${createUserDtoString}`
     );
 
     const userAndOptions = await this.userService.create(createUserDto);
-    this.logger.log(`User created: ${JSON.stringify(userAndOptions)}`);
+    this.logger.log(`User created: ${JSON.stringify(userAndOptions.user)}`);
 
-    const loginDto = this.authService.login(userAndOptions.user);
-    this.logger.log(`Access token created: ${loginDto.accessToken}`);
+    const accessToken = this.authService.login(userAndOptions.user);
+    this.logger.log(`Access token created: ${accessToken}`);
 
-    return { ...loginDto, options: userAndOptions.options };
+    res.cookie(
+      authJwtCookie,
+      accessToken,
+      this.configService.get('csrf.cookieOptions', { infer: true })
+    );
+    return userAndOptions;
   }
 
   /**
@@ -103,20 +111,26 @@ export class AuthController {
   @Public()
   @Post(`${webauthn}/${login}`)
   async webAuthnLoginPost(
+    @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
-  ): Promise<BaseLoginDto> {
+  ): Promise<UserEntity> {
     const { email, credential } = webAuthnLoginDto;
     this.logger.log(
       `WebAuthn login verify request received for email: ${email}`
     );
 
     const user = await this.authService.verifyLoginChallenge(email, credential);
-    const loginDto = this.authService.login(user);
+    const accessToken = this.authService.login(user);
     this.logger.log(
-      `Credentials verified and access token created: ${loginDto.accessToken}`
+      `Credentials verified and access token created: ${accessToken}`
     );
 
-    return loginDto;
+    res.cookie(
+      authJwtCookie,
+      accessToken,
+      this.configService.get('csrf.cookieOptions', { infer: true })
+    );
+    return user;
   }
 
   /**
@@ -151,11 +165,18 @@ export class AuthController {
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Get(magicLinkLogin)
-  magicLinkLogin(@User() user: UserEntity): BaseLoginDto {
-    const loginDto = this.authService.login(user);
-    this.logger.log(
-      `Access token generated: ${JSON.stringify(loginDto.accessToken)}`
+  magicLinkLogin(
+    @Res({ passthrough: true }) res: Response,
+    @User() user: UserEntity
+  ): UserEntity {
+    const accessToken = this.authService.login(user);
+    this.logger.log(`Access token generated: ${JSON.stringify(accessToken)}`);
+
+    res.cookie(
+      authJwtCookie,
+      accessToken,
+      this.configService.get('csrf.cookieOptions', { infer: true })
     );
-    return loginDto;
+    return user;
   }
 }

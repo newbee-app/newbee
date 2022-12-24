@@ -64,19 +64,12 @@
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
-      "@newbee/api/user/util": ["libs/api/user/util/src/index.ts"],
       "@newbee/newbee/auth/data-access": [
         "libs/newbee/auth/data-access/src/index.ts"
       ],
       "@newbee/newbee/auth/feature": ["libs/newbee/auth/feature/src/index.ts"],
       "@newbee/newbee/auth/ui": ["libs/newbee/auth/ui/src/index.ts"],
       "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
-      "@newbee/newbee/authenticator/data-access": [
-        "libs/newbee/authenticator/data-access/src/index.ts"
-      ],
-      "@newbee/newbee/authenticator/feature": [
-        "libs/newbee/authenticator/feature/src/index.ts"
-      ],
       "@newbee/newbee/shared/data-access": [
         "libs/newbee/shared/data-access/src/index.ts"
       ],

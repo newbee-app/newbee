@@ -1,5 +1,4 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { AppState } from '../app.reducer';
 import { DarkActions } from './dark.actions';
 
 /**
@@ -39,7 +38,7 @@ export const initialDarkState: DarkState = {
 /**
  * The reducers and generated selectors for `DarkState`.
  */
-export const darkFeature = createFeature<AppState, 'dark'>({
+export const darkFeature = createFeature({
   name: 'dark',
   reducer: createReducer(
     initialDarkState,

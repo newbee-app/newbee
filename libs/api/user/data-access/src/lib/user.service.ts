@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  UserAndOptionsDto,
   UserChallengeEntity,
   UserEntity,
   UserSettingsEntity,
@@ -22,7 +23,6 @@ import {
   idNotFoundErrorMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
-import type { UserAndOptions } from '@newbee/api/user/util';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -44,12 +44,11 @@ export class UserService {
    * Creates a new `UserEntity`, `UserChallengeEntity`, and `UserSettingsEntity` with the given information.
    *
    * @param createUserDto The information needed to create a new user.
-   *
    * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.
    * @throws {BadRequestException} If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} If the ORM throws any other type of error.
    */
-  async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
+  async create(createUserDto: CreateUserDto): Promise<UserAndOptionsDto> {
     const { email } = createUserDto;
     const id = v4();
     const { displayName, name } = createUserDto;

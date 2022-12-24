@@ -9,11 +9,13 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { HttpClientError } from '@newbee/newbee/shared/util';
 import {
-  testBaseLoginDto1,
   testBaseMagicLinkLoginDto1,
-  testBaseUserCreatedDto1,
+  testBaseUserAndOptionsDto1,
 } from '@newbee/shared/data-access';
-import { testPublicKeyCredentialRequestOptions1 } from '@newbee/shared/util';
+import {
+  testPublicKeyCredentialRequestOptions1,
+  testUser1,
+} from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
@@ -36,14 +38,14 @@ describe('AuthEffects', () => {
             magicLinkLoginLogin: jest
               .fn()
               .mockReturnValue(of(testBaseMagicLinkLoginDto1)),
-            magicLinkLogin: jest.fn().mockReturnValue(of(testBaseLoginDto1)),
+            magicLinkLogin: jest.fn().mockReturnValue(of(testUser1)),
             webAuthnRegister: jest
               .fn()
-              .mockReturnValue(of(testBaseUserCreatedDto1)),
+              .mockReturnValue(of(testBaseUserAndOptionsDto1)),
             webAuthnLoginGet: jest
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialRequestOptions1)),
-            webAuthnLoginPost: jest.fn().mockReturnValue(of(testBaseLoginDto1)),
+            webAuthnLoginPost: jest.fn().mockReturnValue(of(testUser1)),
           }),
         },
         provideMockActions(() => actions$),
@@ -123,7 +125,7 @@ describe('AuthEffects', () => {
         a: AuthActions.confirmMagicLink({ token: '1234' }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.loginSuccess({ loginDto: testBaseLoginDto1 }),
+        a: AuthActions.loginSuccess({ user: testUser1 }),
       });
       expect(effects.confirmMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -183,7 +185,7 @@ describe('AuthEffects', () => {
       });
       const expected$ = hot('a', {
         a: AuthActions.getWebauthnRegisterChallengeSuccess({
-          userCreatedDto: testBaseUserCreatedDto1,
+          userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
       expect(effects.getWebAuthnRegisterChallenge$).toBeObservable(expected$);
@@ -239,12 +241,12 @@ describe('AuthEffects', () => {
     it('should fire verifyRegisterChallenge if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.getWebauthnRegisterChallengeSuccess({
-          userCreatedDto: testBaseUserCreatedDto1,
+          userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
       const expected$ = hot('a', {
         a: AuthenticatorActions.verifyRegisterChallenge({
-          options: testBaseUserCreatedDto1.options,
+          options: testBaseUserAndOptionsDto1.options,
         }),
       });
       expect(effects.getWebAuthnRegisterChallengeSuccess$).toBeObservable(
@@ -330,7 +332,7 @@ describe('AuthEffects', () => {
       });
       const expected$ = hot('a', {
         a: AuthActions.loginSuccess({
-          loginDto: testBaseLoginDto1,
+          user: testUser1,
         }),
       });
       expect(effects.verifyWebAuthnLoginChallenge$).toBeObservable(expected$);

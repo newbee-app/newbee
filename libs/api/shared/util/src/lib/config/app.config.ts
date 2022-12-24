@@ -1,6 +1,7 @@
 import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import type { MailerOptions } from '@nestjs-modules/mailer';
 import type { CsrfTokenCreator } from 'csrf-csrf';
+import type { CookieOptions } from 'express';
 import Joi from 'joi';
 import winston from 'winston';
 
@@ -48,6 +49,7 @@ export interface AppConfig {
    */
   csrf: {
     generateToken: CsrfTokenCreator;
+    cookieOptions: CookieOptions;
   };
 }
 

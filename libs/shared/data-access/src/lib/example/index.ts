@@ -7,10 +7,9 @@ import {
   BaseCreateUserDto,
   BaseCsrfTokenDto,
   BaseEmailDto,
-  BaseLoginDto,
   BaseMagicLinkLoginDto,
   BaseUpdateUserDto,
-  BaseUserCreatedDto,
+  BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
 } from '../dto';
 
@@ -23,15 +22,6 @@ export const testBaseEmailDto1: BaseEmailDto = {
 };
 
 /**
- * An example instance of BaseLoginDto.
- * Strictly for use in testing.
- */
-export const testBaseLoginDto1: BaseLoginDto = {
-  accessToken: 'access',
-  user: testUser1,
-};
-
-/**
  * An example instance of BaseMagicLinkLoginDto.
  * Strictly for use in testing.
  */
@@ -41,11 +31,11 @@ export const testBaseMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
 };
 
 /**
- * An example instance of BaseUserCreatedDto.
+ * An example instance of BaseUserAndOptionsDto.
  * Strictly for use in testing.
  */
-export const testBaseUserCreatedDto1: BaseUserCreatedDto = {
-  ...testBaseLoginDto1,
+export const testBaseUserAndOptionsDto1: BaseUserAndOptionsDto = {
+  user: testUser1,
   options: testPublicKeyCredentialCreationOptions1,
 };
 

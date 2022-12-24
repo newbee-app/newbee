@@ -2,11 +2,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import {
+  AuthenticatorEffects,
+  CsrfEffects,
+} from '@newbee/newbee/shared/data-access';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
+import { httpInterceptorProviders } from './interceptor';
 import { reducers } from './reducer';
 import { AppRoutingModule } from './routing';
 
@@ -34,11 +39,12 @@ import { AppRoutingModule } from './routing';
         strictActionTypeUniqueness: true,
       },
     }),
-    EffectsModule.forRoot([]),
+    EffectsModule.forRoot([AuthenticatorEffects, CsrfEffects]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
     AppRoutingModule,
   ],
+  providers: [httpInterceptorProviders],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })

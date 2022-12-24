@@ -10,7 +10,6 @@ import {
   challengeFalsyLogMsg,
 } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
-import { BaseLoginDto } from '@newbee/shared/data-access';
 import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server';
 import {
   generateAuthenticationOptions,
@@ -43,11 +42,11 @@ export class AuthService {
    *
    * @param user The user to create an access token for.
    *
-   * @returns The given user and its access token.
+   * @returns The access token.
    */
-  login(user: UserEntity): BaseLoginDto {
+  login(user: UserEntity): string {
     const payload: UserJwtPayload = { sub: user.id };
-    return { accessToken: this.jwtService.sign(payload), user };
+    return this.jwtService.sign(payload);
   }
 
   /**

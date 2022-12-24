@@ -12,9 +12,8 @@ import {
   register,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
-  testBaseLoginDto1,
   testBaseMagicLinkLoginDto1,
-  testBaseUserCreatedDto1,
+  testBaseUserAndOptionsDto1,
   testBaseWebAuthnLoginDto1,
   webauthn,
 } from '@newbee/shared/data-access';
@@ -22,6 +21,7 @@ import {
   magicLinkLogin,
   testAuthenticationCredential1,
   testPublicKeyCredentialRequestOptions1,
+  testUser1,
 } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { of } from 'rxjs';
@@ -81,9 +81,9 @@ describe('AuthService', () => {
   describe('magicLinkLogin', () => {
     it('should send out a get request', (done) => {
       service.magicLinkLogin('1234').subscribe({
-        next: (loginDto) => {
+        next: (user) => {
           try {
-            expect(loginDto).toEqual(testBaseLoginDto1);
+            expect(user).toEqual(testUser1);
             done();
           } catch (err) {
             done(err);
@@ -98,16 +98,16 @@ describe('AuthService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseLoginDto1);
+      req.flush(testUser1);
     });
   });
 
   describe('webAuthnRegister', () => {
     it('should send out a get request', (done) => {
       service.webAuthnRegister(testRegisterForm1).subscribe({
-        next: (userCreatedDto) => {
+        next: (userAndOptionsDto) => {
           try {
-            expect(userCreatedDto).toEqual(testBaseUserCreatedDto1);
+            expect(userAndOptionsDto).toEqual(testBaseUserAndOptionsDto1);
             done();
           } catch (err) {
             done(err);
@@ -122,7 +122,7 @@ describe('AuthService', () => {
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateUserDto1);
 
-      req.flush(testBaseUserCreatedDto1);
+      req.flush(testBaseUserAndOptionsDto1);
     });
   });
 
@@ -158,9 +158,9 @@ describe('AuthService', () => {
           testPublicKeyCredentialRequestOptions1
         )
         .subscribe({
-          next: (loginDto) => {
+          next: (user) => {
             try {
-              expect(loginDto).toEqual(testBaseLoginDto1);
+              expect(user).toEqual(testUser1);
               done();
             } catch (err) {
               done(err);
@@ -180,7 +180,7 @@ describe('AuthService', () => {
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);
 
-      req.flush(testBaseLoginDto1);
+      req.flush(testUser1);
     });
   });
 });

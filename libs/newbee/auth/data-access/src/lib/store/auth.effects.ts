@@ -36,8 +36,8 @@ export class AuthEffects {
       ofType(AuthActions.confirmMagicLink),
       switchMap(({ token }) => {
         return this.authService.magicLinkLogin(token).pipe(
-          map((loginDto) => {
-            return AuthActions.loginSuccess({ loginDto });
+          map((user) => {
+            return AuthActions.loginSuccess({ user });
           }),
           tap(async () => {
             await this.router.navigate(['/']);
@@ -55,7 +55,7 @@ export class AuthEffects {
         return this.authService.webAuthnRegister(registerForm).pipe(
           map((userCreatedDto) => {
             return AuthActions.getWebauthnRegisterChallengeSuccess({
-              userCreatedDto,
+              userAndOptionsDto: userCreatedDto,
             });
           }),
           catchError(catchHttpError)
@@ -67,7 +67,7 @@ export class AuthEffects {
   getWebAuthnRegisterChallengeSuccess$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.getWebauthnRegisterChallengeSuccess),
-      map(({ userCreatedDto }) => {
+      map(({ userAndOptionsDto: userCreatedDto }) => {
         return AuthenticatorActions.verifyRegisterChallenge({
           options: userCreatedDto.options,
         });
@@ -100,8 +100,8 @@ export class AuthEffects {
       ofType(AuthActions.verifyWebauthnLoginChallenge),
       switchMap(({ loginForm, options }) => {
         return this.authService.webAuthnLoginPost(loginForm, options).pipe(
-          map((loginDto) => {
-            return AuthActions.loginSuccess({ loginDto });
+          map((user) => {
+            return AuthActions.loginSuccess({ user });
           }),
           tap(async () => {
             await this.router.navigate(['/']);

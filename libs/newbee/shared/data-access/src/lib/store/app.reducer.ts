@@ -1,4 +1,5 @@
 import { AuthState } from './auth';
+import { CsrfState } from './csrf';
 import { DarkState } from './dark';
 import { HttpState } from './http';
 
@@ -7,7 +8,8 @@ import { HttpState } from './http';
  * Able to be accessed from any portion of the frontend, right from first paint.
  */
 export interface AppState {
-  dark: DarkState;
   auth: AuthState;
+  csrf: CsrfState;
+  dark: DarkState;
   http: HttpState;
 }

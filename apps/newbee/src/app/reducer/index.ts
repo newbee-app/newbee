@@ -1,6 +1,7 @@
 import {
   AppState,
   authFeature,
+  csrfFeature,
   darkFeature,
   httpFeature,
 } from '@newbee/newbee/shared/data-access';
@@ -14,4 +15,5 @@ export const reducers: ActionReducerMap<AppState> = {
   dark: darkFeature.reducer,
   auth: authFeature.reducer,
   http: httpFeature.reducer,
+  csrf: csrfFeature.reducer,
 };

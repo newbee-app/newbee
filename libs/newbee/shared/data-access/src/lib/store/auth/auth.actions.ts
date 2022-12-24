@@ -1,9 +1,9 @@
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  BaseLoginDto,
   BaseMagicLinkLoginDto,
-  BaseUserCreatedDto,
+  BaseUserAndOptionsDto,
 } from '@newbee/shared/data-access';
+import { User } from '@newbee/shared/util';
 import { createActionGroup, props } from '@ngrx/store';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
@@ -43,7 +43,7 @@ export const AuthActions = createActionGroup({
      * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Verify Register Challenge`, and redirects.
      */
     'Get WebAuthn Register Challenge Success': props<{
-      userCreatedDto: BaseUserCreatedDto;
+      userAndOptionsDto: BaseUserAndOptionsDto;
     }>(),
 
     /**
@@ -60,6 +60,6 @@ export const AuthActions = createActionGroup({
       loginForm: LoginForm;
       options: PublicKeyCredentialRequestOptionsJSON;
     }>(),
-    'Login Success': props<{ loginDto: BaseLoginDto }>(),
+    'Login Success': props<{ user: User }>(),
   },
 });

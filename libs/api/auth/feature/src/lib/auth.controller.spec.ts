@@ -1,21 +1,23 @@
 import { createMock } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import { testUserEntity1 } from '@newbee/api/shared/data-access';
+import {
+  testUserAndOptionsDto1,
+  testUserEntity1,
+} from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { testUserAndOptions1 } from '@newbee/api/user/util';
 import {
   testBaseCreateUserDto1,
   testBaseEmailDto1,
-  testBaseLoginDto1,
   testBaseMagicLinkLoginDto1,
-  testBaseUserCreatedDto1,
   testBaseWebAuthnLoginDto1,
 } from '@newbee/shared/data-access';
 import { testPublicKeyCredentialRequestOptions1 } from '@newbee/shared/util';
+import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 
 describe('AuthController', () => {
@@ -23,6 +25,9 @@ describe('AuthController', () => {
   let service: AuthService;
   let userService: UserService;
   let strategy: MagicLinkLoginStrategy;
+  let response: Response;
+
+  const testAccessToken = 'access';
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -31,13 +36,13 @@ describe('AuthController', () => {
         {
           provide: UserService,
           useValue: createMock<UserService>({
-            create: jest.fn().mockResolvedValue(testUserAndOptions1),
+            create: jest.fn().mockResolvedValue(testUserAndOptionsDto1),
           }),
         },
         {
           provide: AuthService,
           useValue: createMock<AuthService>({
-            login: jest.fn().mockReturnValue(testBaseLoginDto1),
+            login: jest.fn().mockReturnValue(testAccessToken),
             generateLoginChallenge: jest
               .fn()
               .mockResolvedValue(testPublicKeyCredentialRequestOptions1),
@@ -50,6 +55,12 @@ describe('AuthController', () => {
             send: jest.fn().mockResolvedValue(testBaseMagicLinkLoginDto1.jwtId),
           }),
         },
+        {
+          provide: ConfigService,
+          useValue: createMock<ConfigService>({
+            get: jest.fn().mockReturnValue({}),
+          }),
+        },
       ],
     }).compile();
 
@@ -57,6 +68,8 @@ describe('AuthController', () => {
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
+
+    response = createMock<Response>();
   });
 
   it('should be defined', () => {
@@ -69,12 +82,12 @@ describe('AuthController', () => {
   describe('webAuthnRegister', () => {
     it('should create a new user and options', async () => {
       await expect(
-        controller.webAuthnRegister(testBaseCreateUserDto1)
-      ).resolves.toEqual(testBaseUserCreatedDto1);
+        controller.webAuthnRegister(response, testBaseCreateUserDto1)
+      ).resolves.toEqual(testUserAndOptionsDto1);
       expect(userService.create).toBeCalledTimes(1);
       expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
       expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserAndOptions1.user);
+      expect(service.login).toBeCalledWith(testUserAndOptionsDto1.user);
     });
   });
 
@@ -93,8 +106,8 @@ describe('AuthController', () => {
   describe('webAuthnLoginPost', () => {
     it('should return a LoginDto', async () => {
       await expect(
-        controller.webAuthnLoginPost(testBaseWebAuthnLoginDto1)
-      ).resolves.toEqual(testBaseLoginDto1);
+        controller.webAuthnLoginPost(response, testBaseWebAuthnLoginDto1)
+      ).resolves.toEqual(testUserEntity1);
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(
         testBaseWebAuthnLoginDto1.email,
@@ -119,8 +132,8 @@ describe('AuthController', () => {
 
   describe('magicLinkLogin', () => {
     it('should return an access token', () => {
-      expect(controller.magicLinkLogin(testUserEntity1)).toEqual(
-        testBaseLoginDto1
+      expect(controller.magicLinkLogin(response, testUserEntity1)).toEqual(
+        testUserEntity1
       );
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);

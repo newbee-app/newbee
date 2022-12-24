@@ -12,12 +12,15 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { testUserEntity1, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  testUserAndOptionsDto1,
+  testUserEntity1,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import {
   idNotFoundErrorMsg,
   internalServerErrorMsg,
 } from '@newbee/api/shared/util';
-import { testUserAndOptions1 } from '@newbee/api/user/util';
 import {
   testBaseCreateUserDto1,
   testBaseUpdateUserDto1,
@@ -63,7 +66,7 @@ describe('UserService', () => {
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
-      testUserAndOptions1.options
+      testUserAndOptionsDto1.options
     );
   });
 
@@ -81,7 +84,7 @@ describe('UserService', () => {
 
     it('should create a user', async () => {
       await expect(service.create(testBaseCreateUserDto1)).resolves.toEqual(
-        testUserAndOptions1
+        testUserAndOptionsDto1
       );
     });
 

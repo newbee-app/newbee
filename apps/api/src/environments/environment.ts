@@ -1,16 +1,24 @@
 import { Logger } from '@nestjs/common';
 import { AppConfig } from '@newbee/api/shared/util';
 import { doubleCsrf } from 'csrf-csrf';
+import type { CookieOptions } from 'express';
 import winston from 'winston';
 
 export const environment = {
   production: false,
 };
 
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: false,
+  path: '/',
+  sameSite: 'lax',
+};
+
 const { doubleCsrfProtection, generateToken } = doubleCsrf({
-  getSecret: (req) => req?.get('session-secret') ?? '',
+  getSecret: (req) => req?.get('Session-Secret') ?? '',
   cookieName: 'CSRF-TOKEN',
-  cookieOptions: { secure: false },
+  cookieOptions,
   getTokenFromRequest: (req) => req.get('X-CSRF-TOKEN'),
 });
 export { doubleCsrfProtection };
@@ -64,5 +72,6 @@ export default (): AppConfig => ({
   },
   csrf: {
     generateToken,
+    cookieOptions,
   },
 });

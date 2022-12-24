@@ -1,6 +1,5 @@
 import { HttpClientError } from '@newbee/newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { AppState } from '../app.reducer';
 import { HttpActions } from './http.actions';
 
 /**
@@ -20,7 +19,7 @@ export const initialHttpState: HttpState = {
 /**
  * The reducers and generated selectors for `HttpState`.
  */
-export const httpFeature = createFeature<AppState, 'http'>({
+export const httpFeature = createFeature({
   name: 'http',
   reducer: createReducer(
     initialHttpState,
