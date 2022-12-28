@@ -9,12 +9,14 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import { CsrfModule } from '@newbee/api/csrf/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
+  ProxyThrottlerGuard,
 } from '@newbee/api/shared/util';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
@@ -47,6 +49,11 @@ import { default as appConfig } from '../environments/environment';
         configService.get('mailer', { infer: true }),
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRootAsync({
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
+        configService.get('throttler', { infer: true }),
+      inject: [ConfigService],
+    }),
 
     // In-house modules
     AuthModule,
@@ -70,6 +77,10 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ProxyThrottlerGuard,
     },
   ],
 })

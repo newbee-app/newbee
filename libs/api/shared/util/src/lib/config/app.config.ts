@@ -1,5 +1,6 @@
 import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import type { MailerOptions } from '@nestjs-modules/mailer';
+import type { ThrottlerModuleOptions } from '@nestjs/throttler';
 import type { CsrfTokenCreator } from 'csrf-csrf';
 import type { CookieOptions } from 'express';
 import Joi from 'joi';
@@ -25,30 +26,42 @@ export interface AppConfig {
   mailer: MailerOptions;
 
   /**
+   * The options to feed into the `ThrottlerModule` for request throttling.
+   */
+  throttler: ThrottlerModuleOptions;
+
+  /**
    * Relaying Party information for use in WebAuthn.
    */
   rpInfo: {
     /**
-     * The app's name
+     * The app's name.
      */
     name: string;
 
     /**
-     * The app's globally unique ID (domain)
+     * The app's globally unique ID (domain).
      */
     id: string;
 
     /**
-     * The app's URL, including scheme
+     * The app's URL, including scheme.
      */
     origin: string;
   };
 
   /**
-   *
+   * Useful information for setting up CSRF prevention.
    */
   csrf: {
+    /**
+     * The function to call to generate a CSRF token.
+     */
     generateToken: CsrfTokenCreator;
+
+    /**
+     * The options to use for generating the CSRF token cookie.
+     */
     cookieOptions: CookieOptions;
   };
 }

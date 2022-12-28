@@ -65,6 +65,10 @@ export default (): AppConfig => ({
       from: process.env['SMTP_DEFAULT_FROM'],
     },
   },
+  throttler: {
+    ttl: 60,
+    limit: 10,
+  },
   rpInfo: {
     name: process.env['APP_NAME'] as string,
     id: process.env['APP_DOMAIN'] as string,
