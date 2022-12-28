@@ -14,7 +14,17 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   // Set up Helmet
-  app.use(helmet());
+  app.use(
+    helmet({
+      // Add bits to the CSP to help with Angular XSS prevention
+      contentSecurityPolicy: {
+        directives: {
+          'truted-types': ['angular'],
+          'require-truted-types-for': [`'script'`],
+        },
+      },
+    })
+  );
 
   // Set up CORS
   app.enableCors();
