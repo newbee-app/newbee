@@ -10,8 +10,8 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { ClickWrapperComponentModule } from '../../testing';
-import { TooltipComponentModule } from '../../tooltip/tooltip.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';
 
@@ -24,9 +24,9 @@ export default {
         CommonModule,
         ReactiveFormsModule,
         SearchableSelectComponentModule,
-        TooltipComponentModule,
         PhoneNumberInputDirectiveModule,
         PhoneNumberPipeModule,
+        ErrorFooterComponentModule,
         ClickWrapperComponentModule,
       ],
     }),

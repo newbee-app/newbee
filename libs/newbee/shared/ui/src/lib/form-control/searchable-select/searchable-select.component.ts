@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -11,14 +9,12 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import type { ControlValueAccessor } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 
 /**
@@ -60,6 +56,11 @@ export class SearchableSelectComponent<T>
   @Input() valid = true;
 
   /**
+   * Error text to display, if any.
+   */
+  @Input() errorText = '';
+
+  /**
    * An emitter that tells the parent component when the user has blurred the control.
    */
   @Output() exited = new EventEmitter<void>();
@@ -94,7 +95,6 @@ export class SearchableSelectComponent<T>
    *
    * @param _ The new value.
    */
-  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _onChange: (_: T) => void = (_) => {
     return;
@@ -103,7 +103,6 @@ export class SearchableSelectComponent<T>
   /**
    * Called to mark the control as touched.
    */
-  // @ts-ignore
   private _onTouched: () => void = () => {
     return;
   };
@@ -294,7 +293,12 @@ export class SearchableSelectComponent<T>
 }
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SearchbarComponentModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SearchbarComponentModule,
+    ErrorFooterComponentModule,
+  ],
   declarations: [SearchableSelectComponent],
   exports: [SearchableSelectComponent],
 })

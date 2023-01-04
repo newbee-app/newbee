@@ -18,6 +18,6 @@
   }
 
   .newbee-error-outline {
-    @apply border-error-primary focus:border-error-primary focus:ring-error-primary;
+    @apply border-error-primary-light dark:border-error-primary-dark focus:border-error-primary-light dark:focus:border-error-primary-dark focus:ring-error-primary-light dark:focus:ring-error-primary-dark;
   }
 }

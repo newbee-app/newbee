@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   ButtonWithSpinnerComponentModule,
-  TooltipComponentModule,
+  ErrorFooterComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
@@ -17,9 +17,9 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        TooltipComponentModule,
         BaseFormComponentModule,
         ButtonWithSpinnerComponentModule,
+        ErrorFooterComponentModule,
       ],
     }),
   ],

@@ -10,7 +10,7 @@ import {
   testCountry1,
   testCountry2,
 } from '@newbee/newbee/shared/util';
-import { TooltipComponentModule } from '../../tooltip/tooltip.component';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';
 
@@ -25,9 +25,9 @@ describe('PhoneInputComponent', () => {
         CommonModule,
         ReactiveFormsModule,
         SearchableSelectComponentModule,
-        TooltipComponentModule,
         PhoneNumberInputDirectiveModule,
         PhoneNumberPipeModule,
+        ErrorFooterComponentModule,
       ],
       providers: [
         {

@@ -9,6 +9,7 @@ import {
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
 import { Subject } from 'rxjs';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 import { SearchableSelectComponent } from './searchable-select.component';
 
@@ -21,7 +22,12 @@ describe('SearchableSelectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, ReactiveFormsModule, SearchbarComponentModule],
+      imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        SearchbarComponentModule,
+        ErrorFooterComponentModule,
+      ],
       providers: [
         {
           provide: ClickService,
@@ -55,6 +61,7 @@ describe('SearchableSelectComponent', () => {
   describe('init', () => {
     it('should initialize with expected values', () => {
       expect(component.valid).toBeTruthy();
+      expect(component.errorText).toEqual('');
       expect(component.expanded).toBeFalsy();
       expect(component.value).toBeNull();
       expect(component.disabled).toBeFalsy();

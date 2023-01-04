@@ -10,8 +10,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
   ButtonWithSpinnerComponentModule,
+  ErrorFooterComponentModule,
   PhoneInputComponentModule,
-  TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
 import {
   CountryService,
@@ -54,24 +54,6 @@ export class RegisterFormComponent {
       { country: this.countryService.currentCountry, number: '' } as PhoneInput,
     ],
   });
-
-  /**
-   * The IDs for the register form's tooltips.
-   */
-  tooltipIds = {
-    email: {
-      container: 'email-container',
-      tooltip: 'email-tooltip',
-      message: 'email-message',
-      tail: 'email-tail',
-    },
-    name: {
-      container: 'name-container',
-      tooltip: 'name-tooltip',
-      message: 'name-message',
-      tail: 'name-tail',
-    },
-  };
 
   constructor(
     private readonly fb: FormBuilder,
@@ -129,9 +111,9 @@ export class RegisterFormComponent {
     CommonModule,
     ReactiveFormsModule,
     BaseFormComponentModule,
-    TooltipComponentModule,
     PhoneInputComponentModule,
     ButtonWithSpinnerComponentModule,
+    ErrorFooterComponentModule,
   ],
   declarations: [RegisterFormComponent],
   exports: [RegisterFormComponent],

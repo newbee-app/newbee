@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import {
   ButtonWithSpinnerComponentModule,
+  ErrorFooterComponentModule,
   PhoneInputComponentModule,
-  TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
@@ -29,9 +29,9 @@ describe('RegisterFormComponent', () => {
         CommonModule,
         ReactiveFormsModule,
         BaseFormComponentModule,
-        TooltipComponentModule,
         PhoneInputComponentModule,
         ButtonWithSpinnerComponentModule,
+        ErrorFooterComponentModule,
       ],
       declarations: [RegisterFormComponent],
     }).compileComponents();
@@ -106,121 +106,6 @@ describe('RegisterFormComponent', () => {
         expect(displayNameControl?.value).toEqual(testDisplayName1);
         expect(displayNameControl?.valid).toBeTruthy();
         expect(displayNameControl?.errors).toBeNull();
-      });
-    });
-  });
-
-  describe('tooltips', () => {
-    describe('email tooltip', () => {
-      let emailErrorElement: () => HTMLDivElement | null;
-
-      beforeEach(() => {
-        emailErrorElement = () =>
-          fixture.nativeElement.querySelector(
-            `#${component.tooltipIds.email.message}`
-          );
-      });
-
-      it('should be defined', () => {
-        expect(emailErrorElement).toBeDefined();
-      });
-
-      it('should not be visible initially', () => {
-        expect(component.inputErrorMessage('email')).toEqual(
-          'You must enter a value'
-        );
-        expect(emailErrorElement()).toBeNull();
-      });
-
-      it('should be visible after dirty and touch', () => {
-        emailControl?.markAsDirty();
-        emailControl?.markAsTouched();
-        fixture.detectChanges();
-        const errorMessage = emailErrorElement();
-        expect(errorMessage).not.toBeNull();
-        expect(errorMessage?.innerHTML).toEqual('You must enter a value');
-      });
-
-      it('should be visible after just dirty', () => {
-        emailControl?.markAsDirty();
-        fixture.detectChanges();
-        expect(emailErrorElement()).not.toBeNull();
-      });
-
-      it('should be visible after just touch', () => {
-        emailControl?.markAsTouched();
-        fixture.detectChanges();
-        expect(emailErrorElement()).not.toBeNull();
-      });
-
-      it('should not accept non-email input', () => {
-        const badEmail = 'johndoe';
-        emailControl?.setValue(badEmail);
-        emailControl?.markAsTouched();
-        emailControl?.markAsDirty();
-        fixture.detectChanges();
-        expect(emailErrorElement()).not.toBeNull();
-        expect(component.inputErrorMessage('email')).toEqual(
-          'Not a valid email'
-        );
-        expect(emailErrorElement()?.innerHTML).toEqual('Not a valid email');
-      });
-
-      it('should accept valid email input', () => {
-        emailControl?.setValue(testEmail1);
-        fixture.detectChanges();
-        expect(emailErrorElement()).toBeNull();
-        expect(component.inputErrorMessage('email')).toEqual('');
-      });
-    });
-
-    describe('name tooltip', () => {
-      let nameErrorElement: () => HTMLDivElement | null;
-
-      beforeEach(() => {
-        nameErrorElement = () =>
-          fixture.nativeElement.querySelector(
-            `#${component.tooltipIds.name.message}`
-          );
-      });
-
-      it('should be defined', () => {
-        expect(nameErrorElement).toBeDefined();
-      });
-
-      it('should not be visible initially', () => {
-        expect(component.inputErrorMessage('name')).toEqual(
-          'You must enter a value'
-        );
-        expect(nameErrorElement()).toBeNull();
-      });
-
-      it('should be visible after dirty and touch', () => {
-        nameControl?.markAsDirty();
-        nameControl?.markAsTouched();
-        fixture.detectChanges();
-        const errorMessage = nameErrorElement();
-        expect(errorMessage).not.toBeNull();
-        expect(errorMessage?.innerHTML).toEqual('You must enter a value');
-      });
-
-      it('should be visible after just dirty', () => {
-        nameControl?.markAsDirty();
-        fixture.detectChanges();
-        expect(nameErrorElement()).not.toBeNull();
-      });
-
-      it('should be visible after just touch', () => {
-        nameControl?.markAsTouched();
-        fixture.detectChanges();
-        expect(nameErrorElement()).not.toBeNull();
-      });
-
-      it('should accept any name input', () => {
-        nameControl?.setValue(testName1);
-        fixture.detectChanges();
-        expect(nameErrorElement()).toBeNull();
-        expect(component.inputErrorMessage('name')).toEqual('');
       });
     });
   });

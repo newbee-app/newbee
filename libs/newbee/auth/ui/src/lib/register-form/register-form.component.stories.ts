@@ -3,8 +3,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import {
   ButtonWithSpinnerComponentModule,
   ClickWrapperComponentModule,
+  ErrorFooterComponentModule,
   PhoneInputComponentModule,
-  TooltipComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { action } from '@storybook/addon-actions';
 import {
@@ -25,10 +25,10 @@ export default {
         CommonModule,
         ReactiveFormsModule,
         BaseFormComponentModule,
-        TooltipComponentModule,
         PhoneInputComponentModule,
         ClickWrapperComponentModule,
         ButtonWithSpinnerComponentModule,
+        ErrorFooterComponentModule,
       ],
     }),
     componentWrapperDecorator(

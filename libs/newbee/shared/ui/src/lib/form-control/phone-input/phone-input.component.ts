@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, OnDestroy } from '@angular/core';
+import type {
+  ControlValueAccessor,
+  ValidationErrors,
+  Validator,
+} from '@angular/forms';
 import {
   AbstractControl,
-  ControlValueAccessor,
   FormBuilder,
   FormControl,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
-  ValidationErrors,
-  Validator,
 } from '@angular/forms';
 import {
   Country,
@@ -24,7 +25,7 @@ import {
   SelectOption,
 } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
-import { TooltipComponentModule } from '../../tooltip/tooltip.component';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 
 /**
@@ -82,24 +83,6 @@ export class PhoneInputComponent
     );
 
   /**
-   * All of the ID values for the component's tooltips.
-   */
-  readonly tooltipIds = {
-    country: {
-      container: 'country-container',
-      tooltip: 'country-tooltip',
-      message: 'country-message',
-      tail: 'country-tail',
-    },
-    number: {
-      container: 'number-container',
-      tooltip: 'number-tooltip',
-      message: 'number-message',
-      tail: 'number-tail',
-    },
-  };
-
-  /**
    * A Subject to unsubscribe from the component's infinite observables.
    */
   private readonly unsubscribe$ = new Subject<void>();
@@ -118,7 +101,6 @@ export class PhoneInputComponent
    * Called to trigger change detection.
    * @param _ The new value.
    */
-  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _onChange: (_: Partial<PhoneInput>) => void = (_) => {
     this._dirty = true;
@@ -127,7 +109,6 @@ export class PhoneInputComponent
   /**
    * Called to mark the control as touched.
    */
-  // @ts-ignore
   private _onTouched: () => void = () => {
     this._touched = true;
   };
@@ -190,7 +171,7 @@ export class PhoneInputComponent
 
   /**
    * Disables or enables the control.
-   * Does so by disanbling/enabling the internal form group.
+   * Does so by disabling/enabling the internal form group.
    *
    * @param isDisabled Whether to disable the form control.
    */
@@ -302,9 +283,9 @@ export class PhoneInputComponent
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponentModule,
-    TooltipComponentModule,
     PhoneNumberInputDirectiveModule,
     PhoneNumberPipeModule,
+    ErrorFooterComponentModule,
   ],
   declarations: [PhoneInputComponent],
   exports: [PhoneInputComponent],

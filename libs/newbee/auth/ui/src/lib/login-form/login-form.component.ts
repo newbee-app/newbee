@@ -15,7 +15,7 @@ import {
 import { LoginForm } from '@newbee/newbee/auth/util';
 import {
   ButtonWithSpinnerComponentModule,
-  TooltipComponentModule,
+  ErrorFooterComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { getErrorMessage } from '@newbee/newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
@@ -59,18 +59,6 @@ export class LoginFormComponent {
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
   });
-
-  /**
-   * The IDs for the login form's tooltips.
-   */
-  tooltipIds = {
-    email: {
-      container: 'email-container',
-      tooltip: 'email-tooltip',
-      message: 'email-tooltip-message',
-      tail: 'email-tooltip-tail',
-    },
-  };
 
   constructor(private readonly fb: FormBuilder) {}
 
@@ -123,9 +111,9 @@ export class LoginFormComponent {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    TooltipComponentModule,
     BaseFormComponentModule,
     ButtonWithSpinnerComponentModule,
+    ErrorFooterComponentModule,
   ],
   declarations: [LoginFormComponent],
   exports: [LoginFormComponent],

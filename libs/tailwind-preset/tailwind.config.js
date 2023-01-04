@@ -35,7 +35,10 @@ module.exports = {
           },
         },
         error: {
-          primary: colors.red['500'],
+          primary: {
+            light: colors.red['600'],
+            dark: colors.red['300'],
+          },
         },
         logo: {
           light: colors.yellow['500'],

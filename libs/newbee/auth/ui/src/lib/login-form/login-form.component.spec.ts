@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   ButtonWithSpinnerComponentModule,
-  TooltipComponentModule,
+  ErrorFooterComponentModule,
 } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
@@ -19,9 +19,9 @@ describe('LoginFormComponent', () => {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        TooltipComponentModule,
         BaseFormComponentModule,
         ButtonWithSpinnerComponentModule,
+        ErrorFooterComponentModule,
       ],
       declarations: [LoginFormComponent],
     }).compileComponents();
@@ -59,65 +59,6 @@ describe('LoginFormComponent', () => {
       expect(component.email?.value).toEqual(testUser1.email);
       expect(component.email?.valid).toBeTruthy();
       expect(component.email?.errors).toBeNull();
-    });
-  });
-
-  describe('email tooltip', () => {
-    let emailErrorElement: () => HTMLDivElement | null;
-
-    beforeEach(() => {
-      emailErrorElement = () =>
-        fixture.nativeElement.querySelector(
-          `#${component.tooltipIds.email.message}`
-        );
-    });
-
-    it('should be defined', () => {
-      expect(emailErrorElement).toBeDefined();
-    });
-
-    it('should not be visible initially', () => {
-      expect(component.emailErrorMessage).toEqual('You must enter a value');
-      expect(emailErrorElement()).toBeNull();
-    });
-
-    it('should be visible after dirty and touch', () => {
-      component.email?.markAsDirty();
-      component.email?.markAsTouched();
-      fixture.detectChanges();
-      const errorMessage = emailErrorElement();
-      expect(errorMessage).not.toBeNull();
-      expect(errorMessage?.innerHTML).toEqual('You must enter a value');
-    });
-
-    it('should be visible after just dirty', () => {
-      component.email?.markAsDirty();
-      fixture.detectChanges();
-      expect(emailErrorElement()).not.toBeNull();
-    });
-
-    it('should be visible after just touch', () => {
-      component.email?.markAsTouched();
-      fixture.detectChanges();
-      expect(emailErrorElement()).not.toBeNull();
-    });
-
-    it('should not accept non-email input', () => {
-      const badEmail = 'johndoe';
-      component.email?.setValue(badEmail);
-      component.email?.markAsTouched();
-      component.email?.markAsDirty();
-      fixture.detectChanges();
-      expect(emailErrorElement()).not.toBeNull();
-      expect(component.emailErrorMessage).toEqual('Not a valid email');
-      expect(emailErrorElement()?.innerHTML).toEqual('Not a valid email');
-    });
-
-    it('should accept valid email input', () => {
-      component.email?.setValue(testUser1.email);
-      fixture.detectChanges();
-      expect(emailErrorElement()).toBeNull();
-      expect(component.emailErrorMessage).toEqual('');
     });
   });
 

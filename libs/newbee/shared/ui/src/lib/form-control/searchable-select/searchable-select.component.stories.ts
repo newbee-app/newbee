@@ -12,6 +12,7 @@ import {
   moduleMetadata,
   Story,
 } from '@storybook/angular';
+import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 import { ClickWrapperComponentModule } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
@@ -25,6 +26,7 @@ export default {
         CommonModule,
         ReactiveFormsModule,
         SearchbarComponentModule,
+        ErrorFooterComponentModule,
         ClickWrapperComponentModule,
       ],
     }),
@@ -39,6 +41,7 @@ export default {
   args: {
     optionName: 'Country',
     valid: true,
+    errorText: '',
   },
 } as Meta<SearchableSelectComponent<Country>>;
 
@@ -75,4 +78,5 @@ export const Invalid = Template.bind({});
 Invalid.args = {
   options: [testSelectOption1, testSelectOption2],
   valid: false,
+  errorText: 'Invalid',
 };
