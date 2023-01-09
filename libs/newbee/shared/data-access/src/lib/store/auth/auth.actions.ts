@@ -37,12 +37,12 @@ export const AuthActions = createActionGroup({
      * Get a WebAuthn register challenge from the API for registering a new user.
      * Should call `Get WebAuthn Register Challenge Success` with the result, if successful.
      */
-    'Get WebAuthn Register Challenge': props<{ registerForm: RegisterForm }>(),
+    'Post WebAuthn Register Challenge': props<{ registerForm: RegisterForm }>(),
 
     /**
      * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Verify Register Challenge`, and redirects.
      */
-    'Get WebAuthn Register Challenge Success': props<{
+    'Post WebAuthn Register Challenge Success': props<{
       userAndOptionsDto: BaseUserAndOptionsDto;
     }>(),
 

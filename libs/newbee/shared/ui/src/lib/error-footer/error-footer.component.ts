@@ -12,14 +12,12 @@ export class ErrorFooterComponent {
   /**
    * A string detailing the error text.
    */
-  @Input()
-  error = '';
+  @Input() error = '';
 
   /**
    * Whether the component should be displayed.
    */
-  @Input()
-  displayError = false;
+  @Input() displayError = false;
 }
 
 @NgModule({

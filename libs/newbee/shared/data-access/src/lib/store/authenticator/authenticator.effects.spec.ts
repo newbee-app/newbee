@@ -83,7 +83,7 @@ describe('AuthenticatorEffects', () => {
       actions$ = hot('a', { a: AuthenticatorActions.getRegisterChallenge() });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({ httpClientError: testHttpClientError }),
@@ -140,7 +140,7 @@ describe('AuthenticatorEffects', () => {
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({ httpClientError: testHttpClientError }),

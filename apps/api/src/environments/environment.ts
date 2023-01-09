@@ -9,8 +9,12 @@ export const environment = {
 };
 
 const cookieOptions: CookieOptions = {
+  // Prevents browser JS from accessing cookies
   httpOnly: true,
+  // Whether we're using http:// or https://
   secure: false,
+  // Whether to sign the cookies
+  signed: true,
   path: '/',
   sameSite: 'lax',
 };
@@ -71,8 +75,8 @@ export default (): AppConfig => ({
   },
   rpInfo: {
     name: process.env['APP_NAME'] as string,
-    id: process.env['APP_DOMAIN'] as string,
-    origin: process.env['APP_URL'] as string,
+    id: 'localhost',
+    origin: 'http://localhost:4200',
   },
   csrf: {
     generateToken,

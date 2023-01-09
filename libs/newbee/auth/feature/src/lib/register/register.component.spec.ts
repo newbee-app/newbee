@@ -57,7 +57,7 @@ describe('RegisterComponent', () => {
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.getWebauthnRegisterChallenge({
+              AuthActions.postWebauthnRegisterChallenge({
                 registerForm: testRegisterForm1,
               })
             );

@@ -1,9 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { authFeature } from '@newbee/newbee/auth/data-access';
-import { JwtIdComponentModule } from '@newbee/newbee/auth/ui';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
+import {
+  AuthActions,
+  HttpActions,
+  httpFeature,
+} from '@newbee/newbee/shared/data-access';
+import { HttpClientError } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for users to confirm their magic link email.
@@ -12,7 +16,12 @@ import { Store } from '@ngrx/store';
   selector: 'newbee-confirm-email',
   templateUrl: './confirm-email.component.html',
 })
-export class ConfirmEmailComponent {
+export class ConfirmEmailComponent implements OnDestroy {
+  /**
+   * Emits to unsubscribe from all infinite observables.
+   */
+  private readonly unsubscribe$ = new Subject<void>();
+
   /**
    * The JWT ID associated with the magic link.
    */
@@ -23,7 +32,34 @@ export class ConfirmEmailComponent {
    */
   email$ = this.store.select(authFeature.selectEmail);
 
-  constructor(private readonly store: Store) {}
+  /**
+   * Request HTTP error, if any exist.
+   */
+  httpClientError: HttpClientError | null = null;
+
+  constructor(private readonly store: Store) {
+    store
+      .select(httpFeature.selectError)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (error) => {
+          if (!error) {
+            return;
+          }
+
+          this.httpClientError = error;
+          store.dispatch(HttpActions.resetError());
+        },
+      });
+  }
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   /**
    * When the dumb UI emits `resendLink`, send a `[Auth] Send Login Magic Link` action with the email.
@@ -36,10 +72,3 @@ export class ConfirmEmailComponent {
     );
   }
 }
-
-@NgModule({
-  imports: [CommonModule, JwtIdComponentModule],
-  declarations: [ConfirmEmailComponent],
-  exports: [ConfirmEmailComponent],
-})
-export class ConfirmEmailComponentModule {}

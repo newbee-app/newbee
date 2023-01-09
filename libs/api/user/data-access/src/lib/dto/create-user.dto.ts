@@ -1,5 +1,16 @@
 import { BaseCreateUserDto } from '@newbee/shared/data-access';
-import { IsDefined, IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
+import {
+  displayNameIsNotEmpty,
+  emailIsEmail,
+  nameIsNotEmpty,
+  phoneNumberIsPhoneNumber,
+} from '@newbee/shared/util';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+} from 'class-validator';
 
 /**
  * A verifiable DTO for sending the necessary information to register a new user from the frontend to the backend.
@@ -9,26 +20,30 @@ export class CreateUserDto implements BaseCreateUserDto {
   /**
    * @inheritdoc
    */
-  @IsDefined()
-  @IsEmail()
+  @IsEmail(undefined, {
+    message: emailIsEmail,
+  })
   email!: string;
 
   /**
    * @inheritdoc
    */
-  @IsDefined()
+  @IsNotEmpty({ message: nameIsNotEmpty })
   name!: string;
 
   /**
    * @inheritdoc
    */
   @IsOptional()
+  @IsNotEmpty({ message: displayNameIsNotEmpty })
   displayName: string | null = null;
 
   /**
    * @inheritdoc
    */
   @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumber(undefined, {
+    message: phoneNumberIsPhoneNumber,
+  })
   phoneNumber: string | null = null;
 }

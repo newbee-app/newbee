@@ -6,13 +6,15 @@ import {
   AuthService,
 } from '@newbee/newbee/auth/data-access';
 import {
+  JwtIdComponentModule,
   LoginFormComponentModule,
   RegisterFormComponentModule,
 } from '@newbee/newbee/auth/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { ConfirmEmailComponent } from './confirm-email';
 import { LoginComponent } from './login';
-import { MagicLinkLoginComponentModule } from './magic-link-login';
+import { MagicLinkLoginComponent } from './magic-link-login';
 import { RegisterComponent } from './register';
 import { AuthRoutingModule } from './routing';
 
@@ -21,12 +23,17 @@ import { AuthRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(authFeature),
     EffectsModule.forFeature([AuthEffects]),
+    JwtIdComponentModule,
     LoginFormComponentModule,
     RegisterFormComponentModule,
-    MagicLinkLoginComponentModule,
     AuthRoutingModule,
   ],
   providers: [AuthService],
-  declarations: [LoginComponent, RegisterComponent],
+  declarations: [
+    ConfirmEmailComponent,
+    LoginComponent,
+    RegisterComponent,
+    MagicLinkLoginComponent,
+  ],
 })
 export class AuthModule {}

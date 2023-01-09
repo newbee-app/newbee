@@ -2,8 +2,8 @@
   "name": "newbee",
   "version": "0.0.1",
   "engines": {
-    "npm": ">=8.1.4",
-    "node": ">=17.2.0"
+    "npm": ">=8.19.2",
+    "node": ">=18.12.1"
   },
   "scripts": {
     "ng": "nx",

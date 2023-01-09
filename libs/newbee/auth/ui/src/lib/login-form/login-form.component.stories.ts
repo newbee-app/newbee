@@ -4,6 +4,7 @@ import {
   ButtonWithSpinnerComponentModule,
   ErrorFooterComponentModule,
 } from '@newbee/newbee/shared/ui';
+import { internalServerError, userEmailNotFound } from '@newbee/shared/util';
 import { action } from '@storybook/addon-actions';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { BaseFormComponentModule } from '../base-form';
@@ -26,6 +27,7 @@ export default {
   args: {
     loginPending: false,
     magicLinkPending: false,
+    httpClientError: null,
   },
 } as Meta<LoginFormComponent>;
 
@@ -38,5 +40,15 @@ const Template: Story<LoginFormComponent> = (args: LoginFormComponent) => ({
   },
 });
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const WithoutError = Template.bind({});
+
+export const WithErrors = Template.bind({});
+WithErrors.args = {
+  httpClientError: {
+    status: 500,
+    messages: {
+      email: userEmailNotFound,
+      misc: internalServerError,
+    },
+  },
+};

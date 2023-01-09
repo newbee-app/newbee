@@ -18,11 +18,13 @@ import {
   UserEntity,
   UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
+import type { AppConfig } from '@newbee/api/shared/util';
 import {
-  AppConfig,
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+  internalServerError,
+  userEmailNotFound,
+  userEmailTakenBadRequest,
+  userIdNotFound,
+} from '@newbee/shared/util';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -45,8 +47,8 @@ export class UserService {
    *
    * @param createUserDto The information needed to create a new user.
    * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.
-   * @throws {BadRequestException} If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptionsDto> {
     const { email } = createUserDto;
@@ -75,12 +77,10 @@ export class UserService {
       this.logger.error(err);
 
       if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(
-          `The email ${email} is already taken, please use a different email or log in to your existing account.`
-        );
+        throw new BadRequestException(userEmailTakenBadRequest);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -90,8 +90,8 @@ export class UserService {
    * @param id The user ID to look for.
    *
    * @returns The associated `UserEntity` instance.
-   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneById(id: string): Promise<UserEntity> {
     try {
@@ -100,12 +100,10 @@ export class UserService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('a', 'user', 'an', 'ID', id)
-        );
+        throw new NotFoundException(userIdNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -115,8 +113,8 @@ export class UserService {
    * @param email The email to look for.
    *
    * @returns The associated `UserEntity` instance.
-   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByEmail(email: string): Promise<UserEntity> {
     try {
@@ -125,12 +123,10 @@ export class UserService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('a', 'user', 'an', 'email', email)
-        );
+        throw new NotFoundException(userEmailNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 

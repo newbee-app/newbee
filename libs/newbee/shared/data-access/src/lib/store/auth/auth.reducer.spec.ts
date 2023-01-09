@@ -15,10 +15,10 @@ describe('AuthReducer', () => {
       expect(udpatedState).toEqual(initialAuthState);
     });
 
-    it('should update state for getWebauthnRegisterChallengeSuccess', () => {
+    it('should update state for postWebauthnRegisterChallengeSuccess', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.getWebauthnRegisterChallengeSuccess({
+        AuthActions.postWebauthnRegisterChallengeSuccess({
           userAndOptionsDto: testBaseUserAndOptionsDto1,
         })
       );

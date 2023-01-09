@@ -1,3 +1,4 @@
+export * from './lib/function';
 export * from './lib/interceptor';
 export * from './lib/resolver';
 export * from './lib/service';

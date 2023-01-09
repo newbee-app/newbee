@@ -18,13 +18,15 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
-import {
   testBaseCreateUserDto1,
   testBaseUpdateUserDto1,
 } from '@newbee/shared/data-access';
+import {
+  internalServerError,
+  userEmailNotFound,
+  userEmailTakenBadRequest,
+  userIdNotFound,
+} from '@newbee/shared/util';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { UserService } from './user.service';
 
@@ -91,7 +93,7 @@ describe('UserService', () => {
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
       await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
+        new InternalServerErrorException(internalServerError)
       );
     });
 
@@ -102,9 +104,7 @@ describe('UserService', () => {
           new UniqueConstraintViolationException(new Error('flush'))
         );
       await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
-        new BadRequestException(
-          `The email ${testBaseCreateUserDto1.email} is already taken, please use a different email or log in to your existing account.`
-        )
+        new BadRequestException(userEmailTakenBadRequest)
       );
     });
   });
@@ -126,9 +126,7 @@ describe('UserService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(service.findOneById(testUserEntity1.id)).rejects.toThrow(
-        new NotFoundException(
-          idNotFoundErrorMsg('a', 'user', 'an', 'ID', testUserEntity1.id)
-        )
+        new NotFoundException(userIdNotFound)
       );
     });
 
@@ -137,7 +135,7 @@ describe('UserService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(service.findOneById(testUserEntity1.id)).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
+        new InternalServerErrorException(internalServerError)
       );
     });
   });
@@ -162,11 +160,7 @@ describe('UserService', () => {
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
         service.findOneByEmail(testUserEntity1.email)
-      ).rejects.toThrow(
-        new NotFoundException(
-          idNotFoundErrorMsg('a', 'user', 'an', 'email', testUserEntity1.email)
-        )
-      );
+      ).rejects.toThrow(new NotFoundException(userEmailNotFound));
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
@@ -175,9 +169,7 @@ describe('UserService', () => {
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
         service.findOneByEmail(testUserEntity1.email)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 

@@ -1,4 +1,5 @@
 import { BaseEmailDto } from '@newbee/shared/data-access';
+import { emailIsEmail } from '@newbee/shared/util';
 import { IsEmail } from 'class-validator';
 
 /**
@@ -9,6 +10,8 @@ export class EmailDto implements BaseEmailDto {
   /**
    * @inheritdoc
    */
-  @IsEmail()
+  @IsEmail(undefined, {
+    message: emailIsEmail,
+  })
   email!: string;
 }

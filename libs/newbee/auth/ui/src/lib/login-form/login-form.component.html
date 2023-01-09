@@ -1,5 +1,5 @@
 <newbee-base-form>
-  <div class="space-y-5">
+  <div class="space-y-5 max-w-full w-96">
     <h2 class="text-2xl font-medium text-center">Sign in to your NewBee account</h2>
 
     <form id="login-form" [formGroup]="loginForm" class="space-y-5">
@@ -9,12 +9,16 @@
         <newbee-error-footer [displayError]="showEmailError" [error]="emailErrorMessage"></newbee-error-footer>
       </div>
 
-      <div id="buttons" class="space-y-2">
+      <div id="buttons" class="flex flex-col gap-y-2">
         <div>
           <newbee-button-with-spinner buttonId="webauthn-button" buttonText="Log In" [disabled]="loginForm.invalid" [displaySpinner]="loginPending" (buttonClick)="emitWebAuthn()"></newbee-button-with-spinner>
         </div>
         <div>
           <newbee-button-with-spinner buttonId="magic-link-login-button" buttonText="Send Magic Link to Email" [disabled]="loginForm.invalid" [displaySpinner]="magicLinkPending" (buttonClick)="emitMagicLinkLogin()"></newbee-button-with-spinner>
+        </div>
+
+        <div class="self-center">
+          <newbee-error-footer [displayError]="true" [error]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-footer>
         </div>
       </div>
     </form>

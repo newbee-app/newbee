@@ -104,7 +104,7 @@ describe('AuthEffects', () => {
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({
@@ -161,7 +161,7 @@ describe('AuthEffects', () => {
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({
@@ -176,19 +176,19 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('getWebAuthnRegisterChallenge$', () => {
-    it('should fire getWebauthnRegisterChallengeSuccess if successful', () => {
+  describe('postWebAuthnRegisterChallenge$', () => {
+    it('should fire postWebauthnRegisterChallengeSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.getWebauthnRegisterChallenge({
+        a: AuthActions.postWebauthnRegisterChallenge({
           registerForm: testRegisterForm1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.getWebauthnRegisterChallengeSuccess({
+        a: AuthActions.postWebauthnRegisterChallengeSuccess({
           userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
-      expect(effects.getWebAuthnRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.postWebAuthnRegisterChallenge$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
         expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
@@ -197,7 +197,7 @@ describe('AuthEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.getWebAuthnRegisterChallenge$).toBeMarble('-');
+      expect(effects.postWebAuthnRegisterChallenge$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
         expect(service.magicLinkLoginLogin).not.toBeCalled();
       });
@@ -216,20 +216,20 @@ describe('AuthEffects', () => {
       );
 
       actions$ = hot('a', {
-        a: AuthActions.getWebauthnRegisterChallenge({
+        a: AuthActions.postWebauthnRegisterChallenge({
           registerForm: testRegisterForm1,
         }),
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({
           httpClientError: testHttpClientError,
         }),
       });
-      expect(effects.getWebAuthnRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.postWebAuthnRegisterChallenge$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
         expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
@@ -237,10 +237,10 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('getWebAuthnRegisterChallengeSuccess$', () => {
+  describe('postWebAuthnRegisterChallengeSuccess$', () => {
     it('should fire verifyRegisterChallenge if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.getWebauthnRegisterChallengeSuccess({
+        a: AuthActions.postWebauthnRegisterChallengeSuccess({
           userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
@@ -249,14 +249,14 @@ describe('AuthEffects', () => {
           options: testBaseUserAndOptionsDto1.options,
         }),
       });
-      expect(effects.getWebAuthnRegisterChallengeSuccess$).toBeObservable(
+      expect(effects.postWebAuthnRegisterChallengeSuccess$).toBeObservable(
         expected$
       );
     });
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.getWebAuthnRegisterChallengeSuccess$).toBeMarble('-');
+      expect(effects.postWebAuthnRegisterChallengeSuccess$).toBeMarble('-');
     });
   });
 
@@ -307,7 +307,7 @@ describe('AuthEffects', () => {
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({
@@ -373,7 +373,7 @@ describe('AuthEffects', () => {
       });
       const testHttpClientError: HttpClientError = {
         status: 400,
-        error: testError,
+        messages: { misc: testError.message },
       };
       const expected$ = hot('a', {
         a: HttpActions.clientError({

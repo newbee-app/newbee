@@ -6,6 +6,13 @@ import {
   ErrorFooterComponentModule,
   PhoneInputComponentModule,
 } from '@newbee/newbee/shared/ui';
+import {
+  displayNameIsNotEmpty,
+  internalServerError,
+  nameIsNotEmpty,
+  phoneNumberIsPhoneNumber,
+  userEmailTakenBadRequest,
+} from '@newbee/shared/util';
 import { action } from '@storybook/addon-actions';
 import {
   componentWrapperDecorator,
@@ -41,6 +48,7 @@ export default {
   ],
   args: {
     registerPending: false,
+    httpClientError: null,
   },
 } as Meta<RegisterFormComponent>;
 
@@ -54,9 +62,18 @@ const Template: Story<RegisterFormComponent> = (
   },
 });
 
-export const Primary = Template.bind({});
+export const WithoutErrors = Template.bind({});
 
-export const Pending = Template.bind({});
-Pending.args = {
-  registerPending: true,
+export const WithErrors = Template.bind({});
+WithErrors.args = {
+  httpClientError: {
+    status: 400,
+    messages: {
+      email: userEmailTakenBadRequest,
+      name: nameIsNotEmpty,
+      displayName: displayNameIsNotEmpty,
+      phoneNumber: phoneNumberIsPhoneNumber,
+      misc: internalServerError,
+    },
+  },
 };

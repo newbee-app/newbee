@@ -17,7 +17,7 @@ import {
   ButtonWithSpinnerComponentModule,
   ErrorFooterComponentModule,
 } from '@newbee/newbee/shared/ui';
-import { getErrorMessage } from '@newbee/newbee/shared/util';
+import { getErrorMessage, HttpClientError } from '@newbee/newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
 
 /**
@@ -37,6 +37,11 @@ export class LoginFormComponent {
    * Whether to display the spinner on the magic link login button.
    */
   @Input() magicLinkPending!: boolean;
+
+  /**
+   * An HTTP error for the component, if one exists.
+   */
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
    * The emitted login form, for use in magic link login.
@@ -74,7 +79,9 @@ export class LoginFormComponent {
    */
   get showEmailError(): boolean {
     return (
-      (!!this.email?.dirty || !!this.email?.touched) && !!this.email?.invalid
+      ((!!this.email?.dirty || !!this.email?.touched) &&
+        !!this.email?.invalid) ||
+      !!this.httpClientError?.messages?.['email']
     );
   }
 
@@ -82,7 +89,10 @@ export class LoginFormComponent {
    * The email control's error message, if it has one. Will be an empty string if it doesn't.
    */
   get emailErrorMessage(): string {
-    return getErrorMessage(this.email);
+    return (
+      getErrorMessage(this.email) ||
+      (this.httpClientError?.messages?.['email'] ?? '')
+    );
   }
 
   /**

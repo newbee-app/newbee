@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
+import {
+  AuthActions,
+  HttpActions,
+  httpFeature,
+} from '@newbee/newbee/shared/data-access';
+import { HttpClientError } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for registering a new user.
@@ -12,17 +18,49 @@ import { Store } from '@ngrx/store';
   selector: 'newbee-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
+  /**
+   * Emits to unsubscribe from all infinite observables.
+   */
+  private readonly unsubscribe$ = new Subject<void>();
+
   /**
    * Whether a WebAuthn request is pending.
    */
   pendingWebAuthn$ = this.store.select(authFeature.selectPendingWebAuthn);
 
+  /**
+   * Request HTTP error, if any exist
+   */
+  httpClientError: HttpClientError | null = null;
+
   constructor(
     private readonly store: Store,
     private readonly router: Router,
     private readonly route: ActivatedRoute
-  ) {}
+  ) {
+    store
+      .select(httpFeature.selectError)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (error) => {
+          if (!error) {
+            return;
+          }
+
+          this.httpClientError = error;
+          store.dispatch(HttpActions.resetError());
+        },
+      });
+  }
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   /**
    * When the dumb UI emits `register`, send a `[Auth] Get WebAuthn Register Challenge` action with the value of the register form.
@@ -32,7 +70,7 @@ export class RegisterComponent {
   onRegister(partialRegisterForm: Partial<RegisterForm>): void {
     const registerForm = this.partialToRegisterForm(partialRegisterForm);
     this.store.dispatch(
-      AuthActions.getWebauthnRegisterChallenge({ registerForm })
+      AuthActions.postWebauthnRegisterChallenge({ registerForm })
     );
   }
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ErrorFooterComponentModule } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
 
@@ -11,7 +12,11 @@ describe('JwtIdComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, BaseFormComponentModule],
+      imports: [
+        CommonModule,
+        BaseFormComponentModule,
+        ErrorFooterComponentModule,
+      ],
       declarations: [JwtIdComponent],
     }).compileComponents();
 

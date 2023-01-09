@@ -40,10 +40,10 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(stateAfterLoginMagicLink);
     });
 
-    it('should update state for getWebauthnRegisterChallenge', () => {
+    it('should update state for postWebauthnRegisterChallenge', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.getWebauthnRegisterChallenge({
+        AuthActions.postWebauthnRegisterChallenge({
           registerForm: testRegisterForm1,
         })
       );

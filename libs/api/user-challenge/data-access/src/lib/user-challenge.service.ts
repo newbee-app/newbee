@@ -8,9 +8,10 @@ import {
 } from '@nestjs/common';
 import { UserChallengeEntity } from '@newbee/api/shared/data-access';
 import {
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+  internalServerError,
+  userChallengeEmailNotFound,
+  userChallengeIdNotFound,
+} from '@newbee/shared/util';
 
 /**
  * The service that interacts with the `UserChallengeEntity`.
@@ -30,8 +31,8 @@ export class UserChallengeService {
    * @param id The user challenge ID to look for.
    *
    * @returns The associated `UserChallengeEntity` instance.
-   * @throws {NotFoundException} If the ORM throws a NotFoundError.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userChallengeIdNotFound`. If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneById(id: string): Promise<UserChallengeEntity> {
     try {
@@ -40,12 +41,10 @@ export class UserChallengeService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('a', 'user challenge', 'an', 'ID', id)
-        );
+        throw new NotFoundException(userChallengeIdNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -55,8 +54,8 @@ export class UserChallengeService {
    * @param email The email of the user whose challenge we're looking for.
    *
    * @returns The associated `UserChallengeEntity` instance.
-   * @throws {NotFoundException} If the ORM throws a NotFoundError.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`. If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByEmail(email: string): Promise<UserChallengeEntity> {
     try {
@@ -67,12 +66,10 @@ export class UserChallengeService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('a', 'user challenge', 'an', 'email', email)
-        );
+        throw new NotFoundException(userChallengeEmailNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 

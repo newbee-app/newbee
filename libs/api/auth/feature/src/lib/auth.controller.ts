@@ -51,6 +51,8 @@ export class AuthController {
    * @param createUserDto The details for the new user.
    *
    * @returns The new user, their access token, and the options needed to register an authenticator for use in WebAuthn authentication.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the email is already taken.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
   @Post(`${webauthn}/${register}`)
@@ -107,6 +109,10 @@ export class AuthController {
    * @param webAuthnLoginDto The user's authenticator's attempt at verifying the backend's challenge.
    *
    * @returns The logged in user and their access token, if verified.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`.
+   * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID.
+   * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
   @Post(`${webauthn}/${login}`)
@@ -139,6 +145,7 @@ export class AuthController {
    * @param emailDto The email to send the magic link to.
    *
    * @returns The JWT ID and email associated with the magic link email.
+   * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
   @Public()
   @Get(`${magicLinkLogin}/${login}`)

@@ -12,9 +12,10 @@ import {
   UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+  internalServerError,
+  userChallengeEmailNotFound,
+  userChallengeIdNotFound,
+} from '@newbee/shared/util';
 import { UserChallengeService } from './user-challenge.service';
 
 const testChallenge2 = 'challenge2';
@@ -75,17 +76,7 @@ describe('UserChallengeService', () => {
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
         service.findOneById(testUserChallengeEntity1.id)
-      ).rejects.toThrow(
-        new NotFoundException(
-          idNotFoundErrorMsg(
-            'a',
-            'user challenge',
-            'an',
-            'ID',
-            testUserChallengeEntity1.id
-          )
-        )
-      );
+      ).rejects.toThrow(new NotFoundException(userChallengeIdNotFound));
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
@@ -94,9 +85,7 @@ describe('UserChallengeService', () => {
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
         service.findOneById(testUserChallengeEntity1.id)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
@@ -120,17 +109,7 @@ describe('UserChallengeService', () => {
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
         service.findOneByEmail(testUserEntity1.email)
-      ).rejects.toThrow(
-        new NotFoundException(
-          idNotFoundErrorMsg(
-            'a',
-            'user challenge',
-            'an',
-            'email',
-            testUserEntity1.email
-          )
-        )
-      );
+      ).rejects.toThrow(new NotFoundException(userChallengeEmailNotFound));
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
@@ -139,9 +118,7 @@ describe('UserChallengeService', () => {
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
         service.findOneByEmail(testUserEntity1.email)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 

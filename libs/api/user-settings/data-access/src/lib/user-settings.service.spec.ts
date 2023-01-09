@@ -11,9 +11,9 @@ import {
   UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+  internalServerError,
+  userSettingsIdNotFound,
+} from '@newbee/shared/util';
 import { UserSettingsService } from './user-settings.service';
 
 describe('UserSettingsService', () => {
@@ -64,17 +64,7 @@ describe('UserSettingsService', () => {
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
         service.findOneById(testUserSettingsEntity1.id)
-      ).rejects.toThrow(
-        new NotFoundException(
-          idNotFoundErrorMsg(
-            'a',
-            'user settings',
-            'an',
-            'ID',
-            testUserSettingsEntity1.id
-          )
-        )
-      );
+      ).rejects.toThrow(new NotFoundException(userSettingsIdNotFound));
     });
 
     it('should throw an InternalServerErrorException if an error is encountered', async () => {
@@ -83,9 +73,7 @@ describe('UserSettingsService', () => {
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
         service.findOneById(testUserSettingsEntity1.id)
-      ).rejects.toThrow(
-        new InternalServerErrorException(internalServerErrorMsg)
-      );
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 });

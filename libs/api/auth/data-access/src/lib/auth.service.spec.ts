@@ -12,9 +12,9 @@ import {
   testUserEntity1,
   UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
-import { badRequestAuthenticatorErrorMsg } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
 import {
+  authenticatorVerifyBadRequest,
   testAuthenticationCredential1,
   testPublicKeyCredentialRequestOptions1,
 } from '@newbee/shared/util';
@@ -186,9 +186,7 @@ describe('AuthService', () => {
           testUserEntity1.email,
           testAuthenticationCredential1
         )
-      ).rejects.toThrow(
-        new BadRequestException(badRequestAuthenticatorErrorMsg)
-      );
+      ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
     it('should throw a BadRequestException if verify encounters an error', async () => {
@@ -198,9 +196,7 @@ describe('AuthService', () => {
           testUserEntity1.email,
           testAuthenticationCredential1
         )
-      ).rejects.toThrow(
-        new BadRequestException(badRequestAuthenticatorErrorMsg)
-      );
+      ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
         testAuthenticationCredential1.id
@@ -218,9 +214,7 @@ describe('AuthService', () => {
           testUserEntity1.email,
           testAuthenticationCredential1
         )
-      ).rejects.toThrow(
-        new BadRequestException(badRequestAuthenticatorErrorMsg)
-      );
+      ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
         testAuthenticationCredential1.id

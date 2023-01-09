@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { UserSettingsEntity } from '@newbee/api/shared/data-access';
 import {
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+  internalServerError,
+  userSettingsIdNotFound,
+} from '@newbee/shared/util';
 
 /**
  * The service that interacts with the `UserSettingsEntity`.
@@ -30,8 +30,8 @@ export class UserSettingsService {
    * @param id The user settings ID to look for.
    *
    * @returns The associated `UserSettingsEntity` instance.
-   * @throws {NotFoundException} If the ORM throws a NotFoundError.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userSettingsIdNotFound`. If the ORM throws a NotFoundError.
+   * @throws {InternalServerErrorException} `internalServerError.`. If the ORM throws any other type of error.
    */
   async findOneById(id: string): Promise<UserSettingsEntity> {
     try {
@@ -40,12 +40,10 @@ export class UserSettingsService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('a', 'user settings', 'an', 'ID', id)
-        );
+        throw new NotFoundException(userSettingsIdNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 }

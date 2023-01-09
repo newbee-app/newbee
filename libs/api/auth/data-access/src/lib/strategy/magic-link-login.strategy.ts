@@ -8,13 +8,13 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AppAuthConfig } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
-import { internalServerErrorMsg } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   MagicLinkLoginStrategy as Strategy,
   Payload,
   SendMagicLinkFunction,
 } from '@newbee/passport-magic-link-login';
+import { internalServerError } from '@newbee/shared/util';
 
 /**
  * The Nest Passport Strategy for the Magic Link Login Strategy.
@@ -47,7 +47,7 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
         });
       } catch (err) {
         this.logger.error(err);
-        throw new InternalServerErrorException(internalServerErrorMsg);
+        throw new InternalServerErrorException(internalServerError);
       }
     };
 

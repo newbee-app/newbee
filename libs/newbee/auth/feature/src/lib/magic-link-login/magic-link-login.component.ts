@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
@@ -17,10 +16,3 @@ export class MagicLinkLoginComponent {
     store.dispatch(AuthActions.confirmMagicLink({ token }));
   }
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [MagicLinkLoginComponent],
-  exports: [MagicLinkLoginComponent],
-})
-export class MagicLinkLoginComponentModule {}

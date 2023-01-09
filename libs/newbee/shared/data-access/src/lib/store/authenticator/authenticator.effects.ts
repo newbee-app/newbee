@@ -1,8 +1,9 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap } from 'rxjs';
+import { catchHttpError } from '../../function';
 import { AuthenticatorService } from '../../service';
-import { catchHttpError } from '../http';
 import { AuthenticatorActions } from './authenticator.actions';
 
 /**
@@ -18,7 +19,7 @@ export class AuthenticatorEffects {
           map((options) => {
             return AuthenticatorActions.verifyRegisterChallenge({ options });
           }),
-          catchError(catchHttpError)
+          catchError(AuthenticatorEffects.catchHttpError)
         );
       })
     );
@@ -32,7 +33,7 @@ export class AuthenticatorEffects {
           map(() => {
             return AuthenticatorActions.verifyRegisterChallengeSuccess();
           }),
-          catchError(catchHttpError)
+          catchError(AuthenticatorEffects.catchHttpError)
         );
       })
     );
@@ -42,4 +43,8 @@ export class AuthenticatorEffects {
     private readonly actions$: Actions,
     private readonly authenticatorService: AuthenticatorService
   ) {}
+
+  static catchHttpError(err: HttpErrorResponse) {
+    return catchHttpError(err, () => 'misc');
+  }
 }

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -5,6 +6,15 @@ import {
   AuthenticatorActions,
   catchHttpError,
 } from '@newbee/newbee/shared/data-access';
+import {
+  displayNameIsNotEmpty,
+  emailIsEmail,
+  nameIsNotEmpty,
+  phoneNumberIsPhoneNumber,
+  userChallengeEmailNotFound,
+  userEmailNotFound,
+  userEmailTakenBadRequest,
+} from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -25,7 +35,7 @@ export class AuthEffects {
           tap(async () => {
             await this.router.navigate(['/auth/login/confirm-email']);
           }),
-          catchError(catchHttpError)
+          catchError(AuthEffects.catchHttpError)
         );
       })
     );
@@ -42,31 +52,31 @@ export class AuthEffects {
           tap(async () => {
             await this.router.navigate(['/']);
           }),
-          catchError(catchHttpError)
+          catchError(AuthEffects.catchHttpError)
         );
       })
     );
   });
 
-  getWebAuthnRegisterChallenge$ = createEffect(() => {
+  postWebAuthnRegisterChallenge$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.getWebauthnRegisterChallenge),
+      ofType(AuthActions.postWebauthnRegisterChallenge),
       switchMap(({ registerForm }) => {
         return this.authService.webAuthnRegister(registerForm).pipe(
-          map((userCreatedDto) => {
-            return AuthActions.getWebauthnRegisterChallengeSuccess({
-              userAndOptionsDto: userCreatedDto,
+          map((userAndOptionsDto) => {
+            return AuthActions.postWebauthnRegisterChallengeSuccess({
+              userAndOptionsDto,
             });
           }),
-          catchError(catchHttpError)
+          catchError(AuthEffects.catchHttpError)
         );
       })
     );
   });
 
-  getWebAuthnRegisterChallengeSuccess$ = createEffect(() => {
+  postWebAuthnRegisterChallengeSuccess$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.getWebauthnRegisterChallengeSuccess),
+      ofType(AuthActions.postWebauthnRegisterChallengeSuccess),
       map(({ userAndOptionsDto: userCreatedDto }) => {
         return AuthenticatorActions.verifyRegisterChallenge({
           options: userCreatedDto.options,
@@ -89,7 +99,7 @@ export class AuthEffects {
               options,
             });
           }),
-          catchError(catchHttpError)
+          catchError(AuthEffects.catchHttpError)
         );
       })
     );
@@ -106,7 +116,7 @@ export class AuthEffects {
           tap(async () => {
             await this.router.navigate(['/']);
           }),
-          catchError(catchHttpError)
+          catchError(AuthEffects.catchHttpError)
         );
       })
     );
@@ -117,4 +127,30 @@ export class AuthEffects {
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
+
+  /**
+   * Helper function to feed into `catchError` to capture HTTP errors from responses, convert them to the internal `HttpClientError` format, and save them in the store.
+   *
+   * @param err The HTTP error from the response.
+   * @returns An observable containing the `[Http] Client Error` action.
+   */
+  static catchHttpError(err: HttpErrorResponse) {
+    return catchHttpError(err, (message) => {
+      switch (message) {
+        case userEmailTakenBadRequest:
+        case userChallengeEmailNotFound:
+        case emailIsEmail:
+        case userEmailNotFound:
+          return 'email';
+        case phoneNumberIsPhoneNumber:
+          return 'phoneNumber';
+        case nameIsNotEmpty:
+          return 'name';
+        case displayNameIsNotEmpty:
+          return 'displayName';
+        default:
+          return 'misc';
+      }
+    });
+  }
 }

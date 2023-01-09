@@ -16,7 +16,6 @@ const routes: Routes = [
   {
     path: 'login',
     title: 'Login',
-    component: LoginComponent,
     children: [
       {
         path: 'confirm-email',
@@ -27,6 +26,10 @@ const routes: Routes = [
         path: 'magic-link-login',
         component: MagicLinkLoginComponent,
         canActivate: [magicLinkLoginGuard],
+      },
+      {
+        path: '',
+        component: LoginComponent,
       },
     ],
   },

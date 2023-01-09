@@ -3,12 +3,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import {
   CacheInterceptor,
   CacheModule,
-  ClassSerializerInterceptor,
   Module,
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
@@ -16,6 +15,8 @@ import { CsrfModule } from '@newbee/api/csrf/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
+  ForbiddenExceptionFilter,
+  GlobalExceptionFilter,
   ProxyThrottlerGuard,
 } from '@newbee/api/shared/util';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
@@ -62,18 +63,19 @@ import { default as appConfig } from '../environments/environment';
     UserSettingsModule,
   ],
   providers: [
+    // App-level pipes
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({ transform: true }),
     },
+
+    // App-level interceptors
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
+
+    // App-level guards
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
@@ -81,6 +83,17 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_GUARD,
       useClass: ProxyThrottlerGuard,
+    },
+
+    // App-level exception filters
+    // The exception filter specified last takes precedence in overlapping cases
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ForbiddenExceptionFilter,
     },
   ],
 })

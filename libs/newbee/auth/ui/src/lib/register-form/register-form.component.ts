@@ -16,6 +16,7 @@ import {
 import {
   CountryService,
   getErrorMessage,
+  HttpClientError,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
 import { BaseFormComponentModule } from '../base-form';
@@ -37,6 +38,11 @@ export class RegisterFormComponent {
    * The emitted register form, for use in the smart UI parent.
    */
   @Output() register = new EventEmitter<Partial<RegisterForm>>();
+
+  /**
+   * An HTTP error for the component, if one exists.
+   */
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
    * The emitted request to navigate to the login page, for use in the smart UI parent.
@@ -72,7 +78,7 @@ export class RegisterFormComponent {
   }
 
   /**
-   * Whether the given input is valid (devoid of errors).
+   * Whether the given input is valid.
    *
    * @param inputName The name of the form group's input to look at.
    * @returns `true` if the input is valid, `false` otherwise.
@@ -82,13 +88,28 @@ export class RegisterFormComponent {
   }
 
   /**
+   * Whether to display the input as having an error.
+   * @param inputName The name of the form group's input to look at.
+   * @returns `true` if the input should display an error, `false` otherwise.
+   */
+  inputDisplayError(inputName: string): boolean {
+    return (
+      (!this.inputIsClean(inputName) && !this.inputIsValid(inputName)) ||
+      !!this.httpClientError?.messages?.[inputName]
+    );
+  }
+
+  /**
    * The given input's error message.
    *
    * @param inputName The name of the form group's input to look at.
    * @returns The input's error message if it has one, an empty string otherwise.
    */
   inputErrorMessage(inputName: string): string {
-    return getErrorMessage(this.registerForm.get(inputName));
+    return (
+      getErrorMessage(this.registerForm.get(inputName)) ||
+      (this.httpClientError?.messages?.[inputName] ?? '')
+    );
   }
 
   /**

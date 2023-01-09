@@ -27,7 +27,7 @@ export const authFeature = createFeature({
   reducer: createReducer(
     initialAuthState,
     on(
-      AuthActions.getWebauthnRegisterChallengeSuccess,
+      AuthActions.postWebauthnRegisterChallengeSuccess,
       (state, { userAndOptionsDto: { user } }): AuthState => ({
         ...state,
         user,

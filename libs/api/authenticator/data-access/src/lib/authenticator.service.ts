@@ -16,14 +16,16 @@ import {
   AuthenticatorEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  AppConfig,
-  badRequestAuthenticatorErrorMsg,
-  challengeFalsyLogMsg,
-  idNotFoundErrorMsg,
-  internalServerErrorMsg,
-} from '@newbee/api/shared/util';
+import type { AppConfig } from '@newbee/api/shared/util';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
+import {
+  authenticatorCredentialIdNotFound,
+  authenticatorIdNotFound,
+  authenticatorTakenBadRequest,
+  authenticatorVerifyBadRequest,
+  challengeFalsy,
+  internalServerError,
+} from '@newbee/shared/util';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -86,6 +88,9 @@ export class AuthenticatorService {
    * @param user The user to associate the authenticator with.
    *
    * @returns The newly created authenticator.
+   * @throws {NotFoundException} `userChallengeIdNotFound`. If the user's challenge cannot be found.
+   * @throws {BadRequestException} `authenticatorVerifyBadRequest`, `authenticatorTakenBadRequest`. If the authenticator cannot be verified or it's already being used.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   async create(
     credential: RegistrationCredentialJSON,
@@ -94,10 +99,8 @@ export class AuthenticatorService {
     const userChallenge = await this.userChallengeService.findOneById(user.id);
     const { challenge } = userChallenge;
     if (!challenge) {
-      this.logger.error(
-        challengeFalsyLogMsg('registration', challenge, user.id)
-      );
-      throw new BadRequestException(badRequestAuthenticatorErrorMsg);
+      this.logger.error(challengeFalsy('registration', challenge, user.id));
+      throw new BadRequestException(authenticatorVerifyBadRequest);
     }
 
     const rpInfo = this.configService.get('rpInfo', { infer: true });
@@ -110,7 +113,7 @@ export class AuthenticatorService {
     const { verified, registrationInfo } = verification;
     if (!verified || !registrationInfo) {
       this.logger.error(`Could not verify credentials for user: ${user.id}`);
-      throw new BadRequestException(badRequestAuthenticatorErrorMsg);
+      throw new BadRequestException(authenticatorVerifyBadRequest);
     }
     const {
       credentialID,
@@ -136,12 +139,10 @@ export class AuthenticatorService {
       this.logger.error(err);
 
       if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(
-          'The authenticator you are trying to register has already been registered to an account.'
-        );
+        throw new BadRequestException(authenticatorTakenBadRequest);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -150,14 +151,21 @@ export class AuthenticatorService {
    *
    * @param email The user email to look for.
    *
-   * @returns The associated authenticator instances.
-   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @returns The associated authenticator instances. An empty array if none could be found.
    */
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
     return await this.authenticatorRepository.find({ user: { email } });
   }
 
+  /**
+   * Finds an authenticator by the given ID.
+   *
+   * @param id The database ID of the authenticator to look for.
+   *
+   * @returns The assocaited authenticator instance.
+   * @throws {NotFoundException} `authenticatorIdNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
   async findOneById(id: string): Promise<AuthenticatorEntity> {
     try {
       return await this.authenticatorRepository.findOneOrFail(id);
@@ -165,12 +173,10 @@ export class AuthenticatorService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg('an', 'authenticator', 'an', 'ID', id)
-        );
+        throw new NotFoundException(authenticatorIdNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -180,8 +186,8 @@ export class AuthenticatorService {
    * @param credentialId The credential ID to look for.
    *
    * @returns The associated authenticator instance.
-   * @throws {NotFoundException} If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} If the ORM throws any other type of error.
+   * @throws {NotFoundException} `authenticatorCredentialIdNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByCredentialId(
     credentialId: string
@@ -192,18 +198,10 @@ export class AuthenticatorService {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(
-          idNotFoundErrorMsg(
-            'an',
-            'authenticator',
-            'a',
-            'credential ID',
-            credentialId
-          )
-        );
+        throw new NotFoundException(authenticatorCredentialIdNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerErrorMsg);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 
@@ -214,6 +212,8 @@ export class AuthenticatorService {
    * @param counter The new counter value.
    *
    * @returns The updated authenticator.
+   * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
+   * @throws {InternalServerErrorException} `internalServerError`. If any other error is thrown.
    */
   async updateById(id: string, counter: number): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
