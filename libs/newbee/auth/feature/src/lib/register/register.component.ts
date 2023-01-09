@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
+  AppActions,
   AuthActions,
   HttpActions,
   httpFeature,
@@ -39,6 +40,8 @@ export class RegisterComponent implements OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {
+    store.dispatch(AppActions.resetPendingActions());
+
     store
       .select(httpFeature.selectError)
       .pipe(takeUntil(this.unsubscribe$))

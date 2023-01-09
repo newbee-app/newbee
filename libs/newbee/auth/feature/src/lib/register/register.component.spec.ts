@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { RegisterFormComponentModule } from '@newbee/newbee/auth/ui';
 import { testRegisterForm1 } from '@newbee/newbee/auth/util';
-import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { AppActions, AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -48,6 +48,22 @@ describe('RegisterComponent', () => {
     expect(store).toBeDefined();
     expect(router).toBeDefined();
     expect(route).toBeDefined();
+  });
+
+  describe('init', () => {
+    it('should dispatch resetPendingActions', (done) => {
+      store.scannedActions$.subscribe({
+        next: (scannedAction) => {
+          try {
+            expect(scannedAction).toEqual(AppActions.resetPendingActions());
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+    });
   });
 
   describe('onRegister', () => {

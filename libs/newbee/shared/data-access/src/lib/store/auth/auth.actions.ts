@@ -60,6 +60,11 @@ export const AuthActions = createActionGroup({
       loginForm: LoginForm;
       options: PublicKeyCredentialRequestOptionsJSON;
     }>(),
+
+    /**
+     * Indicates that login has been completed successfully.
+     * Should save user data to the store.
+     */
     'Login Success': props<{ user: User }>(),
   },
 });

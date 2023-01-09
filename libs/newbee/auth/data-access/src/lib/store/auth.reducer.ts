@@ -1,4 +1,8 @@
-import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
+import {
+  AppActions,
+  AuthActions,
+  HttpActions,
+} from '@newbee/newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -76,6 +80,7 @@ export const authFeature = createFeature({
     on(
       AuthActions.loginSuccess,
       HttpActions.clientError,
+      AppActions.resetPendingActions,
       (): AuthState => initialAuthState
     )
   ),

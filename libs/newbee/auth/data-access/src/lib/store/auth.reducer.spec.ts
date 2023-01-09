@@ -1,5 +1,9 @@
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
-import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
+import {
+  AppActions,
+  AuthActions,
+  HttpActions,
+} from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
@@ -106,6 +110,26 @@ describe('AuthReducer', () => {
       updatedState = authFeature.reducer(
         stateAfterWebauthnRegisterChallenge,
         HttpActions.clientError({ httpClientError: testHttpClientError1 })
+      );
+      expect(updatedState).toEqual(initialAuthState);
+    });
+
+    it('should update state for resetPendingActions', () => {
+      let updatedState = authFeature.reducer(
+        stateAfterLoginMagicLinkSuccess,
+        AppActions.resetPendingActions()
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnLoginChallenge,
+        AppActions.resetPendingActions()
+      );
+      expect(updatedState).toEqual(initialAuthState);
+
+      updatedState = authFeature.reducer(
+        stateAfterWebauthnRegisterChallenge,
+        AppActions.resetPendingActions()
       );
       expect(updatedState).toEqual(initialAuthState);
     });
