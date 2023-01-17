@@ -13,18 +13,13 @@ export default {
   parameters: {
     layout: 'centered',
   },
-  args: {
-    containerId: 'container',
-    tooltipId: 'tooltip',
-    messageId: 'tooltip-message',
-    tailId: 'tooltip-tail',
-  },
+  args: {},
 } as Meta<TooltipComponent>;
 
 const Template: Story<TooltipComponent> = (args: TooltipComponent) => ({
   props: args,
   template: `
-    <newbee-tooltip [containerId]="container" [tooltipId]="tooltip" [messageId]="message" [tailId]="tail" [message]="message" [displayTooltip]="displayTooltip">
+    <newbee-tooltip [message]="message" [displayTooltip]="displayTooltip">
       <div>This is a medium length sample div</div>
     </newbee-tooltip>
   `,

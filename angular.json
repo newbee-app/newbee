@@ -23,6 +23,8 @@
     "newbee-auth-feature": "libs/newbee/auth/feature",
     "newbee-auth-ui": "libs/newbee/auth/ui",
     "newbee-auth-util": "libs/newbee/auth/util",
+    "newbee-navbar-ui": "libs/newbee/navbar/ui",
+    "newbee-navbar-util": "libs/newbee/navbar/util",
     "newbee-shared-data-access": "libs/newbee/shared/data-access",
     "newbee-shared-ui": "libs/newbee/shared/ui",
     "newbee-shared-util": "libs/newbee/shared/util",

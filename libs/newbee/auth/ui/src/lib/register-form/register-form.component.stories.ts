@@ -43,7 +43,7 @@ export default {
       <newbee-click-wrapper>
         ${story}
       </newbee-click-wrapper>
-    `
+      `
     ),
   ],
   args: {

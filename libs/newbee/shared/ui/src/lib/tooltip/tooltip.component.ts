@@ -10,26 +10,6 @@ import { Component, Input, NgModule } from '@angular/core';
 })
 export class TooltipComponent {
   /**
-   * The `id` attribute for the tooltip's container `div`.
-   */
-  @Input() containerId?: string;
-
-  /**
-   * The `id` attribute for the tooltip's `div`.
-   */
-  @Input() tooltipId?: string;
-
-  /**
-   * The `id` attribute for the tooltip's message's `div`.
-   */
-  @Input() messageId?: string;
-
-  /**
-   * The `id` attribute for the tooltip's tail's `div`.
-   */
-  @Input() tailId?: string;
-
-  /**
    * The tooltip's message.
    */
   @Input() message!: string;

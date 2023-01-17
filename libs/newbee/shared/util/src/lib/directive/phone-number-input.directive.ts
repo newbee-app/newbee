@@ -6,9 +6,9 @@ import {
   NgModule,
   OnInit,
 } from '@angular/core';
-import { DigitOnlyDirective } from '@uiowa/digit-only';
 import { Country } from '../class';
 import { PhoneNumberPipe, PhoneNumberPipeModule } from '../pipe';
+import { DigitOnlyDirective } from './digit-only.directive';
 
 /**
  * A directive to be used with a string input representing a phone number.

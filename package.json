@@ -56,7 +56,6 @@
     "@nrwl/angular": "15.0.3",
     "@simplewebauthn/browser": "6.3.0-alpha.1",
     "@simplewebauthn/server": "6.3.0-alpha.1",
-    "@uiowa/digit-only": "3.2.1",
     "cache-manager": "4.1.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",

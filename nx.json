@@ -40,6 +40,9 @@
     "@nrwl/angular:scam": {
       "style": "none"
     },
+    "@nrwl/angular:storybook-configuration": {
+      "configureCypress": false
+    },
     "@nrwl/nest:library": {
       "buildable": true
     }

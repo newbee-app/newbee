@@ -37,7 +37,7 @@ export class AppTitleStrategy extends TitleStrategy {
  *
  * - Favor lazy loading routes whenever possible.
  */
-// TODO set up a 404 not found page with a wildcard route
+// TODO: set up a 404 not found page with a wildcard route
 const routes: Routes = [
   {
     path: '',

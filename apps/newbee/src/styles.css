@@ -4,10 +4,10 @@
 
 @layer components {
   .newbee-btn-primary {
-    @apply bg-primary-light dark:bg-primary-dark text-black font-semibold py-2 disabled:opacity-50 enabled:hover:cursor-pointer disabled:hover:cursor-not-allowed;
+    @apply bg-primary-light/80 dark:bg-primary-dark/80 text-black font-semibold py-2 disabled:opacity-50 enabled:hover:cursor-pointer disabled:hover:cursor-not-allowed transition-all ease-in-out duration-200 enabled:hover:bg-primary-light enabled:dark:hover:bg-primary-dark;
   }
 
-  .newbee-link {
+  .newbee-hyperlink {
     @apply text-highlight-primary-light dark:text-highlight-primary-dark visited:text-highlight-secondary-light dark:visited:text-highlight-secondary-dark hover:underline hover:cursor-pointer;
   }
 }

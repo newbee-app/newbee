@@ -120,12 +120,7 @@ export class SearchableSelectComponent<T>
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (target) => {
-          if (
-            !elementRef.nativeElement.contains(target) &&
-            !target.id.startsWith('option-') &&
-            !target.id.startsWith('magnifying-glass-') &&
-            !target.id.startsWith('x-mark-')
-          ) {
+          if (!elementRef.nativeElement.contains(target)) {
             this.shrink();
           }
         },
@@ -267,7 +262,7 @@ export class SearchableSelectComponent<T>
     return this.options.filter((option) => {
       return option.dropdownValue
         .toLowerCase()
-        .includes(this.searchTerm.toLowerCase() ?? '');
+        .includes(this.searchTerm.toLowerCase());
     });
   }
 

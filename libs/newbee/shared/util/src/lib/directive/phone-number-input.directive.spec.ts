@@ -36,37 +36,6 @@ describe('PhoneNumberInputDirective', () => {
     expect(inputElement).toBeDefined();
   });
 
-  describe('DigitOnlyDirective', () => {
-    it('should not allow letter or symbol input', () => {
-      const lettersAsString = 'abcdefghijklmnopqrstuvwxyz+-.,';
-      const lcLetters = lettersAsString.split('');
-      const ucLetters = lettersAsString.toUpperCase().split('');
-
-      for (const letter of lcLetters.concat(ucLetters)) {
-        expect(
-          inputElement().dispatchEvent(
-            new KeyboardEvent('keydown', { key: letter })
-          )
-        ).toBeTruthy();
-        expect(inputElement().value).toBeFalsy();
-      }
-    });
-
-    it('should allow number input', () => {
-      const numbersAsString = '1234567890';
-      const numbers = numbersAsString.split('');
-
-      for (const num of numbers) {
-        expect(
-          inputElement().dispatchEvent(
-            new KeyboardEvent('keydown', { key: num })
-          )
-        ).toBeTruthy();
-        expect(inputElement().value).toBeFalsy();
-      }
-    });
-  });
-
   describe('focus', () => {
     it('should deformat phone number', () => {
       inputElement().value = '(555) 555-5555';
