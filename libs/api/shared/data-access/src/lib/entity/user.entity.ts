@@ -11,6 +11,7 @@ import {
 import { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
+import { UserOrganizationEntity } from './user-oraganization.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 /**
@@ -40,25 +41,19 @@ export class UserEntity implements User {
    * @inheritdoc
    */
   @Property({ type: 'string', nullable: true })
-  displayName: string | null = null;
+  displayName: string | null;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'string', nullable: true })
-  phoneNumber: string | null = null;
+  phoneNumber: string | null;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'boolean' })
   active = true;
-
-  /**
-   * @inheritdoc
-   */
-  @Property({ type: 'boolean' })
-  online = false;
 
   /**
    * The `UserSettingsEntity` associated with the given user.
@@ -69,7 +64,7 @@ export class UserEntity implements User {
     cascade: [Cascade.ALL],
     hidden: true,
   })
-  settings!: UserSettingsEntity;
+  settings = new UserSettingsEntity(this);
 
   /**
    * The `UserChallengeEntity` associated with the given user.
@@ -80,12 +75,13 @@ export class UserEntity implements User {
     cascade: [Cascade.ALL],
     hidden: true,
   })
-  challenge!: UserChallengeEntity;
+  challenge: UserChallengeEntity;
 
   /**
    * The `AuthenticatorEntity`s associated with the given user.
    * Acts as a hidden property, meaning it will never be serialized.
-   * `orphanRemoval` is on, so if the user is deleted, so is its assocaited authenticator. Additionally, if an authenticator is removed from the collection, it is also deleted.
+   * `orphanRemoval` is on, so if the user is deleted, so is its authenticators.
+   * Additionally, if an authenticator is removed from the collection, it is also deleted.
    */
   @OneToMany(() => AuthenticatorEntity, (authenticator) => authenticator.user, {
     orphanRemoval: true,
@@ -94,13 +90,40 @@ export class UserEntity implements User {
   authenticators = new Collection<AuthenticatorEntity>(this);
 
   /**
-   * All of the properties in the entity that are optional, even if they don't appear that way. In this case, it's `active` and `online`.
+   * The organizations the user is a part of, and all of the roles the user holds within that organization.
+   * Acts as a hidden property, meaning it will never be serialized.
+   * `orphanRemoval` is on, so if the user is deleted, so is its user organization entities.
+   * Additionally, if a user organization is removed from the collection, it is also deleted.
    */
-  [OptionalProps]?: 'active' | 'online';
-
-  constructor(partial?: Partial<UserEntity>) {
-    if (partial) {
-      Object.assign(this, partial);
+  @OneToMany(
+    () => UserOrganizationEntity,
+    (organization) => organization.user,
+    {
+      hidden: true,
+      orphanRemoval: true,
     }
+  )
+  organizations = new Collection<UserOrganizationEntity>(this);
+
+  /**
+   * All of the properties in the entity that are optional, even if they don't appear that way.
+   * In this case, it's `active`.
+   */
+  [OptionalProps]?: 'active';
+
+  constructor(
+    id: string,
+    email: string,
+    name: string,
+    displayName: string | null,
+    phoneNumber: string | null,
+    challenge: string | null
+  ) {
+    this.id = id;
+    this.email = email;
+    this.name = name;
+    this.displayName = displayName;
+    this.phoneNumber = phoneNumber;
+    this.challenge = new UserChallengeEntity(this, challenge);
   }
 }

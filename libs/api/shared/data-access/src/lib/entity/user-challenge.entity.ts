@@ -30,16 +30,15 @@ export class UserChallengeEntity implements UserChallenge {
     primary: true,
     hidden: true,
   })
-  user!: UserEntity;
+  user: UserEntity;
 
   /**
    * Defines the type of the entity's primary key, which is a string in this case.
    */
   [PrimaryKeyType]?: string;
 
-  constructor(partial?: Partial<UserChallengeEntity>) {
-    if (partial) {
-      Object.assign(this, partial);
-    }
+  constructor(user: UserEntity, challenge: string | null) {
+    this.user = user;
+    this.challenge = challenge;
   }
 }

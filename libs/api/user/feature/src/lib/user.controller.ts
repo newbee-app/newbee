@@ -32,7 +32,7 @@ export class UserController {
       )}`
     );
     const updatedUser = await this.userService.update(user, updateUserDto);
-    this.logger.log(`Updated user: ${JSON.stringify(updatedUser)}`);
+    this.logger.log(`Updated user: ${user.id}`);
     return updatedUser;
   }
 

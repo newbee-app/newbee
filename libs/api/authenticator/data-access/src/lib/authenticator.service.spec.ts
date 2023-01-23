@@ -170,7 +170,7 @@ describe('AuthenticatorService', () => {
     it('should throw a BadRequestException if challenge is not defined', async () => {
       jest
         .spyOn(userChallengeService, 'findOneById')
-        .mockResolvedValue(new UserChallengeEntity({ user: testUserEntity1 }));
+        .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
       await expect(
         service.create(testRegistrationCredential1, testUserEntity1)
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));

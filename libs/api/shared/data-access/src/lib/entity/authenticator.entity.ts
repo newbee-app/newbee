@@ -70,10 +70,4 @@ export class AuthenticatorEntity implements Authenticator {
     hidden: true,
   })
   user!: UserEntity;
-
-  constructor(partial?: Partial<AuthenticatorEntity>) {
-    if (partial) {
-      Object.assign(this, partial);
-    }
-  }
 }

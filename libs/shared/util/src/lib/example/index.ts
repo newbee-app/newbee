@@ -48,7 +48,6 @@ export const testUser1: User = {
   displayName: 'John',
   phoneNumber: null,
   active: true,
-  online: false,
 };
 
 /**

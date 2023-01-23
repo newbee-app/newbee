@@ -66,7 +66,8 @@ export class AuthController {
     );
 
     const userAndOptions = await this.userService.create(createUserDto);
-    this.logger.log(`User created: ${JSON.stringify(userAndOptions.user)}`);
+    const { user } = userAndOptions;
+    this.logger.log(`User created with ID: ${user.id}, email: ${user.email}`);
 
     const accessToken = this.authService.login(userAndOptions.user);
     this.logger.log(`Access token created: ${accessToken}`);
@@ -177,7 +178,7 @@ export class AuthController {
     @User() user: UserEntity
   ): UserEntity {
     const accessToken = this.authService.login(user);
-    this.logger.log(`Access token generated: ${JSON.stringify(accessToken)}`);
+    this.logger.log(`Access token generated: ${accessToken}`);
 
     res.cookie(
       authJwtCookie,

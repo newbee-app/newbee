@@ -28,6 +28,7 @@ import {
   userIdNotFound,
 } from '@newbee/shared/util';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
+import { v4 } from 'uuid';
 import { UserService } from './user.service';
 
 jest.mock('@simplewebauthn/server', () => ({
@@ -36,6 +37,12 @@ jest.mock('@simplewebauthn/server', () => ({
 }));
 const mockGenerateRegistrationOptions =
   generateRegistrationOptions as jest.Mock;
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('UserService', () => {
   let service: UserService;
@@ -49,7 +56,6 @@ describe('UserService', () => {
         {
           provide: getRepositoryToken(UserEntity),
           useValue: createMock<EntityRepository<UserEntity>>({
-            create: jest.fn().mockReturnValue(testUserEntity1),
             findOneOrFail: jest.fn().mockResolvedValue(testUserEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedUser),
           }),
@@ -70,6 +76,7 @@ describe('UserService', () => {
     mockGenerateRegistrationOptions.mockReturnValue(
       testUserAndOptionsDto1.options
     );
+    mockV4.mockReturnValue(testUserEntity1.id);
   });
 
   it('should be defined', () => {
@@ -80,8 +87,7 @@ describe('UserService', () => {
   describe('create', () => {
     afterEach(() => {
       expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
-      expect(repository.create).toBeCalledTimes(1);
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(repository.persistAndFlush).toBeCalledTimes(1);
     });
 
     it('should create a user', async () => {
@@ -90,8 +96,10 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+    it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'persistAndFlush')
+        .mockRejectedValue(new Error('persistAndFlush'));
       await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
         new InternalServerErrorException(internalServerError)
       );
@@ -99,9 +107,9 @@ describe('UserService', () => {
 
     it('should throw a BadRequestException if email already exists', async () => {
       jest
-        .spyOn(repository, 'flush')
+        .spyOn(repository, 'persistAndFlush')
         .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('flush'))
+          new UniqueConstraintViolationException(new Error('persistAndFlush'))
         );
       await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
         new BadRequestException(userEmailTakenBadRequest)

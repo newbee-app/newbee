@@ -69,7 +69,9 @@ export class AuthenticatorController {
       credential,
       user
     );
-    this.logger.log(`Authenticator created: ${JSON.stringify(authenticator)}`);
+    this.logger.log(
+      `Authenticator created for user ID: ${user.id}, ID: ${authenticator.id}, credential ID: ${authenticator.credentialId}`
+    );
 
     return authenticator;
   }

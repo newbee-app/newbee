@@ -178,9 +178,7 @@ describe('AuthService', () => {
     it('should throw a BadRequestException if challenge is falsy', async () => {
       jest
         .spyOn(userChallengeService, 'findOneByEmail')
-        .mockResolvedValue(
-          new UserChallengeEntity({ user: testUserEntity1, challenge: null })
-        );
+        .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,

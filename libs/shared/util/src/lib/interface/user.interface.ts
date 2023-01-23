@@ -34,9 +34,4 @@ export interface User {
    * Needed so that posts made by the user before deactivation has something to refer back to.
    */
   active: boolean;
-
-  /**
-   * Whether the user is currently logged in and online on NewBee.
-   */
-  online: boolean;
 }

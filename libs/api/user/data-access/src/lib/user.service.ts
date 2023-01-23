@@ -12,12 +12,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  UserAndOptionsDto,
-  UserChallengeEntity,
-  UserEntity,
-  UserSettingsEntity,
-} from '@newbee/api/shared/data-access';
+import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
 import {
   internalServerError,
@@ -51,9 +46,8 @@ export class UserService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptionsDto> {
-    const { email } = createUserDto;
+    const { email, displayName, name, phoneNumber } = createUserDto;
     const id = v4();
-    const { displayName, name } = createUserDto;
     const rpInfo = this.configService.get('rpInfo', { infer: true });
     const options = generateRegistrationOptions({
       rpName: rpInfo.name,
@@ -63,15 +57,16 @@ export class UserService {
       userDisplayName: displayName ?? name,
     });
 
-    const user = this.userRepository.create({
-      ...createUserDto,
+    const user = new UserEntity(
       id,
-      settings: new UserSettingsEntity(),
-      challenge: new UserChallengeEntity({ challenge: options.challenge }),
-    });
-
+      email,
+      name,
+      displayName,
+      phoneNumber,
+      options.challenge
+    );
     try {
-      await this.userRepository.flush();
+      await this.userRepository.persistAndFlush(user);
       return { user, options };
     } catch (err) {
       this.logger.error(err);
