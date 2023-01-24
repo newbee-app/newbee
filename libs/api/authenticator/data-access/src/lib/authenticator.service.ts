@@ -123,17 +123,17 @@ export class AuthenticatorService {
       credentialBackedUp,
     } = registrationInfo;
 
+    const authenticator = new AuthenticatorEntity(
+      credentialID.toString('base64url'),
+      credentialPublicKey.toString('base64url'),
+      counter,
+      credentialDeviceType,
+      credentialBackedUp,
+      user,
+      { ...(credential.transports && { transports: credential.transports }) }
+    );
     try {
-      const authenticator = this.authenticatorRepository.create({
-        credentialId: credentialID.toString('base64url'),
-        credentialPublicKey: credentialPublicKey.toString('base64url'),
-        counter,
-        credentialDeviceType,
-        credentialBackedUp,
-        ...(credential.transports && { transports: credential.transports }),
-        user,
-      });
-      await this.authenticatorRepository.flush();
+      await this.authenticatorRepository.persistAndFlush(authenticator);
       return authenticator;
     } catch (err) {
       this.logger.error(err);

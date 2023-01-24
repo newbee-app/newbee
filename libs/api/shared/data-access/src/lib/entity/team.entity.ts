@@ -14,10 +14,10 @@ import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
 import { GrantEntity } from './grant.entity';
 import { OrganizationEntity } from './organization.entity';
-import { QnAEntity } from './qna.entity';
+import { QnaEntity } from './qna.entity';
 import { ResourceEntity } from './resource.entity';
 import { RoleEntity } from './role.entity';
-import { UserOrganizationEntity } from './user-oraganization.entity';
+import { UserOrganizationEntity } from './user-organization.entity';
 
 /**
  * The MikroORM entity representing a `Team`.
@@ -54,12 +54,6 @@ export class TeamEntity {
   resource = new ResourceEntity(this);
 
   /**
-   * The organization the team belongs to.
-   */
-  @ManyToOne(() => OrganizationEntity)
-  organization!: OrganizationEntity;
-
-  /**
    * All of the docs that belong to the team.
    * `orphanRemoval` is on, so if the team is deleted, so is its docs.
    * Additionally, if a doc is removed from the collection, it is also deleted.
@@ -72,8 +66,14 @@ export class TeamEntity {
    * `orphanRemoval` is on, so if the team is deleted, so is its QnAs.
    * Additionally, if a QnA is removed from the collection, it is also deleted.
    */
-  @OneToMany(() => QnAEntity, (qna) => qna.team, { orphanRemoval: true })
-  qnas = new Collection<QnAEntity>(this);
+  @OneToMany(() => QnaEntity, (qna) => qna.team, { orphanRemoval: true })
+  qnas = new Collection<QnaEntity>(this);
+
+  /**
+   * The organization the team belongs to.
+   */
+  @ManyToOne(() => OrganizationEntity)
+  organization!: OrganizationEntity;
 
   constructor(
     name: string,
@@ -109,20 +109,18 @@ export class TeamEntity {
    * @param member The member `RoleEntity`.
    */
   private generateMemberGrants(member: RoleEntity): void {
-    const grants = [
-      // A member can create docs and QnAs
-      new GrantEntity(member, this.resource, CRUD.C, Possession.Any, [
-        'docs',
-        'qnas',
-      ]),
-      // A member can read any property, except the ID and resource (no need for this to be visible to the user)
-      new GrantEntity(member, this.resource, CRUD.R, Possession.Any, [
-        '*',
-        '!id',
-        '!resource',
-      ]),
-    ];
-    this.resource.grants.add(grants);
+    // A member can create docs and QnAs
+    new GrantEntity(member, this.resource, CRUD.C, Possession.Any, [
+      'docs',
+      'qnas',
+    ]);
+
+    // A member can read any property, except the ID and resource (no need for this to be visible to the user)
+    new GrantEntity(member, this.resource, CRUD.R, Possession.Any, [
+      '*',
+      '!id',
+      '!resource',
+    ]);
   }
 
   /**
@@ -130,24 +128,23 @@ export class TeamEntity {
    * @param admin The admin `RoleEntity`.
    */
   private generateAdminGrants(admin: RoleEntity): void {
-    const grants = [
-      // An admin can add new users to the team
-      new GrantEntity(admin, this.resource, CRUD.C, Possession.Any, ['users']),
-      // An admin can update any property of the team, except the ID, resource, and the organization it belongs to
-      new GrantEntity(admin, this.resource, CRUD.U, Possession.Any, [
-        '*',
-        '!id',
-        '!resource',
-        '!organization',
-      ]),
-      // An admin can delete docs, QnAs, and remove users
-      new GrantEntity(admin, this.resource, CRUD.D, Possession.Any, [
-        'docs',
-        'qnas',
-        'users',
-      ]),
-    ];
-    this.resource.grants.add(grants);
+    // An admin can add new users to the team
+    new GrantEntity(admin, this.resource, CRUD.C, Possession.Any, ['users']);
+
+    // An admin can update any property of the team, except the ID, resource, and the organization it belongs to
+    new GrantEntity(admin, this.resource, CRUD.U, Possession.Any, [
+      '*',
+      '!id',
+      '!resource',
+      '!organization',
+    ]);
+
+    // An admin can delete docs, QnAs, and remove users
+    new GrantEntity(admin, this.resource, CRUD.D, Possession.Any, [
+      'docs',
+      'qnas',
+      'users',
+    ]);
   }
 
   /**
@@ -155,10 +152,7 @@ export class TeamEntity {
    * @param owner The owner `RoleEntity`.
    */
   private generateOwnerGrants(owner: RoleEntity): void {
-    const grants = [
-      // Owners can delete the team itself (being able to delete the primary key implies being able to delete the team)
-      new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']),
-    ];
-    this.resource.grants.add(grants);
+    // Owners can delete the team itself (being able to delete the primary key implies being able to delete the team)
+    new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']);
   }
 }

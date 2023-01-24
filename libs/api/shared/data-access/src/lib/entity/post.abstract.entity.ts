@@ -9,7 +9,7 @@ import { TeamEntity } from './team.entity';
  * Posts can be one of 2 entities: Doc or QnA
  */
 @Entity({ abstract: true })
-export abstract class Post {
+export abstract class PostEntity {
   /**
    * The globally unique ID for the post.
    */

@@ -9,7 +9,7 @@ import { isNotNull } from '@newbee/api/shared/util';
 import { DocEntity } from './doc.entity';
 import { GrantEntity } from './grant.entity';
 import { OrganizationEntity } from './organization.entity';
-import { QnAEntity } from './qna.entity';
+import { QnaEntity } from './qna.entity';
 import { TeamEntity } from './team.entity';
 
 /**
@@ -61,13 +61,13 @@ export class ResourceEntity {
   /**
    * The QnA associated with the permission, if the resource is a QnA.
    */
-  @OneToOne(() => QnAEntity, {
+  @OneToOne(() => QnaEntity, {
     owner: true,
     nullable: true,
     unique: true,
     primary: true,
   })
-  qna: QnAEntity | null = null;
+  qna: QnaEntity | null = null;
 
   /**
    * All of the grants that reference this resource.
@@ -80,7 +80,7 @@ export class ResourceEntity {
   grants = new Collection<GrantEntity>(this);
 
   constructor(
-    resource: OrganizationEntity | TeamEntity | DocEntity | QnAEntity
+    resource: OrganizationEntity | TeamEntity | DocEntity | QnaEntity
   ) {
     if (resource instanceof OrganizationEntity) {
       this.organization = resource;
@@ -88,7 +88,7 @@ export class ResourceEntity {
       this.team = resource;
     } else if (resource instanceof DocEntity) {
       this.doc = resource;
-    } else {
+    } else if (resource instanceof QnaEntity) {
       this.qna = resource;
     }
   }

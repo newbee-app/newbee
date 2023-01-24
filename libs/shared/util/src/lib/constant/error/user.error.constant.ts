@@ -16,4 +16,4 @@ export const userEmailNotFound =
  * Constant to say that the given user email is already taken.
  */
 export const userEmailTakenBadRequest =
-  'The provided email is already taken, please use a different email or log in to your existing account.';
+  'The provided email is already taken, please use a different email.';

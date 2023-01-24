@@ -9,11 +9,11 @@ import {
 import { CRUD, Possession } from '@newbee/api/shared/util';
 import { GrantEntity } from './grant.entity';
 import { OrganizationEntity } from './organization.entity';
-import { Post } from './post.abstract.entity';
+import { PostEntity } from './post.abstract.entity';
 import { ResourceEntity } from './resource.entity';
 import { RoleEntity } from './role.entity';
 import { TeamEntity } from './team.entity';
-import { UserOrganizationEntity } from './user-oraganization.entity';
+import { UserOrganizationEntity } from './user-organization.entity';
 
 /**
  * The MikroORM entity representing a `Doc`, a type of `Post`.
@@ -21,7 +21,7 @@ import { UserOrganizationEntity } from './user-oraganization.entity';
  */
 @Entity()
 @Unique<DocEntity>({ properties: ['organization', 'slug'] })
-export class DocEntity extends Post {
+export class DocEntity extends PostEntity {
   /**
    * @inheritdoc
    */
@@ -92,18 +92,16 @@ export class DocEntity extends Post {
    * @param owner The owner `RoleEntity`.
    */
   private generateOwnerGrants(owner: RoleEntity): void {
-    const grants = [
-      // Owners can update any property of the doc, except the ID, resource, createdAt, and the organization it belongs to
-      new GrantEntity(owner, this.resource, CRUD.U, Possession.Any, [
-        '*',
-        '!id',
-        '!createdAt',
-        '!organization',
-        '!resource',
-      ]),
-      // Owners can delete the doc itself (being able to delete the primary key implies being able to delete the doc)
-      new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']),
-    ];
-    this.resource.grants.add(grants);
+    // Owners can update any property of the doc, except the ID, resource, createdAt, and the organization it belongs to
+    new GrantEntity(owner, this.resource, CRUD.U, Possession.Any, [
+      '*',
+      '!id',
+      '!createdAt',
+      '!organization',
+      '!resource',
+    ]);
+
+    // Owners can delete the doc itself (being able to delete the primary key implies being able to delete the doc)
+    new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']);
   }
 }

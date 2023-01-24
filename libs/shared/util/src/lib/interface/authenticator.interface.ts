@@ -9,11 +9,6 @@ import type {
  */
 export interface Authenticator {
   /**
-   * The UUID of the given authenticator.
-   */
-  id: string;
-
-  /**
    * The globally unique ID of the authenticator's credential.
    */
   credentialId: string;

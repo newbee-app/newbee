@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
-  EntityRepository,
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -88,6 +88,7 @@ describe('UserService', () => {
     afterEach(() => {
       expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledTimes(1);
+      expect(repository.persistAndFlush).toBeCalledWith(testUserEntity1);
     });
 
     it('should create a user', async () => {
@@ -195,6 +196,24 @@ describe('UserService', () => {
       await expect(
         service.update(testUserEntity1, testBaseUpdateUserDto1)
       ).resolves.toEqual(testUpdatedUser);
+    });
+
+    it('should throw a BadRequestException if email already exists', async () => {
+      jest
+        .spyOn(repository, 'flush')
+        .mockRejectedValue(
+          new UniqueConstraintViolationException(new Error('flush'))
+        );
+      await expect(
+        service.update(testUserEntity1, testBaseUpdateUserDto1)
+      ).rejects.toThrow(new BadRequestException(userEmailTakenBadRequest));
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.update(testUserEntity1, testBaseUpdateUserDto1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 

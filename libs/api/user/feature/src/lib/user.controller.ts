@@ -20,6 +20,8 @@ export class UserController {
    * @param user The `UserEntity` instance to update.
    *
    * @returns The updated `UserEntity` instance.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch()
   async update(

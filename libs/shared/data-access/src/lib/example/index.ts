@@ -1,13 +1,16 @@
 import {
   testAuthenticationCredential1,
+  testOrganization1,
   testPublicKeyCredentialCreationOptions1,
   testUser1,
 } from '@newbee/shared/util';
 import {
+  BaseCreateOrganizationDto,
   BaseCreateUserDto,
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseUpdateOrganizationDto,
   BaseUpdateUserDto,
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
@@ -74,4 +77,22 @@ export const testBaseCreateUserDto1: BaseCreateUserDto = {
 export const testBaseUpdateUserDto1: BaseUpdateUserDto = {
   email: testUser1.email,
   name: 'Jane Doe',
+};
+
+/**
+ * An example instance of BaseCreateOrganizationDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
+  name: testOrganization1.name,
+  displayName: testOrganization1.displayName,
+};
+
+/**
+ * An example instance of BaseUpdateOrganizationDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
+  name: 'NewWasp',
+  displayName: 'Waspy',
 };

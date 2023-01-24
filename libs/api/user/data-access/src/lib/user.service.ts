@@ -1,9 +1,9 @@
 import {
-  EntityRepository,
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -29,6 +29,9 @@ import { CreateUserDto, UpdateUserDto } from './dto';
  */
 @Injectable()
 export class UserService {
+  /**
+   * The logger to use when logging anything in `UserService`.
+   */
   private readonly logger = new Logger(UserService.name);
 
   constructor(
@@ -132,14 +135,27 @@ export class UserService {
    * @param updateUserDto The new details for the user.
    *
    * @returns The updated `UserEntity` instance.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
     user: UserEntity,
     updateUserDto: UpdateUserDto
   ): Promise<UserEntity> {
     const updatedUser = this.userRepository.assign(user, updateUserDto);
-    await this.userRepository.flush();
-    return updatedUser;
+
+    try {
+      await this.userRepository.flush();
+      return updatedUser;
+    } catch (err) {
+      this.logger.error(err);
+
+      if (err instanceof UniqueConstraintViolationException) {
+        throw new BadRequestException(userEmailTakenBadRequest);
+      }
+
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**

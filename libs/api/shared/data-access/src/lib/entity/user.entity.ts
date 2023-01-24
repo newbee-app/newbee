@@ -11,7 +11,7 @@ import {
 import { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
-import { UserOrganizationEntity } from './user-oraganization.entity';
+import { UserOrganizationEntity } from './user-organization.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 /**

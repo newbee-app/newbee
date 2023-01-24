@@ -20,9 +20,11 @@ import { UserEntity } from './user.entity';
 @Entity()
 export class AuthenticatorEntity implements Authenticator {
   /**
-   * @inheritdoc
+   * The globally unique ID for the authenticator.
+   * `hidden` is on, so it will never be serialized.
+   * No need for users to know what this value is.
    */
-  @PrimaryKey()
+  @PrimaryKey({ hidden: true })
   id: string = v4();
 
   /**
@@ -70,4 +72,30 @@ export class AuthenticatorEntity implements Authenticator {
     hidden: true,
   })
   user!: UserEntity;
+
+  constructor(
+    credentialId: string,
+    credentialPublicKey: string,
+    counter: number,
+    credentialDeviceType: CredentialDeviceType,
+    credentialBackedUp: boolean,
+    user: UserEntity,
+    optional?: { transports?: AuthenticatorTransportFuture[] }
+  ) {
+    this.credentialId = credentialId;
+    this.credentialPublicKey = credentialPublicKey;
+    this.counter = counter;
+    this.credentialDeviceType = credentialDeviceType;
+    this.credentialBackedUp = credentialBackedUp;
+    this.user = user;
+
+    if (!optional) {
+      return;
+    }
+
+    const { transports } = optional;
+    if (transports) {
+      this.transports = transports;
+    }
+  }
 }

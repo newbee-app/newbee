@@ -7,7 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { v4 } from 'uuid';
 import { GrantEntity } from './grant.entity';
-import { UserOrganizationEntity } from './user-oraganization.entity';
+import { UserOrganizationEntity } from './user-organization.entity';
 
 /**
  * The MikroORM entity representing a `Role`.

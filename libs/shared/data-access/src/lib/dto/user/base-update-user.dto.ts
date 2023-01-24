@@ -1,4 +1,4 @@
-import { User } from '@newbee/shared/util';
+import type { User } from '@newbee/shared/util';
 
 /**
  * The DTO sent from the frontend to the backend for updating the user's value.
