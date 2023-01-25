@@ -23,19 +23,19 @@ export class UserEntity implements User {
    * @inheritdoc
    */
   @PrimaryKey()
-  id!: string;
+  id: string;
 
   /**
    * @inheritdoc
    */
   @Property({ unique: true })
-  email!: string;
+  email: string;
 
   /**
    * @inheritdoc
    */
   @Property()
-  name!: string;
+  name: string;
 
   /**
    * @inheritdoc

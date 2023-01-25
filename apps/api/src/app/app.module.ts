@@ -12,6 +12,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import { CsrfModule } from '@newbee/api/csrf/feature';
+import { OrganizationModule } from '@newbee/api/organization/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
@@ -19,6 +20,7 @@ import {
   GlobalExceptionFilter,
   ProxyThrottlerGuard,
 } from '@newbee/api/shared/util';
+import { UserOrganizationModule } from '@newbee/api/user-organization/feature';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { WinstonModule } from 'nest-winston';
@@ -61,6 +63,8 @@ import { default as appConfig } from '../environments/environment';
     CsrfModule,
     UserModule,
     UserSettingsModule,
+    OrganizationModule,
+    UserOrganizationModule,
   ],
   providers: [
     // App-level pipes

@@ -17,3 +17,13 @@ export const csrfVersion = '1';
  * The version of the `user` API endpoint.
  */
 export const userVersion = '1';
+
+/**
+ * The version of the `organization` API endpoint.
+ */
+export const organizationVersion = '1';
+
+/**
+ * The version of the `user-organization` API endpoint.
+ */
+export const userOrganizationVersion = '1';

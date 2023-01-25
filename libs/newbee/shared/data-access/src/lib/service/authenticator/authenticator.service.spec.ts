@@ -11,7 +11,7 @@ import {
 import {
   testAuthenticator1,
   testPublicKeyCredentialCreationOptions1,
-  testRegistrationCredential1,
+  testRegistrationResponse1,
 } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import { of } from 'rxjs';
@@ -37,7 +37,7 @@ describe('AuthenticatorService', () => {
     httpController = TestBed.inject(HttpTestingController);
 
     jest.clearAllMocks();
-    mockStartRegistration.mockReturnValue(of(testRegistrationCredential1));
+    mockStartRegistration.mockReturnValue(of(testRegistrationResponse1));
   });
 
   afterEach(() => {
@@ -85,7 +85,7 @@ describe('AuthenticatorService', () => {
         `/api/v${authenticatorVersion}/${authenticator}/${create}`
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testRegistrationCredential1);
+      expect(req.request.body).toEqual(testRegistrationResponse1);
 
       req.flush(testAuthenticator1);
     });

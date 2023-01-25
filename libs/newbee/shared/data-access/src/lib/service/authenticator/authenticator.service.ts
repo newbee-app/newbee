@@ -38,10 +38,10 @@ export class AuthenticatorService {
     options: PublicKeyCredentialCreationOptionsJSON
   ): Observable<Authenticator> {
     return from(startRegistration(options)).pipe(
-      switchMap((credential) => {
+      switchMap((response) => {
         return this.http.post<Authenticator>(
           `/api/v${authenticatorVersion}/${authenticator}/${create}`,
-          credential
+          response
         );
       })
     );

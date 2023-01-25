@@ -44,6 +44,13 @@ jest.mock('uuid', () => ({
 }));
 const mockV4 = v4 as jest.Mock;
 
+jest.mock('@newbee/api/shared/data-access', () => ({
+  __esModule: true,
+  ...jest.requireActual('@newbee/api/shared/data-access'),
+  UserEntity: jest.fn(),
+}));
+const mockUserEntity = UserEntity as jest.Mock;
+
 describe('UserService', () => {
   let service: UserService;
   let repository: EntityRepository<UserEntity>;
@@ -77,6 +84,7 @@ describe('UserService', () => {
       testUserAndOptionsDto1.options
     );
     mockV4.mockReturnValue(testUserEntity1.id);
+    mockUserEntity.mockReturnValue(testUserEntity1);
   });
 
   it('should be defined', () => {

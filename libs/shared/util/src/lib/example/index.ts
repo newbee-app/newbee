@@ -1,8 +1,8 @@
 import type {
-  AuthenticationCredentialJSON,
+  AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
-  RegistrationCredentialJSON,
+  RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
 import type {
   Authenticator,
@@ -17,8 +17,8 @@ import type {
  * Strictly for use in testing.
  */
 export const testAuthenticator1: Authenticator = {
-  credentialId: Buffer.from('cred1').toString('base64url'),
-  credentialPublicKey: Buffer.from('credpk1').toString('base64url'),
+  credentialId: 'Y3JlZDE', // 'cred1' with base64url encoding
+  credentialPublicKey: 'Y3JlZHBrMQ', // 'credpk1' with base64url encoding
   counter: 0,
   credentialDeviceType: 'singleDevice',
   credentialBackedUp: true,
@@ -94,10 +94,10 @@ export const testPublicKeyCredentialRequestOptions1: PublicKeyCredentialRequestO
   };
 
 /**
- * An example instance of RegistrationCredentialJSON, from the `@simplewebauthn` package.
+ * An example instance of RegistrationResponseJSON, from the `@simplewebauthn` package.
  * Strictly for use in testing.
  */
-export const testRegistrationCredential1: RegistrationCredentialJSON = {
+export const testRegistrationResponse1: RegistrationResponseJSON = {
   rawId: 'rawId1',
   id: testAuthenticator1.credentialId,
   type: 'public-key',
@@ -109,10 +109,10 @@ export const testRegistrationCredential1: RegistrationCredentialJSON = {
 };
 
 /**
- * An example instance of AuthenticationCredentialJSON, from the `@simplewebauthn` package.
+ * An example instance of AuthenticationResponseJSON, from the `@simplewebauthn` package.
  * Strictly for use in testing.
  */
-export const testAuthenticationCredential1: AuthenticationCredentialJSON = {
+export const testAuthenticationCredential1: AuthenticationResponseJSON = {
   rawId: 'rawId1',
   id: testAuthenticator1.credentialId,
   type: 'public-key',

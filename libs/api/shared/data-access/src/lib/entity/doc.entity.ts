@@ -26,19 +26,19 @@ export class DocEntity extends PostEntity {
    * @inheritdoc
    */
   @ManyToOne(() => OrganizationEntity)
-  organization!: OrganizationEntity;
+  organization: OrganizationEntity;
 
   /**
    * @inheritdoc
    */
   @ManyToOne(() => TeamEntity, { nullable: true })
-  team: TeamEntity | null = null;
+  team: TeamEntity | null;
 
   /**
    * @inheritdoc
    */
   @Property()
-  slug!: string;
+  slug: string;
 
   /**
    * @inheritdoc
@@ -52,39 +52,31 @@ export class DocEntity extends PostEntity {
    * The raw markdown that makes up the doc.
    */
   @Property({ type: 'text' })
-  rawMarkdown!: string;
+  rawMarkdown: string;
 
   /**
    * The raw markdown of the doc rendered into HTML, for display on the frontend.
    */
   @Property({ type: 'text' })
-  renderedHtml!: string;
+  renderedHtml: string;
 
   constructor(
     organization: OrganizationEntity,
+    team: TeamEntity | null,
     slug: string,
     rawMarkdown: string,
     renderedHtml: string,
-    creator: UserOrganizationEntity,
-    optional?: { team?: TeamEntity }
+    creator: UserOrganizationEntity
   ) {
     super();
     this.organization = organization;
+    this.team = team;
     this.slug = slug;
     this.rawMarkdown = rawMarkdown;
     this.renderedHtml = renderedHtml;
 
     const owner = new RoleEntity({ users: [creator] });
     this.generateOwnerGrants(owner);
-
-    if (!optional) {
-      return;
-    }
-
-    const { team } = optional;
-    if (team) {
-      this.team = team;
-    }
   }
 
   /**

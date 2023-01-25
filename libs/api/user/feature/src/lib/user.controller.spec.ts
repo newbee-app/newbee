@@ -24,7 +24,6 @@ describe('UserController', () => {
             create: jest.fn().mockResolvedValue(testUserEntity1),
             findOneById: jest.fn().mockResolvedValue(testUserEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedUserEntity),
-            delete: jest.fn().mockResolvedValue(true),
           }),
         },
       ],

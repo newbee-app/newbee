@@ -25,14 +25,14 @@ import {
   organizationNameNotFound,
   organizationNameTakenBadRequest,
 } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { OrganizationService } from './organization.service';
 
-jest.mock('uuid', () => ({
+jest.mock('@newbee/api/shared/data-access', () => ({
   __esModule: true,
-  v4: jest.fn(),
+  ...jest.requireActual('@newbee/api/shared/data-access'),
+  OrganizationEntity: jest.fn(),
 }));
-const mockV4 = v4 as jest.Mock;
+const mockOrganizationEntity = OrganizationEntity as jest.Mock;
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -63,7 +63,7 @@ describe('OrganizationService', () => {
     );
 
     jest.clearAllMocks();
-    mockV4.mockReturnValue(testOrganizationEntity1.id);
+    mockOrganizationEntity.mockReturnValue(testOrganizationEntity1);
   });
 
   it('should be defined', () => {

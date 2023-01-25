@@ -48,7 +48,7 @@ export const testBaseUserAndOptionsDto1: BaseUserAndOptionsDto = {
  */
 export const testBaseWebAuthnLoginDto1: BaseWebAuthnLoginDto = {
   email: testUser1.email,
-  credential: testAuthenticationCredential1,
+  response: testAuthenticationCredential1,
 };
 
 /**

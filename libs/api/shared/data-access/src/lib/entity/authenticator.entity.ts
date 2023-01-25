@@ -3,7 +3,6 @@ import {
   ManyToOne,
   PrimaryKey,
   Property,
-  types,
   Unique,
 } from '@mikro-orm/core';
 import { Authenticator } from '@newbee/shared/util';
@@ -32,37 +31,37 @@ export class AuthenticatorEntity implements Authenticator {
    */
   @Property({ type: 'text' })
   @Unique()
-  credentialId!: string;
+  credentialId: string;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'text' })
-  credentialPublicKey!: string;
+  credentialPublicKey: string;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'bigint' })
-  counter!: number;
+  counter: number;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'string', length: 32 })
-  credentialDeviceType!: CredentialDeviceType;
+  credentialDeviceType: CredentialDeviceType;
 
   /**
    * @inheritdoc
    */
   @Property()
-  credentialBackedUp!: boolean;
+  credentialBackedUp: boolean;
 
   /**
    * @inheritdoc
    */
-  @Property({ type: types.array, nullable: true })
-  transports: AuthenticatorTransportFuture[] | null = null;
+  @Property({ type: 'array', nullable: true })
+  transports: AuthenticatorTransportFuture[] | null;
 
   /**
    * The `UserEntity` associated with the given authenticator.
@@ -71,7 +70,7 @@ export class AuthenticatorEntity implements Authenticator {
   @ManyToOne(() => UserEntity, {
     hidden: true,
   })
-  user!: UserEntity;
+  user: UserEntity;
 
   constructor(
     credentialId: string,
@@ -79,23 +78,15 @@ export class AuthenticatorEntity implements Authenticator {
     counter: number,
     credentialDeviceType: CredentialDeviceType,
     credentialBackedUp: boolean,
-    user: UserEntity,
-    optional?: { transports?: AuthenticatorTransportFuture[] }
+    transports: AuthenticatorTransportFuture[] | null,
+    user: UserEntity
   ) {
     this.credentialId = credentialId;
     this.credentialPublicKey = credentialPublicKey;
     this.counter = counter;
     this.credentialDeviceType = credentialDeviceType;
     this.credentialBackedUp = credentialBackedUp;
+    this.transports = transports;
     this.user = user;
-
-    if (!optional) {
-      return;
-    }
-
-    const { transports } = optional;
-    if (transports) {
-      this.transports = transports;
-    }
   }
 }

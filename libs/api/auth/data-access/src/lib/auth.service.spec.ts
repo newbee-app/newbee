@@ -43,7 +43,10 @@ describe('AuthService', () => {
   const testAccessToken = 'access';
   const testCounter = 100;
   const testAuthenticationInfo = {
-    credentialID: Buffer.from(testAuthenticatorEntity1.credentialId),
+    credentialID: Buffer.from(
+      testAuthenticatorEntity1.credentialId,
+      'base64url'
+    ),
     newCounter: testCounter,
     userVerified: true,
     credentialDeviceType: testAuthenticatorEntity1.credentialDeviceType,

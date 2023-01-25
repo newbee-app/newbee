@@ -111,7 +111,7 @@ describe('AuthController', () => {
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(
         testBaseWebAuthnLoginDto1.email,
-        testBaseWebAuthnLoginDto1.credential
+        testBaseWebAuthnLoginDto1.response
       );
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);

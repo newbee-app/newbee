@@ -121,12 +121,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
   ): Promise<UserEntity> {
-    const { email, credential } = webAuthnLoginDto;
+    const { email, response } = webAuthnLoginDto;
     this.logger.log(
       `WebAuthn login verify request received for email: ${email}`
     );
 
-    const user = await this.authService.verifyLoginChallenge(email, credential);
+    const user = await this.authService.verifyLoginChallenge(email, response);
     const accessToken = this.authService.login(user);
     this.logger.log(
       `Credentials verified and access token created: ${accessToken}`

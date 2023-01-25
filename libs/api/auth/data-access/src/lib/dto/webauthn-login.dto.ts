@@ -1,6 +1,6 @@
 import { BaseWebAuthnLoginDto } from '@newbee/shared/data-access';
 import { credentialIsDefined } from '@newbee/shared/util';
-import type { AuthenticationCredentialJSON } from '@simplewebauthn/typescript-types';
+import type { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types';
 import { IsDefined } from 'class-validator';
 import { EmailDto } from './email.dto';
 
@@ -13,5 +13,5 @@ export class WebAuthnLoginDto extends EmailDto implements BaseWebAuthnLoginDto {
    * @inheritdoc
    */
   @IsDefined({ message: credentialIsDefined })
-  credential!: AuthenticationCredentialJSON;
+  response!: AuthenticationResponseJSON;
 }

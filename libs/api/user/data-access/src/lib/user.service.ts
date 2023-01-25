@@ -59,7 +59,6 @@ export class UserService {
       userName: email,
       userDisplayName: displayName ?? name,
     });
-
     const user = new UserEntity(
       id,
       email,

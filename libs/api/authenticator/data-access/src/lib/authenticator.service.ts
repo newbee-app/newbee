@@ -26,6 +26,7 @@ import {
   challengeFalsy,
   internalServerError,
 } from '@newbee/shared/util';
+import type { VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -33,7 +34,7 @@ import {
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialDescriptorFuture,
-  RegistrationCredentialJSON,
+  RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
 
 /**
@@ -84,7 +85,7 @@ export class AuthenticatorService {
   /**
    * Verifies the user's authenticator's challenge response and saves the authenticator to the backend, if valid.
    *
-   * @param credential The credential for the user's authenticator.
+   * @param response The credential for the user's authenticator.
    * @param user The user to associate the authenticator with.
    *
    * @returns The newly created authenticator.
@@ -93,7 +94,7 @@ export class AuthenticatorService {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   async create(
-    credential: RegistrationCredentialJSON,
+    response: RegistrationResponseJSON,
     user: UserEntity
   ): Promise<AuthenticatorEntity> {
     const userChallenge = await this.userChallengeService.findOneById(user.id);
@@ -104,12 +105,20 @@ export class AuthenticatorService {
     }
 
     const rpInfo = this.configService.get('rpInfo', { infer: true });
-    const verification = await verifyRegistrationResponse({
-      credential,
-      expectedChallenge: challenge,
-      expectedOrigin: rpInfo.origin,
-      expectedRPID: rpInfo.id,
-    });
+    let verification: VerifiedRegistrationResponse;
+    try {
+      verification = await verifyRegistrationResponse({
+        response,
+        expectedChallenge: challenge,
+        expectedOrigin: rpInfo.origin,
+        expectedRPID: rpInfo.id,
+      });
+    } catch (err) {
+      this.logger.error(err);
+
+      throw new BadRequestException(authenticatorVerifyBadRequest);
+    }
+
     const { verified, registrationInfo } = verification;
     if (!verified || !registrationInfo) {
       this.logger.error(`Could not verify credentials for user: ${user.id}`);
@@ -124,13 +133,13 @@ export class AuthenticatorService {
     } = registrationInfo;
 
     const authenticator = new AuthenticatorEntity(
-      credentialID.toString('base64url'),
-      credentialPublicKey.toString('base64url'),
+      Buffer.from(credentialID).toString('base64url'),
+      Buffer.from(credentialPublicKey).toString('base64url'),
       counter,
       credentialDeviceType,
       credentialBackedUp,
-      user,
-      { ...(credential.transports && { transports: credential.transports }) }
+      response.response.transports ?? null,
+      user
     );
     try {
       await this.authenticatorRepository.persistAndFlush(authenticator);

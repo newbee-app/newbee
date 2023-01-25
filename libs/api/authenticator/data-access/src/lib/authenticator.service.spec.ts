@@ -27,13 +27,12 @@ import {
   authenticatorVerifyBadRequest,
   internalServerError,
   testPublicKeyCredentialCreationOptions1,
-  testRegistrationCredential1,
+  testRegistrationResponse1,
 } from '@newbee/shared/util';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
-import { v4 } from 'uuid';
 import { AuthenticatorService } from './authenticator.service';
 
 jest.mock('@simplewebauthn/server', () => ({
@@ -45,11 +44,12 @@ const mockGenerateRegistrationOptions =
   generateRegistrationOptions as jest.Mock;
 const mockVerifyRegistrationResponse = verifyRegistrationResponse as jest.Mock;
 
-jest.mock('uuid', () => ({
+jest.mock('@newbee/api/shared/data-access', () => ({
   __esModule: true,
-  v4: jest.fn(),
+  ...jest.requireActual('@newbee/api/shared/data-access'),
+  AuthenticatorEntity: jest.fn(),
 }));
-const mockV4 = v4 as jest.Mock;
+const mockAuthenticatorEntity = AuthenticatorEntity as jest.Mock;
 
 describe('AuthenticatorService', () => {
   let service: AuthenticatorService;
@@ -79,6 +79,7 @@ describe('AuthenticatorService', () => {
         {
           provide: getRepositoryToken(AuthenticatorEntity),
           useValue: createMock<EntityRepository<AuthenticatorEntity>>({
+            create: jest.fn().mockResolvedValue(testAuthenticatorEntity1),
             find: jest.fn().mockResolvedValue([testAuthenticatorEntity1]),
             findOneOrFail: jest
               .fn()
@@ -118,7 +119,7 @@ describe('AuthenticatorService', () => {
       verified: true,
       registrationInfo: testRegistrationInfo,
     });
-    mockV4.mockReturnValue(testAuthenticatorEntity1.id);
+    mockAuthenticatorEntity.mockReturnValue(testAuthenticatorEntity1);
   });
 
   it('should be defined', () => {
@@ -155,9 +156,19 @@ describe('AuthenticatorService', () => {
 
     it('should create an authenticator', async () => {
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
+      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
+      expect(mockAuthenticatorEntity).toBeCalledWith(
+        testRegistrationInfo.credentialID.toString('base64url'),
+        testRegistrationInfo.credentialPublicKey.toString('base64url'),
+        testRegistrationInfo.counter,
+        testRegistrationInfo.credentialDeviceType,
+        testRegistrationInfo.credentialBackedUp,
+        null,
+        testUserEntity1
+      );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(
         testAuthenticatorEntity1
@@ -169,14 +180,14 @@ describe('AuthenticatorService', () => {
         .spyOn(userChallengeService, 'findOneById')
         .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
     it('should throw a BadRequestException if challenge cannot be verified', async () => {
       mockVerifyRegistrationResponse.mockResolvedValue({ verified: false });
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
     });
@@ -184,7 +195,7 @@ describe('AuthenticatorService', () => {
     it('should throw a BadRequestException if challenge is verified without registrationInfo', async () => {
       mockVerifyRegistrationResponse.mockResolvedValue({ verified: true });
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
@@ -195,13 +206,11 @@ describe('AuthenticatorService', () => {
           new UniqueConstraintViolationException(new Error('persistAndFlush'))
         );
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).rejects.toThrow(new BadRequestException(authenticatorTakenBadRequest));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
+      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledWith(
-        testAuthenticatorEntity1
-      );
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -209,13 +218,11 @@ describe('AuthenticatorService', () => {
         .spyOn(repository, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testRegistrationCredential1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
+      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledWith(
-        testAuthenticatorEntity1
-      );
     });
   });
 

@@ -26,19 +26,19 @@ export class QnaEntity extends PostEntity {
    * @inheritdoc
    */
   @ManyToOne(() => OrganizationEntity)
-  organization!: OrganizationEntity;
+  organization: OrganizationEntity;
 
   /**
    * @inheritdoc
    */
   @ManyToOne(() => TeamEntity, { nullable: true })
-  team: TeamEntity | null = null;
+  team: TeamEntity | null;
 
   /**
    * @inheritdoc
    */
   @Property()
-  slug!: string;
+  slug: string;
 
   /**
    * @inheritdoc
@@ -52,38 +52,39 @@ export class QnaEntity extends PostEntity {
    * The raw markdown of the question portion of the QnA.
    */
   @Property({ type: 'text' })
-  questionMarkdown!: string;
+  questionMarkdown: string;
 
   /**
    * The raw markdown of the question rendered into HTML, for display on the frontend.
    */
   @Property({ type: 'text' })
-  renderedQuestion!: string;
+  renderedQuestion: string;
 
   /**
    * The raw markdown of the answer portion of the QnA.
    */
   @Property({ type: 'text' })
-  answerMarkdown!: string;
+  answerMarkdown: string;
 
   /**
    * The raw markdown of the answer rendered into HTML, for display on the frontend.
    */
   @Property({ type: 'text' })
-  renderedAnswer!: string;
+  renderedAnswer: string;
 
   constructor(
     organization: OrganizationEntity,
+    team: TeamEntity | null,
     slug: string,
     questionMarkdown: string,
     renderedQuestion: string,
     answerMarkdown: string,
     renderedAnswer: string,
-    creator: UserOrganizationEntity,
-    optional?: { team?: TeamEntity }
+    creator: UserOrganizationEntity
   ) {
     super();
     this.organization = organization;
+    this.team = team;
     this.slug = slug;
     this.questionMarkdown = questionMarkdown;
     this.renderedQuestion = renderedQuestion;
@@ -92,15 +93,6 @@ export class QnaEntity extends PostEntity {
 
     const owner = new RoleEntity({ users: [creator] });
     this.generateOwnerGrants(owner);
-
-    if (!optional) {
-      return;
-    }
-
-    const { team } = optional;
-    if (team) {
-      this.team = team;
-    }
   }
 
   /**

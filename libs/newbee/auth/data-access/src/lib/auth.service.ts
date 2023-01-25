@@ -120,10 +120,10 @@ export class AuthService {
   ): Observable<User> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
-      switchMap((credential) => {
+      switchMap((response) => {
         const webAuthnLoginDto: BaseWebAuthnLoginDto = {
           ...emailDto,
-          credential,
+          response,
         };
         return this.http.post<User>(
           `/api/v${authVersion}/${auth}/${webauthn}/${login}`,

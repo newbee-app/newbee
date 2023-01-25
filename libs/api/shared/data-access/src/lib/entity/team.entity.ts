@@ -36,13 +36,13 @@ export class TeamEntity {
    * The name for the team, which should be unique for the organization.
    */
   @Property()
-  name!: string;
+  name: string;
 
   /**
    * How to display the name of the team in the app, regardless of the value of `name`.
    */
   @Property({ nullable: true })
-  displayName: string | null = null;
+  displayName: string | null;
 
   /**
    * The team represented as a generic resource.
@@ -73,15 +73,16 @@ export class TeamEntity {
    * The organization the team belongs to.
    */
   @ManyToOne(() => OrganizationEntity)
-  organization!: OrganizationEntity;
+  organization: OrganizationEntity;
 
   constructor(
     name: string,
+    displayName: string | null,
     organization: OrganizationEntity,
-    creator: UserOrganizationEntity,
-    optional?: { displayName: string }
+    creator: UserOrganizationEntity
   ) {
     this.name = name;
+    this.displayName = displayName;
     this.organization = organization;
 
     const member = new RoleEntity();
@@ -93,15 +94,6 @@ export class TeamEntity {
       users: [creator],
     });
     this.generateOwnerGrants(owner);
-
-    if (!optional) {
-      return;
-    }
-
-    const { displayName } = optional;
-    if (displayName) {
-      this.displayName = displayName;
-    }
   }
 
   /**

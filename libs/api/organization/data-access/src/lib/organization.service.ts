@@ -50,9 +50,7 @@ export class OrganizationService {
     creator: UserEntity
   ): Promise<OrganizationEntity> {
     const { name, displayName } = createOrganizationDto;
-    const organization = new OrganizationEntity(name, creator, {
-      ...(displayName && { displayName }),
-    });
+    const organization = new OrganizationEntity(name, displayName, creator);
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
@@ -98,6 +96,8 @@ export class OrganizationService {
    * @param updateOrganizationDto The new details for the organization.
    *
    * @returns The updated `OrganizationEntity` instance.
+   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
     organization: OrganizationEntity,

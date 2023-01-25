@@ -4,6 +4,7 @@ import {
   Entity,
   OneToMany,
   OneToOne,
+  OptionalProps,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -36,13 +37,13 @@ export class OrganizationEntity implements Organization {
    * @inheritdoc
    */
   @Property({ unique: true })
-  name!: string;
+  name: string;
 
   /**
    * @inheritdoc
    */
   @Property({ nullable: true })
-  displayName: string | null = null;
+  displayName: string | null;
 
   /**
    * The organization represented as a generic resource.
@@ -103,12 +104,15 @@ export class OrganizationEntity implements Organization {
   })
   users = new Collection<UserOrganizationEntity>(this);
 
-  constructor(
-    name: string,
-    creator: UserEntity,
-    optional?: { displayName?: string }
-  ) {
+  /**
+   * All of the properties of the entity that are optional.
+   * In this case, it's `resource`.
+   */
+  [OptionalProps]?: 'resource';
+
+  constructor(name: string, displayName: string | null, creator: UserEntity) {
     this.name = name;
+    this.displayName = displayName;
     const user = new UserOrganizationEntity(creator, this);
 
     const member = new RoleEntity();
@@ -120,15 +124,6 @@ export class OrganizationEntity implements Organization {
       users: [user],
     });
     this.generateOwnerGrants(owner);
-
-    if (!optional) {
-      return;
-    }
-
-    const { displayName } = optional;
-    if (displayName) {
-      this.displayName = displayName;
-    }
   }
 
   /**
