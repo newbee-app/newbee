@@ -45,6 +45,18 @@
     },
     "@nrwl/nest:library": {
       "buildable": true
+    },
+    "@nrwl/nest:module": {
+      "flat": true,
+      "directory": "lib"
+    },
+    "@nrwl/nest:controller": {
+      "flat": true,
+      "directory": "lib"
+    },
+    "@nrwl/nest:service": {
+      "flat": true,
+      "directory": "lib"
     }
   },
   "defaultProject": "newbee",
