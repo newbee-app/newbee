@@ -6,12 +6,25 @@ import type {
 } from '@simplewebauthn/typescript-types';
 import type {
   Authenticator,
+  Doc,
   Organization,
+  Post,
+  Qna,
   Team,
   User,
   UserChallenge,
   UserSettings,
 } from '../interface';
+
+/**
+ * For internal use in creating a user challenge.
+ */
+const testChallenge1 = 'challenge1';
+
+/**
+ * For internal use whenever we're working with datetimes.
+ */
+const now = new Date();
 
 /**
  * An example instance of Authenticator.
@@ -26,7 +39,6 @@ export const testAuthenticator1: Authenticator = {
   transports: null,
 };
 
-const testChallenge1 = 'challenge1';
 /**
  * An example instance of UserChallenge.
  * Strictly for use in testing.
@@ -73,6 +85,43 @@ export const testOrganization1: Organization = {
 export const testTeam1: Team = {
   name: 'Development',
   displayName: null,
+};
+
+/**
+ * An example instance of Post.
+ * Strictly for use in testing.
+ */
+export const testPost1: Post = {
+  createdAt: now,
+  updatedAt: now,
+  markedUpToDateAt: now,
+  upToDate: true,
+  slug: 'Title',
+};
+
+/**
+ * An example instance of Doc.
+ * Strictly for use in testing.
+ */
+export const testDoc1: Doc = {
+  ...testPost1,
+  rawMarkdown: 'rawmarkdown',
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // renderedHtml: 'renderedhtml',
+};
+
+/**
+ * An example instance of Qna.
+ * Strictly for use in testing.
+ */
+export const testQna1: Qna = {
+  ...testPost1,
+  questionMarkdown: 'questionmarkdown',
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // renderedQuestion: 'renderedquestion',
+  answerMarkdown: 'answermarkdown',
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // renderedAnswer: 'renderedanswer',
 };
 
 /**

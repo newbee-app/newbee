@@ -7,6 +7,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { CRUD, Possession } from '@newbee/api/shared/util';
+import { Qna } from '@newbee/shared/util';
 import { GrantEntity } from './grant.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -21,7 +22,7 @@ import { UserOrganizationEntity } from './user-organization.entity';
  */
 @Entity()
 @Unique<QnaEntity>({ properties: ['organization', 'slug'] })
-export class QnaEntity extends PostEntity {
+export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
    */
@@ -49,37 +50,39 @@ export class QnaEntity extends PostEntity {
   resource = new ResourceEntity(this);
 
   /**
-   * The raw markdown of the question portion of the QnA.
+   * @inheritdoc
    */
   @Property({ type: 'text' })
   questionMarkdown: string;
 
-  /**
-   * The raw markdown of the question rendered into HTML, for display on the frontend.
-   */
-  @Property({ type: 'text' })
-  renderedQuestion: string;
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // /**
+  //  * @inheritdoc
+  //  */
+  // @Property({ type: 'text' })
+  // renderedQuestion: string;
 
   /**
-   * The raw markdown of the answer portion of the QnA.
+   * @inheritdoc
    */
   @Property({ type: 'text' })
   answerMarkdown: string;
 
-  /**
-   * The raw markdown of the answer rendered into HTML, for display on the frontend.
-   */
-  @Property({ type: 'text' })
-  renderedAnswer: string;
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // /**
+  //  * @inheritdoc
+  //  */
+  // @Property({ type: 'text' })
+  // renderedAnswer: string;
 
   constructor(
     organization: OrganizationEntity,
     team: TeamEntity | null,
     slug: string,
     questionMarkdown: string,
-    renderedQuestion: string,
+    // renderedQuestion: string,
     answerMarkdown: string,
-    renderedAnswer: string,
+    // renderedAnswer: string,
     creator: UserOrganizationEntity
   ) {
     super();
@@ -87,9 +90,9 @@ export class QnaEntity extends PostEntity {
     this.team = team;
     this.slug = slug;
     this.questionMarkdown = questionMarkdown;
-    this.renderedQuestion = renderedQuestion;
+    // this.renderedQuestion = renderedQuestion;
     this.answerMarkdown = answerMarkdown;
-    this.renderedAnswer = renderedAnswer;
+    // this.renderedAnswer = renderedAnswer;
 
     const owner = new RoleEntity({ users: [creator] });
     this.generateOwnerGrants(owner);

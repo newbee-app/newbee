@@ -1,4 +1,5 @@
 import { Entity, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import { Post } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { OrganizationEntity } from './organization.entity';
 import { ResourceEntity } from './resource.entity';
@@ -9,7 +10,7 @@ import { TeamEntity } from './team.entity';
  * Posts can be one of 2 entities: Doc or QnA
  */
 @Entity({ abstract: true })
-export abstract class PostEntity {
+export abstract class PostEntity implements Post {
   /**
    * The globally unique ID for the post.
    */
@@ -17,25 +18,25 @@ export abstract class PostEntity {
   id = v4();
 
   /**
-   * The DateTime when the post was created.
+   * @inheritdoc
    */
   @Property({ type: 'datetime' })
   createdAt = new Date();
 
   /**
-   * The DateTime when the post was last updated.
+   * @inheritdoc
    */
   @Property({ type: 'datetime' })
   updatedAt = this.createdAt;
 
   /**
-   * The DateTime when the post was last marked up-to-date.
+   * @inheritdoc
    */
   @Property({ type: 'datetime' })
   markedUpToDateAt = this.createdAt;
 
   /**
-   * Whether the post is up-to-date.
+   * @inheritdoc
    */
   @Property({ type: 'boolean' })
   upToDate = true;
@@ -54,8 +55,7 @@ export abstract class PostEntity {
   abstract team: TeamEntity | null;
 
   /**
-   * The slug to use to represent the post as a link.
-   * A slug should be unique within an organization.
+   * @inheritdoc
    */
   abstract slug: string;
 

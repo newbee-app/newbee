@@ -7,6 +7,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { CRUD, Possession } from '@newbee/api/shared/util';
+import { Doc } from '@newbee/shared/util';
 import { GrantEntity } from './grant.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -21,7 +22,7 @@ import { UserOrganizationEntity } from './user-organization.entity';
  */
 @Entity()
 @Unique<DocEntity>({ properties: ['organization', 'slug'] })
-export class DocEntity extends PostEntity {
+export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
@@ -49,23 +50,24 @@ export class DocEntity extends PostEntity {
   resource = new ResourceEntity(this);
 
   /**
-   * The raw markdown that makes up the doc.
+   * @inheritdoc
    */
   @Property({ type: 'text' })
   rawMarkdown: string;
 
-  /**
-   * The raw markdown of the doc rendered into HTML, for display on the frontend.
-   */
-  @Property({ type: 'text' })
-  renderedHtml: string;
+  // TODO: add this in later once we figure out what we wanna do with markdoc
+  // /**
+  //  * @inheritdoc
+  //  */
+  // @Property({ type: 'text' })
+  // renderedHtml: string;
 
   constructor(
     organization: OrganizationEntity,
     team: TeamEntity | null,
     slug: string,
     rawMarkdown: string,
-    renderedHtml: string,
+    // renderedHtml: string,
     creator: UserOrganizationEntity
   ) {
     super();
@@ -73,7 +75,7 @@ export class DocEntity extends PostEntity {
     this.team = team;
     this.slug = slug;
     this.rawMarkdown = rawMarkdown;
-    this.renderedHtml = renderedHtml;
+    // this.renderedHtml = renderedHtml;
 
     const owner = new RoleEntity({ users: [creator] });
     this.generateOwnerGrants(owner);
