@@ -9,6 +9,8 @@
     "api-authenticator-data-access": "libs/api/authenticator/data-access",
     "api-authenticator-feature": "libs/api/authenticator/feature",
     "api-csrf-feature": "libs/api/csrf/feature",
+    "api-grant-data-access": "libs/api/grant/data-access",
+    "api-grant-feature": "libs/api/grant/feature",
     "api-organization-data-access": "libs/api/organization/data-access",
     "api-organization-feature": "libs/api/organization/feature",
     "api-shared-data-access": "libs/api/shared/data-access",

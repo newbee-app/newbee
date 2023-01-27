@@ -44,6 +44,10 @@
         "libs/api/authenticator/feature/src/index.ts"
       ],
       "@newbee/api/csrf/feature": ["libs/api/csrf/feature/src/index.ts"],
+      "@newbee/api/grant/data-access": [
+        "libs/api/grant/data-access/src/index.ts"
+      ],
+      "@newbee/api/grant/feature": ["libs/api/grant/feature/src/index.ts"],
       "@newbee/api/organization/data-access": [
         "libs/api/organization/data-access/src/index.ts"
       ],
