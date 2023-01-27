@@ -44,6 +44,8 @@
         "libs/api/authenticator/feature/src/index.ts"
       ],
       "@newbee/api/csrf/feature": ["libs/api/csrf/feature/src/index.ts"],
+      "@newbee/api/doc/data-access": ["libs/api/doc/data-access/src/index.ts"],
+      "@newbee/api/doc/feature": ["libs/api/doc/feature/src/index.ts"],
       "@newbee/api/grant/data-access": [
         "libs/api/grant/data-access/src/index.ts"
       ],
@@ -54,6 +56,8 @@
       "@newbee/api/organization/feature": [
         "libs/api/organization/feature/src/index.ts"
       ],
+      "@newbee/api/qna/data-access": ["libs/api/qna/data-access/src/index.ts"],
+      "@newbee/api/qna/feature": ["libs/api/qna/feature/src/index.ts"],
       "@newbee/api/resource/data-access": [
         "libs/api/resource/data-access/src/index.ts"
       ],
