@@ -54,6 +54,12 @@
       "@newbee/api/organization/feature": [
         "libs/api/organization/feature/src/index.ts"
       ],
+      "@newbee/api/resource/data-access": [
+        "libs/api/resource/data-access/src/index.ts"
+      ],
+      "@newbee/api/resource/feature": [
+        "libs/api/resource/feature/src/index.ts"
+      ],
       "@newbee/api/role/data-access": [
         "libs/api/role/data-access/src/index.ts"
       ],

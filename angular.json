@@ -13,6 +13,8 @@
     "api-grant-feature": "libs/api/grant/feature",
     "api-organization-data-access": "libs/api/organization/data-access",
     "api-organization-feature": "libs/api/organization/feature",
+    "api-resource-data-access": "libs/api/resource/data-access",
+    "api-resource-feature": "libs/api/resource/feature",
     "api-role-data-access": "libs/api/role/data-access",
     "api-role-feature": "libs/api/role/feature",
     "api-shared-data-access": "libs/api/shared/data-access",
