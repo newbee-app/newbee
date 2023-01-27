@@ -7,6 +7,7 @@ import type {
 import type {
   Authenticator,
   Organization,
+  Team,
   User,
   UserChallenge,
   UserSettings,
@@ -62,6 +63,15 @@ export const testUser1: User = {
  */
 export const testOrganization1: Organization = {
   name: 'NewBee',
+  displayName: null,
+};
+
+/**
+ * An example instance of Team.
+ * Strictly for use in testing.
+ */
+export const testTeam1: Team = {
+  name: 'Development',
   displayName: null,
 };
 

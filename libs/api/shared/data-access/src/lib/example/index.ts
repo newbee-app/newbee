@@ -2,6 +2,7 @@ import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
   testOrganization1,
+  testTeam1,
   testUser1,
   testUserChallenge1,
   testUserSettings1,
@@ -10,8 +11,10 @@ import { UserAndOptionsDto } from '../dto';
 import {
   AuthenticatorEntity,
   OrganizationEntity,
+  TeamEntity,
   UserChallengeEntity,
   UserEntity,
+  UserOrganizationEntity,
   UserSettingsEntity,
 } from '../entity';
 
@@ -56,3 +59,18 @@ export const testUserAndOptionsDto1: UserAndOptionsDto = {
  * Strictly for use in testing.
  */
 export const testOrganizationEntity1 = testOrganization1 as OrganizationEntity;
+
+/**
+ * An example instance of `TeamEntity`.
+ * Strictly for use in testing.
+ */
+export const testTeamEntity1 = testTeam1 as TeamEntity;
+
+/**
+ * An example instance of `UserOrganizationEntity`.
+ * Strictly for use in testing.
+ */
+export const testUserOrganizationEntity1 = {
+  user: testUserEntity1,
+  organization: testOrganizationEntity1,
+} as UserOrganizationEntity;

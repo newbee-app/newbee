@@ -1,16 +1,15 @@
-import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
+import { BaseUpdateTeamDto } from '@newbee/shared/data-access';
 import { displayNameIsNotEmpty, nameIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
- * The DTO sent from the frontend to the backend for updating an organization.
+ * The verifiable DTO sent from the frontend to the backend for updating a team's value.
  * Suitable for use in PATCH requests.
  */
-export class UpdateOrganizationDto implements BaseUpdateOrganizationDto {
+export class UpdateTeamDto implements BaseUpdateTeamDto {
   /**
    * @inheritdoc
    */
-  @IsOptional()
   @IsNotEmpty({ message: nameIsNotEmpty })
   name?: string;
 

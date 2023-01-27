@@ -46,14 +46,18 @@ export class OrganizationController {
     @User() user: UserEntity
   ): Promise<OrganizationEntity> {
     this.logger.log(
-      `Create organization request received from user ID: ${user.id}, for organization name: ${createOrganizationDto.name}`
+      `Create organization request received from user ID: ${
+        user.id
+      }, with values: ${JSON.stringify(createOrganizationDto)}`
     );
 
     const organization = await this.organizationService.create(
       createOrganizationDto,
       user
     );
-    this.logger.log(`Organization created with name: ${organization.name}`);
+    this.logger.log(
+      `Organization created with name: ${organization.name}, ID: ${organization.id}`
+    );
 
     return organization;
   }
@@ -75,7 +79,9 @@ export class OrganizationController {
     );
 
     const organization = await this.organizationService.findOneByName(name);
-    this.logger.log(`Found organization: ${organization.id}`);
+    this.logger.log(
+      `Found organization, name: ${name}, ID: ${organization.id}`
+    );
 
     return organization;
   }
@@ -98,7 +104,9 @@ export class OrganizationController {
   ): Promise<OrganizationEntity> {
     // TODO: implement access controls here
     this.logger.log(
-      `Update organization request received for organization name: ${name}`
+      `Update organization request received for organization name: ${name}, with values: ${JSON.stringify(
+        updateOrganizationDto
+      )}`
     );
 
     const organization = await this.organizationService.findOneByName(name);
@@ -106,7 +114,9 @@ export class OrganizationController {
       organization,
       updateOrganizationDto
     );
-    this.logger.log(`Updated organization: ${updatedOrganization.id}`);
+    this.logger.log(
+      `Updated organization, name: ${name}, ID: ${updatedOrganization.id}`
+    );
 
     return updatedOrganization;
   }
@@ -122,6 +132,8 @@ export class OrganizationController {
     this.logger.log(`Delete organization request received for name: ${name}`);
     const organization = await this.organizationService.findOneByName(name);
     await this.organizationService.delete(organization);
-    this.logger.log(`Deleted organization: ${organization.id}`);
+    this.logger.log(
+      `Deleted organization, name: ${name}, ID: ${organization.id}`
+    );
   }
 }

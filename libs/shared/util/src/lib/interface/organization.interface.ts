@@ -10,7 +10,7 @@ export interface Organization {
 
   /**
    * How the organization's name will be displayed on the platform, regardless of the value of name.
-   * If the value is null, the user's name will be displayed.
+   * If the value is null, the organization's name will be displayed.
    */
   displayName: string | null;
 }

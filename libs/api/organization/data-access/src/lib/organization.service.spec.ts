@@ -73,6 +73,12 @@ describe('OrganizationService', () => {
 
   describe('create', () => {
     afterEach(() => {
+      expect(mockOrganizationEntity).toBeCalledTimes(1);
+      expect(mockOrganizationEntity).toBeCalledWith(
+        testBaseCreateOrganizationDto1.name,
+        testBaseCreateOrganizationDto1.displayName,
+        testUserEntity1
+      );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(
         testOrganizationEntity1
