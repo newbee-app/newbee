@@ -20,7 +20,7 @@ export interface Qna extends Post {
   /**
    * The raw markdown of the answer portion of the QnA.
    */
-  answerMarkdown: string;
+  answerMarkdown: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**

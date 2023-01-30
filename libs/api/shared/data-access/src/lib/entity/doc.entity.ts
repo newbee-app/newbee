@@ -63,7 +63,6 @@ export class DocEntity extends PostEntity implements Doc {
   // renderedHtml: string;
 
   constructor(
-    organization: OrganizationEntity,
     team: TeamEntity | null,
     slug: string,
     rawMarkdown: string,
@@ -71,7 +70,7 @@ export class DocEntity extends PostEntity implements Doc {
     creator: UserOrganizationEntity
   ) {
     super();
-    this.organization = organization;
+    this.organization = creator.organization;
     this.team = team;
     this.slug = slug;
     this.rawMarkdown = rawMarkdown;

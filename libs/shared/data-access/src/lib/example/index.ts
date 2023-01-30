@@ -1,18 +1,24 @@
 import {
   testAuthenticationCredential1,
+  testDoc1,
   testOrganization1,
   testPublicKeyCredentialCreationOptions1,
+  testQna1,
   testTeam1,
   testUser1,
 } from '@newbee/shared/util';
 import {
+  BaseCreateDocDto,
   BaseCreateOrganizationDto,
+  BaseCreateQnaDto,
   BaseCreateTeamDto,
   BaseCreateUserDto,
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
+  BaseUpdateQnaDto,
   BaseUpdateTeamDto,
   BaseUpdateUserDto,
   BaseUserAndOptionsDto,
@@ -116,4 +122,42 @@ export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
 export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
   name: 'Human Resources',
   displayName: 'HR',
+};
+
+/**
+ * An example instance of BaseCreateDocDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCreateDocDto1: BaseCreateDocDto = {
+  slug: testDoc1.slug,
+  rawMarkdown: testDoc1.rawMarkdown,
+};
+
+/**
+ * An example instance of BaseUpdateDocDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
+  slug: 'new-title',
+  rawMarkdown: 'new raw markdown',
+};
+
+/**
+ * An example instance of BaseCreateQnaDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
+  slug: testQna1.slug,
+  questionMarkdown: testQna1.questionMarkdown,
+  answerMarkdown: testQna1.answerMarkdown,
+};
+
+/**
+ * An example instance of BaseUpdateQnaDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
+  slug: 'new-title',
+  questionMarkdown: 'new question',
+  answerMarkdown: 'new answer',
 };

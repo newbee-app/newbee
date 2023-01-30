@@ -20,5 +20,5 @@ export class BaseCreateQnaDto
   /**
    * @inheritdoc
    */
-  answerMarkdown!: string;
+  answerMarkdown: string | null = null;
 }

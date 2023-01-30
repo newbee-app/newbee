@@ -65,8 +65,8 @@ export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
    */
-  @Property({ type: 'text' })
-  answerMarkdown: string;
+  @Property({ type: 'text', nullable: true })
+  answerMarkdown: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
@@ -76,17 +76,16 @@ export class QnaEntity extends PostEntity implements Qna {
   // renderedAnswer: string;
 
   constructor(
-    organization: OrganizationEntity,
     team: TeamEntity | null,
     slug: string,
     questionMarkdown: string,
     // renderedQuestion: string,
-    answerMarkdown: string,
+    answerMarkdown: string | null,
     // renderedAnswer: string,
     creator: UserOrganizationEntity
   ) {
     super();
-    this.organization = organization;
+    this.organization = creator.organization;
     this.team = team;
     this.slug = slug;
     this.questionMarkdown = questionMarkdown;
