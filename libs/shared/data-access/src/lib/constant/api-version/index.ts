@@ -32,3 +32,13 @@ export const userOrganizationVersion = '1';
  * The version of the `team` API endpoint.
  */
 export const teamVersion = '1';
+
+/**
+ * The version of the `doc` API endpoint.
+ */
+export const docVersion = '1';
+
+/**
+ * The version of he `qna` API endpoint.
+ */
+export const qnaVersion = '1';

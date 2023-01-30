@@ -24,6 +24,9 @@ import { create, team, teamVersion } from '@newbee/shared/data-access';
  */
 @Controller({ path: `:organization/${team}`, version: teamVersion })
 export class TeamController {
+  /**
+   * The logger to use when logging anything in the controller.
+   */
   private readonly logger = new Logger(TeamController.name);
 
   constructor(
@@ -40,7 +43,8 @@ export class TeamController {
    * @param organizationName The name of the organization the team will go in.
    *
    * @returns The newly created team.
-   * @throws {BadRequestException} `organizationNameNotFound`, `userOrganizationNotFound`, `teamNameTakenBadRequest`. If the organization name cannot be found, the user does not exist in the organization, or the team name is already taken in the organization.
+   * @throws {BadRequestException} `teamNameTakenBadRequest`. If the team name is already taken in the organization.
+   * @throws {NotFoundException} `organizationNameNotFound`, `userOrganizationNotFound`. If the organization name cannot be found or the user does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
@@ -101,9 +105,9 @@ export class TeamController {
    * @param teamName The name of the team to look for.
    * @param updateTeamDto The new values for the team.
    *
-   * @returns The udpated team, if it was updated successfully.
+   * @returns The updated team, if it was updated successfully.
    * @throws {NotFoundException} `organizationNameNotFound`, `teamNameNotFound`. If the organization or team can't be found.
-   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the team's name is being updated and is already taken.
+   * @throws {BadRequestException} `teamNameTakenBadRequest`. If the team's name is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(':name')
@@ -121,7 +125,9 @@ export class TeamController {
 
     const team = await this.getTeam(organizationName, teamName);
     const updatedTeam = await this.teamService.update(team, updateTeamDto);
-    this.logger.log(`Updated team, name: ${teamName}, ID: ${updatedTeam.id}`);
+    this.logger.log(
+      `Updated team, name: ${updatedTeam.name}, ID: ${updatedTeam.id}`
+    );
 
     return updatedTeam;
   }

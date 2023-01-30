@@ -88,7 +88,7 @@ export class QnaService {
    * @throws {NotFoundException} `qnaSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findBySlug(
+  async findOneBySlug(
     organization: OrganizationEntity,
     slug: string
   ): Promise<QnaEntity> {

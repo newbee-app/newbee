@@ -26,6 +26,9 @@ import {
  */
 @Controller({ path: organization, version: organizationVersion })
 export class OrganizationController {
+  /**
+   * The logger to use when logging anything in the controller.
+   */
   private readonly logger = new Logger(OrganizationController.name);
 
   constructor(private readonly organizationService: OrganizationService) {}
@@ -115,7 +118,7 @@ export class OrganizationController {
       updateOrganizationDto
     );
     this.logger.log(
-      `Updated organization, name: ${name}, ID: ${updatedOrganization.id}`
+      `Updated organization, name: ${updatedOrganization.name}, ID: ${updatedOrganization.id}`
     );
 
     return updatedOrganization;

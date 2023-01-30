@@ -122,7 +122,7 @@ describe('DocService', () => {
     });
   });
 
-  describe('findBySlug', () => {
+  describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith({
@@ -133,7 +133,7 @@ describe('DocService', () => {
 
     it('should find a slug', async () => {
       await expect(
-        service.findBySlug(testOrganizationEntity1, testDocEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
       ).resolves.toEqual(testDocEntity1);
     });
 
@@ -142,7 +142,7 @@ describe('DocService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findBySlug(testOrganizationEntity1, testDocEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -151,7 +151,7 @@ describe('DocService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findBySlug(testOrganizationEntity1, testDocEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
       ).rejects.toThrow(new NotFoundException(docSlugNotFound));
     });
   });

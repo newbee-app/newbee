@@ -57,6 +57,18 @@ export const userOrganization = 'user-organization';
  */
 export const team = 'team';
 
+// DOC endpoints
+/**
+ * The URL endpoint associated with Doc.
+ */
+export const doc = 'doc';
+
+// QNA endpoints
+/**
+ * The URL endpoint associated with Qna.
+ */
+export const qna = 'qna';
+
 // GENERAL endpoints
 /**
  * The URL endpoint associated with creating something.

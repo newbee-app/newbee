@@ -122,7 +122,7 @@ describe('QnaService', () => {
     });
   });
 
-  describe('findBySlug', () => {
+  describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith({
@@ -133,7 +133,7 @@ describe('QnaService', () => {
 
     it('should find a qna using the slug', async () => {
       await expect(
-        service.findBySlug(testOrganizationEntity1, testQnaEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
       ).resolves.toEqual(testQnaEntity1);
     });
 
@@ -142,7 +142,7 @@ describe('QnaService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findBySlug(testOrganizationEntity1, testQnaEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -151,7 +151,7 @@ describe('QnaService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findBySlug(testOrganizationEntity1, testQnaEntity1.slug)
+        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
       ).rejects.toThrow(new BadRequestException(qnaSlugNotFound));
     });
   });
