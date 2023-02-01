@@ -10,8 +10,8 @@ import {
 } from '@mikro-orm/core';
 import { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
+import { OrgMemberEntity } from './org-member.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
-import { UserOrganizationEntity } from './user-organization.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 /**
@@ -90,20 +90,16 @@ export class UserEntity implements User {
   authenticators = new Collection<AuthenticatorEntity>(this);
 
   /**
-   * The organizations the user is a part of, and all of the roles the user holds within that organization.
+   * The organizations the user is a part of along with the role the user holds and the teams the user belongs to within that organization.
    * Acts as a hidden property, meaning it will never be serialized.
    * `orphanRemoval` is on, so if the user is deleted, so is its user organization entities.
    * Additionally, if a user organization is removed from the collection, it is also deleted.
    */
-  @OneToMany(
-    () => UserOrganizationEntity,
-    (organization) => organization.user,
-    {
-      hidden: true,
-      orphanRemoval: true,
-    }
-  )
-  organizations = new Collection<UserOrganizationEntity>(this);
+  @OneToMany(() => OrgMemberEntity, (organization) => organization.user, {
+    hidden: true,
+    orphanRemoval: true,
+  })
+  organizations = new Collection<OrgMemberEntity>(this);
 
   /**
    * All of the properties in the entity that are optional, even if they don't appear that way.

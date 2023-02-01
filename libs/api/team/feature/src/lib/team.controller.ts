@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { TeamEntity, UserEntity } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
@@ -16,7 +17,6 @@ import {
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
-import { UserOrganizationService } from '@newbee/api/user-organization/data-access';
 import { create, team, teamVersion } from '@newbee/shared/data-access';
 
 /**
@@ -32,7 +32,7 @@ export class TeamController {
   constructor(
     private readonly teamService: TeamService,
     private readonly organizationService: OrganizationService,
-    private readonly userOrganizationService: UserOrganizationService
+    private readonly orgMemberService: OrgMemberService
   ) {}
 
   /**
@@ -44,7 +44,7 @@ export class TeamController {
    *
    * @returns The newly created team.
    * @throws {BadRequestException} `teamNameTakenBadRequest`. If the team name is already taken in the organization.
-   * @throws {NotFoundException} `organizationNameNotFound`, `userOrganizationNotFound`. If the organization name cannot be found or the user does not exist in the organization.
+   * @throws {NotFoundException} `organizationNameNotFound`, `orgMemberNotFound`. If the organization name cannot be found or the user does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
@@ -61,12 +61,11 @@ export class TeamController {
     const organization = await this.organizationService.findOneByName(
       organizationName
     );
-    const userOrganization =
-      await this.userOrganizationService.findOneByUserAndOrganization(
-        user,
-        organization
-      );
-    const team = await this.teamService.create(createTeamDto, userOrganization);
+    const orgMember = await this.orgMemberService.findOneByUserAndOrg(
+      user,
+      organization
+    );
+    const team = await this.teamService.create(createTeamDto, orgMember);
     this.logger.log(`Team created with name: ${team.name}, ID: ${team.id}`);
 
     return team;

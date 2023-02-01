@@ -1,14 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   testOrganizationEntity1,
+  testOrgMemberEntity1,
   testTeamEntity1,
   testUserEntity1,
-  testUserOrganizationEntity1,
 } from '@newbee/api/shared/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { UserOrganizationService } from '@newbee/api/user-organization/data-access';
 import {
   testBaseCreateTeamDto1,
   testBaseUpdateTeamDto1,
@@ -19,7 +19,7 @@ describe('TeamController', () => {
   let controller: TeamController;
   let service: TeamService;
   let organizationService: OrganizationService;
-  let userOrganizationService: UserOrganizationService;
+  let orgMemberService: OrgMemberService;
 
   const testUpdatedTeamEntity = {
     ...testTeamEntity1,
@@ -45,11 +45,11 @@ describe('TeamController', () => {
           }),
         },
         {
-          provide: UserOrganizationService,
-          useValue: createMock<UserOrganizationService>({
-            findOneByUserAndOrganization: jest
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>({
+            findOneByUserAndOrg: jest
               .fn()
-              .mockResolvedValue(testUserOrganizationEntity1),
+              .mockResolvedValue(testOrgMemberEntity1),
           }),
         },
       ],
@@ -58,16 +58,14 @@ describe('TeamController', () => {
     controller = module.get<TeamController>(TeamController);
     service = module.get<TeamService>(TeamService);
     organizationService = module.get<OrganizationService>(OrganizationService);
-    userOrganizationService = module.get<UserOrganizationService>(
-      UserOrganizationService
-    );
+    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
     expect(organizationService).toBeDefined();
-    expect(userOrganizationService).toBeDefined();
+    expect(orgMemberService).toBeDefined();
   });
 
   describe('finds organization', () => {
@@ -90,16 +88,15 @@ describe('TeamController', () => {
       expect(organizationService.findOneByName).toBeCalledWith(
         testOrganizationEntity1.name
       );
-      expect(
-        userOrganizationService.findOneByUserAndOrganization
-      ).toBeCalledTimes(1);
-      expect(
-        userOrganizationService.findOneByUserAndOrganization
-      ).toBeCalledWith(testUserEntity1, testOrganizationEntity1);
+      expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
+      expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
+        testUserEntity1,
+        testOrganizationEntity1
+      );
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
         testBaseCreateTeamDto1,
-        testUserOrganizationEntity1
+        testOrgMemberEntity1
       );
     });
 

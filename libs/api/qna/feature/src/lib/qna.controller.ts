@@ -9,6 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   CreateQnaDto,
@@ -18,7 +19,6 @@ import {
 import { QnaEntity, UserEntity } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import { UserOrganizationService } from '@newbee/api/user-organization/data-access';
 import { create, qna, qnaVersion } from '@newbee/shared/data-access';
 
 /**
@@ -34,7 +34,7 @@ export class QnaController {
   constructor(
     private readonly qnaService: QnaService,
     private readonly organizationService: OrganizationService,
-    private readonly userOrganizationService: UserOrganizationService,
+    private readonly orgMemberService: OrgMemberService,
     private readonly teamService: TeamService
   ) {}
 
@@ -48,7 +48,7 @@ export class QnaController {
    *
    * @returns The newly created qna.
    * @throws {BadRequestException} `qnaSlugTakenBadRequest`. If the slug is already taken in the organization.
-   * @throws {NotFoundException} `organizationNameNotFound`, `userOrganizationNotFound`, `teamNameNotFound`. If the organization name cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
+   * @throws {NotFoundException} `organizationNameNotFound`, `orgMemberNotFound`, `teamNameNotFound`. If the organization name cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
@@ -70,19 +70,14 @@ export class QnaController {
     const organization = await this.organizationService.findOneByName(
       organizationName
     );
-    const userOrganization =
-      await this.userOrganizationService.findOneByUserAndOrganization(
-        user,
-        organization
-      );
+    const orgMember = await this.orgMemberService.findOneByUserAndOrg(
+      user,
+      organization
+    );
     const team = teamName
       ? await this.teamService.findOneByName(organization, teamName)
       : null;
-    const qna = await this.qnaService.create(
-      createQnaDto,
-      team,
-      userOrganization
-    );
+    const qna = await this.qnaService.create(createQnaDto, team, orgMember);
     this.logger.log(`Qna created with slug: ${qna.slug}, ID: ${qna.id}`);
 
     return qna;

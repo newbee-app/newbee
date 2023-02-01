@@ -1,20 +1,9 @@
-import {
-  Cascade,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
-import { CRUD, Possession } from '@newbee/api/shared/util';
+import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { Doc } from '@newbee/shared/util';
-import { GrantEntity } from './grant.entity';
+import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
-import { ResourceEntity } from './resource.entity';
-import { RoleEntity } from './role.entity';
 import { TeamEntity } from './team.entity';
-import { UserOrganizationEntity } from './user-organization.entity';
 
 /**
  * The MikroORM entity representing a `Doc`, a type of `Post`.
@@ -38,16 +27,20 @@ export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
-  @Property()
-  slug: string;
+  @ManyToOne(() => OrgMemberEntity)
+  creator: OrgMemberEntity;
 
   /**
    * @inheritdoc
    */
-  @OneToOne(() => ResourceEntity, (resource) => resource.doc, {
-    cascade: [Cascade.ALL],
-  })
-  resource = new ResourceEntity(this);
+  @ManyToOne(() => OrgMemberEntity)
+  maintainer: OrgMemberEntity | null = null;
+
+  /**
+   * @inheritdoc
+   */
+  @Property()
+  slug: string;
 
   /**
    * @inheritdoc
@@ -63,38 +56,19 @@ export class DocEntity extends PostEntity implements Doc {
   // renderedHtml: string;
 
   constructor(
+    creator: OrgMemberEntity,
     team: TeamEntity | null,
     slug: string,
-    rawMarkdown: string,
+    rawMarkdown: string
     // renderedHtml: string,
-    creator: UserOrganizationEntity
   ) {
     super();
     this.organization = creator.organization;
     this.team = team;
+    this.creator = creator;
+    this.maintainer = creator;
     this.slug = slug;
     this.rawMarkdown = rawMarkdown;
     // this.renderedHtml = renderedHtml;
-
-    const owner = new RoleEntity({ users: [creator] });
-    this.generateOwnerGrants(owner);
-  }
-
-  /**
-   * A helper function for generating the grants associated with the doc owner role.
-   * @param owner The owner `RoleEntity`.
-   */
-  private generateOwnerGrants(owner: RoleEntity): void {
-    // Owners can update any property of the doc, except the ID, resource, createdAt, and the organization it belongs to
-    new GrantEntity(owner, this.resource, CRUD.U, Possession.Any, [
-      '*',
-      '!id',
-      '!createdAt',
-      '!organization',
-      '!resource',
-    ]);
-
-    // Owners can delete the doc itself (being able to delete the primary key implies being able to delete the doc)
-    new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']);
   }
 }

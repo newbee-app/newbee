@@ -1,24 +1,20 @@
 import {
-  Cascade,
   Collection,
   Entity,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { CRUD, Possession } from '@newbee/api/shared/util';
+import { TeamRole } from '@newbee/api/shared/util';
 import { Team } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
-import { GrantEntity } from './grant.entity';
+import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { QnaEntity } from './qna.entity';
-import { ResourceEntity } from './resource.entity';
-import { RoleEntity } from './role.entity';
-import { UserOrganizationEntity } from './user-organization.entity';
+import { TeamMemberEntity } from './team-member.entity';
 
 /**
  * The MikroORM entity representing a `Team`.
@@ -46,17 +42,6 @@ export class TeamEntity implements Team {
    */
   @Property({ nullable: true })
   displayName: string | null;
-
-  /**
-   * The team represented as a generic resource.
-   * All actions are cascaded, so if the team is deleted, so is its associated resource.
-   * `hidden` is on, so it will never be serialized.
-   */
-  @OneToOne(() => ResourceEntity, (resource) => resource.team, {
-    cascade: [Cascade.ALL],
-    hidden: true,
-  })
-  resource = new ResourceEntity(this);
 
   /**
    * All of the docs that belong to the team.
@@ -89,75 +74,26 @@ export class TeamEntity implements Team {
   @ManyToOne(() => OrganizationEntity, { hidden: true })
   organization: OrganizationEntity;
 
+  /**
+   * All of the members of the team.
+   * `orphanRemoval` is on, so if the team is deleted, so is its team member entities.
+   * Additionally, if a team member is removed from the collection, it is also deleted.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.team, {
+    orphanRemoval: true,
+    hidden: true,
+  })
+  teamMembers = new Collection<TeamMemberEntity>(this);
+
   constructor(
     name: string,
     displayName: string | null,
-    creator: UserOrganizationEntity
+    creator: OrgMemberEntity
   ) {
     this.name = name;
     this.displayName = displayName;
     this.organization = creator.organization;
-
-    const member = new RoleEntity();
-    this.generateMemberGrants(member);
-    const admin = new RoleEntity({ impliedRoles: [member] });
-    this.generateAdminGrants(admin);
-    const owner = new RoleEntity({
-      impliedRoles: [member, admin],
-      users: [creator],
-    });
-    this.generateOwnerGrants(owner);
-  }
-
-  /**
-   * A helper function for generating the grants associated with the team member role.
-   * @param member The member `RoleEntity`.
-   */
-  private generateMemberGrants(member: RoleEntity): void {
-    // A member can create docs and QnAs
-    new GrantEntity(member, this.resource, CRUD.C, Possession.Any, [
-      'docs',
-      'qnas',
-    ]);
-
-    // A member can read any property, except the ID and resource (no need for this to be visible to the user)
-    new GrantEntity(member, this.resource, CRUD.R, Possession.Any, [
-      '*',
-      '!id',
-      '!resource',
-    ]);
-  }
-
-  /**
-   * A helper function for generating the grants associated with the team admin role.
-   * @param admin The admin `RoleEntity`.
-   */
-  private generateAdminGrants(admin: RoleEntity): void {
-    // An admin can add new users to the team
-    new GrantEntity(admin, this.resource, CRUD.C, Possession.Any, ['users']);
-
-    // An admin can update any property of the team, except the ID, resource, and the organization it belongs to
-    new GrantEntity(admin, this.resource, CRUD.U, Possession.Any, [
-      '*',
-      '!id',
-      '!resource',
-      '!organization',
-    ]);
-
-    // An admin can delete docs, QnAs, and remove users
-    new GrantEntity(admin, this.resource, CRUD.D, Possession.Any, [
-      'docs',
-      'qnas',
-      'users',
-    ]);
-  }
-
-  /**
-   * A helper function for generating the grants associated with the team owner role.
-   * @param owner The owner `RoleEntity`.
-   */
-  private generateOwnerGrants(owner: RoleEntity): void {
-    // Owners can delete the team itself (being able to delete the primary key implies being able to delete the team)
-    new GrantEntity(owner, this.resource, CRUD.D, Possession.Any, ['*']);
+    new TeamMemberEntity(creator, this, TeamRole.Owner);
   }
 }

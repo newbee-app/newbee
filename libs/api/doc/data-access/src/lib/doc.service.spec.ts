@@ -15,8 +15,8 @@ import {
   DocEntity,
   testDocEntity1,
   testOrganizationEntity1,
+  testOrgMemberEntity1,
   testTeamEntity1,
-  testUserOrganizationEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateDocDto1,
@@ -74,10 +74,10 @@ describe('DocService', () => {
     afterEach(() => {
       expect(mockDocEntity).toBeCalledTimes(1);
       expect(mockDocEntity).toBeCalledWith(
+        testOrgMemberEntity1,
         testTeamEntity1,
         testDocEntity1.slug,
-        testDocEntity1.rawMarkdown,
-        testUserOrganizationEntity1
+        testDocEntity1.rawMarkdown
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testDocEntity1);
@@ -88,7 +88,7 @@ describe('DocService', () => {
         service.create(
           testBaseCreateDocDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).resolves.toEqual(testDocEntity1);
     });
@@ -101,7 +101,7 @@ describe('DocService', () => {
         service.create(
           testBaseCreateDocDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
@@ -116,7 +116,7 @@ describe('DocService', () => {
         service.create(
           testBaseCreateDocDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).rejects.toThrow(new BadRequestException(docSlugTakenBadRequest));
     });

@@ -14,11 +14,11 @@ import {
   DocService,
   UpdateDocDto,
 } from '@newbee/api/doc/data-access';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { DocEntity, UserEntity } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import { UserOrganizationService } from '@newbee/api/user-organization/data-access';
 import { create, doc, docVersion } from '@newbee/shared/data-access';
 
 /**
@@ -34,7 +34,7 @@ export class DocController {
   constructor(
     private readonly docService: DocService,
     private readonly organizationService: OrganizationService,
-    private readonly userOrganizationService: UserOrganizationService,
+    private readonly orgMemberService: OrgMemberService,
     private readonly teamService: TeamService
   ) {}
 
@@ -48,7 +48,7 @@ export class DocController {
    *
    * @returns The newly created doc.
    * @throws {BadRequestException} `docSlugTakenBadRequest`. If the slug is already taken in the organization.
-   * @throws {NotFoundException} `organizationNameNotFound`, `userOrganizationNotFound`, `teamNameNotFound`. If the organization name cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
+   * @throws {NotFoundException} `organizationNameNotFound`, `orgMemberNotFound`, `teamNameNotFound`. If the organization name cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
@@ -70,19 +70,14 @@ export class DocController {
     const organization = await this.organizationService.findOneByName(
       organizationName
     );
-    const userOrganization =
-      await this.userOrganizationService.findOneByUserAndOrganization(
-        user,
-        organization
-      );
+    const orgMember = await this.orgMemberService.findOneByUserAndOrg(
+      user,
+      organization
+    );
     const team = teamName
       ? await this.teamService.findOneByName(organization, teamName)
       : null;
-    const doc = await this.docService.create(
-      createDocDto,
-      team,
-      userOrganization
-    );
+    const doc = await this.docService.create(createDocDto, team, orgMember);
     this.logger.log(`Doc created with slug: ${doc.slug}, ID: ${doc.id}`);
 
     return doc;

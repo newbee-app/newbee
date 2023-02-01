@@ -46,10 +46,12 @@
       "@newbee/api/csrf/feature": ["libs/api/csrf/feature/src/index.ts"],
       "@newbee/api/doc/data-access": ["libs/api/doc/data-access/src/index.ts"],
       "@newbee/api/doc/feature": ["libs/api/doc/feature/src/index.ts"],
-      "@newbee/api/grant/data-access": [
-        "libs/api/grant/data-access/src/index.ts"
+      "@newbee/api/org-member/data-access": [
+        "libs/api/org-member/data-access/src/index.ts"
       ],
-      "@newbee/api/grant/feature": ["libs/api/grant/feature/src/index.ts"],
+      "@newbee/api/org-member/feature": [
+        "libs/api/org-member/feature/src/index.ts"
+      ],
       "@newbee/api/organization/data-access": [
         "libs/api/organization/data-access/src/index.ts"
       ],
@@ -58,20 +60,16 @@
       ],
       "@newbee/api/qna/data-access": ["libs/api/qna/data-access/src/index.ts"],
       "@newbee/api/qna/feature": ["libs/api/qna/feature/src/index.ts"],
-      "@newbee/api/resource/data-access": [
-        "libs/api/resource/data-access/src/index.ts"
-      ],
-      "@newbee/api/resource/feature": [
-        "libs/api/resource/feature/src/index.ts"
-      ],
-      "@newbee/api/role/data-access": [
-        "libs/api/role/data-access/src/index.ts"
-      ],
-      "@newbee/api/role/feature": ["libs/api/role/feature/src/index.ts"],
       "@newbee/api/shared/data-access": [
         "libs/api/shared/data-access/src/index.ts"
       ],
       "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"],
+      "@newbee/api/team-member/data-access": [
+        "libs/api/team-member/data-access/src/index.ts"
+      ],
+      "@newbee/api/team-member/feature": [
+        "libs/api/team-member/feature/src/index.ts"
+      ],
       "@newbee/api/team/data-access": [
         "libs/api/team/data-access/src/index.ts"
       ],
@@ -81,12 +79,6 @@
       ],
       "@newbee/api/user-challenge/feature": [
         "libs/api/user-challenge/feature/src/index.ts"
-      ],
-      "@newbee/api/user-organization/data-access": [
-        "libs/api/user-organization/data-access/src/index.ts"
-      ],
-      "@newbee/api/user-organization/feature": [
-        "libs/api/user-organization/feature/src/index.ts"
       ],
       "@newbee/api/user-settings/data-access": [
         "libs/api/user-settings/data-access/src/index.ts"

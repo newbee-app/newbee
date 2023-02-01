@@ -45,12 +45,6 @@ export const user = 'user';
  */
 export const organization = 'organization';
 
-// USER-ORGANIZATION endpoints
-/**
- * The URL endpoint associated with UserOrganization.
- */
-export const userOrganization = 'user-organization';
-
 // TEAM endpoints
 /**
  * The URL endpoint associated with Team.

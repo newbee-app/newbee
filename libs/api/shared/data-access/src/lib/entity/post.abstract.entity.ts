@@ -1,8 +1,8 @@
 import { Entity, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
 import { Post } from '@newbee/shared/util';
 import { v4 } from 'uuid';
+import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
-import { ResourceEntity } from './resource.entity';
 import { TeamEntity } from './team.entity';
 
 /**
@@ -55,13 +55,19 @@ export abstract class PostEntity implements Post {
   abstract team: TeamEntity | null;
 
   /**
+   * The org member that created the post.
+   */
+  abstract creator: OrgMemberEntity;
+
+  /**
+   * The org member responsible for maintaining the post.
+   * It can be null if the post is a qna that hasn't been answered yet.
+   * Otherwise, there should aways be one (and only one) maintainer.
+   */
+  abstract maintainer: OrgMemberEntity | null;
+
+  /**
    * @inheritdoc
    */
   abstract slug: string;
-
-  /**
-   * The post represented as a generic resource.
-   * All actions are cascaded, so if the post is deleted, so is its associated resource.
-   */
-  abstract resource: ResourceEntity;
 }

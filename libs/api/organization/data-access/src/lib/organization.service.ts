@@ -36,7 +36,7 @@ export class OrganizationService {
   ) {}
 
   /**
-   * Creates a new `OrganizationEntity` and associates it with its relevant `ResourceEntity`, `UserOrganizationEntity`, `RoleEntity`, and `GrantEntity`.
+   * Creates a new `OrganizationEntity` and makes the creator the owner.
    *
    * @param createOrganizationDto The information needed to create a new organization.
    * @param creator The `UserEntity` creating the organization.

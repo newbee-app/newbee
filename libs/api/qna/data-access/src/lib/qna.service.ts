@@ -13,9 +13,9 @@ import {
 } from '@nestjs/common';
 import {
   OrganizationEntity,
+  OrgMemberEntity,
   QnaEntity,
   TeamEntity,
-  UserOrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import {
   internalServerError,
@@ -40,7 +40,7 @@ export class QnaService {
   ) {}
 
   /**
-   * Creates a new `QnaEntity` and associates it with its relevant `ResourceEntity`, `RoleEntity`, `GrantEntity`, `OrganizationEntity`, and `TeamEntity`.
+   * Creates a new `QnaEntity` and associates it with its relevant `OrganizationEntity` and `TeamEntity`, and marks the creator as the qna's creator.
    *
    * @param createQnaDto The information needed to create a new QnA.
    * @param team The team the QnA belongs to, if applicable.
@@ -53,15 +53,15 @@ export class QnaService {
   async create(
     createQnaDto: CreateQnaDto,
     team: TeamEntity | null,
-    creator: UserOrganizationEntity
+    creator: OrgMemberEntity
   ): Promise<QnaEntity> {
     const { slug, questionMarkdown, answerMarkdown } = createQnaDto;
     const qna = new QnaEntity(
+      creator,
       team,
       slug,
       questionMarkdown,
-      answerMarkdown,
-      creator
+      answerMarkdown
     );
 
     try {

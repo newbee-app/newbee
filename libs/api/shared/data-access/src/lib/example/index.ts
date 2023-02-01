@@ -1,3 +1,4 @@
+import { OrganizationRole, TeamRole } from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -14,13 +15,14 @@ import {
   AuthenticatorEntity,
   DocEntity,
   OrganizationEntity,
+  OrgMemberEntity,
   QnaEntity,
   TeamEntity,
   UserChallengeEntity,
   UserEntity,
-  UserOrganizationEntity,
   UserSettingsEntity,
 } from '../entity';
+import { TeamMemberEntity } from '../entity/team-member.entity';
 
 /**
  * An example instance of `UserEntity`.
@@ -71,13 +73,20 @@ export const testOrganizationEntity1 = testOrganization1 as OrganizationEntity;
 export const testTeamEntity1 = testTeam1 as TeamEntity;
 
 /**
- * An example instance of `UserOrganizationEntity`.
+ * An example instance of `OrgMemberEntity`.
  * Strictly for use in testing.
  */
-export const testUserOrganizationEntity1 = {
+export const testOrgMemberEntity1 = {
   user: testUserEntity1,
   organization: testOrganizationEntity1,
-} as UserOrganizationEntity;
+  role: OrganizationRole.Owner,
+} as OrgMemberEntity;
+
+export const testTeamMemberEntity1 = {
+  orgMember: testOrgMemberEntity1,
+  team: testTeamEntity1,
+  role: TeamRole.Owner,
+} as TeamMemberEntity;
 
 /**
  * An example instance of `DocEntity`.

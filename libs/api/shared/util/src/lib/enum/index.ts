@@ -1,17 +1,17 @@
 /**
- * The strings associated with each component of CRUD, to be used with `accesscontrol`.
+ * All of the possible roles a user can have within an organization.
  */
-export enum CRUD {
-  C = 'create',
-  R = 'read',
-  U = 'update',
-  D = 'delete',
+export enum OrganizationRole {
+  Member = 'Member',
+  Moderator = 'Moderator',
+  Owner = 'Owner',
 }
 
 /**
- * The strings associated with the possession component of an `accesscontrol` action.
+ * All of the possible roles a user can have within a team.
  */
-export enum Possession {
-  Any = 'any',
-  Own = 'own',
+export enum TeamRole {
+  Member = 'Member',
+  Moderator = 'Moderator',
+  Owner = 'Owner',
 }

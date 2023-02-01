@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import {
   OrganizationEntity,
+  OrgMemberEntity,
   TeamEntity,
-  UserOrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import {
   internalServerError,
@@ -39,10 +39,10 @@ export class TeamService {
   ) {}
 
   /**
-   * Creates a new `TeamEntity` and associates it with its relevant `ResourceEntity`, `OrganizationEntity`, `RoleEntity`, and `GrantEntity`.
+   * Creates a new `TeamEntity` and associates it with its relevant `OrganizationEntity` and marks the creator as the team's owner.
    *
    * @param createTeamDto The information needed to create a new team.
-   * @param creator The `UserOrganizationEntity` that represents a user within the organization creating the team. The `organization` portion of the entity must be populated.
+   * @param creator The `OrgMemberEntity` that represents a user within the organization creating the team. The `organization` portion of the entity must be populated.
    *
    * @returns A new `TeamEntity` instance.
    * @throws {BadRequestException} `teamNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
@@ -50,7 +50,7 @@ export class TeamService {
    */
   async create(
     createTeamDto: CreateTeamDto,
-    creator: UserOrganizationEntity
+    creator: OrgMemberEntity
   ): Promise<TeamEntity> {
     const { name, displayName } = createTeamDto;
     const team = new TeamEntity(name, displayName, creator);

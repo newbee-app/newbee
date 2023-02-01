@@ -13,9 +13,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   QnaEntity,
   testOrganizationEntity1,
+  testOrgMemberEntity1,
   testQnaEntity1,
   testTeamEntity1,
-  testUserOrganizationEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateQnaDto1,
@@ -73,11 +73,11 @@ describe('QnaService', () => {
     afterEach(() => {
       expect(mockQnaEntity).toBeCalledTimes(1);
       expect(mockQnaEntity).toBeCalledWith(
+        testOrgMemberEntity1,
         testTeamEntity1,
         testQnaEntity1.slug,
         testQnaEntity1.questionMarkdown,
-        testQnaEntity1.answerMarkdown,
-        testUserOrganizationEntity1
+        testQnaEntity1.answerMarkdown
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testQnaEntity1);
@@ -88,7 +88,7 @@ describe('QnaService', () => {
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).resolves.toEqual(testQnaEntity1);
     });
@@ -101,7 +101,7 @@ describe('QnaService', () => {
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
@@ -116,7 +116,7 @@ describe('QnaService', () => {
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testUserOrganizationEntity1
+          testOrgMemberEntity1
         )
       ).rejects.toThrow(new BadRequestException(qnaSlugTakenBadRequest));
     });

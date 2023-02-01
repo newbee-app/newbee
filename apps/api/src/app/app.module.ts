@@ -11,8 +11,12 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
+import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
 import { CsrfModule } from '@newbee/api/csrf/feature';
+import { DocModule } from '@newbee/api/doc/feature';
+import { OrgMemberModule } from '@newbee/api/org-member/feature';
 import { OrganizationModule } from '@newbee/api/organization/feature';
+import { QnaModule } from '@newbee/api/qna/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
@@ -20,7 +24,9 @@ import {
   GlobalExceptionFilter,
   ProxyThrottlerGuard,
 } from '@newbee/api/shared/util';
-import { UserOrganizationModule } from '@newbee/api/user-organization/feature';
+import { TeamMemberModule } from '@newbee/api/team-member/feature';
+import { TeamModule } from '@newbee/api/team/feature';
+import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { WinstonModule } from 'nest-winston';
@@ -60,11 +66,17 @@ import { default as appConfig } from '../environments/environment';
 
     // In-house modules
     AuthModule,
+    AuthenticatorModule,
     CsrfModule,
-    UserModule,
-    UserSettingsModule,
+    DocModule,
+    OrgMemberModule,
     OrganizationModule,
-    UserOrganizationModule,
+    QnaModule,
+    TeamModule,
+    TeamMemberModule,
+    UserModule,
+    UserChallengeModule,
+    UserSettingsModule,
   ],
   providers: [
     // App-level pipes

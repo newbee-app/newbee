@@ -14,8 +14,8 @@ import {
 import {
   DocEntity,
   OrganizationEntity,
+  OrgMemberEntity,
   TeamEntity,
-  UserOrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import {
   docSlugNotFound,
@@ -40,7 +40,7 @@ export class DocService {
   ) {}
 
   /**
-   * Creates a new `DocEntity` and associates it with its relevant `ResourceEntity`, `RoleEntity`, `GrantEntity`, `OrganizationEntity`, and `TeamEntity`.
+   * Creates a new `DocEntity` and associates it with its relevant `OrganizationEntity` and `TeamEntity`, and marks the creator as the doc's creator and maintainer.
    *
    * @param createDocDto The information needed to create a new doc.
    * @param team The team the doc belongs to, if applicable.
@@ -53,10 +53,10 @@ export class DocService {
   async create(
     createDocDto: CreateDocDto,
     team: TeamEntity | null,
-    creator: UserOrganizationEntity
+    creator: OrgMemberEntity
   ): Promise<DocEntity> {
     const { slug, rawMarkdown } = createDocDto;
-    const doc = new DocEntity(team, slug, rawMarkdown, creator);
+    const doc = new DocEntity(creator, team, slug, rawMarkdown);
 
     try {
       await this.docRepository.persistAndFlush(doc);

@@ -14,8 +14,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   TeamEntity,
   testOrganizationEntity1,
+  testOrgMemberEntity1,
   testTeamEntity1,
-  testUserOrganizationEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateTeamDto1,
@@ -75,7 +75,7 @@ describe('TeamService', () => {
       expect(mockTeamEntity).toBeCalledWith(
         testBaseCreateTeamDto1.name,
         testBaseCreateTeamDto1.displayName,
-        testUserOrganizationEntity1
+        testOrgMemberEntity1
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testTeamEntity1);
@@ -83,7 +83,7 @@ describe('TeamService', () => {
 
     it('should create a new team', async () => {
       await expect(
-        service.create(testBaseCreateTeamDto1, testUserOrganizationEntity1)
+        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).resolves.toEqual(testTeamEntity1);
     });
 
@@ -92,7 +92,7 @@ describe('TeamService', () => {
         .spyOn(repository, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testBaseCreateTeamDto1, testUserOrganizationEntity1)
+        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -103,7 +103,7 @@ describe('TeamService', () => {
           new UniqueConstraintViolationException(new Error('persistAndFlush'))
         );
       await expect(
-        service.create(testBaseCreateTeamDto1, testUserOrganizationEntity1)
+        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).rejects.toThrow(new BadRequestException(teamNameTakenBadRequest));
     });
   });
