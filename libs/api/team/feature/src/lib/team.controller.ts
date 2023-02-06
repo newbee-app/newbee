@@ -11,7 +11,7 @@ import {
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { TeamEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import { organizationName, teamName, User } from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
@@ -22,7 +22,7 @@ import { create, team, teamVersion } from '@newbee/shared/data-access';
 /**
  * The controller that interacts with `TeamEntity`.
  */
-@Controller({ path: `:organization/${team}`, version: teamVersion })
+@Controller({ path: `:${organizationName}/${team}`, version: teamVersion })
 export class TeamController {
   /**
    * The logger to use when logging anything in the controller.
@@ -51,7 +51,7 @@ export class TeamController {
   async create(
     @Body() createTeamDto: CreateTeamDto,
     @User() user: UserEntity,
-    @Param('organization') organizationName: string
+    @Param(organizationName) organizationName: string
   ): Promise<TeamEntity> {
     // TODO: implement access controls here
     this.logger.log(
@@ -81,10 +81,10 @@ export class TeamController {
    * @throws {NotFoundException} `organizationNameNotFound`, `teamNameNotFound`. If the organization or team name cannot be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(':name')
+  @Get(`:${teamName}`)
   async get(
-    @Param('organization') organizationName: string,
-    @Param('name') teamName: string
+    @Param(organizationName) organizationName: string,
+    @Param(teamName) teamName: string
   ): Promise<TeamEntity> {
     // TODO: implement access controls here
     this.logger.log(
@@ -109,10 +109,10 @@ export class TeamController {
    * @throws {BadRequestException} `teamNameTakenBadRequest`. If the team's name is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(':name')
+  @Patch(`:${teamName}`)
   async update(
-    @Param('organization') organizationName: string,
-    @Param('name') teamName: string,
+    @Param(organizationName) organizationName: string,
+    @Param(teamName) teamName: string,
     @Body() updateTeamDto: UpdateTeamDto
   ): Promise<TeamEntity> {
     // TODO: implement access controls here
@@ -137,10 +137,10 @@ export class TeamController {
    * @param organizationName The name of the organization to look in.
    * @param teamName The name of the team to look for in the organization.
    */
-  @Delete(':name')
+  @Delete(`:${teamName}`)
   async delete(
-    @Param('organization') organizationName: string,
-    @Param('name') teamName: string
+    @Param(organizationName) organizationName: string,
+    @Param(teamName) teamName: string
   ): Promise<void> {
     // TODO: implement access controls here
     this.logger.log(

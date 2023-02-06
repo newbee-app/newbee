@@ -15,6 +15,7 @@ import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
 import { CsrfModule } from '@newbee/api/csrf/feature';
 import { DocModule } from '@newbee/api/doc/feature';
 import { OrgMemberModule } from '@newbee/api/org-member/feature';
+import { OrgRoleGuard } from '@newbee/api/organization/data-access';
 import { OrganizationModule } from '@newbee/api/organization/feature';
 import { QnaModule } from '@newbee/api/qna/feature';
 import {
@@ -95,6 +96,10 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: OrgRoleGuard,
     },
     {
       provide: APP_GUARD,

@@ -13,6 +13,7 @@ import {
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   testBaseCreateDocDto1,
+  testBaseTeamNameDto1,
   testBaseUpdateDocDto1,
 } from '@newbee/shared/data-access';
 import { DocController } from './doc.controller';
@@ -89,7 +90,7 @@ describe('DocController', () => {
           testBaseCreateDocDto1,
           testUserEntity1,
           testOrganizationEntity1.name,
-          testTeamEntity1.name
+          testBaseTeamNameDto1
         )
       ).resolves.toEqual(testDocEntity1);
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);

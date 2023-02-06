@@ -16,15 +16,19 @@ import {
   QnaService,
   UpdateQnaDto,
 } from '@newbee/api/qna/data-access';
-import { QnaEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import {
+  QnaEntity,
+  TeamNameDto,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
+import { organizationName, postSlug, User } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import { create, qna, qnaVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `QnaEntity`.
  */
-@Controller({ path: `:organization/${qna}`, version: qnaVersion })
+@Controller({ path: `:${organizationName}/${qna}`, version: qnaVersion })
 export class QnaController {
   /**
    * The logger to use when logging anything in the controller.
@@ -55,10 +59,11 @@ export class QnaController {
   async create(
     @Body() createQnaDto: CreateQnaDto,
     @User() user: UserEntity,
-    @Param('organization') organizationName: string,
-    @Query('team') teamName?: string
+    @Param(organizationName) organizationName: string,
+    @Query() teamNameDto: TeamNameDto
   ): Promise<QnaEntity> {
     // TODO: implement access controls here
+    const { teamName } = teamNameDto;
     this.logger.log(
       `Create qna request received from user ID: ${user.id}, with slug: ${
         createQnaDto.slug
@@ -93,10 +98,10 @@ export class QnaController {
    * @throws {NotFoundException} `organizationNameNotFound`, `qnaSlugNotFound`. If the organization name cannot be found or if the qna's slug could not be found in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(':slug')
+  @Get(`:${postSlug}`)
   async get(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string
   ): Promise<QnaEntity> {
     // TODO: implement access controls here
     this.logger.log(
@@ -121,10 +126,10 @@ export class QnaController {
    * @throws {BadRequestException} `qnaSlugTakenBadRequest`. If the qna's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(':slug')
+  @Patch(`:${postSlug}`)
   async update(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string,
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string,
     @Body() updateQnaDto: UpdateQnaDto
   ): Promise<QnaEntity> {
     // TODO: implement access controls here
@@ -149,10 +154,10 @@ export class QnaController {
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    */
-  @Delete(':slug')
+  @Delete(`:${postSlug}`)
   async delete(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string
   ): Promise<void> {
     // TODO: implement access controls here
     this.logger.log(

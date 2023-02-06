@@ -16,15 +16,19 @@ import {
 } from '@newbee/api/doc/data-access';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
-import { DocEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import {
+  DocEntity,
+  TeamNameDto,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
+import { organizationName, postSlug, User } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import { create, doc, docVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `DocEntity`.
  */
-@Controller({ path: `:organization/${doc}`, version: docVersion })
+@Controller({ path: `:${organizationName}/${doc}`, version: docVersion })
 export class DocController {
   /**
    * The logger to use when logging anything in the controller.
@@ -55,10 +59,11 @@ export class DocController {
   async create(
     @Body() createDocDto: CreateDocDto,
     @User() user: UserEntity,
-    @Param('organization') organizationName: string,
-    @Query('team') teamName?: string
+    @Param(organizationName) organizationName: string,
+    @Query() teamNameDto: TeamNameDto
   ): Promise<DocEntity> {
     // TODO: implement access controls here
+    const { teamName } = teamNameDto;
     this.logger.log(
       `Create doc request received from user ID: ${user.id}, with slug: ${
         createDocDto.slug
@@ -93,10 +98,10 @@ export class DocController {
    * @throws {NotFoundException} `organizationNameNotFound`, `docSlugNotFound`. If the organization name cannot be found or if the doc's slug could not be found in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(':slug')
+  @Get(`:${postSlug}`)
   async get(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string
   ): Promise<DocEntity> {
     // TODO: implement access controls here
     this.logger.log(
@@ -121,10 +126,10 @@ export class DocController {
    * @throws {BadRequestException} `docSlugTakenBadRequest`. If the doc's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(':slug')
+  @Patch(`:${postSlug}`)
   async update(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string,
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string,
     @Body() updateDocDto: UpdateDocDto
   ): Promise<DocEntity> {
     // TODO: implement access controls here
@@ -149,10 +154,10 @@ export class DocController {
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    */
-  @Delete(':slug')
+  @Delete(`:${postSlug}`)
   async delete(
-    @Param('organization') organizationName: string,
-    @Param('slug') slug: string
+    @Param(organizationName) organizationName: string,
+    @Param(postSlug) slug: string
   ): Promise<void> {
     // TODO: implement access controls here
     this.logger.log(

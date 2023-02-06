@@ -16,6 +16,7 @@ import {
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseTeamNameDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
   BaseUpdateQnaDto,
@@ -160,4 +161,12 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   slug: 'new-title',
   questionMarkdown: 'new question',
   answerMarkdown: 'new answer',
+};
+
+/**
+ * An example instance of BaseTeamNameDto.
+ * Strictly for use in testing.
+ */
+export const testBaseTeamNameDto1: BaseTeamNameDto = {
+  teamName: testTeam1.name,
 };

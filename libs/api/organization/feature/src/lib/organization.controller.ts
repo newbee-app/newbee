@@ -14,7 +14,12 @@ import {
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import {
+  organizationName,
+  OrganizationRole,
+  OrgRole,
+  User,
+} from '@newbee/api/shared/util';
 import {
   create,
   organization,
@@ -67,6 +72,7 @@ export class OrganizationController {
 
   /**
    * The API route for getting an organization.
+   * Members, moderators, and owners should be allowed to access this endpoint.
    *
    * @param name The name of the organization to get.
    *
@@ -74,9 +80,15 @@ export class OrganizationController {
    * @throws {NotFoundException} `organizationNameNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Get(':name')
-  async get(@Param('name') name: string): Promise<OrganizationEntity> {
-    // TODO: implement access controls here
+  @Get(`:${organizationName}`)
+  @OrgRole(
+    OrganizationRole.Member,
+    OrganizationRole.Moderator,
+    OrganizationRole.Owner
+  )
+  async get(
+    @Param(organizationName) name: string
+  ): Promise<OrganizationEntity> {
     this.logger.log(
       `Get organization request received for organization name: ${name}`
     );
@@ -91,6 +103,7 @@ export class OrganizationController {
 
   /**
    * The API route for updating an organization.
+   * Moderators and owners should be allowed to access this endpoint.
    *
    * @param name The name of the organization to update.
    * @param updateOrganizationDto The new information for the organization.
@@ -100,12 +113,12 @@ export class OrganizationController {
    * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Patch(':name')
+  @Patch(`:${organizationName}`)
+  @OrgRole(OrganizationRole.Moderator, OrganizationRole.Owner)
   async update(
-    @Param('name') name: string,
+    @Param(organizationName) name: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto
   ): Promise<OrganizationEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Update organization request received for organization name: ${name}, with values: ${JSON.stringify(
         updateOrganizationDto
@@ -126,12 +139,13 @@ export class OrganizationController {
 
   /**
    * The API route for deleting an organization.
+   * Owners should be allowed to access this endpoint.
    *
    * @param name The name of the organization to delete.
    */
-  @Delete(':name')
-  async delete(@Param('name') name: string): Promise<void> {
-    // TODO: implement access controls here
+  @Delete(`:${organizationName}`)
+  @OrgRole(OrganizationRole.Owner)
+  async delete(@Param(organizationName) name: string): Promise<void> {
     this.logger.log(`Delete organization request received for name: ${name}`);
     const organization = await this.organizationService.findOneByName(name);
     await this.organizationService.delete(organization);

@@ -55,3 +55,8 @@ export const activeIsBoolean = 'Active must be true or false.';
  * Constant to say that the online field must be a boolean value.
  */
 export const onlineIsBoolean = 'Online must be true or false.';
+
+/**
+ * Constant to say that team name cannot be an empty string.
+ */
+export const teamNameIsNotEmpty = 'Team name cannot be an empty string.';

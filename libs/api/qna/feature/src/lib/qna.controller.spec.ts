@@ -13,6 +13,7 @@ import {
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   testBaseCreateQnaDto1,
+  testBaseTeamNameDto1,
   testBaseUpdateQnaDto1,
 } from '@newbee/shared/data-access';
 import { QnaController } from './qna.controller';
@@ -90,7 +91,7 @@ describe('QnaController', () => {
           testBaseCreateQnaDto1,
           testUserEntity1,
           testOrganizationEntity1.name,
-          testTeamEntity1.name
+          testBaseTeamNameDto1
         )
       ).resolves.toEqual(testQnaEntity1);
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
