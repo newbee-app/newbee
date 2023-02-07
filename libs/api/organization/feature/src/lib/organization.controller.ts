@@ -16,8 +16,8 @@ import {
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
 import {
   organizationName,
-  OrganizationRole,
-  OrgRole,
+  OrgRoleEnum,
+  Role,
   User,
 } from '@newbee/api/shared/util';
 import {
@@ -81,11 +81,7 @@ export class OrganizationController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Get(`:${organizationName}`)
-  @OrgRole(
-    OrganizationRole.Member,
-    OrganizationRole.Moderator,
-    OrganizationRole.Owner
-  )
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Param(organizationName) name: string
   ): Promise<OrganizationEntity> {
@@ -114,7 +110,7 @@ export class OrganizationController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch(`:${organizationName}`)
-  @OrgRole(OrganizationRole.Moderator, OrganizationRole.Owner)
+  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Param(organizationName) name: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto
@@ -144,7 +140,7 @@ export class OrganizationController {
    * @param name The name of the organization to delete.
    */
   @Delete(`:${organizationName}`)
-  @OrgRole(OrganizationRole.Owner)
+  @Role(OrgRoleEnum.Owner)
   async delete(@Param(organizationName) name: string): Promise<void> {
     this.logger.log(`Delete organization request received for name: ${name}`);
     const organization = await this.organizationService.findOneByName(name);

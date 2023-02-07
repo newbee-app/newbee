@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { TeamRole } from '@newbee/api/shared/util';
+import { TeamRoleEnum } from '@newbee/api/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
 
@@ -23,8 +23,8 @@ export class TeamMemberEntity {
   /**
    * The org member's role in the team.
    */
-  @Enum(() => TeamRole)
-  role: TeamRole;
+  @Enum(() => TeamRoleEnum)
+  role: TeamRoleEnum;
 
   /**
    * Specifies the primary key of the entity.
@@ -32,7 +32,11 @@ export class TeamMemberEntity {
    */
   [PrimaryKeyType]?: [string, string];
 
-  constructor(orgMember: OrgMemberEntity, team: TeamEntity, role: TeamRole) {
+  constructor(
+    orgMember: OrgMemberEntity,
+    team: TeamEntity,
+    role: TeamRoleEnum
+  ) {
     this.orgMember = orgMember;
     this.team = team;
     this.role = role;

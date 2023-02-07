@@ -1,4 +1,4 @@
-import { OrganizationRole, TeamRole } from '@newbee/api/shared/util';
+import { OrgRoleEnum, TeamRoleEnum } from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -79,13 +79,13 @@ export const testTeamEntity1 = testTeam1 as TeamEntity;
 export const testOrgMemberEntity1 = {
   user: testUserEntity1,
   organization: testOrganizationEntity1,
-  role: OrganizationRole.Owner,
+  role: OrgRoleEnum.Owner,
 } as OrgMemberEntity;
 
 export const testTeamMemberEntity1 = {
   orgMember: testOrgMemberEntity1,
   team: testTeamEntity1,
-  role: TeamRole.Owner,
+  role: TeamRoleEnum.Owner,
 } as TeamMemberEntity;
 
 /**

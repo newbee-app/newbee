@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { OrganizationRole } from '@newbee/api/shared/util';
+import { OrgRoleEnum } from '@newbee/api/shared/util';
 import { OrganizationEntity } from './organization.entity';
 import { UserEntity } from './user.entity';
 
@@ -23,8 +23,8 @@ export class OrgMemberEntity {
   /**
    * The user's role in the organization.
    */
-  @Enum(() => OrganizationRole)
-  role: OrganizationRole;
+  @Enum(() => OrgRoleEnum)
+  role: OrgRoleEnum;
 
   /**
    * Specifies the primary key of the entity.
@@ -35,7 +35,7 @@ export class OrgMemberEntity {
   constructor(
     user: UserEntity,
     organization: OrganizationEntity,
-    role: OrganizationRole
+    role: OrgRoleEnum
   ) {
     this.user = user;
     this.organization = organization;

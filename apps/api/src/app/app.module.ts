@@ -9,13 +9,13 @@ import {
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { RoleGuard } from '@newbee/api/auth/data-access';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
 import { CsrfModule } from '@newbee/api/csrf/feature';
 import { DocModule } from '@newbee/api/doc/feature';
 import { OrgMemberModule } from '@newbee/api/org-member/feature';
-import { OrgRoleGuard } from '@newbee/api/organization/data-access';
 import { OrganizationModule } from '@newbee/api/organization/feature';
 import { QnaModule } from '@newbee/api/qna/feature';
 import {
@@ -99,7 +99,7 @@ import { default as appConfig } from '../environments/environment';
     },
     {
       provide: APP_GUARD,
-      useClass: OrgRoleGuard,
+      useClass: RoleGuard,
     },
     {
       provide: APP_GUARD,

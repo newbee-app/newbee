@@ -17,7 +17,7 @@ import {
   testTeamEntity1,
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
-import { TeamRole } from '@newbee/api/shared/util';
+import { TeamRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamMemberNotFound,
@@ -38,7 +38,7 @@ describe('TeamMemberService', () => {
 
   const testUpdatedTeamMember = {
     ...testTeamMemberEntity1,
-    role: TeamRole.Moderator,
+    role: TeamRoleEnum.Moderator,
   };
 
   beforeEach(async () => {

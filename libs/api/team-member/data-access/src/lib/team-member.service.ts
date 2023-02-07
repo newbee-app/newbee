@@ -16,7 +16,7 @@ import {
   TeamEntity,
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
-import { TeamRole } from '@newbee/api/shared/util';
+import { TeamRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamMemberNotFound,
@@ -52,7 +52,7 @@ export class TeamMemberService {
   async create(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
-    role: TeamRole
+    role: TeamRoleEnum
   ): Promise<TeamMemberEntity> {
     const teamMember = new TeamMemberEntity(orgMember, team, role);
     try {
@@ -106,7 +106,7 @@ export class TeamMemberService {
    */
   async updateRole(
     teamMember: TeamMemberEntity,
-    newRole: TeamRole
+    newRole: TeamRoleEnum
   ): Promise<TeamMemberEntity> {
     const updatedTeamMember = this.teamMemberRepository.assign(teamMember, {
       role: newRole,

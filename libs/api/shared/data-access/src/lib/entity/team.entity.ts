@@ -7,7 +7,7 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { TeamRole } from '@newbee/api/shared/util';
+import { TeamRoleEnum } from '@newbee/api/shared/util';
 import { Team } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
@@ -94,6 +94,6 @@ export class TeamEntity implements Team {
     this.name = name;
     this.displayName = displayName;
     this.organization = creator.organization;
-    new TeamMemberEntity(creator, this, TeamRole.Owner);
+    new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
   }
 }

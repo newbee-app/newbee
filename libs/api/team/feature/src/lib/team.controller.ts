@@ -11,7 +11,14 @@ import {
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { TeamEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { organizationName, teamName, User } from '@newbee/api/shared/util';
+import {
+  organizationName,
+  OrgRoleEnum,
+  Role,
+  teamName,
+  TeamRoleEnum,
+  User,
+} from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
@@ -48,6 +55,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
+  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createTeamDto: CreateTeamDto,
     @User() user: UserEntity,
@@ -82,6 +90,14 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${teamName}`)
+  @Role(
+    OrgRoleEnum.Member,
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Member,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner
+  )
   async get(
     @Param(organizationName) organizationName: string,
     @Param(teamName) teamName: string
@@ -110,6 +126,12 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${teamName}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner
+  )
   async update(
     @Param(organizationName) organizationName: string,
     @Param(teamName) teamName: string,
@@ -138,6 +160,7 @@ export class TeamController {
    * @param teamName The name of the team to look for in the organization.
    */
   @Delete(`:${teamName}`)
+  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
   async delete(
     @Param(organizationName) organizationName: string,
     @Param(teamName) teamName: string

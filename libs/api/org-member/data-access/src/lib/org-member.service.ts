@@ -16,7 +16,7 @@ import {
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { OrganizationRole } from '@newbee/api/shared/util';
+import { OrgRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
@@ -52,7 +52,7 @@ export class OrgMemberService {
   async create(
     user: UserEntity,
     organization: OrganizationEntity,
-    role: OrganizationRole
+    role: OrgRoleEnum
   ): Promise<OrgMemberEntity> {
     const orgMember = new OrgMemberEntity(user, organization, role);
     try {
@@ -109,7 +109,7 @@ export class OrgMemberService {
    */
   async updateRole(
     orgMember: OrgMemberEntity,
-    newRole: OrganizationRole
+    newRole: OrgRoleEnum
   ): Promise<OrgMemberEntity> {
     const updatedOrgMember = this.orgMemberRepository.assign(orgMember, {
       role: newRole,

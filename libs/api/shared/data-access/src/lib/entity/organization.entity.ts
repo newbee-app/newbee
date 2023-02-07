@@ -5,7 +5,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { OrganizationRole } from '@newbee/api/shared/util';
+import { OrgRoleEnum } from '@newbee/api/shared/util';
 import type { Organization } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
@@ -90,6 +90,6 @@ export class OrganizationEntity implements Organization {
   constructor(name: string, displayName: string | null, creator: UserEntity) {
     this.name = name;
     this.displayName = displayName;
-    new OrgMemberEntity(creator, this, OrganizationRole.Owner);
+    new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
   }
 }

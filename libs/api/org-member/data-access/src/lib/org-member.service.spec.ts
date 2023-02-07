@@ -17,7 +17,7 @@ import {
   testOrgMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { OrganizationRole } from '@newbee/api/shared/util';
+import { OrgRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
@@ -38,7 +38,7 @@ describe('OrgMemberService', () => {
 
   const testUpdatedOrgMember = {
     ...testOrgMemberEntity1,
-    role: OrganizationRole.Moderator,
+    role: OrgRoleEnum.Moderator,
   };
 
   beforeEach(async () => {

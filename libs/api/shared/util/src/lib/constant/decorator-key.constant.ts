@@ -4,11 +4,6 @@
 export const IS_PUBLIC_KEY = 'isPublic';
 
 /**
- * The string to use to access organization role metadata.
+ * The string to use to access role metadata.
  */
-export const ORG_ROLE_KEY = 'orgRole';
-
-/**
- * The string to use to access team role metadata.
- */
-export const TEAM_ROLE_KEY = 'teamRole';
+export const ROLE_KEY = 'role';

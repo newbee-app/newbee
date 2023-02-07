@@ -1,17 +1,17 @@
 /**
  * All of the possible roles a user can have within an organization.
  */
-export enum OrganizationRole {
-  Member = 'Member',
-  Moderator = 'Moderator',
-  Owner = 'Owner',
+export enum OrgRoleEnum {
+  Member = 'Org Member',
+  Moderator = 'Org Moderator',
+  Owner = 'Org Owner',
 }
 
 /**
  * All of the possible roles a user can have within a team.
  */
-export enum TeamRole {
-  Member = 'Member',
-  Moderator = 'Moderator',
-  Owner = 'Owner',
+export enum TeamRoleEnum {
+  Member = 'Team Member',
+  Moderator = 'Team Moderator',
+  Owner = 'Team Owner',
 }
