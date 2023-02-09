@@ -15,7 +15,7 @@ export abstract class PostEntity implements Post {
    * The globally unique ID for the post.
    */
   @PrimaryKey()
-  id = v4();
+  id: string = v4();
 
   /**
    * @inheritdoc

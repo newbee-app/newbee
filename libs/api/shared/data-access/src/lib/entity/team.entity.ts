@@ -29,7 +29,7 @@ export class TeamEntity implements Team {
    * No need for users to know what this value is.
    */
   @PrimaryKey({ hidden: true })
-  id = v4();
+  id: string = v4();
 
   /**
    * @inheritdoc

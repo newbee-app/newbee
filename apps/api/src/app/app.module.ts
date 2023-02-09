@@ -1,13 +1,8 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MailerModule } from '@nestjs-modules/mailer';
-import {
-  CacheInterceptor,
-  CacheModule,
-  Module,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { RoleGuard } from '@newbee/api/auth/data-access';
 import { AuthModule } from '@newbee/api/auth/feature';
@@ -43,7 +38,6 @@ import { default as appConfig } from '../environments/environment';
       validationSchema: appEnvironmentVariablesSchema,
       load: [appConfig],
     }),
-    CacheModule.register({ isGlobal: true }),
     WinstonModule.forRootAsync({
       useFactory: (configService: ConfigService<AppConfig, true>) =>
         configService.get('logging', { infer: true }),
@@ -84,12 +78,6 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({ transform: true }),
-    },
-
-    // App-level interceptors
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
     },
 
     // App-level guards
