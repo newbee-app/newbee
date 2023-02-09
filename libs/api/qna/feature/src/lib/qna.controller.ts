@@ -21,7 +21,15 @@ import {
   TeamNameDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { organizationName, postSlug, User } from '@newbee/api/shared/util';
+import {
+  organizationName,
+  OrgRoleEnum,
+  PostRoleEnum,
+  qnaSlug,
+  Role,
+  TeamRoleEnum,
+  User,
+} from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import { create, qna, qnaVersion } from '@newbee/shared/data-access';
 
@@ -44,6 +52,7 @@ export class QnaController {
 
   /**
    * The API route for creating a qna.
+   * Organization members, moderators, and owners should be allowed to access this endpoint.
    *
    * @param createQnaDto The information necessary to create a qna.
    * @param user The user that sent the request and will become the asker of the qna.
@@ -56,13 +65,13 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createQnaDto: CreateQnaDto,
     @User() user: UserEntity,
     @Param(organizationName) organizationName: string,
     @Query() teamNameDto: TeamNameDto
   ): Promise<QnaEntity> {
-    // TODO: implement access controls here
     const { teamName } = teamNameDto;
     this.logger.log(
       `Create qna request received from user ID: ${user.id}, with slug: ${
@@ -90,6 +99,7 @@ export class QnaController {
 
   /**
    * The API route for getting a qna.
+   * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
@@ -98,12 +108,12 @@ export class QnaController {
    * @throws {NotFoundException} `organizationNameNotFound`, `qnaSlugNotFound`. If the organization name cannot be found or if the qna's slug could not be found in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${postSlug}`)
+  @Get(`:${qnaSlug}`)
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string
+    @Param(qnaSlug) slug: string
   ): Promise<QnaEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Get qna request received for slug: ${slug}, in organization: ${organizationName}`
     );
@@ -116,6 +126,7 @@ export class QnaController {
 
   /**
    * The API route for updating a qna.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
@@ -126,13 +137,19 @@ export class QnaController {
    * @throws {BadRequestException} `qnaSlugTakenBadRequest`. If the qna's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${postSlug}`)
+  @Patch(`:${qnaSlug}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
   async update(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string,
+    @Param(qnaSlug) slug: string,
     @Body() updateQnaDto: UpdateQnaDto
   ): Promise<QnaEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Update qna request received for slug: ${slug}, in organization: ${organizationName}, with values: ${JSON.stringify(
         updateQnaDto
@@ -150,16 +167,23 @@ export class QnaController {
 
   /**
    * The API route for deleting a qna.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    */
-  @Delete(`:${postSlug}`)
+  @Delete(`:${qnaSlug}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
   async delete(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string
+    @Param(qnaSlug) slug: string
   ): Promise<void> {
-    // TODO: implement access controls here
     this.logger.log(
       `Delete qna request received for qna slug: ${slug}, in organization: ${organizationName}`
     );

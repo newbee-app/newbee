@@ -44,6 +44,7 @@ export class TeamController {
 
   /**
    * The API route for creating a team.
+   * Organization moderators and owners should be allowed to access this endpoint.
    *
    * @param createTeamDto The information necessary to create a team.
    * @param user The user that sent the request and will become the owner of the team.
@@ -61,7 +62,6 @@ export class TeamController {
     @User() user: UserEntity,
     @Param(organizationName) organizationName: string
   ): Promise<TeamEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Create team request received from user ID: ${user.id}, for team name: ${createTeamDto.name}, in organization: ${organizationName}`
     );
@@ -81,6 +81,8 @@ export class TeamController {
 
   /**
    * The API route for getting a team.
+   * Organization members, moderators, and owners should be allowed to access this endpoint.
+   * No need for team permissions as team members should also be organization members.
    *
    * @param organizationName The name of the organization to look in for the team.
    * @param teamName The name of the team to look for.
@@ -90,19 +92,11 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${teamName}`)
-  @Role(
-    OrgRoleEnum.Member,
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Member,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner
-  )
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Param(organizationName) organizationName: string,
     @Param(teamName) teamName: string
   ): Promise<TeamEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Get organization request received for team name: ${teamName}, in organization: ${organizationName}`
     );
@@ -115,6 +109,7 @@ export class TeamController {
 
   /**
    * The API route for updating a team.
+   * Organization moderators and owners, and team moderators and owners, should be allowed to access this endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param teamName The name of the team to look for.
@@ -137,7 +132,6 @@ export class TeamController {
     @Param(teamName) teamName: string,
     @Body() updateTeamDto: UpdateTeamDto
   ): Promise<TeamEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Update team request received for team name: ${teamName}, for organization: ${organizationName}, with values: ${JSON.stringify(
         updateTeamDto
@@ -155,6 +149,7 @@ export class TeamController {
 
   /**
    * The API route for deleting a team.
+   * Organization moderators and owners, and team owners, should be allowed to access this endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param teamName The name of the team to look for in the organization.
@@ -165,7 +160,6 @@ export class TeamController {
     @Param(organizationName) organizationName: string,
     @Param(teamName) teamName: string
   ): Promise<void> {
-    // TODO: implement access controls here
     this.logger.log(
       `Delete team request received for team name: ${teamName}, in organization: ${organizationName}`
     );

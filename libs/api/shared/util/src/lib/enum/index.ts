@@ -15,3 +15,16 @@ export enum TeamRoleEnum {
   Moderator = 'Team Moderator',
   Owner = 'Team Owner',
 }
+
+/**
+ * All of the possible roles a user can have regarding posts.
+ */
+export enum PostRoleEnum {
+  Creator = 'Post Creator',
+  Maintainer = 'Post Owner',
+}
+
+/**
+ * All of the possible roles a user can have.
+ */
+export type RoleType = OrgRoleEnum | TeamRoleEnum | PostRoleEnum;

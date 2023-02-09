@@ -93,9 +93,13 @@ export const testTeamMemberEntity1 = {
  * Strictly for use in testing.
  */
 export const testDocEntity1 = testDoc1 as DocEntity;
+testDocEntity1.creator = testOrgMemberEntity1;
+testDocEntity1.maintainer = testOrgMemberEntity1;
 
 /**
  * An example instance of `QnaEntity`.
  * Strictly for use in testing.
  */
 export const testQnaEntity1 = testQna1 as QnaEntity;
+testQnaEntity1.creator = testOrgMemberEntity1;
+testQnaEntity1.maintainer = testOrgMemberEntity1;

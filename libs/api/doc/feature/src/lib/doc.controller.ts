@@ -21,7 +21,15 @@ import {
   TeamNameDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { organizationName, postSlug, User } from '@newbee/api/shared/util';
+import {
+  docSlug,
+  organizationName,
+  OrgRoleEnum,
+  PostRoleEnum,
+  Role,
+  TeamRoleEnum,
+  User,
+} from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import { create, doc, docVersion } from '@newbee/shared/data-access';
 
@@ -44,6 +52,8 @@ export class DocController {
 
   /**
    * The API route for creating a doc.
+   * Organization members, moderators and owners should be allowed to access this endpoint.
+   * No need for team permissions as team members should also be organization members.
    *
    * @param createDocDto The information necessary to create a doc.
    * @param user The user that sent the request and will become the owner of the doc.
@@ -56,13 +66,13 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createDocDto: CreateDocDto,
     @User() user: UserEntity,
     @Param(organizationName) organizationName: string,
     @Query() teamNameDto: TeamNameDto
   ): Promise<DocEntity> {
-    // TODO: implement access controls here
     const { teamName } = teamNameDto;
     this.logger.log(
       `Create doc request received from user ID: ${user.id}, with slug: ${
@@ -90,6 +100,7 @@ export class DocController {
 
   /**
    * The API route for getting a doc.
+   * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
@@ -98,12 +109,12 @@ export class DocController {
    * @throws {NotFoundException} `organizationNameNotFound`, `docSlugNotFound`. If the organization name cannot be found or if the doc's slug could not be found in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${postSlug}`)
+  @Get(`:${docSlug}`)
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string
+    @Param(docSlug) slug: string
   ): Promise<DocEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Get doc request received for slug: ${slug}, in organization: ${organizationName}`
     );
@@ -116,6 +127,7 @@ export class DocController {
 
   /**
    * The API route for updating a doc.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
@@ -126,13 +138,19 @@ export class DocController {
    * @throws {BadRequestException} `docSlugTakenBadRequest`. If the doc's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${postSlug}`)
+  @Patch(`:${docSlug}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
   async update(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string,
+    @Param(docSlug) slug: string,
     @Body() updateDocDto: UpdateDocDto
   ): Promise<DocEntity> {
-    // TODO: implement access controls here
     this.logger.log(
       `Update doc request received for slug: ${slug}, in organization: ${organizationName}, with values: ${JSON.stringify(
         updateDocDto
@@ -150,16 +168,23 @@ export class DocController {
 
   /**
    * The API route for deleting a doc.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    */
-  @Delete(`:${postSlug}`)
+  @Delete(`:${docSlug}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
   async delete(
     @Param(organizationName) organizationName: string,
-    @Param(postSlug) slug: string
+    @Param(docSlug) slug: string
   ): Promise<void> {
-    // TODO: implement access controls here
     this.logger.log(
       `Delete doc request received for doc slug: ${slug}, in organization: ${organizationName}`
     );

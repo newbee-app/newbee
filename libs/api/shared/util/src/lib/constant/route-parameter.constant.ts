@@ -11,6 +11,11 @@ export const organizationName = 'organizationName';
 export const teamName = 'teamName';
 
 /**
- * The slug of the post associated with this route.
+ * The name of the doc associated with this route.
  */
-export const postSlug = 'postSlug';
+export const docSlug = 'docSlug';
+
+/**
+ * The name of the qna associated with this route.
+ */
+export const qnaSlug = 'qnaSlug';
