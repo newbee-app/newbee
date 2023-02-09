@@ -1,6 +1,5 @@
 import { Logger, VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -40,15 +39,6 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: VERSION_NEUTRAL,
   });
-
-  // Set up Swagger
-  const config = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('API for NewBee')
-    .setVersion('1')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
 
   // Set up global api prefix
   const globalPrefix = 'api';
