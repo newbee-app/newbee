@@ -36,6 +36,9 @@ import type { Response } from 'express';
  */
 @Controller({ path: auth, version: authVersion })
 export class AuthController {
+  /**
+   * The logger to use to log anything in the controller.
+   */
   private readonly logger = new Logger(AuthController.name);
 
   constructor(

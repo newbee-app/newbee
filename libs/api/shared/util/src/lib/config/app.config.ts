@@ -60,6 +60,11 @@ export interface AppConfig {
     generateToken: CsrfTokenCreator;
 
     /**
+     * The error that's passed whenever a CSRF error occurs.
+     */
+    invalidCsrfTokenError: Error;
+
+    /**
      * The options to use for generating the CSRF token cookie.
      */
     cookieOptions: CookieOptions;

@@ -19,12 +19,13 @@ const cookieOptions: CookieOptions = {
   sameSite: 'lax',
 };
 
-const { doubleCsrfProtection, generateToken } = doubleCsrf({
-  getSecret: (req) => req?.get('Session-Secret') ?? '',
-  cookieName: 'CSRF-TOKEN',
-  cookieOptions,
-  getTokenFromRequest: (req) => req.get('X-CSRF-TOKEN'),
-});
+const { doubleCsrfProtection, generateToken, invalidCsrfTokenError } =
+  doubleCsrf({
+    getSecret: (req) => req?.get('Session-Secret') ?? '',
+    cookieName: 'CSRF-TOKEN',
+    cookieOptions,
+    getTokenFromRequest: (req) => req.get('X-CSRF-TOKEN'),
+  });
 export { doubleCsrfProtection };
 
 const logger = new Logger('MikroORM');
@@ -80,6 +81,7 @@ export default (): AppConfig => ({
   },
   csrf: {
     generateToken,
+    invalidCsrfTokenError,
     cookieOptions,
   },
 });

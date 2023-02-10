@@ -83,15 +83,15 @@ import { default as appConfig } from '../environments/environment';
     // App-level guards
     {
       provide: APP_GUARD,
+      useClass: ProxyThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: ProxyThrottlerGuard,
     },
 
     // App-level exception filters
