@@ -116,7 +116,7 @@ export class UserEntity implements User {
     challenge: string | null
   ) {
     this.id = id;
-    this.email = email;
+    this.email = email.toLowerCase();
     this.name = name;
     this.displayName = displayName;
     this.phoneNumber = phoneNumber;

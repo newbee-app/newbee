@@ -22,8 +22,8 @@ import {
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
-  organizationNameNotFound,
-  organizationNameTakenBadRequest,
+  organizationSlugNotFound,
+  organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { OrganizationService } from './organization.service';
 
@@ -50,6 +50,7 @@ describe('OrganizationService', () => {
         {
           provide: getRepositoryToken(OrganizationEntity),
           useValue: createMock<EntityRepository<OrganizationEntity>>({
+            findOne: jest.fn().mockResolvedValue(testOrganizationEntity1),
             findOneOrFail: jest.fn().mockResolvedValue(testOrganizationEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedOrganization),
           }),
@@ -76,7 +77,7 @@ describe('OrganizationService', () => {
       expect(mockOrganizationEntity).toBeCalledTimes(1);
       expect(mockOrganizationEntity).toBeCalledWith(
         testBaseCreateOrganizationDto1.name,
-        testBaseCreateOrganizationDto1.displayName,
+        testBaseCreateOrganizationDto1.slug,
         testUserEntity1
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
@@ -109,22 +110,44 @@ describe('OrganizationService', () => {
       await expect(
         service.create(testBaseCreateOrganizationDto1, testUserEntity1)
       ).rejects.toThrow(
-        new BadRequestException(organizationNameTakenBadRequest)
+        new BadRequestException(organizationSlugTakenBadRequest)
       );
     });
   });
 
-  describe('findOneByName', () => {
+  describe('hasOneBySlug', () => {
+    afterEach(() => {
+      expect(repository.findOne).toBeCalledTimes(1);
+      expect(repository.findOne).toBeCalledWith({
+        slug: testOrganizationEntity1.slug,
+      });
+    });
+
+    it(`should say an organization exists if it's found`, async () => {
+      await expect(
+        service.hasOneBySlug(testOrganizationEntity1.slug)
+      ).resolves.toBeTruthy();
+    });
+
+    it(`should say an organization does not exist if it can't be found`, async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      await expect(
+        service.hasOneBySlug(testOrganizationEntity1.slug)
+      ).resolves.toBeFalsy();
+    });
+  });
+
+  describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith({
-        name: testOrganizationEntity1.name,
+        slug: testOrganizationEntity1.slug,
       });
     });
 
     it('should find an organization', async () => {
       await expect(
-        service.findOneByName(testOrganizationEntity1.name)
+        service.findOneBySlug(testOrganizationEntity1.slug)
       ).resolves.toEqual(testOrganizationEntity1);
     });
 
@@ -133,17 +156,17 @@ describe('OrganizationService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneByName(testOrganizationEntity1.name)
+        service.findOneBySlug(testOrganizationEntity1.slug)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw a NotFoundException if name does not exist', async () => {
+    it('should throw a NotFoundException if slug does not exist', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneByName(testOrganizationEntity1.name)
-      ).rejects.toThrow(new NotFoundException(organizationNameNotFound));
+        service.findOneBySlug(testOrganizationEntity1.slug)
+      ).rejects.toThrow(new NotFoundException(organizationSlugNotFound));
     });
   });
 
@@ -174,7 +197,7 @@ describe('OrganizationService', () => {
       await expect(
         service.update(testOrganizationEntity1, testBaseUpdateOrganizationDto1)
       ).rejects.toThrow(
-        new BadRequestException(organizationNameTakenBadRequest)
+        new BadRequestException(organizationSlugTakenBadRequest)
       );
     });
   });

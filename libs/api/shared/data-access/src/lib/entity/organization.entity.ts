@@ -30,14 +30,14 @@ export class OrganizationEntity implements Organization {
   /**
    * @inheritdoc
    */
-  @Property({ unique: true })
+  @Property()
   name: string;
 
   /**
    * @inheritdoc
    */
-  @Property({ nullable: true })
-  displayName: string | null;
+  @Property({ unique: true })
+  slug: string;
 
   /**
    * All of the teams that belong to the organization.
@@ -87,9 +87,9 @@ export class OrganizationEntity implements Organization {
   })
   members = new Collection<OrgMemberEntity>(this);
 
-  constructor(name: string, displayName: string | null, creator: UserEntity) {
+  constructor(name: string, slug: string, creator: UserEntity) {
     this.name = name;
-    this.displayName = displayName;
+    this.slug = slug;
     new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
   }
 }

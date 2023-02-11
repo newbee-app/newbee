@@ -1,5 +1,5 @@
 import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
-import { displayNameIsNotEmpty, nameIsNotEmpty } from '@newbee/shared/util';
+import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
@@ -17,6 +17,6 @@ export class CreateOrganizationDto implements BaseCreateOrganizationDto {
    * @inheritdoc
    */
   @IsOptional()
-  @IsNotEmpty({ message: displayNameIsNotEmpty })
-  displayName: string | null = null;
+  @IsNotEmpty({ message: slugIsNotEmpty })
+  slug?: string;
 }

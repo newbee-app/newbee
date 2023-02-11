@@ -91,7 +91,7 @@ export class TeamEntity implements Team {
     displayName: string | null,
     creator: OrgMemberEntity
   ) {
-    this.name = name;
+    this.name = name.toLowerCase();
     this.displayName = displayName;
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);

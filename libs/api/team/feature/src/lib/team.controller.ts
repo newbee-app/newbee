@@ -66,7 +66,7 @@ export class TeamController {
       `Create team request received from user ID: ${user.id}, for team name: ${createTeamDto.name}, in organization: ${organizationName}`
     );
 
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
@@ -182,7 +182,7 @@ export class TeamController {
     organizationName: string,
     teamName: string
   ): Promise<TeamEntity> {
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     return await this.teamService.findOneByName(organization, teamName);

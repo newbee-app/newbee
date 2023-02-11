@@ -14,12 +14,7 @@ import {
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import {
-  organizationName,
-  OrgRoleEnum,
-  Role,
-  User,
-} from '@newbee/api/shared/util';
+import { OrgRoleEnum, Role, User } from '@newbee/api/shared/util';
 import {
   create,
   organization,
@@ -45,7 +40,7 @@ export class OrganizationController {
    * @param user The user that sent the request and will become the owner of the organization.
    *
    * @returns The newly created organization.
-   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Post(create)
@@ -63,9 +58,7 @@ export class OrganizationController {
       createOrganizationDto,
       user
     );
-    this.logger.log(
-      `Organization created with name: ${organization.name}, ID: ${organization.id}`
-    );
+    this.logger.log(`Organization created: ${JSON.stringify(organization)}`);
 
     return organization;
   }
@@ -74,24 +67,22 @@ export class OrganizationController {
    * The API route for getting an organization.
    * Members, moderators, and owners should be allowed to access this endpoint.
    *
-   * @param name The name of the organization to get.
+   * @param slug The slug of the organization to get.
    *
-   * @returns The organization associated with the name, if one exists.
-   * @throws {NotFoundException} `organizationNameNotFound`. If the ORM throws a `NotFoundError`.
+   * @returns The organization associated with the slug, if one exists.
+   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Get(`:${organizationName}`)
+  @Get(`:${organization}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(
-    @Param(organizationName) name: string
-  ): Promise<OrganizationEntity> {
+  async get(@Param(organization) slug: string): Promise<OrganizationEntity> {
     this.logger.log(
-      `Get organization request received for organization name: ${name}`
+      `Get organization request received for organization slug: ${slug}`
     );
 
-    const organization = await this.organizationService.findOneByName(name);
+    const organization = await this.organizationService.findOneBySlug(slug);
     this.logger.log(
-      `Found organization, name: ${name}, ID: ${organization.id}`
+      `Found organization, slug: ${slug}, ID: ${organization.id}`
     );
 
     return organization;
@@ -101,33 +92,33 @@ export class OrganizationController {
    * The API route for updating an organization.
    * Moderators and owners should be allowed to access this endpoint.
    *
-   * @param name The name of the organization to update.
+   * @param slug The slug of the organization to update.
    * @param updateOrganizationDto The new information for the organization.
    *
    * @returns The updated organization, if it was updated successfully.
-   * @throws {NotFoundException} `organizationNameNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Patch(`:${organizationName}`)
+  @Patch(`:${organization}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
-    @Param(organizationName) name: string,
+    @Param(organization) slug: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto
   ): Promise<OrganizationEntity> {
     this.logger.log(
-      `Update organization request received for organization name: ${name}, with values: ${JSON.stringify(
+      `Update organization request received for organization slug: ${slug}, with values: ${JSON.stringify(
         updateOrganizationDto
       )}`
     );
 
-    const organization = await this.organizationService.findOneByName(name);
+    const organization = await this.organizationService.findOneBySlug(slug);
     const updatedOrganization = await this.organizationService.update(
       organization,
       updateOrganizationDto
     );
     this.logger.log(
-      `Updated organization, name: ${updatedOrganization.name}, ID: ${updatedOrganization.id}`
+      `Updated organization, slug: ${updatedOrganization.slug}, ID: ${updatedOrganization.id}`
     );
 
     return updatedOrganization;
@@ -137,16 +128,16 @@ export class OrganizationController {
    * The API route for deleting an organization.
    * Owners should be allowed to access this endpoint.
    *
-   * @param name The name of the organization to delete.
+   * @param slug The slug of the organization to delete.
    */
-  @Delete(`:${organizationName}`)
+  @Delete(`:${organization}`)
   @Role(OrgRoleEnum.Owner)
-  async delete(@Param(organizationName) name: string): Promise<void> {
-    this.logger.log(`Delete organization request received for name: ${name}`);
-    const organization = await this.organizationService.findOneByName(name);
+  async delete(@Param(organization) slug: string): Promise<void> {
+    this.logger.log(`Delete organization request received for slug: ${slug}`);
+    const organization = await this.organizationService.findOneBySlug(slug);
     await this.organizationService.delete(organization);
     this.logger.log(
-      `Deleted organization, name: ${name}, ID: ${organization.id}`
+      `Deleted organization, slug: ${slug}, ID: ${organization.id}`
     );
   }
 }

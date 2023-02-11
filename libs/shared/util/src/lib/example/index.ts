@@ -75,7 +75,7 @@ export const testUser1: User = {
  */
 export const testOrganization1: Organization = {
   name: 'NewBee',
-  displayName: null,
+  slug: 'newbee',
 };
 
 /**

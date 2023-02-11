@@ -1,13 +1,13 @@
 // Details all of the errors the `organization` portion of the backend can throw.
 
 /**
- * Constant to say that an organization with the given name is already taken.
+ * Constant to say that an organization with the given slug is already taken.
  */
-export const organizationNameTakenBadRequest =
-  'The provided organization name is already taken, please use a different name.';
+export const organizationSlugTakenBadRequest =
+  'The provided organization slug is already taken, please use a different slug.';
 
 /**
- * Constant to say that an organization with the given name could not be found.
+ * Constant to say that an organization with the given slug could not be found.
  */
-export const organizationNameNotFound =
-  'We could not find an organization associated with the provided name. Please check the name value and try again.';
+export const organizationSlugNotFound =
+  'We could not find an organization associated with the provided slug. Please check the slug value and try again.';

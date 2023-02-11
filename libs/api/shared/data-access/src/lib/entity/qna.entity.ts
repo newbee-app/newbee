@@ -81,7 +81,7 @@ export class QnaEntity extends PostEntity implements Qna {
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
-    this.slug = slug;
+    this.slug = slug.toLowerCase();
     this.questionMarkdown = questionMarkdown;
     // this.renderedQuestion = renderedQuestion;
     this.answerMarkdown = answerMarkdown;

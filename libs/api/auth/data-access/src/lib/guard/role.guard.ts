@@ -66,7 +66,7 @@ export class RoleGuard implements CanActivate {
     const qSlug: string | undefined = params[qnaSlug];
 
     try {
-      const organization = await this.organizationService.findOneByName(
+      const organization = await this.organizationService.findOneBySlug(
         orgName
       );
       const orgMember = await this.orgMemberService.findOneByUserAndOrg(

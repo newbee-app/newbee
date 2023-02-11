@@ -81,7 +81,7 @@ export class QnaController {
       }`
     );
 
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
@@ -206,7 +206,7 @@ export class QnaController {
     organizationName: string,
     slug: string
   ): Promise<QnaEntity> {
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     return await this.qnaService.findOneBySlug(organization, slug);

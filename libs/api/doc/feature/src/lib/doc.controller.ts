@@ -82,7 +82,7 @@ export class DocController {
       }`
     );
 
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
@@ -207,7 +207,7 @@ export class DocController {
     organizationName: string,
     slug: string
   ): Promise<DocEntity> {
-    const organization = await this.organizationService.findOneByName(
+    const organization = await this.organizationService.findOneBySlug(
       organizationName
     );
     return await this.docService.findOneBySlug(organization, slug);

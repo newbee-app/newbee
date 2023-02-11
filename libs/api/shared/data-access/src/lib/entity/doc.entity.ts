@@ -67,7 +67,7 @@ export class DocEntity extends PostEntity implements Doc {
     this.team = team;
     this.creator = creator;
     this.maintainer = creator;
-    this.slug = slug;
+    this.slug = slug.toLowerCase();
     this.rawMarkdown = rawMarkdown;
     // this.renderedHtml = renderedHtml;
   }

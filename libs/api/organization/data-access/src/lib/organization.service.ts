@@ -12,10 +12,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
+import { generateUniqueSlug } from '@newbee/api/shared/util';
 import {
   internalServerError,
-  organizationNameNotFound,
-  organizationNameTakenBadRequest,
+  organizationSlugNotFound,
+  organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { CreateOrganizationDto } from './dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -42,15 +43,22 @@ export class OrganizationService {
    * @param creator The `UserEntity` creating the organization.
    *
    * @returns A new `OrganizationEntity` instance.
-   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(
     createOrganizationDto: CreateOrganizationDto,
     creator: UserEntity
   ): Promise<OrganizationEntity> {
-    const { name, displayName } = createOrganizationDto;
-    const organization = new OrganizationEntity(name, displayName, creator);
+    const { name } = createOrganizationDto;
+    let { slug } = createOrganizationDto;
+    if (!slug) {
+      slug = await generateUniqueSlug(
+        async (slugToTry) => !(await this.hasOneBySlug(slugToTry)),
+        name
+      );
+    }
+    const organization = new OrganizationEntity(name, slug, creator);
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
@@ -59,7 +67,7 @@ export class OrganizationService {
       this.logger.error(err);
 
       if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(organizationNameTakenBadRequest);
+        throw new BadRequestException(organizationSlugTakenBadRequest);
       }
 
       throw new InternalServerErrorException(internalServerError);
@@ -67,22 +75,33 @@ export class OrganizationService {
   }
 
   /**
-   * Finds the `OrganizationEntity` in the database associated with the given name.
+   * Whether an organization with the given slug already exists in the database.
    *
-   * @param name The name to look for.
+   * @param slug The slug to check for.
+   *
+   * @returns `true` if the slug already exists in the database, `false` if not.
+   */
+  async hasOneBySlug(slug: string): Promise<boolean> {
+    return !!(await this.organizationRepository.findOne({ slug }));
+  }
+
+  /**
+   * Finds the `OrganizationEntity` in the database associated with the given slug.
+   *
+   * @param slug The slug to look for.
    *
    * @returns The associated `OrganizationEntity` instance.
-   * @throws {NotFoundException} `organizationNameNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneByName(name: string): Promise<OrganizationEntity> {
+  async findOneBySlug(slug: string): Promise<OrganizationEntity> {
     try {
-      return await this.organizationRepository.findOneOrFail({ name });
+      return await this.organizationRepository.findOneOrFail({ slug });
     } catch (err) {
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
-        throw new NotFoundException(organizationNameNotFound);
+        throw new NotFoundException(organizationSlugNotFound);
       }
 
       throw new InternalServerErrorException(internalServerError);
@@ -96,7 +115,7 @@ export class OrganizationService {
    * @param updateOrganizationDto The new details for the organization.
    *
    * @returns The updated `OrganizationEntity` instance.
-   * @throws {BadRequestException} `organizationNameTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
@@ -114,7 +133,7 @@ export class OrganizationService {
       this.logger.error(err);
 
       if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(organizationNameTakenBadRequest);
+        throw new BadRequestException(organizationSlugTakenBadRequest);
       }
 
       throw new InternalServerErrorException(internalServerError);

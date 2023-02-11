@@ -4,13 +4,12 @@
  */
 export interface Organization {
   /**
-   * The globally unique name for the organization.
+   * The unique name for the organization, as it will be displayed on the platform.
    */
   name: string;
 
   /**
-   * How the organization's name will be displayed on the platform, regardless of the value of name.
-   * If the value is null, the organization's name will be displayed.
+   * The globally unique slug for the organization, auto-generated based on the provided name.
    */
-  displayName: string | null;
+  slug: string;
 }

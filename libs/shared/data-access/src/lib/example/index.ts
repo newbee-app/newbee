@@ -94,8 +94,7 @@ export const testBaseUpdateUserDto1: BaseUpdateUserDto = {
  * Strictly for use in testing.
  */
 export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
-  name: testOrganization1.name,
-  displayName: testOrganization1.displayName,
+  ...testOrganization1,
 };
 
 /**
@@ -104,7 +103,7 @@ export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
  */
 export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
   name: 'NewWasp',
-  displayName: 'Waspy',
+  slug: 'new-wasp',
 };
 
 /**

@@ -13,5 +13,5 @@ export class BaseUpdateOrganizationDto implements Partial<Organization> {
   /**
    * @inheritdoc
    */
-  displayName?: string | null;
+  slug?: string;
 }
