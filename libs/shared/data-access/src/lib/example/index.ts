@@ -112,7 +112,7 @@ export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
  */
 export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
   name: testTeam1.name,
-  displayName: testTeam1.displayName,
+  slug: testTeam1.slug,
 };
 
 /**
@@ -121,7 +121,7 @@ export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
  */
 export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
   name: 'Human Resources',
-  displayName: 'HR',
+  slug: 'human-resources',
 };
 
 /**

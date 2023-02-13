@@ -89,7 +89,7 @@ export class QnaController {
       organization
     );
     const team = teamName
-      ? await this.teamService.findOneByName(organization, teamName)
+      ? await this.teamService.findOneBySlug(organization, teamName)
       : null;
     const qna = await this.qnaService.create(createQnaDto, team, orgMember);
     this.logger.log(`Qna created with slug: ${qna.slug}, ID: ${qna.id}`);

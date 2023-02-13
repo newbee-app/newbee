@@ -34,14 +34,14 @@ describe('TeamController', () => {
           provide: TeamService,
           useValue: createMock<TeamService>({
             create: jest.fn().mockResolvedValue(testTeamEntity1),
-            findOneByName: jest.fn().mockResolvedValue(testTeamEntity1),
+            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedTeamEntity),
           }),
         },
         {
           provide: OrganizationService,
           useValue: createMock<OrganizationService>({
-            findOneByName: jest.fn().mockResolvedValue(testOrganizationEntity1),
+            findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
           }),
         },
         {
@@ -70,9 +70,9 @@ describe('TeamController', () => {
 
   describe('finds organization', () => {
     afterEach(() => {
-      expect(organizationService.findOneByName).toBeCalledTimes(1);
-      expect(organizationService.findOneByName).toBeCalledWith(
-        testOrganizationEntity1.name
+      expect(organizationService.findOneBySlug).toBeCalledTimes(1);
+      expect(organizationService.findOneBySlug).toBeCalledWith(
+        testOrganizationEntity1.slug
       );
     });
 
@@ -81,13 +81,9 @@ describe('TeamController', () => {
         controller.create(
           testBaseCreateTeamDto1,
           testUserEntity1,
-          testOrganizationEntity1.name
+          testOrganizationEntity1.slug
         )
       ).resolves.toEqual(testTeamEntity1);
-      expect(organizationService.findOneByName).toBeCalledTimes(1);
-      expect(organizationService.findOneByName).toBeCalledWith(
-        testOrganizationEntity1.name
-      );
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
         testUserEntity1,
@@ -102,24 +98,24 @@ describe('TeamController', () => {
 
     describe('finds team', () => {
       afterEach(() => {
-        expect(service.findOneByName).toBeCalledTimes(1);
-        expect(service.findOneByName).toBeCalledWith(
+        expect(service.findOneBySlug).toBeCalledTimes(1);
+        expect(service.findOneBySlug).toBeCalledWith(
           testOrganizationEntity1,
-          testTeamEntity1.name
+          testTeamEntity1.slug
         );
       });
 
       it('get should find and return a team', async () => {
         await expect(
-          controller.get(testOrganizationEntity1.name, testTeamEntity1.name)
+          controller.get(testOrganizationEntity1.slug, testTeamEntity1.slug)
         ).resolves.toEqual(testTeamEntity1);
       });
 
       it('udpate should find and update a team', async () => {
         await expect(
           controller.update(
-            testOrganizationEntity1.name,
-            testTeamEntity1.name,
+            testOrganizationEntity1.slug,
+            testTeamEntity1.slug,
             testBaseUpdateTeamDto1
           )
         ).resolves.toEqual(testUpdatedTeamEntity);
@@ -132,7 +128,7 @@ describe('TeamController', () => {
 
       it('should delete the team', async () => {
         await expect(
-          controller.delete(testOrganizationEntity1.name, testTeamEntity1.name)
+          controller.delete(testOrganizationEntity1.slug, testTeamEntity1.slug)
         ).resolves.toBeUndefined();
         expect(service.delete).toBeCalledTimes(1);
         expect(service.delete).toBeCalledWith(testTeamEntity1);

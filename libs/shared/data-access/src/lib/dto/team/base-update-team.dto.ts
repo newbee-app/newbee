@@ -13,5 +13,5 @@ export class BaseUpdateTeamDto implements Partial<Team> {
   /**
    * @inheritdoc
    */
-  displayName?: string | null;
+  slug?: string;
 }

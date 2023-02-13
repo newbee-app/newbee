@@ -23,8 +23,8 @@ import {
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
-  teamNameNotFound,
-  teamNameTakenBadRequest,
+  teamSlugNotFound,
+  teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
@@ -48,6 +48,7 @@ describe('TeamService', () => {
         {
           provide: getRepositoryToken(TeamEntity),
           useValue: createMock<EntityRepository<TeamEntity>>({
+            findOne: jest.fn().mockResolvedValue(testTeamEntity1),
             findOneOrFail: jest.fn().mockResolvedValue(testTeamEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedTeam),
           }),
@@ -74,7 +75,7 @@ describe('TeamService', () => {
       expect(mockTeamEntity).toBeCalledTimes(1);
       expect(mockTeamEntity).toBeCalledWith(
         testBaseCreateTeamDto1.name,
-        testBaseCreateTeamDto1.displayName,
+        testBaseCreateTeamDto1.slug,
         testOrgMemberEntity1
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
@@ -96,7 +97,7 @@ describe('TeamService', () => {
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw a BadRequestException if name already exists', async () => {
+    it('should throw a BadRequestException if slug already exists', async () => {
       jest
         .spyOn(repository, 'persistAndFlush')
         .mockRejectedValue(
@@ -104,22 +105,45 @@ describe('TeamService', () => {
         );
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
-      ).rejects.toThrow(new BadRequestException(teamNameTakenBadRequest));
+      ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
     });
   });
 
-  describe('findOneByName', () => {
+  describe('hasOneBySlug', () => {
+    afterEach(() => {
+      expect(repository.findOne).toBeCalledTimes(1);
+      expect(repository.findOne).toBeCalledWith({
+        organization: testOrganizationEntity1,
+        slug: testTeamEntity1.slug,
+      });
+    });
+
+    it(`should say a team exists if it's found`, async () => {
+      await expect(
+        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
+      ).resolves.toBeTruthy();
+    });
+
+    it(`should say a team does not exist if it can't be found`, async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      await expect(
+        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
+      ).resolves.toBeFalsy();
+    });
+  });
+
+  describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith({
         organization: testOrganizationEntity1,
-        name: testTeamEntity1.name,
+        slug: testTeamEntity1.slug,
       });
     });
 
-    it('should find a team by name', async () => {
+    it('should find a team by slug', async () => {
       await expect(
-        service.findOneByName(testOrganizationEntity1, testTeamEntity1.name)
+        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
       ).resolves.toEqual(testTeamEntity1);
     });
 
@@ -128,17 +152,17 @@ describe('TeamService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneByName(testOrganizationEntity1, testTeamEntity1.name)
+        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw a BadRequestException if name does not exist', async () => {
+    it('should throw a BadRequestException if slug does not exist', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneByName(testOrganizationEntity1, testTeamEntity1.name)
-      ).rejects.toThrow(new NotFoundException(teamNameNotFound));
+        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
+      ).rejects.toThrow(new NotFoundException(teamSlugNotFound));
     });
   });
 
@@ -165,7 +189,7 @@ describe('TeamService', () => {
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw a BadRequestException if name is already taken', async () => {
+    it('should throw a BadRequestException if slug is already taken', async () => {
       jest
         .spyOn(repository, 'flush')
         .mockRejectedValue(
@@ -173,7 +197,7 @@ describe('TeamService', () => {
         );
       await expect(
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
-      ).rejects.toThrow(new BadRequestException(teamNameTakenBadRequest));
+      ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
     });
   });
 

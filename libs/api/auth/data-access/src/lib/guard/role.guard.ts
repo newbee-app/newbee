@@ -80,7 +80,7 @@ export class RoleGuard implements CanActivate {
 
       // if team name was specified, see if team member roles will help user pass
       if (tName) {
-        const team = await this.teamService.findOneByName(organization, tName);
+        const team = await this.teamService.findOneBySlug(organization, tName);
         const teamMember =
           await this.teamMemberService.findOneByOrgMemberAndTeam(
             orgMember,

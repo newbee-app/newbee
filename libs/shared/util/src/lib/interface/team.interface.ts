@@ -4,13 +4,12 @@
  */
 export interface Team {
   /**
-   * The unique name for the team, within an organization.
+   * The unique name for the team, within an organization, as it will be displayed on the platform.
    */
   name: string;
 
   /**
-   * How the team's name will be displayed on the platform, regardless of the value of name.
-   * If the value is null, the team's name will be displayed.
+   * The globally unique slug for the team, auto-generated based on the provided name.
    */
-  displayName: string | null;
+  slug: string;
 }

@@ -18,10 +18,10 @@ import { TeamMemberEntity } from './team-member.entity';
 
 /**
  * The MikroORM entity representing a `Team`.
- * The team name should be unique for the organization.
+ * The team slug should be unique for the organization.
  */
 @Entity()
-@Unique<TeamEntity>({ properties: ['name', 'organization'] })
+@Unique<TeamEntity>({ properties: ['slug', 'organization'] })
 export class TeamEntity implements Team {
   /**
    * The globally unique ID for the team.
@@ -40,8 +40,8 @@ export class TeamEntity implements Team {
   /**
    * @inheritdoc
    */
-  @Property({ nullable: true })
-  displayName: string | null;
+  @Property()
+  slug: string;
 
   /**
    * All of the docs that belong to the team.
@@ -86,13 +86,9 @@ export class TeamEntity implements Team {
   })
   teamMembers = new Collection<TeamMemberEntity>(this);
 
-  constructor(
-    name: string,
-    displayName: string | null,
-    creator: OrgMemberEntity
-  ) {
-    this.name = name.toLowerCase();
-    this.displayName = displayName;
+  constructor(name: string, slug: string, creator: OrgMemberEntity) {
+    this.name = name;
+    this.slug = slug;
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
   }

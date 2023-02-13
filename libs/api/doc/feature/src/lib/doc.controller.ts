@@ -90,7 +90,7 @@ export class DocController {
       organization
     );
     const team = teamName
-      ? await this.teamService.findOneByName(organization, teamName)
+      ? await this.teamService.findOneBySlug(organization, teamName)
       : null;
     const doc = await this.docService.create(createDocDto, team, orgMember);
     this.logger.log(`Doc created with slug: ${doc.slug}, ID: ${doc.id}`);
