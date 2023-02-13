@@ -1,8 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -12,20 +9,16 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   QnaEntity,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
+import { elongateUuid } from '@newbee/api/shared/util';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateQnaDto1,
 } from '@newbee/shared/data-access';
-import {
-  internalServerError,
-  qnaSlugNotFound,
-  qnaSlugTakenBadRequest,
-} from '@newbee/shared/util';
+import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
 import { QnaService } from './qna.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -34,6 +27,13 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   QnaEntity: jest.fn(),
 }));
 const mockQnaEntity = QnaEntity as jest.Mock;
+
+jest.mock('@newbee/api/shared/util', () => ({
+  __esModule: true,
+  ...jest.requireActual('@newbee/api/shared/util'),
+  elongateUuid: jest.fn(),
+}));
+const mockElongateUuid = elongateUuid as jest.Mock;
 
 describe('QnaService', () => {
   let service: QnaService;
@@ -62,6 +62,7 @@ describe('QnaService', () => {
 
     jest.clearAllMocks();
     mockQnaEntity.mockReturnValue(testQnaEntity1);
+    mockElongateUuid.mockReturnValue(testQnaEntity1.slug);
   });
 
   it('should be defined', () => {
@@ -73,9 +74,9 @@ describe('QnaService', () => {
     afterEach(() => {
       expect(mockQnaEntity).toBeCalledTimes(1);
       expect(mockQnaEntity).toBeCalledWith(
+        testQnaEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,
-        testQnaEntity1.slug,
         testQnaEntity1.questionMarkdown,
         testQnaEntity1.answerMarkdown
       );
@@ -105,54 +106,36 @@ describe('QnaService', () => {
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
-
-    it('should throw a BadRequestException if slug already exists', async () => {
-      jest
-        .spyOn(repository, 'persistAndFlush')
-        .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('persistAndFlush'))
-        );
-      await expect(
-        service.create(
-          testBaseCreateQnaDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1
-        )
-      ).rejects.toThrow(new BadRequestException(qnaSlugTakenBadRequest));
-    });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith({
-        organization: testOrganizationEntity1,
-        slug: testQnaEntity1.slug,
-      });
+      expect(repository.findOneOrFail).toBeCalledWith(testQnaEntity1.slug);
     });
 
     it('should find a qna using the slug', async () => {
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
-      ).resolves.toEqual(testQnaEntity1);
+      await expect(service.findOneBySlug(testQnaEntity1.slug)).resolves.toEqual(
+        testQnaEntity1
+      );
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      await expect(service.findOneBySlug(testQnaEntity1.slug)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
 
     it('should throw a BadRequestException if slug does not exist', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testQnaEntity1.slug)
-      ).rejects.toThrow(new BadRequestException(qnaSlugNotFound));
+      await expect(service.findOneBySlug(testQnaEntity1.slug)).rejects.toThrow(
+        new BadRequestException(qnaSlugNotFound)
+      );
     });
   });
 
@@ -177,17 +160,6 @@ describe('QnaService', () => {
       await expect(
         service.update(testQnaEntity1, testBaseUpdateQnaDto1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
-
-    it('should throw a BadRequestException if slug already exists', async () => {
-      jest
-        .spyOn(repository, 'flush')
-        .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('flush'))
-        );
-      await expect(
-        service.update(testQnaEntity1, testBaseUpdateQnaDto1)
-      ).rejects.toThrow(new BadRequestException(qnaSlugTakenBadRequest));
     });
   });
 

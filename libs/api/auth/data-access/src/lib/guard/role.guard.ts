@@ -5,17 +5,10 @@ import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { QnaService } from '@newbee/api/qna/data-access';
 import { OrgMemberEntity, PostEntity } from '@newbee/api/shared/data-access';
-import {
-  docSlug,
-  organizationName,
-  PostRoleEnum,
-  qnaSlug,
-  RoleType,
-  ROLE_KEY,
-  teamName,
-} from '@newbee/api/shared/util';
+import { PostRoleEnum, RoleType, ROLE_KEY } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
+import { doc, organization, qna, team } from '@newbee/shared/data-access';
 
 /**
  * A guard that prevents users from accessing endpoints annotated with role metadata unless they possess the required roles.
@@ -53,21 +46,21 @@ export class RoleGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const { params, query, user } = request;
-    const orgName: string | undefined = params[organizationName];
-    // fail if org name wasn't specified but roles were
-    if (!orgName) {
+    const orgSlug: string | undefined = params[organization];
+    // fail if org slug wasn't specified but roles were
+    if (!orgSlug) {
       return false;
     }
 
-    const tName: string | undefined = params[teamName]
-      ? params[teamName]
-      : query[teamName];
-    const dSlug: string | undefined = params[docSlug];
-    const qSlug: string | undefined = params[qnaSlug];
+    const teamSlug: string | undefined = params[team]
+      ? params[team]
+      : query[team];
+    const docSlug: string | undefined = params[doc];
+    const qnaSlug: string | undefined = params[qna];
 
     try {
       const organization = await this.organizationService.findOneBySlug(
-        orgName
+        orgSlug
       );
       const orgMember = await this.orgMemberService.findOneByUserAndOrg(
         user,
@@ -79,8 +72,11 @@ export class RoleGuard implements CanActivate {
       }
 
       // if team name was specified, see if team member roles will help user pass
-      if (tName) {
-        const team = await this.teamService.findOneBySlug(organization, tName);
+      if (teamSlug) {
+        const team = await this.teamService.findOneBySlug(
+          organization,
+          teamSlug
+        );
         const teamMember =
           await this.teamMemberService.findOneByOrgMemberAndTeam(
             orgMember,
@@ -93,16 +89,16 @@ export class RoleGuard implements CanActivate {
       }
 
       // if doc slug was specified, see if doc roles will help user pass
-      if (dSlug) {
-        const doc = await this.docService.findOneBySlug(organization, dSlug);
+      if (docSlug) {
+        const doc = await this.docService.findOneBySlug(docSlug);
         if (RoleGuard.checkPostRoles(doc, orgMember, roles)) {
           return true;
         }
       }
 
       // if qna slug was specified, see if qna roles will help users pass
-      if (qSlug) {
-        const qna = await this.qnaService.findOneBySlug(organization, qSlug);
+      if (qnaSlug) {
+        const qna = await this.qnaService.findOneBySlug(qnaSlug);
         if (RoleGuard.checkPostRoles(qna, orgMember, roles)) {
           return true;
         }

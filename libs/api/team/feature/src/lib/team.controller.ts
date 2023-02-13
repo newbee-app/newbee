@@ -155,6 +155,9 @@ export class TeamController {
    *
    * @param organizationSlug The slug of the organization to look in.
    * @param teamSlug The slug of the team to look for in the organization.
+   *
+   * @throws {NotFoundException} `organizationSlugNotFound`, `teamSlugNotFound`. If the organization or team slug cannot be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${team}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)

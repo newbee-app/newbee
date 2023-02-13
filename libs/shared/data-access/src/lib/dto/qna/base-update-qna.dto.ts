@@ -8,12 +8,12 @@ export class BaseUpdateQnaDto implements Partial<BaseCreateQnaDto> {
   /**
    * @inheritdoc
    */
-  slug?: string;
+  title?: string;
 
   /**
    * @inheritdoc
    */
-  questionMarkdown?: string;
+  questionMarkdown?: string | null;
 
   /**
    * @inheritdoc

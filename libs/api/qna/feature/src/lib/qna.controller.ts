@@ -18,25 +18,28 @@ import {
 } from '@newbee/api/qna/data-access';
 import {
   QnaEntity,
-  TeamNameDto,
+  TeamSlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  organizationName,
   OrgRoleEnum,
   PostRoleEnum,
-  qnaSlug,
   Role,
   TeamRoleEnum,
   User,
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import { create, qna, qnaVersion } from '@newbee/shared/data-access';
+import {
+  create,
+  organization,
+  qna,
+  qnaVersion,
+} from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `QnaEntity`.
  */
-@Controller({ path: `:${organizationName}/${qna}`, version: qnaVersion })
+@Controller({ path: `:${organization}/${qna}`, version: qnaVersion })
 export class QnaController {
   /**
    * The logger to use when logging anything in the controller.
@@ -56,12 +59,11 @@ export class QnaController {
    *
    * @param createQnaDto The information necessary to create a qna.
    * @param user The user that sent the request and will become the asker of the qna.
-   * @param organizationName The name of the organization the qna will go in.
-   * @param teamName The name of the team teh qna will go in, if applicable.
+   * @param organizationSlug The slug of the organization the qna will go in.
+   * @param teamSlugDto The DTO containing the slug of the team the qna will go in, if applicable.
    *
    * @returns The newly created qna.
-   * @throws {BadRequestException} `qnaSlugTakenBadRequest`. If the slug is already taken in the organization.
-   * @throws {NotFoundException} `organizationNameNotFound`, `orgMemberNotFound`, `teamNameNotFound`. If the organization name cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
+   * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`. If the organization slug cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
@@ -69,30 +71,32 @@ export class QnaController {
   async create(
     @Body() createQnaDto: CreateQnaDto,
     @User() user: UserEntity,
-    @Param(organizationName) organizationName: string,
-    @Query() teamNameDto: TeamNameDto
+    @Param(organization) organizationSlug: string,
+    @Query() teamSlugDto: TeamSlugDto
   ): Promise<QnaEntity> {
-    const { teamName } = teamNameDto;
+    const { teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create qna request received from user ID: ${user.id}, with slug: ${
-        createQnaDto.slug
-      }, in organization: ${organizationName}${
-        teamName ? `, in team: ${teamName}` : ''
-      }`
+      `Create qna request received from user ID: ${
+        user.id
+      }, in organization: ${organizationSlug}${
+        teamSlug ? `, in team: ${teamSlug}` : ''
+      }, with title: ${createQnaDto.title}`
     );
 
     const organization = await this.organizationService.findOneBySlug(
-      organizationName
+      organizationSlug
     );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
       user,
       organization
     );
-    const team = teamName
-      ? await this.teamService.findOneBySlug(organization, teamName)
+    const team = teamSlug
+      ? await this.teamService.findOneBySlug(organization, teamSlug)
       : null;
     const qna = await this.qnaService.create(createQnaDto, team, orgMember);
-    this.logger.log(`Qna created with slug: ${qna.slug}, ID: ${qna.id}`);
+    this.logger.log(
+      `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`
+    );
 
     return qna;
   }
@@ -101,26 +105,18 @@ export class QnaController {
    * The API route for getting a qna.
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
-   * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    *
-   * @returns The qna associated with the slug in the organization, if one exists.
-   * @throws {NotFoundException} `organizationNameNotFound`, `qnaSlugNotFound`. If the organization name cannot be found or if the qna's slug could not be found in the organization.
+   * @returns The qna associated with the slug, if one exists.
+   * @throws {NotFoundException} `qnaSlugNotFound`. If the qna's slug could not be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${qnaSlug}`)
+  @Get(`:${qna}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(
-    @Param(organizationName) organizationName: string,
-    @Param(qnaSlug) slug: string
-  ): Promise<QnaEntity> {
-    this.logger.log(
-      `Get qna request received for slug: ${slug}, in organization: ${organizationName}`
-    );
-
-    const qna = await this.getQna(organizationName, slug);
+  async get(@Param(qna) slug: string): Promise<QnaEntity> {
+    this.logger.log(`Get qna request received for slug: ${slug}`);
+    const qna = await this.qnaService.findOneBySlug(slug);
     this.logger.log(`Found qna, slug: ${slug}, ID: ${qna.id}`);
-
     return qna;
   }
 
@@ -128,16 +124,14 @@ export class QnaController {
    * The API route for updating a qna.
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
-   * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
    * @param updateQnaDto The new values for the qna.
    *
    * @returns The updated qna, if it was updated successfully.
-   * @throws {NotFoundException} `organizationNameNotFound`, `qnaSlugNotFound`. If the organization can't be found of if the qna's slug can't be found in the organization.
-   * @throws {BadRequestException} `qnaSlugTakenBadRequest`. If the qna's slug is being updated and is already taken.
+   * @throws {NotFoundException} `qnaSlugNotFound`. If the qna's slug can't be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${qnaSlug}`)
+  @Patch(`:${qna}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -146,17 +140,12 @@ export class QnaController {
     PostRoleEnum.Maintainer
   )
   async update(
-    @Param(organizationName) organizationName: string,
-    @Param(qnaSlug) slug: string,
+    @Param(qna) slug: string,
     @Body() updateQnaDto: UpdateQnaDto
   ): Promise<QnaEntity> {
-    this.logger.log(
-      `Update qna request received for slug: ${slug}, in organization: ${organizationName}, with values: ${JSON.stringify(
-        updateQnaDto
-      )}`
-    );
+    this.logger.log(`Update qna request received for slug: ${slug}`);
 
-    const qna = await this.getQna(organizationName, slug);
+    const qna = await this.qnaService.findOneBySlug(slug);
     const updatedQna = await this.qnaService.update(qna, updateQnaDto);
     this.logger.log(
       `Updated qna, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
@@ -169,10 +158,12 @@ export class QnaController {
    * The API route for deleting a qna.
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
-   * @param organizationName The name of the organization to look in.
    * @param slug The slug to look for.
+   *
+   * @throws {NotFoundException} `qnaSlugNotFound`. If the qna's slug can't be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${qnaSlug}`)
+  @Delete(`:${qna}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -180,35 +171,10 @@ export class QnaController {
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer
   )
-  async delete(
-    @Param(organizationName) organizationName: string,
-    @Param(qnaSlug) slug: string
-  ): Promise<void> {
-    this.logger.log(
-      `Delete qna request received for qna slug: ${slug}, in organization: ${organizationName}`
-    );
-    const qna = await this.getQna(organizationName, slug);
+  async delete(@Param(qna) slug: string): Promise<void> {
+    this.logger.log(`Delete qna request received for qna slug: ${slug}`);
+    const qna = await this.qnaService.findOneBySlug(slug);
     await this.qnaService.delete(qna);
     this.logger.log(`Deleted qna, slug: ${slug}, ID: ${qna.id}`);
-  }
-
-  /**
-   * Finds the qna with the given slug in the organization.
-   *
-   * @param organizationName The name of the organization to look in.
-   * @param slug The slug to look for.
-   *
-   * @returns The associated qna, if it exists.
-   * @throws {NotFoundException} `organizationNameNotFound`, `qnaSlugNotFound`. If the organization or slug cannot be found.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
-   */
-  private async getQna(
-    organizationName: string,
-    slug: string
-  ): Promise<QnaEntity> {
-    const organization = await this.organizationService.findOneBySlug(
-      organizationName
-    );
-    return await this.qnaService.findOneBySlug(organization, slug);
   }
 }

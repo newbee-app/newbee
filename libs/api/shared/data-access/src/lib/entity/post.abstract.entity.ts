@@ -1,4 +1,5 @@
 import { Entity, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import { shortenUuid } from '@newbee/api/shared/util';
 import { Post } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { OrgMemberEntity } from './org-member.entity';
@@ -7,7 +8,7 @@ import { TeamEntity } from './team.entity';
 
 /**
  * The abstract MikroORM entity representing a `Post`.
- * Posts can be one of 2 entities: Doc or QnA
+ * Posts can be one of 2 entities: Doc or QnA.
  */
 @Entity({ abstract: true })
 export abstract class PostEntity implements Post {
@@ -41,7 +42,26 @@ export abstract class PostEntity implements Post {
   @Property({ type: 'boolean' })
   upToDate = true;
 
-  [OptionalProps]?: 'createdAt' | 'updatedAt' | 'markedUpToDateAt' | 'upToDate';
+  /**
+   * @inheritdoc
+   */
+  @Property()
+  title: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ persist: false })
+  get slug(): string {
+    return shortenUuid(this.id);
+  }
+
+  [OptionalProps]?:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'markedUpToDateAt'
+    | 'upToDate'
+    | 'slug';
 
   /**
    * The organization associated with the post.
@@ -66,8 +86,7 @@ export abstract class PostEntity implements Post {
    */
   abstract maintainer: OrgMemberEntity | null;
 
-  /**
-   * @inheritdoc
-   */
-  abstract slug: string;
+  constructor(title: string) {
+    this.title = title;
+  }
 }

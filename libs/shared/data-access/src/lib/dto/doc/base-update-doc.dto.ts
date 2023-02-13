@@ -8,7 +8,7 @@ export class BaseUpdateDocDto implements Partial<BaseCreateDocDto> {
   /**
    * @inheritdoc
    */
-  slug?: string;
+  title?: string;
 
   /**
    * @inheritdoc

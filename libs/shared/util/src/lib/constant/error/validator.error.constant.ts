@@ -27,6 +27,11 @@ export const nameIsNotEmpty = 'Name cannot be an empty string.';
 export const displayNameIsNotEmpty = 'Display name cannot be an empty string.';
 
 /**
+ * Constant to say that title cannot be an empty string.
+ */
+export const titleIsNotEmpty = 'Title cannot be an empty string.';
+
+/**
  * Constant to say that slug cannot be an empty string.
  */
 export const slugIsNotEmpty = 'Slug cannot be an empty string.';
@@ -55,8 +60,3 @@ export const activeIsBoolean = 'Active must be true or false.';
  * Constant to say that the online field must be a boolean value.
  */
 export const onlineIsBoolean = 'Online must be true or false.';
-
-/**
- * Constant to say that team name cannot be an empty string.
- */
-export const teamNameIsNotEmpty = 'Team name cannot be an empty string.';

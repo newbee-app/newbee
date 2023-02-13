@@ -25,8 +25,15 @@ export interface Post {
   upToDate: boolean;
 
   /**
+   * The title of the post.
+   * For a doc, it's the doc's actual title.
+   * The a qna, it's the headline of the question.
+   */
+  title: string;
+
+  /**
    * The slug to use to represent the post as a link.
-   * A slug should be unique within an organization.
+   * The slug should be globally unique, as it's a shortened version of the UUID.
    */
   slug: string;
 }

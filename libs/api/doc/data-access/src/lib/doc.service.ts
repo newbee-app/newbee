@@ -1,11 +1,7 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -13,15 +9,11 @@ import {
 } from '@nestjs/common';
 import {
   DocEntity,
-  OrganizationEntity,
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  docSlugNotFound,
-  docSlugTakenBadRequest,
-  internalServerError,
-} from '@newbee/shared/util';
+import { elongateUuid } from '@newbee/api/shared/util';
+import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { CreateDocDto, UpdateDocDto } from './dto';
 
 /**
@@ -47,47 +39,38 @@ export class DocService {
    * @param creator The user in the organization attempting to create the doc.
    *
    * @returns A new `DocEntity` instance.
-   * @throws {BadRequestException} `docSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async create(
     createDocDto: CreateDocDto,
     team: TeamEntity | null,
     creator: OrgMemberEntity
   ): Promise<DocEntity> {
-    const { slug, rawMarkdown } = createDocDto;
-    const doc = new DocEntity(creator, team, slug, rawMarkdown);
+    const { title, rawMarkdown } = createDocDto;
+    const doc = new DocEntity(title, creator, team, rawMarkdown);
 
     try {
       await this.docRepository.persistAndFlush(doc);
       return doc;
     } catch (err) {
       this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(docSlugTakenBadRequest);
-      }
-
       throw new InternalServerErrorException(internalServerError);
     }
   }
 
   /**
-   * Finds the `DocEntity` associated with the given slug in the given organization.
+   * Finds the `DocEntity` associated with the given slug.
    *
-   * @param organization The organization to look in.
    * @param slug The slug to look for.
    *
    * @returns The associated `DocEntity` instance, if one exists.
    * @throws {NotFoundException} `docSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneBySlug(
-    organization: OrganizationEntity,
-    slug: string
-  ): Promise<DocEntity> {
+  async findOneBySlug(slug: string): Promise<DocEntity> {
+    const id = elongateUuid(slug);
     try {
-      return await this.docRepository.findOneOrFail({ organization, slug });
+      return await this.docRepository.findOneOrFail(id);
     } catch (err) {
       this.logger.error(err);
 
@@ -106,8 +89,7 @@ export class DocService {
    * @param updateDocDto The new details for the doc.
    *
    * @returns The updated `DocEntity` instance.
-   * @throws {BadRequestException} `docSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
     const updatedDoc = this.docRepository.assign(doc, updateDocDto);
@@ -116,11 +98,6 @@ export class DocService {
       return updatedDoc;
     } catch (err) {
       this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(docSlugTakenBadRequest);
-      }
-
       throw new InternalServerErrorException(internalServerError);
     }
   }

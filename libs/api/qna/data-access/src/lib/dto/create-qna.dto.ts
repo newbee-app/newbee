@@ -2,7 +2,7 @@ import { BaseCreateQnaDto } from '@newbee/shared/data-access';
 import {
   answerIsNotEmpty,
   questionIsNotEmpty,
-  slugIsNotEmpty,
+  titleIsNotEmpty,
 } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
@@ -14,14 +14,15 @@ export class CreateQnaDto implements BaseCreateQnaDto {
   /**
    * @inheritdoc
    */
-  @IsNotEmpty({ message: slugIsNotEmpty })
-  slug!: string;
+  @IsNotEmpty({ message: titleIsNotEmpty })
+  title!: string;
 
   /**
    * @inheritdoc
    */
+  @IsOptional()
   @IsNotEmpty({ message: questionIsNotEmpty })
-  questionMarkdown!: string;
+  questionMarkdown: string | null = null;
 
   /**
    * @inheritdoc

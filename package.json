@@ -75,6 +75,7 @@
     "react-dom": "^17.0.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "~7.8.0",
+    "short-uuid": "4.2.2",
     "slug": "8.2.2",
     "tslib": "^2.3.0",
     "uuid": "9.0.0",

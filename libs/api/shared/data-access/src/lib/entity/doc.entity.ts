@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Doc } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -10,7 +10,6 @@ import { TeamEntity } from './team.entity';
  * The `slug` must be unique within an `organization`.
  */
 @Entity()
-@Unique<DocEntity>({ properties: ['organization', 'slug'] })
 export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
@@ -39,12 +38,6 @@ export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
-  @Property()
-  slug: string;
-
-  /**
-   * @inheritdoc
-   */
   @Property({ type: 'text' })
   rawMarkdown: string;
 
@@ -56,18 +49,17 @@ export class DocEntity extends PostEntity implements Doc {
   // renderedHtml: string;
 
   constructor(
+    title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
-    slug: string,
     rawMarkdown: string
     // renderedHtml: string,
   ) {
-    super();
+    super(title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
     this.maintainer = creator;
-    this.slug = slug.toLowerCase();
     this.rawMarkdown = rawMarkdown;
     // this.renderedHtml = renderedHtml;
   }

@@ -96,7 +96,8 @@ export const testPost1: Post = {
   updatedAt: now,
   markedUpToDateAt: now,
   upToDate: true,
-  slug: 'Title',
+  title: 'Title',
+  slug: 'slug',
 };
 
 /**

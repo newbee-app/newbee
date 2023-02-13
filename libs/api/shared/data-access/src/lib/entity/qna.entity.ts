@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Qna } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -10,7 +10,6 @@ import { TeamEntity } from './team.entity';
  * The `slug` must be unique within an `organization`.
  */
 @Entity()
-@Unique<QnaEntity>({ properties: ['organization', 'slug'] })
 export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
@@ -39,14 +38,8 @@ export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
    */
-  @Property()
-  slug: string;
-
-  /**
-   * @inheritdoc
-   */
-  @Property({ type: 'text' })
-  questionMarkdown: string;
+  @Property({ type: 'text', nullable: true })
+  questionMarkdown: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
@@ -69,19 +62,18 @@ export class QnaEntity extends PostEntity implements Qna {
   // renderedAnswer: string;
 
   constructor(
+    title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
-    slug: string,
-    questionMarkdown: string,
+    questionMarkdown: string | null,
     // renderedQuestion: string,
     answerMarkdown: string | null
     // renderedAnswer: string,
   ) {
-    super();
+    super(title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
-    this.slug = slug.toLowerCase();
     this.questionMarkdown = questionMarkdown;
     // this.renderedQuestion = renderedQuestion;
     this.answerMarkdown = answerMarkdown;

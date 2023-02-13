@@ -129,6 +129,9 @@ export class OrganizationController {
    * Owners should be allowed to access this endpoint.
    *
    * @param slug The slug of the organization to delete.
+   *
+   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${organization}`)
   @Role(OrgRoleEnum.Owner)

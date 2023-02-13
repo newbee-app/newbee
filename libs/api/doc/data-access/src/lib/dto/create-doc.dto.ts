@@ -1,5 +1,5 @@
 import { BaseCreateDocDto } from '@newbee/shared/data-access';
-import { docIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
+import { docIsNotEmpty, titleIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty } from 'class-validator';
 
 /**
@@ -10,8 +10,8 @@ export class CreateDocDto implements BaseCreateDocDto {
   /**
    * @inheritdoc
    */
-  @IsNotEmpty({ message: slugIsNotEmpty })
-  slug!: string;
+  @IsNotEmpty({ message: titleIsNotEmpty })
+  title!: string;
 
   /**
    * @inheritdoc

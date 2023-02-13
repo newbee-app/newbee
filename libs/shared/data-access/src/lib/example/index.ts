@@ -16,7 +16,7 @@ import {
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
-  BaseTeamNameDto,
+  BaseTeamSlugDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
   BaseUpdateQnaDto,
@@ -129,7 +129,7 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
  * Strictly for use in testing.
  */
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
-  slug: testDoc1.slug,
+  title: testDoc1.title,
   rawMarkdown: testDoc1.rawMarkdown,
 };
 
@@ -138,7 +138,7 @@ export const testBaseCreateDocDto1: BaseCreateDocDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
-  slug: 'new-title',
+  title: 'New title',
   rawMarkdown: 'new raw markdown',
 };
 
@@ -147,8 +147,8 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
  * Strictly for use in testing.
  */
 export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
-  slug: testQna1.slug,
-  questionMarkdown: testQna1.questionMarkdown,
+  title: testQna1.title,
+  questionMarkdown: testQna1.questionMarkdown as string,
   answerMarkdown: testQna1.answerMarkdown,
 };
 
@@ -157,15 +157,15 @@ export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
-  slug: 'new-title',
+  title: 'New title',
   questionMarkdown: 'new question',
   answerMarkdown: 'new answer',
 };
 
 /**
- * An example instance of BaseTeamNameDto.
+ * An example instance of BaseTeamSlugDto.
  * Strictly for use in testing.
  */
-export const testBaseTeamNameDto1: BaseTeamNameDto = {
-  teamName: testTeam1.name,
+export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
+  teamSlug: testTeam1.slug,
 };

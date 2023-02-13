@@ -1,12 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
-  BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,19 +10,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   DocEntity,
   testDocEntity1,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
+import { elongateUuid } from '@newbee/api/shared/util';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
 } from '@newbee/shared/data-access';
-import {
-  docSlugNotFound,
-  docSlugTakenBadRequest,
-  internalServerError,
-} from '@newbee/shared/util';
+import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { DocService } from './doc.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -35,6 +27,13 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   DocEntity: jest.fn(),
 }));
 const mockDocEntity = DocEntity as jest.Mock;
+
+jest.mock('@newbee/api/shared/util', () => ({
+  __esModule: true,
+  ...jest.requireActual('@newbee/api/shared/util'),
+  elongateUuid: jest.fn(),
+}));
+const mockElongateUuid = elongateUuid as jest.Mock;
 
 describe('DocService', () => {
   let service: DocService;
@@ -63,6 +62,7 @@ describe('DocService', () => {
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
+    mockElongateUuid.mockReturnValue(testDocEntity1.slug);
   });
 
   it('should be defined', () => {
@@ -74,9 +74,9 @@ describe('DocService', () => {
     afterEach(() => {
       expect(mockDocEntity).toBeCalledTimes(1);
       expect(mockDocEntity).toBeCalledWith(
+        testDocEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,
-        testDocEntity1.slug,
         testDocEntity1.rawMarkdown
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
@@ -105,54 +105,36 @@ describe('DocService', () => {
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
-
-    it('should throw a BadRequestException if slug already exists', async () => {
-      jest
-        .spyOn(repository, 'persistAndFlush')
-        .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('persistAndFlush'))
-        );
-      await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1
-        )
-      ).rejects.toThrow(new BadRequestException(docSlugTakenBadRequest));
-    });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith({
-        organization: testOrganizationEntity1,
-        slug: testDocEntity1.slug,
-      });
+      expect(repository.findOneOrFail).toBeCalledWith(testDocEntity1.slug);
     });
 
     it('should find a slug', async () => {
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
-      ).resolves.toEqual(testDocEntity1);
+      await expect(service.findOneBySlug(testDocEntity1.slug)).resolves.toEqual(
+        testDocEntity1
+      );
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      await expect(service.findOneBySlug(testDocEntity1.slug)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
 
     it('should throw a NotFoundException if doc cannot be found', async () => {
       jest
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
-      await expect(
-        service.findOneBySlug(testOrganizationEntity1, testDocEntity1.slug)
-      ).rejects.toThrow(new NotFoundException(docSlugNotFound));
+      await expect(service.findOneBySlug(testDocEntity1.slug)).rejects.toThrow(
+        new NotFoundException(docSlugNotFound)
+      );
     });
   });
 
@@ -177,17 +159,6 @@ describe('DocService', () => {
       await expect(
         service.update(testDocEntity1, testBaseUpdateDocDto1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
-
-    it('should throw a BadRequestException if udpated slug is already taken', async () => {
-      jest
-        .spyOn(repository, 'flush')
-        .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('flush'))
-        );
-      await expect(
-        service.update(testDocEntity1, testBaseUpdateDocDto1)
-      ).rejects.toThrow(new BadRequestException(docSlugTakenBadRequest));
     });
   });
 
