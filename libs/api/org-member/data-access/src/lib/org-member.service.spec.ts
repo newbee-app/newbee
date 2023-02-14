@@ -157,25 +157,47 @@ describe('OrgMemberService', () => {
   });
 
   describe('updateRole', () => {
-    it(`should update an org member's role`, async () => {
-      await expect(
-        service.updateRole(testOrgMemberEntity1, testUpdatedOrgMember.role)
-      ).resolves.toEqual(testUpdatedOrgMember);
+    afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testOrgMemberEntity1, {
         role: testUpdatedOrgMember.role,
       });
       expect(repository.flush).toBeCalledTimes(1);
     });
+
+    it(`should update an org member's role`, async () => {
+      await expect(
+        service.updateRole(testOrgMemberEntity1, testUpdatedOrgMember.role)
+      ).resolves.toEqual(testUpdatedOrgMember);
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.updateRole(testOrgMemberEntity1, testUpdatedOrgMember.role)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
   });
 
   describe('delete', () => {
+    afterEach(() => {
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
+    });
+
     it('should delete an org member', async () => {
       await expect(
         service.delete(testOrgMemberEntity1)
       ).resolves.toBeUndefined();
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testOrgMemberEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
   });
 });

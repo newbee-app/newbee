@@ -72,7 +72,7 @@ describe('AuthService', () => {
             findOneByCredentialId: jest
               .fn()
               .mockResolvedValue(testAuthenticatorEntity1),
-            updateById: jest.fn().mockResolvedValue({
+            updateCounterById: jest.fn().mockResolvedValue({
               ...testAuthenticatorEntity1,
               counter: testCounter,
             }),
@@ -171,8 +171,8 @@ describe('AuthService', () => {
         testAuthenticationCredential1.id
       );
       expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
-      expect(authenticatorService.updateById).toBeCalledTimes(1);
-      expect(authenticatorService.updateById).toBeCalledWith(
+      expect(authenticatorService.updateCounterById).toBeCalledTimes(1);
+      expect(authenticatorService.updateCounterById).toBeCalledWith(
         testAuthenticatorEntity1.id,
         testCounter
       );

@@ -161,9 +161,15 @@ export class AuthenticatorService {
    * @param email The user email to look for.
    *
    * @returns The associated authenticator instances. An empty array if none could be found.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
-    return await this.authenticatorRepository.find({ user: { email } });
+    try {
+      return await this.authenticatorRepository.find({ user: { email } });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
@@ -215,7 +221,7 @@ export class AuthenticatorService {
   }
 
   /**
-   * Finds an authenticator by ID, updates it, and saves the changes to the database.
+   * Finds an authenticator by ID, updates its counter, and saves the changes to the database.
    *
    * @param id The authenticator ID to look for.
    * @param counter The new counter value.
@@ -224,22 +230,37 @@ export class AuthenticatorService {
    * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
    * @throws {InternalServerErrorException} `internalServerError`. If any other error is thrown.
    */
-  async updateById(id: string, counter: number): Promise<AuthenticatorEntity> {
+  async updateCounterById(
+    id: string,
+    counter: number
+  ): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
     authenticator = this.authenticatorRepository.assign(authenticator, {
       counter,
     });
-    await this.authenticatorRepository.flush();
-    return authenticator;
+    try {
+      await this.authenticatorRepository.flush();
+      return authenticator;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
    * Deltes an authenticator by ID and saves the changes to the database.
    *
    * @param id The authenticator ID to look for.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async deleteOneById(id: string): Promise<void> {
     const authenticator = this.authenticatorRepository.getReference(id);
-    await this.authenticatorRepository.removeAndFlush(authenticator);
+    try {
+      await this.authenticatorRepository.removeAndFlush(authenticator);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

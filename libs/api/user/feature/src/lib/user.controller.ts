@@ -42,6 +42,8 @@ export class UserController {
    * The API route for deleting the authenticated user.
    *
    * @param user The `UserEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Delete()
   async delete(@User() user: UserEntity): Promise<void> {

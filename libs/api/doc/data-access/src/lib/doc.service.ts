@@ -106,8 +106,15 @@ export class DocService {
    * Deletes the given `DocEntity` and saves the changes.
    *
    * @param doc The `DocEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(doc: DocEntity): Promise<void> {
-    await this.docRepository.removeAndFlush(doc);
+    try {
+      await this.docRepository.removeAndFlush(doc);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

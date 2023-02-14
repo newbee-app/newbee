@@ -234,5 +234,14 @@ describe('UserService', () => {
     it('should delete the user', async () => {
       await expect(service.delete(testUserEntity1)).resolves.toBeUndefined();
     });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testUserEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
   });
 });

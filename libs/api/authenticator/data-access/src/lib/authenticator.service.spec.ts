@@ -227,14 +227,24 @@ describe('AuthenticatorService', () => {
   });
 
   describe('findAllByEmail', () => {
-    it('should get an array of authenticators by user ID', async () => {
-      await expect(
-        service.findAllByEmail(testUserEntity1.email)
-      ).resolves.toEqual([testAuthenticatorEntity1]);
+    afterEach(() => {
       expect(repository.find).toBeCalledTimes(1);
       expect(repository.find).toBeCalledWith({
         user: { email: testUserEntity1.email },
       });
+    });
+
+    it('should get an array of authenticators by user ID', async () => {
+      await expect(
+        service.findAllByEmail(testUserEntity1.email)
+      ).resolves.toEqual([testAuthenticatorEntity1]);
+    });
+
+    it('should throw an InternalServerErrorException if find throws an error', async () => {
+      jest.spyOn(repository, 'find').mockRejectedValue(new Error('find'));
+      await expect(
+        service.findAllByEmail(testUserEntity1.email)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
@@ -306,11 +316,8 @@ describe('AuthenticatorService', () => {
     });
   });
 
-  describe('updateById', () => {
-    it('should update an authenticator by ID', async () => {
-      await expect(
-        service.updateById(testAuthenticatorEntity1.id, testCounter)
-      ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
+  describe('updateCounterById', () => {
+    afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith(
         testAuthenticatorEntity1.id
@@ -321,13 +328,23 @@ describe('AuthenticatorService', () => {
       });
       expect(repository.flush).toBeCalledTimes(1);
     });
+
+    it('should update an authenticator by ID', async () => {
+      await expect(
+        service.updateCounterById(testAuthenticatorEntity1.id, testCounter)
+      ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.updateCounterById(testAuthenticatorEntity1.id, testCounter)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
   });
 
   describe('deleteOneById', () => {
-    it('should delete a single authenticator by ID', async () => {
-      await expect(
-        service.deleteOneById(testAuthenticatorEntity1.id)
-      ).resolves.toBeUndefined();
+    afterEach(() => {
       expect(repository.getReference).toBeCalledTimes(1);
       expect(repository.getReference).toBeCalledWith(
         testAuthenticatorEntity1.id
@@ -336,6 +353,21 @@ describe('AuthenticatorService', () => {
       expect(repository.removeAndFlush).toBeCalledWith(
         testAuthenticatorEntity1
       );
+    });
+
+    it('should delete a single authenticator by ID', async () => {
+      await expect(
+        service.deleteOneById(testAuthenticatorEntity1.id)
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(
+        service.deleteOneById(testAuthenticatorEntity1.id)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 });

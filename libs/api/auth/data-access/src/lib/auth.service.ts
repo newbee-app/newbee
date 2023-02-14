@@ -134,7 +134,7 @@ export class AuthService {
       throw new BadRequestException(authenticatorVerifyBadRequest);
     }
 
-    await this.authenticatorService.updateById(
+    await this.authenticatorService.updateCounterById(
       authenticator.id,
       authenticationInfo.newCounter
     );

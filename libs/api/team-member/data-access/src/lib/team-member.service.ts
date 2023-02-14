@@ -103,6 +103,7 @@ export class TeamMemberService {
    * @param newRole The new role for the team member.
    *
    * @returns The updated team member.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateRole(
     teamMember: TeamMemberEntity,
@@ -111,16 +112,29 @@ export class TeamMemberService {
     const updatedTeamMember = this.teamMemberRepository.assign(teamMember, {
       role: newRole,
     });
-    await this.teamMemberRepository.flush();
-    return updatedTeamMember;
+
+    try {
+      await this.teamMemberRepository.flush();
+      return updatedTeamMember;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
    * Deletes the given team member.
    *
    * @param teamMember The team member to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(teamMember: TeamMemberEntity): Promise<void> {
-    await this.teamMemberRepository.removeAndFlush(teamMember);
+    try {
+      await this.teamMemberRepository.removeAndFlush(teamMember);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

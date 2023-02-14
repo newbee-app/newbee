@@ -48,8 +48,9 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
       return;
     }
 
+    this.logger.error(exception);
+
     if (exception === this.invalidCsrfTokenError) {
-      this.logger.error(exception);
       response.status(HttpStatus.FORBIDDEN).json({
         statusCode: HttpStatus.FORBIDDEN,
         message: csrfTokenInvalidForbidden,

@@ -163,10 +163,22 @@ describe('DocService', () => {
   });
 
   describe('delete', () => {
-    it('should delete a doc', async () => {
-      await expect(service.delete(testDocEntity1)).resolves.toBeUndefined();
+    afterEach(() => {
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testDocEntity1);
+    });
+
+    it('should delete a doc', async () => {
+      await expect(service.delete(testDocEntity1)).resolves.toBeUndefined();
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testDocEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
   });
 });

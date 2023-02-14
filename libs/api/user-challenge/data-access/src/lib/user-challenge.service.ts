@@ -80,6 +80,7 @@ export class UserChallengeService {
    * @param challenge The new challenge string.
    *
    * @returns The updated `UserChallengeEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(
     userChallenge: UserChallengeEntity,
@@ -89,8 +90,14 @@ export class UserChallengeService {
       userChallenge,
       { challenge }
     );
-    await this.userChallengeRepository.flush();
-    return updatedUserChallenge;
+
+    try {
+      await this.userChallengeRepository.flush();
+      return updatedUserChallenge;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**

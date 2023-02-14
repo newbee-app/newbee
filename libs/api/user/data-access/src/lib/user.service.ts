@@ -161,8 +161,15 @@ export class UserService {
    * Deletes the given `UserEntity` and saves the changes to the database.
    *
    * @param user The `UserEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(user: UserEntity): Promise<void> {
-    await this.userRepository.removeAndFlush(user);
+    try {
+      await this.userRepository.removeAndFlush(user);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

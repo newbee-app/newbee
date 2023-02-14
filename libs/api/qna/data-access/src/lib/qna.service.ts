@@ -112,8 +112,15 @@ export class QnaService {
    * Deletes the given `QnaEntity` and saves the changes.
    *
    * @param qna The `QnaEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(qna: QnaEntity): Promise<void> {
-    await this.qnaRepository.removeAndFlush(qna);
+    try {
+      await this.qnaRepository.removeAndFlush(qna);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

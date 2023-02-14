@@ -86,12 +86,18 @@ export class TeamService {
    * @param slug The slug to check for.
    *
    * @returns `true` if the slug already exists in the organization, `false` if not.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async hasOneBySlug(
     organization: OrganizationEntity,
     slug: string
   ): Promise<boolean> {
-    return !!(await this.teamRepository.findOne({ organization, slug }));
+    try {
+      return !!(await this.teamRepository.findOne({ organization, slug }));
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
@@ -157,8 +163,15 @@ export class TeamService {
    * Deletes the given `TeamEntity` and saves the changes to the database.
    *
    * @param team The `TeamEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(team: TeamEntity): Promise<void> {
-    await this.teamRepository.removeAndFlush(team);
+    try {
+      await this.teamRepository.removeAndFlush(team);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

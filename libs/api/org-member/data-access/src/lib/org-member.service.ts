@@ -106,6 +106,7 @@ export class OrgMemberService {
    * @param newRole The new role for the org member.
    *
    * @returns The udpated org member.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateRole(
     orgMember: OrgMemberEntity,
@@ -114,16 +115,29 @@ export class OrgMemberService {
     const updatedOrgMember = this.orgMemberRepository.assign(orgMember, {
       role: newRole,
     });
-    await this.orgMemberRepository.flush();
-    return updatedOrgMember;
+
+    try {
+      await this.orgMemberRepository.flush();
+      return updatedOrgMember;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
    * Deletes the given org member.
    *
    * @param orgMember The org member to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(orgMember: OrgMemberEntity): Promise<void> {
-    await this.orgMemberRepository.removeAndFlush(orgMember);
+    try {
+      await this.orgMemberRepository.removeAndFlush(orgMember);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 }

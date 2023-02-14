@@ -130,6 +130,13 @@ describe('TeamService', () => {
         service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
       ).resolves.toBeFalsy();
     });
+
+    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
+      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+      await expect(
+        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
   });
 
   describe('findOneBySlug', () => {
@@ -202,10 +209,22 @@ describe('TeamService', () => {
   });
 
   describe('delete', () => {
-    it('should delete a team', async () => {
-      await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
+    afterEach(() => {
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testTeamEntity1);
+    });
+
+    it('should delete a team', async () => {
+      await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testTeamEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
   });
 });

@@ -159,5 +159,12 @@ describe('UserChallengeService', () => {
         });
       });
     });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.update(testUserChallengeEntity1, testChallenge2)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
   });
 });

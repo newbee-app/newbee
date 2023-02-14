@@ -202,13 +202,25 @@ describe('OrganizationService', () => {
     });
   });
 
-  describe('update', () => {
+  describe('delete', () => {
+    afterEach(() => {
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
+    });
+
     it('should remove an organization', async () => {
       await expect(
         service.delete(testOrganizationEntity1)
       ).resolves.toBeUndefined();
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testOrganizationEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
   });
 });

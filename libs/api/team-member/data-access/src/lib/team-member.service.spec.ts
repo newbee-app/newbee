@@ -157,25 +157,47 @@ describe('TeamMemberService', () => {
   });
 
   describe('updateRole', () => {
-    it(`should update an org member's role`, async () => {
-      await expect(
-        service.updateRole(testTeamMemberEntity1, testUpdatedTeamMember.role)
-      ).resolves.toEqual(testUpdatedTeamMember);
+    afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testTeamMemberEntity1, {
         role: testUpdatedTeamMember.role,
       });
       expect(repository.flush).toBeCalledTimes(1);
     });
+
+    it(`should update an org member's role`, async () => {
+      await expect(
+        service.updateRole(testTeamMemberEntity1, testUpdatedTeamMember.role)
+      ).resolves.toEqual(testUpdatedTeamMember);
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.updateRole(testTeamMemberEntity1, testUpdatedTeamMember.role)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
   });
 
   describe('delete', () => {
+    afterEach(() => {
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
+    });
+
     it('should delete a team member', async () => {
       await expect(
         service.delete(testTeamMemberEntity1)
       ).resolves.toBeUndefined();
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testTeamMemberEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
     });
   });
 });

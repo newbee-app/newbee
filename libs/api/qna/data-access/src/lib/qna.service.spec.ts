@@ -169,5 +169,14 @@ describe('QnaService', () => {
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testQnaEntity1);
     });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testQnaEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
   });
 });
