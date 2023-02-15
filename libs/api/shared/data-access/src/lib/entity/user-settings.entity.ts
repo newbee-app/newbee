@@ -1,4 +1,4 @@
-import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { Entity, OneToOne, PrimaryKeyType } from '@mikro-orm/core';
 import { UserSettings } from '@newbee/shared/util';
 import { UserEntity } from './user.entity';
 
@@ -7,14 +7,6 @@ import { UserEntity } from './user.entity';
  */
 @Entity()
 export class UserSettingsEntity implements UserSettings {
-  /**
-   * @inheritdoc
-   */
-  @Property({ persist: false })
-  get id(): string {
-    return this.user.id;
-  }
-
   /**
    * The `UserEntity` associated with the given user settings.
    * Acts as a hidden property, meaning it will never be serialized.

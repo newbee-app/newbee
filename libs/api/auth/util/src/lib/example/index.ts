@@ -1,4 +1,4 @@
-import { testUser1 } from '@newbee/shared/util';
+import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import type { UserJwtPayload } from '../interface';
 
 /**
@@ -6,5 +6,5 @@ import type { UserJwtPayload } from '../interface';
  * Strictly for use in testing.
  */
 export const testUserJwtPayload1: UserJwtPayload = {
-  sub: testUser1.id,
+  sub: testUserEntity1.id,
 };

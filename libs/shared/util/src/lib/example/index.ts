@@ -44,7 +44,6 @@ export const testAuthenticator1: Authenticator = {
  * Strictly for use in testing.
  */
 export const testUserChallenge1: UserChallenge = {
-  id: '1',
   challenge: testChallenge1,
 };
 
@@ -52,16 +51,13 @@ export const testUserChallenge1: UserChallenge = {
  * An example instance of UserSettings.
  * Strictly for use in testing.
  */
-export const testUserSettings1: UserSettings = {
-  id: '1',
-};
+export const testUserSettings1: UserSettings = {};
 
 /**
  * An example instance of User.
  * Strictly for use in testing.
  */
 export const testUser1: User = {
-  id: '1',
   email: 'johndoe@example.com',
   name: 'John Doe',
   displayName: 'John',
@@ -132,7 +128,7 @@ export const testQna1: Qna = {
 export const testPublicKeyCredentialCreationOptions1: PublicKeyCredentialCreationOptionsJSON =
   {
     user: {
-      id: testUser1.id,
+      id: '1',
       name: testUser1.email,
       displayName: testUser1.displayName ?? testUser1.name,
     },

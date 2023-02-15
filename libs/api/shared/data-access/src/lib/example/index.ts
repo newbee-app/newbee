@@ -31,6 +31,7 @@ import { TeamMemberEntity } from '../entity/team-member.entity';
  */
 export const testUserEntity1 = createMock<UserEntity>({
   ...testUser1,
+  id: '1',
 });
 
 /**
@@ -56,6 +57,7 @@ export const testUserChallengeEntity1 = createMock<UserChallengeEntity>({
  */
 export const testUserSettingsEntity1 = createMock<UserSettingsEntity>({
   ...testUserSettings1,
+  user: testUserEntity1,
 });
 
 /**

@@ -10,14 +10,6 @@ export class UserChallengeEntity implements UserChallenge {
   /**
    * @inheritdoc
    */
-  @Property({ persist: false })
-  get id(): string {
-    return this.user.id;
-  }
-
-  /**
-   * @inheritdoc
-   */
   @Property({ type: 'string', nullable: true })
   challenge: string | null = null;
 

@@ -20,9 +20,11 @@ import { UserSettingsEntity } from './user-settings.entity';
 @Entity()
 export class UserEntity implements User {
   /**
-   * @inheritdoc
+   * The UUID of the given user.
+   * `hidden` is on, so it will never be serialized.
+   * No need for users to know what this value is.
    */
-  @PrimaryKey()
+  @PrimaryKey({ hidden: true })
   id: string;
 
   /**

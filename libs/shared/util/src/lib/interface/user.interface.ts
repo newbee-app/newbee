@@ -4,11 +4,6 @@
  */
 export interface User {
   /**
-   * The UUID of the given user.
-   */
-  id: string;
-
-  /**
    * The globally unique email of the given user.
    */
   email: string;

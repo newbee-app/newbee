@@ -60,13 +60,13 @@ describe('UserChallengeService', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith(
-        testUserChallengeEntity1.id
+        testUserChallengeEntity1.user.id
       );
     });
 
     it('should get a single user challenge by user id', async () => {
       await expect(
-        service.findOneById(testUserChallengeEntity1.id)
+        service.findOneById(testUserChallengeEntity1.user.id)
       ).resolves.toEqual(testUserChallengeEntity1);
     });
 
@@ -75,7 +75,7 @@ describe('UserChallengeService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneById(testUserChallengeEntity1.id)
+        service.findOneById(testUserChallengeEntity1.user.id)
       ).rejects.toThrow(new NotFoundException(userChallengeIdNotFound));
     });
 
@@ -84,7 +84,7 @@ describe('UserChallengeService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneById(testUserChallengeEntity1.id)
+        service.findOneById(testUserChallengeEntity1.user.id)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
@@ -139,11 +139,11 @@ describe('UserChallengeService', () => {
     describe('byId', () => {
       it('should find and update a user challenge by ID', async () => {
         await expect(
-          service.updateById(testUserChallengeEntity1.id, testChallenge2)
+          service.updateById(testUserChallengeEntity1.user.id, testChallenge2)
         ).resolves.toEqual(testUpdatedUserChallengeEntity);
         expect(repository.findOneOrFail).toBeCalledTimes(1);
         expect(repository.findOneOrFail).toBeCalledWith(
-          testUserChallengeEntity1.id
+          testUserChallengeEntity1.user.id
         );
       });
     });

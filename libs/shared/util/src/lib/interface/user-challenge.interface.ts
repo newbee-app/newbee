@@ -4,11 +4,6 @@
  */
 export interface UserChallenge {
   /**
-   * The UUID of the given user.
-   */
-  id: string;
-
-  /**
    * The current challenge associated with the user.
    * Value can be null.
    */

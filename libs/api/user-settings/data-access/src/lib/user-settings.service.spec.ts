@@ -48,13 +48,13 @@ describe('UserSettingsService', () => {
     afterEach(() => {
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.findOneOrFail).toBeCalledWith(
-        testUserSettingsEntity1.id
+        testUserSettingsEntity1.user.id
       );
     });
 
     it(`should get a single user's settings by id`, async () => {
       await expect(
-        service.findOneById(testUserSettingsEntity1.id)
+        service.findOneById(testUserSettingsEntity1.user.id)
       ).resolves.toEqual(testUserSettingsEntity1);
     });
 
@@ -63,7 +63,7 @@ describe('UserSettingsService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneById(testUserSettingsEntity1.id)
+        service.findOneById(testUserSettingsEntity1.user.id)
       ).rejects.toThrow(new NotFoundException(userSettingsIdNotFound));
     });
 
@@ -72,7 +72,7 @@ describe('UserSettingsService', () => {
         .spyOn(repository, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneById(testUserSettingsEntity1.id)
+        service.findOneById(testUserSettingsEntity1.user.id)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
