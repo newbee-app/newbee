@@ -1,1 +1,1 @@
-export * from './team-name.dto';
+export * from './team-slug.dto';

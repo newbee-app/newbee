@@ -4,7 +4,6 @@ import {
   displayNameIsNotEmpty,
   emailIsEmail,
   nameIsNotEmpty,
-  onlineIsBoolean,
   phoneNumberIsPhoneNumber,
 } from '@newbee/shared/util';
 import {
@@ -58,11 +57,4 @@ export class UpdateUserDto implements BaseUpdateUserDto {
   @IsOptional()
   @IsBoolean({ message: activeIsBoolean })
   active?: boolean;
-
-  /**
-   * @inheritdoc
-   */
-  @IsOptional()
-  @IsBoolean({ message: onlineIsBoolean })
-  online?: boolean;
 }

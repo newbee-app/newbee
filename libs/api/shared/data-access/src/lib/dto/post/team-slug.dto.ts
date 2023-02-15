@@ -12,5 +12,5 @@ export class TeamSlugDto implements BaseTeamSlugDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
-  teamSlug?: string;
+  team?: string;
 }

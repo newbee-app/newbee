@@ -10,14 +10,16 @@ import { UserEntity } from './user.entity';
 export class OrgMemberEntity {
   /**
    * The user associated with this entity.
+   * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => UserEntity, { primary: true })
+  @ManyToOne(() => UserEntity, { primary: true, hidden: true })
   user: UserEntity;
 
   /**
    * The organization associated with this entity.
+   * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => OrganizationEntity, { primary: true })
+  @ManyToOne(() => OrganizationEntity, { primary: true, hidden: true })
   organization: OrganizationEntity;
 
   /**

@@ -167,5 +167,5 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
  * Strictly for use in testing.
  */
 export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
-  teamSlug: testTeam1.slug,
+  team: testTeam1.slug,
 };

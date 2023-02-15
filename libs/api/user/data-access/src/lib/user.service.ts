@@ -166,6 +166,7 @@ export class UserService {
    */
   async delete(user: UserEntity): Promise<void> {
     try {
+      await user.removeAllCollections();
       await this.userRepository.removeAndFlush(user);
     } catch (err) {
       this.logger.error(err);

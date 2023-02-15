@@ -14,25 +14,25 @@ export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrganizationEntity)
+  @ManyToOne(() => OrganizationEntity, { hidden: true })
   organization: OrganizationEntity;
 
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => TeamEntity, { nullable: true })
+  @ManyToOne(() => TeamEntity, { nullable: true, hidden: true })
   team: TeamEntity | null;
 
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity)
+  @ManyToOne(() => OrgMemberEntity, { hidden: true })
   creator: OrgMemberEntity;
 
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity)
+  @ManyToOne(() => OrgMemberEntity, { hidden: true })
   maintainer: OrgMemberEntity | null = null;
 
   /**

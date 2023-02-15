@@ -6,23 +6,22 @@ import type { User } from '@newbee/shared/util';
  */
 export class BaseCreateUserDto implements Omit<User, 'id' | 'active'> {
   /**
-   * The new user's email. This should be globally unique.
+   * @inheritdoc
    */
   email!: string;
 
   /**
-   * The new user's full name.
+   * @inheritdoc
    */
   name!: string;
 
   /**
-   * The new user's display name, which will be displayed on the platform regardless of the name value.
-   * If the value is null, the user's name will be displayed.
+   * @inheritdoc
    */
   displayName: string | null = null;
 
   /**
-   * The new user's phone number.
+   * @inheritdoc
    */
   phoneNumber: string | null = null;
 }

@@ -74,7 +74,7 @@ export class QnaController {
     @Param(organization) organizationSlug: string,
     @Query() teamSlugDto: TeamSlugDto
   ): Promise<QnaEntity> {
-    const { teamSlug } = teamSlugDto;
+    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
       `Create qna request received from user ID: ${
         user.id

@@ -75,7 +75,7 @@ export class DocController {
     @Param(organization) organizationSlug: string,
     @Query() teamSlugDto: TeamSlugDto
   ): Promise<DocEntity> {
-    const { teamSlug } = teamSlugDto;
+    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
       `Create doc request received from user ID: ${
         user.id

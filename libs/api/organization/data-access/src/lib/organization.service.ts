@@ -147,6 +147,7 @@ export class OrganizationService {
    */
   async delete(organization: OrganizationEntity): Promise<void> {
     try {
+      await organization.removeAllCollections();
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);

@@ -168,6 +168,7 @@ export class TeamService {
    */
   async delete(team: TeamEntity): Promise<void> {
     try {
+      await team.removeAllCollections();
       await this.teamRepository.removeAndFlush(team);
     } catch (err) {
       this.logger.error(err);

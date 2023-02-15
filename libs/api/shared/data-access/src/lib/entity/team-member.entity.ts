@@ -10,14 +10,16 @@ import { TeamEntity } from './team.entity';
 export class TeamMemberEntity {
   /**
    * The org member associated with this entity.
+   * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => OrgMemberEntity, { primary: true })
+  @ManyToOne(() => OrgMemberEntity, { primary: true, hidden: true })
   orgMember: OrgMemberEntity;
 
   /**
    * The team associated with this entity.
+   * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => TeamEntity, { primary: true })
+  @ManyToOne(() => TeamEntity, { primary: true, hidden: true })
   team: TeamEntity;
 
   /**

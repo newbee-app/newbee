@@ -227,6 +227,7 @@ describe('UserService', () => {
 
   describe('delete', () => {
     afterEach(() => {
+      expect(testUserEntity1.removeAllCollections).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserEntity1);
     });

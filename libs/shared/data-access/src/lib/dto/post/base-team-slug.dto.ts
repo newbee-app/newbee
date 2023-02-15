@@ -6,5 +6,5 @@ export class BaseTeamSlugDto {
   /**
    * The team slug to be transported.
    */
-  teamSlug?: string;
+  team?: string;
 }

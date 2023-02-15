@@ -14,8 +14,10 @@ import { TeamEntity } from './team.entity';
 export abstract class PostEntity implements Post {
   /**
    * The globally unique ID for the post.
+   * `hidden` is on, so it will never be serialized.
+   * No need for users to know what this value is.
    */
-  @PrimaryKey()
+  @PrimaryKey({ hidden: true })
   id: string = v4();
 
   /**
@@ -65,17 +67,20 @@ export abstract class PostEntity implements Post {
 
   /**
    * The organization associated with the post.
+   * Should be `hidden`, so it will never be serialized.
    */
   abstract organization: OrganizationEntity;
 
   /**
    * The team associated with the post.
    * A post does not have to belong to a team, in which case it will just belong to the organization.
+   * Should be `hidden`, so it will never be serialized.
    */
   abstract team: TeamEntity | null;
 
   /**
    * The org member that created the post.
+   * Should be `hidden`, so it will never be serialized.
    */
   abstract creator: OrgMemberEntity;
 
@@ -83,6 +88,7 @@ export abstract class PostEntity implements Post {
    * The org member responsible for maintaining the post.
    * It can be null if the post is a qna that hasn't been answered yet.
    * Otherwise, there should aways be one (and only one) maintainer.
+   * Should be `hidden`, so it will never be serialized.
    */
   abstract maintainer: OrgMemberEntity | null;
 

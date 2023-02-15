@@ -92,4 +92,18 @@ export class TeamEntity implements Team {
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
   }
+
+  /**
+   * Call `removeAll` on all of the entity's collections.
+   * If necessary, call remove all of the individual entities of a collection.
+   */
+  async removeAllCollections(): Promise<void> {
+    const collections = [this.docs, this.qnas, this.teamMembers];
+    for (const collection of collections) {
+      if (!collection.isInitialized()) {
+        await collection.init();
+      }
+      collection.removeAll();
+    }
+  }
 }
