@@ -12,7 +12,7 @@ export const auth = 'auth';
 export const webauthn = 'webauthn';
 
 /**
- * The URL endpoint for loggin in.
+ * The URL endpoint for logging in.
  */
 export const login = 'login';
 
@@ -26,6 +26,11 @@ export const register = 'register';
  * The URL endpoint assocaited with Authenticator.
  */
 export const authenticator = 'authenticator';
+
+/**
+ * The URL endpoint for creationg credential options.
+ */
+export const options = 'options';
 
 // CSRF endpoints
 /**

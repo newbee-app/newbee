@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import {
   AuthenticatorEntity,
@@ -9,6 +9,7 @@ import {
   authenticator,
   authenticatorVersion,
   create,
+  options,
 } from '@newbee/shared/data-access';
 import type {
   PublicKeyCredentialCreationOptionsJSON,
@@ -30,16 +31,18 @@ export class AuthenticatorController {
    * @param user The user to associate with the authenticator.
    * @returns The registration options for the new authenticator.
    */
-  @Get(create)
-  async createGet(
+  @Post(`${create}/${options}`)
+  async createOptions(
     @User() user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     this.logger.log(
-      `Create authenticator challenge request received for user ID: ${user.id}`
+      `Create authenticator registration options request received for user ID: ${user.id}`
     );
 
-    const options = await this.authenticatorService.generateChallenge(user);
-    this.logger.log(`Challenge created: ${JSON.stringify(options)}`);
+    const options = await this.authenticatorService.generateOptions(user);
+    this.logger.log(
+      `Authenticator registration options created: ${JSON.stringify(options)}`
+    );
 
     return options;
   }
@@ -56,7 +59,7 @@ export class AuthenticatorController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
-  async createPost(
+  async create(
     @Body() response: RegistrationResponseJSON,
     @User() user: UserEntity
   ): Promise<AuthenticatorEntity> {

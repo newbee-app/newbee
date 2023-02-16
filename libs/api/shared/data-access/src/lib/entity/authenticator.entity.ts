@@ -1,10 +1,4 @@
-import {
-  Entity,
-  ManyToOne,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Authenticator } from '@newbee/shared/util';
 import type {
   AuthenticatorTransportFuture,
@@ -29,8 +23,7 @@ export class AuthenticatorEntity implements Authenticator {
   /**
    * @inheritdoc
    */
-  @Property({ type: 'text' })
-  @Unique()
+  @Property({ type: 'text', unique: true })
   credentialId: string;
 
   /**

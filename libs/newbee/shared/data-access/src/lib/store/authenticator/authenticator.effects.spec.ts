@@ -47,15 +47,17 @@ describe('AuthenticatorEffects', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getRegisterChallenge$', () => {
-    it('should fire verifyRegisterChallenge if successful', () => {
-      actions$ = hot('a', { a: AuthenticatorActions.getRegisterChallenge() });
+  describe('createRegistrationOptions$', () => {
+    it('should fire createAuthenticator if successful', () => {
+      actions$ = hot('a', {
+        a: AuthenticatorActions.createRegistrationOptions(),
+      });
       const expected$ = hot('a', {
-        a: AuthenticatorActions.verifyRegisterChallenge({
+        a: AuthenticatorActions.createAuthenticator({
           options: testPublicKeyCredentialCreationOptions1,
         }),
       });
-      expect(effects.getRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.createRegistrationOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createGet).toBeCalledTimes(1);
         expect(service.createGet).toBeCalledWith();
@@ -64,7 +66,7 @@ describe('AuthenticatorEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.getRegisterChallenge$).toBeMarble('-');
+      expect(effects.createRegistrationOptions$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
         expect(service.createGet).not.toBeCalled();
       });
@@ -80,7 +82,9 @@ describe('AuthenticatorEffects', () => {
           )
         );
 
-      actions$ = hot('a', { a: AuthenticatorActions.getRegisterChallenge() });
+      actions$ = hot('a', {
+        a: AuthenticatorActions.createRegistrationOptions(),
+      });
       const testHttpClientError: HttpClientError = {
         status: 400,
         messages: { misc: testError.message },
@@ -88,7 +92,7 @@ describe('AuthenticatorEffects', () => {
       const expected$ = hot('a', {
         a: HttpActions.clientError({ httpClientError: testHttpClientError }),
       });
-      expect(effects.getRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.createRegistrationOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createGet).toBeCalledTimes(1);
         expect(service.createGet).toBeCalledWith();
@@ -96,17 +100,17 @@ describe('AuthenticatorEffects', () => {
     });
   });
 
-  describe('verifyRegisterChallenge$', () => {
-    it('should fire verifyRegisterChallengeSuccess if successful', () => {
+  describe('createAuthenticator$', () => {
+    it('should fire createAuthenticatorSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthenticatorActions.verifyRegisterChallenge({
+        a: AuthenticatorActions.createAuthenticator({
           options: testPublicKeyCredentialCreationOptions1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthenticatorActions.verifyRegisterChallengeSuccess(),
+        a: AuthenticatorActions.createAuthenticatorSuccess(),
       });
-      expect(effects.verifyRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.createAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createPost).toBeCalledTimes(1);
         expect(service.createPost).toBeCalledWith(
@@ -117,7 +121,7 @@ describe('AuthenticatorEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.verifyRegisterChallenge$).toBeMarble('-');
+      expect(effects.createAuthenticator$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
         expect(service.createPost).not.toBeCalled();
       });
@@ -134,7 +138,7 @@ describe('AuthenticatorEffects', () => {
         );
 
       actions$ = hot('a', {
-        a: AuthenticatorActions.verifyRegisterChallenge({
+        a: AuthenticatorActions.createAuthenticator({
           options: testPublicKeyCredentialCreationOptions1,
         }),
       });
@@ -145,7 +149,7 @@ describe('AuthenticatorEffects', () => {
       const expected$ = hot('a', {
         a: HttpActions.clientError({ httpClientError: testHttpClientError }),
       });
-      expect(effects.verifyRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.createAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createPost).toBeCalledTimes(1);
         expect(service.createPost).toBeCalledWith(

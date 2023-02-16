@@ -1,4 +1,10 @@
-import { Entity, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  OptionalProps,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import { Post } from '@newbee/shared/util';
 import { v4 } from 'uuid';
@@ -11,6 +17,7 @@ import { TeamEntity } from './team.entity';
  * Posts can be one of 2 entities: Doc or QnA.
  */
 @Entity({ abstract: true })
+@Unique<PostEntity>({ properties: ['slug', 'organization'] })
 export abstract class PostEntity implements Post {
   /**
    * The globally unique ID for the post.
@@ -53,17 +60,10 @@ export abstract class PostEntity implements Post {
   /**
    * @inheritdoc
    */
-  @Property({ persist: false })
-  get slug(): string {
-    return shortenUuid(this.id);
-  }
+  @Property()
+  slug: string = shortenUuid(this.id);
 
-  [OptionalProps]?:
-    | 'createdAt'
-    | 'updatedAt'
-    | 'markedUpToDateAt'
-    | 'upToDate'
-    | 'slug';
+  [OptionalProps]?: 'createdAt' | 'updatedAt' | 'markedUpToDateAt' | 'upToDate';
 
   /**
    * The organization associated with the post.

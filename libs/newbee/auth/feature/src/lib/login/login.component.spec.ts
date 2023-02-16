@@ -67,13 +67,13 @@ describe('LoginComponent', () => {
   });
 
   describe('onWebAuthn', () => {
-    it('should dispatch getWebauthnLoginChallenge', (done) => {
+    it('should dispatch createWebauthnLoginOptions', (done) => {
       component.onWebAuthn(testLoginForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.getWebauthnLoginChallenge({
+              AuthActions.createWebauthnLoginOptions({
                 loginForm: testLoginForm1,
               })
             );

@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Post,
-  Query,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
@@ -24,6 +15,7 @@ import {
   authVersion,
   BaseMagicLinkLoginDto,
   login,
+  options,
   register,
   webauthn,
 } from '@newbee/shared/data-access';
@@ -91,18 +83,18 @@ export class AuthController {
    * @returns The challenge for the user's authenticator to verify.
    */
   @Public()
-  @Get(`${webauthn}/${login}`)
-  async webAuthnLoginGet(
-    @Query() emailDto: EmailDto
+  @Post(`${webauthn}/${login}/${options}`)
+  async webAuthnLoginOptions(
+    @Body() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const { email } = emailDto;
     this.logger.log(
-      `WebAuthn login challenge request received for email: ${email}`
+      `WebAuthn login option request received for email: ${email}`
     );
 
     const options = await this.authService.generateLoginChallenge(email);
     this.logger.log(
-      `WebAuthn login challenge options generated: ${JSON.stringify(options)}`
+      `WebAuthn login options generated: ${JSON.stringify(options)}`
     );
     return options;
   }
@@ -120,7 +112,7 @@ export class AuthController {
    */
   @Public()
   @Post(`${webauthn}/${login}`)
-  async webAuthnLoginPost(
+  async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
   ): Promise<UserEntity> {
@@ -152,9 +144,9 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
   @Public()
-  @Get(`${magicLinkLogin}/${login}`)
+  @Post(`${magicLinkLogin}/${login}`)
   async magicLinkLoginLogin(
-    @Query() emailDto: EmailDto
+    @Body() emailDto: EmailDto
   ): Promise<BaseMagicLinkLoginDto> {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
@@ -175,7 +167,7 @@ export class AuthController {
    */
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
-  @Get(magicLinkLogin)
+  @Post(magicLinkLogin)
   magicLinkLogin(
     @Res({ passthrough: true }) res: Response,
     @User() user: UserEntity

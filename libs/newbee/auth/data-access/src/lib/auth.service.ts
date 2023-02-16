@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
@@ -10,6 +10,7 @@ import {
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
   login,
+  options,
   register,
   webauthn,
 } from '@newbee/shared/data-access';
@@ -30,31 +31,29 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Convert the given login form to a `BaseEmailDto` and send a GET request to send a magic link for login.
+   * Convert the given login form to a `BaseEmailDto` and send a POST request to send a magic link for login.
    *
    * @param loginForm The login form containing the necessary email.
    * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
    */
   magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
     const emailDto = this.loginFormToEmailDto(loginForm);
-    const params = new HttpParams({ fromObject: { ...emailDto } });
-    return this.http.get<BaseMagicLinkLoginDto>(
+    return this.http.post<BaseMagicLinkLoginDto>(
       `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}`,
-      { params }
+      emailDto
     );
   }
 
   /**
-   * Sends a GET request to verify the magic link token.
+   * Sends a POST request to verify the magic link token.
    *
    * @param token The token associated with the magic link.
    * @returns An observable containing information about the logged in user.
    */
   magicLinkLogin(token: string): Observable<User> {
-    const params = new HttpParams({ fromObject: { token } });
-    return this.http.get<User>(
+    return this.http.post<User>(
       `/api/v${authVersion}/${auth}/${magicLinkLogin}`,
-      { params }
+      { token }
     );
   }
 
@@ -91,19 +90,18 @@ export class AuthService {
   }
 
   /**
-   * Converts the given login form to a `BaseEmailDto` and sends a GET request to create login authenticator options.
+   * Converts the given login form to a `BaseEmailDto` and sends a POST request to create login authenticator options.
    *
    * @param loginForm The login form containing the necessary email.
    * @returns An observable of the options needed to log in with a registered authenticator.
    */
-  webAuthnLoginGet(
+  webAuthnLoginOptions(
     loginForm: LoginForm
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     const emailDto = this.loginFormToEmailDto(loginForm);
-    const params = new HttpParams({ fromObject: { ...emailDto } });
-    return this.http.get<PublicKeyCredentialRequestOptionsJSON>(
-      `/api/v${authVersion}/${auth}/${webauthn}/${login}`,
-      { params }
+    return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
+      `/api/v${authVersion}/${auth}/${webauthn}/${login}/${options}`,
+      emailDto
     );
   }
 
@@ -114,7 +112,7 @@ export class AuthService {
    * @param options The options to feed into the authenticator.
    * @returns An observable containing information about the logged in user.
    */
-  webAuthnLoginPost(
+  webAuthnLogin(
     loginForm: LoginForm,
     options: PublicKeyCredentialRequestOptionsJSON
   ): Observable<User> {

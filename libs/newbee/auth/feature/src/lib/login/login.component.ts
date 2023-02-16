@@ -77,7 +77,7 @@ export class LoginComponent implements OnDestroy {
    */
   onWebAuthn(partialLoginForm: Partial<LoginForm>): void {
     const loginForm = this.partialToLoginForm(partialLoginForm);
-    this.store.dispatch(AuthActions.getWebauthnLoginChallenge({ loginForm }));
+    this.store.dispatch(AuthActions.createWebauthnLoginOptions({ loginForm }));
   }
 
   /**

@@ -58,13 +58,13 @@ export class AuthEffects {
     );
   });
 
-  postWebAuthnRegisterChallenge$ = createEffect(() => {
+  registerWithWebauthn$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.postWebauthnRegisterChallenge),
+      ofType(AuthActions.registerWithWebauthn),
       switchMap(({ registerForm }) => {
         return this.authService.webAuthnRegister(registerForm).pipe(
           map((userAndOptionsDto) => {
-            return AuthActions.postWebauthnRegisterChallengeSuccess({
+            return AuthActions.registerWithWebauthnSuccess({
               userAndOptionsDto,
             });
           }),
@@ -74,11 +74,11 @@ export class AuthEffects {
     );
   });
 
-  postWebAuthnRegisterChallengeSuccess$ = createEffect(() => {
+  registerWithWebauthnSuccess$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.postWebauthnRegisterChallengeSuccess),
+      ofType(AuthActions.registerWithWebauthnSuccess),
       map(({ userAndOptionsDto: userCreatedDto }) => {
-        return AuthenticatorActions.verifyRegisterChallenge({
+        return AuthenticatorActions.createAuthenticator({
           options: userCreatedDto.options,
         });
       }),
@@ -88,13 +88,13 @@ export class AuthEffects {
     );
   });
 
-  getWebAuthnLoginChallenge$ = createEffect(() => {
+  createWebauthnLoginOptions$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.getWebauthnLoginChallenge),
+      ofType(AuthActions.createWebauthnLoginOptions),
       switchMap(({ loginForm }) => {
-        return this.authService.webAuthnLoginGet(loginForm).pipe(
+        return this.authService.webAuthnLoginOptions(loginForm).pipe(
           map((options) => {
-            return AuthActions.verifyWebauthnLoginChallenge({
+            return AuthActions.loginWithWebauthn({
               loginForm,
               options,
             });
@@ -105,11 +105,11 @@ export class AuthEffects {
     );
   });
 
-  verifyWebAuthnLoginChallenge$ = createEffect(() => {
+  loginWithWebauthn$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.verifyWebauthnLoginChallenge),
+      ofType(AuthActions.loginWithWebauthn),
       switchMap(({ loginForm, options }) => {
-        return this.authService.webAuthnLoginPost(loginForm, options).pipe(
+        return this.authService.webAuthnLogin(loginForm, options).pipe(
           map((user) => {
             return AuthActions.loginSuccess({ user });
           }),

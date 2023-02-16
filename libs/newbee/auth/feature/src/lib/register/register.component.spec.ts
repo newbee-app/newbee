@@ -67,13 +67,13 @@ describe('RegisterComponent', () => {
   });
 
   describe('onRegister', () => {
-    it('should dispatch sendMagicLink action', (done) => {
+    it('should dispatch registerWithWebauthn action', (done) => {
       component.onRegister(testRegisterForm1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.postWebauthnRegisterChallenge({
+              AuthActions.registerWithWebauthn({
                 registerForm: testRegisterForm1,
               })
             );

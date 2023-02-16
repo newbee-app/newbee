@@ -34,29 +34,29 @@ export const AuthActions = createActionGroup({
     'Confirm Magic Link': props<{ token: string }>(),
 
     /**
-     * Get a WebAuthn register challenge from the API for registering a new user.
-     * Should call `Get WebAuthn Register Challenge Success` with the result, if successful.
+     * Register a new user and get WebAuthn registration options from the API for registering a new authenticator.
+     * Should call `Register With WebAuthn Success` with the result, if successful.
      */
-    'Post WebAuthn Register Challenge': props<{ registerForm: RegisterForm }>(),
+    'Register With WebAuthn': props<{ registerForm: RegisterForm }>(),
 
     /**
-     * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Verify Register Challenge`, and redirects.
+     * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Create Authenticator`, and redirects.
      */
-    'Post WebAuthn Register Challenge Success': props<{
+    'Register With WebAuthn Success': props<{
       userAndOptionsDto: BaseUserAndOptionsDto;
     }>(),
 
     /**
-     * Gets a WebAuthn login challenge from the API for logging in an existing user.
-     * Should call `Verify WebAuthn Login Challenge` with the result, if successful.
+     * Gets WebAuthn login options from the API for logging in an existing user.
+     * Should call `Login With WebAuthn` with the result, if successful.
      */
-    'Get WebAuthn Login Challenge': props<{ loginForm: LoginForm }>(),
+    'Create WebAuthn Login Options': props<{ loginForm: LoginForm }>(),
 
     /**
      * Sends the authenticator's response back to the API for verification.
      * Should call `Login Success` with the result and redirect.
      */
-    'Verify WebAuthn Login Challenge': props<{
+    'Login With WebAuthn': props<{
       loginForm: LoginForm;
       options: PublicKeyCredentialRequestOptionsJSON;
     }>(),

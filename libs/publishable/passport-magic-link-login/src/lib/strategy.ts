@@ -177,7 +177,7 @@ export class MagicLinkLoginStrategy extends Strategy {
     try {
       // No need to check the result of jwt.verify more strictly with something like a Joi schema because we create the payload when the token is created, so we know its structure and can guarantee type safety
       const payload = jwt.verify(
-        req.query['token'] as string,
+        req.body['token'] as string,
         this.secret,
         this.jwtVerifyOptions
       ) as Payload;

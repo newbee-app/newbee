@@ -44,20 +44,20 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(stateAfterLoginMagicLink);
     });
 
-    it('should update state for postWebauthnRegisterChallenge', () => {
+    it('should update state for registerWithWebauthn', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.postWebauthnRegisterChallenge({
+        AuthActions.registerWithWebauthn({
           registerForm: testRegisterForm1,
         })
       );
       expect(updatedState).toEqual(stateAfterWebauthnRegisterChallenge);
     });
 
-    it('should update state for getWebauthnLoginChallenge', () => {
+    it('should update state for createWebauthnLoginOptions', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.getWebauthnLoginChallenge({ loginForm: testLoginForm1 })
+        AuthActions.createWebauthnLoginOptions({ loginForm: testLoginForm1 })
       );
       expect(updatedState).toEqual(stateAfterWebauthnLoginChallenge);
     });

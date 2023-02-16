@@ -22,7 +22,7 @@ describe('AuthenticatorController', () => {
         {
           provide: AuthenticatorService,
           useValue: createMock<AuthenticatorService>({
-            generateChallenge: jest
+            generateOptions: jest
               .fn()
               .mockResolvedValue(testPublicKeyCredentialCreationOptions1),
             create: jest.fn().mockResolvedValue(testAuthenticatorEntity1),
@@ -40,20 +40,20 @@ describe('AuthenticatorController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('createGet', () => {
-    it('should create a challenge', async () => {
-      await expect(controller.createGet(testUserEntity1)).resolves.toEqual(
+  describe('createOptions', () => {
+    it('should create registration options', async () => {
+      await expect(controller.createOptions(testUserEntity1)).resolves.toEqual(
         testPublicKeyCredentialCreationOptions1
       );
-      expect(service.generateChallenge).toBeCalledTimes(1);
-      expect(service.generateChallenge).toBeCalledWith(testUserEntity1);
+      expect(service.generateOptions).toBeCalledTimes(1);
+      expect(service.generateOptions).toBeCalledWith(testUserEntity1);
     });
   });
 
   describe('createPost', () => {
     it('should create an authenticator', async () => {
       await expect(
-        controller.createPost(testRegistrationResponse1, testUserEntity1)
+        controller.create(testRegistrationResponse1, testUserEntity1)
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(

@@ -11,13 +11,13 @@ import { AuthenticatorActions } from './authenticator.actions';
  */
 @Injectable()
 export class AuthenticatorEffects {
-  getRegisterChallenge$ = createEffect(() => {
+  createRegistrationOptions$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthenticatorActions.getRegisterChallenge),
+      ofType(AuthenticatorActions.createRegistrationOptions),
       switchMap(() => {
         return this.authenticatorService.createGet().pipe(
           map((options) => {
-            return AuthenticatorActions.verifyRegisterChallenge({ options });
+            return AuthenticatorActions.createAuthenticator({ options });
           }),
           catchError(AuthenticatorEffects.catchHttpError)
         );
@@ -25,13 +25,13 @@ export class AuthenticatorEffects {
     );
   });
 
-  verifyRegisterChallenge$ = createEffect(() => {
+  createAuthenticator$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthenticatorActions.verifyRegisterChallenge),
+      ofType(AuthenticatorActions.createAuthenticator),
       switchMap(({ options }) => {
         return this.authenticatorService.createPost(options).pipe(
           map(() => {
-            return AuthenticatorActions.verifyRegisterChallengeSuccess();
+            return AuthenticatorActions.createAuthenticatorSuccess();
           }),
           catchError(AuthenticatorEffects.catchHttpError)
         );

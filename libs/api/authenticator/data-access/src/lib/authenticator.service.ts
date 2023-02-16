@@ -52,13 +52,13 @@ export class AuthenticatorService {
   ) {}
 
   /**
-   * Generate a challenge for registering a new authenticator for the given user.
+   * Generate options for registering a new authenticator for the given user.
    *
-   * @param user The user to generate a challenge for.
+   * @param user The user to generate options for.
    *
-   * @returns The options for verifying the registration challenge on the frontend.
+   * @returns The options to register the frontend's authenticator.
    */
-  async generateChallenge(
+  async generateOptions(
     user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     const authenticators: PublicKeyCredentialDescriptorFuture[] = (

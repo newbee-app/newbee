@@ -91,10 +91,10 @@ describe('AuthController', () => {
     });
   });
 
-  describe('webAuthnLoginGet', () => {
+  describe('webAuthnLoginOptions', () => {
     it('should create login challenge options', async () => {
       await expect(
-        controller.webAuthnLoginGet(testBaseEmailDto1)
+        controller.webAuthnLoginOptions(testBaseEmailDto1)
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
       expect(service.generateLoginChallenge).toBeCalledTimes(1);
       expect(service.generateLoginChallenge).toBeCalledWith(
@@ -103,10 +103,10 @@ describe('AuthController', () => {
     });
   });
 
-  describe('webAuthnLoginPost', () => {
+  describe('webAuthnLogin', () => {
     it('should return a LoginDto', async () => {
       await expect(
-        controller.webAuthnLoginPost(response, testBaseWebAuthnLoginDto1)
+        controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1)
       ).resolves.toEqual(testUserEntity1);
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(

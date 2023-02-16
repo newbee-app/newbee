@@ -2,7 +2,10 @@ import { randomBytes } from 'crypto';
 import short from 'short-uuid';
 import slug from 'slug';
 
-const translator = short();
+/**
+ * An instance of `short-uuid` to work with.
+ */
+export const translator = short();
 
 /**
  * Generates a string saying the given `column` IS NOT NULL.

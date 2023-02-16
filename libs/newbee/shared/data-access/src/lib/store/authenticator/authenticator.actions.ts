@@ -8,22 +8,22 @@ export const AuthenticatorActions = createActionGroup({
   source: 'Authenticator',
   events: {
     /**
-     * Gets a register challenge from the API for registering a new authenticator for an existing user.
-     * Should call `Verify Register Challenge` with the result.
+     * Creates registration options from the API for registering a new authenticator for an existing user.
+     * Should call `Create Authenticator` with the result.
      */
-    'Get Register Challenge': emptyProps(),
+    'Create Registration Options': emptyProps(),
 
     /**
      * Sends the authenticator's response back to the API for registration.
-     * Should call `Verify Register Challenge Success`, if successful.
+     * Should call `Create Authenticator Success`, if successful.
      */
-    'Verify Register Challenge': props<{
+    'Create Authenticator': props<{
       options: PublicKeyCredentialCreationOptionsJSON;
     }>(),
 
     /**
      * Marks the authenticator registraiton as successful.
      */
-    'Verify Register Challenge Success': emptyProps(),
+    'Create Authenticator Success': emptyProps(),
   },
 });

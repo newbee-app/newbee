@@ -42,10 +42,10 @@ describe('AuthEffects', () => {
             webAuthnRegister: jest
               .fn()
               .mockReturnValue(of(testBaseUserAndOptionsDto1)),
-            webAuthnLoginGet: jest
+            webAuthnLoginOptions: jest
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialRequestOptions1)),
-            webAuthnLoginPost: jest.fn().mockReturnValue(of(testUser1)),
+            webAuthnLogin: jest.fn().mockReturnValue(of(testUser1)),
           }),
         },
         provideMockActions(() => actions$),
@@ -176,19 +176,19 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('postWebAuthnRegisterChallenge$', () => {
-    it('should fire postWebauthnRegisterChallengeSuccess if successful', () => {
+  describe('registerWithWebauthn$', () => {
+    it('should fire registerWithWebauthnSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.postWebauthnRegisterChallenge({
+        a: AuthActions.registerWithWebauthn({
           registerForm: testRegisterForm1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.postWebauthnRegisterChallengeSuccess({
+        a: AuthActions.registerWithWebauthnSuccess({
           userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
-      expect(effects.postWebAuthnRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.registerWithWebauthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
         expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
@@ -197,7 +197,7 @@ describe('AuthEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.postWebAuthnRegisterChallenge$).toBeMarble('-');
+      expect(effects.registerWithWebauthn$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
         expect(service.magicLinkLoginLogin).not.toBeCalled();
       });
@@ -216,7 +216,7 @@ describe('AuthEffects', () => {
       );
 
       actions$ = hot('a', {
-        a: AuthActions.postWebauthnRegisterChallenge({
+        a: AuthActions.registerWithWebauthn({
           registerForm: testRegisterForm1,
         }),
       });
@@ -229,7 +229,7 @@ describe('AuthEffects', () => {
           httpClientError: testHttpClientError,
         }),
       });
-      expect(effects.postWebAuthnRegisterChallenge$).toBeObservable(expected$);
+      expect(effects.registerWithWebauthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
         expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
@@ -237,60 +237,58 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('postWebAuthnRegisterChallengeSuccess$', () => {
+  describe('registerWithWebauthnSuccess$', () => {
     it('should fire verifyRegisterChallenge if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.postWebauthnRegisterChallengeSuccess({
+        a: AuthActions.registerWithWebauthnSuccess({
           userAndOptionsDto: testBaseUserAndOptionsDto1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthenticatorActions.verifyRegisterChallenge({
+        a: AuthenticatorActions.createAuthenticator({
           options: testBaseUserAndOptionsDto1.options,
         }),
       });
-      expect(effects.postWebAuthnRegisterChallengeSuccess$).toBeObservable(
-        expected$
-      );
+      expect(effects.registerWithWebauthnSuccess$).toBeObservable(expected$);
     });
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.postWebAuthnRegisterChallengeSuccess$).toBeMarble('-');
+      expect(effects.registerWithWebauthnSuccess$).toBeMarble('-');
     });
   });
 
-  describe('getWebAuthnLoginChallenge$', () => {
-    it('should fire verifyWebauthnLogiChallenge if successful', () => {
+  describe('createWebauthnLoginOptions$', () => {
+    it('should fire loginWithWebauthn if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.getWebauthnLoginChallenge({
+        a: AuthActions.createWebauthnLoginOptions({
           loginForm: testLoginForm1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.verifyWebauthnLoginChallenge({
+        a: AuthActions.loginWithWebauthn({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
-      expect(effects.getWebAuthnLoginChallenge$).toBeObservable(expected$);
+      expect(effects.createWebauthnLoginOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginGet).toBeCalledTimes(1);
-        expect(service.webAuthnLoginGet).toBeCalledWith(testLoginForm1);
+        expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
+        expect(service.webAuthnLoginOptions).toBeCalledWith(testLoginForm1);
       });
     });
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.getWebAuthnLoginChallenge$).toBeMarble('-');
+      expect(effects.createWebauthnLoginOptions$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginGet).not.toBeCalled();
+        expect(service.webAuthnLoginOptions).not.toBeCalled();
       });
     });
 
     it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('webAuthnLoginGet');
-      jest.spyOn(service, 'webAuthnLoginGet').mockReturnValue(
+      const testError = new Error('webAuthnLoginOptions');
+      jest.spyOn(service, 'webAuthnLoginOptions').mockReturnValue(
         throwError(
           () =>
             new HttpErrorResponse({
@@ -301,7 +299,7 @@ describe('AuthEffects', () => {
       );
 
       actions$ = hot('a', {
-        a: AuthActions.getWebauthnLoginChallenge({
+        a: AuthActions.createWebauthnLoginOptions({
           loginForm: testLoginForm1,
         }),
       });
@@ -314,18 +312,18 @@ describe('AuthEffects', () => {
           httpClientError: testHttpClientError,
         }),
       });
-      expect(effects.getWebAuthnLoginChallenge$).toBeObservable(expected$);
+      expect(effects.createWebauthnLoginOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginGet).toBeCalledTimes(1);
-        expect(service.webAuthnLoginGet).toBeCalledWith(testLoginForm1);
+        expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
+        expect(service.webAuthnLoginOptions).toBeCalledWith(testLoginForm1);
       });
     });
   });
 
-  describe('verifyWebAuthnLoginChallenge$', () => {
+  describe('loginWithWebauthn$', () => {
     it('should fire loginSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.verifyWebauthnLoginChallenge({
+        a: AuthActions.loginWithWebauthn({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -335,10 +333,10 @@ describe('AuthEffects', () => {
           user: testUser1,
         }),
       });
-      expect(effects.verifyWebAuthnLoginChallenge$).toBeObservable(expected$);
+      expect(effects.loginWithWebauthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginPost).toBeCalledTimes(1);
-        expect(service.webAuthnLoginPost).toBeCalledWith(
+        expect(service.webAuthnLogin).toBeCalledTimes(1);
+        expect(service.webAuthnLogin).toBeCalledWith(
           testLoginForm1,
           testPublicKeyCredentialRequestOptions1
         );
@@ -347,15 +345,15 @@ describe('AuthEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.verifyWebAuthnLoginChallenge$).toBeMarble('-');
+      expect(effects.loginWithWebauthn$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginPost).not.toBeCalled();
+        expect(service.webAuthnLogin).not.toBeCalled();
       });
     });
 
     it('should fire a httpClientError if service throws an error', () => {
       const testError = new Error('webAuthnLoginPost');
-      jest.spyOn(service, 'webAuthnLoginPost').mockReturnValue(
+      jest.spyOn(service, 'webAuthnLogin').mockReturnValue(
         throwError(
           () =>
             new HttpErrorResponse({
@@ -366,7 +364,7 @@ describe('AuthEffects', () => {
       );
 
       actions$ = hot('a', {
-        a: AuthActions.verifyWebauthnLoginChallenge({
+        a: AuthActions.loginWithWebauthn({
           loginForm: testLoginForm1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -380,10 +378,10 @@ describe('AuthEffects', () => {
           httpClientError: testHttpClientError,
         }),
       });
-      expect(effects.verifyWebAuthnLoginChallenge$).toBeObservable(expected$);
+      expect(effects.loginWithWebauthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginPost).toBeCalledTimes(1);
-        expect(service.webAuthnLoginPost).toBeCalledWith(
+        expect(service.webAuthnLogin).toBeCalledTimes(1);
+        expect(service.webAuthnLogin).toBeCalledWith(
           testLoginForm1,
           testPublicKeyCredentialRequestOptions1
         );

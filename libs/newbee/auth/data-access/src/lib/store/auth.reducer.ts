@@ -64,14 +64,14 @@ export const authFeature = createFeature({
       })
     ),
     on(
-      AuthActions.postWebauthnRegisterChallenge,
+      AuthActions.registerWithWebauthn,
       (state): AuthState => ({
         ...state,
         pendingWebAuthn: true,
       })
     ),
     on(
-      AuthActions.getWebauthnLoginChallenge,
+      AuthActions.createWebauthnLoginOptions,
       (state): AuthState => ({
         ...state,
         pendingWebAuthn: true,

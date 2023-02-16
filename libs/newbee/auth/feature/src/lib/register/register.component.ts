@@ -72,9 +72,7 @@ export class RegisterComponent implements OnDestroy {
    */
   onRegister(partialRegisterForm: Partial<RegisterForm>): void {
     const registerForm = this.partialToRegisterForm(partialRegisterForm);
-    this.store.dispatch(
-      AuthActions.postWebauthnRegisterChallenge({ registerForm })
-    );
+    this.store.dispatch(AuthActions.registerWithWebauthn({ registerForm }));
   }
 
   /**

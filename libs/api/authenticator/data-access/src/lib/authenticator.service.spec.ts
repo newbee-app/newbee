@@ -128,9 +128,9 @@ describe('AuthenticatorService', () => {
     expect(userChallengeService).toBeDefined();
   });
 
-  describe('generateChallenge', () => {
-    it('should generate a challenge', async () => {
-      await expect(service.generateChallenge(testUserEntity1)).resolves.toEqual(
+  describe('generateOptions', () => {
+    it('should generate registraiont options', async () => {
+      await expect(service.generateOptions(testUserEntity1)).resolves.toEqual(
         testPublicKeyCredentialCreationOptions1
       );
       expect(repository.find).toBeCalledTimes(1);

@@ -44,6 +44,9 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
+  // Listen for shutdown hooks to work with MikroORM
+  app.enableShutdownHooks();
+
   const port = process.env['PORT'] || 3333;
   await app.listen(port);
   Logger.log(

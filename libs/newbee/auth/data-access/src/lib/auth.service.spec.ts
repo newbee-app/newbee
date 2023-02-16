@@ -1,4 +1,3 @@
-import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -9,6 +8,7 @@ import {
   auth,
   authVersion,
   login,
+  options,
   register,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
@@ -55,7 +55,7 @@ describe('AuthService', () => {
   });
 
   describe('magicLinkLoginLogin', () => {
-    it('should send out a get request', (done) => {
+    it('should send out a post request', (done) => {
       service.magicLinkLoginLogin(testLoginForm1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
@@ -68,18 +68,18 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testBaseEmailDto1 } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}?${params.toString()}`
+        `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}`
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseEmailDto1);
 
       req.flush(testBaseMagicLinkLoginDto1);
     });
   });
 
   describe('magicLinkLogin', () => {
-    it('should send out a get request', (done) => {
+    it('should send out a post request', (done) => {
       service.magicLinkLogin('1234').subscribe({
         next: (user) => {
           try {
@@ -92,18 +92,18 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { token: '1234' } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${magicLinkLogin}?${params.toString()}`
+        `/api/v${authVersion}/${auth}/${magicLinkLogin}`
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual({ token: '1234' });
 
       req.flush(testUser1);
     });
   });
 
   describe('webAuthnRegister', () => {
-    it('should send out a get request', (done) => {
+    it('should send out a post request', (done) => {
       service.webAuthnRegister(testRegisterForm1).subscribe({
         next: (userAndOptionsDto) => {
           try {
@@ -126,9 +126,9 @@ describe('AuthService', () => {
     });
   });
 
-  describe('webAuthnLoginGet', () => {
-    it('should send out a get request', (done) => {
-      service.webAuthnLoginGet(testLoginForm1).subscribe({
+  describe('webAuthnLoginOptions', () => {
+    it('should send out a post request', (done) => {
+      service.webAuthnLoginOptions(testLoginForm1).subscribe({
         next: (options) => {
           try {
             expect(options).toEqual(testPublicKeyCredentialRequestOptions1);
@@ -140,23 +140,20 @@ describe('AuthService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testBaseEmailDto1 } });
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${webauthn}/${login}?${params.toString()}`
+        `/api/v${authVersion}/${auth}/${webauthn}/${login}/${options}`
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseEmailDto1);
 
       req.flush(testPublicKeyCredentialRequestOptions1);
     });
   });
 
-  describe('webauthnLoginPost', () => {
+  describe('webauthnLogin', () => {
     it('should send out a post request', (done) => {
       service
-        .webAuthnLoginPost(
-          testLoginForm1,
-          testPublicKeyCredentialRequestOptions1
-        )
+        .webAuthnLogin(testLoginForm1, testPublicKeyCredentialRequestOptions1)
         .subscribe({
           next: (user) => {
             try {

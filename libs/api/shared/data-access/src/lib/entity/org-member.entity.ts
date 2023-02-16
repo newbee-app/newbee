@@ -1,12 +1,21 @@
-import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { OrgRoleEnum } from '@newbee/api/shared/util';
+import {
+  Entity,
+  Enum,
+  ManyToOne,
+  PrimaryKeyType,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
+import { OrgRoleEnum, translator } from '@newbee/api/shared/util';
 import { OrganizationEntity } from './organization.entity';
 import { UserEntity } from './user.entity';
 
 /**
  * The MikroORM entity representing the link between users and thier organizations.
+ * The org member's slug should be unique within the organization.
  */
 @Entity()
+@Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
 export class OrgMemberEntity {
   /**
    * The user associated with this entity.
@@ -27,6 +36,12 @@ export class OrgMemberEntity {
    */
   @Enum(() => OrgRoleEnum)
   role: OrgRoleEnum;
+
+  /**
+   * The user's unique slug within the organization.
+   */
+  @Property()
+  slug: string = translator.new();
 
   /**
    * Specifies the primary key of the entity.
