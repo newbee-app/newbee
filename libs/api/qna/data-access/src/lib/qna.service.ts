@@ -98,7 +98,14 @@ export class QnaService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(qna: QnaEntity, updateQnaDto: UpdateQnaDto): Promise<QnaEntity> {
-    const updatedQna = this.qnaRepository.assign(qna, updateQnaDto);
+    const now = new Date();
+    const newQnaDetails = {
+      ...updateQnaDto,
+      updatedAt: now,
+      markedUpToDateAt: now,
+      upToDate: true,
+    };
+    const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
     try {
       await this.qnaRepository.flush();
       return updatedQna;

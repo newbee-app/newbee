@@ -40,6 +40,7 @@ describe('DocService', () => {
   let repository: EntityRepository<DocEntity>;
 
   const testUpdatedDocEntity = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
+  const now = new Date();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -63,6 +64,8 @@ describe('DocService', () => {
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
     mockElongateUuid.mockReturnValue(testDocEntity1.slug);
+
+    jest.useFakeTimers().setSystemTime(now);
   });
 
   it('should be defined', () => {
@@ -141,10 +144,12 @@ describe('DocService', () => {
   describe('update', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(
-        testDocEntity1,
-        testBaseUpdateDocDto1
-      );
+      expect(repository.assign).toBeCalledWith(testDocEntity1, {
+        ...testBaseUpdateDocDto1,
+        updatedAt: now,
+        markedUpToDateAt: now,
+        upToDate: true,
+      });
       expect(repository.flush).toBeCalledTimes(1);
     });
 

@@ -40,6 +40,7 @@ describe('QnaService', () => {
   let repository: EntityRepository<QnaEntity>;
 
   const testUpdatedQnaEntity = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
+  const now = new Date();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -63,6 +64,8 @@ describe('QnaService', () => {
     jest.clearAllMocks();
     mockQnaEntity.mockReturnValue(testQnaEntity1);
     mockElongateUuid.mockReturnValue(testQnaEntity1.slug);
+
+    jest.useFakeTimers().setSystemTime(now);
   });
 
   it('should be defined', () => {
@@ -142,10 +145,12 @@ describe('QnaService', () => {
   describe('update', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(
-        testQnaEntity1,
-        testBaseUpdateQnaDto1
-      );
+      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+        ...testBaseUpdateQnaDto1,
+        updatedAt: now,
+        markedUpToDateAt: now,
+        upToDate: true,
+      });
       expect(repository.flush).toBeCalledTimes(1);
     });
 

@@ -92,7 +92,14 @@ export class DocService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
-    const updatedDoc = this.docRepository.assign(doc, updateDocDto);
+    const now = new Date();
+    const newDocDetails = {
+      ...updateDocDto,
+      updatedAt: now,
+      markedUpToDateAt: now,
+      upToDate: true,
+    };
+    const updatedDoc = this.docRepository.assign(doc, newDocDetails);
     try {
       await this.docRepository.flush();
       return updatedDoc;
