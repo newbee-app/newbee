@@ -14,7 +14,9 @@ import { TeamService } from '@newbee/api/team/data-access';
 import {
   testBaseCreateQnaDto1,
   testBaseTeamSlugDto1,
+  testBaseUpdateAnswerDto1,
   testBaseUpdateQnaDto1,
+  testBaseUpdateQuestionDto1,
 } from '@newbee/shared/data-access';
 import { QnaController } from './qna.controller';
 
@@ -128,6 +130,39 @@ describe('QnaController', () => {
       expect(service.update).toBeCalledWith(
         testQnaEntity1,
         testBaseUpdateQnaDto1
+      );
+    });
+
+    it('updateQuestion should update the question', async () => {
+      await expect(
+        controller.updateQuestion(
+          testQnaEntity1.slug,
+          testBaseUpdateQuestionDto1
+        )
+      ).resolves.toEqual(testUpdatedQnaEntity);
+      expect(service.update).toBeCalledTimes(1);
+      expect(service.update).toBeCalledWith(
+        testQnaEntity1,
+        testBaseUpdateQuestionDto1
+      );
+    });
+
+    it('updateAnswer should update the answer', async () => {
+      const testQnaEntity2 = { ...testQnaEntity1, maintainer: null };
+      jest.spyOn(service, 'findOneBySlug').mockResolvedValue(testQnaEntity2);
+      await expect(
+        controller.updateAnswer(
+          testOrganizationEntity1.slug,
+          testQnaEntity2.slug,
+          testUserEntity1,
+          testBaseUpdateAnswerDto1
+        )
+      ).resolves.toEqual(testUpdatedQnaEntity);
+      expect(service.update).toBeCalledTimes(1);
+      expect(service.update).toBeCalledWith(
+        testQnaEntity2,
+        testBaseUpdateAnswerDto1,
+        testOrgMemberEntity1
       );
     });
 

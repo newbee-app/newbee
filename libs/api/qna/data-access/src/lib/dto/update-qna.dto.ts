@@ -30,5 +30,5 @@ export class UpdateQnaDto implements BaseUpdateQnaDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
-  answerMarkdown?: string | null;
+  answerMarkdown?: string;
 }

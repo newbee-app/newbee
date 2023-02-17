@@ -22,6 +22,7 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  ConditionalRoleEnum,
   OrgRoleEnum,
   PostRoleEnum,
   Role,
@@ -55,8 +56,8 @@ export class DocController {
 
   /**
    * The API route for creating a doc.
-   * Organization members, moderators and owners should be allowed to access this endpoint.
-   * No need for team permissions as team members should also be organization members.
+   * Org moderators and owners; and team members, moderators, and owners should be allowed to access the endpoint.
+   * Org members should be allowed to access the endpoint if no team was specified in the request's query or body.
    *
    * @param createDocDto The information necessary to create a doc.
    * @param user The user that sent the request and will become the owner of the doc.
@@ -68,7 +69,14 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(create)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Member,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    ConditionalRoleEnum.OrgMemberIfNoTeamInReq
+  )
   async create(
     @Body() createDocDto: CreateDocDto,
     @User() user: UserEntity,

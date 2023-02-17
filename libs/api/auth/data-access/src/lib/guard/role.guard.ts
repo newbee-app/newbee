@@ -5,7 +5,13 @@ import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { QnaService } from '@newbee/api/qna/data-access';
 import { OrgMemberEntity, PostEntity } from '@newbee/api/shared/data-access';
-import { PostRoleEnum, RoleType, ROLE_KEY } from '@newbee/api/shared/util';
+import {
+  ConditionalRoleEnum,
+  OrgRoleEnum,
+  PostRoleEnum,
+  RoleType,
+  ROLE_KEY,
+} from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import { doc, organization, qna, team } from '@newbee/shared/data-access';
@@ -71,6 +77,14 @@ export class RoleGuard implements CanActivate {
         return true;
       }
 
+      if (
+        roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInReq) &&
+        orgMember.role === OrgRoleEnum.Member &&
+        !teamSlug
+      ) {
+        return true;
+      }
+
       // if team name was specified, see if team member roles will help user pass
       if (teamSlug) {
         const team = await this.teamService.findOneBySlug(
@@ -100,6 +114,14 @@ export class RoleGuard implements CanActivate {
       if (qnaSlug) {
         const qna = await this.qnaService.findOneBySlug(qnaSlug);
         if (RoleGuard.checkPostRoles(qna, orgMember, roles)) {
+          return true;
+        }
+
+        if (
+          roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInQna) &&
+          orgMember.role === OrgRoleEnum.Member &&
+          !qna.team
+        ) {
           return true;
         }
       }

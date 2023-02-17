@@ -8,13 +8,17 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   CreateQnaDto,
   QnaService,
+  UnansweredQnaGuard,
+  UpdateAnswerDto,
   UpdateQnaDto,
+  UpdateQuestionDto,
 } from '@newbee/api/qna/data-access';
 import {
   QnaEntity,
@@ -22,6 +26,7 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  ConditionalRoleEnum,
   OrgRoleEnum,
   PostRoleEnum,
   Role,
@@ -149,6 +154,99 @@ export class QnaController {
     const updatedQna = await this.qnaService.update(qna, updateQnaDto);
     this.logger.log(
       `Updated qna, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+    );
+
+    return updatedQna;
+  }
+
+  /**
+   * The API route for updating just the question portion of a qna.
+   * Organization moderators and owners; team moderators and owners; and post creators and maintainers should be allowed to access the endpoint.
+   *
+   * @param slug The slug to look for.
+   * @param updateQuestionDto The new values for the question.
+   *
+   * @returns The updated qna, if it was updated successfully.
+   * @throws {NotFoundException} `qnaSlugNotFound`. If the qna's slug can't be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   */
+  @Patch(`:${qna}/question`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Creator,
+    PostRoleEnum.Maintainer
+  )
+  async updateQuestion(
+    @Param(qna) slug: string,
+    @Body() updateQuestionDto: UpdateQuestionDto
+  ): Promise<QnaEntity> {
+    this.logger.log(`Update question request received for slug: ${slug}`);
+
+    const qna = await this.qnaService.findOneBySlug(slug);
+    const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
+    this.logger.log(
+      `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+    );
+
+    return updatedQna;
+  }
+
+  /**
+   * The API route for updating just the answer portion of a qna.
+   * Can only be accessed if the question is unanswered.
+   * Organization moderators and owners; team members, moderators, and owners; and post maintainers should be allowed to access the endpoint.
+   * Organization members should be allowed to access the endpoint if the qna is not associated with a team.
+   *
+   * @param slug The slug to look for.
+   * @param updateAnswerDto The new value for the answer.
+   *
+   * @returns The updated qna, if it was updated successfully.
+   * @throws {NotFoundException} `qnaSlugNotFound`, `organizationSlugNotFound`, `orgMemberNotFound`. If the qna's slug, the organization's slug, or the org member can't be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   */
+  @Patch(`:${qna}/answer`)
+  @UseGuards(UnansweredQnaGuard)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Member,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer,
+    ConditionalRoleEnum.OrgMemberIfNoTeamInQna
+  )
+  async updateAnswer(
+    @Param(organization) organizationSlug: string,
+    @Param(qna) slug: string,
+    @User() user: UserEntity,
+    @Body() updateAnswerDto: UpdateAnswerDto
+  ): Promise<QnaEntity> {
+    this.logger.log(`Update answer request received for slug: ${slug}`);
+
+    const qna = await this.qnaService.findOneBySlug(slug);
+    let updatedQna: QnaEntity;
+    console.log(qna.maintainer);
+    if (qna.maintainer) {
+      updatedQna = await this.qnaService.update(qna, updateAnswerDto);
+    } else {
+      const organization = await this.organizationService.findOneBySlug(
+        organizationSlug
+      );
+      const orgMember = await this.orgMemberService.findOneByUserAndOrg(
+        user,
+        organization
+      );
+      updatedQna = await this.qnaService.update(
+        qna,
+        updateAnswerDto,
+        orgMember
+      );
+    }
+    this.logger.log(
+      `Updated answer, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
     );
 
     return updatedQna;

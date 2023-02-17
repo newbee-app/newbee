@@ -20,11 +20,13 @@ import {
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
   BaseUpdateQnaDto,
+  BaseUpdateQuestionDto,
   BaseUpdateTeamDto,
   BaseUpdateUserDto,
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
 } from '../dto';
+import { BaseUpdateAnswerDto } from '../dto/qna/base-update-answer.dto';
 
 /**
  * An example instance of BaseEmailDto.
@@ -159,6 +161,23 @@ export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
 export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   title: 'New title',
   questionMarkdown: 'new question',
+  answerMarkdown: 'new answer',
+};
+
+/**
+ * An example instance of BaseUpdateQuestionDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
+  title: 'New title',
+  questionMarkdown: 'new question',
+};
+
+/**
+ * An example instance of BaseUpdateAnswerDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
   answerMarkdown: 'new answer',
 };
 

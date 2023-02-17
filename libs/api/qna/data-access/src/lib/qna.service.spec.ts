@@ -145,12 +145,6 @@ describe('QnaService', () => {
   describe('update', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
-        ...testBaseUpdateQnaDto1,
-        updatedAt: now,
-        markedUpToDateAt: now,
-        upToDate: true,
-      });
       expect(repository.flush).toBeCalledTimes(1);
     });
 
@@ -158,6 +152,29 @@ describe('QnaService', () => {
       await expect(
         service.update(testQnaEntity1, testBaseUpdateQnaDto1)
       ).resolves.toEqual(testUpdatedQnaEntity);
+      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+        ...testBaseUpdateQnaDto1,
+        updatedAt: now,
+        markedUpToDateAt: now,
+        upToDate: true,
+      });
+    });
+
+    it('should udpate the maintainer if one is specified', async () => {
+      await expect(
+        service.update(
+          testQnaEntity1,
+          testBaseUpdateQnaDto1,
+          testOrgMemberEntity1
+        )
+      ).resolves.toEqual(testUpdatedQnaEntity);
+      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+        ...testBaseUpdateQnaDto1,
+        updatedAt: now,
+        markedUpToDateAt: now,
+        upToDate: true,
+        maintainer: testOrgMemberEntity1,
+      });
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {

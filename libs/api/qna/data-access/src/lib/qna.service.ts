@@ -93,17 +93,23 @@ export class QnaService {
    *
    * @param qna The `QnaEntity` to update.
    * @param updateQnaDto The new details for the qna.
+   * @param newMaintainer The new maintainer for the qna. Leave undefined to indicate that the maintainer should not be changed.
    *
    * @returns The updated `QnaEntity` instance.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async update(qna: QnaEntity, updateQnaDto: UpdateQnaDto): Promise<QnaEntity> {
+  async update(
+    qna: QnaEntity,
+    updateQnaDto: UpdateQnaDto,
+    newMaintainer?: OrgMemberEntity
+  ): Promise<QnaEntity> {
     const now = new Date();
     const newQnaDetails = {
       ...updateQnaDto,
       updatedAt: now,
       markedUpToDateAt: now,
       upToDate: true,
+      ...(newMaintainer && { maintainer: newMaintainer }),
     };
     const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
     try {

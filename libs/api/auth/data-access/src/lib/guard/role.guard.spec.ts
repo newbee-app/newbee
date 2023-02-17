@@ -17,6 +17,7 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
+  ConditionalRoleEnum,
   OrgRoleEnum,
   PostRoleEnum,
   ROLE_KEY,
@@ -203,6 +204,35 @@ describe('RoleGuard', () => {
       jest.spyOn(reflector, 'get').mockReturnValue([OrgRoleEnum.Owner]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
     });
+
+    describe('OrgMemberIfNoTeamInReq', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(reflector, 'get')
+          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInReq]);
+        jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
+          ...testOrgMemberEntity1,
+          role: OrgRoleEnum.Member,
+        });
+      });
+
+      it(`should return true if org member's role is member and no team was specified in the request`, async () => {
+        jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+          params: {
+            organization: testOrganizationEntity1.slug,
+            doc: testDocEntity1.slug,
+            qna: testQnaEntity1.slug,
+          },
+          query: {},
+          user: testUserEntity1,
+        });
+        await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      });
+
+      it(`should return false if org member's role is member and a team was specified in the request`, async () => {
+        await expect(guard.canActivate(context)).resolves.toBeFalsy();
+      });
+    });
   });
 
   describe('team member role check', () => {
@@ -251,6 +281,32 @@ describe('RoleGuard', () => {
 
     it('should return false if no roles match', async () => {
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
+    });
+
+    describe('OrgMemberIfNoTeamInQna', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(reflector, 'get')
+          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInQna]);
+        jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
+          ...testOrgMemberEntity1,
+          role: OrgRoleEnum.Member,
+        });
+      });
+
+      it(`should return true if org member's role is member and the qna doesn't specify a team`, async () => {
+        jest
+          .spyOn(qnaService, 'findOneBySlug')
+          .mockResolvedValue({ ...testQnaEntity1, team: null });
+        await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      });
+
+      it(`should return false if org member's role is member and the qna specifies a team`, async () => {
+        jest
+          .spyOn(qnaService, 'findOneBySlug')
+          .mockResolvedValue({ ...testQnaEntity1, team: testTeamEntity1 });
+        await expect(guard.canActivate(context)).resolves.toBeFalsy();
+      });
     });
   });
 });

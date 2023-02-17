@@ -68,6 +68,16 @@ export const doc = 'doc';
  */
 export const qna = 'qna';
 
+/**
+ * The URL endpoint associated with the question portion of a Qna.
+ */
+export const question = 'question';
+
+/**
+ * The URL endpoint associated with the answer portion of a Qna.
+ */
+export const answer = 'answer';
+
 // GENERAL endpoints
 /**
  * The URL endpoint associated with creating something.
