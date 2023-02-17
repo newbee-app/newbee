@@ -8,16 +8,13 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   CreateQnaDto,
   QnaService,
-  UnansweredQnaGuard,
   UpdateAnswerDto,
-  UpdateQnaDto,
   UpdateQuestionDto,
 } from '@newbee/api/qna/data-access';
 import {
@@ -126,40 +123,6 @@ export class QnaController {
   }
 
   /**
-   * The API route for updating a qna.
-   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
-   *
-   * @param slug The slug to look for.
-   * @param updateQnaDto The new values for the qna.
-   *
-   * @returns The updated qna, if it was updated successfully.
-   * @throws {NotFoundException} `qnaSlugNotFound`. If the qna's slug can't be found.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
-   */
-  @Patch(`:${qna}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
-  )
-  async update(
-    @Param(qna) slug: string,
-    @Body() updateQnaDto: UpdateQnaDto
-  ): Promise<QnaEntity> {
-    this.logger.log(`Update qna request received for slug: ${slug}`);
-
-    const qna = await this.qnaService.findOneBySlug(slug);
-    const updatedQna = await this.qnaService.update(qna, updateQnaDto);
-    this.logger.log(
-      `Updated qna, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
-    );
-
-    return updatedQna;
-  }
-
-  /**
    * The API route for updating just the question portion of a qna.
    * Organization moderators and owners; team moderators and owners; and post creators and maintainers should be allowed to access the endpoint.
    *
@@ -196,7 +159,6 @@ export class QnaController {
 
   /**
    * The API route for updating just the answer portion of a qna.
-   * Can only be accessed if the question is unanswered.
    * Organization moderators and owners; team members, moderators, and owners; and post maintainers should be allowed to access the endpoint.
    * Organization members should be allowed to access the endpoint if the qna is not associated with a team.
    *
@@ -208,7 +170,6 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${qna}/answer`)
-  @UseGuards(UnansweredQnaGuard)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
