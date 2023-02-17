@@ -213,6 +213,36 @@ export class QnaController {
   }
 
   /**
+   * The API route for marking a qna as up-to-date.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
+   *
+   * @param slug The slug to look for.
+   *
+   * @returns The updated qna, if it was updated successfully.
+   * @throws {NotFoundException} `qnaSlugNotFound`. If the doc's slug can't be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   */
+  @Post(`:${qna}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
+  async markUpToDate(@Param(qna) slug: string): Promise<QnaEntity> {
+    this.logger.log(`Mark up-to-date request received for slug: ${slug}`);
+
+    const qna = await this.qnaService.findOneBySlug(slug);
+    const updatedQna = await this.qnaService.markUpToDate(qna);
+    this.logger.log(
+      `Marked qna up-to-date, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+    );
+
+    return updatedQna;
+  }
+
+  /**
    * The API route for deleting a qna.
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *

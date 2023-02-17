@@ -131,7 +131,8 @@ export class DocController {
 
   /**
    * The API route for updating a doc.
-   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
+   * Organization moderators and owners; team members, moderators and owners; and post maintainers should be allowed to access the endpoint.
+   * Organization members should be allowed to access the endpoint if the doc is not associated with a team.
    *
    * @param slug The slug to look for.
    * @param updateDocDto The new values for the doc.
@@ -144,9 +145,11 @@ export class DocController {
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
+    TeamRoleEnum.Member,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
+    ConditionalRoleEnum.OrgMemberIfNoTeamInDoc
   )
   async update(
     @Param(doc) slug: string,
@@ -158,6 +161,36 @@ export class DocController {
     const updatedDoc = await this.docService.update(doc, updateDocDto);
     this.logger.log(
       `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
+    );
+
+    return updatedDoc;
+  }
+
+  /**
+   * The API route for marking a doc as up-to-date.
+   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
+   *
+   * @param slug The slug to look for.
+   *
+   * @returns The updated doc, if it was updated successfully.
+   * @throws {NotFoundException} `docSlugNotFound`. If the doc's slug can't be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   */
+  @Post(`:${doc}`)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    TeamRoleEnum.Moderator,
+    TeamRoleEnum.Owner,
+    PostRoleEnum.Maintainer
+  )
+  async markUpToDate(@Param(doc) slug: string): Promise<DocEntity> {
+    this.logger.log(`Mark up-to-date request received for slug: ${slug}`);
+
+    const doc = await this.docService.findOneBySlug(slug);
+    const updatedDoc = await this.docService.markUpToDate(doc);
+    this.logger.log(
+      `Marked doc up-to-date, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
     );
 
     return updatedDoc;

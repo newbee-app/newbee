@@ -185,6 +185,30 @@ describe('QnaService', () => {
     });
   });
 
+  describe('markUpToDate', () => {
+    afterEach(() => {
+      expect(repository.assign).toBeCalledTimes(1);
+      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+        markedUpToDateAt: now,
+        upToDate: true,
+      });
+      expect(repository.flush).toBeCalledTimes(1);
+    });
+
+    it('should mark the qna as up to date', async () => {
+      await expect(service.markUpToDate(testQnaEntity1)).resolves.toEqual(
+        testUpdatedQnaEntity
+      );
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(service.markUpToDate(testQnaEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
+  });
+
   describe('delete', () => {
     it('should delete a qna', async () => {
       await expect(service.delete(testQnaEntity1)).resolves.toBeUndefined();

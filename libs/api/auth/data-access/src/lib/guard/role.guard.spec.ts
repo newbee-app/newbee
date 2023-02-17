@@ -262,6 +262,32 @@ describe('RoleGuard', () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
     });
+
+    describe('OrgMemberIfNoTeamInDoc', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(reflector, 'get')
+          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInDoc]);
+        jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
+          ...testOrgMemberEntity1,
+          role: OrgRoleEnum.Member,
+        });
+      });
+
+      it(`should return true if org member's role is member and the doc doesn't specify a team`, async () => {
+        jest
+          .spyOn(docService, 'findOneBySlug')
+          .mockResolvedValue({ ...testDocEntity1, team: null });
+        await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      });
+
+      it(`should return false if org member's role is member and the doc specifies a team`, async () => {
+        jest
+          .spyOn(docService, 'findOneBySlug')
+          .mockResolvedValue({ ...testDocEntity1, team: testTeamEntity1 });
+        await expect(guard.canActivate(context)).resolves.toBeFalsy();
+      });
+    });
   });
 
   describe('qna role check', () => {

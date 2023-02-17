@@ -37,6 +37,11 @@ export enum ConditionalRoleEnum {
    * Allows OrgRoleEnum.Member if there's no team associated with the qna.
    */
   OrgMemberIfNoTeamInQna = 'Org Member If No Team In Qna',
+
+  /**
+   * Allows OrgRoleEnum.Member if there's no team associated with the doc.
+   */
+  OrgMemberIfNoTeamInDoc = 'Org Member If No Team In Doc',
 }
 
 /**

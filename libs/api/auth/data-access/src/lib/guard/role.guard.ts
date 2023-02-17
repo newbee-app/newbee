@@ -108,6 +108,14 @@ export class RoleGuard implements CanActivate {
         if (RoleGuard.checkPostRoles(doc, orgMember, roles)) {
           return true;
         }
+
+        if (
+          roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInDoc) &&
+          orgMember.role === OrgRoleEnum.Member &&
+          !doc.team
+        ) {
+          return true;
+        }
       }
 
       // if qna slug was specified, see if qna roles will help users pass

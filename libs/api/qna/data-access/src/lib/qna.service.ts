@@ -122,6 +122,27 @@ export class QnaService {
   }
 
   /**
+   * Marks the given `QnaEntity` as up-to-date.
+   *
+   * @param qna The `QnaEntity` instance.
+   *
+   * @returns The updated `QnaEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async markUpToDate(qna: QnaEntity): Promise<QnaEntity> {
+    const now = new Date();
+    const newQnaDetails = { markedUpToDateAt: now, upToDate: true };
+    const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
+    try {
+      await this.qnaRepository.flush();
+      return updatedQna;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Deletes the given `QnaEntity` and saves the changes.
    *
    * @param qna The `QnaEntity` instance to delete.

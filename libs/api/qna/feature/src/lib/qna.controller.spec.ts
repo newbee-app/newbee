@@ -39,6 +39,7 @@ describe('QnaController', () => {
             create: jest.fn().mockResolvedValue(testQnaEntity1),
             findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
+            markUpToDate: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
           }),
         },
         {
@@ -153,6 +154,14 @@ describe('QnaController', () => {
         testBaseUpdateAnswerDto1,
         testOrgMemberEntity1
       );
+    });
+
+    it('markUpToDate should mark a qna as up-to-date', async () => {
+      await expect(
+        controller.markUpToDate(testQnaEntity1.slug)
+      ).resolves.toEqual(testUpdatedQnaEntity);
+      expect(service.markUpToDate).toBeCalledTimes(1);
+      expect(service.markUpToDate).toBeCalledWith(testQnaEntity1);
     });
 
     it('delete should delete a qna', async () => {

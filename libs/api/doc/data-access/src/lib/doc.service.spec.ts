@@ -167,6 +167,30 @@ describe('DocService', () => {
     });
   });
 
+  describe('markUpToDate', () => {
+    afterEach(() => {
+      expect(repository.assign).toBeCalledTimes(1);
+      expect(repository.assign).toBeCalledWith(testDocEntity1, {
+        markedUpToDateAt: now,
+        upToDate: true,
+      });
+      expect(repository.flush).toBeCalledTimes(1);
+    });
+
+    it('should mark the doc as up to date', async () => {
+      await expect(service.markUpToDate(testDocEntity1)).resolves.toEqual(
+        testUpdatedDocEntity
+      );
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(service.markUpToDate(testDocEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
+  });
+
   describe('delete', () => {
     afterEach(() => {
       expect(repository.removeAndFlush).toBeCalledTimes(1);

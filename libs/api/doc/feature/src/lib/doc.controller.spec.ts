@@ -37,6 +37,7 @@ describe('DocController', () => {
             create: jest.fn().mockResolvedValue(testDocEntity1),
             findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedDocEntity),
+            markUpToDate: jest.fn().mockResolvedValue(testUpdatedDocEntity),
           }),
         },
         {
@@ -129,6 +130,14 @@ describe('DocController', () => {
         testDocEntity1,
         testBaseUpdateDocDto1
       );
+    });
+
+    it('markUpToDate should mark a doc as up-to-date', async () => {
+      await expect(
+        controller.markUpToDate(testDocEntity1.slug)
+      ).resolves.toEqual(testUpdatedDocEntity);
+      expect(service.markUpToDate).toBeCalledTimes(1);
+      expect(service.markUpToDate).toBeCalledWith(testDocEntity1);
     });
 
     it('delete should delete a doc', async () => {

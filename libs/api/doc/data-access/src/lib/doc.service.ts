@@ -110,6 +110,27 @@ export class DocService {
   }
 
   /**
+   * Marks the given `DocEntity` as up-to-date.
+   *
+   * @param doc The `DocEntity` to mark as up-to-date.
+   *
+   * @returns The updated `DocEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async markUpToDate(doc: DocEntity): Promise<DocEntity> {
+    const now = new Date();
+    const newDocDetails = { markedUpToDateAt: now, upToDate: true };
+    const updatedDoc = this.docRepository.assign(doc, newDocDetails);
+    try {
+      await this.docRepository.flush();
+      return updatedDoc;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Deletes the given `DocEntity` and saves the changes.
    *
    * @param doc The `DocEntity` instance to delete.
