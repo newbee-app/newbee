@@ -1,5 +1,8 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
-import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
+import {
+  AuthenticatorService,
+  RegistrationResponseDto,
+} from '@newbee/api/authenticator/data-access';
 import {
   AuthenticatorEntity,
   UserEntity,
@@ -11,10 +14,7 @@ import {
   create,
   options,
 } from '@newbee/shared/data-access';
-import type {
-  PublicKeyCredentialCreationOptionsJSON,
-  RegistrationResponseJSON,
-} from '@simplewebauthn/typescript-types';
+import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**
  * The controller that interacts with the `AuthenticatorEntity`.
@@ -60,9 +60,10 @@ export class AuthenticatorController {
    */
   @Post(create)
   async create(
-    @Body() response: RegistrationResponseJSON,
+    @Body() registrationResponseDto: RegistrationResponseDto,
     @User() user: UserEntity
   ): Promise<AuthenticatorEntity> {
+    const { response } = registrationResponseDto;
     const responseString = JSON.stringify(response);
     this.logger.log(
       `Create authenticator verify request received for user ID: ${user.id}, response: ${responseString}`

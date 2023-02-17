@@ -189,7 +189,6 @@ export class QnaController {
 
     const qna = await this.qnaService.findOneBySlug(slug);
     let updatedQna: QnaEntity;
-    console.log(qna.maintainer);
     if (qna.maintainer) {
       updatedQna = await this.qnaService.update(qna, updateAnswerDto);
     } else {

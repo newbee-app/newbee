@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './authenticator';
 export * from './csrf';
 export * from './doc';
 export * from './organization';

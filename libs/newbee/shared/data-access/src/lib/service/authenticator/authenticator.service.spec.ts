@@ -7,6 +7,7 @@ import {
   authenticator,
   authenticatorVersion,
   create,
+  testBaseRegistrationResponseDto1,
 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -85,7 +86,7 @@ describe('AuthenticatorService', () => {
         `/api/v${authenticatorVersion}/${authenticator}/${create}`
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testRegistrationResponse1);
+      expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);
 
       req.flush(testAuthenticator1);
     });

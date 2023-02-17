@@ -4,6 +4,7 @@ import {
   testOrganization1,
   testPublicKeyCredentialCreationOptions1,
   testQna1,
+  testRegistrationResponse1,
   testTeam1,
   testUser1,
 } from '@newbee/shared/util';
@@ -16,6 +17,7 @@ import {
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseRegistrationResponseDto,
   BaseTeamSlugDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
@@ -187,4 +189,12 @@ export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
  */
 export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
   team: testTeam1.slug,
+};
+
+/**
+ * An example instance of BaseRegistrationResponseDto.
+ * Strictly for use in testing.
+ */
+export const testBaseRegistrationResponseDto1: BaseRegistrationResponseDto = {
+  response: testRegistrationResponse1,
 };

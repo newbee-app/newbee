@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   authenticator,
   authenticatorVersion,
+  BaseRegistrationResponseDto,
   create,
 } from '@newbee/shared/data-access';
 import { Authenticator } from '@newbee/shared/util';
@@ -39,9 +40,12 @@ export class AuthenticatorService {
   ): Observable<Authenticator> {
     return from(startRegistration(options)).pipe(
       switchMap((response) => {
+        const registrationResponseDto: BaseRegistrationResponseDto = {
+          response,
+        };
         return this.http.post<Authenticator>(
           `/api/v${authenticatorVersion}/${authenticator}/${create}`,
-          response
+          registrationResponseDto
         );
       })
     );

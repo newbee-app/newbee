@@ -122,17 +122,6 @@ describe('QnaController', () => {
       );
     });
 
-    it('update should update a qna', async () => {
-      await expect(
-        controller.update(testQnaEntity1.slug, testBaseUpdateQnaDto1)
-      ).resolves.toEqual(testUpdatedQnaEntity);
-      expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(
-        testQnaEntity1,
-        testBaseUpdateQnaDto1
-      );
-    });
-
     it('updateQuestion should update the question', async () => {
       await expect(
         controller.updateQuestion(

@@ -77,7 +77,7 @@ import { default as appConfig } from '../environments/environment';
     // App-level pipes
     {
       provide: APP_PIPE,
-      useValue: new ValidationPipe({ transform: true }),
+      useValue: new ValidationPipe({ transform: true, whitelist: true }),
     },
 
     // App-level guards

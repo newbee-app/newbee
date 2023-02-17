@@ -12,9 +12,9 @@ export const phoneNumberIsPhoneNumber =
   'Phone number must specify a valid phone number.';
 
 /**
- * Constant to say that credential is required.
+ * Constant to say that response is required.
  */
-export const credentialIsDefined = 'Credential is required.';
+export const responseIsDefined = 'Response is required.';
 
 /**
  * Constant to say that name cannot be an empty string.

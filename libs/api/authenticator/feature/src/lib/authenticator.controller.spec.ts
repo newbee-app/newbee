@@ -5,6 +5,7 @@ import {
   testAuthenticatorEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
+import { testBaseRegistrationResponseDto1 } from '@newbee/shared/data-access';
 import {
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
@@ -53,7 +54,7 @@ describe('AuthenticatorController', () => {
   describe('createPost', () => {
     it('should create an authenticator', async () => {
       await expect(
-        controller.create(testRegistrationResponse1, testUserEntity1)
+        controller.create(testBaseRegistrationResponseDto1, testUserEntity1)
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
