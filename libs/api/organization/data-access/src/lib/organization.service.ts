@@ -12,7 +12,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { generateUniqueSlug } from '@newbee/api/shared/util';
+import { generateUniqueSlug, newOrgConfigset } from '@newbee/api/shared/util';
 import {
   internalServerError,
   organizationSlugNotFound,
@@ -66,12 +66,6 @@ export class OrganizationService {
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
-      await this.solrCli.createCollection({
-        name: id,
-        numShards: 1,
-      });
-
-      return organization;
     } catch (err) {
       this.logger.error(err);
 
@@ -81,6 +75,20 @@ export class OrganizationService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    try {
+      await this.solrCli.createCollection({
+        name: id,
+        numShards: 1,
+        config: newOrgConfigset,
+      });
+    } catch (err) {
+      this.logger.error(err);
+      await this.organizationRepository.removeAndFlush(organization);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return organization;
   }
 
   /**
@@ -157,8 +165,8 @@ export class OrganizationService {
   async delete(organization: OrganizationEntity): Promise<void> {
     try {
       await organization.removeAllCollections();
-      await this.solrCli.deleteCollection(organization.id);
       await this.organizationRepository.removeAndFlush(organization);
+      await this.solrCli.deleteCollection(organization.id);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

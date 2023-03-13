@@ -1,15 +1,6 @@
 import axios from 'axios';
 import { readFileSync } from 'fs';
 import { URLSearchParams } from 'url';
-import {
-  configOverlayUrl,
-  configUrl,
-  generateSolrCliHeader,
-  octetStreamHeader,
-  schemaUrl,
-  updateJsonDocsUrl,
-  updateUrl,
-} from './constant';
 import type {
   AddCopyFieldParams,
   AddDocsParams,
@@ -41,6 +32,15 @@ import {
   RetrieveConfigOverlayResponse,
   RetrieveConfigResponse,
 } from './interface/config.interface';
+import {
+  configOverlayUrl,
+  configUrl,
+  generateSolrCliHeader,
+  octetStreamHeader,
+  schemaUrl,
+  updateJsonDocsUrl,
+  updateUrl,
+} from './util';
 
 /**
  * The information needed to create a new `SolrCli`.

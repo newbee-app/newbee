@@ -75,9 +75,11 @@ export default (): AppConfig => ({
     limit: 10,
   },
   solr: {
-    host: process.env['SOLR_HOST'] as string,
-    port: +(process.env['SOLR_PORT'] as string),
-    https: process.env['SOLR_HTTPS'] === 'true',
+    url: process.env['SOLR_URL'] as string,
+    basicAuth: {
+      username: process.env['SOLR_USERNAME'] as string,
+      password: process.env['SOLR_PASSWORD'] as string,
+    },
   },
   rpInfo: {
     name: process.env['APP_NAME'] as string,
