@@ -25,6 +25,7 @@ import { TeamModule } from '@newbee/api/team/feature';
 import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
+import { SolrModule } from '@newbee/nest-solr-cli';
 import { WinstonModule } from 'nest-winston';
 import { default as appConfig } from '../environments/environment';
 
@@ -59,7 +60,14 @@ import { default as appConfig } from '../environments/environment';
       inject: [ConfigService],
     }),
 
-    // In-house modules
+    // In-house dynamic modules
+    SolrModule.forRootAsync({
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
+        configService.get('solr', { infer: true }),
+      inject: [ConfigService],
+    }),
+
+    // In-house static modules
     AuthModule,
     AuthenticatorModule,
     CsrfModule,

@@ -15,7 +15,7 @@ export class AuthenticatorEffects {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createRegistrationOptions),
       switchMap(() => {
-        return this.authenticatorService.createGet().pipe(
+        return this.authenticatorService.createOptions().pipe(
           map((options) => {
             return AuthenticatorActions.createAuthenticator({ options });
           }),
@@ -29,7 +29,7 @@ export class AuthenticatorEffects {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createAuthenticator),
       switchMap(({ options }) => {
-        return this.authenticatorService.createPost(options).pipe(
+        return this.authenticatorService.create(options).pipe(
           map(() => {
             return AuthenticatorActions.createAuthenticatorSuccess();
           }),

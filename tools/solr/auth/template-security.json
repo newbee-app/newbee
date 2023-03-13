@@ -1,0 +1,8 @@
+{
+  "authentication": {
+    "class": "solr.BasicAuthPlugin",
+    "blockUnknown": true,
+    "forwardCredentials": false,
+    "realm": "NewBee Solr"
+  }
+}

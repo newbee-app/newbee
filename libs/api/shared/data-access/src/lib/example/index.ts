@@ -75,6 +75,7 @@ export const testUserAndOptionsDto1: UserAndOptionsDto = {
  */
 export const testOrganizationEntity1 = createMock<OrganizationEntity>({
   ...testOrganization1,
+  id: 'org1',
 });
 
 /**

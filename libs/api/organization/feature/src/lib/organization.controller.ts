@@ -15,11 +15,7 @@ import {
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
 import { OrgRoleEnum, Role, User } from '@newbee/api/shared/util';
-import {
-  create,
-  organization,
-  organizationVersion,
-} from '@newbee/shared/data-access';
+import { organization, organizationVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
@@ -43,7 +39,7 @@ export class OrganizationController {
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Post(create)
+  @Post()
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
     @User() user: UserEntity

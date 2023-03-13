@@ -74,6 +74,11 @@ export default (): AppConfig => ({
     ttl: 60,
     limit: 10,
   },
+  solr: {
+    host: process.env['SOLR_HOST'] as string,
+    port: +(process.env['SOLR_PORT'] as string),
+    https: process.env['SOLR_HTTPS'] === 'true',
+  },
   rpInfo: {
     name: process.env['APP_NAME'] as string,
     id: 'localhost',

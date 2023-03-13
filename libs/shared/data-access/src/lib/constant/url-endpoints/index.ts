@@ -48,7 +48,7 @@ export const user = 'user';
 /**
  * The URL endpoint associated with Organization.
  */
-export const organization = 'organization';
+export const organization = 'org';
 
 // TEAM endpoints
 /**
@@ -77,10 +77,3 @@ export const question = 'question';
  * The URL endpoint associated with the answer portion of a Qna.
  */
 export const answer = 'answer';
-
-// GENERAL endpoints
-/**
- * The URL endpoint associated with creating something.
- * The 'C' in CRUD.
- */
-export const create = 'create';

@@ -27,10 +27,10 @@ describe('AuthenticatorEffects', () => {
         {
           provide: AuthenticatorService,
           useValue: createMock<AuthenticatorService>({
-            createGet: jest
+            createOptions: jest
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialCreationOptions1)),
-            createPost: jest.fn().mockReturnValue(of(testAuthenticator1)),
+            create: jest.fn().mockReturnValue(of(testAuthenticator1)),
           }),
         },
         provideMockActions(() => actions$),
@@ -59,8 +59,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createRegistrationOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.createGet).toBeCalledTimes(1);
-        expect(service.createGet).toBeCalledWith();
+        expect(service.createOptions).toBeCalledTimes(1);
+        expect(service.createOptions).toBeCalledWith();
       });
     });
 
@@ -68,14 +68,14 @@ describe('AuthenticatorEffects', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
       expect(effects.createRegistrationOptions$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.createGet).not.toBeCalled();
+        expect(service.createOptions).not.toBeCalled();
       });
     });
 
     it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('createGet');
+      const testError = new Error('createOptions');
       jest
-        .spyOn(service, 'createGet')
+        .spyOn(service, 'createOptions')
         .mockReturnValue(
           throwError(
             () => new HttpErrorResponse({ error: testError, status: 400 })
@@ -94,8 +94,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createRegistrationOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.createGet).toBeCalledTimes(1);
-        expect(service.createGet).toBeCalledWith();
+        expect(service.createOptions).toBeCalledTimes(1);
+        expect(service.createOptions).toBeCalledWith();
       });
     });
   });
@@ -112,8 +112,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.createPost).toBeCalledTimes(1);
-        expect(service.createPost).toBeCalledWith(
+        expect(service.create).toBeCalledTimes(1);
+        expect(service.create).toBeCalledWith(
           testPublicKeyCredentialCreationOptions1
         );
       });
@@ -123,14 +123,14 @@ describe('AuthenticatorEffects', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
       expect(effects.createAuthenticator$).toBeMarble('-');
       expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.createPost).not.toBeCalled();
+        expect(service.create).not.toBeCalled();
       });
     });
 
     it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('createPost');
+      const testError = new Error('create');
       jest
-        .spyOn(service, 'createPost')
+        .spyOn(service, 'create')
         .mockReturnValue(
           throwError(
             () => new HttpErrorResponse({ error: testError, status: 400 })
@@ -151,8 +151,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.createPost).toBeCalledTimes(1);
-        expect(service.createPost).toBeCalledWith(
+        expect(service.create).toBeCalledTimes(1);
+        expect(service.create).toBeCalledWith(
           testPublicKeyCredentialCreationOptions1
         );
       });

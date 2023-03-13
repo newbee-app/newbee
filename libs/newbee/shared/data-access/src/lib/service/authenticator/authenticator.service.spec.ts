@@ -6,7 +6,7 @@ import { TestBed } from '@angular/core/testing';
 import {
   authenticator,
   authenticatorVersion,
-  create,
+  options,
   testBaseRegistrationResponseDto1,
 } from '@newbee/shared/data-access';
 import {
@@ -45,9 +45,9 @@ describe('AuthenticatorService', () => {
     httpController.verify();
   });
 
-  describe('createGet', () => {
-    it('should send out a get request', (done) => {
-      service.createGet().subscribe({
+  describe('createOptions', () => {
+    it('should send out a post request', (done) => {
+      service.createOptions().subscribe({
         next: (options) => {
           try {
             expect(options).toEqual(testPublicKeyCredentialCreationOptions1);
@@ -60,17 +60,18 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${authenticator}/${create}`
+        `/api/v${authenticatorVersion}/${authenticator}/${options}`
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual({});
 
       req.flush(testPublicKeyCredentialCreationOptions1);
     });
   });
 
-  describe('createPost', () => {
+  describe('create', () => {
     it('should send out a post request', (done) => {
-      service.createPost(testPublicKeyCredentialCreationOptions1).subscribe({
+      service.create(testPublicKeyCredentialCreationOptions1).subscribe({
         next: (authenticator) => {
           try {
             expect(authenticator).toEqual(testAuthenticator1);
@@ -83,7 +84,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${authenticator}/${create}`
+        `/api/v${authenticatorVersion}/${authenticator}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);

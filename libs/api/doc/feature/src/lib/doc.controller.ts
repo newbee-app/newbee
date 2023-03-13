@@ -30,17 +30,15 @@ import {
   User,
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import {
-  create,
-  doc,
-  docVersion,
-  organization,
-} from '@newbee/shared/data-access';
+import { doc, docVersion, organization } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `DocEntity`.
  */
-@Controller({ path: `:${organization}/${doc}`, version: docVersion })
+@Controller({
+  path: `${organization}/:${organization}/${doc}`,
+  version: docVersion,
+})
 export class DocController {
   /**
    * The logger to use when logging anything in the controller.
@@ -68,7 +66,7 @@ export class DocController {
    * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`. If the organization slug cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(create)
+  @Post()
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

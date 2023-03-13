@@ -1,6 +1,7 @@
 import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import type { MailerOptions } from '@nestjs-modules/mailer';
 import type { ThrottlerModuleOptions } from '@nestjs/throttler';
+import type { SolrCliOptions } from '@newbee/solr-cli';
 import type { CsrfTokenCreator } from 'csrf-csrf';
 import type { CookieOptions } from 'express';
 import Joi from 'joi';
@@ -29,6 +30,11 @@ export interface AppConfig {
    * The options to feed into the `ThrottlerModule` for request throttling.
    */
   throttler: ThrottlerModuleOptions;
+
+  /**
+   * The options to feed into the `SolrModule` for interacting with Solr.
+   */
+  solr: SolrCliOptions;
 
   /**
    * Relaying Party information for use in WebAuthn.
@@ -102,4 +108,9 @@ export const appEnvironmentVariablesSchema = Joi.object({
   SMTP_USERNAME: Joi.string().required(),
   SMTP_PASSWORD: Joi.string().required(),
   SMTP_DEFAULT_FROM: Joi.string().required(),
+
+  // Solr
+  SOLR_HOST: Joi.string().required(),
+  SOLR_PORT: Joi.number().required(),
+  SOLR_HTTPS: Joi.boolean().required(),
 });

@@ -18,6 +18,8 @@ import {
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 import { CreateOrganizationDto } from './dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
@@ -33,7 +35,8 @@ export class OrganizationService {
 
   constructor(
     @InjectRepository(OrganizationEntity)
-    private readonly organizationRepository: EntityRepository<OrganizationEntity>
+    private readonly organizationRepository: EntityRepository<OrganizationEntity>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -58,10 +61,16 @@ export class OrganizationService {
         name
       );
     }
-    const organization = new OrganizationEntity(name, slug, creator);
+    const id = v4();
+    const organization = new OrganizationEntity(id, name, slug, creator);
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
+      await this.solrCli.createCollection({
+        name: id,
+        numShards: 1,
+      });
+
       return organization;
     } catch (err) {
       this.logger.error(err);
@@ -148,6 +157,7 @@ export class OrganizationService {
   async delete(organization: OrganizationEntity): Promise<void> {
     try {
       await organization.removeAllCollections();
+      await this.solrCli.deleteCollection(organization.id);
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);

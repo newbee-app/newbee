@@ -7,7 +7,6 @@ import {
 } from '@mikro-orm/core';
 import { OrgRoleEnum } from '@newbee/api/shared/util';
 import type { Organization } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { QnaEntity } from './qna.entity';
@@ -25,7 +24,7 @@ export class OrganizationEntity implements Organization {
    * No need for users to know what this value is.
    */
   @PrimaryKey({ hidden: true })
-  id: string = v4();
+  id: string;
 
   /**
    * @inheritdoc
@@ -87,7 +86,8 @@ export class OrganizationEntity implements Organization {
   })
   members = new Collection<OrgMemberEntity>(this);
 
-  constructor(name: string, slug: string, creator: UserEntity) {
+  constructor(id: string, name: string, slug: string, creator: UserEntity) {
+    this.id = id;
     this.name = name;
     this.slug = slug;
     new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);

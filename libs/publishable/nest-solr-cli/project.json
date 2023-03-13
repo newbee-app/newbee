@@ -1,0 +1,48 @@
+{
+  "name": "publishable-nest-solr-cli",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publishable/nest-solr-cli/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/publishable/nest-solr-cli",
+        "tsConfig": "libs/publishable/nest-solr-cli/tsconfig.lib.json",
+        "packageJson": "libs/publishable/nest-solr-cli/package.json",
+        "main": "libs/publishable/nest-solr-cli/src/index.ts",
+        "assets": ["libs/publishable/nest-solr-cli/*.md"]
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs publishable-nest-solr-cli {args.ver} {args.tag}"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/publishable/nest-solr-cli/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/publishable/nest-solr-cli/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

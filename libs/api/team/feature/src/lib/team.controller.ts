@@ -17,17 +17,15 @@ import {
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
-import {
-  create,
-  organization,
-  team,
-  teamVersion,
-} from '@newbee/shared/data-access';
+import { organization, team, teamVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `TeamEntity`.
  */
-@Controller({ path: `:${organization}/${team}`, version: teamVersion })
+@Controller({
+  path: `${organization}/:${organization}/${team}`,
+  version: teamVersion,
+})
 export class TeamController {
   /**
    * The logger to use when logging anything in the controller.
@@ -53,7 +51,7 @@ export class TeamController {
    * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`. If the organization slug cannot be found or the user does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(create)
+  @Post()
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createTeamDto: CreateTeamDto,

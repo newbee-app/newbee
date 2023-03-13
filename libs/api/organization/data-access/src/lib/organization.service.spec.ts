@@ -25,6 +25,8 @@ import {
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 import { OrganizationService } from './organization.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -33,6 +35,12 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   OrganizationEntity: jest.fn(),
 }));
 const mockOrganizationEntity = OrganizationEntity as jest.Mock;
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -55,6 +63,10 @@ describe('OrganizationService', () => {
             assign: jest.fn().mockReturnValue(testUpdatedOrganization),
           }),
         },
+        {
+          provide: SolrCli,
+          useValue: createMock<SolrCli>({}),
+        },
       ],
     }).compile();
 
@@ -65,6 +77,7 @@ describe('OrganizationService', () => {
 
     jest.clearAllMocks();
     mockOrganizationEntity.mockReturnValue(testOrganizationEntity1);
+    mockV4.mockReturnValue(testOrganizationEntity1.id);
   });
 
   it('should be defined', () => {
@@ -76,6 +89,7 @@ describe('OrganizationService', () => {
     afterEach(() => {
       expect(mockOrganizationEntity).toBeCalledTimes(1);
       expect(mockOrganizationEntity).toBeCalledWith(
+        testOrganizationEntity1.id,
         testBaseCreateOrganizationDto1.name,
         testBaseCreateOrganizationDto1.slug,
         testUserEntity1

@@ -31,17 +31,15 @@ import {
   User,
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import {
-  create,
-  organization,
-  qna,
-  qnaVersion,
-} from '@newbee/shared/data-access';
+import { organization, qna, qnaVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with `QnaEntity`.
  */
-@Controller({ path: `:${organization}/${qna}`, version: qnaVersion })
+@Controller({
+  path: `${organization}/:${organization}/${qna}`,
+  version: qnaVersion,
+})
 export class QnaController {
   /**
    * The logger to use when logging anything in the controller.
@@ -68,7 +66,7 @@ export class QnaController {
    * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`. If the organization slug cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(create)
+  @Post()
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createQnaDto: CreateQnaDto,

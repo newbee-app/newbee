@@ -11,7 +11,6 @@ import { User } from '@newbee/api/shared/util';
 import {
   authenticator,
   authenticatorVersion,
-  create,
   options,
 } from '@newbee/shared/data-access';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -31,7 +30,7 @@ export class AuthenticatorController {
    * @param user The user to associate with the authenticator.
    * @returns The registration options for the new authenticator.
    */
-  @Post(`${create}/${options}`)
+  @Post(options)
   async createOptions(
     @User() user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
@@ -58,7 +57,7 @@ export class AuthenticatorController {
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`, `authenticatorTakenBadRequest`. If the authenticator cannot be verified or is already in use.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(create)
+  @Post()
   async create(
     @Body() registrationResponseDto: RegistrationResponseDto,
     @User() user: UserEntity

@@ -76,7 +76,7 @@ describe('RoleGuard', () => {
         createMock<HttpArgumentsHost>({
           getRequest: jest.fn().mockReturnValue({
             params: {
-              organization: testOrganizationEntity1.slug,
+              org: testOrganizationEntity1.slug,
               team: testTeamEntity1.slug,
               doc: testDocEntity1.slug,
               qna: testQnaEntity1.slug,
@@ -114,7 +114,7 @@ describe('RoleGuard', () => {
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
     });
 
-    it('should return false if organization is not a route parameter', async () => {
+    it('should return false if org is not a route parameter', async () => {
       jest
         .spyOn(context.switchToHttp(), 'getRequest')
         .mockReturnValue({ params: {} });
@@ -219,7 +219,7 @@ describe('RoleGuard', () => {
       it(`should return true if org member's role is member and no team was specified in the request`, async () => {
         jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
           params: {
-            organization: testOrganizationEntity1.slug,
+            org: testOrganizationEntity1.slug,
             doc: testDocEntity1.slug,
             qna: testQnaEntity1.slug,
           },

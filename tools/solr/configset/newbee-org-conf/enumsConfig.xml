@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<enumsConfig>
+  <enum name="entry">
+    <value>doc</value>
+    <value>qna</value>
+    <value>team</value>
+    <value>member</value>
+  </enum>
+</enumsConfig>

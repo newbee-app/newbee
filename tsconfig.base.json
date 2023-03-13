@@ -90,6 +90,7 @@
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
+      "@newbee/nest-solr-cli": ["libs/publishable/nest-solr-cli/src/index.ts"],
       "@newbee/newbee/auth/data-access": [
         "libs/newbee/auth/data-access/src/index.ts"
       ],
@@ -110,7 +111,8 @@
       "@newbee/shared/util": ["libs/shared/util/src/index.ts"],
       "@newbee/simple-webauthn": [
         "libs/publishable/simple-webauthn/src/index.ts"
-      ]
+      ],
+      "@newbee/solr-cli": ["libs/publishable/solr-cli/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "dist"]

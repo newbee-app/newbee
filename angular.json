@@ -40,7 +40,9 @@
     "newbee-shared-data-access": "libs/newbee/shared/data-access",
     "newbee-shared-ui": "libs/newbee/shared/ui",
     "newbee-shared-util": "libs/newbee/shared/util",
+    "publishable-nest-solr-cli": "libs/publishable/nest-solr-cli",
     "publishable-passport-magic-link-login": "libs/publishable/passport-magic-link-login",
+    "publishable-solr-cli": "libs/publishable/solr-cli",
     "shared-data-access": "libs/shared/data-access",
     "shared-util": "libs/shared/util",
     "tailwind-preset": "libs/tailwind-preset"
