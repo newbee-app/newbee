@@ -39,9 +39,24 @@ export function generateSolrCliHeader(basicAuth?: BasicAuth): RequestHeader {
 }
 
 /**
+ * Generates the real-time get API URL for the given collection.
+ *
+ * @param collectionsApiUrl The base API URL for a given collection.
+ * @param collectionName The name of the collection we want to work with.
+ *
+ * @returns The real-time get API URL for the given collection.
+ */
+export function realTimeGetUrl(
+  collectionsApiUrl: string,
+  collectionName: string
+): string {
+  return `${collectionsApiUrl}/${collectionName}/get`;
+}
+
+/**
  * Generates the update handler API URL for the given collection.
  *
- * @param solrUrl The base Solr URL.
+ * @param solrUrl The base URL for the Solr instance.
  * @param collectionName The name of the collection we want to work with.
  *
  * @returns The update handler API URL for the given collection.
@@ -51,9 +66,21 @@ export function updateUrl(solrUrl: string, collectionName: string): string {
 }
 
 /**
+ * Generates the JSON update handler API URL for the given collection.
+ *
+ * @param solrUrl The base URL for the Solr instance.
+ * @param collectionName The name of the collection you want to work with.
+ *
+ * @returns The JSON update handler API URL for the given collection.
+ */
+export function updateJsonUrl(solrUrl: string, collectionName: string): string {
+  return `${updateUrl(solrUrl, collectionName)}/json`;
+}
+
+/**
  * Generates the JSON docs update handler API URL for the given collection.
  *
- * @param solrUrl The base Solr URL.
+ * @param solrUrl The base URL for the Solr instance.
  * @param collectionName The name of the collection you want to work with.
  *
  * @returns The JSON docs update handler API URL for the given collection.
@@ -62,7 +89,7 @@ export function updateJsonDocsUrl(
   solrUrl: string,
   collectionName: string
 ): string {
-  return `${solrUrl}/solr/${collectionName}/update/json/docs`;
+  return `${updateJsonUrl(solrUrl, collectionName)}/docs`;
 }
 
 /**

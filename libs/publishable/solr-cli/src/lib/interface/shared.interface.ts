@@ -34,6 +34,11 @@ export interface ResponseHeader {
    * How long the query took, in milliseconds.
    */
   QTime: number;
+
+  /**
+   * Whether the Zookeeper instance is connected.
+   */
+  zkConnected: boolean;
 }
 
 /**

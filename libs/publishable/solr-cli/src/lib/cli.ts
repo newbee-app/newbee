@@ -3,21 +3,23 @@ import { readFileSync } from 'fs';
 import { URLSearchParams } from 'url';
 import type {
   AddCopyFieldParams,
-  AddDocsParams,
+  AddDocParams,
   AddDynamicFieldParams,
   AddFieldParams,
   AddFieldTypeParams,
   AddUserParams,
   BasicAuth,
+  BulkDocRequestParams,
   BulkSchemaRequestParams,
   CopyFieldParams,
   CreateCollectionParams,
   CreateConfigsetParams,
-  DeleteCollectionParams,
-  DeleteDocsParams,
+  DeleteDocParams,
   DeleteFieldParams,
   ListCollectionsResponse,
   ListConfigsetsResponse,
+  RealTimeGetByIdResponse,
+  RealTimeGetByIdsResponse,
   RequestHeader,
   RetrieveCopyFieldsResponse,
   RetrieveDynamicFieldsResponse,
@@ -25,6 +27,7 @@ import type {
   RetrieveFieldTypesResponse,
   RetrieveSchemaResponse,
   SolrResponse,
+  UpdateDocParams,
   UploadConfigsetParams,
 } from './interface';
 import {
@@ -37,9 +40,10 @@ import {
   configUrl,
   generateSolrCliHeader,
   octetStreamHeader,
+  realTimeGetUrl,
   schemaUrl,
   updateJsonDocsUrl,
-  updateUrl,
+  updateJsonUrl,
 } from './util';
 
 /**
@@ -130,18 +134,59 @@ export class SolrCli {
    * DELETE an existing collection.
    *
    * @param name The name of the collection to delete.
-   * @param params All of the parameters for DELETEing a collection.
+   * @param async The request ID to track this action, which will be processed asynchronously.
    *
    * @returns The status of the request and the cores that were deleted. If the status is anything other than "success", an error message will explain why the request failed.
    */
-  async deleteCollection(
-    name: string,
-    params?: DeleteCollectionParams
-  ): Promise<SolrResponse> {
-    const async = params?.async;
+  async deleteCollection(name: string, async?: string): Promise<SolrResponse> {
     return (
       await axios.delete(
         `${this.collectionsApiUrl}/${name}${async ? `?async=${async}` : ''}`,
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
+   * Get a doc from a collection using its ID, which is much quicker than querying.
+   *
+   * @param collectionName The collection to look in.
+   * @param id The doc ID to get.
+   *
+   * @returns The status of the request and the values for the found doc.
+   */
+  async realTimeGetById(
+    collectionName: string,
+    id: string
+  ): Promise<RealTimeGetByIdResponse> {
+    return (
+      await axios.get(
+        `${realTimeGetUrl(this.collectionsApiUrl, collectionName)}?id=${id}`,
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
+   * Gets docs from a collection using their IDs, which is much quicker than querying.
+   *
+   * @param collectionName The collection to look in.
+   * @param ids The doc IDs to get.
+   * @param fq Filter query, specified in `<property>:<value>` format.
+   *
+   * @returns The status of the request and the values for the found docs.
+   */
+  async realTimeGetByIds(
+    collectionName: string,
+    ids: string[],
+    fq?: string
+  ): Promise<RealTimeGetByIdsResponse> {
+    return (
+      await axios.get(
+        `${realTimeGetUrl(
+          this.collectionsApiUrl,
+          collectionName
+        )}$ids=${ids.join(',')}${fq ? `&fq=${fq}` : ''}`,
         this.defaultHeader
       )
     ).data;
@@ -152,37 +197,129 @@ export class SolrCli {
   // START: docs
 
   /**
+   * ADD a doc to a collection.
+   *
+   * @param collectionName The name of the collection to add a doc to.
+   * @param params All of the parameters for ADDing a doc.
+   *
+   * @returns The status of the request.
+   */
+  async addDoc(
+    collectionName: string,
+    params: AddDocParams
+  ): Promise<SolrResponse> {
+    return (
+      await axios.post(
+        updateJsonDocsUrl(this.solrUrl, collectionName),
+        params,
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
    * ADD docs to a collection.
    *
    * @param collectionName The name of the collection to add the docs to.
    * @param params All of the parameters for ADDing docs.
    *
-   * @returns The status of the request and the document that was added.
+   * @returns The status of the request.
    */
   async addDocs(
     collectionName: string,
-    params: AddDocsParams
+    params: AddDocParams[]
   ): Promise<SolrResponse> {
-    const updateHandlerUrl = updateJsonDocsUrl(this.solrUrl, collectionName);
-    return (await axios.post(updateHandlerUrl, params, this.defaultHeader))
-      .data;
+    return (
+      await axios.post(
+        updateJsonDocsUrl(this.solrUrl, collectionName),
+        params,
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
+   * DELETE a doc from a collection.
+   *
+   * @param collectionName The collection to delete from.
+   * @param params The parameters for DELETEing a doc.
+   *
+   * @returns The status of the request.
+   */
+  async deleteDoc(
+    collectionName: string,
+    params: DeleteDocParams
+  ): Promise<SolrResponse> {
+    return (
+      await axios.post(
+        updateJsonUrl(this.solrUrl, collectionName),
+        { delete: params },
+        this.defaultHeader
+      )
+    ).data;
   }
 
   /**
    * DELETE docs from a collection.
    *
-   * @param collectionName The name of the collection to delete from.
-   * @param params All of the parameters for DELETEing docs.
+   * @param collectionName The collection to delete from.
+   * @param params The parameters for DELETEing docs.
    *
    * @returns The status of the request.
    */
   async deleteDocs(
     collectionName: string,
-    params: DeleteDocsParams
+    params: DeleteDocParams[]
   ): Promise<SolrResponse> {
-    const updateHandlerUrl = updateUrl(this.solrUrl, collectionName);
-    return (await axios.post(updateHandlerUrl, params, this.defaultHeader))
-      .data;
+    return (
+      await axios.post(
+        updateJsonUrl(this.solrUrl, collectionName),
+        { delete: params },
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
+   * Performs an atomic update on docs in the collection.
+   *
+   * @param collectionName The name of the collection to find the doc in.
+   * @param params The parameters for performing an atomic update.
+   *
+   * @returns The status of the request.
+   */
+  async updateDocs(
+    collectionName: string,
+    params: UpdateDocParams[]
+  ): Promise<SolrResponse> {
+    return (
+      await axios.post(
+        updateJsonUrl(this.solrUrl, collectionName),
+        params,
+        this.defaultHeader
+      )
+    ).data;
+  }
+
+  /**
+   * Creates a bulk transactional doc request. All operations are carried out in the order in which they're specified. Can add or delete.
+   *
+   * @param collectionName The name of the collection to make doc requests to.
+   * @param params The parameters for the bulk doc request.
+   *
+   * @returns The status of the request.
+   */
+  async bulkDocRequest(
+    collectionName: string,
+    params: BulkDocRequestParams
+  ): Promise<SolrResponse> {
+    return (
+      await axios.post(
+        updateJsonUrl(this.solrUrl, collectionName),
+        params,
+        this.defaultHeader
+      )
+    ).data;
   }
 
   // END: docs
@@ -683,7 +820,8 @@ export class SolrCli {
    *
    * @param collectionName The name of the collection to make schema requests to.
    * @param params The parameters for the bulk schema request.
-   * @returns
+   *
+   * @returns The status of the request.
    */
   async bulkSchemaRequest(
     collectionName: string,

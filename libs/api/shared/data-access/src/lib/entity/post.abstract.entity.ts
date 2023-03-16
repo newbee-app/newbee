@@ -7,7 +7,6 @@ import {
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import { Post } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { TeamEntity } from './team.entity';
@@ -25,7 +24,7 @@ export abstract class PostEntity implements Post {
    * No need for users to know what this value is.
    */
   @PrimaryKey({ hidden: true })
-  id: string = v4();
+  id: string;
 
   /**
    * @inheritdoc
@@ -61,7 +60,7 @@ export abstract class PostEntity implements Post {
    * @inheritdoc
    */
   @Property()
-  slug: string = shortenUuid(this.id);
+  slug: string;
 
   [OptionalProps]?: 'createdAt' | 'updatedAt' | 'markedUpToDateAt' | 'upToDate';
 
@@ -92,7 +91,9 @@ export abstract class PostEntity implements Post {
    */
   abstract maintainer: OrgMemberEntity | null;
 
-  constructor(title: string) {
+  constructor(id: string, title: string) {
+    this.id = id;
     this.title = title;
+    this.slug = shortenUuid(id);
   }
 }

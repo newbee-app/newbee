@@ -166,10 +166,15 @@ export class OrganizationService {
     try {
       await organization.removeAllCollections();
       await this.organizationRepository.removeAndFlush(organization);
-      await this.solrCli.deleteCollection(organization.id);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
+    }
+
+    try {
+      await this.solrCli.deleteCollection(organization.id);
+    } catch (err) {
+      this.logger.error(err);
     }
   }
 }

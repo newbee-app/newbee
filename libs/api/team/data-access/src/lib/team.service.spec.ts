@@ -15,8 +15,11 @@ import {
   TeamEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
+  testRealTimeGetByIdResponse1,
+  testSolrResponse1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
+import { SolrEntryEnum } from '@newbee/api/shared/util';
 import {
   testBaseCreateTeamDto1,
   testBaseUpdateTeamDto1,
@@ -26,6 +29,8 @@ import {
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 import { TeamService } from './team.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -35,9 +40,16 @@ jest.mock('@newbee/api/shared/data-access', () => ({
 }));
 const mockTeamEntity = TeamEntity as jest.Mock;
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
+
 describe('TeamService', () => {
   let service: TeamService;
   let repository: EntityRepository<TeamEntity>;
+  let solrCli: SolrCli;
 
   const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
 
@@ -53,6 +65,17 @@ describe('TeamService', () => {
             assign: jest.fn().mockReturnValue(testUpdatedTeam),
           }),
         },
+        {
+          provide: SolrCli,
+          useValue: createMock<SolrCli>({
+            addDoc: jest.fn().mockResolvedValue(testSolrResponse1),
+            realTimeGetById: jest
+              .fn()
+              .mockResolvedValue(testRealTimeGetByIdResponse1),
+            updateDocs: jest.fn().mockResolvedValue(testSolrResponse1),
+            deleteDoc: jest.fn().mockResolvedValue(testSolrResponse1),
+          }),
+        },
       ],
     }).compile();
 
@@ -60,9 +83,11 @@ describe('TeamService', () => {
     repository = module.get<EntityRepository<TeamEntity>>(
       getRepositoryToken(TeamEntity)
     );
+    solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockTeamEntity.mockReturnValue(testTeamEntity1);
+    mockV4.mockReturnValue(testTeamEntity1.id);
   });
 
   it('should be defined', () => {
@@ -74,6 +99,7 @@ describe('TeamService', () => {
     afterEach(() => {
       expect(mockTeamEntity).toBeCalledTimes(1);
       expect(mockTeamEntity).toBeCalledWith(
+        testTeamEntity1.id,
         testBaseCreateTeamDto1.name,
         testBaseCreateTeamDto1.slug,
         testOrgMemberEntity1
@@ -86,6 +112,12 @@ describe('TeamService', () => {
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).resolves.toEqual(testTeamEntity1);
+      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(solrCli.addDoc).toBeCalledWith(testOrganizationEntity1.id, {
+        id: testTeamEntity1.id,
+        entry_type: SolrEntryEnum.Team,
+        name: testTeamEntity1.name,
+      });
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -95,6 +127,16 @@ describe('TeamService', () => {
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+
+    it('should throw an InternalServerErrorException and delete if addDoc throws an error', async () => {
+      jest.spyOn(solrCli, 'addDoc').mockRejectedValue(new Error('addDoc'));
+      await expect(
+        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testTeamEntity1);
     });
 
     it('should throw a BadRequestException if slug already exists', async () => {
@@ -187,6 +229,19 @@ describe('TeamService', () => {
       await expect(
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
       ).resolves.toEqual(testUpdatedTeam);
+      expect(solrCli.realTimeGetById).toBeCalledTimes(1);
+      expect(solrCli.realTimeGetById).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testTeamEntity1.id
+      );
+      expect(solrCli.updateDocs).toBeCalledTimes(1);
+      expect(solrCli.updateDocs).toBeCalledWith(testOrganizationEntity1.id, [
+        {
+          id: testTeamEntity1.id,
+          _version_: 1,
+          name: { set: testBaseUpdateTeamDto1.name },
+        },
+      ]);
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
@@ -206,6 +261,17 @@ describe('TeamService', () => {
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
       ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
     });
+
+    it('should not throw if updateDocs throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'updateDocs')
+        .mockRejectedValue(new Error('updateDocs'));
+      await expect(
+        service.update(testTeamEntity1, testBaseUpdateTeamDto1)
+      ).resolves.toEqual(testUpdatedTeam);
+      expect(solrCli.realTimeGetById).toBeCalledTimes(1);
+      expect(solrCli.updateDocs).toBeCalledTimes(1);
+    });
   });
 
   describe('delete', () => {
@@ -217,6 +283,11 @@ describe('TeamService', () => {
 
     it('should delete a team', async () => {
       await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
+      expect(solrCli.deleteDoc).toBeCalledTimes(1);
+      expect(solrCli.deleteDoc).toBeCalledWith(testOrganizationEntity1.id, {
+        id: testTeamEntity1.id,
+        query: `team:${testTeamEntity1.name}`,
+      });
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
@@ -226,6 +297,14 @@ describe('TeamService', () => {
       await expect(service.delete(testTeamEntity1)).rejects.toThrow(
         new InternalServerErrorException(internalServerError)
       );
+    });
+
+    it('should not throw if deleteDoc throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'deleteDoc')
+        .mockRejectedValue(new Error('deleteDoc'));
+      await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
+      expect(solrCli.deleteDoc).toBeCalledTimes(1);
     });
   });
 });

@@ -62,6 +62,7 @@ export class QnaEntity extends PostEntity implements Qna {
   // renderedAnswer: string;
 
   constructor(
+    id: string,
     title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
@@ -70,7 +71,7 @@ export class QnaEntity extends PostEntity implements Qna {
     answerMarkdown: string | null
     // renderedAnswer: string,
   ) {
-    super(title);
+    super(id, title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;

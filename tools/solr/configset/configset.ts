@@ -137,12 +137,6 @@ async function create(options: OptionValues): Promise<void> {
       // Applicable for team and member
       { name: 'name', type: 'string' },
 
-      // Applicable for team
-      { name: 'members', type: 'string', multiValued: true },
-
-      // Applicable for member
-      { name: 'teams', type: 'string', multiValued: true },
-
       // Applicable for doc and qna
       { name: 'team', type: 'string' },
       { name: 'created_at', type: 'pdate' },

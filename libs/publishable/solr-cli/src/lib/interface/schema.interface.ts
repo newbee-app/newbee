@@ -1,23 +1,6 @@
 import type { ResponseHeader } from './shared.interface';
 
 /**
- * The parameters for a bulk schema request.
- */
-export interface BulkSchemaRequestParams {
-  'add-field'?: AddFieldParams | AddFieldParams[];
-  'delete-field'?: DeleteFieldParams | DeleteFieldParams[];
-  'replace-field'?: AddFieldParams | AddFieldParams[];
-  'add-dynamic-field'?: AddDynamicFieldParams | AddDynamicFieldParams[];
-  'delete-dynamic-field'?: DeleteFieldParams | DeleteFieldParams[];
-  'replace-dynamic-field'?: AddDynamicFieldParams | AddDynamicFieldParams[];
-  'add-field-type'?: AddFieldTypeParams | AddFieldTypeParams[];
-  'delete-field-type'?: DeleteFieldParams | DeleteFieldParams[];
-  'replace-field-type'?: AddFieldTypeParams | AddFieldTypeParams[];
-  'add-copy-field'?: AddCopyFieldParams | AddCopyFieldParams[];
-  'delete-copy-field'?: CopyFieldParams | CopyFieldParams[];
-}
-
-/**
  * How field types are structured in a response.
  */
 export interface FieldType {
@@ -513,4 +496,21 @@ export interface AddCopyFieldParams extends CopyFieldParams {
    * The upper limit for the number of characters to be copied.
    */
   maxChars?: number;
+}
+
+/**
+ * The parameters for a bulk schema request.
+ */
+export interface BulkSchemaRequestParams {
+  'add-field'?: AddFieldParams | AddFieldParams[];
+  'delete-field'?: DeleteFieldParams | DeleteFieldParams[];
+  'replace-field'?: AddFieldParams | AddFieldParams[];
+  'add-dynamic-field'?: AddDynamicFieldParams | AddDynamicFieldParams[];
+  'delete-dynamic-field'?: DeleteFieldParams | DeleteFieldParams[];
+  'replace-dynamic-field'?: AddDynamicFieldParams | AddDynamicFieldParams[];
+  'add-field-type'?: AddFieldTypeParams | AddFieldTypeParams[];
+  'delete-field-type'?: DeleteFieldParams | DeleteFieldParams[];
+  'replace-field-type'?: AddFieldTypeParams | AddFieldTypeParams[];
+  'add-copy-field'?: AddCopyFieldParams | AddCopyFieldParams[];
+  'delete-copy-field'?: CopyFieldParams | CopyFieldParams[];
 }

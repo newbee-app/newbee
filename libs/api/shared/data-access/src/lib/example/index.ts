@@ -1,5 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/api/shared/util';
+import {
+  OrgRoleEnum,
+  SolrEntryEnum,
+  TeamRoleEnum,
+} from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -11,6 +15,11 @@ import {
   testUserChallenge1,
   testUserSettings1,
 } from '@newbee/shared/util';
+import type {
+  RealTimeGetByIdResponse,
+  ResponseHeader,
+  SolrResponse,
+} from '@newbee/solr-cli';
 import { UserAndOptionsDto } from '../dto';
 import {
   AuthenticatorEntity,
@@ -82,7 +91,11 @@ export const testOrganizationEntity1 = createMock<OrganizationEntity>({
  * An example instance of `TeamEntity`.
  * Strictly for use in testing.
  */
-export const testTeamEntity1 = createMock<TeamEntity>({ ...testTeam1 });
+export const testTeamEntity1 = createMock<TeamEntity>({
+  ...testTeam1,
+  id: '1',
+  organization: testOrganizationEntity1,
+});
 
 /**
  * An example instance of `OrgMemberEntity`.
@@ -123,3 +136,35 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   creator: testOrgMemberEntity1,
   maintainer: testOrgMemberEntity1,
 });
+
+/**
+ * An example instace of `ResponseHeader`.
+ * Strictly for use in testing.
+ */
+export const testSolrResponseHeader1: ResponseHeader = {
+  status: 0,
+  QTime: 300,
+  zkConnected: true,
+};
+
+/**
+ * An example instance of `SolrResponse`.
+ * Strictly for use in testing.
+ */
+export const testSolrResponse1: SolrResponse = {
+  responseHeader: testSolrResponseHeader1,
+};
+
+/**
+ * An example instance of `RealTimeGetByIdResponse`.
+ * Strictly for use in testing.
+ */
+export const testRealTimeGetByIdResponse1: RealTimeGetByIdResponse = {
+  responseHeader: testSolrResponseHeader1,
+  doc: {
+    id: testTeamEntity1.id,
+    _version_: 1,
+    entry_type: SolrEntryEnum.Team,
+    name: testTeamEntity1.name,
+  },
+};

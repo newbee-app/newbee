@@ -49,13 +49,14 @@ export class DocEntity extends PostEntity implements Doc {
   // renderedHtml: string;
 
   constructor(
+    id: string,
     title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
     rawMarkdown: string
     // renderedHtml: string,
   ) {
-    super(title);
+    super(id, title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;

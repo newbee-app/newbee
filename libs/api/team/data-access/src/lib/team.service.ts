@@ -16,12 +16,15 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { generateUniqueSlug } from '@newbee/api/shared/util';
+import type { SolrSchema } from '@newbee/api/shared/util';
+import { generateUniqueSlug, SolrEntryEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 import { CreateTeamDto, UpdateTeamDto } from './dto';
 
 /**
@@ -36,7 +39,8 @@ export class TeamService {
 
   constructor(
     @InjectRepository(TeamEntity)
-    private readonly teamRepository: EntityRepository<TeamEntity>
+    private readonly teamRepository: EntityRepository<TeamEntity>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -53,6 +57,7 @@ export class TeamService {
     createTeamDto: CreateTeamDto,
     creator: OrgMemberEntity
   ): Promise<TeamEntity> {
+    const id = v4();
     const { name } = createTeamDto;
     let { slug } = createTeamDto;
     const { organization } = creator;
@@ -63,11 +68,10 @@ export class TeamService {
         name
       );
     }
-    const team = new TeamEntity(name, slug, creator);
+    const team = new TeamEntity(id, name, slug, creator);
 
     try {
       await this.teamRepository.persistAndFlush(team);
-      return team;
     } catch (err) {
       this.logger.error(err);
 
@@ -77,6 +81,17 @@ export class TeamService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const docParams: SolrSchema = { id, entry_type: SolrEntryEnum.Team, name };
+    try {
+      await this.solrCli.addDoc(organization.id, docParams);
+    } catch (err) {
+      this.logger.error(err);
+      await this.teamRepository.removeAndFlush(team);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return team;
   }
 
   /**
@@ -145,9 +160,9 @@ export class TeamService {
     updateTeamDto: UpdateTeamDto
   ): Promise<TeamEntity> {
     const updatedTeam = this.teamRepository.assign(team, updateTeamDto);
+
     try {
       await this.teamRepository.flush();
-      return updatedTeam;
     } catch (err) {
       this.logger.error(err);
 
@@ -157,6 +172,27 @@ export class TeamService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    if (!updateTeamDto.name) {
+      return updatedTeam;
+    }
+
+    const collectionName = updatedTeam.organization.id;
+    const { id } = updatedTeam;
+    try {
+      const solrRes = await this.solrCli.realTimeGetById(
+        collectionName,
+        team.id
+      );
+      const version = solrRes.doc['_version_'] as number;
+      await this.solrCli.updateDocs(collectionName, [
+        { id, _version_: version, name: { set: updatedTeam.name } },
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedTeam;
   }
 
   /**
@@ -173,6 +209,16 @@ export class TeamService {
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
+    }
+
+    const collectionName = team.organization.id;
+    try {
+      await this.solrCli.deleteDoc(collectionName, {
+        id: team.id,
+        query: `team:${team.name}`,
+      });
+    } catch (err) {
+      this.logger.error(err);
     }
   }
 }

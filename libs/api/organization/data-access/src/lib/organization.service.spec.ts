@@ -14,8 +14,10 @@ import { Test } from '@nestjs/testing';
 import {
   OrganizationEntity,
   testOrganizationEntity1,
+  testSolrResponse1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
+import { newOrgConfigset } from '@newbee/api/shared/util';
 import {
   testBaseCreateOrganizationDto1,
   testBaseUpdateOrganizationDto1,
@@ -45,6 +47,7 @@ const mockV4 = v4 as jest.Mock;
 describe('OrganizationService', () => {
   let service: OrganizationService;
   let repository: EntityRepository<OrganizationEntity>;
+  let solrCli: SolrCli;
 
   const testUpdatedOrganization = {
     ...testOrganizationEntity1,
@@ -65,7 +68,10 @@ describe('OrganizationService', () => {
         },
         {
           provide: SolrCli,
-          useValue: createMock<SolrCli>({}),
+          useValue: createMock<SolrCli>({
+            createCollection: jest.fn().mockResolvedValue(testSolrResponse1),
+            deleteCollection: jest.fn().mockResolvedValue(testSolrResponse1),
+          }),
         },
       ],
     }).compile();
@@ -74,6 +80,7 @@ describe('OrganizationService', () => {
     repository = module.get<EntityRepository<OrganizationEntity>>(
       getRepositoryToken(OrganizationEntity)
     );
+    solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrganizationEntity.mockReturnValue(testOrganizationEntity1);
@@ -83,6 +90,7 @@ describe('OrganizationService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(solrCli).toBeDefined();
   });
 
   describe('create', () => {
@@ -104,6 +112,12 @@ describe('OrganizationService', () => {
       await expect(
         service.create(testBaseCreateOrganizationDto1, testUserEntity1)
       ).resolves.toEqual(testOrganizationEntity1);
+      expect(solrCli.createCollection).toBeCalledTimes(1);
+      expect(solrCli.createCollection).toBeCalledWith({
+        name: testOrganizationEntity1.id,
+        numShards: 1,
+        config: newOrgConfigset,
+      });
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -113,6 +127,18 @@ describe('OrganizationService', () => {
       await expect(
         service.create(testBaseCreateOrganizationDto1, testUserEntity1)
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+
+    it('should throw an InternalServerErrorException and delete if createCollection throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'createCollection')
+        .mockRejectedValue(new Error('createCollection'));
+      await expect(
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(solrCli.createCollection).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
     });
 
     it('should throw a BadRequestException if name already exists', async () => {
@@ -227,6 +253,10 @@ describe('OrganizationService', () => {
       await expect(
         service.delete(testOrganizationEntity1)
       ).resolves.toBeUndefined();
+      expect(solrCli.deleteCollection).toBeCalledTimes(1);
+      expect(solrCli.deleteCollection).toBeCalledWith(
+        testOrganizationEntity1.id
+      );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
@@ -236,6 +266,16 @@ describe('OrganizationService', () => {
       await expect(service.delete(testOrganizationEntity1)).rejects.toThrow(
         new InternalServerErrorException(internalServerError)
       );
+    });
+
+    it('should not throw if deleteCollection throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'deleteCollection')
+        .mockRejectedValue(new Error('deleteCollection'));
+      await expect(
+        service.delete(testOrganizationEntity1)
+      ).resolves.toBeUndefined();
+      expect(solrCli.deleteCollection).toBeCalledTimes(1);
     });
   });
 });

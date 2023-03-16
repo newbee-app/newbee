@@ -9,7 +9,6 @@ import {
 } from '@mikro-orm/core';
 import { TeamRoleEnum } from '@newbee/api/shared/util';
 import { Team } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -29,7 +28,7 @@ export class TeamEntity implements Team {
    * No need for users to know what this value is.
    */
   @PrimaryKey({ hidden: true })
-  id: string = v4();
+  id: string;
 
   /**
    * @inheritdoc
@@ -86,7 +85,13 @@ export class TeamEntity implements Team {
   })
   teamMembers = new Collection<TeamMemberEntity>(this);
 
-  constructor(name: string, slug: string, creator: OrgMemberEntity) {
+  constructor(
+    id: string,
+    name: string,
+    slug: string,
+    creator: OrgMemberEntity
+  ) {
+    this.id = id;
     this.name = name;
     this.slug = slug;
     this.organization = creator.organization;
