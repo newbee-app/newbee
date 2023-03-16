@@ -19,6 +19,7 @@ import {
   testBaseUpdateDocDto1,
 } from '@newbee/shared/data-access';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 import { DocService } from './doc.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -27,6 +28,12 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   DocEntity: jest.fn(),
 }));
 const mockDocEntity = DocEntity as jest.Mock;
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 jest.mock('@newbee/api/shared/util', () => ({
   __esModule: true,
@@ -63,6 +70,7 @@ describe('DocService', () => {
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
+    mockV4.mockReturnValue(testDocEntity1.id);
     mockElongateUuid.mockReturnValue(testDocEntity1.slug);
 
     jest.useFakeTimers().setSystemTime(now);
@@ -77,6 +85,7 @@ describe('DocService', () => {
     afterEach(() => {
       expect(mockDocEntity).toBeCalledTimes(1);
       expect(mockDocEntity).toBeCalledWith(
+        testDocEntity1.id,
         testDocEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,

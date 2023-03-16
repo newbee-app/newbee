@@ -19,6 +19,7 @@ import {
   testBaseUpdateQnaDto1,
 } from '@newbee/shared/data-access';
 import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 import { QnaService } from './qna.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -27,6 +28,12 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   QnaEntity: jest.fn(),
 }));
 const mockQnaEntity = QnaEntity as jest.Mock;
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 jest.mock('@newbee/api/shared/util', () => ({
   __esModule: true,
@@ -63,6 +70,7 @@ describe('QnaService', () => {
 
     jest.clearAllMocks();
     mockQnaEntity.mockReturnValue(testQnaEntity1);
+    mockV4.mockReturnValue(testQnaEntity1.id);
     mockElongateUuid.mockReturnValue(testQnaEntity1.slug);
 
     jest.useFakeTimers().setSystemTime(now);
@@ -77,6 +85,7 @@ describe('QnaService', () => {
     afterEach(() => {
       expect(mockQnaEntity).toBeCalledTimes(1);
       expect(mockQnaEntity).toBeCalledWith(
+        testQnaEntity1.id,
         testQnaEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,

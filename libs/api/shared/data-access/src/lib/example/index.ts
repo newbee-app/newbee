@@ -123,6 +123,7 @@ export const testTeamMemberEntity1 = createMock<TeamMemberEntity>({
  */
 export const testDocEntity1 = createMock<DocEntity>({
   ...testDoc1,
+  id: '1',
   creator: testOrgMemberEntity1,
   maintainer: testOrgMemberEntity1,
 });
@@ -133,6 +134,7 @@ export const testDocEntity1 = createMock<DocEntity>({
  */
 export const testQnaEntity1 = createMock<QnaEntity>({
   ...testQna1,
+  id: '1',
   creator: testOrgMemberEntity1,
   maintainer: testOrgMemberEntity1,
 });

@@ -14,6 +14,7 @@ import {
 } from '@newbee/api/shared/data-access';
 import { elongateUuid } from '@newbee/api/shared/util';
 import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
 
 /**
@@ -47,7 +48,9 @@ export class QnaService {
     creator: OrgMemberEntity
   ): Promise<QnaEntity> {
     const { title, questionMarkdown, answerMarkdown } = createQnaDto;
+    const id = v4();
     const qna = new QnaEntity(
+      id,
       title,
       creator,
       team,

@@ -14,6 +14,7 @@ import {
 } from '@newbee/api/shared/data-access';
 import { elongateUuid } from '@newbee/api/shared/util';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
 
 /**
@@ -47,7 +48,8 @@ export class DocService {
     creator: OrgMemberEntity
   ): Promise<DocEntity> {
     const { title, rawMarkdown } = createDocDto;
-    const doc = new DocEntity(title, creator, team, rawMarkdown);
+    const id = v4();
+    const doc = new DocEntity(id, title, creator, team, rawMarkdown);
 
     try {
       await this.docRepository.persistAndFlush(doc);
