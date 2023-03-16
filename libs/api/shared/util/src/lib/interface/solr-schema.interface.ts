@@ -18,7 +18,7 @@ export interface SolrSchema extends AddDocParams {
   /**
    * The name of the team or the org member the doc represents, if the doc is a team or an org member.
    */
-  name?: string;
+  name?: string | string[];
 
   /**
    * The ID of the team the post belongs to, if the doc is a doc or a qna.

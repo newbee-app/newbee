@@ -135,7 +135,7 @@ async function create(options: OptionValues): Promise<void> {
       { name: 'entry_type', type: 'entry_type', required: true },
 
       // Applicable for team and member
-      { name: 'name', type: 'string' },
+      { name: 'name', type: 'string', multiValued: true },
 
       // Applicable for doc and qna
       { name: 'team', type: 'string' },

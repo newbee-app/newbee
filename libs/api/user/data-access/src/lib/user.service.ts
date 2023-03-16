@@ -20,6 +20,7 @@ import {
   userEmailTakenBadRequest,
   userIdNotFound,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -37,7 +38,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
-    private readonly configService: ConfigService<AppConfig, true>
+    private readonly configService: ConfigService<AppConfig, true>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -145,7 +147,6 @@ export class UserService {
 
     try {
       await this.userRepository.flush();
-      return updatedUser;
     } catch (err) {
       this.logger.error(err);
 
@@ -155,6 +156,34 @@ export class UserService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    if (!updateUserDto.name && !updateUserDto.displayName) {
+      return updatedUser;
+    }
+
+    if (!updatedUser.organizations.isInitialized()) {
+      await updatedUser.organizations.init();
+    }
+    const { name, displayName, organizations } = updatedUser;
+    for (const orgMember of organizations) {
+      const collectionName = orgMember.organization.id;
+      const { id } = orgMember;
+      try {
+        const solrRes = await this.solrCli.realTimeGetById(collectionName, id);
+        const version = solrRes.doc['_version_'] as number;
+        await this.solrCli.updateDocs(collectionName, [
+          {
+            id,
+            _version_: version,
+            name: { set: displayName ? [name, displayName] : name },
+          },
+        ]);
+      } catch (err) {
+        this.logger.error(err);
+      }
+    }
+
+    return updatedUser;
   }
 
   /**

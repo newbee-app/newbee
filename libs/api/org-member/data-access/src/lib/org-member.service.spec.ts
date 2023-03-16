@@ -17,12 +17,14 @@ import {
   testOrgMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { OrgRoleEnum } from '@newbee/api/shared/util';
+import { OrgRoleEnum, SolrEntryEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 import { OrgMemberService } from './org-member.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -32,9 +34,16 @@ jest.mock('@newbee/api/shared/data-access', () => ({
 }));
 const mockOrgMemberEntity = OrgMemberEntity as jest.Mock;
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
+
 describe('OrgMemberService', () => {
   let service: OrgMemberService;
   let repository: EntityRepository<OrgMemberEntity>;
+  let solrCli: SolrCli;
 
   const testUpdatedOrgMember = {
     ...testOrgMemberEntity1,
@@ -52,6 +61,10 @@ describe('OrgMemberService', () => {
             assign: jest.fn().mockResolvedValue(testUpdatedOrgMember),
           }),
         },
+        {
+          provide: SolrCli,
+          useValue: createMock<SolrCli>(),
+        },
       ],
     }).compile();
 
@@ -59,20 +72,24 @@ describe('OrgMemberService', () => {
     repository = module.get<EntityRepository<OrgMemberEntity>>(
       getRepositoryToken(OrgMemberEntity)
     );
+    solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrgMemberEntity.mockReturnValue(testOrgMemberEntity1);
+    mockV4.mockReturnValue(testOrgMemberEntity1.id);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(solrCli).toBeDefined();
   });
 
   describe('create', () => {
     afterEach(() => {
       expect(mockOrgMemberEntity).toBeCalledTimes(1);
       expect(mockOrgMemberEntity).toBeCalledWith(
+        testOrgMemberEntity1.id,
         testUserEntity1,
         testOrganizationEntity1,
         testOrgMemberEntity1.role
@@ -89,6 +106,12 @@ describe('OrgMemberService', () => {
           testOrgMemberEntity1.role
         )
       ).resolves.toEqual(testOrgMemberEntity1);
+      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(solrCli.addDoc).toBeCalledWith(testOrganizationEntity1.id, {
+        id: testOrgMemberEntity1.id,
+        entry_type: SolrEntryEnum.Member,
+        name: [testUserEntity1.name, testUserEntity1.displayName],
+      });
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -119,6 +142,20 @@ describe('OrgMemberService', () => {
       ).rejects.toThrow(
         new BadRequestException(userAlreadyOrgMemberBadRequest)
       );
+    });
+
+    it('should throw an InternalServerErrorException and delete if addDoc throws an error', async () => {
+      jest.spyOn(solrCli, 'addDoc').mockRejectedValue(new Error('addDoc'));
+      await expect(
+        service.create(
+          testUserEntity1,
+          testOrganizationEntity1,
+          testOrgMemberEntity1.role
+        )
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
     });
   });
 
@@ -198,6 +235,16 @@ describe('OrgMemberService', () => {
       await expect(service.delete(testOrgMemberEntity1)).rejects.toThrow(
         new InternalServerErrorException(internalServerError)
       );
+    });
+
+    it('should not throw if deleteDoc throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'deleteDoc')
+        .mockRejectedValue(new Error('deleteDoc'));
+      await expect(
+        service.delete(testOrgMemberEntity1)
+      ).resolves.toBeUndefined();
+      expect(solrCli.deleteDoc).toBeCalledTimes(1);
     });
   });
 });

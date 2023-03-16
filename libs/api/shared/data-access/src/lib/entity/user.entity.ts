@@ -105,7 +105,6 @@ export class UserEntity implements User {
 
   /**
    * All of the properties in the entity that are optional, even if they don't appear that way.
-   * In this case, it's `active`.
    */
   [OptionalProps]?: 'active';
 

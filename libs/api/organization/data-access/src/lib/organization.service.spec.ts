@@ -14,7 +14,6 @@ import { Test } from '@nestjs/testing';
 import {
   OrganizationEntity,
   testOrganizationEntity1,
-  testSolrResponse1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import { newOrgConfigset } from '@newbee/api/shared/util';
@@ -68,10 +67,7 @@ describe('OrganizationService', () => {
         },
         {
           provide: SolrCli,
-          useValue: createMock<SolrCli>({
-            createCollection: jest.fn().mockResolvedValue(testSolrResponse1),
-            deleteCollection: jest.fn().mockResolvedValue(testSolrResponse1),
-          }),
+          useValue: createMock<SolrCli>(),
         },
       ],
     }).compile();
@@ -129,18 +125,6 @@ describe('OrganizationService', () => {
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw an InternalServerErrorException and delete if createCollection throws an error', async () => {
-      jest
-        .spyOn(solrCli, 'createCollection')
-        .mockRejectedValue(new Error('createCollection'));
-      await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.createCollection).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
-    });
-
     it('should throw a BadRequestException if name already exists', async () => {
       jest
         .spyOn(repository, 'persistAndFlush')
@@ -152,6 +136,18 @@ describe('OrganizationService', () => {
       ).rejects.toThrow(
         new BadRequestException(organizationSlugTakenBadRequest)
       );
+    });
+
+    it('should throw an InternalServerErrorException and delete if createCollection throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'createCollection')
+        .mockRejectedValue(new Error('createCollection'));
+      await expect(
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(solrCli.createCollection).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
     });
   });
 

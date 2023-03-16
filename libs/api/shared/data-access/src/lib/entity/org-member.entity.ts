@@ -2,11 +2,12 @@ import {
   Entity,
   Enum,
   ManyToOne,
+  PrimaryKey,
   PrimaryKeyType,
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { OrgRoleEnum, translator } from '@newbee/api/shared/util';
+import { OrgRoleEnum, shortenUuid } from '@newbee/api/shared/util';
 import { OrganizationEntity } from './organization.entity';
 import { UserEntity } from './user.entity';
 
@@ -18,17 +19,25 @@ import { UserEntity } from './user.entity';
 @Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
 export class OrgMemberEntity {
   /**
+   * The globally unique ID for the org member.
+   * `hidden` is on, so it will never be serialized.
+   * No need for users to know what this value is.
+   */
+  @PrimaryKey({ hidden: true })
+  id: string;
+
+  /**
    * The user associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => UserEntity, { primary: true, hidden: true })
+  @ManyToOne(() => UserEntity, { hidden: true })
   user: UserEntity;
 
   /**
    * The organization associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => OrganizationEntity, { primary: true, hidden: true })
+  @ManyToOne(() => OrganizationEntity, { hidden: true })
   organization: OrganizationEntity;
 
   /**
@@ -41,7 +50,7 @@ export class OrgMemberEntity {
    * The user's unique slug within the organization.
    */
   @Property()
-  slug: string = translator.new();
+  slug: string;
 
   /**
    * Specifies the primary key of the entity.
@@ -50,12 +59,15 @@ export class OrgMemberEntity {
   [PrimaryKeyType]?: [string, string];
 
   constructor(
+    id: string,
     user: UserEntity,
     organization: OrganizationEntity,
     role: OrgRoleEnum
   ) {
+    this.id = id;
     this.user = user;
     this.organization = organization;
     this.role = role;
+    this.slug = shortenUuid(id);
   }
 }

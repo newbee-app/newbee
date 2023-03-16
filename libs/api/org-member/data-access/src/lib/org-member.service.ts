@@ -16,12 +16,18 @@ import {
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { OrgRoleEnum } from '@newbee/api/shared/util';
+import {
+  OrgRoleEnum,
+  SolrEntryEnum,
+  SolrSchema,
+} from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import { v4 } from 'uuid';
 
 /**
  * The service that interacts with `OrgMemberEntity`.
@@ -35,7 +41,8 @@ export class OrgMemberService {
 
   constructor(
     @InjectRepository(OrgMemberEntity)
-    private readonly orgMemberRepository: EntityRepository<OrgMemberEntity>
+    private readonly orgMemberRepository: EntityRepository<OrgMemberEntity>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -54,10 +61,10 @@ export class OrgMemberService {
     organization: OrganizationEntity,
     role: OrgRoleEnum
   ): Promise<OrgMemberEntity> {
-    const orgMember = new OrgMemberEntity(user, organization, role);
+    const id = v4();
+    const orgMember = new OrgMemberEntity(id, user, organization, role);
     try {
       await this.orgMemberRepository.persistAndFlush(orgMember);
-      return orgMember;
     } catch (err) {
       this.logger.error(err);
 
@@ -67,6 +74,22 @@ export class OrgMemberService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const { name, displayName } = user;
+    const docParams: SolrSchema = {
+      id,
+      entry_type: SolrEntryEnum.Member,
+      name: displayName ? [name, displayName] : name,
+    };
+    try {
+      await this.solrCli.addDoc(organization.id, docParams);
+    } catch (err) {
+      this.logger.error(err);
+      await this.orgMemberRepository.removeAndFlush(orgMember);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return orgMember;
   }
 
   /**
@@ -138,6 +161,15 @@ export class OrgMemberService {
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
+    }
+
+    const collectionName = orgMember.organization.id;
+    try {
+      await this.solrCli.deleteDoc(collectionName, {
+        id: orgMember.id,
+      });
+    } catch (err) {
+      this.logger.error(err);
     }
   }
 }

@@ -13,6 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
+  testRealTimeGetByIdResponse1,
   testUserAndOptionsDto1,
   testUserEntity1,
   UserEntity,
@@ -27,6 +28,7 @@ import {
   userEmailTakenBadRequest,
   userIdNotFound,
 } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { UserService } from './user.service';
@@ -54,6 +56,7 @@ const mockUserEntity = UserEntity as jest.Mock;
 describe('UserService', () => {
   let service: UserService;
   let repository: EntityRepository<UserEntity>;
+
   const testUpdatedUser = { ...testUserEntity1, ...testBaseUpdateUserDto1 };
 
   beforeEach(async () => {
@@ -70,6 +73,14 @@ describe('UserService', () => {
         {
           provide: ConfigService,
           useValue: createMock<ConfigService>(),
+        },
+        {
+          provide: SolrCli,
+          useValue: createMock<SolrCli>({
+            realTimeGetById: jest
+              .fn()
+              .mockResolvedValue(testRealTimeGetByIdResponse1),
+          }),
         },
       ],
     }).compile();

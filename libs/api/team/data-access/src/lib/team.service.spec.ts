@@ -16,7 +16,6 @@ import {
   testOrganizationEntity1,
   testOrgMemberEntity1,
   testRealTimeGetByIdResponse1,
-  testSolrResponse1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { SolrEntryEnum } from '@newbee/api/shared/util';
@@ -68,12 +67,9 @@ describe('TeamService', () => {
         {
           provide: SolrCli,
           useValue: createMock<SolrCli>({
-            addDoc: jest.fn().mockResolvedValue(testSolrResponse1),
             realTimeGetById: jest
               .fn()
               .mockResolvedValue(testRealTimeGetByIdResponse1),
-            updateDocs: jest.fn().mockResolvedValue(testSolrResponse1),
-            deleteDoc: jest.fn().mockResolvedValue(testSolrResponse1),
           }),
         },
       ],
@@ -129,16 +125,6 @@ describe('TeamService', () => {
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
-    it('should throw an InternalServerErrorException and delete if addDoc throws an error', async () => {
-      jest.spyOn(solrCli, 'addDoc').mockRejectedValue(new Error('addDoc'));
-      await expect(
-        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDoc).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testTeamEntity1);
-    });
-
     it('should throw a BadRequestException if slug already exists', async () => {
       jest
         .spyOn(repository, 'persistAndFlush')
@@ -148,6 +134,16 @@ describe('TeamService', () => {
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
+    });
+
+    it('should throw an InternalServerErrorException and delete if addDoc throws an error', async () => {
+      jest.spyOn(solrCli, 'addDoc').mockRejectedValue(new Error('addDoc'));
+      await expect(
+        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testTeamEntity1);
     });
   });
 

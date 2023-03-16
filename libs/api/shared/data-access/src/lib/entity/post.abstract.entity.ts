@@ -62,6 +62,9 @@ export abstract class PostEntity implements Post {
   @Property()
   slug: string;
 
+  /**
+   * All of the properties in the entity that are optional, even if they don't appear that way.
+   */
   [OptionalProps]?: 'createdAt' | 'updatedAt' | 'markedUpToDateAt' | 'upToDate';
 
   /**

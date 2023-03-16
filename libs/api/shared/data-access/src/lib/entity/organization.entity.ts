@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { OrgRoleEnum } from '@newbee/api/shared/util';
 import type { Organization } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { QnaEntity } from './qna.entity';
@@ -90,7 +91,7 @@ export class OrganizationEntity implements Organization {
     this.id = id;
     this.name = name;
     this.slug = slug;
-    new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
+    new OrgMemberEntity(v4(), creator, this, OrgRoleEnum.Owner);
   }
 
   /**
