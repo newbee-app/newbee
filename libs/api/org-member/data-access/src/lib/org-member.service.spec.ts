@@ -106,8 +106,8 @@ describe('OrgMemberService', () => {
           testOrgMemberEntity1.role
         )
       ).resolves.toEqual(testOrgMemberEntity1);
-      expect(solrCli.addDoc).toBeCalledTimes(1);
-      expect(solrCli.addDoc).toBeCalledWith(testOrganizationEntity1.id, {
+      expect(solrCli.addDocs).toBeCalledTimes(1);
+      expect(solrCli.addDocs).toBeCalledWith(testOrganizationEntity1.id, {
         id: testOrgMemberEntity1.id,
         entry_type: SolrEntryEnum.Member,
         name: [testUserEntity1.name, testUserEntity1.displayName],
@@ -144,8 +144,8 @@ describe('OrgMemberService', () => {
       );
     });
 
-    it('should throw an InternalServerErrorException and delete if addDoc throws an error', async () => {
-      jest.spyOn(solrCli, 'addDoc').mockRejectedValue(new Error('addDoc'));
+    it('should throw an InternalServerErrorException and delete if addDocs throws an error', async () => {
+      jest.spyOn(solrCli, 'addDocs').mockRejectedValue(new Error('addDocs'));
       await expect(
         service.create(
           testUserEntity1,
@@ -153,7 +153,7 @@ describe('OrgMemberService', () => {
           testOrgMemberEntity1.role
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDoc).toBeCalledTimes(1);
+      expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
     });
@@ -237,14 +237,14 @@ describe('OrgMemberService', () => {
       );
     });
 
-    it('should not throw if deleteDoc throws an error', async () => {
+    it('should not throw if deleteDocs throws an error', async () => {
       jest
-        .spyOn(solrCli, 'deleteDoc')
-        .mockRejectedValue(new Error('deleteDoc'));
+        .spyOn(solrCli, 'deleteDocs')
+        .mockRejectedValue(new Error('deleteDocs'));
       await expect(
         service.delete(testOrgMemberEntity1)
       ).resolves.toBeUndefined();
-      expect(solrCli.deleteDoc).toBeCalledTimes(1);
+      expect(solrCli.deleteDocs).toBeCalledTimes(1);
     });
   });
 });

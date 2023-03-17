@@ -12,8 +12,13 @@ import {
   QnaEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid } from '@newbee/api/shared/util';
+import {
+  elongateUuid,
+  SolrEntryEnum,
+  SolrSchema,
+} from '@newbee/api/shared/util';
 import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
 
@@ -29,7 +34,8 @@ export class QnaService {
 
   constructor(
     @InjectRepository(QnaEntity)
-    private readonly qnaRepository: EntityRepository<QnaEntity>
+    private readonly qnaRepository: EntityRepository<QnaEntity>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -60,11 +66,24 @@ export class QnaService {
 
     try {
       await this.qnaRepository.persistAndFlush(qna);
-      return qna;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = creator.organization.id;
+    try {
+      await this.solrCli.addDocs(
+        collectionName,
+        QnaService.createDocFields(qna)
+      );
+    } catch (err) {
+      this.logger.error(err);
+      await this.qnaRepository.removeAndFlush(qna);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return qna;
   }
 
   /**
@@ -117,11 +136,22 @@ export class QnaService {
     const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
     try {
       await this.qnaRepository.flush();
-      return updatedQna;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = qna.organization.id;
+    try {
+      await this.solrCli.getVersionAndReplaceDocs(
+        collectionName,
+        QnaService.createDocFields(updatedQna)
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedQna;
   }
 
   /**
@@ -138,11 +168,22 @@ export class QnaService {
     const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
     try {
       await this.qnaRepository.flush();
-      return updatedQna;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = qna.organization.id;
+    try {
+      await this.solrCli.getVersionAndReplaceDocs(
+        collectionName,
+        QnaService.createDocFields(updatedQna)
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedQna;
   }
 
   /**
@@ -159,5 +200,42 @@ export class QnaService {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = qna.organization.id;
+    try {
+      await this.solrCli.deleteDocs(collectionName, { id: qna.id });
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  private static createDocFields(qna: QnaEntity): SolrSchema {
+    const {
+      id,
+      createdAt,
+      updatedAt,
+      markedUpToDateAt,
+      upToDate,
+      title,
+      creator,
+      maintainer,
+      questionMarkdown,
+      answerMarkdown,
+      team,
+    } = qna;
+    return {
+      id,
+      entry_type: SolrEntryEnum.Qna,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      marked_up_to_date_at: markedUpToDateAt,
+      up_to_date: upToDate,
+      title,
+      creator: creator.id,
+      maintainer: maintainer?.id ?? null,
+      question_details: questionMarkdown,
+      answer: answerMarkdown,
+      team: team?.id ?? null,
+    };
   }
 }

@@ -76,13 +76,13 @@ export class OrgMemberService {
     }
 
     const { name, displayName } = user;
-    const docParams: SolrSchema = {
+    const docFields: SolrSchema = {
       id,
       entry_type: SolrEntryEnum.Member,
       name: displayName ? [name, displayName] : name,
     };
     try {
-      await this.solrCli.addDoc(organization.id, docParams);
+      await this.solrCli.addDocs(organization.id, docFields);
     } catch (err) {
       this.logger.error(err);
       await this.orgMemberRepository.removeAndFlush(orgMember);
@@ -165,9 +165,7 @@ export class OrgMemberService {
 
     const collectionName = orgMember.organization.id;
     try {
-      await this.solrCli.deleteDoc(collectionName, {
-        id: orgMember.id,
-      });
+      await this.solrCli.deleteDocs(collectionName, { id: orgMember.id });
     } catch (err) {
       this.logger.error(err);
     }

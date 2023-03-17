@@ -1,10 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
-import {
-  OrgRoleEnum,
-  SolrEntryEnum,
-  TeamRoleEnum,
-} from '@newbee/api/shared/util';
+import { OrgRoleEnum, TeamRoleEnum } from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -16,7 +12,6 @@ import {
   testUserChallenge1,
   testUserSettings1,
 } from '@newbee/shared/util';
-import type { RealTimeGetByIdResponse, ResponseHeader } from '@newbee/solr-cli';
 import { UserAndOptionsDto } from '../dto';
 import {
   AuthenticatorEntity,
@@ -125,6 +120,8 @@ export const testDocEntity1 = createMock<DocEntity>({
   id: '1',
   creator: testOrgMemberEntity1,
   maintainer: testOrgMemberEntity1,
+  organization: testOrganizationEntity1,
+  team: testTeamEntity1,
 });
 
 /**
@@ -136,28 +133,6 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   id: '1',
   creator: testOrgMemberEntity1,
   maintainer: testOrgMemberEntity1,
+  organization: testOrganizationEntity1,
+  team: testTeamEntity1,
 });
-
-/**
- * An example instace of `ResponseHeader`.
- * Strictly for use in testing.
- */
-export const testSolrResponseHeader1: ResponseHeader = {
-  status: 0,
-  QTime: 300,
-  zkConnected: true,
-};
-
-/**
- * An example instance of `RealTimeGetByIdResponse`.
- * Strictly for use in testing.
- */
-export const testRealTimeGetByIdResponse1: RealTimeGetByIdResponse = {
-  responseHeader: testSolrResponseHeader1,
-  doc: {
-    id: testTeamEntity1.id,
-    _version_: 1,
-    entry_type: SolrEntryEnum.Team,
-    name: testTeamEntity1.name,
-  },
-};

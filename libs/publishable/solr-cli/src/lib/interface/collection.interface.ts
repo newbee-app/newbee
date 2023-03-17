@@ -1,4 +1,4 @@
-import { ResponseHeader } from './shared.interface';
+import type { DocResponse, ResponseHeader } from './shared.interface';
 
 /**
  * The response from a LIST collections request.
@@ -137,9 +137,7 @@ export interface RealTimeGetByIdResponse {
   /**
    * The result doc.
    */
-  doc: {
-    [docParams: string]: string | number | boolean;
-  };
+  doc: DocResponse;
 }
 
 export interface RealTimeGetByIdsResponse {
@@ -170,6 +168,6 @@ export interface RealTimeGetByIdsResponse {
     /**
      * The values of the docs themselves.
      */
-    docs: { [docParams: string]: string | number | boolean }[];
+    docs: DocResponse[];
   };
 }

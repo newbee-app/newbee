@@ -82,9 +82,9 @@ export class TeamService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const docParams: SolrSchema = { id, entry_type: SolrEntryEnum.Team, name };
+    const docFields: SolrSchema = { id, entry_type: SolrEntryEnum.Team, name };
     try {
-      await this.solrCli.addDoc(organization.id, docParams);
+      await this.solrCli.addDocs(organization.id, docFields);
     } catch (err) {
       this.logger.error(err);
       await this.teamRepository.removeAndFlush(team);
@@ -173,21 +173,17 @@ export class TeamService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    if (!updateTeamDto.name) {
+    const { name } = updateTeamDto;
+    if (!name) {
       return updatedTeam;
     }
 
-    const collectionName = updatedTeam.organization.id;
-    const { id } = updatedTeam;
+    const collectionName = team.organization.id;
     try {
-      const solrRes = await this.solrCli.realTimeGetById(
+      await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        team.id
+        TeamService.createDocFields(updatedTeam)
       );
-      const version = solrRes.doc['_version_'] as number;
-      await this.solrCli.updateDocs(collectionName, [
-        { id, _version_: version, name: { set: updatedTeam.name } },
-      ]);
     } catch (err) {
       this.logger.error(err);
     }
@@ -213,12 +209,24 @@ export class TeamService {
 
     const collectionName = team.organization.id;
     try {
-      await this.solrCli.deleteDoc(collectionName, {
+      await this.solrCli.deleteDocs(collectionName, {
         id: team.id,
         query: `team:${team.name}`,
       });
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  /**
+   * Create the fields to add or replace a team doc in a Solr index.
+   *
+   * @param team The team to create doc fields for.
+   *
+   * @returns The params to add or replace a doc using SolrCli.
+   */
+  private static createDocFields(team: TeamEntity): SolrSchema {
+    const { id, name } = team;
+    return { id, name, entry_type: SolrEntryEnum.Team };
   }
 }

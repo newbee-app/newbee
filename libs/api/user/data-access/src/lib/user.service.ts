@@ -169,15 +169,10 @@ export class UserService {
       const collectionName = orgMember.organization.id;
       const { id } = orgMember;
       try {
-        const solrRes = await this.solrCli.realTimeGetById(collectionName, id);
-        const version = solrRes.doc['_version_'] as number;
-        await this.solrCli.updateDocs(collectionName, [
-          {
-            id,
-            _version_: version,
-            name: { set: displayName ? [name, displayName] : name },
-          },
-        ]);
+        await this.solrCli.getVersionAndUpdateDocs(collectionName, {
+          id,
+          name: { set: displayName ? [name, displayName] : name },
+        });
       } catch (err) {
         this.logger.error(err);
       }

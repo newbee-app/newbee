@@ -197,37 +197,17 @@ export class SolrCli {
   // START: docs
 
   /**
-   * ADD a doc to a collection.
-   *
-   * @param collectionName The name of the collection to add a doc to.
-   * @param params All of the parameters for ADDing a doc.
-   *
-   * @returns The status of the request.
-   */
-  async addDoc(
-    collectionName: string,
-    params: AddDocParams
-  ): Promise<SolrResponse> {
-    return (
-      await axios.post(
-        updateJsonDocsUrl(this.solrUrl, collectionName),
-        params,
-        this.defaultHeader
-      )
-    ).data;
-  }
-
-  /**
-   * ADD docs to a collection.
+   * ADD doc(s) to a collection.
+   * Can also be used to do a full replace, if the ID of the doc already exists in the index.
    *
    * @param collectionName The name of the collection to add the docs to.
-   * @param params All of the parameters for ADDing docs.
+   * @param params All of the parameters for ADDing doc(s).
    *
    * @returns The status of the request.
    */
   async addDocs(
     collectionName: string,
-    params: AddDocParams[]
+    params: AddDocParams | AddDocParams[]
   ): Promise<SolrResponse> {
     return (
       await axios.post(
@@ -239,37 +219,16 @@ export class SolrCli {
   }
 
   /**
-   * DELETE a doc from a collection.
+   * DELETE doc(s) from a collection.
    *
    * @param collectionName The collection to delete from.
-   * @param params The parameters for DELETEing a doc.
-   *
-   * @returns The status of the request.
-   */
-  async deleteDoc(
-    collectionName: string,
-    params: DeleteDocParams
-  ): Promise<SolrResponse> {
-    return (
-      await axios.post(
-        updateJsonUrl(this.solrUrl, collectionName),
-        { delete: params },
-        this.defaultHeader
-      )
-    ).data;
-  }
-
-  /**
-   * DELETE docs from a collection.
-   *
-   * @param collectionName The collection to delete from.
-   * @param params The parameters for DELETEing docs.
+   * @param params The parameters for DELETEing doc(s).
    *
    * @returns The status of the request.
    */
   async deleteDocs(
     collectionName: string,
-    params: DeleteDocParams[]
+    params: DeleteDocParams | DeleteDocParams[]
   ): Promise<SolrResponse> {
     return (
       await axios.post(
@@ -281,7 +240,7 @@ export class SolrCli {
   }
 
   /**
-   * Performs an atomic update on docs in the collection.
+   * Performs an atomic update on doc(s) in the collection.
    *
    * @param collectionName The name of the collection to find the doc in.
    * @param params The parameters for performing an atomic update.
@@ -290,15 +249,59 @@ export class SolrCli {
    */
   async updateDocs(
     collectionName: string,
-    params: UpdateDocParams[]
+    params: UpdateDocParams | UpdateDocParams[]
   ): Promise<SolrResponse> {
     return (
       await axios.post(
         updateJsonUrl(this.solrUrl, collectionName),
-        params,
+        Array.isArray(params) ? params : [params],
         this.defaultHeader
       )
     ).data;
+  }
+
+  /**
+   * Performs a full replace on doc(s) in the collection with optimistic concurrency.
+   *
+   * @param collectionName The name of the collection to find the doc in.
+   * @param params The parameters for performing a full replace.
+   *
+   * @returns The status of the request.
+   */
+  async getVersionAndReplaceDocs(
+    collectionName: string,
+    params: AddDocParams | AddDocParams[]
+  ): Promise<SolrResponse> {
+    const paramsArray = Array.isArray(params) ? params : [params];
+    const ids = paramsArray.map((param) => param.id);
+    const res = await this.realTimeGetByIds(collectionName, ids);
+    const versionedParams = paramsArray.map((param, index) => {
+      param._version_ = res.response.docs[index]._version_;
+      return param;
+    });
+    return await this.addDocs(collectionName, versionedParams);
+  }
+
+  /**
+   * Performs an atomic update on doc(s) in the collection with optimistic concurrency.
+   *
+   * @param collectionName The name of the collection to find the doc in.
+   * @param params The parameters for performing an atomic update.
+   *
+   * @returns The status of the request.
+   */
+  async getVersionAndUpdateDocs(
+    collectionName: string,
+    params: UpdateDocParams | UpdateDocParams[]
+  ): Promise<SolrResponse> {
+    const paramsArray = Array.isArray(params) ? params : [params];
+    const ids = paramsArray.map((param) => param.id);
+    const res = await this.realTimeGetByIds(collectionName, ids);
+    const versionedParams = paramsArray.map((param, index) => {
+      param._version_ = res.response.docs[index]._version_;
+      return param;
+    });
+    return await this.updateDocs(collectionName, versionedParams);
   }
 
   /**

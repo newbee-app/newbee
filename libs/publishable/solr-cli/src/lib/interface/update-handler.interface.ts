@@ -1,24 +1,24 @@
-/**
- * All of the possible data formats that a doc's field can take.
- */
-export type DocInput =
-  | string
-  | string[]
-  | number
-  | number[]
-  | boolean
-  | boolean[]
-  | Date
-  | Date[];
+import type { DocInput } from './shared.interface';
 
 /**
  * All of the parameters for ADDing a doc to a collection.
  */
 export interface AddDocParams {
   /**
-   * The parameters for the doc.
+   * A unique key for the doc in the index.
    */
-  [docParams: string]: DocInput;
+  id: string;
+
+  /**
+   * The version of the doc, if you want to do a replace and not an add.
+   * Not mandatory for a replace, just if you want to use optimistic concurrency.
+   */
+  _version_?: number;
+
+  /**
+   * The fields for the doc.
+   */
+  [docFields: string]: DocInput;
 }
 
 /**
@@ -53,12 +53,12 @@ export interface UpdateDocParams {
   /**
    * The doc field to update.
    */
-  [docParams: string]:
+  [docFields: string]:
     | {
         /**
          * Set or replace the field value(s) with the specified value(s), or remove the values if 'null' or empty list is specified as the new value. May be specified as a single value, or as a list for multiValued fields.
          */
-        set?: DocInput | null;
+        set?: DocInput;
 
         /**
          * Adds the specified values to a multiValued field. May be specified as a single value, or as a list.

@@ -125,3 +125,43 @@ export interface SolrResponse {
    */
   error?: ResponseError;
 }
+
+/**
+ * All of the possible data formats that a doc's field can take.
+ */
+export type DocInput =
+  | string
+  | string[]
+  | number
+  | number[]
+  | boolean
+  | boolean[]
+  | Date
+  | Date[]
+  | null;
+
+/**
+ * The structure of a doc when it's sent as a response by Solr.
+ */
+export interface DocResponse {
+  /**
+   * The ID of the doc.
+   */
+  id: string;
+
+  /**
+   * The version of the doc, for use in optimistic concurrency.
+   */
+  _version_: number;
+
+  /**
+   * Other values for the doc, which will vary depending on the schema.
+   */
+  [docFields: string]:
+    | string
+    | string[]
+    | number
+    | number[]
+    | boolean
+    | boolean[];
+}

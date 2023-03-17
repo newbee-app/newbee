@@ -24,7 +24,7 @@ const testChallenge1 = 'challenge1';
 /**
  * For internal use whenever we're working with datetimes.
  */
-const now = new Date();
+export const testNow1 = new Date();
 
 /**
  * An example instance of Authenticator.
@@ -88,9 +88,9 @@ export const testTeam1: Team = {
  * Strictly for use in testing.
  */
 export const testPost1: Post = {
-  createdAt: now,
-  updatedAt: now,
-  markedUpToDateAt: now,
+  createdAt: testNow1,
+  updatedAt: testNow1,
+  markedUpToDateAt: testNow1,
   upToDate: true,
   title: 'Title',
   slug: 'slug',

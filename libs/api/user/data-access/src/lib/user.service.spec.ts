@@ -13,7 +13,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
-  testRealTimeGetByIdResponse1,
   testUserAndOptionsDto1,
   testUserEntity1,
   UserEntity,
@@ -76,11 +75,7 @@ describe('UserService', () => {
         },
         {
           provide: SolrCli,
-          useValue: createMock<SolrCli>({
-            realTimeGetById: jest
-              .fn()
-              .mockResolvedValue(testRealTimeGetByIdResponse1),
-          }),
+          useValue: createMock<SolrCli>(),
         },
       ],
     }).compile();

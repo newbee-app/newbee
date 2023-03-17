@@ -12,8 +12,10 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid } from '@newbee/api/shared/util';
+import type { SolrSchema } from '@newbee/api/shared/util';
+import { elongateUuid, SolrEntryEnum } from '@newbee/api/shared/util';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
 
@@ -29,7 +31,8 @@ export class DocService {
 
   constructor(
     @InjectRepository(DocEntity)
-    private readonly docRepository: EntityRepository<DocEntity>
+    private readonly docRepository: EntityRepository<DocEntity>,
+    private readonly solrCli: SolrCli
   ) {}
 
   /**
@@ -53,11 +56,24 @@ export class DocService {
 
     try {
       await this.docRepository.persistAndFlush(doc);
-      return doc;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = creator.organization.id;
+    try {
+      await this.solrCli.addDocs(
+        collectionName,
+        DocService.createDocFields(doc)
+      );
+    } catch (err) {
+      this.logger.error(err);
+      await this.docRepository.removeAndFlush(doc);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return doc;
   }
 
   /**
@@ -104,11 +120,22 @@ export class DocService {
     const updatedDoc = this.docRepository.assign(doc, newDocDetails);
     try {
       await this.docRepository.flush();
-      return updatedDoc;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = doc.organization.id;
+    try {
+      await this.solrCli.getVersionAndReplaceDocs(
+        collectionName,
+        DocService.createDocFields(updatedDoc)
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedDoc;
   }
 
   /**
@@ -125,11 +152,22 @@ export class DocService {
     const updatedDoc = this.docRepository.assign(doc, newDocDetails);
     try {
       await this.docRepository.flush();
-      return updatedDoc;
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = doc.organization.id;
+    try {
+      await this.solrCli.getVersionAndReplaceDocs(
+        collectionName,
+        DocService.createDocFields(updatedDoc)
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedDoc;
   }
 
   /**
@@ -146,5 +184,47 @@ export class DocService {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const collectionName = doc.organization.id;
+    try {
+      await this.solrCli.deleteDocs(collectionName, { id: doc.id });
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  /**
+   * Create the fields to add or replace a doc doc in a Solr index.
+   *
+   * @param doc The doc to create doc fields for.
+   *
+   * @returns The params to add or replace a doc using SolrCli.
+   */
+  private static createDocFields(doc: DocEntity): SolrSchema {
+    const {
+      id,
+      createdAt,
+      updatedAt,
+      markedUpToDateAt,
+      upToDate,
+      title,
+      creator,
+      maintainer,
+      rawMarkdown,
+      team,
+    } = doc;
+    return {
+      id,
+      entry_type: SolrEntryEnum.Doc,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      marked_up_to_date_at: markedUpToDateAt,
+      up_to_date: upToDate,
+      title,
+      creator: creator.id,
+      maintainer: maintainer?.id ?? null,
+      doc_body: rawMarkdown,
+      team: team?.id ?? null,
+    };
   }
 }

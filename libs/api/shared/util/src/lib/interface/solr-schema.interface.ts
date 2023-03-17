@@ -18,60 +18,60 @@ export interface SolrSchema extends AddDocParams {
   /**
    * The name of the team or the org member the doc represents, if the doc is a team or an org member.
    */
-  name?: string | string[];
+  name?: string | string[] | null;
 
   /**
    * The ID of the team the post belongs to, if the doc is a doc or a qna.
    */
-  team?: string;
+  team?: string | null;
 
   /**
    * When the post was created, if the doc is a doc or a qna.
    */
-  created_at?: Date;
+  created_at?: Date | null;
 
   /**
    * When the post was last updated, if the doc is a doc or a qna.
    */
-  updated_at?: Date;
+  updated_at?: Date | null;
 
   /**
    * When the post was last marked up-to-date, if the doc is a doc or a qna.
    */
-  marked_up_to_date_at?: Date;
+  marked_up_to_date_at?: Date | null;
 
   /**
    * Whether the post is up-to-date, if the doc is a doc or a qna.
    */
-  up_to_date?: boolean;
+  up_to_date?: boolean | null;
 
   /**
    * The title of the post, if the doc is a doc or a qna.
    */
-  title?: string;
+  title?: string | null;
 
   /**
    * The user that created the post, if the doc is a doc or a qna.
    */
-  creator?: string;
+  creator?: string | null;
 
   /**
    * The user responsible for maintaining the post, if the doc is a doc or a qna.
    */
-  maintainer?: string;
+  maintainer?: string | null;
 
   /**
    * The body of the document, if the doc is a doc.
    */
-  doc_body?: string;
+  doc_body?: string | null;
 
   /**
    * The details of the question, if the doc is a qna.
    */
-  question_details?: string;
+  question_details?: string | null;
 
   /**
    * The answer to the question, if the doc is a qna.
    */
-  answer?: string;
+  answer?: string | null;
 }
