@@ -77,6 +77,13 @@ async function main(): Promise<void> {
     )
     .action(upload);
 
+  program
+    .command('zip <path> <destination>')
+    .description(
+      'Zip a configset located on the local filepath to get it ready to be uploaded'
+    )
+    .action(zip);
+
   await program.parseAsync(process.argv);
 }
 
@@ -88,9 +95,19 @@ async function main(): Promise<void> {
 async function create(options: OptionValues): Promise<void> {
   const solrCli = createSolrCli(options);
 
-  // Create configset and a temporary collection that uses the configset to allow us to make changes to it
+  // Create the configset
   let res = await solrCli.createConfigset({ name: newbeeOrg });
   console.log(`Creating configset '${newbeeOrg}': ${prettyJson(res)}\n`);
+
+  // Upload config files to the configset
+  res = await solrCli.uploadConfigset(
+    newbeeOrg,
+    './enumsConfig.xml',
+    'enumsConfig.xml'
+  );
+  console.log(`Uploading 'enumsConfig.xml' to configset: ${prettyJson(res)}\n`);
+
+  // Create a temporary collection that uses the configset to allow us to make changes to it
   res = await solrCli.createCollection({
     name: newbeeOrg,
     numShards: 1,
@@ -109,14 +126,6 @@ async function create(options: OptionValues): Promise<void> {
       res
     )}\n`
   );
-
-  // Upload config files to the configset
-  res = await solrCli.uploadConfigset(
-    newbeeOrg,
-    './enumsConfig.xml',
-    'enumsConfig.xml'
-  );
-  console.log(`Uploading 'enumsConfig.xml' to configset: ${prettyJson(res)}\n`);
 
   // Make a bulk request to set up the schema
   res = await solrCli.bulkSchemaRequest(newbeeOrg, {
@@ -217,6 +226,16 @@ async function upload(path: string, options: OptionValues): Promise<void> {
   const solrCli = createSolrCli(options);
   const res = await solrCli.uploadConfigset(newbeeOrg, path);
   console.log(`Uploading configset '${newbeeOrg}': ${prettyJson(res)}`);
+}
+
+/**
+ * Zips the files located in the specified path and outputs it to the destination.
+ *
+ * @param path The conf files to zip.
+ * @param destination Where to send the zipped files.
+ */
+async function zip(path: string, destination: string): Promise<void> {
+  await execute(`(cd ${path} && zip -r - *) > ${destination}`);
 }
 
 /**

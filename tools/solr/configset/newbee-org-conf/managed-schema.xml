@@ -460,11 +460,9 @@
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
   <field name="maintainer" type="string"/>
   <field name="marked_up_to_date_at" type="pdate"/>
-  <field name="members" type="string" multiValued="true"/>
-  <field name="name" type="string"/>
+  <field name="name" type="string" multiValued="true"/>
   <field name="question_details" type="text_en"/>
   <field name="team" type="string"/>
-  <field name="teams" type="string" multiValued="true"/>
   <field name="title" type="string"/>
   <field name="up_to_date" type="boolean" docValues="true"/>
   <field name="updated_at" type="pdate"/>

@@ -82,9 +82,11 @@ export class TeamService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const docFields: SolrSchema = { id, entry_type: SolrEntryEnum.Team, name };
     try {
-      await this.solrCli.addDocs(organization.id, docFields);
+      await this.solrCli.addDocs(
+        organization.id,
+        TeamService.createDocFields(team)
+      );
     } catch (err) {
       this.logger.error(err);
       await this.teamRepository.removeAndFlush(team);
