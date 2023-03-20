@@ -110,7 +110,7 @@ export const appEnvironmentVariablesSchema = Joi.object({
   SMTP_DEFAULT_FROM: Joi.string().required(),
 
   // Solr
-  SOLR_HOST: Joi.string().required(),
-  SOLR_PORT: Joi.number().required(),
-  SOLR_HTTPS: Joi.boolean().required(),
+  SOLR_URL: Joi.string().required(),
+  SOLR_USERNAME: Joi.string().required(),
+  SOLR_PASSWORD: Joi.string().required(),
 });

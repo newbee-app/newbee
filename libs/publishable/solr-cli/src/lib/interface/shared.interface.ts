@@ -136,6 +136,8 @@ export type DocInput =
   | number[]
   | boolean
   | boolean[]
+  | bigint
+  | bigint[]
   | Date
   | Date[]
   | null;
@@ -152,7 +154,7 @@ export interface DocResponse {
   /**
    * The version of the doc, for use in optimistic concurrency.
    */
-  _version_: number;
+  _version_: bigint;
 
   /**
    * Other values for the doc, which will vary depending on the schema.
@@ -163,5 +165,7 @@ export interface DocResponse {
     | number
     | number[]
     | boolean
-    | boolean[];
+    | boolean[]
+    | bigint
+    | bigint[];
 }

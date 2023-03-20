@@ -1,4 +1,31 @@
+import JSONbig from 'json-bigint';
 import type { BasicAuth, RequestHeader } from './interface';
+
+/**
+ * Handle an error thrown by Axios.
+ *
+ * @param err The Axios error to handle.
+ *
+ * @returns The error as a returnable object.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function handleAxiosErr(err: any): any {
+  const { response, request } = err;
+
+  // The request was made and the server responded with a status code that falls out of the range of 2xx
+  if (response) {
+    return new Error(JSON.stringify(response.data));
+  }
+  // The request was made but no response was received
+  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+  else if (request) {
+    return new Error(JSON.stringify(request));
+  }
+  // Something happened in setting up the request that triggered an Error
+  else {
+    return new Error(err.message);
+  }
+}
 
 /**
  * A request header listing `Content-Type` as `application/json`.
@@ -10,6 +37,14 @@ export const jsonHeader = { headers: { 'Content-Type': 'application/json' } };
  */
 export const octetStreamHeader = {
   headers: { 'Content-Type': 'application/octet-stream' },
+};
+
+/**
+ * Add bigint support to Axios by transforming the response using the `json-bigint` library.
+ */
+export const bigintHeader = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformResponse: (res: any) => JSONbig.parse(res),
 };
 
 /**
@@ -34,6 +69,7 @@ export function basicAuthHeader(username: string, password: string) {
 export function generateSolrCliHeader(basicAuth?: BasicAuth): RequestHeader {
   return {
     ...jsonHeader,
+    ...bigintHeader,
     ...(basicAuth && basicAuthHeader(basicAuth.username, basicAuth.password)),
   };
 }

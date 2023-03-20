@@ -13,7 +13,7 @@ export interface AddDocParams {
    * The version of the doc, if you want to do a replace and not an add.
    * Not mandatory for a replace, just if you want to use optimistic concurrency.
    */
-  _version_?: number;
+  _version_?: bigint;
 
   /**
    * The fields for the doc.
@@ -26,12 +26,12 @@ export interface AddDocParams {
  */
 export interface DeleteDocParams {
   /**
-   * Delete a doc via an ID.
+   * Delete a doc via an ID. Cannot be used with `query`.
    */
   id?: string;
 
   /**
-   * Delete a doc via a query.
+   * Delete a doc via a query. Cannot be used with `id`.
    */
   query?: string;
 }
@@ -48,7 +48,7 @@ export interface UpdateDocParams {
   /**
    * The version of the doc to update, to prevent concurrency issues.
    */
-  _version_?: number;
+  _version_?: bigint;
 
   /**
    * The doc field to update.
@@ -86,7 +86,7 @@ export interface UpdateDocParams {
         inc?: number;
       }
     | string
-    | number;
+    | bigint;
 }
 
 /**

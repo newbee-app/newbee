@@ -12,7 +12,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { generateUniqueSlug, newOrgConfigset } from '@newbee/api/shared/util';
+import type { SolrSchema } from '@newbee/api/shared/util';
+import {
+  generateUniqueSlug,
+  newOrgConfigset,
+  SolrEntryEnum,
+} from '@newbee/api/shared/util';
 import {
   internalServerError,
   organizationSlugNotFound,
@@ -66,6 +71,11 @@ export class OrganizationService {
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
+
+      // Shouldn't execute as it's already initialized, but keep it here for safety
+      if (!organization.members.isInitialized()) {
+        await organization.members.init();
+      }
     } catch (err) {
       this.logger.error(err);
 
@@ -82,6 +92,16 @@ export class OrganizationService {
         numShards: 1,
         config: newOrgConfigset,
       });
+
+      for (const orgMember of organization.members) {
+        const { name, displayName } = orgMember.user;
+        const docFields: SolrSchema = {
+          id: orgMember.id,
+          entry_type: SolrEntryEnum.Member,
+          name: displayName ? [name, displayName] : name,
+        };
+        await this.solrCli.addDocs(id, docFields);
+      }
     } catch (err) {
       this.logger.error(err);
       await this.organizationRepository.removeAndFlush(organization);

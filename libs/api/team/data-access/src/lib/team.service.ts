@@ -211,10 +211,10 @@ export class TeamService {
 
     const collectionName = team.organization.id;
     try {
-      await this.solrCli.deleteDocs(collectionName, {
-        id: team.id,
-        query: `team:${team.name}`,
-      });
+      await this.solrCli.deleteDocs(collectionName, [
+        { id: team.id },
+        { query: `team:${team.id}` },
+      ]);
     } catch (err) {
       this.logger.error(err);
     }
