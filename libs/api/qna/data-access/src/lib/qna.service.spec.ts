@@ -14,7 +14,11 @@ import {
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, SolrEntryEnum } from '@newbee/api/shared/util';
+import {
+  elongateUuid,
+  markdocToTxt,
+  SolrEntryEnum,
+} from '@newbee/api/shared/util';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateQnaDto1,
@@ -53,6 +57,18 @@ describe('QnaService', () => {
   let repository: EntityRepository<QnaEntity>;
   let solrCli: SolrCli;
 
+  const testAssignParams = {
+    ...testBaseUpdateQnaDto1,
+    ...(testBaseUpdateQnaDto1.questionMarkdoc && {
+      questionTxt: markdocToTxt(testBaseUpdateQnaDto1.questionMarkdoc),
+    }),
+    ...(testBaseUpdateQnaDto1.answerMarkdoc && {
+      answerTxt: markdocToTxt(testBaseUpdateQnaDto1.answerMarkdoc),
+    }),
+    updatedAt: testNow1,
+    markedUpToDateAt: testNow1,
+    upToDate: true,
+  };
   const testUpdatedQna = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
   const createDocFields = {
     id: testQnaEntity1.id,
@@ -64,15 +80,15 @@ describe('QnaService', () => {
     title: testQnaEntity1.title,
     creator: testOrgMemberEntity1.id,
     maintainer: testOrgMemberEntity1.id,
-    question_details: testQnaEntity1.questionMarkdown,
-    answer: testQnaEntity1.answerMarkdown,
+    question_details: testQnaEntity1.questionTxt,
+    answer: testQnaEntity1.answerTxt,
     team: testTeamEntity1.id,
   };
   const updateDocFields = {
     ...createDocFields,
     title: testUpdatedQna.title,
-    question_details: testUpdatedQna.questionMarkdown,
-    answer: testUpdatedQna.answerMarkdown,
+    question_details: testUpdatedQna.questionTxt,
+    answer: testUpdatedQna.answerTxt,
   };
 
   beforeEach(async () => {
@@ -121,8 +137,8 @@ describe('QnaService', () => {
         testQnaEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,
-        testQnaEntity1.questionMarkdown,
-        testQnaEntity1.answerMarkdown
+        testQnaEntity1.questionMarkdoc,
+        testQnaEntity1.answerMarkdoc
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testQnaEntity1);
@@ -212,12 +228,10 @@ describe('QnaService', () => {
       await expect(
         service.update(testQnaEntity1, testBaseUpdateQnaDto1)
       ).resolves.toEqual(testUpdatedQna);
-      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
-        ...testBaseUpdateQnaDto1,
-        updatedAt: testNow1,
-        markedUpToDateAt: testNow1,
-        upToDate: true,
-      });
+      expect(repository.assign).toBeCalledWith(
+        testQnaEntity1,
+        testAssignParams
+      );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1,
@@ -233,13 +247,10 @@ describe('QnaService', () => {
           testOrgMemberEntity1
         )
       ).resolves.toEqual(testUpdatedQna);
-      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
-        ...testBaseUpdateQnaDto1,
-        updatedAt: testNow1,
-        markedUpToDateAt: testNow1,
-        upToDate: true,
-        maintainer: testOrgMemberEntity1,
-      });
+      expect(repository.assign).toBeCalledWith(
+        testQnaEntity1,
+        testAssignParams
+      );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
     });
 

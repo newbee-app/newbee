@@ -6,28 +6,38 @@ import { Post } from './post.interface';
  */
 export interface Qna extends Post {
   /**
-   * The raw markdown of the question portion of the QnA.
+   * The raw markdoc of the question portion of the QnA.
    * Can be null if the question is encapsulated by the title, and requires no further details.
    */
-  questionMarkdown: string | null;
+  questionMarkdoc: string | null;
+
+  /**
+   * The question markdoc converted into plain text.
+   */
+  questionTxt: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
   // /**
-  //  * The raw markdown of the question rendered into HTML, for display on the frontend.
+  //  * The raw markdoc of the question rendered into HTML, for display on the frontend.
   //  */
   // renderedQuestion: string;
 
   /**
-   * The raw markdown of the answer portion of the QnA.
+   * The raw markdoc of the answer portion of the QnA.
    * Can be null if no one has answered the question yet.
    */
-  answerMarkdown: string | null;
+  answerMarkdoc: string | null;
+
+  /**
+   * The answer markdoc converted into plain text.
+   */
+  answerTxt: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
   // /**
-  //  * The raw markdown of the answer rendered into HTML, for display on the frontend.
+  //  * The raw markdoc of the answer rendered into HTML, for display on the frontend.
   //  */
   // renderedAnswer: string;
 }

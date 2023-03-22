@@ -102,7 +102,8 @@ export const testPost1: Post = {
  */
 export const testDoc1: Doc = {
   ...testPost1,
-  rawMarkdown: 'rawmarkdown',
+  bodyMarkdoc: 'bodyMarkdoc',
+  bodyTxt: 'bodyTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedHtml: 'renderedhtml',
 };
@@ -113,10 +114,12 @@ export const testDoc1: Doc = {
  */
 export const testQna1: Qna = {
   ...testPost1,
-  questionMarkdown: 'questionmarkdown',
+  questionMarkdoc: 'questionMarkdoc',
+  questionTxt: 'questionTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedQuestion: 'renderedquestion',
-  answerMarkdown: 'answermarkdown',
+  answerMarkdoc: 'answerMarkdoc',
+  answerTxt: 'answerTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedAnswer: 'renderedanswer',
 };

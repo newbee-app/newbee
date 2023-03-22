@@ -11,5 +11,5 @@ export class UpdateAnswerDto implements BaseUpdateAnswerDto {
    * @inheritdoc
    */
   @IsNotEmpty({ message: answerIsNotEmpty })
-  answerMarkdown!: string;
+  answerMarkdoc!: string;
 }

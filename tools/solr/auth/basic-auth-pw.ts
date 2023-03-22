@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import { createHash, randomBytes } from 'crypto';
-import { fileToJson } from '../util';
+import { fileToJson, prettyJson } from '../util';
 
 /**
  * The main function to call to kick off the script.
@@ -110,7 +110,7 @@ function generateAllPw(usersFile: string): void {
     solrUsers[username] = `${hashedPassword} ${salt}`;
   }
 
-  console.log(JSON.stringify(solrUsers, null, 4));
+  console.log(prettyJson(solrUsers));
 }
 
 main();

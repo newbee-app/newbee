@@ -14,6 +14,7 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   elongateUuid,
+  markdocToTxt,
   SolrEntryEnum,
   SolrSchema,
 } from '@newbee/api/shared/util';
@@ -53,15 +54,15 @@ export class QnaService {
     team: TeamEntity | null,
     creator: OrgMemberEntity
   ): Promise<QnaEntity> {
-    const { title, questionMarkdown, answerMarkdown } = createQnaDto;
+    const { title, questionMarkdoc, answerMarkdoc } = createQnaDto;
     const id = v4();
     const qna = new QnaEntity(
       id,
       title,
       creator,
       team,
-      questionMarkdown,
-      answerMarkdown
+      questionMarkdoc,
+      answerMarkdoc
     );
 
     try {
@@ -125,13 +126,16 @@ export class QnaService {
     updateQnaDto: UpdateQnaDto,
     newMaintainer?: OrgMemberEntity
   ): Promise<QnaEntity> {
+    const { questionMarkdoc, answerMarkdoc } = updateQnaDto;
     const now = new Date();
     const newQnaDetails = {
       ...updateQnaDto,
+      ...(questionMarkdoc && { questionTxt: markdocToTxt(questionMarkdoc) }),
+      ...(answerMarkdoc && { answerTxt: markdocToTxt(answerMarkdoc) }),
+      ...(newMaintainer && { maintainer: newMaintainer }),
       updatedAt: now,
       markedUpToDateAt: now,
       upToDate: true,
-      ...(newMaintainer && { maintainer: newMaintainer }),
     };
     const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
     try {
@@ -219,8 +223,8 @@ export class QnaService {
       title,
       creator,
       maintainer,
-      questionMarkdown,
-      answerMarkdown,
+      questionTxt,
+      answerTxt,
       team,
     } = qna;
     return {
@@ -233,8 +237,8 @@ export class QnaService {
       title,
       creator: creator.id,
       maintainer: maintainer?.id ?? null,
-      question_details: questionMarkdown,
-      answer: answerMarkdown,
+      question_details: questionTxt,
+      answer: answerTxt,
       team: team?.id ?? null,
     };
   }

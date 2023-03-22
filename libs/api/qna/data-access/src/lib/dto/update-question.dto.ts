@@ -19,5 +19,5 @@ export class UpdateQuestionDto implements BaseUpdateQuestionDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: questionIsNotEmpty })
-  questionMarkdown?: string | null;
+  questionMarkdoc?: string | null;
 }

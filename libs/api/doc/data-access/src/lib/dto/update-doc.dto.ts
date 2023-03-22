@@ -19,5 +19,5 @@ export class UpdateDocDto implements BaseUpdateDocDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: docIsNotEmpty })
-  rawMarkdown?: string;
+  bodyMarkdoc?: string;
 }

@@ -12,8 +12,12 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import type { SolrSchema } from '@newbee/api/shared/util';
-import { elongateUuid, SolrEntryEnum } from '@newbee/api/shared/util';
+import {
+  elongateUuid,
+  markdocToTxt,
+  SolrEntryEnum,
+  SolrSchema,
+} from '@newbee/api/shared/util';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
@@ -50,9 +54,9 @@ export class DocService {
     team: TeamEntity | null,
     creator: OrgMemberEntity
   ): Promise<DocEntity> {
-    const { title, rawMarkdown } = createDocDto;
+    const { title, bodyMarkdoc } = createDocDto;
     const id = v4();
-    const doc = new DocEntity(id, title, creator, team, rawMarkdown);
+    const doc = new DocEntity(id, title, creator, team, bodyMarkdoc);
 
     try {
       await this.docRepository.persistAndFlush(doc);
@@ -110,9 +114,11 @@ export class DocService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
+    const { bodyMarkdoc } = updateDocDto;
     const now = new Date();
     const newDocDetails = {
       ...updateDocDto,
+      ...(bodyMarkdoc && { bodyTxt: markdocToTxt(bodyMarkdoc) }),
       updatedAt: now,
       markedUpToDateAt: now,
       upToDate: true,
@@ -210,7 +216,7 @@ export class DocService {
       title,
       creator,
       maintainer,
-      rawMarkdown,
+      bodyTxt,
       team,
     } = doc;
     return {
@@ -223,7 +229,7 @@ export class DocService {
       title,
       creator: creator.id,
       maintainer: maintainer?.id ?? null,
-      doc_body: rawMarkdown,
+      doc_body: bodyTxt,
       team: team?.id ?? null,
     };
   }

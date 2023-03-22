@@ -5,7 +5,7 @@ import { Qna } from '@newbee/shared/util';
  * Suitable for use in POST requests.
  */
 export class BaseCreateQnaDto
-  implements Pick<Qna, 'title' | 'questionMarkdown' | 'answerMarkdown'>
+  implements Pick<Qna, 'title' | 'questionMarkdoc' | 'answerMarkdoc'>
 {
   /**
    * @inheritdoc
@@ -15,10 +15,10 @@ export class BaseCreateQnaDto
   /**
    * @inheritdoc
    */
-  questionMarkdown: string | null = null;
+  questionMarkdoc: string | null = null;
 
   /**
    * @inheritdoc
    */
-  answerMarkdown: string | null = null;
+  answerMarkdoc: string | null = null;
 }

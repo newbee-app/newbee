@@ -1,4 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { markdocToTxt } from '@newbee/api/shared/util';
 import { Doc } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -39,7 +40,13 @@ export class DocEntity extends PostEntity implements Doc {
    * @inheritdoc
    */
   @Property({ type: 'text' })
-  rawMarkdown: string;
+  bodyMarkdoc: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'text' })
+  bodyTxt: string;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
@@ -53,7 +60,7 @@ export class DocEntity extends PostEntity implements Doc {
     title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
-    rawMarkdown: string
+    bodyMarkdoc: string
     // renderedHtml: string,
   ) {
     super(id, title);
@@ -61,7 +68,8 @@ export class DocEntity extends PostEntity implements Doc {
     this.team = team;
     this.creator = creator;
     this.maintainer = creator;
-    this.rawMarkdown = rawMarkdown;
+    this.bodyMarkdoc = bodyMarkdoc;
+    this.bodyTxt = markdocToTxt(bodyMarkdoc);
     // this.renderedHtml = renderedHtml;
   }
 }

@@ -134,7 +134,7 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
  */
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
   title: testDoc1.title,
-  rawMarkdown: testDoc1.rawMarkdown,
+  bodyMarkdoc: testDoc1.bodyMarkdoc,
 };
 
 /**
@@ -143,7 +143,7 @@ export const testBaseCreateDocDto1: BaseCreateDocDto = {
  */
 export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   title: 'New title',
-  rawMarkdown: 'new raw markdown',
+  bodyMarkdoc: 'new raw markdoc',
 };
 
 /**
@@ -152,8 +152,8 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
  */
 export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
   title: testQna1.title,
-  questionMarkdown: testQna1.questionMarkdown as string,
-  answerMarkdown: testQna1.answerMarkdown,
+  questionMarkdoc: testQna1.questionMarkdoc as string,
+  answerMarkdoc: testQna1.answerMarkdoc,
 };
 
 /**
@@ -162,8 +162,8 @@ export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
  */
 export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   title: 'New title',
-  questionMarkdown: 'new question',
-  answerMarkdown: 'new answer',
+  questionMarkdoc: 'new question',
+  answerMarkdoc: 'new answer',
 };
 
 /**
@@ -172,7 +172,7 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
  */
 export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
   title: 'New title',
-  questionMarkdown: 'new question',
+  questionMarkdoc: 'new question',
 };
 
 /**
@@ -180,7 +180,7 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
-  answerMarkdown: 'new answer',
+  answerMarkdoc: 'new answer',
 };
 
 /**

@@ -6,13 +6,18 @@ import { Post } from './post.interface';
  */
 export interface Doc extends Post {
   /**
-   * The raw markdown that makes up the doc.
+   * The raw markdoc that makes up the doc.
    */
-  rawMarkdown: string;
+  bodyMarkdoc: string;
+
+  /**
+   * The raw markdoc converted into plain text.
+   */
+  bodyTxt: string;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
-  //  * The raw markdown of the doc rendered into HTML, for display on the frontend.
+  //  * The raw markdoc of the doc rendered into HTML, for display on the frontend.
   //  */
   // renderedHtml: string;
 }

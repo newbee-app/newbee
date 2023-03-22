@@ -17,5 +17,5 @@ export class CreateDocDto implements BaseCreateDocDto {
    * @inheritdoc
    */
   @IsNotEmpty({ message: docIsNotEmpty })
-  rawMarkdown!: string;
+  bodyMarkdoc!: string;
 }

@@ -22,12 +22,12 @@ export class CreateQnaDto implements BaseCreateQnaDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: questionIsNotEmpty })
-  questionMarkdown: string | null = null;
+  questionMarkdoc: string | null = null;
 
   /**
    * @inheritdoc
    */
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
-  answerMarkdown: string | null = null;
+  answerMarkdoc: string | null = null;
 }

@@ -23,12 +23,12 @@ export class UpdateQnaDto implements BaseUpdateQnaDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: questionIsNotEmpty })
-  questionMarkdown?: string | null;
+  questionMarkdoc?: string | null;
 
   /**
    * @inheritdoc
    */
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
-  answerMarkdown?: string;
+  answerMarkdoc?: string;
 }

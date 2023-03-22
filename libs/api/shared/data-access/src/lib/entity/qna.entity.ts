@@ -1,4 +1,7 @@
+import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { markdocToTxt } from '@newbee/api/shared/util';
+import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import { Qna } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -39,7 +42,13 @@ export class QnaEntity extends PostEntity implements Qna {
    * @inheritdoc
    */
   @Property({ type: 'text', nullable: true })
-  questionMarkdown: string | null;
+  questionMarkdoc: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'text', nullable: true })
+  questionTxt: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
@@ -52,7 +61,13 @@ export class QnaEntity extends PostEntity implements Qna {
    * @inheritdoc
    */
   @Property({ type: 'text', nullable: true })
-  answerMarkdown: string | null;
+  answerMarkdoc: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'text', nullable: true })
+  answerTxt: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
@@ -66,18 +81,32 @@ export class QnaEntity extends PostEntity implements Qna {
     title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
-    questionMarkdown: string | null,
+    questionMarkdoc: string | null,
     // renderedQuestion: string,
-    answerMarkdown: string | null
+    answerMarkdoc: string | null
     // renderedAnswer: string,
   ) {
     super(id, title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
-    this.questionMarkdown = questionMarkdown;
+    this.questionMarkdoc = questionMarkdoc;
+    this.questionTxt = questionMarkdoc ? markdocToTxt(questionMarkdoc) : null;
     // this.renderedQuestion = renderedQuestion;
-    this.answerMarkdown = answerMarkdown;
+    this.answerMarkdoc = answerMarkdoc;
+    this.answerTxt = answerMarkdoc ? markdocToTxt(answerMarkdoc) : null;
     // this.renderedAnswer = renderedAnswer;
+
+    if (questionMarkdoc) {
+      const ast = Markdoc.parse(questionMarkdoc);
+      const content = Markdoc.transform(ast);
+      this.questionTxt = markdocTxtRenderer(content);
+    }
+
+    if (answerMarkdoc) {
+      const ast = Markdoc.parse(answerMarkdoc);
+      const content = Markdoc.transform(ast);
+      this.answerTxt = markdocTxtRenderer(content);
+    }
   }
 }

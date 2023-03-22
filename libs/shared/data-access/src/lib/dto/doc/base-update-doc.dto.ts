@@ -13,5 +13,5 @@ export class BaseUpdateDocDto implements Partial<BaseCreateDocDto> {
   /**
    * @inheritdoc
    */
-  rawMarkdown?: string;
+  bodyMarkdoc?: string;
 }

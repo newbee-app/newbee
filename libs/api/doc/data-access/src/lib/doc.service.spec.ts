@@ -14,7 +14,11 @@ import {
   testOrgMemberEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, SolrEntryEnum } from '@newbee/api/shared/util';
+import {
+  elongateUuid,
+  markdocToTxt,
+  SolrEntryEnum,
+} from '@newbee/api/shared/util';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
@@ -64,13 +68,13 @@ describe('DocService', () => {
     title: testDocEntity1.title,
     creator: testOrgMemberEntity1.id,
     maintainer: testOrgMemberEntity1.id,
-    doc_body: testDocEntity1.rawMarkdown,
+    doc_body: testDocEntity1.bodyTxt,
     team: testTeamEntity1,
   };
   const updateDocFields = {
     ...createDocFields,
     title: testUpdatedDoc.title,
-    doc_body: testUpdatedDoc.rawMarkdown,
+    doc_body: testUpdatedDoc.bodyTxt,
   };
 
   beforeEach(async () => {
@@ -119,7 +123,7 @@ describe('DocService', () => {
         testDocEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,
-        testDocEntity1.rawMarkdown
+        testDocEntity1.bodyMarkdoc
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testDocEntity1);
@@ -204,6 +208,9 @@ describe('DocService', () => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testDocEntity1, {
         ...testBaseUpdateDocDto1,
+        ...(testBaseUpdateDocDto1.bodyMarkdoc && {
+          bodyTxt: markdocToTxt(testBaseUpdateDocDto1.bodyMarkdoc),
+        }),
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         upToDate: true,

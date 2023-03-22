@@ -1,3 +1,5 @@
+import Markdoc from '@markdoc/markdoc';
+import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import { randomBytes } from 'crypto';
 import short from 'short-uuid';
 import slug from 'slug';
@@ -60,4 +62,17 @@ export function shortenUuid(uuid: string): string {
  */
 export function elongateUuid(shortUuid: string): string {
   return translator.toUUID(shortUuid);
+}
+
+/**
+ * Renders Markdoc to plain text.
+ *
+ * @param markdoc The Markdoc to render, represented as a string.
+ *
+ * @returns The Markdoc as plain text, represented as a string.
+ */
+export function markdocToTxt(markdoc: string): string {
+  const ast = Markdoc.parse(markdoc);
+  const content = Markdoc.transform(ast);
+  return markdocTxtRenderer(content);
 }

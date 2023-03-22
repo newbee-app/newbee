@@ -5,7 +5,7 @@ import { Qna } from '@newbee/shared/util';
  * Suitable for use in PATCH requests.
  */
 export class BaseUpdateQuestionDto
-  implements Partial<Pick<Qna, 'title' | 'questionMarkdown'>>
+  implements Partial<Pick<Qna, 'title' | 'questionMarkdoc'>>
 {
   /**
    * @inheritdoc
@@ -15,5 +15,5 @@ export class BaseUpdateQuestionDto
   /**
    * @inheritdoc
    */
-  questionMarkdown?: string | null;
+  questionMarkdoc?: string | null;
 }
