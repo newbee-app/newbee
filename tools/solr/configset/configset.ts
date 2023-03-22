@@ -119,10 +119,20 @@ async function create(options: OptionValues): Promise<void> {
 
   // Turn off schemaless mode
   res = await solrCli.setUserProperty(newbeeOrg, {
-    'update.autoCreateFields': 'false',
+    'update.autoCreateFields': false,
   });
   console.log(
     `Turning off schemaless mode by setting user property 'update.autoCreateFields' to 'false': ${prettyJson(
+      res
+    )}\n`
+  );
+
+  // Turn on auto soft commits
+  res = await solrCli.setProperty(newbeeOrg, {
+    'updateHandler.autoSoftCommit.maxTime': 60000,
+  });
+  console.log(
+    `Turning on auto soft commits by setting common property 'updateHandler.autoSoftCommit.maxTime' to '60000': ${prettyJson(
       res
     )}\n`
   );

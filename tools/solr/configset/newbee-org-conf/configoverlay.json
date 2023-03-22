@@ -1,1 +1,3 @@
-{"userProps":{"update.autoCreateFields":"false"}}
+{
+  "userProps":{"update.autoCreateFields":false},
+  "props":{"updateHandler":{"autoSoftCommit":{"maxTime":60000}}}}

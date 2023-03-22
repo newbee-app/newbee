@@ -17,6 +17,8 @@
     "api-organization-feature": "libs/api/organization/feature",
     "api-qna-data-access": "libs/api/qna/data-access",
     "api-qna-feature": "libs/api/qna/feature",
+    "api-search-data-access": "libs/api/search/data-access",
+    "api-search-feature": "libs/api/search/feature",
     "api-shared-data-access": "libs/api/shared/data-access",
     "api-shared-util": "libs/api/shared/util",
     "api-team-data-access": "libs/api/team/data-access",

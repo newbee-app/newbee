@@ -60,6 +60,10 @@
       ],
       "@newbee/api/qna/data-access": ["libs/api/qna/data-access/src/index.ts"],
       "@newbee/api/qna/feature": ["libs/api/qna/feature/src/index.ts"],
+      "@newbee/api/search/data-access": [
+        "libs/api/search/data-access/src/index.ts"
+      ],
+      "@newbee/api/search/feature": ["libs/api/search/feature/src/index.ts"],
       "@newbee/api/shared/data-access": [
         "libs/api/shared/data-access/src/index.ts"
       ],
