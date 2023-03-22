@@ -33,5 +33,5 @@ export interface RetrieveConfigOverlayResponse {
  * Properties that are a part of a config.
  */
 export interface ConfigProperty {
-  [property: string]: string;
+  [property: string]: string | boolean | number;
 }

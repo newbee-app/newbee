@@ -139,35 +139,3 @@ export interface RealTimeGetByIdResponse {
    */
   doc: DocResponse;
 }
-
-export interface RealTimeGetByIdsResponse {
-  /**
-   * The response header.
-   */
-  responseHeader: ResponseHeader;
-
-  /**
-   * The response object.
-   */
-  response: {
-    /**
-     * The amount of documents found.
-     */
-    numFound: number;
-
-    /**
-     * The result sequence the docs will start from.
-     */
-    start: number;
-
-    /**
-     * Whether the `numFound` value is exact or an approximation.
-     */
-    numFoundExact: boolean;
-
-    /**
-     * The values of the docs themselves.
-     */
-    docs: DocResponse[];
-  };
-}

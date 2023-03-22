@@ -52,6 +52,11 @@ export const questionIsNotEmpty = 'You cannot save an empty question.';
 export const answerIsNotEmpty = 'You cannot save an empty answer.';
 
 /**
+ * Constant to say that query cannot be an empty string.
+ */
+export const queryIsNotEmpty = 'Query cannot be an empty string.';
+
+/**
  * Constant to say that the active field must be a boolean value.
  */
 export const activeIsBoolean = 'Active must be true or false.';
@@ -60,3 +65,13 @@ export const activeIsBoolean = 'Active must be true or false.';
  * Constant to say that the online field must be a boolean value.
  */
 export const onlineIsBoolean = 'Online must be true or false.';
+
+/**
+ * Constant to say that offset must be an int.
+ */
+export const offsetIsInt = 'Offset must be an int.';
+
+/**
+ * Constant to say that offset has a min of 0.
+ */
+export const offsetMin0 = 'Offset cannot be less than 0.';

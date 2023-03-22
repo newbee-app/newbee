@@ -11,6 +11,7 @@ import type {
   BasicAuth,
   BulkDocRequestParams,
   BulkSchemaRequestParams,
+  ConfigProperty,
   CopyFieldParams,
   CreateCollectionParams,
   CreateConfigsetParams,
@@ -18,9 +19,12 @@ import type {
   DeleteFieldParams,
   ListCollectionsResponse,
   ListConfigsetsResponse,
+  QueryParams,
+  QueryResponse,
   RealTimeGetByIdResponse,
-  RealTimeGetByIdsResponse,
   RequestHeader,
+  RetrieveConfigOverlayResponse,
+  RetrieveConfigResponse,
   RetrieveCopyFieldsResponse,
   RetrieveDynamicFieldsResponse,
   RetrieveFieldsResponse,
@@ -31,16 +35,12 @@ import type {
   UploadConfigsetParams,
 } from './interface';
 import {
-  ConfigProperty,
-  RetrieveConfigOverlayResponse,
-  RetrieveConfigResponse,
-} from './interface/config.interface';
-import {
   configOverlayUrl,
   configUrl,
   generateSolrCliHeader,
   handleAxiosErr,
   octetStreamHeader,
+  queryUrl,
   realTimeGetUrl,
   schemaUrl,
   updateJsonDocsUrl,
@@ -100,6 +100,27 @@ export class SolrCli {
     this.configsetApiUrl = `${this.solrUrl}/api/cluster/configs`;
     this.authApiUrl = `${this.solrUrl}/api/cluster/security/authentication`;
   }
+
+  // START: search
+
+  async query(
+    collectionName: string,
+    params: QueryParams
+  ): Promise<QueryResponse> {
+    try {
+      return (
+        await axios.post(
+          queryUrl(this.solrUrl, collectionName),
+          params,
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  // END: search
 
   // START: collections
 
@@ -197,7 +218,7 @@ export class SolrCli {
     collectionName: string,
     ids: string[],
     fq?: string
-  ): Promise<RealTimeGetByIdsResponse> {
+  ): Promise<QueryResponse> {
     try {
       return (
         await axios.get(
@@ -507,6 +528,56 @@ export class SolrCli {
       return (
         await axios.get(
           configOverlayUrl(this.collectionsApiUrl, collectionName),
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Sets common properties for the given collection.
+   *
+   * @param collectionName The collection to set common properties for.
+   * @param params The common properties to set.
+   *
+   * @returns The status of the request.
+   */
+  async setProperty(
+    collectionName: string,
+    params: ConfigProperty
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'set-property': params },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Unsets common properties for the given collection.
+   *
+   * @param collectionName The collection to unset common properties for.
+   * @param properties The common properties to unset.
+   *
+   * @returns The status of the request.
+   */
+  async unsetProperty(
+    collectionName: string,
+    properties: string[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'unset-property': properties },
           this.defaultHeader
         )
       ).data;

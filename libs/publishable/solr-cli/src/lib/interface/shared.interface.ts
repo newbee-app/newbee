@@ -169,3 +169,43 @@ export interface DocResponse {
     | bigint
     | bigint[];
 }
+
+/**
+ * The structure of docs when it's sent as a query response by Solr.
+ */
+export interface DocsResponse {
+  /**
+   * The amount of documents found.
+   */
+  numFound: number;
+
+  /**
+   * The result sequence the docs will start from.
+   */
+  start: number;
+
+  /**
+   * Whether the `numFound` value is exact or an approximation.
+   */
+  numFoundExact: boolean;
+
+  /**
+   * The values of the docs themselves.
+   */
+  docs: DocResponse[];
+}
+
+/**
+ * The response to a query request.
+ */
+export interface QueryResponse {
+  /**
+   * The response header.
+   */
+  responseHeader: ResponseHeader;
+
+  /**
+   * The response object.
+   */
+  response: DocsResponse;
+}

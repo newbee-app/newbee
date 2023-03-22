@@ -2,7 +2,7 @@ import JSONbig from 'json-bigint';
 import type { BasicAuth, RequestHeader } from './interface';
 
 /**
- * Handle an error thrown by Axios.
+ * Parse an error thrown by Axios into a human-friendly POJO.
  *
  * @param err The Axios error to handle.
  *
@@ -171,4 +171,16 @@ export function configOverlayUrl(
   collectionName: string
 ): string {
   return `${configUrl(collectionsApiUrl, collectionName)}/overlay`;
+}
+
+/**
+ * Generates the query API URL for the given collection.
+ *
+ * @param solrUrl The base URL for the Solr instance.
+ * @param collectionName The name of the collection you want to work with.
+ *
+ * @returns The query API URL for the collection.
+ */
+export function queryUrl(solrUrl: string, collectionName: string): string {
+  return `${solrUrl}/solr/${collectionName}/query`;
 }

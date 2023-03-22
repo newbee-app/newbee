@@ -270,10 +270,10 @@ describe('TeamService', () => {
     it('should delete a team', async () => {
       await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
       expect(solrCli.deleteDocs).toBeCalledTimes(1);
-      expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: testTeamEntity1.id,
-        query: `team:${testTeamEntity1.name}`,
-      });
+      expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, [
+        { id: testTeamEntity1.id },
+        { query: `team:${testTeamEntity1.id}` },
+      ]);
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
