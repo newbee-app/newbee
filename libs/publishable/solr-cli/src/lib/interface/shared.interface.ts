@@ -196,6 +196,46 @@ export interface DocsResponse {
 }
 
 /**
+ * The structure of a Solr suggestion.
+ */
+export interface Suggestion {
+  /**
+   * The suggestion itself.
+   */
+  term: string;
+
+  /**
+   * The weight of the suggestion.
+   */
+  weight: number;
+
+  /**
+   * The payload for the suggestion.
+   */
+  payload: string;
+}
+
+/**
+ * An interface representing highlighted fields.
+ */
+export interface HighlightedFields {
+  /**
+   * The field that's highlighted and its highlighted snippets.
+   */
+  [field: string]: string[];
+}
+
+/**
+ * The structure of Solr's highlighting response.
+ */
+export interface Highlights {
+  /**
+   * The doc that was highlighted mapped to its highlighted fields.
+   */
+  [docId: string]: HighlightedFields;
+}
+
+/**
  * The response to a query request.
  */
 export interface QueryResponse {
@@ -208,4 +248,73 @@ export interface QueryResponse {
    * The response object.
    */
   response: DocsResponse;
+
+  /**
+   * Highlighted fields, if highlighting was requested.
+   */
+  highlighting?: Highlights;
+
+  /**
+   * Spellchecking, if spellchecking was requested.
+   */
+  spellcheck?: {
+    /**
+     * Suggestions for individual search terms, in the format of ['term', { suggestion }]
+     */
+    suggestions: (
+      | string
+      | {
+          numFound: number;
+          startOffset: number;
+          endOffset: number;
+          origFreq: number;
+          suggestion: { word: string; freq: number }[];
+        }
+    )[];
+
+    /**
+     * Whether enough results were generated for the query to be considered "correctly spelled", determined by `spellcheck.maxResultsForSuggest`.
+     */
+    correctlySpelled: boolean;
+
+    /**
+     * Spellchecking suggestions as a collation (spellchecking the whole query, as opposed to individual terms).
+     * In the format of ['collation', { collationSuggestion }]
+     */
+    collations:
+      | [
+          string,
+          {
+            collationQuery: string;
+            hits: number;
+            misspellingsAndCorrections: string[];
+          }
+        ]
+      | [];
+  };
+
+  /**
+   * Suggestioned based on the query, if suggestions were requested.
+   */
+  suggest?: {
+    /**
+     * The suggester dictionary that was used.
+     */
+    [dictionary: string]: {
+      /**
+       * The query that suggestions were generated for.
+       */
+      [query: string]: {
+        /**
+         * The number of suggestions generated.
+         */
+        numFound: number;
+
+        /**
+         * The suggestions themselves.
+         */
+        suggestions: Suggestion[];
+      };
+    };
+  };
 }

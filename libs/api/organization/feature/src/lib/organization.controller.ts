@@ -14,8 +14,9 @@ import {
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { OrgRoleEnum, Role, User } from '@newbee/api/shared/util';
+import { Role, User } from '@newbee/api/shared/util';
 import { organization, organizationVersion } from '@newbee/shared/data-access';
+import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
@@ -54,7 +55,11 @@ export class OrganizationController {
       createOrganizationDto,
       user
     );
-    this.logger.log(`Organization created: ${JSON.stringify(organization)}`);
+    this.logger.log(
+      `Organization created with ID: ${organization.id}, ${JSON.stringify(
+        organization
+      )}`
+    );
 
     return organization;
   }

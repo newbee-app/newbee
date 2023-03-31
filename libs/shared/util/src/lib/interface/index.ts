@@ -1,5 +1,6 @@
 export * from './authenticator.interface';
 export * from './doc.interface';
+export * from './org-member.interface';
 export * from './organization.interface';
 export * from './post.interface';
 export * from './qna.interface';

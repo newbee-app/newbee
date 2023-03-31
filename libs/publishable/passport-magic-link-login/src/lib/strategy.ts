@@ -92,7 +92,7 @@ export interface Payload {
   /**
    * Any other values the end-user wants to define to aid in backend validation.
    */
-  [key: string]: unknown | undefined;
+  [key: string]: unknown;
 }
 
 /**

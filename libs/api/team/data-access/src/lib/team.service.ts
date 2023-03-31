@@ -17,9 +17,10 @@ import {
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import type { SolrSchema } from '@newbee/api/shared/util';
-import { generateUniqueSlug, SolrEntryEnum } from '@newbee/api/shared/util';
+import { generateUniqueSlug } from '@newbee/api/shared/util';
 import {
   internalServerError,
+  SolrEntryEnum,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
@@ -228,7 +229,7 @@ export class TeamService {
    * @returns The params to add or replace a doc using SolrCli.
    */
   private static createDocFields(team: TeamEntity): SolrSchema {
-    const { id, name } = team;
-    return { id, name, entry_type: SolrEntryEnum.Team };
+    const { id, slug, name } = team;
+    return { id, entry_type: SolrEntryEnum.Team, slug, team_name: name };
   }
 }

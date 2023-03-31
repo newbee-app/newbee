@@ -1,4 +1,4 @@
-import { Post } from './post.interface';
+import type { Post } from './post.interface';
 
 /**
  * The information associated with a QnA.
@@ -21,7 +21,7 @@ export interface Qna extends Post {
   // /**
   //  * The raw markdoc of the question rendered into HTML, for display on the frontend.
   //  */
-  // renderedQuestion: string;
+  // questionHtml: string;
 
   /**
    * The raw markdoc of the answer portion of the QnA.
@@ -39,5 +39,5 @@ export interface Qna extends Post {
   // /**
   //  * The raw markdoc of the answer rendered into HTML, for display on the frontend.
   //  */
-  // renderedAnswer: string;
+  // answerHtml: string;
 }

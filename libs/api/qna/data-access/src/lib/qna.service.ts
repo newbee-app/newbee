@@ -15,10 +15,13 @@ import {
 import {
   elongateUuid,
   markdocToTxt,
-  SolrEntryEnum,
   SolrSchema,
 } from '@newbee/api/shared/util';
-import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
+import {
+  internalServerError,
+  qnaSlugNotFound,
+  SolrEntryEnum,
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
@@ -221,6 +224,7 @@ export class QnaService {
       markedUpToDateAt,
       upToDate,
       title,
+      slug,
       creator,
       maintainer,
       questionTxt,
@@ -230,15 +234,16 @@ export class QnaService {
     return {
       id,
       entry_type: SolrEntryEnum.Qna,
+      slug,
       created_at: createdAt,
       updated_at: updatedAt,
       marked_up_to_date_at: markedUpToDateAt,
       up_to_date: upToDate,
-      title,
-      creator: creator.id,
-      maintainer: maintainer?.id ?? null,
-      question_details: questionTxt,
-      answer: answerTxt,
+      qna_title: title,
+      creator: creator.slug,
+      maintainer: maintainer?.slug ?? null,
+      question_txt: questionTxt,
+      answer_txt: answerTxt,
       team: team?.id ?? null,
     };
   }

@@ -86,7 +86,7 @@ function generatePwValues(password: string, salt?: Buffer): [string, string] {
  */
 function reversePw(password: string, solrPassword: string): void {
   const [expectedPassword, expectedSalt] = solrPassword.split(' ');
-  const saltBuff = Buffer.from(expectedSalt, 'base64');
+  const saltBuff = Buffer.from(expectedSalt ?? '', 'base64');
   const [receivedPassword, receivedSalt] = generatePwValues(password, saltBuff);
 
   console.log(`Expected: ${solrPassword}`);

@@ -5,7 +5,9 @@ import {
   testPublicKeyCredentialCreationOptions1,
   testQna1,
   testRegistrationResponse1,
+  testSuggestion1,
   testTeam1,
+  testTeamQueryResult1,
   testUser1,
 } from '@newbee/shared/util';
 import {
@@ -17,8 +19,13 @@ import {
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseQueryDto,
+  BaseQueryResultDto,
   BaseRegistrationResponseDto,
+  BaseSuggestDto,
+  BaseSuggestResultDto,
   BaseTeamSlugDto,
+  BaseUpdateAnswerDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
   BaseUpdateQnaDto,
@@ -28,7 +35,6 @@ import {
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
 } from '../dto';
-import { BaseUpdateAnswerDto } from '../dto/qna/base-update-answer.dto';
 
 /**
  * An example instance of BaseEmailDto.
@@ -134,7 +140,7 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
  */
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
   title: testDoc1.title,
-  bodyMarkdoc: testDoc1.bodyMarkdoc,
+  docMarkdoc: testDoc1.docMarkdoc,
 };
 
 /**
@@ -143,7 +149,7 @@ export const testBaseCreateDocDto1: BaseCreateDocDto = {
  */
 export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   title: 'New title',
-  bodyMarkdoc: 'new raw markdoc',
+  docMarkdoc: 'new raw markdoc',
 };
 
 /**
@@ -197,4 +203,40 @@ export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
  */
 export const testBaseRegistrationResponseDto1: BaseRegistrationResponseDto = {
   response: testRegistrationResponse1,
+};
+
+/**
+ * An example instance of BaseSuggestDto.
+ * Strictly for use in testing.
+ */
+export const testBaseSuggestDto1: BaseSuggestDto = {
+  query: 'query',
+};
+
+/**
+ * An example instance of BaseQueryDto.
+ * Strictly for use in testing.
+ */
+export const testBaseQueryDto1: BaseQueryDto = {
+  query: 'query',
+  offset: 0,
+};
+
+/**
+ * An example instance of BaseSuggestResultDto.
+ * Strictly for use in testing.
+ */
+export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
+  suggestions: [testSuggestion1.term],
+};
+
+/**
+ * An example instance of BaseQueryResultDto.
+ * Strictly for use in testing.
+ */
+export const testBaseQueryResultDto1: BaseQueryResultDto = {
+  team: {
+    offset: testBaseQueryDto1.offset,
+    results: [testTeamQueryResult1],
+  },
 };

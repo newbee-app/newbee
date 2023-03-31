@@ -18,13 +18,12 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
-  OrgRoleEnum,
   PostRoleEnum,
   ROLE_KEY,
-  TeamRoleEnum,
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
+import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {

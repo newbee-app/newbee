@@ -14,11 +14,7 @@ import {
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import {
-  elongateUuid,
-  markdocToTxt,
-  SolrEntryEnum,
-} from '@newbee/api/shared/util';
+import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateQnaDto1,
@@ -26,6 +22,7 @@ import {
 import {
   internalServerError,
   qnaSlugNotFound,
+  SolrEntryEnum,
   testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -73,22 +70,23 @@ describe('QnaService', () => {
   const createDocFields = {
     id: testQnaEntity1.id,
     entry_type: SolrEntryEnum.Qna,
+    slug: testQnaEntity1.slug,
     created_at: testNow1,
     updated_at: testNow1,
     marked_up_to_date_at: testNow1,
     up_to_date: testQnaEntity1.upToDate,
-    title: testQnaEntity1.title,
-    creator: testOrgMemberEntity1.id,
-    maintainer: testOrgMemberEntity1.id,
-    question_details: testQnaEntity1.questionTxt,
-    answer: testQnaEntity1.answerTxt,
+    qna_title: testQnaEntity1.title,
+    creator: testOrgMemberEntity1.slug,
+    maintainer: testOrgMemberEntity1.slug,
+    question_txt: testQnaEntity1.questionTxt,
+    answer_txt: testQnaEntity1.answerTxt,
     team: testTeamEntity1.id,
   };
   const updateDocFields = {
     ...createDocFields,
-    title: testUpdatedQna.title,
-    question_details: testUpdatedQna.questionTxt,
-    answer: testUpdatedQna.answerTxt,
+    qna_title: testUpdatedQna.title,
+    question_txt: testUpdatedQna.questionTxt,
+    answer_txt: testUpdatedQna.answerTxt,
   };
 
   beforeEach(async () => {
@@ -99,6 +97,7 @@ describe('QnaService', () => {
           provide: getRepositoryToken(QnaEntity),
           useValue: createMock<EntityRepository<QnaEntity>>({
             findOneOrFail: jest.fn().mockResolvedValue(testQnaEntity1),
+            find: jest.fn().mockResolvedValue([testQnaEntity1]),
             assign: jest.fn().mockReturnValue(testUpdatedQna),
           }),
         },

@@ -1,5 +1,7 @@
 // Details all of the errors that `class-validator` can throw from backend DTOs.
 
+import { SolrEntryEnum } from '../../enum';
+
 /**
  * Constant to say that an email address field must specify a valid email address.
  */
@@ -75,3 +77,10 @@ export const offsetIsInt = 'Offset must be an int.';
  * Constant to say that offset has a min of 0.
  */
 export const offsetMin0 = 'Offset cannot be less than 0.';
+
+/**
+ * Constant to say that the value for type must be in SolrEntryEnum.
+ */
+export const typeIsEnum = `Type can only be one of the following values: ${Object.values(
+  SolrEntryEnum
+)}`;

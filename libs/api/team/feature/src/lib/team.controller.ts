@@ -11,13 +11,14 @@ import {
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { TeamEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { OrgRoleEnum, Role, TeamRoleEnum, User } from '@newbee/api/shared/util';
+import { Role, User } from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
 import { organization, team, teamVersion } from '@newbee/shared/data-access';
+import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamEntity`.
@@ -74,7 +75,9 @@ export class TeamController {
       organization
     );
     const team = await this.teamService.create(createTeamDto, orgMember);
-    this.logger.log(`Team created: ${JSON.stringify(team)}`);
+    this.logger.log(
+      `Team created with ID: ${team.id}, ${JSON.stringify(team)}`
+    );
 
     return team;
   }

@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { TeamRoleEnum } from '@newbee/api/shared/util';
+import { TeamRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
 

@@ -17,10 +17,10 @@ import {
   testTeamEntity1,
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
-import { TeamRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamMemberNotFound,
+  TeamRoleEnum,
   userAlreadyTeamMemberBadRequest,
 } from '@newbee/shared/util';
 import { TeamMemberService } from './team-member.service';

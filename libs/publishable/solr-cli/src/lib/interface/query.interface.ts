@@ -3,9 +3,26 @@
  */
 export interface QueryParams {
   /**
-   * The query string itself.
+   * The query string itself or an object with the name of the query parser to use and any relevant parameters.
    */
-  query: string;
+  query?:
+    | string
+    | {
+        /**
+         * The query parser to use.
+         */
+        [queryParser: string]: {
+          /**
+           * The query itself.
+           */
+          query: string;
+
+          /**
+           * Parameters for the query parser.
+           */
+          [queryParserParams: string]: string | string[] | boolean | number;
+        };
+      };
 
   /**
    * Defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. Specified in `<field>:<query>` format.
@@ -31,4 +48,10 @@ export interface QueryParams {
    * Arranges search results in either ascending (`asc`) or descending (`desc`) order. Specified in `<field> <asc-desc>` format. Default value is `score desc`.
    */
   sort?: string | string[];
+
+  /**
+   * Other params not specified above go in this object.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params?: any;
 }

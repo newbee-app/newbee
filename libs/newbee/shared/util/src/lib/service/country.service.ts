@@ -24,7 +24,7 @@ export class CountryService {
   constructor(@Inject(LOCALE_ID) localeId: string) {
     this.regionNames = new Intl.DisplayNames(localeId, { type: 'region' });
 
-    this._currentRegion = localeId.split('-')[1];
+    this._currentRegion = localeId.split('-')[1] ?? 'US';
     this._currentCountry = this.getCountry(this._currentRegion);
 
     const supportedRegionsSet = new Set(this._supportedRegions);

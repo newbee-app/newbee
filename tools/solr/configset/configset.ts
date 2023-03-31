@@ -117,44 +117,74 @@ async function create(options: OptionValues): Promise<void> {
     `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
   );
 
-  // Turn off schemaless mode
-  res = await solrCli.setUserProperty(newbeeOrg, {
-    'update.autoCreateFields': false,
-  });
-  console.log(
-    `Turning off schemaless mode by setting user property 'update.autoCreateFields' to 'false': ${prettyJson(
-      res
-    )}\n`
-  );
-
-  // Turn on auto soft commits
-  res = await solrCli.setProperty(newbeeOrg, {
-    'updateHandler.autoSoftCommit.maxTime': 60000,
-  });
-  console.log(
-    `Turning on auto soft commits by setting common property 'updateHandler.autoSoftCommit.maxTime' to '60000': ${prettyJson(
-      res
-    )}\n`
-  );
-
   // Make a bulk request to set up the schema
   res = await solrCli.bulkSchemaRequest(newbeeOrg, {
     // Create all of the needed field types
-    'add-field-type': {
-      name: 'entry_type',
-      class: 'solr.EnumFieldType',
-      enumsConfig: 'enumsConfig.xml',
-      enumName: 'entry',
-      docValues: true,
-    },
+    'add-field-type': [
+      {
+        name: 'entry_type',
+        class: 'solr.EnumFieldType',
+        enumsConfig: 'enumsConfig.xml',
+        enumName: 'entry',
+        docValues: true,
+      },
+      {
+        name: 'basic_text',
+        class: 'solr.TextField',
+        positionIncrementGap: 100,
+        analyzer: {
+          tokenizer: {
+            name: 'standard',
+          },
+          filters: [
+            {
+              name: 'lowercase',
+            },
+          ],
+        },
+      },
+    ],
 
     // Create all of the needed fields
     'add-field': [
+      // Required for spell checking and stemming
+      {
+        name: '_basic_text_',
+        type: 'basic_text',
+        stored: false,
+        multiValued: true,
+      },
+      {
+        name: '_user_fields_',
+        type: 'basic_text',
+        stored: false,
+        multiValued: true,
+      },
+      {
+        name: '_doc_fields_',
+        type: 'basic_text',
+        stored: false,
+        multiValued: true,
+      },
+      {
+        name: '_qna_fields_',
+        type: 'basic_text',
+        stored: false,
+        multiValued: true,
+      },
+
       // Required on all entries to distinguish them
       { name: 'entry_type', type: 'entry_type', required: true },
 
-      // Applicable for team and member
-      { name: 'name', type: 'string', multiValued: true },
+      // Applicable for all entries
+      { name: 'slug', type: 'string', required: true },
+
+      // Applicable for user
+      { name: 'user_name', type: 'basic_text' },
+      { name: 'user_display_name', type: 'basic_text' },
+
+      // Applicable for team
+      { name: 'team_name', type: 'basic_text' },
 
       // Applicable for doc and qna
       { name: 'team', type: 'string' },
@@ -162,33 +192,225 @@ async function create(options: OptionValues): Promise<void> {
       { name: 'updated_at', type: 'pdate' },
       { name: 'marked_up_to_date_at', type: 'pdate' },
       { name: 'up_to_date', type: 'boolean', docValues: true },
-      { name: 'title', type: 'string' },
       { name: 'creator', type: 'string' },
       { name: 'maintainer', type: 'string' },
 
       // Applicable for doc
-      { name: 'doc_body', type: 'text_en' },
+      { name: 'doc_title', type: 'basic_text' },
+      { name: 'doc_txt', type: 'basic_text' },
 
       // Applicable for qna
-      { name: 'question_details', type: 'text_en' },
-      { name: 'answer', type: 'text_en' },
+      { name: 'qna_title', type: 'basic_text' },
+      { name: 'question_txt', type: 'basic_text' },
+      { name: 'answer_txt', type: 'basic_text' },
     ],
 
     // Create all of the needed copy fields
     'add-copy-field': [
-      { source: 'name', dest: '_text_' },
-      { source: 'title', dest: '_text_' },
-      { source: 'doc_body', dest: '_text_' },
-      { source: 'question_details', dest: '_text_' },
-      { source: 'answer', dest: '_text_' },
+      {
+        source: 'user_name',
+        dest: ['_text_', '_basic_text_', '_user_fields_'],
+      },
+      {
+        source: 'user_display_name',
+        dest: ['_text_', '_basic_text_', '_user_fields_'],
+      },
+      { source: 'team_name', dest: ['_text_', '_basic_text_'] },
+      { source: 'doc_title', dest: ['_text_', '_basic_text_', '_doc_fields_'] },
+      { source: 'doc_txt', dest: ['_text_', '_basic_text_', '_doc_fields_'] },
+      { source: 'qna_title', dest: ['_text_', '_basic_text_', '_qna_fields_'] },
+      {
+        source: 'question_txt',
+        dest: ['_text_', '_basic_text_', '_qna_fields_'],
+      },
+      {
+        source: 'answer_txt',
+        dest: ['_text_', '_basic_text_', '_qna_fields_'],
+      },
     ],
   });
   console.log(`Creating schema with bulk request: ${prettyJson(res)}\n`);
 
-  // Delete the temporary configset
+  // Make a bulk request to set up the config
+  res = await solrCli.bulkConfigRequest(newbeeOrg, {
+    // Turn off schemaless mode
+    'set-user-property': {
+      'update.autoCreateFields': false,
+    },
+
+    // Turn on auto soft commits
+    'set-property': {
+      'updateHandler.autoSoftCommit.maxTime': 60000,
+    },
+
+    // Add support for suggester
+    'add-searchcomponent': {
+      name: 'suggest',
+      class: 'solr.SuggestComponent',
+      suggester: [
+        {
+          name: 'default',
+          lookupImpl: 'FuzzyLookupFactory',
+          dictionaryImpl: 'HighFrequencyDictionaryFactory',
+          field: '_basic_text_',
+          buildOnCommit: 'true',
+          suggestAnalyzerFieldType: 'basic_text',
+        },
+        {
+          name: 'user',
+          lookupImpl: 'FuzzyLookupFactory',
+          dictionaryImpl: 'HighFrequencyDictionaryFactory',
+          field: '_user_fields_',
+          buildOnCommit: 'true',
+          suggestAnalyzerFieldType: 'basic_text',
+        },
+        {
+          name: 'team',
+          lookupImpl: 'FuzzyLookupFactory',
+          dictionaryImpl: 'HighFrequencyDictionaryFactory',
+          field: 'team_name',
+          buildOnCommit: 'true',
+          suggestAnalyzerFieldType: 'basic_text',
+        },
+        {
+          name: 'doc',
+          lookupImpl: 'FuzzyLookupFactory',
+          dictionaryImpl: 'HighFrequencyDictionaryFactory',
+          field: '_doc_fields_',
+          buildOnCommit: 'true',
+          suggestAnalyzerFieldType: 'basic_text',
+        },
+        {
+          name: 'qna',
+          lookupImpl: 'FuzzyLookupFactory',
+          dictionaryImpl: 'HighFrequencyDictionaryFactory',
+          field: '_qna_fields_',
+          buildOnCommit: 'true',
+          suggestAnalyzerFieldType: 'basic_text',
+        },
+      ],
+    },
+
+    // Modify spellcheck to use _basic_text_ and basic_text instead of _text_ and text_general
+    'update-searchcomponent': {
+      name: 'spellcheck',
+      class: 'solr.SpellCheckComponent',
+      queryAnalyzerFieldType: 'basic_text',
+      spellchecker: [
+        {
+          name: 'default',
+          field: '_basic_text_',
+          classname: 'solr.DirectSolrSpellChecker',
+          distanceMeasure: 'internal',
+          accuracy: 0.5,
+          maxEdits: 2,
+          minPrefix: 1,
+          maxInspections: 5,
+          minQueryLength: 4,
+          maxQueryFrequency: 0.01,
+        },
+        {
+          name: 'user',
+          field: '_user_fields_',
+          classname: 'solr.DirectSolrSpellChecker',
+          distanceMeasure: 'internal',
+          accuracy: 0.5,
+          maxEdits: 2,
+          minPrefix: 1,
+          maxInspections: 5,
+          minQueryLength: 4,
+          maxQueryFrequency: 0.01,
+        },
+        {
+          name: 'team',
+          field: '_team_fields_',
+          classname: 'solr.DirectSolrSpellChecker',
+          distanceMeasure: 'internal',
+          accuracy: 0.5,
+          maxEdits: 2,
+          minPrefix: 1,
+          maxInspections: 5,
+          minQueryLength: 4,
+          maxQueryFrequency: 0.01,
+        },
+        {
+          name: 'doc',
+          field: '_doc_fields_',
+          classname: 'solr.DirectSolrSpellChecker',
+          distanceMeasure: 'internal',
+          accuracy: 0.5,
+          maxEdits: 2,
+          minPrefix: 1,
+          maxInspections: 5,
+          minQueryLength: 4,
+          maxQueryFrequency: 0.01,
+        },
+        {
+          name: 'qna',
+          field: '_qna_fields_',
+          classname: 'solr.DirectSolrSpellChecker',
+          distanceMeasure: 'internal',
+          accuracy: 0.5,
+          maxEdits: 2,
+          minPrefix: 1,
+          maxInspections: 5,
+          minQueryLength: 4,
+          maxQueryFrequency: 0.01,
+        },
+      ],
+    },
+
+    // Add suggester functionality with endpoint /suggest
+    'add-requesthandler': {
+      name: '/suggest',
+      class: 'solr.SearchHandler',
+      defaults: {
+        wt: 'json',
+        indent: 'true',
+        suggest: 'true',
+        'suggest.dictionary': 'default',
+        'suggest.count': '10',
+      },
+      'last-components': ['suggest'],
+    },
+
+    // Add spellcheck and highlighting functionality to the /query request handler
+    'update-requesthandler': {
+      name: '/query',
+      class: 'solr.SearchHandler',
+      defaults: {
+        wt: 'json',
+        indent: 'true',
+        hl: 'true',
+        'hl.tag.pre': '<strong>',
+        'hl.tag.post': '</strong>',
+        'hl.defaultSummary': 'true',
+        'hl.fl': ['doc_txt', 'question_txt', 'answer_txt'],
+        spellcheck: 'true',
+        'spellcheck.count': '1',
+        'spellcheck.alternativeTermCount': '5',
+        'spellcheck.extendedResults': 'true',
+        'spellcheck.collate': 'true',
+        'spellcheck.maxCollations': '1',
+        'spellcheck.maxCollationTries': '10',
+        'spellcheck.collateExtendedResults': 'true',
+        'spellcheck.maxResultsForSuggest': '3',
+        'spellcheck.dictionary': 'default',
+        suggest: 'true',
+        'suggest.dictionary': 'default',
+        'suggest.count': '10',
+      },
+      'last-components': ['spellcheck', 'suggest'],
+    },
+  });
+  console.log(
+    `Creating config overlay with bulk request: ${prettyJson(res)}\n`
+  );
+
+  // Delete the temporary collection
   res = await solrCli.deleteCollection(newbeeOrg);
   console.log(
-    `Deleting temporary configset '${newbeeOrg}': ${prettyJson(res)}\n`
+    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
   );
 }
 
@@ -263,7 +485,10 @@ function createSolrCli(options: OptionValues): SolrCli {
     url,
     ...(basicAuth &&
       splitBasicAuth && {
-        basicAuth: { username: splitBasicAuth[0], password: splitBasicAuth[1] },
+        basicAuth: {
+          username: splitBasicAuth[0] ?? '',
+          password: splitBasicAuth[1] ?? '',
+        },
       }),
   });
 }

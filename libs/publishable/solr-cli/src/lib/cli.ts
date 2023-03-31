@@ -7,8 +7,11 @@ import type {
   AddDynamicFieldParams,
   AddFieldParams,
   AddFieldTypeParams,
+  AddRequestHandlerParams,
+  AddSearchComponentParams,
   AddUserParams,
   BasicAuth,
+  BulkConfigRequestParams,
   BulkDocRequestParams,
   BulkSchemaRequestParams,
   ConfigProperty,
@@ -43,6 +46,7 @@ import {
   queryUrl,
   realTimeGetUrl,
   schemaUrl,
+  suggestUrl,
   updateJsonDocsUrl,
   updateJsonUrl,
 } from './util';
@@ -103,6 +107,14 @@ export class SolrCli {
 
   // START: search
 
+  /**
+   * Query a given collection.
+   *
+   * @param collectionName The collection to query.
+   * @param params The parameters for the query.
+   *
+   * @returns The result of the query.
+   */
   async query(
     collectionName: string,
     params: QueryParams
@@ -111,6 +123,31 @@ export class SolrCli {
       return (
         await axios.post(
           queryUrl(this.solrUrl, collectionName),
+          params,
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Generate query suggestions for a given collection.
+   *
+   * @param collectionName The collection to generate suggestions for.
+   * @param params The parameters for suggestion generation.
+   *
+   * @returns The result of the suggestion generation.
+   */
+  async suggest(
+    collectionName: string,
+    params: QueryParams
+  ): Promise<QueryResponse> {
+    try {
+      return (
+        await axios.post(
+          suggestUrl(this.solrUrl, collectionName),
           params,
           this.defaultHeader
         )
@@ -329,11 +366,13 @@ export class SolrCli {
     const paramsArray = Array.isArray(params) ? params : [params];
     const ids = paramsArray.map((param) => param.id);
     const res = await this.realTimeGetByIds(collectionName, ids);
-    const versionedParams = paramsArray.map((param, index) => {
-      param._version_ = res.response.docs[index]._version_;
-      return param;
+    paramsArray.forEach((param, index) => {
+      const version = res.response.docs[index]?._version_ ?? null;
+      if (version) {
+        param._version_ = version;
+      }
     });
-    return await this.addDocs(collectionName, versionedParams);
+    return await this.addDocs(collectionName, paramsArray);
   }
 
   /**
@@ -351,11 +390,13 @@ export class SolrCli {
     const paramsArray = Array.isArray(params) ? params : [params];
     const ids = paramsArray.map((param) => param.id);
     const res = await this.realTimeGetByIds(collectionName, ids);
-    const versionedParams = paramsArray.map((param, index) => {
-      param._version_ = res.response.docs[index]._version_;
-      return param;
+    paramsArray.forEach((param, index) => {
+      const version = res.response.docs[index]?._version_ ?? null;
+      if (version) {
+        param._version_ = version;
+      }
     });
-    return await this.updateDocs(collectionName, versionedParams);
+    return await this.updateDocs(collectionName, paramsArray);
   }
 
   /**
@@ -571,7 +612,7 @@ export class SolrCli {
    */
   async unsetProperty(
     collectionName: string,
-    properties: string[]
+    properties: string | string[]
   ): Promise<SolrResponse> {
     try {
       return (
@@ -621,13 +662,188 @@ export class SolrCli {
    */
   async unsetUserProperty(
     collectionName: string,
-    properties: string[]
+    properties: string | string[]
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'unset-user-property': properties },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Add request handlers for the given collection.
+   *
+   * @param collectionName The collection to add a request handler to.
+   * @param params The parameters for adding request handlers.
+   *
+   * @returns The status of the request.
+   */
+  async addRequestHandler(
+    collectionName: string,
+    params: AddRequestHandlerParams | AddRequestHandlerParams[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'add-requesthandler': params },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Update request handlers for the given collection.
+   *
+   * @param collectionName The collection to update a request handler for.
+   * @param params The parameters for updating request handlers.
+   *
+   * @returns The status of the request.
+   */
+  async updateRequestHandler(
+    collectionName: string,
+    params: AddRequestHandlerParams | AddRequestHandlerParams[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'update-requesthandler': params },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Delete request handlers in the given collection.
+   *
+   * @param collectionName The collection to delete a request handler in.
+   * @param handlers The request handlers to delete.
+   *
+   * @returns The status of the request.
+   */
+  async deleteRequestHandler(
+    collectionName: string,
+    handlers: string | string[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'delete-requesthandler': handlers },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Add search components in the given collection.
+   *
+   * @param collectionName The collection to add a search component to.
+   * @param params The parameters for adding search components.
+   *
+   * @returns The status of the request.
+   */
+  async addSearchComponent(
+    collectionName: string,
+    params: AddSearchComponentParams | AddSearchComponentParams[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'add-searchcomponent': params },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Update search components in the given collection.
+   *
+   * @param collectionName The collection to update a search component in.
+   * @param params The parameters for updating search components.
+   *
+   * @returns The status of the request.
+   */
+  async updateSearchComponent(
+    collectionName: string,
+    params: AddSearchComponentParams | AddSearchComponentParams[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'update-searchcomponent': params },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Delete search components in the given collection.
+   *
+   * @param collectionName The collection to delete a search component in.
+   * @param components The parameters for deleting search components.
+   *
+   * @returns The status of the request.
+   */
+  async deleteSearchComponent(
+    collectionName: string,
+    components: string | string[]
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          { 'delete-searchcomponent': components },
+          this.defaultHeader
+        )
+      ).data;
+    } catch (err) {
+      throw handleAxiosErr(err);
+    }
+  }
+
+  /**
+   * Make a bulk config request.
+   *
+   * @param collectionName The collection to make a bulk config request for.
+   * @param params The params for the bulk request.
+   *
+   * @returns The status of the request.
+   */
+  async bulkConfigRequest(
+    collectionName: string,
+    params: BulkConfigRequestParams
+  ): Promise<SolrResponse> {
+    try {
+      return (
+        await axios.post(
+          configUrl(this.collectionsApiUrl, collectionName),
+          params,
           this.defaultHeader
         )
       ).data;

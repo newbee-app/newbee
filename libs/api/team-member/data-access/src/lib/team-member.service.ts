@@ -16,10 +16,10 @@ import {
   TeamEntity,
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
-import { TeamRoleEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamMemberNotFound,
+  TeamRoleEnum,
   userAlreadyTeamMemberBadRequest,
 } from '@newbee/shared/util';
 

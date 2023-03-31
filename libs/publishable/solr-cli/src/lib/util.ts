@@ -9,7 +9,7 @@ import type { BasicAuth, RequestHeader } from './interface';
  * @returns The error as a returnable object.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function handleAxiosErr(err: any): any {
+export function handleAxiosErr(err: any): Error {
   const { response, request } = err;
 
   // The request was made and the server responded with a status code that falls out of the range of 2xx
@@ -183,4 +183,16 @@ export function configOverlayUrl(
  */
 export function queryUrl(solrUrl: string, collectionName: string): string {
   return `${solrUrl}/solr/${collectionName}/query`;
+}
+
+/**
+ * Generates the suggest API URL for the given collection.
+ *
+ * @param solrUrl The base URL for the Solr instance.
+ * @param collectionName The name of the collection you want to work with.
+ *
+ * @returns The suggest API URL for the collection.
+ */
+export function suggestUrl(solrUrl: string, collectionName: string): string {
+  return `${solrUrl}/solr/${collectionName}/suggest`;
 }

@@ -7,8 +7,7 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { TeamRoleEnum } from '@newbee/api/shared/util';
-import { Team } from '@newbee/shared/util';
+import { Team, TeamRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';

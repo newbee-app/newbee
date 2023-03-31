@@ -17,13 +17,14 @@ import {
   testOrgMemberEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { SolrEntryEnum } from '@newbee/api/shared/util';
+import type { SolrSchema } from '@newbee/api/shared/util';
 import {
   testBaseCreateTeamDto1,
   testBaseUpdateTeamDto1,
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
+  SolrEntryEnum,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
@@ -50,6 +51,17 @@ describe('TeamService', () => {
   let solrCli: SolrCli;
 
   const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
+  const createDocFields: SolrSchema = {
+    id: testTeamEntity1.id,
+    entry_type: SolrEntryEnum.Team,
+    slug: testTeamEntity1.slug,
+    team_name: testTeamEntity1.name,
+  };
+  const updateDocFields: SolrSchema = {
+    ...createDocFields,
+    slug: testUpdatedTeam.slug,
+    team_name: testUpdatedTeam.name,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -60,6 +72,7 @@ describe('TeamService', () => {
           useValue: createMock<EntityRepository<TeamEntity>>({
             findOne: jest.fn().mockResolvedValue(testTeamEntity1),
             findOneOrFail: jest.fn().mockResolvedValue(testTeamEntity1),
+            find: jest.fn().mockResolvedValue([testTeamEntity1]),
             assign: jest.fn().mockReturnValue(testUpdatedTeam),
           }),
         },
@@ -104,11 +117,10 @@ describe('TeamService', () => {
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1)
       ).resolves.toEqual(testTeamEntity1);
       expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: testTeamEntity1.id,
-        entry_type: SolrEntryEnum.Team,
-        name: testTeamEntity1.name,
-      });
+      expect(solrCli.addDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        createDocFields
+      );
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -221,6 +233,10 @@ describe('TeamService', () => {
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
       ).resolves.toEqual(testUpdatedTeam);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        updateDocFields
+      );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
@@ -249,14 +265,6 @@ describe('TeamService', () => {
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
       ).resolves.toEqual(testUpdatedTeam);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1.id,
-        {
-          id: testUpdatedTeam.id,
-          entry_type: SolrEntryEnum.Team,
-          name: testUpdatedTeam.name,
-        }
-      );
     });
   });
 

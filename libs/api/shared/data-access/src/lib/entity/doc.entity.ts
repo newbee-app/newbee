@@ -40,36 +40,36 @@ export class DocEntity extends PostEntity implements Doc {
    * @inheritdoc
    */
   @Property({ type: 'text' })
-  bodyMarkdoc: string;
+  docMarkdoc: string;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'text' })
-  bodyTxt: string;
+  docTxt: string;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
   //  * @inheritdoc
   //  */
   // @Property({ type: 'text' })
-  // renderedHtml: string;
+  // docHtml: string;
 
   constructor(
     id: string,
     title: string,
     creator: OrgMemberEntity,
     team: TeamEntity | null,
-    bodyMarkdoc: string
-    // renderedHtml: string,
+    docMarkdoc: string
+    // docHtml: string,
   ) {
     super(id, title);
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
     this.maintainer = creator;
-    this.bodyMarkdoc = bodyMarkdoc;
-    this.bodyTxt = markdocToTxt(bodyMarkdoc);
-    // this.renderedHtml = renderedHtml;
+    this.docMarkdoc = docMarkdoc;
+    this.docTxt = markdocToTxt(docMarkdoc);
+    // this.docHtml = docHtml;
   }
 }

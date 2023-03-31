@@ -14,11 +14,8 @@ import {
   testOrgMemberEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import {
-  elongateUuid,
-  markdocToTxt,
-  SolrEntryEnum,
-} from '@newbee/api/shared/util';
+import type { SolrSchema } from '@newbee/api/shared/util';
+import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
@@ -26,6 +23,7 @@ import {
 import {
   docSlugNotFound,
   internalServerError,
+  SolrEntryEnum,
   testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -58,23 +56,24 @@ describe('DocService', () => {
   let solrCli: SolrCli;
 
   const testUpdatedDoc = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
-  const createDocFields = {
+  const createDocFields: SolrSchema = {
     id: testDocEntity1.id,
     entry_type: SolrEntryEnum.Doc,
+    slug: testDocEntity1.slug,
     created_at: testNow1,
     updated_at: testNow1,
     marked_up_to_date_at: testNow1,
     up_to_date: testDocEntity1.upToDate,
-    title: testDocEntity1.title,
-    creator: testOrgMemberEntity1.id,
-    maintainer: testOrgMemberEntity1.id,
-    doc_body: testDocEntity1.bodyTxt,
-    team: testTeamEntity1,
+    doc_title: testDocEntity1.title,
+    creator: testOrgMemberEntity1.slug,
+    maintainer: testOrgMemberEntity1.slug,
+    doc_txt: testDocEntity1.docTxt,
+    team: testTeamEntity1.id,
   };
-  const updateDocFields = {
+  const updateDocFields: SolrSchema = {
     ...createDocFields,
-    title: testUpdatedDoc.title,
-    doc_body: testUpdatedDoc.bodyTxt,
+    doc_title: testUpdatedDoc.title,
+    doc_txt: testUpdatedDoc.docTxt,
   };
 
   beforeEach(async () => {
@@ -85,6 +84,7 @@ describe('DocService', () => {
           provide: getRepositoryToken(DocEntity),
           useValue: createMock<EntityRepository<DocEntity>>({
             findOneOrFail: jest.fn().mockResolvedValue(testDocEntity1),
+            find: jest.fn().mockResolvedValue([testDocEntity1]),
             assign: jest.fn().mockReturnValue(testUpdatedDoc),
           }),
         },
@@ -123,7 +123,7 @@ describe('DocService', () => {
         testDocEntity1.title,
         testOrgMemberEntity1,
         testTeamEntity1,
-        testDocEntity1.bodyMarkdoc
+        testDocEntity1.docMarkdoc
       );
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testDocEntity1);
@@ -208,8 +208,8 @@ describe('DocService', () => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testDocEntity1, {
         ...testBaseUpdateDocDto1,
-        ...(testBaseUpdateDocDto1.bodyMarkdoc && {
-          bodyTxt: markdocToTxt(testBaseUpdateDocDto1.bodyMarkdoc),
+        ...(testBaseUpdateDocDto1.docMarkdoc && {
+          docTxt: markdocToTxt(testBaseUpdateDocDto1.docMarkdoc),
         }),
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,

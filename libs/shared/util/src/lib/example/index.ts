@@ -1,13 +1,16 @@
+import type { ResponseHeader, Suggestion } from '@newbee/solr-cli';
 import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
+import { OrgRoleEnum } from '../enum';
 import type {
   Authenticator,
   Doc,
   Organization,
+  OrgMember,
   Post,
   Qna,
   Team,
@@ -15,6 +18,7 @@ import type {
   UserChallenge,
   UserSettings,
 } from '../interface';
+import type { TeamQueryResult } from '../type';
 
 /**
  * For internal use in creating a user challenge.
@@ -84,6 +88,15 @@ export const testTeam1: Team = {
 };
 
 /**
+ * An example instance of OrgMember.
+ * Strictly for use in testing.
+ */
+export const testOrgMember1: OrgMember = {
+  role: OrgRoleEnum.Owner,
+  slug: 'slug',
+};
+
+/**
  * An example instance of Post.
  * Strictly for use in testing.
  */
@@ -102,8 +115,8 @@ export const testPost1: Post = {
  */
 export const testDoc1: Doc = {
   ...testPost1,
-  bodyMarkdoc: 'bodyMarkdoc',
-  bodyTxt: 'bodyTxt',
+  docMarkdoc: 'docMarkdoc',
+  docTxt: 'docTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedHtml: 'renderedhtml',
 };
@@ -181,4 +194,30 @@ export const testAuthenticationCredential1: AuthenticationResponseJSON = {
     clientDataJSON: 'clientData1',
     signature: 'signature1',
   },
+};
+
+/**
+ * An example instance of `TeamQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testTeamQueryResult1: TeamQueryResult = testTeam1;
+
+/**
+ * An example instance of `ResponseHeader`.
+ * Strictly for use in testing.
+ */
+export const testResponseHeader1: ResponseHeader = {
+  status: 0,
+  QTime: 30,
+  zkConnected: true,
+};
+
+/**
+ * An example instance of `Suggestion`.
+ * Strictly for use in testing.
+ */
+export const testSuggestion1: Suggestion = {
+  term: 'suggestion',
+  weight: 1,
+  payload: '',
 };

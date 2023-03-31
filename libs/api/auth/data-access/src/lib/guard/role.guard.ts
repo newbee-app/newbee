@@ -7,7 +7,6 @@ import { QnaService } from '@newbee/api/qna/data-access';
 import { OrgMemberEntity, PostEntity } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
-  OrgRoleEnum,
   PostRoleEnum,
   RoleType,
   ROLE_KEY,
@@ -15,6 +14,7 @@ import {
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import { doc, organization, qna, team } from '@newbee/shared/data-access';
+import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * A guard that prevents users from accessing endpoints annotated with role metadata unless they possess the required roles.

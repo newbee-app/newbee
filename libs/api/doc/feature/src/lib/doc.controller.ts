@@ -23,14 +23,13 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
-  OrgRoleEnum,
   PostRoleEnum,
   Role,
-  TeamRoleEnum,
   User,
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import { doc, docVersion, organization } from '@newbee/shared/data-access';
+import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.

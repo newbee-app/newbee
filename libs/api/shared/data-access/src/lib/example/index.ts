@@ -1,17 +1,26 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
+  SolrEntryEnum,
+  TeamRoleEnum,
   testAuthenticator1,
   testDoc1,
   testOrganization1,
+  testOrgMember1,
   testQna1,
+  testResponseHeader1,
+  testSuggestion1,
   testTeam1,
   testUser1,
   testUserChallenge1,
   testUserSettings1,
 } from '@newbee/shared/util';
+import type {
+  DocResponse,
+  DocsResponse,
+  QueryResponse,
+} from '@newbee/solr-cli';
 import { UserAndOptionsDto } from '../dto';
 import {
   AuthenticatorEntity,
@@ -96,10 +105,9 @@ export const testTeamEntity1 = createMock<TeamEntity>({
  * Strictly for use in testing.
  */
 export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
-  id: '1',
+  ...testOrgMember1,
   user: testUserEntity1,
   organization: testOrganizationEntity1,
-  role: OrgRoleEnum.Owner,
 });
 
 /**
@@ -137,3 +145,75 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
 });
+
+/**
+ * An example instance of `DocResponse`.
+ * Strictly for use in testing.
+ */
+export const testDocResponse1: DocResponse = {
+  id: testTeamEntity1.id,
+  _version_: BigInt(1),
+  type: SolrEntryEnum.Team,
+  slug: testTeamEntity1.slug,
+  team_name: testTeamEntity1.name,
+};
+
+/**
+ * An example instance of `DocsResponse`.
+ * Strictly for use in testing.
+ */
+export const testDocsResponse1: DocsResponse = {
+  numFound: 1,
+  start: 0,
+  numFoundExact: true,
+  docs: [testDocResponse1],
+};
+
+/**
+ * An example instance of `DocsResponse`.
+ * Strictly for use in testing.
+ */
+export const testDocsResponse2: DocsResponse = {
+  numFound: 0,
+  start: 0,
+  numFoundExact: true,
+  docs: [],
+};
+
+/**
+ * An example instance of `QueryResponse`.
+ * Strictly for use in testing.
+ */
+export const testQueryResponse1: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  response: testDocsResponse1,
+};
+
+/**
+ * An example instance of `QueryResponse`.
+ * Strictly for use in testing.
+ */
+export const testQueryResponse2: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  response: testDocsResponse2,
+  suggest: {
+    default: { query: { numFound: 1, suggestions: [testSuggestion1] } },
+  },
+};
+
+/**
+ * An example instance of `QueryResponse`.
+ * Strictly for use in testing.
+ */
+export const testSuggestResponse1: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  response: testDocsResponse2,
+  suggest: {
+    default: {
+      query: {
+        numFound: 1,
+        suggestions: [testSuggestion1],
+      },
+    },
+  },
+};

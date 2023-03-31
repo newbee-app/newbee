@@ -16,18 +16,15 @@ import {
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  OrgRoleEnum,
-  SolrEntryEnum,
-  SolrSchema,
-} from '@newbee/api/shared/util';
+import { SolrSchema } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
+  OrgRoleEnum,
+  SolrEntryEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
-import { v4 } from 'uuid';
 
 /**
  * The service that interacts with `OrgMemberEntity`.
@@ -61,8 +58,7 @@ export class OrgMemberService {
     organization: OrganizationEntity,
     role: OrgRoleEnum
   ): Promise<OrgMemberEntity> {
-    const id = v4();
-    const orgMember = new OrgMemberEntity(id, user, organization, role);
+    const orgMember = new OrgMemberEntity(user, organization, role);
     try {
       await this.orgMemberRepository.persistAndFlush(orgMember);
     } catch (err) {
@@ -76,10 +72,13 @@ export class OrgMemberService {
     }
 
     const { name, displayName } = user;
+    const { slug } = orgMember;
     const docFields: SolrSchema = {
-      id,
-      entry_type: SolrEntryEnum.Member,
-      name: displayName ? [name, displayName] : name,
+      id: `${user.id},${organization.id}`,
+      entry_type: SolrEntryEnum.User,
+      slug,
+      user_name: name,
+      user_display_name: displayName,
     };
     try {
       await this.solrCli.addDocs(organization.id, docFields);
@@ -165,7 +164,7 @@ export class OrgMemberService {
 
     const collectionName = orgMember.organization.id;
     try {
-      await this.solrCli.deleteDocs(collectionName, { id: orgMember.id });
+      await this.solrCli.deleteDocs(collectionName, { id: orgMember.slug });
     } catch (err) {
       this.logger.error(err);
     }

@@ -15,10 +15,13 @@ import {
 import {
   elongateUuid,
   markdocToTxt,
-  SolrEntryEnum,
   SolrSchema,
 } from '@newbee/api/shared/util';
-import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import {
+  docSlugNotFound,
+  internalServerError,
+  SolrEntryEnum,
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
@@ -54,9 +57,9 @@ export class DocService {
     team: TeamEntity | null,
     creator: OrgMemberEntity
   ): Promise<DocEntity> {
-    const { title, bodyMarkdoc } = createDocDto;
+    const { title, docMarkdoc } = createDocDto;
     const id = v4();
-    const doc = new DocEntity(id, title, creator, team, bodyMarkdoc);
+    const doc = new DocEntity(id, title, creator, team, docMarkdoc);
 
     try {
       await this.docRepository.persistAndFlush(doc);
@@ -114,11 +117,11 @@ export class DocService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
-    const { bodyMarkdoc } = updateDocDto;
+    const { docMarkdoc } = updateDocDto;
     const now = new Date();
     const newDocDetails = {
       ...updateDocDto,
-      ...(bodyMarkdoc && { bodyTxt: markdocToTxt(bodyMarkdoc) }),
+      ...(docMarkdoc && { docTxt: markdocToTxt(docMarkdoc) }),
       updatedAt: now,
       markedUpToDateAt: now,
       upToDate: true,
@@ -214,22 +217,24 @@ export class DocService {
       markedUpToDateAt,
       upToDate,
       title,
+      slug,
       creator,
       maintainer,
-      bodyTxt,
+      docTxt,
       team,
     } = doc;
     return {
       id,
       entry_type: SolrEntryEnum.Doc,
+      slug,
       created_at: createdAt,
       updated_at: updatedAt,
       marked_up_to_date_at: markedUpToDateAt,
       up_to_date: upToDate,
-      title,
-      creator: creator.id,
-      maintainer: maintainer?.id ?? null,
-      doc_body: bodyTxt,
+      doc_title: title,
+      creator: creator.slug,
+      maintainer: maintainer?.slug ?? null,
+      doc_txt: docTxt,
       team: team?.id ?? null,
     };
   }

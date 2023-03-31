@@ -17,14 +17,14 @@ import {
   testOrgMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { OrgRoleEnum, SolrEntryEnum } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
+  OrgRoleEnum,
+  SolrEntryEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
-import { v4 } from 'uuid';
 import { OrgMemberService } from './org-member.service';
 
 jest.mock('@newbee/api/shared/data-access', () => ({
@@ -33,12 +33,6 @@ jest.mock('@newbee/api/shared/data-access', () => ({
   OrgMemberEntity: jest.fn(),
 }));
 const mockOrgMemberEntity = OrgMemberEntity as jest.Mock;
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn(),
-}));
-const mockV4 = v4 as jest.Mock;
 
 describe('OrgMemberService', () => {
   let service: OrgMemberService;
@@ -58,6 +52,7 @@ describe('OrgMemberService', () => {
           provide: getRepositoryToken(OrgMemberEntity),
           useValue: createMock<EntityRepository<OrgMemberEntity>>({
             findOneOrFail: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+            find: jest.fn().mockResolvedValue([testOrgMemberEntity1]),
             assign: jest.fn().mockResolvedValue(testUpdatedOrgMember),
           }),
         },
@@ -76,7 +71,6 @@ describe('OrgMemberService', () => {
 
     jest.clearAllMocks();
     mockOrgMemberEntity.mockReturnValue(testOrgMemberEntity1);
-    mockV4.mockReturnValue(testOrgMemberEntity1.id);
   });
 
   it('should be defined', () => {
@@ -89,7 +83,6 @@ describe('OrgMemberService', () => {
     afterEach(() => {
       expect(mockOrgMemberEntity).toBeCalledTimes(1);
       expect(mockOrgMemberEntity).toBeCalledWith(
-        testOrgMemberEntity1.id,
         testUserEntity1,
         testOrganizationEntity1,
         testOrgMemberEntity1.role
@@ -108,9 +101,11 @@ describe('OrgMemberService', () => {
       ).resolves.toEqual(testOrgMemberEntity1);
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: testOrgMemberEntity1.id,
-        entry_type: SolrEntryEnum.Member,
-        name: [testUserEntity1.name, testUserEntity1.displayName],
+        id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
+        entry_type: SolrEntryEnum.User,
+        slug: testOrgMemberEntity1.slug,
+        user_name: testUserEntity1.name,
+        user_display_name: testUserEntity1.displayName,
       });
     });
 

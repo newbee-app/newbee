@@ -1,5 +1,5 @@
+import { SolrEntryEnum } from '@newbee/shared/util';
 import type { AddDocParams } from '@newbee/solr-cli';
-import { SolrEntryEnum } from '../enum';
 
 /**
  * All of the parts of NewBee's Solr schema that we care about.
@@ -11,14 +11,35 @@ export interface SolrSchema extends AddDocParams {
   id: string;
 
   /**
+   * The version of the doc, if you want to do a replace/update with optimistic concurrency.
+   * Not required, even for a replace/update.
+   */
+  _version_?: bigint;
+
+  /**
    * What type of entry the doc represents.
    */
   entry_type: SolrEntryEnum;
 
   /**
-   * The name of the team or the org member the doc represents, if the doc is a team or an org member.
+   * The slug associated with the doc.
    */
-  name?: string | string[] | null;
+  slug: string;
+
+  /**
+   * The name of the org member the doc represents, if the doc is an org member.
+   */
+  user_name?: string | null;
+
+  /**
+   * The display name of the org member the doc represents, if the doc is an org member.
+   */
+  user_display_name?: string | null;
+
+  /**
+   * The name of the team the doc represents, if the doc is a team.
+   */
+  team_name?: string | null;
 
   /**
    * The ID of the team the post belongs to, if the doc is a doc or a qna.
@@ -46,11 +67,6 @@ export interface SolrSchema extends AddDocParams {
   up_to_date?: boolean | null;
 
   /**
-   * The title of the post, if the doc is a doc or a qna.
-   */
-  title?: string | null;
-
-  /**
    * The user that created the post, if the doc is a doc or a qna.
    */
   creator?: string | null;
@@ -61,17 +77,27 @@ export interface SolrSchema extends AddDocParams {
   maintainer?: string | null;
 
   /**
-   * The body of the document, if the doc is a doc.
+   * The title of the doc, if the doc is a doc.
    */
-  doc_body?: string | null;
+  doc_title?: string | null;
+
+  /**
+   * The body of the doc, if the doc is a doc.
+   */
+  doc_txt?: string | null;
+
+  /**
+   * The title of the qna, if the doc is a qna.
+   */
+  qna_title?: string | null;
 
   /**
    * The details of the question, if the doc is a qna.
    */
-  question_details?: string | null;
+  question_txt?: string | null;
 
   /**
    * The answer to the question, if the doc is a qna.
    */
-  answer?: string | null;
+  answer_txt?: string | null;
 }

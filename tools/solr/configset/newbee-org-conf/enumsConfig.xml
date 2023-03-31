@@ -4,6 +4,6 @@
     <value>doc</value>
     <value>qna</value>
     <value>team</value>
-    <value>member</value>
+    <value>user</value>
   </enum>
 </enumsConfig>

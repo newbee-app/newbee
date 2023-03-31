@@ -12,5 +12,5 @@ export interface HttpClientError {
    * The target is the part of the component where the message is meant to be displayed.
    * e.g. `{ email: 'Email field is required' }`
    */
-  messages: { [target: string]: string | undefined };
+  messages: { [target: string]: string };
 }

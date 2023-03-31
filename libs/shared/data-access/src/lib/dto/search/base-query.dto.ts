@@ -1,13 +1,10 @@
+import { BaseSuggestDto } from './base-suggest.dto';
+
 /**
  * The DTO sent from the frontend to the backend to execute a query.
  * Suitable for use in POST requests.
  */
-export class BaseQueryDto {
-  /**
-   * The query itself.
-   */
-  query!: string;
-
+export class BaseQueryDto extends BaseSuggestDto {
   /**
    * The offset from which the result set should be displayed.
    */

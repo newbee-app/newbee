@@ -2,12 +2,13 @@ import {
   Entity,
   Enum,
   ManyToOne,
-  PrimaryKey,
   PrimaryKeyType,
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { OrgRoleEnum, shortenUuid } from '@newbee/api/shared/util';
+import { translator } from '@newbee/api/shared/util';
+import type { OrgMember } from '@newbee/shared/util';
+import { OrgRoleEnum } from '@newbee/shared/util';
 import { OrganizationEntity } from './organization.entity';
 import { UserEntity } from './user.entity';
 
@@ -17,40 +18,32 @@ import { UserEntity } from './user.entity';
  */
 @Entity()
 @Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
-export class OrgMemberEntity {
-  /**
-   * The globally unique ID for the org member.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
+export class OrgMemberEntity implements OrgMember {
   /**
    * The user associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => UserEntity, { hidden: true })
+  @ManyToOne(() => UserEntity, { primary: true, hidden: true })
   user: UserEntity;
 
   /**
    * The organization associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => OrganizationEntity, { hidden: true })
+  @ManyToOne(() => OrganizationEntity, { primary: true, hidden: true })
   organization: OrganizationEntity;
 
   /**
-   * The user's role in the organization.
+   * @inheritdoc
    */
   @Enum(() => OrgRoleEnum)
   role: OrgRoleEnum;
 
   /**
-   * The user's unique slug within the organization.
+   * @inheritdoc
    */
   @Property()
-  slug: string;
+  slug: string = translator.new();
 
   /**
    * Specifies the primary key of the entity.
@@ -59,15 +52,12 @@ export class OrgMemberEntity {
   [PrimaryKeyType]?: [string, string];
 
   constructor(
-    id: string,
     user: UserEntity,
     organization: OrganizationEntity,
     role: OrgRoleEnum
   ) {
-    this.id = id;
     this.user = user;
     this.organization = organization;
     this.role = role;
-    this.slug = shortenUuid(id);
   }
 }
