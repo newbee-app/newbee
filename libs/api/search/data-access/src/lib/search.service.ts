@@ -130,7 +130,12 @@ export class SearchService {
                 doc['type'] === SolrEntryEnum.Doc ||
                 doc['type'] === SolrEntryEnum.Qna
             )
-            .map((doc) => doc.id)
+            .flatMap(
+              (doc) =>
+                [doc['team'], doc['creator'], doc['maintainer']].filter(
+                  (val) => typeof val === 'string' && val
+                ) as string[]
+            )
         )
       );
 
