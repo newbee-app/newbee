@@ -5,6 +5,7 @@
     "npm": ">=8.19.2",
     "node": ">=18.12.1"
   },
+  "license": "The MIT License",
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",

@@ -2,9 +2,9 @@
 
 ## Description
 
-This repo represents a monolith that encapsulates all of the TypeScript code written by NewBee LLC. NewBee makes use of Nx to handle the complexities of running an enterprise-level monorepo. For all intents and purposes, NewBee projects try to stick with canonical Nx structure and Nx recommendations.
+NewBee makes use of Nx to handle the complexities of running an enterprise-level monorepo. For all intents and purposes, NewBee projects try to stick with canonical Nx structure and Nx recommendations.
 
-Currently, the only project that NewBee LLC is developing is NewBee, an internal documentation app marketed towards businesses. NewBee is powered by Nest in the backend and Angular in the frontend, both of which maintain first-level support status with Nx. The combination of Nx, Nest, and Angular was made for a couple of reasons.
+NewBee is powered by Nest in the backend and Angular in the frontend, both of which maintain first-level support status with Nx. The combination of Nx, Nest, and Angular was made for a couple of reasons.
 
 1. They are all opinionated tools (with reasonable opinions) with clear guidelines and recommendations, which drastically cuts down on decision fatigue.
 2. They are all powerful, and come with loads of first-class plugins that allow them to meet most use-cases out-of-the-box.
@@ -19,7 +19,7 @@ Currently, the only project that NewBee LLC is developing is NewBee, an internal
 
 > The official docs for how to structure a tsconfig.json file: <https://www.typescriptlang.org/tsconfig>
 
-The JavaScript projects at NewBee LLC make use of TypeScript, as opposed to vanilla JavaScript, in order to: catch errors before runtime, make the code clearer, and allow for better maintainability as new contributors are tasked with adding to and maintaining the codebase. In order to do this, we make use of tsconfig.json files in all of our TS projects. These project-specific tsconfig.json files inherit from the tsconfig.base.json file that exists in the root dir. When picking out the settings that would go into the base config, choices were made to focus on:
+NewBee makes use of TypeScript, as opposed to vanilla JavaScript, in order to: catch errors before runtime, make the code clearer, and allow for better maintainability as new contributors are tasked with adding to and maintaining the codebase. In order to do this, we make use of tsconfig.json files in all of our TS projects. These project-specific tsconfig.json files inherit from the tsconfig.base.json file that exists in the root dir. When picking out the settings that would go into the base config, choices were made to focus on:
 
 1. Catching as many bugs as possible at compile time.
 2. Forcing developers to keep to a defined and predictable standard.
@@ -29,19 +29,19 @@ The JavaScript projects at NewBee LLC make use of TypeScript, as opposed to vani
 
 As specified in the docs, some options in the tsconfig.base.json file also affect other options. For such options, the root tsconfig.base.json file tries to specify as few lines as possible, meaning "child" options are not specified unless they should explicitly differ from their "parent" option. The following are all of the "parent" options specified in the base file and the "child" options associated with them which were not explicitly changed:
 
-- strict
-  - alwaysStrict
-  - strictNullChecks
-  - strictBindCallApply
-  - strictFunctionTypes
-  - strictPropertyInitialization
-  - noImplicitAny
-  - noImplicitThis
-  - useUnknownInCatchVariables
-- esModuleInterop
-  - allowSyntheticDefaultImports
-- target
-  - useDefineForClassFields
+- `strict`
+  - `alwaysStrict`
+  - `strictNullChecks`
+  - `strictBindCallApply`
+  - `strictFunctionTypes`
+  - `strictPropertyInitialization`
+  - `noImplicitAny`
+  - `noImplicitThis`
+  - `useUnknownInCatchVariables`
+- `esModuleInterop`
+  - `allowSyntheticDefaultImports`
+- `target`
+  - `useDefineForClassFields`
 
 ## Style guide
 
@@ -61,7 +61,7 @@ While Prettier handles formatting code most of the time, it explicitly does not 
 - Code that does not and will never need to import from other `data-access`, `ui`, or `feature` libraries should be put in the `util` library associated with their corresponding feature.
 - To avoid issues with barrel files and circular dependencies, put all entity files in the `api-shared-data-access` library.
 - All projects in this monorepo make use of `compodoc` to transform `jsdoc` comments into pretty, human-readable web pages. All contributors to this project should update `jsdoc` comments whenever they make changes to existing documented code, create `jsdoc` comments for existing undocumented code (if encountered), and add `jsdoc` comments to all new code they write. `compodoc` web pages can be viewed using the `compodoc` task provided by `@twittwer/compodoc`, a third-party Nx plugin. Remember to pass in the `--serve` flag.
-- When adding new packages for use in the repo, it's important not to violate the license of the packages we're using. As, for now, we are creating proprietary software, it's important to ensure that all packages used in the project are under permissive licenses (e.g. `MIT`, `ISC`, `Apache`) and not copyleft licenses (e.g. `GPL`, `AGPL`, `LGPL`). You can make use of the `license-checker` package to check the license of any package in the repo, or any package you might want to add to the repo.
+- When adding new packages for use in the repo, it's important not to violate the license of the packages we're using. As NewBee uses the MIT license and does not want to use another type of license, it's important to ensure that all packages used in the project are under permissive licenses (e.g. `MIT`, `ISC`, `Apache`) and not copyleft licenses (e.g. `GPL`, `AGPL`, `LGPL`),as copyleft licenses require packages that use them to use the same license that they use. You can make use of the `license-checker` package to check the license of any package in the repo, or any package you might want to add to the repo.
 - While it's okay for the backend Nest project to make use of CJS packages, the frontend Angular project should only use ESM packages to ensure the Angular builder can properly tree-shake any unused portions of imported dependencies. While the Angular builder should give you warnings when you make use of a CJS module on the frontend, you should use the `is-esm` package to preemptively check that any package you use on the frontend is in ESM format.
 - When defining a new dir to store files, prefer creating an `index.ts` file for each dir, which exports all of the files of the dir that can be used outside of that dir. When importing files from the dir, prefer importing the dir itself through the index file rather than importing specific files from the dir.
 - When defining entities, mark all relations as hidden properties using `hidden: true`. This makes it easier to work with the plain interfaces that entity classes should inherit from. If you need to pass in a populated relation from the backend to the frontend, define a DTO that explicitly passes the relation separately.
