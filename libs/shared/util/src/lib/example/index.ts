@@ -1,4 +1,4 @@
-import type { ResponseHeader, Suggestion } from '@newbee/solr-cli';
+import type { ResponseHeader } from '@newbee/solr-cli';
 import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
@@ -210,14 +210,4 @@ export const testResponseHeader1: ResponseHeader = {
   status: 0,
   QTime: 30,
   zkConnected: true,
-};
-
-/**
- * An example instance of `Suggestion`.
- * Strictly for use in testing.
- */
-export const testSuggestion1: Suggestion = {
-  term: 'suggestion',
-  weight: 1,
-  payload: '',
 };

@@ -13,12 +13,14 @@ import { DocModule } from '@newbee/api/doc/feature';
 import { OrgMemberModule } from '@newbee/api/org-member/feature';
 import { OrganizationModule } from '@newbee/api/organization/feature';
 import { QnaModule } from '@newbee/api/qna/feature';
+import { SearchModule } from '@newbee/api/search/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
   ForbiddenExceptionFilter,
   GlobalExceptionFilter,
   ProxyThrottlerGuard,
+  UnauthorizedExceptionFilter,
 } from '@newbee/api/shared/util';
 import { TeamMemberModule } from '@newbee/api/team-member/feature';
 import { TeamModule } from '@newbee/api/team/feature';
@@ -75,6 +77,7 @@ import { default as appConfig } from '../environments/environment';
     OrgMemberModule,
     OrganizationModule,
     QnaModule,
+    SearchModule,
     TeamModule,
     TeamMemberModule,
     UserModule,
@@ -111,6 +114,10 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_FILTER,
       useClass: ForbiddenExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: UnauthorizedExceptionFilter,
     },
   ],
 })

@@ -12,16 +12,8 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  elongateUuid,
-  markdocToTxt,
-  SolrSchema,
-} from '@newbee/api/shared/util';
-import {
-  docSlugNotFound,
-  internalServerError,
-  SolrEntryEnum,
-} from '@newbee/shared/util';
+import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
+import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
@@ -70,10 +62,7 @@ export class DocService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(
-        collectionName,
-        DocService.createDocFields(doc)
-      );
+      await this.solrCli.addDocs(collectionName, doc.createDocDocParams());
     } catch (err) {
       this.logger.error(err);
       await this.docRepository.removeAndFlush(doc);
@@ -138,7 +127,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        DocService.createDocFields(updatedDoc)
+        updatedDoc.createDocDocParams()
       );
     } catch (err) {
       this.logger.error(err);
@@ -170,7 +159,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        DocService.createDocFields(updatedDoc)
+        updatedDoc.createDocDocParams()
       );
     } catch (err) {
       this.logger.error(err);
@@ -200,42 +189,5 @@ export class DocService {
     } catch (err) {
       this.logger.error(err);
     }
-  }
-
-  /**
-   * Create the fields to add or replace a doc doc in a Solr index.
-   *
-   * @param doc The doc to create doc fields for.
-   *
-   * @returns The params to add or replace a doc using SolrCli.
-   */
-  private static createDocFields(doc: DocEntity): SolrSchema {
-    const {
-      id,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      upToDate,
-      title,
-      slug,
-      creator,
-      maintainer,
-      docTxt,
-      team,
-    } = doc;
-    return {
-      id,
-      entry_type: SolrEntryEnum.Doc,
-      slug,
-      created_at: createdAt,
-      updated_at: updatedAt,
-      marked_up_to_date_at: markedUpToDateAt,
-      up_to_date: upToDate,
-      doc_title: title,
-      creator: creator.slug,
-      maintainer: maintainer?.slug ?? null,
-      doc_txt: docTxt,
-      team: team?.id ?? null,
-    };
   }
 }

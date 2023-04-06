@@ -34,6 +34,11 @@ export const teamVersion = '1';
 export const docVersion = '1';
 
 /**
- * The version of he `qna` API endpoint.
+ * The version of the `qna` API endpoint.
  */
 export const qnaVersion = '1';
+
+/**
+ * The version of the `search` API endpoint.
+ */
+export const searchVersion = '1';

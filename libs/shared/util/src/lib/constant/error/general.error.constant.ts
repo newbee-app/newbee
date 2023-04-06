@@ -9,3 +9,9 @@ export const internalServerError =
  */
 export const forbiddenError =
   'You do not have permissions to access this resource. Please contact an organization or team admin about your permissions if you think this is an error.';
+
+/**
+ * Constant to describe an aunauthorized error.
+ */
+export const unauthorizedError =
+  'You must be logged in to access this resource. Please log in and try again.';

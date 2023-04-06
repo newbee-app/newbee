@@ -2,26 +2,26 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { forbiddenError } from '@newbee/shared/util';
+import { unauthorizedError } from '@newbee/shared/util';
 import type { Response } from 'express';
 
 /**
- * A global exception filter to handle any `ForbiddenException` thrown by the JWT strategy.
+ * A global exception filter to handle any `UnauthorizedException`.
  * Automatically adds a user-readable message.
  */
-@Catch(ForbiddenException)
-export class ForbiddenExceptionFilter implements ExceptionFilter {
-  catch(exception: ForbiddenException, host: ArgumentsHost) {
+@Catch(UnauthorizedException)
+export class UnauthorizedExceptionFilter implements ExceptionFilter {
+  catch(exception: UnauthorizedException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
     response.status(status).json({
       statusCode: status,
-      message: forbiddenError,
-      error: 'Forbidden',
+      message: unauthorizedError,
+      error: 'Unauthorized',
     });
   }
 }

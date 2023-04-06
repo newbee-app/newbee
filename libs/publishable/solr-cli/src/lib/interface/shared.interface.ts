@@ -236,6 +236,45 @@ export interface Highlights {
 }
 
 /**
+ * The structure of Solr's spellcheck response.
+ */
+export interface Spellcheck {
+  /**
+   * Suggestions for individual search terms, in the format of ['term', { suggestion }]
+   */
+  suggestions: (
+    | string
+    | {
+        numFound: number;
+        startOffset: number;
+        endOffset: number;
+        origFreq: number;
+        suggestion: { word: string; freq: number }[];
+      }
+  )[];
+
+  /**
+   * Whether enough results were generated for the query to be considered "correctly spelled", determined by `spellcheck.maxResultsForSuggest`.
+   */
+  correctlySpelled: boolean;
+
+  /**
+   * Spellchecking suggestions as a collation (spellchecking the whole query, as opposed to individual terms).
+   * In the format of ['collation', { collationSuggestion }]
+   */
+  collations:
+    | [
+        string,
+        {
+          collationQuery: string;
+          hits: number;
+          misspellingsAndCorrections: string[];
+        }
+      ]
+    | [];
+}
+
+/**
  * The response to a query request.
  */
 export interface QueryResponse {
@@ -257,41 +296,7 @@ export interface QueryResponse {
   /**
    * Spellchecking, if spellchecking was requested.
    */
-  spellcheck?: {
-    /**
-     * Suggestions for individual search terms, in the format of ['term', { suggestion }]
-     */
-    suggestions: (
-      | string
-      | {
-          numFound: number;
-          startOffset: number;
-          endOffset: number;
-          origFreq: number;
-          suggestion: { word: string; freq: number }[];
-        }
-    )[];
-
-    /**
-     * Whether enough results were generated for the query to be considered "correctly spelled", determined by `spellcheck.maxResultsForSuggest`.
-     */
-    correctlySpelled: boolean;
-
-    /**
-     * Spellchecking suggestions as a collation (spellchecking the whole query, as opposed to individual terms).
-     * In the format of ['collation', { collationSuggestion }]
-     */
-    collations:
-      | [
-          string,
-          {
-            collationQuery: string;
-            hits: number;
-            misspellingsAndCorrections: string[];
-          }
-        ]
-      | [];
-  };
+  spellcheck?: Spellcheck;
 
   /**
    * Suggestioned based on the query, if suggestions were requested.

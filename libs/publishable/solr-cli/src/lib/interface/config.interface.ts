@@ -59,6 +59,11 @@ export interface AddRequestHandlerParams {
   'use-params'?: string;
 
   /**
+   * Completely replace the default components with the following components.
+   */
+  components?: string[];
+
+  /**
    * Define some components as being used before the default components.
    */
   'first-components'?: string[];

@@ -1,1 +1,1 @@
-export * from './solr-schema.interface';
+export * from './solr.interface';

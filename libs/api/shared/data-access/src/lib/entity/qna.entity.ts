@@ -1,6 +1,6 @@
 import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { markdocToTxt } from '@newbee/api/shared/util';
+import { markdocToTxt, QnaDocParams } from '@newbee/api/shared/util';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import { Qna } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
@@ -108,5 +108,26 @@ export class QnaEntity extends PostEntity implements Qna {
       const content = Markdoc.transform(ast);
       this.answerTxt = markdocTxtRenderer(content);
     }
+  }
+
+  /**
+   * Create the fields to add or replace a qna doc in a Solr index.
+   * @returns The params to add or replace a qna doc using SolrCli.
+   */
+  createQnaDocParams(): QnaDocParams {
+    return new QnaDocParams(
+      this.id,
+      this.slug,
+      this.team?.id ?? null,
+      this.createdAt,
+      this.updatedAt,
+      this.markedUpToDateAt,
+      this.upToDate,
+      this.creator.id,
+      this.maintainer?.id ?? null,
+      this.title,
+      this.questionTxt,
+      this.answerTxt
+    );
   }
 }

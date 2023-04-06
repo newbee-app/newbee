@@ -12,16 +12,8 @@ import {
   QnaEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  elongateUuid,
-  markdocToTxt,
-  SolrSchema,
-} from '@newbee/api/shared/util';
-import {
-  internalServerError,
-  qnaSlugNotFound,
-  SolrEntryEnum,
-} from '@newbee/shared/util';
+import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
+import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
@@ -77,10 +69,7 @@ export class QnaService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(
-        collectionName,
-        QnaService.createDocFields(qna)
-      );
+      await this.solrCli.addDocs(collectionName, qna.createQnaDocParams());
     } catch (err) {
       this.logger.error(err);
       await this.qnaRepository.removeAndFlush(qna);
@@ -152,7 +141,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        QnaService.createDocFields(updatedQna)
+        updatedQna.createQnaDocParams()
       );
     } catch (err) {
       this.logger.error(err);
@@ -184,7 +173,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        QnaService.createDocFields(updatedQna)
+        updatedQna.createQnaDocParams()
       );
     } catch (err) {
       this.logger.error(err);
@@ -214,37 +203,5 @@ export class QnaService {
     } catch (err) {
       this.logger.error(err);
     }
-  }
-
-  private static createDocFields(qna: QnaEntity): SolrSchema {
-    const {
-      id,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      upToDate,
-      title,
-      slug,
-      creator,
-      maintainer,
-      questionTxt,
-      answerTxt,
-      team,
-    } = qna;
-    return {
-      id,
-      entry_type: SolrEntryEnum.Qna,
-      slug,
-      created_at: createdAt,
-      updated_at: updatedAt,
-      marked_up_to_date_at: markedUpToDateAt,
-      up_to_date: upToDate,
-      qna_title: title,
-      creator: creator.slug,
-      maintainer: maintainer?.slug ?? null,
-      question_txt: questionTxt,
-      answer_txt: answerTxt,
-      team: team?.id ?? null,
-    };
   }
 }

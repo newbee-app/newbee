@@ -12,13 +12,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import type { SolrSchema } from '@newbee/api/shared/util';
 import { generateUniqueSlug, newOrgConfigset } from '@newbee/api/shared/util';
 import {
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
-  SolrEntryEnum,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
@@ -91,15 +89,10 @@ export class OrganizationService {
       });
 
       for (const orgMember of organization.members) {
-        const { name, displayName } = orgMember.user;
-        const docFields: SolrSchema = {
-          id: `${creator.id},${id}`,
-          entry_type: SolrEntryEnum.User,
-          slug: orgMember.slug,
-          user_name: name,
-          user_display_name: displayName,
-        };
-        await this.solrCli.addDocs(id, docFields);
+        await this.solrCli.addDocs(
+          id,
+          await orgMember.createOrgMemberDocParams()
+        );
       }
     } catch (err) {
       this.logger.error(err);

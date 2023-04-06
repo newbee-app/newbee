@@ -13,10 +13,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
-import type { AppConfig, SolrSchema } from '@newbee/api/shared/util';
+import type { AppConfig } from '@newbee/api/shared/util';
 import {
   internalServerError,
-  SolrEntryEnum,
   userEmailNotFound,
   userEmailTakenBadRequest,
   userIdNotFound,
@@ -162,21 +161,17 @@ export class UserService {
       return updatedUser;
     }
 
-    if (!updatedUser.organizations.isInitialized()) {
-      await updatedUser.organizations.init();
+    const { organizations } = updatedUser;
+    if (!organizations.isInitialized()) {
+      await organizations.init();
     }
-    const { name, displayName, organizations } = updatedUser;
     for (const orgMember of organizations) {
-      const { organization, slug } = orgMember;
-      const docFields: SolrSchema = {
-        id: `${updatedUser.id},${organization.id}`,
-        entry_type: SolrEntryEnum.User,
-        slug,
-        user_name: name,
-        user_display_name: displayName,
-      };
+      const { organization } = orgMember;
       try {
-        await this.solrCli.getVersionAndReplaceDocs(organization.id, docFields);
+        await this.solrCli.getVersionAndReplaceDocs(
+          organization.id,
+          await orgMember.createOrgMemberDocParams()
+        );
       } catch (err) {
         this.logger.error(err);
       }

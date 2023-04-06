@@ -1,3 +1,4 @@
+import { SolrEntryEnum } from '@newbee/shared/util';
 import { BaseSuggestDto } from './base-suggest.dto';
 
 /**
@@ -9,4 +10,10 @@ export class BaseQueryDto extends BaseSuggestDto {
    * The offset from which the result set should be displayed.
    */
   offset = 0;
+
+  /**
+   * The type of entry to look for.
+   * Leave undefined to search in all.
+   */
+  type?: SolrEntryEnum;
 }

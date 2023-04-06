@@ -1,5 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
+import {
+  DocDocParams,
+  OrgMemberDocParams,
+  QnaDocParams,
+  TeamDocParams,
+} from '@newbee/api/shared/util';
 import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
   SolrEntryEnum,
@@ -10,7 +16,6 @@ import {
   testOrgMember1,
   testQna1,
   testResponseHeader1,
-  testSuggestion1,
   testTeam1,
   testUser1,
   testUserChallenge1,
@@ -98,6 +103,7 @@ export const testTeamEntity1 = createMock<TeamEntity>({
   ...testTeam1,
   id: '1',
   organization: testOrganizationEntity1,
+  createTeamDocParams: jest.fn(),
 });
 
 /**
@@ -108,6 +114,8 @@ export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
   ...testOrgMember1,
   user: testUserEntity1,
   organization: testOrganizationEntity1,
+  id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
+  createOrgMemberDocParams: jest.fn(),
 });
 
 /**
@@ -131,6 +139,7 @@ export const testDocEntity1 = createMock<DocEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  createDocDocParams: jest.fn(),
 });
 
 /**
@@ -144,16 +153,76 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  createQnaDocParams: jest.fn(),
 });
+
+/**
+ * An example instance of `OrgMemberDocParams`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberDocParams1 = new OrgMemberDocParams(
+  testOrgMemberEntity1.id,
+  testOrgMemberEntity1.slug,
+  testUserEntity1.name,
+  testUserEntity1.displayName
+);
+
+/**
+ * An example instance of `TeamDocParams`.
+ * Strictly for use in testing.
+ */
+export const testTeamDocParams1 = new TeamDocParams(
+  testTeamEntity1.id,
+  testTeamEntity1.slug,
+  testTeamEntity1.name
+);
+
+/**
+ * An example instance of `DocDocParams`.
+ * Strictly for use in testing.
+ */
+export const testDocDocParams1 = new DocDocParams(
+  testDocEntity1.id,
+  testDocEntity1.slug,
+  testDocEntity1.team?.id ?? null,
+  testDocEntity1.createdAt,
+  testDocEntity1.updatedAt,
+  testDocEntity1.markedUpToDateAt,
+  testDocEntity1.upToDate,
+  testDocEntity1.creator.id,
+  testDocEntity1.maintainer?.id ?? null,
+  testDocEntity1.title,
+  testDocEntity1.docTxt
+);
+
+/**
+ * An example instance of `QnaDocParams`.
+ * Strictly for use in testing.
+ */
+export const testQnaDocParams1 = new QnaDocParams(
+  testQnaEntity1.id,
+  testQnaEntity1.slug,
+  testQnaEntity1.team?.id ?? null,
+  testQnaEntity1.createdAt,
+  testQnaEntity1.updatedAt,
+  testQnaEntity1.markedUpToDateAt,
+  testQnaEntity1.upToDate,
+  testQnaEntity1.creator.id,
+  testQnaEntity1.maintainer?.id ?? null,
+  testQnaEntity1.title,
+  testQnaEntity1.questionTxt,
+  testQnaEntity1.answerTxt
+);
 
 /**
  * An example instance of `DocResponse`.
  * Strictly for use in testing.
+ * Uses testTeamEntity1.
  */
 export const testDocResponse1: DocResponse = {
   id: testTeamEntity1.id,
   _version_: BigInt(1),
-  type: SolrEntryEnum.Team,
+  entry_type: SolrEntryEnum.Team,
   slug: testTeamEntity1.slug,
   team_name: testTeamEntity1.name,
 };
@@ -161,6 +230,7 @@ export const testDocResponse1: DocResponse = {
 /**
  * An example instance of `DocsResponse`.
  * Strictly for use in testing.
+ * Uses testDocResponse1.
  */
 export const testDocsResponse1: DocsResponse = {
   numFound: 1,
@@ -172,6 +242,7 @@ export const testDocsResponse1: DocsResponse = {
 /**
  * An example instance of `DocsResponse`.
  * Strictly for use in testing.
+ * Simulates empty results.
  */
 export const testDocsResponse2: DocsResponse = {
   numFound: 0,
@@ -183,10 +254,16 @@ export const testDocsResponse2: DocsResponse = {
 /**
  * An example instance of `QueryResponse`.
  * Strictly for use in testing.
+ * Simulates a match with highlights.
  */
 export const testQueryResponse1: QueryResponse = {
   responseHeader: testResponseHeader1,
   response: testDocsResponse1,
+  highlighting: {
+    '1': {
+      team_name: [testTeamEntity1.name],
+    },
+  },
 };
 
 /**
@@ -196,24 +273,16 @@ export const testQueryResponse1: QueryResponse = {
 export const testQueryResponse2: QueryResponse = {
   responseHeader: testResponseHeader1,
   response: testDocsResponse2,
-  suggest: {
-    default: { query: { numFound: 1, suggestions: [testSuggestion1] } },
-  },
-};
-
-/**
- * An example instance of `QueryResponse`.
- * Strictly for use in testing.
- */
-export const testSuggestResponse1: QueryResponse = {
-  responseHeader: testResponseHeader1,
-  response: testDocsResponse2,
-  suggest: {
-    default: {
-      query: {
-        numFound: 1,
-        suggestions: [testSuggestion1],
+  spellcheck: {
+    suggestions: [],
+    correctlySpelled: false,
+    collations: [
+      'collation',
+      {
+        collationQuery: testTeamEntity1.name,
+        hits: 2,
+        misspellingsAndCorrections: [],
       },
-    },
+    ],
   },
 };

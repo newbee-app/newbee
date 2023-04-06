@@ -5,8 +5,9 @@ import {
   PrimaryKeyType,
   Property,
   Unique,
+  wrap,
 } from '@mikro-orm/core';
-import { translator } from '@newbee/api/shared/util';
+import { OrgMemberDocParams, translator } from '@newbee/api/shared/util';
 import type { OrgMember } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import { OrganizationEntity } from './organization.entity';
@@ -59,5 +60,29 @@ export class OrgMemberEntity implements OrgMember {
     this.user = user;
     this.organization = organization;
     this.role = role;
+  }
+
+  /**
+   * Gets the ID for the entity as a comma-delimited string.
+   */
+  get id(): string {
+    return `${this.user.id},${this.organization.id}`;
+  }
+
+  /**
+   * Create the fields to add or replace an org member doc in a Solr index.
+   * @returns The params to add or replace an org member doc using SolrCli.
+   */
+  async createOrgMemberDocParams(): Promise<OrgMemberDocParams> {
+    if (!wrap(this.user).isInitialized()) {
+      await wrap(this.user).init();
+    }
+
+    return new OrgMemberDocParams(
+      this.id,
+      this.slug,
+      this.user.name,
+      this.user.displayName
+    );
   }
 }

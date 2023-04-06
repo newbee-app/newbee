@@ -15,16 +15,16 @@ import {
   TeamEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
+  testTeamDocParams1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import type { SolrSchema } from '@newbee/api/shared/util';
+import { TeamDocParams } from '@newbee/api/shared/util';
 import {
   testBaseCreateTeamDto1,
   testBaseUpdateTeamDto1,
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
-  SolrEntryEnum,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
@@ -51,14 +51,8 @@ describe('TeamService', () => {
   let solrCli: SolrCli;
 
   const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
-  const createDocFields: SolrSchema = {
-    id: testTeamEntity1.id,
-    entry_type: SolrEntryEnum.Team,
-    slug: testTeamEntity1.slug,
-    team_name: testTeamEntity1.name,
-  };
-  const updateDocFields: SolrSchema = {
-    ...createDocFields,
+  const testUpdatedTeamDocParams: TeamDocParams = {
+    ...testTeamDocParams1,
     slug: testUpdatedTeam.slug,
     team_name: testUpdatedTeam.name,
   };
@@ -92,6 +86,7 @@ describe('TeamService', () => {
     jest.clearAllMocks();
     mockTeamEntity.mockReturnValue(testTeamEntity1);
     mockV4.mockReturnValue(testTeamEntity1.id);
+    testTeamEntity1.createTeamDocParams.mockReturnValue(testTeamDocParams1);
   });
 
   it('should be defined', () => {
@@ -119,7 +114,7 @@ describe('TeamService', () => {
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        createDocFields
+        testTeamDocParams1
       );
     });
 
@@ -219,6 +214,12 @@ describe('TeamService', () => {
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      testTeamEntity1.createTeamDocParams.mockReturnValue(
+        testUpdatedTeamDocParams
+      );
+    });
+
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(
@@ -235,7 +236,7 @@ describe('TeamService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        updateDocFields
+        testUpdatedTeamDocParams
       );
     });
 
@@ -265,6 +266,10 @@ describe('TeamService', () => {
         service.update(testTeamEntity1, testBaseUpdateTeamDto1)
       ).resolves.toEqual(testUpdatedTeam);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testUpdatedTeamDocParams
+      );
     });
   });
 

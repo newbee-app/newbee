@@ -10,42 +10,32 @@ import type {
  */
 export class BaseQueryResultDto {
   /**
+   * The page set from which to start listing results.
+   */
+  offset!: number;
+
+  /**
    * Org members that match the query.
    */
-  orgMember?: Result<OrgMemberQueryResult>;
+  orgMember?: OrgMemberQueryResult[];
 
   /**
    * Teams that match the query.
    */
-  team?: Result<TeamQueryResult>;
+  team?: TeamQueryResult[];
 
   /**
    * Docs that match the query.
    */
-  doc?: Result<DocQueryResult>;
+  doc?: DocQueryResult[];
 
   /**
    * Qnas that match the query.
    */
-  qna?: Result<QnaQueryResult>;
+  qna?: QnaQueryResult[];
 
   /**
    * An alternative query the user might have meant, if the original query found little to no results.
    */
   suggestion?: string;
-}
-
-/**
- * The format of a query result by category.
- */
-interface Result<T> {
-  /**
-   * The page set from which to start listing results.
-   */
-  offset: number;
-
-  /**
-   * The results themselves.
-   */
-  results: T[];
 }

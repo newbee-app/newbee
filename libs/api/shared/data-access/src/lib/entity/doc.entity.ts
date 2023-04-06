@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { markdocToTxt } from '@newbee/api/shared/util';
+import { DocDocParams, markdocToTxt } from '@newbee/api/shared/util';
 import { Doc } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -71,5 +71,25 @@ export class DocEntity extends PostEntity implements Doc {
     this.docMarkdoc = docMarkdoc;
     this.docTxt = markdocToTxt(docMarkdoc);
     // this.docHtml = docHtml;
+  }
+
+  /**
+   * Create the fields to add or replace a NewBee doc in a Solr index.
+   * @returns The params to add or replace a Solr doc using SolrCli.
+   */
+  createDocDocParams(): DocDocParams {
+    return new DocDocParams(
+      this.id,
+      this.slug,
+      this.team?.id ?? null,
+      this.createdAt,
+      this.updatedAt,
+      this.markedUpToDateAt,
+      this.upToDate,
+      this.creator.id,
+      this.maintainer?.id ?? null,
+      this.title,
+      this.docTxt
+    );
   }
 }

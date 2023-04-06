@@ -16,12 +16,10 @@ import {
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { SolrSchema } from '@newbee/api/shared/util';
 import {
   internalServerError,
   orgMemberNotFound,
   OrgRoleEnum,
-  SolrEntryEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -71,17 +69,11 @@ export class OrgMemberService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const { name, displayName } = user;
-    const { slug } = orgMember;
-    const docFields: SolrSchema = {
-      id: `${user.id},${organization.id}`,
-      entry_type: SolrEntryEnum.User,
-      slug,
-      user_name: name,
-      user_display_name: displayName,
-    };
     try {
-      await this.solrCli.addDocs(organization.id, docFields);
+      await this.solrCli.addDocs(
+        organization.id,
+        await orgMember.createOrgMemberDocParams()
+      );
     } catch (err) {
       this.logger.error(err);
       await this.orgMemberRepository.removeAndFlush(orgMember);

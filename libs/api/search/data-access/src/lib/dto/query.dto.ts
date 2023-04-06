@@ -1,6 +1,11 @@
 import { BaseQueryDto } from '@newbee/shared/data-access';
-import { offsetIsInt, offsetMin0 } from '@newbee/shared/util';
-import { IsInt, Min } from 'class-validator';
+import {
+  offsetIsInt,
+  offsetMin0,
+  SolrEntryEnum,
+  typeIsEnum,
+} from '@newbee/shared/util';
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 import { SuggestDto } from './suggest.dto';
 
 /**
@@ -14,4 +19,11 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
   @IsInt({ message: offsetIsInt })
   @Min(0, { message: offsetMin0 })
   offset = 0;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsEnum(SolrEntryEnum, { message: typeIsEnum })
+  type?: SolrEntryEnum;
 }

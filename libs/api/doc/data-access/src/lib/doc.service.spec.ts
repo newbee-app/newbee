@@ -9,13 +9,17 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   DocEntity,
+  testDocDocParams1,
   testDocEntity1,
   testOrganizationEntity1,
   testOrgMemberEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import type { SolrSchema } from '@newbee/api/shared/util';
-import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
+import {
+  DocDocParams,
+  elongateUuid,
+  markdocToTxt,
+} from '@newbee/api/shared/util';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
@@ -23,7 +27,6 @@ import {
 import {
   docSlugNotFound,
   internalServerError,
-  SolrEntryEnum,
   testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -56,22 +59,8 @@ describe('DocService', () => {
   let solrCli: SolrCli;
 
   const testUpdatedDoc = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
-  const createDocFields: SolrSchema = {
-    id: testDocEntity1.id,
-    entry_type: SolrEntryEnum.Doc,
-    slug: testDocEntity1.slug,
-    created_at: testNow1,
-    updated_at: testNow1,
-    marked_up_to_date_at: testNow1,
-    up_to_date: testDocEntity1.upToDate,
-    doc_title: testDocEntity1.title,
-    creator: testOrgMemberEntity1.slug,
-    maintainer: testOrgMemberEntity1.slug,
-    doc_txt: testDocEntity1.docTxt,
-    team: testTeamEntity1.id,
-  };
-  const updateDocFields: SolrSchema = {
-    ...createDocFields,
+  const testUpdatedDocDocParams: DocDocParams = {
+    ...testDocDocParams1,
     doc_title: testUpdatedDoc.title,
     doc_txt: testUpdatedDoc.docTxt,
   };
@@ -105,6 +94,7 @@ describe('DocService', () => {
     mockDocEntity.mockReturnValue(testDocEntity1);
     mockV4.mockReturnValue(testDocEntity1.id);
     mockElongateUuid.mockReturnValue(testDocEntity1.slug);
+    testDocEntity1.createDocDocParams.mockReturnValue(testDocDocParams1);
 
     jest.useFakeTimers().setSystemTime(testNow1);
   });
@@ -140,7 +130,7 @@ describe('DocService', () => {
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        createDocFields
+        testDocDocParams1
       );
     });
 
@@ -204,6 +194,12 @@ describe('DocService', () => {
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      testDocEntity1.createDocDocParams.mockReturnValue(
+        testUpdatedDocDocParams
+      );
+    });
+
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testDocEntity1, {
@@ -225,7 +221,7 @@ describe('DocService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        updateDocFields
+        testUpdatedDocDocParams
       );
     });
 
@@ -244,10 +240,20 @@ describe('DocService', () => {
         service.update(testDocEntity1, testBaseUpdateDocDto1)
       ).resolves.toEqual(testUpdatedDoc);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testUpdatedDocDocParams
+      );
     });
   });
 
   describe('markUpToDate', () => {
+    beforeEach(() => {
+      testDocEntity1.createDocDocParams.mockReturnValue(
+        testUpdatedDocDocParams
+      );
+    });
+
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testDocEntity1, {
@@ -264,7 +270,7 @@ describe('DocService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        updateDocFields
+        testUpdatedDocDocParams
       );
     });
 
@@ -283,6 +289,10 @@ describe('DocService', () => {
         testUpdatedDoc
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testUpdatedDocDocParams
+      );
     });
   });
 

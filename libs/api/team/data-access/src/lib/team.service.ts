@@ -16,11 +16,9 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import type { SolrSchema } from '@newbee/api/shared/util';
 import { generateUniqueSlug } from '@newbee/api/shared/util';
 import {
   internalServerError,
-  SolrEntryEnum,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
@@ -84,10 +82,7 @@ export class TeamService {
     }
 
     try {
-      await this.solrCli.addDocs(
-        organization.id,
-        TeamService.createDocFields(team)
-      );
+      await this.solrCli.addDocs(organization.id, team.createTeamDocParams());
     } catch (err) {
       this.logger.error(err);
       await this.teamRepository.removeAndFlush(team);
@@ -185,7 +180,7 @@ export class TeamService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        TeamService.createDocFields(updatedTeam)
+        updatedTeam.createTeamDocParams()
       );
     } catch (err) {
       this.logger.error(err);
@@ -219,17 +214,5 @@ export class TeamService {
     } catch (err) {
       this.logger.error(err);
     }
-  }
-
-  /**
-   * Create the fields to add or replace a team doc in a Solr index.
-   *
-   * @param team The team to create doc fields for.
-   *
-   * @returns The params to add or replace a doc using SolrCli.
-   */
-  private static createDocFields(team: TeamEntity): SolrSchema {
-    const { id, slug, name } = team;
-    return { id, entry_type: SolrEntryEnum.Team, slug, team_name: name };
   }
 }

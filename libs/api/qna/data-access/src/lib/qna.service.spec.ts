@@ -11,10 +11,15 @@ import {
   QnaEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
+  testQnaDocParams1,
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
+import {
+  elongateUuid,
+  markdocToTxt,
+  QnaDocParams,
+} from '@newbee/api/shared/util';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateQnaDto1,
@@ -22,7 +27,6 @@ import {
 import {
   internalServerError,
   qnaSlugNotFound,
-  SolrEntryEnum,
   testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -67,23 +71,8 @@ describe('QnaService', () => {
     upToDate: true,
   };
   const testUpdatedQna = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
-  const createDocFields = {
-    id: testQnaEntity1.id,
-    entry_type: SolrEntryEnum.Qna,
-    slug: testQnaEntity1.slug,
-    created_at: testNow1,
-    updated_at: testNow1,
-    marked_up_to_date_at: testNow1,
-    up_to_date: testQnaEntity1.upToDate,
-    qna_title: testQnaEntity1.title,
-    creator: testOrgMemberEntity1.slug,
-    maintainer: testOrgMemberEntity1.slug,
-    question_txt: testQnaEntity1.questionTxt,
-    answer_txt: testQnaEntity1.answerTxt,
-    team: testTeamEntity1.id,
-  };
-  const updateDocFields = {
-    ...createDocFields,
+  const testUpdatedQnaDocParams: QnaDocParams = {
+    ...testQnaDocParams1,
     qna_title: testUpdatedQna.title,
     question_txt: testUpdatedQna.questionTxt,
     answer_txt: testUpdatedQna.answerTxt,
@@ -118,6 +107,7 @@ describe('QnaService', () => {
     mockQnaEntity.mockReturnValue(testQnaEntity1);
     mockV4.mockReturnValue(testQnaEntity1.id);
     mockElongateUuid.mockReturnValue(testQnaEntity1.slug);
+    testQnaEntity1.createQnaDocParams.mockReturnValue(testQnaDocParams1);
 
     jest.useFakeTimers().setSystemTime(testNow1);
   });
@@ -154,7 +144,7 @@ describe('QnaService', () => {
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        createDocFields
+        testQnaDocParams1
       );
     });
 
@@ -218,6 +208,12 @@ describe('QnaService', () => {
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      testQnaEntity1.createQnaDocParams.mockReturnValue(
+        testUpdatedQnaDocParams
+      );
+    });
+
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.flush).toBeCalledTimes(1);
@@ -234,7 +230,7 @@ describe('QnaService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1,
-        updateDocFields
+        testUpdatedQnaDocParams
       );
     });
 
@@ -251,6 +247,10 @@ describe('QnaService', () => {
         testAssignParams
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1,
+        testUpdatedQnaDocParams
+      );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
@@ -268,10 +268,20 @@ describe('QnaService', () => {
         service.update(testQnaEntity1, testBaseUpdateQnaDto1)
       ).resolves.toEqual(testUpdatedQna);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1,
+        testUpdatedQnaDocParams
+      );
     });
   });
 
   describe('markUpToDate', () => {
+    beforeEach(() => {
+      testQnaEntity1.createQnaDocParams.mockReturnValue(
+        testUpdatedQnaDocParams
+      );
+    });
+
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
       expect(repository.assign).toBeCalledWith(testQnaEntity1, {
@@ -288,7 +298,7 @@ describe('QnaService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1,
-        updateDocFields
+        testUpdatedQnaDocParams
       );
     });
 
@@ -307,6 +317,10 @@ describe('QnaService', () => {
         testUpdatedQna
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity1,
+        testUpdatedQnaDocParams
+      );
     });
   });
 

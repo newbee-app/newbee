@@ -77,3 +77,13 @@ export const question = 'question';
  * The URL endpoint associated with the answer portion of a Qna.
  */
 export const answer = 'answer';
+
+/**
+ * The URL endpoint associated with search.
+ */
+export const search = 'search';
+
+/**
+ * The URL endpoint associated with suggestions.
+ */
+export const suggest = 'suggest';

@@ -5,7 +5,6 @@ import {
   testPublicKeyCredentialCreationOptions1,
   testQna1,
   testRegistrationResponse1,
-  testSuggestion1,
   testTeam1,
   testTeamQueryResult1,
   testUser1,
@@ -210,7 +209,7 @@ export const testBaseRegistrationResponseDto1: BaseRegistrationResponseDto = {
  * Strictly for use in testing.
  */
 export const testBaseSuggestDto1: BaseSuggestDto = {
-  query: 'query',
+  query: testTeam1.name,
 };
 
 /**
@@ -218,7 +217,7 @@ export const testBaseSuggestDto1: BaseSuggestDto = {
  * Strictly for use in testing.
  */
 export const testBaseQueryDto1: BaseQueryDto = {
-  query: 'query',
+  ...testBaseSuggestDto1,
   offset: 0,
 };
 
@@ -227,7 +226,7 @@ export const testBaseQueryDto1: BaseQueryDto = {
  * Strictly for use in testing.
  */
 export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
-  suggestions: [testSuggestion1.term],
+  suggestions: [`<b>${testTeamQueryResult1.name}</b>`],
 };
 
 /**
@@ -235,8 +234,6 @@ export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
  * Strictly for use in testing.
  */
 export const testBaseQueryResultDto1: BaseQueryResultDto = {
-  team: {
-    offset: testBaseQueryDto1.offset,
-    results: [testTeamQueryResult1],
-  },
+  offset: testBaseQueryDto1.offset,
+  team: [testTeamQueryResult1],
 };

@@ -14,6 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   OrgMemberEntity,
   testOrganizationEntity1,
+  testOrgMemberDocParams1,
   testOrgMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
@@ -21,7 +22,6 @@ import {
   internalServerError,
   orgMemberNotFound,
   OrgRoleEnum,
-  SolrEntryEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -71,6 +71,9 @@ describe('OrgMemberService', () => {
 
     jest.clearAllMocks();
     mockOrgMemberEntity.mockReturnValue(testOrgMemberEntity1);
+    testOrgMemberEntity1.createOrgMemberDocParams.mockResolvedValue(
+      testOrgMemberDocParams1
+    );
   });
 
   it('should be defined', () => {
@@ -100,13 +103,10 @@ describe('OrgMemberService', () => {
         )
       ).resolves.toEqual(testOrgMemberEntity1);
       expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
-        entry_type: SolrEntryEnum.User,
-        slug: testOrgMemberEntity1.slug,
-        user_name: testUserEntity1.name,
-        user_display_name: testUserEntity1.displayName,
-      });
+      expect(solrCli.addDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testOrgMemberDocParams1
+      );
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -149,6 +149,10 @@ describe('OrgMemberService', () => {
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.addDocs).toBeCalledTimes(1);
+      expect(solrCli.addDocs).toBeCalledWith(
+        testOrganizationEntity1.id,
+        testOrgMemberDocParams1
+      );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
     });

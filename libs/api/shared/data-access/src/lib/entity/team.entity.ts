@@ -7,6 +7,7 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
+import { TeamDocParams } from '@newbee/api/shared/util';
 import { Team, TeamRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
@@ -95,6 +96,14 @@ export class TeamEntity implements Team {
     this.slug = slug;
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
+  }
+
+  /**
+   * Create the fields to add or replace a team doc in a Solr index.
+   * @returns The params to add or replace a team doc using SolrCli.
+   */
+  createTeamDocParams(): TeamDocParams {
+    return new TeamDocParams(this.id, this.slug, this.name);
   }
 
   /**
