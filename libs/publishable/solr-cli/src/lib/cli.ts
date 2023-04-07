@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { readFileSync } from 'fs';
-import { URLSearchParams } from 'url';
+import { readFileSync } from 'node:fs';
+import { URLSearchParams } from 'node:url';
 import type {
   AddCopyFieldParams,
   AddDocParams,

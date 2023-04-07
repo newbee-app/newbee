@@ -7,7 +7,6 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
-import { csrfTokenResolver } from '@newbee/newbee/shared/data-access';
 
 /**
  * How the web page's title should be set for all routes, unless otherwise specified.
@@ -41,9 +40,6 @@ export class AppTitleStrategy extends TitleStrategy {
 const routes: Routes = [
   {
     path: '',
-    resolve: {
-      csrfToken: csrfTokenResolver,
-    },
     children: [
       {
         path: '',

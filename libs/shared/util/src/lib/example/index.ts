@@ -1,4 +1,3 @@
-import type { ResponseHeader } from '@newbee/solr-cli';
 import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
@@ -201,13 +200,3 @@ export const testAuthenticationCredential1: AuthenticationResponseJSON = {
  * Strictly for use in testing.
  */
 export const testTeamQueryResult1: TeamQueryResult = testTeam1;
-
-/**
- * An example instance of `ResponseHeader`.
- * Strictly for use in testing.
- */
-export const testResponseHeader1: ResponseHeader = {
-  status: 0,
-  QTime: 30,
-  zkConnected: true,
-};

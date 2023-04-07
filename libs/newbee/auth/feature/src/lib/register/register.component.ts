@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
@@ -19,7 +19,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent implements OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy {
   /**
    * Emits to unsubscribe from all infinite observables.
    */
@@ -39,10 +39,15 @@ export class RegisterComponent implements OnDestroy {
     private readonly store: Store,
     private readonly router: Router,
     private readonly route: ActivatedRoute
-  ) {
-    store.dispatch(AppActions.resetPendingActions());
+  ) {}
 
-    store
+  /**
+   * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
+   */
+  ngOnInit(): void {
+    this.store.dispatch(AppActions.resetPendingActions());
+
+    this.store
       .select(httpFeature.selectError)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -52,7 +57,7 @@ export class RegisterComponent implements OnDestroy {
           }
 
           this.httpClientError = error;
-          store.dispatch(HttpActions.resetError());
+          this.store.dispatch(HttpActions.resetError());
         },
       });
   }

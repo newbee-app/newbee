@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import {
   AuthActions,
@@ -16,7 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-confirm-email',
   templateUrl: './confirm-email.component.html',
 })
-export class ConfirmEmailComponent implements OnDestroy {
+export class ConfirmEmailComponent implements OnInit, OnDestroy {
   /**
    * Emits to unsubscribe from all infinite observables.
    */
@@ -37,8 +37,13 @@ export class ConfirmEmailComponent implements OnDestroy {
    */
   httpClientError: HttpClientError | null = null;
 
-  constructor(private readonly store: Store) {
-    store
+  constructor(private readonly store: Store) {}
+
+  /**
+   * Set `httpClientError` to update whenever the store's error changes.
+   */
+  ngOnInit(): void {
+    this.store
       .select(httpFeature.selectError)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -48,7 +53,7 @@ export class ConfirmEmailComponent implements OnDestroy {
           }
 
           this.httpClientError = error;
-          store.dispatch(HttpActions.resetError());
+          this.store.dispatch(HttpActions.resetError());
         },
       });
   }

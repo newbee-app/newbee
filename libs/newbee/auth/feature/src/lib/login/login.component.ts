@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { LoginForm } from '@newbee/newbee/auth/util';
@@ -19,7 +19,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-login',
   templateUrl: './login.component.html',
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   /**
    * Emits to unsubscribe from all infinite observables.
    */
@@ -44,10 +44,15 @@ export class LoginComponent implements OnDestroy {
     private readonly store: Store,
     private readonly router: Router,
     private readonly route: ActivatedRoute
-  ) {
-    store.dispatch(AppActions.resetPendingActions());
+  ) {}
 
-    store
+  /**
+   * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
+   */
+  ngOnInit(): void {
+    this.store.dispatch(AppActions.resetPendingActions());
+
+    this.store
       .select(httpFeature.selectError)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -57,7 +62,7 @@ export class LoginComponent implements OnDestroy {
           }
 
           this.httpClientError = error;
-          store.dispatch(HttpActions.resetError());
+          this.store.dispatch(HttpActions.resetError());
         },
       });
   }

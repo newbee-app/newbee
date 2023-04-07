@@ -15,7 +15,6 @@ import {
   testOrganization1,
   testOrgMember1,
   testQna1,
-  testResponseHeader1,
   testTeam1,
   testUser1,
   testUserChallenge1,
@@ -25,6 +24,7 @@ import type {
   DocResponse,
   DocsResponse,
   QueryResponse,
+  ResponseHeader,
 } from '@newbee/solr-cli';
 import { UserAndOptionsDto } from '../dto';
 import {
@@ -209,6 +209,16 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.questionTxt,
   testQnaEntity1.answerTxt
 );
+
+/**
+ * An example instance of `ResponseHeader`.
+ * Strictly for use in testing.
+ */
+export const testResponseHeader1: ResponseHeader = {
+  status: 0,
+  QTime: 30,
+  zkConnected: true,
+};
 
 /**
  * An example instance of `DocResponse`.
