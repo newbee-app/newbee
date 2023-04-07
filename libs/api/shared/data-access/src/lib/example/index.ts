@@ -103,7 +103,6 @@ export const testTeamEntity1 = createMock<TeamEntity>({
   ...testTeam1,
   id: '1',
   organization: testOrganizationEntity1,
-  createTeamDocParams: jest.fn(),
 });
 
 /**
@@ -115,7 +114,6 @@ export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
   user: testUserEntity1,
   organization: testOrganizationEntity1,
   id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
-  createOrgMemberDocParams: jest.fn(),
 });
 
 /**
@@ -139,7 +137,6 @@ export const testDocEntity1 = createMock<DocEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
-  createDocDocParams: jest.fn(),
 });
 
 /**
@@ -153,7 +150,6 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
-  createQnaDocParams: jest.fn(),
 });
 
 /**

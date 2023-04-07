@@ -86,7 +86,10 @@ describe('TeamService', () => {
     jest.clearAllMocks();
     mockTeamEntity.mockReturnValue(testTeamEntity1);
     mockV4.mockReturnValue(testTeamEntity1.id);
-    testTeamEntity1.createTeamDocParams.mockReturnValue(testTeamDocParams1);
+
+    testTeamEntity1.createTeamDocParams = jest
+      .fn()
+      .mockReturnValue(testTeamDocParams1);
   });
 
   it('should be defined', () => {
@@ -215,9 +218,9 @@ describe('TeamService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testTeamEntity1.createTeamDocParams.mockReturnValue(
-        testUpdatedTeamDocParams
-      );
+      testUpdatedTeam.createTeamDocParams = jest
+        .fn()
+        .mockReturnValue(testUpdatedTeamDocParams);
     });
 
     afterEach(() => {

@@ -58,7 +58,10 @@ describe('DocService', () => {
   let repository: EntityRepository<DocEntity>;
   let solrCli: SolrCli;
 
-  const testUpdatedDoc = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
+  const testUpdatedDoc = createMock<DocEntity>({
+    ...testDocEntity1,
+    ...testBaseUpdateDocDto1,
+  });
   const testUpdatedDocDocParams: DocDocParams = {
     ...testDocDocParams1,
     doc_title: testUpdatedDoc.title,
@@ -195,7 +198,7 @@ describe('DocService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testDocEntity1.createDocDocParams.mockReturnValue(
+      testUpdatedDoc.createDocDocParams.mockReturnValue(
         testUpdatedDocDocParams
       );
     });
@@ -249,9 +252,9 @@ describe('DocService', () => {
 
   describe('markUpToDate', () => {
     beforeEach(() => {
-      testDocEntity1.createDocDocParams.mockReturnValue(
-        testUpdatedDocDocParams
-      );
+      testUpdatedDoc.createDocDocParams = jest
+        .fn()
+        .mockReturnValue(testUpdatedDocDocParams);
     });
 
     afterEach(() => {

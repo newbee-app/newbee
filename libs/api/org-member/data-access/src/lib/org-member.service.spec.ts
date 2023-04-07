@@ -39,10 +39,10 @@ describe('OrgMemberService', () => {
   let repository: EntityRepository<OrgMemberEntity>;
   let solrCli: SolrCli;
 
-  const testUpdatedOrgMember = {
+  const testUpdatedOrgMember = createMock<OrgMemberEntity>({
     ...testOrgMemberEntity1,
     role: OrgRoleEnum.Moderator,
-  };
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

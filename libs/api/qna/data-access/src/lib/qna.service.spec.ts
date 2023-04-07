@@ -70,7 +70,10 @@ describe('QnaService', () => {
     markedUpToDateAt: testNow1,
     upToDate: true,
   };
-  const testUpdatedQna = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
+  const testUpdatedQna = createMock<QnaEntity>({
+    ...testQnaEntity1,
+    ...testBaseUpdateQnaDto1,
+  });
   const testUpdatedQnaDocParams: QnaDocParams = {
     ...testQnaDocParams1,
     qna_title: testUpdatedQna.title,
@@ -209,7 +212,7 @@ describe('QnaService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testQnaEntity1.createQnaDocParams.mockReturnValue(
+      testUpdatedQna.createQnaDocParams.mockReturnValue(
         testUpdatedQnaDocParams
       );
     });
@@ -277,7 +280,7 @@ describe('QnaService', () => {
 
   describe('markUpToDate', () => {
     beforeEach(() => {
-      testQnaEntity1.createQnaDocParams.mockReturnValue(
+      testUpdatedQna.createQnaDocParams.mockReturnValue(
         testUpdatedQnaDocParams
       );
     });

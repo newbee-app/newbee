@@ -36,7 +36,7 @@ export class OrganizationGuard implements CanActivate {
     }
 
     const org = await this.organizationService.findOneBySlug(orgSlug);
-    request.org = org;
+    request[organization] = org;
     return true;
   }
 }

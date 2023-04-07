@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { BadRequestException, ExecutionContext } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { testOrganizationEntity1 } from '@newbee/api/shared/data-access';
+import { organization } from '@newbee/shared/data-access';
 import { organizationSlugNotSpecifiedBadRequest } from '@newbee/shared/util';
 import { OrganizationService } from '../organization.service';
 import { OrganizationGuard } from './organization.guard';
@@ -47,7 +48,7 @@ describe('OrganizationGuard', () => {
   describe('valid org slug', () => {
     it('should return true and add the organization to the request', async () => {
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
-      expect(context.switchToHttp().getRequest().org).toEqual(
+      expect(context.switchToHttp().getRequest()[organization]).toEqual(
         testOrganizationEntity1
       );
     });
