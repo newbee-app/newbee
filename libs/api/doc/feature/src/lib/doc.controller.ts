@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateDocDto,
@@ -15,14 +16,16 @@ import {
   UpdateDocDto,
 } from '@newbee/api/doc/data-access';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
-import { OrganizationService } from '@newbee/api/organization/data-access';
+import { OrganizationGuard } from '@newbee/api/organization/data-access';
 import {
   DocEntity,
+  OrganizationEntity,
   TeamSlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
+  Organization,
   PostRoleEnum,
   Role,
   User,
@@ -38,6 +41,7 @@ import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
   path: `${organization}/:${organization}/${doc}`,
   version: docVersion,
 })
+@UseGuards(OrganizationGuard)
 export class DocController {
   /**
    * The logger to use when logging anything in the controller.
@@ -46,7 +50,6 @@ export class DocController {
 
   constructor(
     private readonly docService: DocService,
-    private readonly organizationService: OrganizationService,
     private readonly orgMemberService: OrgMemberService,
     private readonly teamService: TeamService
   ) {}
@@ -58,11 +61,11 @@ export class DocController {
    *
    * @param createDocDto The information necessary to create a doc.
    * @param user The user that sent the request and will become the owner of the doc.
-   * @param organizationSlug The slug of the organization the doc will go in.
+   * @param organization The organization the doc will go in.
    * @param teamSlugDto The DTO containing the slug of the team the doc will go in, if applicable.
    *
    * @returns The newly created doc.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`. If the organization slug cannot be found, the user does not exist in the organization, or the team does not exist in the organization.
+   * @throws {NotFoundException} `orgMemberNotFound`, `teamSlugNotFound`. If the the user does not exist in the organization or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
@@ -77,21 +80,18 @@ export class DocController {
   async create(
     @Body() createDocDto: CreateDocDto,
     @User() user: UserEntity,
-    @Param(organization) organizationSlug: string,
+    @Organization() organization: OrganizationEntity,
     @Query() teamSlugDto: TeamSlugDto
   ): Promise<DocEntity> {
     const { team: teamSlug } = teamSlugDto;
     this.logger.log(
       `Create doc request received from user ID: ${
         user.id
-      }, in organization: ${organizationSlug}${
+      }, in organization ID: ${organization.id}${
         teamSlug ? `, in team: ${teamSlug}` : ''
       }, with title: ${createDocDto.title}`
     );
 
-    const organization = await this.organizationService.findOneBySlug(
-      organizationSlug
-    );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
       user,
       organization

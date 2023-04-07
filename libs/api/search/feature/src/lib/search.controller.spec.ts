@@ -29,9 +29,7 @@ describe('SearchController', () => {
         },
         {
           provide: OrganizationService,
-          useValue: createMock<OrganizationService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
-          }),
+          useValue: createMock<OrganizationService>(),
         },
       ],
     }).compile();
@@ -47,38 +45,29 @@ describe('SearchController', () => {
     expect(organizationService).toBeDefined();
   });
 
-  describe('search & suggest', () => {
-    afterEach(() => {
-      expect(organizationService.findOneBySlug).toBeCalledTimes(1);
-      expect(organizationService.findOneBySlug).toBeCalledWith(
-        testOrganizationEntity1.slug
+  describe('search', () => {
+    it('should generate search results', async () => {
+      await expect(
+        controller.search(testBaseQueryDto1, testOrganizationEntity1)
+      ).resolves.toEqual(testBaseQueryResultDto1);
+      expect(service.query).toBeCalledTimes(1);
+      expect(service.query).toBeCalledWith(
+        testOrganizationEntity1,
+        testBaseQueryDto1
       );
     });
+  });
 
-    describe('search', () => {
-      it('should generate search results', async () => {
-        await expect(
-          controller.search(testBaseQueryDto1, testOrganizationEntity1.slug)
-        ).resolves.toEqual(testBaseQueryResultDto1);
-        expect(service.query).toBeCalledTimes(1);
-        expect(service.query).toBeCalledWith(
-          testOrganizationEntity1,
-          testBaseQueryDto1
-        );
-      });
-    });
-
-    describe('suggest', () => {
-      it('should generate search suggestions', async () => {
-        await expect(
-          controller.suggest(testBaseSuggestDto1, testOrganizationEntity1.slug)
-        ).resolves.toEqual(testBaseSuggestResultDto1);
-        expect(service.suggest).toBeCalledTimes(1);
-        expect(service.suggest).toBeCalledWith(
-          testOrganizationEntity1,
-          testBaseSuggestDto1
-        );
-      });
+  describe('suggest', () => {
+    it('should generate search suggestions', async () => {
+      await expect(
+        controller.suggest(testBaseSuggestDto1, testOrganizationEntity1)
+      ).resolves.toEqual(testBaseSuggestResultDto1);
+      expect(service.suggest).toBeCalledTimes(1);
+      expect(service.suggest).toBeCalledWith(
+        testOrganizationEntity1,
+        testBaseSuggestDto1
+      );
     });
   });
 });

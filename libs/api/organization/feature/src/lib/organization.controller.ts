@@ -4,17 +4,18 @@ import {
   Delete,
   Get,
   Logger,
-  Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateOrganizationDto,
+  OrganizationGuard,
   OrganizationService,
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { Role, User } from '@newbee/api/shared/util';
+import { Organization, Role, User } from '@newbee/api/shared/util';
 import { organization, organizationVersion } from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
@@ -68,23 +69,21 @@ export class OrganizationController {
    * The API route for getting an organization.
    * Members, moderators, and owners should be allowed to access this endpoint.
    *
-   * @param slug The slug of the organization to get.
+   * @param organization The organization to get.
    *
    * @returns The organization associated with the slug, if one exists.
-   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Get(`:${organization}`)
+  @UseGuards(OrganizationGuard)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Param(organization) slug: string): Promise<OrganizationEntity> {
+  async get(
+    @Organization() organization: OrganizationEntity
+  ): Promise<OrganizationEntity> {
+    const { id, slug } = organization;
     this.logger.log(
       `Get organization request received for organization slug: ${slug}`
     );
-
-    const organization = await this.organizationService.findOneBySlug(slug);
-    this.logger.log(
-      `Found organization, slug: ${slug}, ID: ${organization.id}`
-    );
+    this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
 
     return organization;
   }
@@ -93,7 +92,7 @@ export class OrganizationController {
    * The API route for updating an organization.
    * Moderators and owners should be allowed to access this endpoint.
    *
-   * @param slug The slug of the organization to update.
+   * @param organization The organization to update.
    * @param updateOrganizationDto The new information for the organization.
    *
    * @returns The updated organization, if it was updated successfully.
@@ -102,25 +101,24 @@ export class OrganizationController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch(`:${organization}`)
+  @UseGuards(OrganizationGuard)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
-    @Param(organization) slug: string,
+    @Organization() organization: OrganizationEntity,
     @Body() updateOrganizationDto: UpdateOrganizationDto
   ): Promise<OrganizationEntity> {
+    const { id, slug } = organization;
     this.logger.log(
       `Update organization request received for organization slug: ${slug}, with values: ${JSON.stringify(
         updateOrganizationDto
       )}`
     );
 
-    const organization = await this.organizationService.findOneBySlug(slug);
     const updatedOrganization = await this.organizationService.update(
       organization,
       updateOrganizationDto
     );
-    this.logger.log(
-      `Updated organization, slug: ${updatedOrganization.slug}, ID: ${updatedOrganization.id}`
-    );
+    this.logger.log(`Updated organization, slug: ${slug}, ID: ${id}`);
 
     return updatedOrganization;
   }
@@ -129,19 +127,17 @@ export class OrganizationController {
    * The API route for deleting an organization.
    * Owners should be allowed to access this endpoint.
    *
-   * @param slug The slug of the organization to delete.
-   *
-   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   * @param organization The organization to delete.
    */
   @Delete(`:${organization}`)
+  @UseGuards(OrganizationGuard)
   @Role(OrgRoleEnum.Owner)
-  async delete(@Param(organization) slug: string): Promise<void> {
+  async delete(
+    @Organization() organization: OrganizationEntity
+  ): Promise<void> {
+    const { id, slug } = organization;
     this.logger.log(`Delete organization request received for slug: ${slug}`);
-    const organization = await this.organizationService.findOneBySlug(slug);
     await this.organizationService.delete(organization);
-    this.logger.log(
-      `Deleted organization, slug: ${slug}, ID: ${organization.id}`
-    );
+    this.logger.log(`Deleted organization, slug: ${slug}, ID: ${id}`);
   }
 }

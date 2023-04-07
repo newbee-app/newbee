@@ -8,9 +8,10 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
-import { OrganizationService } from '@newbee/api/organization/data-access';
+import { OrganizationGuard } from '@newbee/api/organization/data-access';
 import {
   CreateQnaDto,
   QnaService,
@@ -18,12 +19,14 @@ import {
   UpdateQuestionDto,
 } from '@newbee/api/qna/data-access';
 import {
+  OrganizationEntity,
   QnaEntity,
   TeamSlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
+  Organization,
   PostRoleEnum,
   Role,
   User,
@@ -39,6 +42,7 @@ import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
   path: `${organization}/:${organization}/${qna}`,
   version: qnaVersion,
 })
+@UseGuards(OrganizationGuard)
 export class QnaController {
   /**
    * The logger to use when logging anything in the controller.
@@ -47,7 +51,6 @@ export class QnaController {
 
   constructor(
     private readonly qnaService: QnaService,
-    private readonly organizationService: OrganizationService,
     private readonly orgMemberService: OrgMemberService,
     private readonly teamService: TeamService
   ) {}
@@ -58,7 +61,7 @@ export class QnaController {
    *
    * @param createQnaDto The information necessary to create a qna.
    * @param user The user that sent the request and will become the asker of the qna.
-   * @param organizationSlug The slug of the organization the qna will go in.
+   * @param organization The organization the qna will go in.
    * @param teamSlugDto The DTO containing the slug of the team the qna will go in, if applicable.
    *
    * @returns The newly created qna.
@@ -70,21 +73,18 @@ export class QnaController {
   async create(
     @Body() createQnaDto: CreateQnaDto,
     @User() user: UserEntity,
-    @Param(organization) organizationSlug: string,
+    @Organization() organization: OrganizationEntity,
     @Query() teamSlugDto: TeamSlugDto
   ): Promise<QnaEntity> {
     const { team: teamSlug } = teamSlugDto;
     this.logger.log(
       `Create qna request received from user ID: ${
         user.id
-      }, in organization: ${organizationSlug}${
+      }, in organization ID: ${organization.id}${
         teamSlug ? `, in team: ${teamSlug}` : ''
       }, with title: ${createQnaDto.title}`
     );
 
-    const organization = await this.organizationService.findOneBySlug(
-      organizationSlug
-    );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
       user,
       organization
@@ -177,9 +177,9 @@ export class QnaController {
     ConditionalRoleEnum.OrgMemberIfNoTeamInQna
   )
   async updateAnswer(
-    @Param(organization) organizationSlug: string,
     @Param(qna) slug: string,
     @User() user: UserEntity,
+    @Organization() organization: OrganizationEntity,
     @Body() updateAnswerDto: UpdateAnswerDto
   ): Promise<QnaEntity> {
     this.logger.log(`Update answer request received for slug: ${slug}`);
@@ -189,9 +189,6 @@ export class QnaController {
     if (qna.maintainer) {
       updatedQna = await this.qnaService.update(qna, updateAnswerDto);
     } else {
-      const organization = await this.organizationService.findOneBySlug(
-        organizationSlug
-      );
       const orgMember = await this.orgMemberService.findOneByUserAndOrg(
         user,
         organization

@@ -7,11 +7,16 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
-import { OrganizationService } from '@newbee/api/organization/data-access';
-import { TeamEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { Role, User } from '@newbee/api/shared/util';
+import { OrganizationGuard } from '@newbee/api/organization/data-access';
+import {
+  OrganizationEntity,
+  TeamEntity,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
+import { Organization, Role, User } from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
@@ -27,6 +32,7 @@ import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
   path: `${organization}/:${organization}/${team}`,
   version: teamVersion,
 })
+@UseGuards(OrganizationGuard)
 export class TeamController {
   /**
    * The logger to use when logging anything in the controller.
@@ -35,7 +41,6 @@ export class TeamController {
 
   constructor(
     private readonly teamService: TeamService,
-    private readonly organizationService: OrganizationService,
     private readonly orgMemberService: OrgMemberService
   ) {}
 
@@ -45,11 +50,11 @@ export class TeamController {
    *
    * @param createTeamDto The information necessary to create a team.
    * @param user The user that sent the request and will become the owner of the team.
-   * @param organizationSlug The slug of the organization the team will go in.
+   * @param organization The  organization the team will go in.
    *
    * @returns The newly created team.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team slug is already taken in the organization.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`. If the organization slug cannot be found or the user does not exist in the organization.
+   * @throws {NotFoundException} `orgMemberNotFound`. If the user does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
@@ -57,19 +62,16 @@ export class TeamController {
   async create(
     @Body() createTeamDto: CreateTeamDto,
     @User() user: UserEntity,
-    @Param(organization) organizationSlug: string
+    @Organization() organization: OrganizationEntity
   ): Promise<TeamEntity> {
     this.logger.log(
       `Create team request received from user ID: ${
         user.id
-      }, in organization: ${organizationSlug}, with values: ${JSON.stringify(
+      }, in organization ID: ${organization.id}, with values: ${JSON.stringify(
         createTeamDto
       )}`
     );
 
-    const organization = await this.organizationService.findOneBySlug(
-      organizationSlug
-    );
     const orgMember = await this.orgMemberService.findOneByUserAndOrg(
       user,
       organization
@@ -87,24 +89,24 @@ export class TeamController {
    * Organization members, moderators, and owners should be allowed to access this endpoint.
    * No need for team permissions as team members should also be organization members.
    *
-   * @param organizationSlug The slug of the organization to look in for the team.
    * @param teamSlug The slug of the team to look for.
+   * @param organization The organization to look in for the team.
    *
    * @returns The team associated with the slug in the organization, if one exists.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `teamSlugNotFound`. If the organization or team slug cannot be found.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the team slug cannot be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${team}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
-    @Param(organization) organizationSlug: string,
-    @Param(team) teamSlug: string
+    @Param(team) teamSlug: string,
+    @Organization() organization: OrganizationEntity
   ): Promise<TeamEntity> {
     this.logger.log(
-      `Get organization request received for team slug: ${teamSlug}, in organization: ${organizationSlug}`
+      `Get organization request received for team slug: ${teamSlug}, in organization ID: ${organization.id}`
     );
 
-    const team = await this.getTeam(organizationSlug, teamSlug);
+    const team = await this.teamService.findOneBySlug(organization, teamSlug);
     this.logger.log(`Found team, slug: ${teamSlug}, ID: ${team.id}`);
 
     return team;
@@ -114,12 +116,12 @@ export class TeamController {
    * The API route for updating a team.
    * Organization moderators and owners, and team moderators and owners, should be allowed to access this endpoint.
    *
-   * @param organizationSlug The slug of the organization to look in.
    * @param teamSlug The slug of the team to look for.
    * @param updateTeamDto The new values for the team.
+   * @param organization The organization to look in.
    *
    * @returns The updated team, if it was updated successfully.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `teamSlugNotFound`. If the organization or team can't be found.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the team can't be found.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
@@ -131,17 +133,17 @@ export class TeamController {
     TeamRoleEnum.Owner
   )
   async update(
-    @Param(organization) organizationSlug: string,
     @Param(team) teamSlug: string,
-    @Body() updateTeamDto: UpdateTeamDto
+    @Body() updateTeamDto: UpdateTeamDto,
+    @Organization() organization: OrganizationEntity
   ): Promise<TeamEntity> {
     this.logger.log(
-      `Update team request received for team slug: ${teamSlug}, for organization: ${organizationSlug}, with values: ${JSON.stringify(
-        updateTeamDto
-      )}`
+      `Update team request received for team slug: ${teamSlug}, for organization ID: ${
+        organization.id
+      }, with values: ${JSON.stringify(updateTeamDto)}`
     );
 
-    const team = await this.getTeam(organizationSlug, teamSlug);
+    const team = await this.teamService.findOneBySlug(organization, teamSlug);
     const updatedTeam = await this.teamService.update(team, updateTeamDto);
     this.logger.log(
       `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`
@@ -154,43 +156,23 @@ export class TeamController {
    * The API route for deleting a team.
    * Organization moderators and owners, and team owners, should be allowed to access this endpoint.
    *
-   * @param organizationSlug The slug of the organization to look in.
    * @param teamSlug The slug of the team to look for in the organization.
+   * @param organization The organization to look in.
    *
-   * @throws {NotFoundException} `organizationSlugNotFound`, `teamSlugNotFound`. If the organization or team slug cannot be found.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the team slug cannot be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${team}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
   async delete(
-    @Param(organization) organizationSlug: string,
-    @Param(team) teamSlug: string
+    @Param(team) teamSlug: string,
+    @Organization() organization: OrganizationEntity
   ): Promise<void> {
     this.logger.log(
-      `Delete team request received for team slug: ${teamSlug}, in organization: ${organizationSlug}`
+      `Delete team request received for team slug: ${teamSlug}, in organization ID: ${organization.id}`
     );
-    const team = await this.getTeam(organizationSlug, teamSlug);
+    const team = await this.teamService.findOneBySlug(organization, teamSlug);
     await this.teamService.delete(team);
     this.logger.log(`Deleted team, slug: ${teamSlug}, ID: ${team.id}`);
-  }
-
-  /**
-   * Finds the team with the given slug in the given organization.
-   *
-   * @param organizationSlug The slug of the organization to look in.
-   * @param teamSlug The slug of the team to look for.
-   *
-   * @returns The associated team, if it exists.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `teamSlugNotFound`. If the organization or team slug cannot be found.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
-   */
-  private async getTeam(
-    organizationSlug: string,
-    teamSlug: string
-  ): Promise<TeamEntity> {
-    const organization = await this.organizationService.findOneBySlug(
-      organizationSlug
-    );
-    return await this.teamService.findOneBySlug(organization, teamSlug);
   }
 }

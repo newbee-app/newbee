@@ -21,9 +21,9 @@ import { DocController } from './doc.controller';
 describe('DocController', () => {
   let controller: DocController;
   let service: DocService;
-  let organizationService: OrganizationService;
   let orgMemberService: OrgMemberService;
   let teamService: TeamService;
+  let organizationService: OrganizationService;
 
   const testUpdatedDocEntity = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
 
@@ -41,12 +41,6 @@ describe('DocController', () => {
           }),
         },
         {
-          provide: OrganizationService,
-          useValue: createMock<OrganizationService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
-          }),
-        },
-        {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
             findOneByUserAndOrg: jest
@@ -60,22 +54,26 @@ describe('DocController', () => {
             findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
           }),
         },
+        {
+          provide: OrganizationService,
+          useValue: createMock<OrganizationService>(),
+        },
       ],
     }).compile();
 
     controller = module.get<DocController>(DocController);
     service = module.get<DocService>(DocService);
-    organizationService = module.get<OrganizationService>(OrganizationService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
     teamService = module.get<TeamService>(TeamService);
+    organizationService = module.get<OrganizationService>(OrganizationService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
-    expect(organizationService).toBeDefined();
     expect(orgMemberService).toBeDefined();
     expect(teamService).toBeDefined();
+    expect(organizationService).toBeDefined();
   });
 
   it('create should create a doc', async () => {
@@ -83,14 +81,10 @@ describe('DocController', () => {
       controller.create(
         testBaseCreateDocDto1,
         testUserEntity1,
-        testOrganizationEntity1.slug,
+        testOrganizationEntity1,
         testBaseTeamSlugDto1
       )
     ).resolves.toEqual(testDocEntity1);
-    expect(organizationService.findOneBySlug).toBeCalledTimes(1);
-    expect(organizationService.findOneBySlug).toBeCalledWith(
-      testOrganizationEntity1.slug
-    );
     expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
     expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
       testUserEntity1,

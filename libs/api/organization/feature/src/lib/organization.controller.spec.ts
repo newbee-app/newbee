@@ -28,7 +28,6 @@ describe('OrganizationController', () => {
           provide: OrganizationService,
           useValue: createMock<OrganizationService>({
             create: jest.fn().mockResolvedValue(testOrganizationEntity1),
-            findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedOrganizationEntity),
           }),
         },
@@ -59,12 +58,8 @@ describe('OrganizationController', () => {
 
   describe('get', () => {
     it('should find and return an organization', async () => {
-      await expect(
-        controller.get(testOrganizationEntity1.slug)
-      ).resolves.toEqual(testOrganizationEntity1);
-      expect(service.findOneBySlug).toBeCalledTimes(1);
-      expect(service.findOneBySlug).toBeCalledWith(
-        testOrganizationEntity1.slug
+      await expect(controller.get(testOrganizationEntity1)).resolves.toEqual(
+        testOrganizationEntity1
       );
     });
   });
@@ -73,14 +68,10 @@ describe('OrganizationController', () => {
     it('should find and update an organization', async () => {
       await expect(
         controller.update(
-          testOrganizationEntity1.slug,
+          testOrganizationEntity1,
           testBaseUpdateOrganizationDto1
         )
       ).resolves.toEqual(testUpdatedOrganizationEntity);
-      expect(service.findOneBySlug).toBeCalledTimes(1);
-      expect(service.findOneBySlug).toBeCalledWith(
-        testOrganizationEntity1.slug
-      );
       expect(service.update).toBeCalledTimes(1);
       expect(service.update).toBeCalledWith(
         testOrganizationEntity1,
@@ -92,12 +83,8 @@ describe('OrganizationController', () => {
   describe('delete', () => {
     it('should delete the organization', async () => {
       await expect(
-        controller.delete(testOrganizationEntity1.slug)
+        controller.delete(testOrganizationEntity1)
       ).resolves.toBeUndefined();
-      expect(service.findOneBySlug).toBeCalledTimes(1);
-      expect(service.findOneBySlug).toBeCalledWith(
-        testOrganizationEntity1.slug
-      );
       expect(service.delete).toBeCalledTimes(1);
       expect(service.delete).toBeCalledWith(testOrganizationEntity1);
     });

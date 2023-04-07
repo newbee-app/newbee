@@ -23,9 +23,9 @@ import { QnaController } from './qna.controller';
 describe('QnaController', () => {
   let controller: QnaController;
   let service: QnaService;
-  let organizationService: OrganizationService;
   let orgMemberService: OrgMemberService;
   let teamService: TeamService;
+  let organizationService: OrganizationService;
 
   const testUpdatedQnaEntity = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
 
@@ -43,12 +43,6 @@ describe('QnaController', () => {
           }),
         },
         {
-          provide: OrganizationService,
-          useValue: createMock<OrganizationService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
-          }),
-        },
-        {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
             findOneByUserAndOrg: jest
@@ -62,22 +56,26 @@ describe('QnaController', () => {
             findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
           }),
         },
+        {
+          provide: OrganizationService,
+          useValue: createMock<OrganizationService>(),
+        },
       ],
     }).compile();
 
     controller = module.get<QnaController>(QnaController);
     service = module.get<QnaService>(QnaService);
-    organizationService = module.get<OrganizationService>(OrganizationService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
     teamService = module.get<TeamService>(TeamService);
+    organizationService = module.get<OrganizationService>(OrganizationService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
-    expect(organizationService).toBeDefined();
     expect(orgMemberService).toBeDefined();
     expect(teamService).toBeDefined();
+    expect(organizationService).toBeDefined();
   });
 
   it('create should create a qna', async () => {
@@ -85,14 +83,10 @@ describe('QnaController', () => {
       controller.create(
         testBaseCreateQnaDto1,
         testUserEntity1,
-        testOrganizationEntity1.name,
+        testOrganizationEntity1,
         testBaseTeamSlugDto1
       )
     ).resolves.toEqual(testQnaEntity1);
-    expect(organizationService.findOneBySlug).toBeCalledTimes(1);
-    expect(organizationService.findOneBySlug).toBeCalledWith(
-      testOrganizationEntity1.name
-    );
     expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
     expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
       testUserEntity1,
@@ -142,9 +136,9 @@ describe('QnaController', () => {
       jest.spyOn(service, 'findOneBySlug').mockResolvedValue(testQnaEntity2);
       await expect(
         controller.updateAnswer(
-          testOrganizationEntity1.slug,
           testQnaEntity2.slug,
           testUserEntity1,
+          testOrganizationEntity1,
           testBaseUpdateAnswerDto1
         )
       ).resolves.toEqual(testUpdatedQnaEntity);

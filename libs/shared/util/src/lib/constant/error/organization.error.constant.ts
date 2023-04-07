@@ -11,3 +11,9 @@ export const organizationSlugTakenBadRequest =
  */
 export const organizationSlugNotFound =
   'We could not find an organization associated with the provided slug. Please check the slug value and try again.';
+
+/**
+ * Constant to say that an organization slug was not specified in the request params.
+ */
+export const organizationSlugNotSpecifiedBadRequest =
+  'You must provide an organization slug as a request param.';
