@@ -2,7 +2,7 @@ import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { markdocToTxt, QnaDocParams } from '@newbee/api/shared/util';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
-import { Qna } from '@newbee/shared/util';
+import type { Qna } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -45,9 +45,9 @@ export class QnaEntity extends PostEntity implements Qna {
   questionMarkdoc: string | null;
 
   /**
-   * @inheritdoc
+   * The question markdoc converted into plain text.
    */
-  @Property({ type: 'text', nullable: true })
+  @Property({ type: 'text', nullable: true, hidden: true })
   questionTxt: string | null;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc

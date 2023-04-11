@@ -16,6 +16,7 @@ import {
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
+import { BaseOrgMemberDto } from '@newbee/shared/data-access';
 import {
   internalServerError,
   orgMemberNotFound,
@@ -114,6 +115,36 @@ export class OrgMemberService {
   }
 
   /**
+   * Finds the `OrgMemberEntity` associated with the given organization and slug.
+   *
+   * @param organization The organization to search in.
+   * @param slug The slug to search for.
+   *
+   * @returns The associated `OrgMemberEntity` instance.
+   * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  async findOneByOrgAndSlug(
+    organization: OrganizationEntity,
+    slug: string
+  ): Promise<OrgMemberEntity> {
+    try {
+      return await this.orgMemberRepository.findOneOrFail({
+        organization,
+        slug,
+      });
+    } catch (err) {
+      this.logger.error(err);
+
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(orgMemberNotFound);
+      }
+
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Updates the role of the given org member.
    *
    * @param orgMember The org member to update.
@@ -160,5 +191,62 @@ export class OrgMemberService {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  /**
+   * Takes in an org member and converts it to a `BaseOrgMemberDto`.
+   *
+   * @param orgMember The org member to convert.
+   *
+   * @returns The org member as a `BaseOrgMemberDto`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createOrgMemberDto(
+    orgMember: OrgMemberEntity
+  ): Promise<BaseOrgMemberDto> {
+    try {
+      await this.orgMemberRepository.populate(orgMember, [
+        'user',
+        'teams.team',
+        'createdDocs',
+        'maintainedDocs',
+        'createdQnas',
+        'maintainedQnas',
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    const {
+      role,
+      slug,
+      user,
+      teams,
+      createdDocs,
+      maintainedDocs,
+      createdQnas,
+      maintainedQnas,
+    } = orgMember;
+    const { email, name, displayName, phoneNumber, active } = user;
+
+    return {
+      role,
+      slug,
+      email,
+      name,
+      displayName,
+      phoneNumber,
+      active,
+      teams: teams.getItems().map((teamMember) => {
+        const { role, team } = teamMember;
+        const { name, slug } = team;
+        return { name, slug, role };
+      }),
+      createdDocs: createdDocs.getItems(),
+      maintainedDocs: maintainedDocs.getItems(),
+      createdQnas: createdQnas.getItems(),
+      maintainedQnas: maintainedQnas.getItems(),
+    };
   }
 }

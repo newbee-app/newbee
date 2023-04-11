@@ -192,6 +192,49 @@ describe('OrgMemberService', () => {
     });
   });
 
+  describe('findOneByOrgAndSlug', () => {
+    afterEach(() => {
+      expect(repository.findOneOrFail).toBeCalledTimes(1);
+      expect(repository.findOneOrFail).toBeCalledWith({
+        organization: testOrganizationEntity1,
+        slug: testOrgMemberEntity1.slug,
+      });
+    });
+
+    it('should find an org member', async () => {
+      await expect(
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testOrgMemberEntity1.slug
+        )
+      ).resolves.toEqual(testOrgMemberEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new Error('findOneOrFail'));
+      await expect(
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testOrgMemberEntity1.slug
+        )
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+
+    it('should throw a NotFoundException if user does not exist in the organization', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(new NotFoundError('findOneOrFail'));
+      await expect(
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testOrgMemberEntity1.slug
+        )
+      ).rejects.toThrow(new NotFoundException(orgMemberNotFound));
+    });
+  });
+
   describe('updateRole', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);

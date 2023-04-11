@@ -24,6 +24,11 @@ export const userVersion = '1';
 export const organizationVersion = '1';
 
 /**
+ * The version of the `org-member` API endpoint.
+ */
+export const orgMemberVersion = '1';
+
+/**
  * The version of the `team` API endpoint.
  */
 export const teamVersion = '1';

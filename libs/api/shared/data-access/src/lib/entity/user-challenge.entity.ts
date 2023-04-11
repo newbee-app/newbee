@@ -1,5 +1,5 @@
 import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
-import { UserChallenge } from '@newbee/shared/util';
+import type { UserChallenge } from '@newbee/shared/util';
 import { UserEntity } from './user.entity';
 
 /**

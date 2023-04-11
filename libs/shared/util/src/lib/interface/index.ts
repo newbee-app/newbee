@@ -4,6 +4,7 @@ export * from './org-member.interface';
 export * from './organization.interface';
 export * from './post.interface';
 export * from './qna.interface';
+export * from './team-member.interface';
 export * from './team.interface';
 export * from './user-challenge.interface';
 export * from './user-settings.interface';

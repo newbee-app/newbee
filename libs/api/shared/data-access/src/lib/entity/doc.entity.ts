@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { DocDocParams, markdocToTxt } from '@newbee/api/shared/util';
-import { Doc } from '@newbee/shared/util';
+import type { Doc } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -43,9 +43,9 @@ export class DocEntity extends PostEntity implements Doc {
   docMarkdoc: string;
 
   /**
-   * @inheritdoc
+   * The raw markdoc converted into plain text.
    */
-  @Property({ type: 'text' })
+  @Property({ type: 'text', hidden: true })
   docTxt: string;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc

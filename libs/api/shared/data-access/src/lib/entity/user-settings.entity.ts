@@ -1,5 +1,5 @@
 import { Entity, OneToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { UserSettings } from '@newbee/shared/util';
+import type { UserSettings } from '@newbee/shared/util';
 import { UserEntity } from './user.entity';
 
 /**

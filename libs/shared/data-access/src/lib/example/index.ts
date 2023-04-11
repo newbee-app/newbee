@@ -2,10 +2,12 @@ import {
   testAuthenticationCredential1,
   testDoc1,
   testOrganization1,
+  testOrgMember1,
   testPublicKeyCredentialCreationOptions1,
   testQna1,
   testRegistrationResponse1,
   testTeam1,
+  testTeamMember1,
   testTeamQueryResult1,
   testUser1,
 } from '@newbee/shared/util';
@@ -18,11 +20,13 @@ import {
   BaseCsrfTokenDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
+  BaseOrgMemberDto,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseRegistrationResponseDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
+  BaseTeamMemberDto,
   BaseTeamSlugDto,
   BaseUpdateAnswerDto,
   BaseUpdateDocDto,
@@ -194,6 +198,35 @@ export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
  */
 export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
   team: testTeam1.slug,
+};
+
+/**
+ * An example instance of BaseTeamMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseTeamMemberDto1: BaseTeamMemberDto = {
+  name: testTeam1.name,
+  slug: testTeam1.slug,
+  role: testTeamMember1.role,
+};
+
+/**
+ * An example instance of BaseOrgMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseOrgMemberDto1: BaseOrgMemberDto = {
+  role: testOrgMember1.role,
+  slug: testOrgMember1.slug,
+  email: testUser1.email,
+  name: testUser1.name,
+  displayName: testUser1.displayName,
+  phoneNumber: testUser1.phoneNumber,
+  active: testUser1.active,
+  teams: [testBaseTeamMemberDto1],
+  createdDocs: [testDoc1],
+  maintainedDocs: [testDoc1],
+  createdQnas: [testQna1],
+  maintainedQnas: [testQna1],
 };
 
 /**

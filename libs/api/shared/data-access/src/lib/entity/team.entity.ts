@@ -8,7 +8,8 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { TeamDocParams } from '@newbee/api/shared/util';
-import { Team, TeamRoleEnum } from '@newbee/shared/util';
+import type { Team } from '@newbee/shared/util';
+import { TeamRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';

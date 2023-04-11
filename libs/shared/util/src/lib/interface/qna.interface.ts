@@ -11,11 +11,6 @@ export interface Qna extends Post {
    */
   questionMarkdoc: string | null;
 
-  /**
-   * The question markdoc converted into plain text.
-   */
-  questionTxt: string | null;
-
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
   // /**

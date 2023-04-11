@@ -6,7 +6,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
-import { Post } from '@newbee/shared/util';
+import type { Post } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { TeamEntity } from './team.entity';

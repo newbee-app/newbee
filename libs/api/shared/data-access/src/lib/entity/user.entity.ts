@@ -8,7 +8,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { User } from '@newbee/shared/util';
+import type { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { UserChallengeEntity } from './user-challenge.entity';

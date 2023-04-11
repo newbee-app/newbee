@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Authenticator } from '@newbee/shared/util';
+import type { Authenticator } from '@newbee/shared/util';
 import type {
   AuthenticatorTransportFuture,
   CredentialDeviceType,

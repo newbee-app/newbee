@@ -1,4 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
+import type { TeamMember } from '@newbee/shared/util';
 import { TeamRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
@@ -7,7 +8,7 @@ import { TeamEntity } from './team.entity';
  * The MikroORM entity representing the link between org members and their teams.
  */
 @Entity()
-export class TeamMemberEntity {
+export class TeamMemberEntity implements TeamMember {
   /**
    * The org member associated with this entity.
    * `hidden` is on, so it will never be serialized.
@@ -23,7 +24,7 @@ export class TeamMemberEntity {
   team: TeamEntity;
 
   /**
-   * The org member's role in the team.
+   * @inheritdoc
    */
   @Enum(() => TeamRoleEnum)
   role: TeamRoleEnum;

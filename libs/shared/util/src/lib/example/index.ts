@@ -4,7 +4,7 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
-import { OrgRoleEnum } from '../enum';
+import { OrgRoleEnum, TeamRoleEnum } from '../enum';
 import type {
   Authenticator,
   Doc,
@@ -13,6 +13,7 @@ import type {
   Post,
   Qna,
   Team,
+  TeamMember,
   User,
   UserChallenge,
   UserSettings,
@@ -87,6 +88,14 @@ export const testTeam1: Team = {
 };
 
 /**
+ * An example instance of TeamMember.
+ * Strictly for use in testing.
+ */
+export const testTeamMember1: TeamMember = {
+  role: TeamRoleEnum.Owner,
+};
+
+/**
  * An example instance of OrgMember.
  * Strictly for use in testing.
  */
@@ -115,7 +124,6 @@ export const testPost1: Post = {
 export const testDoc1: Doc = {
   ...testPost1,
   docMarkdoc: 'docMarkdoc',
-  docTxt: 'docTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedHtml: 'renderedhtml',
 };
@@ -127,7 +135,6 @@ export const testDoc1: Doc = {
 export const testQna1: Qna = {
   ...testPost1,
   questionMarkdoc: 'questionMarkdoc',
-  questionTxt: 'questionTxt',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedQuestion: 'renderedquestion',
   answerMarkdoc: 'answerMarkdoc',
