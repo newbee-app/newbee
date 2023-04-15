@@ -12,6 +12,7 @@ import type { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
+import { UserInvitesEntity } from './user-invites.entity';
 import { UserSettingsEntity } from './user-settings.entity';
 
 /**
@@ -80,6 +81,18 @@ export class UserEntity implements User {
   challenge: UserChallengeEntity;
 
   /**
+   * The `UserInvitesEntity` associated with the given user.
+   * Acts as a hidden property, meaning it will never be serialized.
+   * All actions are cascaded, so if the user is deleted, so is its assocaited invites.
+   */
+  @OneToOne(() => UserInvitesEntity, (userInvite) => userInvite.user, {
+    hidden: true,
+    owner: true,
+    cascade: [Cascade.ALL],
+  })
+  invites: UserInvitesEntity;
+
+  /**
    * The `AuthenticatorEntity`s associated with the given user.
    * Acts as a hidden property, meaning it will never be serialized.
    * `orphanRemoval` is on, so if the user is deleted, so is its authenticators.
@@ -114,7 +127,8 @@ export class UserEntity implements User {
     name: string,
     displayName: string | null,
     phoneNumber: string | null,
-    challenge: string | null
+    challenge: string | null,
+    invites: UserInvitesEntity
   ) {
     this.id = id;
     this.email = email.toLowerCase();
@@ -122,6 +136,7 @@ export class UserEntity implements User {
     this.displayName = displayName;
     this.phoneNumber = phoneNumber;
     this.challenge = new UserChallengeEntity(this, challenge);
+    this.invites = invites;
   }
 
   /**

@@ -8,6 +8,7 @@ import {
 import type { Organization } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
+import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { QnaEntity } from './qna.entity';
 import { TeamEntity } from './team.entity';
@@ -85,6 +86,15 @@ export class OrganizationEntity implements Organization {
     hidden: true,
   })
   members = new Collection<OrgMemberEntity>(this);
+
+  /**
+   * All of the outstanding invites for users to join the organization.
+   */
+  @OneToMany(() => OrgMemberInviteEntity, (invite) => invite.organization, {
+    orphanRemoval: true,
+    hidden: true,
+  })
+  invites = new Collection<OrgMemberInviteEntity>(this);
 
   constructor(id: string, name: string, slug: string, creator: UserEntity) {
     this.id = id;

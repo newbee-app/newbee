@@ -3,7 +3,7 @@ import { emailIsEmail } from '@newbee/shared/util';
 import { IsEmail } from 'class-validator';
 
 /**
- * A verifiable DTO for sending an email value from the frontend to the backend.
+ * The verifiable DTO for sending an email value from the frontend to the backend.
  * Suitable for use in any request method.
  */
 export class EmailDto implements BaseEmailDto {

@@ -14,6 +14,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
+import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
   internalServerError,
   userEmailNotFound,
@@ -38,6 +39,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
+    private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly solrCli: SolrCli
   ) {}
@@ -52,6 +54,9 @@ export class UserService {
    */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptionsDto> {
     const { email, displayName, name, phoneNumber } = createUserDto;
+    const userInvites = await this.userInvitesService.findOrCreateOneByEmail(
+      email
+    );
     const id = v4();
     const rpInfo = this.configService.get('rpInfo', { infer: true });
     const options = generateRegistrationOptions({
@@ -67,7 +72,8 @@ export class UserService {
       name,
       displayName,
       phoneNumber,
-      options.challenge
+      options.challenge,
+      userInvites
     );
     try {
       await this.userRepository.persistAndFlush(user);

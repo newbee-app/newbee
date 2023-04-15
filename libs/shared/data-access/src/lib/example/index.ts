@@ -1,4 +1,5 @@
 import {
+  OrgRoleEnum,
   testAuthenticationCredential1,
   testDoc1,
   testOrganization1,
@@ -14,6 +15,7 @@ import {
 import {
   BaseCreateDocDto,
   BaseCreateOrganizationDto,
+  BaseCreateOrgMemberInviteDto,
   BaseCreateQnaDto,
   BaseCreateTeamDto,
   BaseCreateUserDto,
@@ -28,6 +30,7 @@ import {
   BaseSuggestResultDto,
   BaseTeamMemberDto,
   BaseTeamSlugDto,
+  BaseTokenDto,
   BaseUpdateAnswerDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
@@ -227,6 +230,23 @@ export const testBaseOrgMemberDto1: BaseOrgMemberDto = {
   maintainedDocs: [testDoc1],
   createdQnas: [testQna1],
   maintainedQnas: [testQna1],
+};
+
+/**
+ * An example instance of BaseCreateOrgMemberInviteDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCreateOrgMemberInviteDto1: BaseCreateOrgMemberInviteDto = {
+  email: testUser1.email,
+  role: OrgRoleEnum.Member,
+};
+
+/**
+ * An example instance of `BaseTokenDto`.
+ * Strictly for use in testing.
+ */
+export const testBaseTokenDto1: BaseTokenDto = {
+  token: 'token',
 };
 
 /**

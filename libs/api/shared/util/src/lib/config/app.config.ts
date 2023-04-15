@@ -100,9 +100,6 @@ export const appEnvironmentVariablesSchema = Joi.object({
   // Cookies
   COOKIE_SECRET: Joi.string().required(),
 
-  // AUTH: Magic Link Login Strategy
-  MAGIC_LINK_LOGIN_VERIFY_LINK: Joi.string().required(),
-
   // SMTP
   SMTP_HOST: Joi.string().required(),
   SMTP_USERNAME: Joi.string().required(),
@@ -113,4 +110,11 @@ export const appEnvironmentVariablesSchema = Joi.object({
   SOLR_URL: Joi.string().required(),
   SOLR_USERNAME: Joi.string().required(),
   SOLR_PASSWORD: Joi.string().required(),
+
+  // AUTH: Magic Link Login Strategy
+  MAGIC_LINK_LOGIN_VERIFY_LINK: Joi.string().required(),
+
+  // ORG-MEMBER-INVITE
+  ORG_MEMBER_INVITE_ACCEPT_LINK: Joi.string().required(),
+  ORG_MEMBER_INVITE_DECLINE_LINK: Joi.string().required(),
 });

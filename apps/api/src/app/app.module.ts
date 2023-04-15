@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '@newbee/api/auth/util';
 import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
 import { CsrfModule } from '@newbee/api/csrf/feature';
 import { DocModule } from '@newbee/api/doc/feature';
+import { OrgMemberInviteModule } from '@newbee/api/org-member-invite/feature';
 import { OrgMemberModule } from '@newbee/api/org-member/feature';
 import { OrganizationModule } from '@newbee/api/organization/feature';
 import { QnaModule } from '@newbee/api/qna/feature';
@@ -25,6 +26,7 @@ import {
 import { TeamMemberModule } from '@newbee/api/team-member/feature';
 import { TeamModule } from '@newbee/api/team/feature';
 import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
+import { UserInvitesModule } from '@newbee/api/user-invites/feature';
 import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { SolrModule } from '@newbee/nest-solr-cli';
@@ -75,6 +77,7 @@ import { default as appConfig } from '../environments/environment';
     CsrfModule,
     DocModule,
     OrgMemberModule,
+    OrgMemberInviteModule,
     OrganizationModule,
     QnaModule,
     SearchModule,
@@ -82,6 +85,7 @@ import { default as appConfig } from '../environments/environment';
     TeamMemberModule,
     UserModule,
     UserChallengeModule,
+    UserInvitesModule,
     UserSettingsModule,
   ],
   providers: [

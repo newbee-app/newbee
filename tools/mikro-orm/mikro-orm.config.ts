@@ -4,12 +4,14 @@ import {
   DocEntity,
   OrganizationEntity,
   OrgMemberEntity,
+  OrgMemberInviteEntity,
   PostEntity,
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
   UserChallengeEntity,
   UserEntity,
+  UserInvitesEntity,
   UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 import { password, user } from './secret';
@@ -28,6 +30,7 @@ export default defineConfig({
   entities: [
     AuthenticatorEntity,
     DocEntity,
+    OrgMemberInviteEntity,
     OrgMemberEntity,
     OrganizationEntity,
     PostEntity,
@@ -35,6 +38,7 @@ export default defineConfig({
     TeamMemberEntity,
     TeamEntity,
     UserChallengeEntity,
+    UserInvitesEntity,
     UserSettingsEntity,
     UserEntity,
   ],

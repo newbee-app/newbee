@@ -2,6 +2,7 @@ export * from './authenticator.error.constant';
 export * from './csrf.error.constant';
 export * from './doc.error.constant';
 export * from './general.error.constant';
+export * from './org-member-invite.error.constant';
 export * from './org-member.error.constant';
 export * from './organization.error.constant';
 export * from './qna.error.constant';

@@ -2,12 +2,15 @@ import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
-  EmailDto,
   MagicLinkLoginStrategy,
   WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EmailDto,
+  UserAndOptionsDto,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {

@@ -1,6 +1,6 @@
 // Details all of the errors that `class-validator` can throw from backend DTOs.
 
-import { SolrEntryEnum } from '../../enum';
+import { OrgRoleEnum, SolrEntryEnum } from '../../enum';
 
 /**
  * Constant to say that an email address field must specify a valid email address.
@@ -59,6 +59,11 @@ export const answerIsNotEmpty = 'You cannot save an empty answer.';
 export const queryIsNotEmpty = 'Query cannot be an empty string.';
 
 /**
+ * Constant to say that token cannot be an empty string.
+ */
+export const tokenIsNotEmpty = 'Token cannot be an empty string.';
+
+/**
  * Constant to say that the active field must be a boolean value.
  */
 export const activeIsBoolean = 'Active must be true or false.';
@@ -83,4 +88,11 @@ export const offsetMin0 = 'Offset cannot be less than 0.';
  */
 export const typeIsEnum = `Type can only be one of the following values: ${Object.values(
   SolrEntryEnum
+)}`;
+
+/**
+ * Constant to say that the value for orgRole must be in OrgRoleEnum.
+ */
+export const orgRoleIsEnum = `Type can only be one of the following values: ${Object.values(
+  OrgRoleEnum
 )}`;

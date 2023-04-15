@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import type { JwtModuleOptions } from '@nestjs/jwt';
-import { AppConfig, authJwtCookie } from '@newbee/api/shared/util';
+import type { AppConfig } from '@newbee/api/shared/util';
+import { authJwtCookie } from '@newbee/api/shared/util';
 import type { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { StrategyOptions as JwtStrategyOptions } from 'passport-jwt';

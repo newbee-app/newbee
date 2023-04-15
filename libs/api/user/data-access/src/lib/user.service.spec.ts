@@ -15,8 +15,10 @@ import { Test } from '@nestjs/testing';
 import {
   testUserAndOptionsDto1,
   testUserEntity1,
+  testUserInvitesEntity1,
   UserEntity,
 } from '@newbee/api/shared/data-access';
+import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
   testBaseCreateUserDto1,
   testBaseUpdateUserDto1,
@@ -55,6 +57,7 @@ const mockUserEntity = UserEntity as jest.Mock;
 describe('UserService', () => {
   let service: UserService;
   let repository: EntityRepository<UserEntity>;
+  let userInvitesService: UserInvitesService;
 
   const testUpdatedUser = { ...testUserEntity1, ...testBaseUpdateUserDto1 };
 
@@ -67,6 +70,14 @@ describe('UserService', () => {
           useValue: createMock<EntityRepository<UserEntity>>({
             findOneOrFail: jest.fn().mockResolvedValue(testUserEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedUser),
+          }),
+        },
+        {
+          provide: UserInvitesService,
+          useValue: createMock<UserInvitesService>({
+            findOrCreateOneByEmail: jest
+              .fn()
+              .mockResolvedValue(testUserInvitesEntity1),
           }),
         },
         {
@@ -84,6 +95,7 @@ describe('UserService', () => {
     repository = module.get<EntityRepository<UserEntity>>(
       getRepositoryToken(UserEntity)
     );
+    userInvitesService = module.get<UserInvitesService>(UserInvitesService);
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
@@ -96,10 +108,15 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(userInvitesService).toBeDefined();
   });
 
   describe('create', () => {
     afterEach(() => {
+      expect(userInvitesService.findOrCreateOneByEmail).toBeCalledTimes(1);
+      expect(userInvitesService.findOrCreateOneByEmail).toBeCalledWith(
+        testBaseCreateUserDto1.email
+      );
       expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledTimes(1);
       expect(repository.persistAndFlush).toBeCalledWith(testUserEntity1);

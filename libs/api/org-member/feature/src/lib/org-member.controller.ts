@@ -11,6 +11,9 @@ import {
 } from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
+/**
+ * The controller that interacts with `OrgMemberEntity`.
+ */
 @Controller({
   path: `${organization}/:${organization}/${user}`,
   version: orgMemberVersion,

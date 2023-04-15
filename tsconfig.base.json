@@ -47,6 +47,15 @@
       "@newbee/api/csrf/feature": ["libs/api/csrf/feature/src/index.ts"],
       "@newbee/api/doc/data-access": ["libs/api/doc/data-access/src/index.ts"],
       "@newbee/api/doc/feature": ["libs/api/doc/feature/src/index.ts"],
+      "@newbee/api/org-member-invite/data-access": [
+        "libs/api/org-member-invite/data-access/src/index.ts"
+      ],
+      "@newbee/api/org-member-invite/feature": [
+        "libs/api/org-member-invite/feature/src/index.ts"
+      ],
+      "@newbee/api/org-member-invite/util": [
+        "libs/api/org-member-invite/util/src/index.ts"
+      ],
       "@newbee/api/org-member/data-access": [
         "libs/api/org-member/data-access/src/index.ts"
       ],
@@ -84,6 +93,12 @@
       ],
       "@newbee/api/user-challenge/feature": [
         "libs/api/user-challenge/feature/src/index.ts"
+      ],
+      "@newbee/api/user-invites/data-access": [
+        "libs/api/user-invites/data-access/src/index.ts"
+      ],
+      "@newbee/api/user-invites/feature": [
+        "libs/api/user-invites/feature/src/index.ts"
       ],
       "@newbee/api/user-settings/data-access": [
         "libs/api/user-settings/data-access/src/index.ts"

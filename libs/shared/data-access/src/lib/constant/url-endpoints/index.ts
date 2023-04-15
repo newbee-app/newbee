@@ -78,6 +78,7 @@ export const question = 'question';
  */
 export const answer = 'answer';
 
+// SEARCH endpoints
 /**
  * The URL endpoint associated with search.
  */
@@ -87,3 +88,19 @@ export const search = 'search';
  * The URL endpoint associated with suggestions.
  */
 export const suggest = 'suggest';
+
+// ORG-MEMBER-INVITE endpoints
+/**
+ * The URL endpoint associated with invites.
+ */
+export const invite = 'invite';
+
+/**
+ * The URL endpoint associated with accepting an invite.
+ */
+export const accept = 'accept';
+
+/**
+ * The URL endpoint associated with declining an invite.
+ */
+export const decline = 'decline';
