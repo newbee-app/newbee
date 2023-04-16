@@ -2,13 +2,11 @@ import { BaseUpdateUserDto } from '@newbee/shared/data-access';
 import {
   activeIsBoolean,
   displayNameIsNotEmpty,
-  emailIsEmail,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,
 } from '@newbee/shared/util';
 import {
   IsBoolean,
-  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -19,15 +17,6 @@ import {
  * Suitable for use in PATCH requests.
  */
 export class UpdateUserDto implements BaseUpdateUserDto {
-  /**
-   * @inheritdoc
-   */
-  @IsOptional()
-  @IsEmail(undefined, {
-    message: emailIsEmail,
-  })
-  email?: string;
-
   /**
    * @inheritdoc
    */

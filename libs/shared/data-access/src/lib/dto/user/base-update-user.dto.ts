@@ -4,12 +4,9 @@ import { BaseCreateUserDto } from './base-create-user.dto';
  * The DTO sent from the frontend to the backend for updating the user's value.
  * Suitable for use in PATCH requests.
  */
-export class BaseUpdateUserDto implements Partial<BaseCreateUserDto> {
-  /**
-   * @inheritdoc
-   */
-  email?: string;
-
+export class BaseUpdateUserDto
+  implements Partial<Omit<BaseCreateUserDto, 'email'>>
+{
   /**
    * @inheritdoc
    */

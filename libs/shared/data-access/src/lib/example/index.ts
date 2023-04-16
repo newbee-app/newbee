@@ -101,7 +101,6 @@ export const testBaseCreateUserDto1: BaseCreateUserDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateUserDto1: BaseUpdateUserDto = {
-  email: testUser1.email,
   name: 'Jane Doe',
 };
 
