@@ -1,8 +1,7 @@
 module.exports = {
-  stories: [],
   addons: [
     // Includes Docs, Controls, Actions, Viewport, Backgrounds, Toolbars & globals, Measure & outline
-    '@storybook/addon-essentials',
+
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-dark-mode',
