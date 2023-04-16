@@ -1,4 +1,4 @@
-import { getSelectors } from '@ngrx/router-store';
+import { getRouterSelectors } from '@ngrx/router-store';
 
 /**
  * Selectors provided by `@ngrx/router-store` for accessing bits of Angular's router state.
