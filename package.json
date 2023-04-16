@@ -88,6 +88,8 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "15.2.6",
+    "@angular-devkit/core": "~15.1.2",
+    "@angular-devkit/schematics": "~15.1.2",
     "@angular-eslint/eslint-plugin": "15.2.0",
     "@angular-eslint/eslint-plugin-template": "15.2.0",
     "@angular-eslint/template-parser": "15.2.0",
@@ -115,6 +117,7 @@
     "@nrwl/storybook": "15.9.2",
     "@nrwl/web": "15.9.2",
     "@nrwl/workspace": "15.9.2",
+    "@schematics/angular": "~15.1.2",
     "@simplewebauthn/typescript-types": "7.0.0",
     "@storybook/addon-a11y": "7.0.5",
     "@storybook/addon-essentials": "7.0.5",
