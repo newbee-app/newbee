@@ -55,4 +55,16 @@ export class UserInvitesEntity {
     this.id = id;
     this.email = email;
   }
+
+  /**
+   * Calls `removeAll` on all of the entity's collections.
+   * If necessary, calls remove all on the individual entities of a collection.
+   */
+  async removeAllCollections(): Promise<void> {
+    if (!this.orgMemberInvites.isInitialized()) {
+      await this.orgMemberInvites.init();
+    }
+
+    this.orgMemberInvites.removeAll();
+  }
 }

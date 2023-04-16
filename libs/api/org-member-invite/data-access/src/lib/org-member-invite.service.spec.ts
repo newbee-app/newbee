@@ -299,25 +299,37 @@ describe('OrgMemberInviteService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(
-        testOrgMemberInviteEntity1
-      );
+      expect(em.populate).toBeCalledTimes(1);
+      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
+        'userInvites.orgMemberInvites',
+        'userInvites.user',
+      ]);
     });
 
-    it('should delete an org member invite', async () => {
-      await expect(
-        service.delete(testOrgMemberInviteEntity1)
-      ).resolves.toBeUndefined();
-    });
+    describe('more than one org member invite', () => {
+      afterEach(() => {
+        expect(repository.removeAndFlush).toBeCalledTimes(1);
+        expect(repository.removeAndFlush).toBeCalledWith(
+          testOrgMemberInviteEntity1
+        );
+      });
 
-    it('throws an InternalServerErrorException if removeAndFlush throws an error', async () => {
-      jest
-        .spyOn(repository, 'removeAndFlush')
-        .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(service.delete(testOrgMemberInviteEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
-      );
+      it('should only delete the org member invite', async () => {
+        await expect(
+          service.delete(testOrgMemberInviteEntity1)
+        ).resolves.toBeUndefined();
+      });
+
+      it('throws an InternalServerErrorException if removeAndFlush throws an error', async () => {
+        jest
+          .spyOn(repository, 'removeAndFlush')
+          .mockRejectedValue(new Error('removeAndFlush'));
+        await expect(
+          service.delete(testOrgMemberInviteEntity1)
+        ).rejects.toThrow(
+          new InternalServerErrorException(internalServerError)
+        );
+      });
     });
   });
 

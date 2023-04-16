@@ -112,4 +112,27 @@ describe('UserInvitesService', () => {
       });
     });
   });
+
+  describe('delete', () => {
+    afterEach(() => {
+      expect(testUserInvitesEntity1.removeAllCollections).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledTimes(1);
+      expect(repository.removeAndFlush).toBeCalledWith(testUserInvitesEntity1);
+    });
+
+    it('should delete a user invites object', async () => {
+      await expect(
+        service.delete(testUserInvitesEntity1)
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
+      jest
+        .spyOn(repository, 'removeAndFlush')
+        .mockRejectedValue(new Error('removeAndFlush'));
+      await expect(service.delete(testUserInvitesEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
+  });
 });

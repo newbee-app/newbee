@@ -47,4 +47,19 @@ export class UserInvitesService {
       throw new InternalServerErrorException(internalServerError);
     }
   }
+
+  /**
+   * Deletes the given `UserInvitesEntity` and saves the changes to the database.
+   *
+   * @param userInvites The `UserInvitesEntity` instance to delete.
+   */
+  async delete(userInvites: UserInvitesEntity): Promise<void> {
+    try {
+      await userInvites.removeAllCollections();
+      await this.userInvitesRepository.removeAndFlush(userInvites);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
 }

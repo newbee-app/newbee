@@ -105,7 +105,7 @@ export class OrganizationEntity implements Organization {
 
   /**
    * Call `removeAll` on all of the entity's collections.
-   * If necessary, call remove all of the individual entities of a collection.
+   * If necessary, call remove all on the individual entities of a collection.
    */
   async removeAllCollections(): Promise<void> {
     const collections = [this.teams, this.docs, this.qnas, this.members];

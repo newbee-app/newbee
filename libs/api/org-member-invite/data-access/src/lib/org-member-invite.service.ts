@@ -152,6 +152,7 @@ export class OrgMemberInviteService {
 
   /**
    * Deletes the given `OrgMemberInviteEntity`.
+   * If the `OrgMemberInviteEntity` is the only invite the user invites object has, it deletes the user invites object if there is no registered user attached to it.
    *
    * @param orgMemberInvite The `OrgMemberInviteEntity` to delete.
    *
@@ -159,7 +160,17 @@ export class OrgMemberInviteService {
    */
   async delete(orgMemberInvite: OrgMemberInviteEntity): Promise<void> {
     try {
-      await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
+      await this.em.populate(orgMemberInvite, [
+        'userInvites.orgMemberInvites',
+        'userInvites.user',
+      ]);
+      const { userInvites } = orgMemberInvite;
+
+      if (!userInvites.user && userInvites.orgMemberInvites.length === 1) {
+        await this.userInvitesService.delete(userInvites);
+      } else {
+        await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
+      }
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
