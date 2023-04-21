@@ -5,17 +5,17 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
-  auth,
+  authUrl,
   authVersion,
-  login,
-  options,
-  register,
+  loginUrl,
+  optionsUrl,
+  registerUrl,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserAndOptionsDto1,
   testBaseWebAuthnLoginDto1,
-  webauthn,
+  webauthnUrl,
 } from '@newbee/shared/data-access';
 import {
   magicLinkLogin,
@@ -69,7 +69,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}`
+        `/api/v${authVersion}/${authUrl}/${magicLinkLogin}/${loginUrl}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseEmailDto1);
@@ -93,7 +93,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${magicLinkLogin}`
+        `/api/v${authVersion}/${authUrl}/${magicLinkLogin}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({ token: '1234' });
@@ -117,7 +117,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${webauthn}/${register}`
+        `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${registerUrl}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateUserDto1);
@@ -141,7 +141,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${webauthn}/${login}/${options}`
+        `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}/${optionsUrl}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseEmailDto1);
@@ -172,7 +172,7 @@ describe('AuthService', () => {
       );
 
       const req = httpController.expectOne(
-        `/api/v${authVersion}/${auth}/${webauthn}/${login}`
+        `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);

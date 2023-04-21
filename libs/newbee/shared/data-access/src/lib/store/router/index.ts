@@ -13,4 +13,4 @@ export const {
   selectRouteData,
   selectUrl,
   selectTitle,
-} = getSelectors();
+} = getRouterSelectors();

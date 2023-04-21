@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  csrf,
+  csrfUrl,
   csrfVersion,
   testBaseCsrfTokenDto1,
 } from '@newbee/shared/data-access';
@@ -42,7 +42,7 @@ describe('CsrfService', () => {
         error: done.fail,
       });
 
-      const req = httpController.expectOne(`/api/v${csrfVersion}/${csrf}`);
+      const req = httpController.expectOne(`/api/v${csrfVersion}/${csrfUrl}`);
       expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseCsrfTokenDto1);
