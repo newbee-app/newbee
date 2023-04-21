@@ -117,6 +117,7 @@ export const testTeamEntity1 = createMock<TeamEntity>({
   ...testTeam1,
   id: '1',
   organization: testOrganizationEntity1,
+  teamMembers: createMock<Collection<TeamMemberEntity>>(),
 });
 
 /**
@@ -128,6 +129,7 @@ export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
   user: testUserEntity1,
   organization: testOrganizationEntity1,
   id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
+  teams: createMock<Collection<TeamMemberEntity>>(),
 });
 
 /**
@@ -215,7 +217,7 @@ export const testDocDocParams1 = new DocDocParams(
   testDocEntity1.updatedAt,
   testDocEntity1.markedUpToDateAt,
   testDocEntity1.upToDate,
-  testDocEntity1.creator.id,
+  testDocEntity1.creator?.id ?? null,
   testDocEntity1.maintainer?.id ?? null,
   testDocEntity1.title,
   testDocEntity1.docTxt
@@ -233,7 +235,7 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.updatedAt,
   testQnaEntity1.markedUpToDateAt,
   testQnaEntity1.upToDate,
-  testQnaEntity1.creator.id,
+  testQnaEntity1.creator?.id ?? null,
   testQnaEntity1.maintainer?.id ?? null,
   testQnaEntity1.title,
   testQnaEntity1.questionTxt,

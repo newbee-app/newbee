@@ -3,9 +3,10 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -18,6 +19,8 @@ import {
 } from '@newbee/api/shared/data-access';
 import { BaseOrgMemberDto } from '@newbee/shared/data-access';
 import {
+  compareOrgRoles,
+  forbiddenError,
   internalServerError,
   orgMemberNotFound,
   OrgRoleEnum,
@@ -38,6 +41,7 @@ export class OrgMemberService {
   constructor(
     @InjectRepository(OrgMemberEntity)
     private readonly orgMemberRepository: EntityRepository<OrgMemberEntity>,
+    private readonly em: EntityManager,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -145,18 +149,48 @@ export class OrgMemberService {
   }
 
   /**
+   * Finds the `OrgMemberEntity` associated with the given user and organization, returns null if it doesn't exist.
+   *
+   * @param user The user to search for.
+   * @param organization The organization to search in.
+   *
+   * @returns The associated `OrgMemberEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  async findOneByUserAndOrgOrNull(
+    user: UserEntity,
+    organization: OrganizationEntity
+  ): Promise<OrgMemberEntity | null> {
+    try {
+      return await this.orgMemberRepository.findOne({
+        user,
+        organization,
+      });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Updates the role of the given org member.
    *
    * @param orgMember The org member to update.
    * @param newRole The new role for the org member.
+   * @param requesterOrgRole The org role of the requester.
    *
    * @returns The udpated org member.
+   * @throws {ForbiddenException} `forbiddenError`. If the user is trying to update an org member with permissions that exceed their own.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateRole(
     orgMember: OrgMemberEntity,
-    newRole: OrgRoleEnum
+    newRole: OrgRoleEnum,
+    requesterOrgRole: OrgRoleEnum
   ): Promise<OrgMemberEntity> {
+    this.checkRequester(requesterOrgRole, newRole);
+    this.checkRequester(requesterOrgRole, orgMember.role);
+
     const updatedOrgMember = this.orgMemberRepository.assign(orgMember, {
       role: newRole,
     });
@@ -172,19 +206,36 @@ export class OrgMemberService {
 
   /**
    * Deletes the given org member.
+   * If the org member is the only owner of the org, throw a `BadRequestException`.
    *
    * @param orgMember The org member to delete.
+   * @param requesterOrgRole The org role of the requester.
    *
+   * @throws {ForbiddenException} `forbiddenError`. If the user is trying to delete an org member with permissions that exceed their own.
+   * @throws {BadRequestException} `cannotDeleteOnlyOwnerBadRequest`. If the org member is the only owner of the team.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async delete(orgMember: OrgMemberEntity): Promise<void> {
+  async delete(
+    orgMember: OrgMemberEntity,
+    requesterOrgRole: OrgRoleEnum
+  ): Promise<void> {
+    this.checkRequester(requesterOrgRole, orgMember.role);
+
+    // Handle deleting the org member in the database
     try {
+      await orgMember.safeToDelete(this.em);
+      await orgMember.prepareToDelete();
       await this.orgMemberRepository.removeAndFlush(orgMember);
     } catch (err) {
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
 
+    // Handle deleting the org member in Solr
     const collectionName = orgMember.organization.id;
     try {
       await this.solrCli.deleteDocs(collectionName, { id: orgMember.slug });
@@ -228,7 +279,7 @@ export class OrgMemberService {
       createdQnas,
       maintainedQnas,
     } = orgMember;
-    const { email, name, displayName, phoneNumber, active } = user;
+    const { email, name, displayName, phoneNumber } = user;
 
     return {
       role,
@@ -237,7 +288,6 @@ export class OrgMemberService {
       name,
       displayName,
       phoneNumber,
-      active,
       teams: teams.getItems().map((teamMember) => {
         const { role, team } = teamMember;
         const { name, slug } = team;
@@ -248,5 +298,25 @@ export class OrgMemberService {
       createdQnas: createdQnas.getItems(),
       maintainedQnas: maintainedQnas.getItems(),
     };
+  }
+
+  /**
+   * Checks the requester's roles to see if the operation is permissible.
+   * The requester shouldn't be allowed to affect a role higher than theirs.
+   *
+   * @param requesterOrgRole The requester's org role.
+   * @param subjectRole The affected role.
+   *
+   * @throws {ForbiddenException} `forbiddenError`. If the operation isn't permissible.
+   */
+  checkRequester(
+    requesterOrgRole: OrgRoleEnum,
+    subjectRole: OrgRoleEnum
+  ): void {
+    if (compareOrgRoles(requesterOrgRole, subjectRole) >= 0) {
+      return;
+    }
+
+    throw new ForbiddenException(forbiddenError);
   }
 }

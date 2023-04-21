@@ -1,4 +1,12 @@
-import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  InternalServerErrorException,
+  Logger,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
@@ -14,22 +22,22 @@ import {
 import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
-  auth,
+  authUrl,
   authVersion,
   BaseMagicLinkLoginDto,
-  login,
-  options,
-  register,
-  webauthn,
+  loginUrl,
+  optionsUrl,
+  registerUrl,
+  webauthnUrl,
 } from '@newbee/shared/data-access';
-import { magicLinkLogin } from '@newbee/shared/util';
+import { internalServerError, magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { Response } from 'express';
 
 /**
  * The controller that provides API routes for logging in and registering users.
  */
-@Controller({ path: auth, version: authVersion })
+@Controller({ path: authUrl, version: authVersion })
 export class AuthController {
   /**
    * The logger to use to log anything in the controller.
@@ -53,7 +61,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${webauthn}/${register}`)
+  @Post(`${webauthnUrl}/${registerUrl}`)
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto
@@ -84,9 +92,11 @@ export class AuthController {
    * @param emailDto The user's email as a verified DTO.
    *
    * @returns The challenge for the user's authenticator to verify.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Public()
-  @Post(`${webauthn}/${login}/${options}`)
+  @Post(`${webauthnUrl}/${loginUrl}/${optionsUrl}`)
   async webAuthnLoginOptions(
     @Body() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
@@ -108,13 +118,13 @@ export class AuthController {
    * @param webAuthnLoginDto The user's authenticator's attempt at verifying the backend's challenge.
    *
    * @returns The logged in user and their access token, if verified.
-   * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`.
-   * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
+   * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${webauthn}/${login}`)
+  @Post(`${webauthnUrl}/${loginUrl}`)
   async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
@@ -147,17 +157,22 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
   @Public()
-  @Post(`${magicLinkLogin}/${login}`)
+  @Post(`${magicLinkLogin}/${loginUrl}`)
   async magicLinkLoginLogin(
     @Body() emailDto: EmailDto
   ): Promise<BaseMagicLinkLoginDto> {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
 
-    const jwtId = await this.magicLinkLoginStrategy.send({ email });
-    this.logger.log(`Magic link sent to email: ${email}`);
+    try {
+      const jwtId = await this.magicLinkLoginStrategy.send({ email });
+      this.logger.log(`Magic link sent to email: ${email}`);
 
-    return { jwtId, email };
+      return { jwtId, email };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**

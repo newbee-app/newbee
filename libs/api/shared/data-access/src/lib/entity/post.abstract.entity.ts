@@ -82,9 +82,10 @@ export abstract class PostEntity implements Post {
 
   /**
    * The org member that created the post.
+   * It can be null if the creator of the post has left the organization.
    * Should be `hidden`, so it will never be serialized.
    */
-  abstract creator: OrgMemberEntity;
+  abstract creator: OrgMemberEntity | null;
 
   /**
    * The org member responsible for maintaining the post.

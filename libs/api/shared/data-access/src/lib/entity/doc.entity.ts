@@ -27,13 +27,13 @@ export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity, { hidden: true })
-  creator: OrgMemberEntity;
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
+  creator: OrgMemberEntity | null;
 
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity, { hidden: true })
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
   maintainer: OrgMemberEntity | null = null;
 
   /**
@@ -86,7 +86,7 @@ export class DocEntity extends PostEntity implements Doc {
       this.updatedAt,
       this.markedUpToDateAt,
       this.upToDate,
-      this.creator.id,
+      this.creator?.id ?? null,
       this.maintainer?.id ?? null,
       this.title,
       this.docTxt

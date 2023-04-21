@@ -66,7 +66,6 @@ export const testUser1: User = {
   name: 'John Doe',
   displayName: 'John',
   phoneNumber: null,
-  active: true,
 };
 
 /**

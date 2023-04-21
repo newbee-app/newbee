@@ -1,6 +1,6 @@
 // Details all of the errors that `class-validator` can throw from backend DTOs.
 
-import { OrgRoleEnum, SolrEntryEnum } from '../../enum';
+import { OrgRoleEnum, SolrEntryEnum, TeamRoleEnum } from '../../enum';
 
 /**
  * Constant to say that an email address field must specify a valid email address.
@@ -95,4 +95,11 @@ export const typeIsEnum = `Type can only be one of the following values: ${Objec
  */
 export const orgRoleIsEnum = `Type can only be one of the following values: ${Object.values(
   OrgRoleEnum
+)}`;
+
+/**
+ * Constant to say that the value of teamRole must be in TeamRoleEnum.
+ */
+export const teamRoleIsEnum = `Type can only be one of the following values: ${Object.values(
+  TeamRoleEnum
 )}`;

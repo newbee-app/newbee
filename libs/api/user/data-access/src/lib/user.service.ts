@@ -3,7 +3,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -39,6 +39,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
+    private readonly em: EntityManager,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly solrCli: SolrCli
@@ -136,6 +137,23 @@ export class UserService {
   }
 
   /**
+   * Finds the `UserEntity` in the database associated with the given email, return null if none is found.
+   *
+   * @param email The email to look for.
+   *
+   * @returns The associated `UserEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  async findOneByEmailOrNull(email: string): Promise<UserEntity | null> {
+    try {
+      return await this.userRepository.findOne({ email });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Updates the given `UserEntity` and saves the changes to the database.
    *
    * @param user The `UserEntity` instance to update.
@@ -194,12 +212,31 @@ export class UserService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(user: UserEntity): Promise<void> {
+    const collectionNamesAndIds: [string, string][] = [];
     try {
-      await user.removeAllCollections();
+      await this.userRepository.populate(user, ['organizations']);
+      collectionNamesAndIds.push(
+        ...user.organizations
+          .getItems()
+          .map(
+            (orgMember) =>
+              [orgMember.organization.id, orgMember.slug] as [string, string]
+          )
+      );
+      await user.safeToDelete(this.em);
+      await user.prepareToDelete();
       await this.userRepository.removeAndFlush(user);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
+    }
+
+    try {
+      for (const [collectionName, id] of collectionNamesAndIds) {
+        await this.solrCli.deleteDocs(collectionName, { id });
+      }
+    } catch (err) {
+      this.logger.error(err);
     }
   }
 }

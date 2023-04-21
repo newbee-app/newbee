@@ -37,11 +37,6 @@ export class BaseOrgMemberDto implements OrgMember, User {
   phoneNumber!: string | null;
 
   /**
-   * @inheritdoc
-   */
-  active!: boolean;
-
-  /**
    * The teams the org member is a part of, and the role they hold in each team.
    */
   teams!: BaseTeamMemberDto[];

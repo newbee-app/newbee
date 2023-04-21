@@ -52,10 +52,11 @@ export class UserInvitesService {
    * Deletes the given `UserInvitesEntity` and saves the changes to the database.
    *
    * @param userInvites The `UserInvitesEntity` instance to delete.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(userInvites: UserInvitesEntity): Promise<void> {
     try {
-      await userInvites.removeAllCollections();
+      await userInvites.prepareToDelete();
       await this.userInvitesRepository.removeAndFlush(userInvites);
     } catch (err) {
       this.logger.error(err);

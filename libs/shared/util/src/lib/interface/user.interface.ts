@@ -23,10 +23,4 @@ export interface User {
    * The phone number of the given user, stored in the backend in E.164 format.
    */
   phoneNumber: string | null;
-
-  /**
-   * Whether the user's account has been deactivated.
-   * Needed so that posts made by the user before deactivation has something to refer back to.
-   */
-  active: boolean;
 }

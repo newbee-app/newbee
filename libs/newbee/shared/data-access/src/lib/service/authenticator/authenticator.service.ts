@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  authenticator,
+  authenticatorUrl,
   authenticatorVersion,
   BaseRegistrationResponseDto,
-  options,
+  optionsUrl,
 } from '@newbee/shared/data-access';
 import { Authenticator } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
@@ -25,7 +25,7 @@ export class AuthenticatorService {
    */
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
-      `/api/v${authenticatorVersion}/${authenticator}/${options}`,
+      `/api/v${authenticatorVersion}/${authenticatorUrl}/${optionsUrl}`,
       {}
     );
   }
@@ -45,7 +45,7 @@ export class AuthenticatorService {
           response,
         };
         return this.http.post<Authenticator>(
-          `/api/v${authenticatorVersion}/${authenticator}`,
+          `/api/v${authenticatorVersion}/${authenticatorUrl}`,
           registrationResponseDto
         );
       })

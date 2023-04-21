@@ -29,13 +29,13 @@ export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity, { hidden: true })
-  creator: OrgMemberEntity;
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
+  creator: OrgMemberEntity | null;
 
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrgMemberEntity, { nullable: true, hidden: true })
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
   maintainer: OrgMemberEntity | null = null;
 
   /**
@@ -123,7 +123,7 @@ export class QnaEntity extends PostEntity implements Qna {
       this.updatedAt,
       this.markedUpToDateAt,
       this.upToDate,
-      this.creator.id,
+      this.creator?.id ?? null,
       this.maintainer?.id ?? null,
       this.title,
       this.questionTxt,

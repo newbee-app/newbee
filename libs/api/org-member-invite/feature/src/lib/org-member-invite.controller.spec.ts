@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberInviteService } from '@newbee/api/org-member-invite/data-access';
-import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -29,10 +28,6 @@ describe('OrgMemberInviteController', () => {
             acceptInvite: jest.fn().mockResolvedValue(testOrgMemberEntity1),
           }),
         },
-        {
-          provide: OrganizationService,
-          useValue: createMock<OrganizationService>(),
-        },
       ],
     }).compile();
 
@@ -52,15 +47,15 @@ describe('OrgMemberInviteController', () => {
       await expect(
         controller.invite(
           testBaseCreateOrgMemberInviteDto1,
-          testUserEntity1,
+          testOrgMemberEntity1,
           testOrganizationEntity1
         )
       ).resolves.toBeUndefined();
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
         testOrgMemberInviteEntity1.userInvites.email,
-        testUserEntity1,
         testOrgMemberInviteEntity1.role,
+        testOrgMemberEntity1,
         testOrgMemberInviteEntity1.organization.slug
       );
     });

@@ -4,55 +4,52 @@ import {
   Delete,
   Get,
   Logger,
-  Param,
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   CreateDocDto,
   DocService,
   UpdateDocDto,
 } from '@newbee/api/doc/data-access';
-import { OrgMemberService } from '@newbee/api/org-member/data-access';
-import { OrganizationGuard } from '@newbee/api/organization/data-access';
 import {
   DocEntity,
   OrganizationEntity,
+  OrgMemberEntity,
+  TeamEntity,
   TeamSlugDto,
-  UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
+  Doc,
   Organization,
+  OrgMember,
   PostRoleEnum,
   Role,
-  User,
+  Team,
 } from '@newbee/api/shared/util';
-import { TeamService } from '@newbee/api/team/data-access';
-import { doc, docVersion, organization } from '@newbee/shared/data-access';
+import {
+  docUrl,
+  docVersion,
+  organizationUrl,
+} from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
  */
 @Controller({
-  path: `${organization}/:${organization}/${doc}`,
+  path: `${organizationUrl}/:${organizationUrl}/${docUrl}`,
   version: docVersion,
 })
-@UseGuards(OrganizationGuard)
 export class DocController {
   /**
    * The logger to use when logging anything in the controller.
    */
   private readonly logger = new Logger(DocController.name);
 
-  constructor(
-    private readonly docService: DocService,
-    private readonly orgMemberService: OrgMemberService,
-    private readonly teamService: TeamService
-  ) {}
+  constructor(private readonly docService: DocService) {}
 
   /**
    * The API route for creating a doc.
@@ -65,7 +62,6 @@ export class DocController {
    * @param teamSlugDto The DTO containing the slug of the team the doc will go in, if applicable.
    *
    * @returns The newly created doc.
-   * @throws {NotFoundException} `orgMemberNotFound`, `teamSlugNotFound`. If the the user does not exist in the organization or the team does not exist in the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
@@ -79,31 +75,27 @@ export class DocController {
   )
   async create(
     @Body() createDocDto: CreateDocDto,
-    @User() user: UserEntity,
+    @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
+    @Team() team: TeamEntity | undefined,
     @Query() teamSlugDto: TeamSlugDto
   ): Promise<DocEntity> {
     const { team: teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create doc request received from user ID: ${
-        user.id
+      `Create doc request received from org member slug: ${
+        orgMember.slug
       }, in organization ID: ${organization.id}${
         teamSlug ? `, in team: ${teamSlug}` : ''
       }, with title: ${createDocDto.title}`
     );
-
-    const orgMember = await this.orgMemberService.findOneByUserAndOrg(
-      user,
-      organization
+    const doc = await this.docService.create(
+      createDocDto,
+      team ?? null,
+      orgMember
     );
-    const team = teamSlug
-      ? await this.teamService.findOneBySlug(organization, teamSlug)
-      : null;
-    const doc = await this.docService.create(createDocDto, team, orgMember);
     this.logger.log(
       `Doc created with ID: ${doc.id}, slug: ${doc.slug}, title: ${doc.title}`
     );
-
     return doc;
   }
 
@@ -111,18 +103,16 @@ export class DocController {
    * The API route for getting a doc.
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
-   * @param slug The slug to look for.
+   * @param doc The doc we're looking for.
    *
    * @returns The doc associated with the slug, if one exists.
-   * @throws {NotFoundException} `docSlugNotFound`. If the doc's slug could not be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${doc}`)
+  @Get(`:${docUrl}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Param(doc) slug: string): Promise<DocEntity> {
-    this.logger.log(`Get doc request received for slug: ${slug}}`);
-    const doc = await this.docService.findOneBySlug(slug);
-    this.logger.log(`Found doc, slug: ${slug}, ID: ${doc.id}`);
+  async get(@Doc() doc: DocEntity): Promise<DocEntity> {
+    this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
+    this.logger.log(`Found doc, slug: ${doc.slug}, ID: ${doc.id}`);
     return doc;
   }
 
@@ -131,14 +121,13 @@ export class DocController {
    * Organization moderators and owners; team members, moderators and owners; and post maintainers should be allowed to access the endpoint.
    * Organization members should be allowed to access the endpoint if the doc is not associated with a team.
    *
-   * @param slug The slug to look for.
    * @param updateDocDto The new values for the doc.
+   * @param doc The doc we're looking for.
    *
    * @returns The updated doc, if it was updated successfully.
-   * @throws {NotFoundException} `docSlugNotFound`. If the doc's slug can't be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${doc}`)
+  @Patch(`:${docUrl}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -149,17 +138,14 @@ export class DocController {
     ConditionalRoleEnum.OrgMemberIfNoTeamInDoc
   )
   async update(
-    @Param(doc) slug: string,
-    @Body() updateDocDto: UpdateDocDto
+    @Body() updateDocDto: UpdateDocDto,
+    @Doc() doc: DocEntity
   ): Promise<DocEntity> {
-    this.logger.log(`Update doc request received for slug: ${slug}`);
-
-    const doc = await this.docService.findOneBySlug(slug);
+    this.logger.log(`Update doc request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.update(doc, updateDocDto);
     this.logger.log(
       `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
     );
-
     return updatedDoc;
   }
 
@@ -167,13 +153,12 @@ export class DocController {
    * The API route for marking a doc as up-to-date.
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
-   * @param slug The slug to look for.
+   * @param doc The doc we're looking for.
    *
    * @returns The updated doc, if it was updated successfully.
-   * @throws {NotFoundException} `docSlugNotFound`. If the doc's slug can't be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(`:${doc}`)
+  @Post(`:${docUrl}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -181,15 +166,12 @@ export class DocController {
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer
   )
-  async markUpToDate(@Param(doc) slug: string): Promise<DocEntity> {
-    this.logger.log(`Mark up-to-date request received for slug: ${slug}`);
-
-    const doc = await this.docService.findOneBySlug(slug);
+  async markUpToDate(@Doc() doc: DocEntity): Promise<DocEntity> {
+    this.logger.log(`Mark up-to-date request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.markUpToDate(doc);
     this.logger.log(
       `Marked doc up-to-date, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
     );
-
     return updatedDoc;
   }
 
@@ -197,12 +179,11 @@ export class DocController {
    * The API route for deleting a doc.
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
-   * @param slug The slug to look for.
+   * @param doc The doc we're looking for.
    *
-   * @throws {NotFoundException} `docSlugNotFound`. If the doc's slug can't be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${doc}`)
+  @Delete(`:${docUrl}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -210,10 +191,9 @@ export class DocController {
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer
   )
-  async delete(@Param(doc) slug: string): Promise<void> {
-    this.logger.log(`Delete doc request received for doc slug: ${slug}`);
-    const doc = await this.docService.findOneBySlug(slug);
+  async delete(@Doc() doc: DocEntity): Promise<void> {
+    this.logger.log(`Delete doc request received for doc slug: ${doc.slug}`);
     await this.docService.delete(doc);
-    this.logger.log(`Deleted doc, slug: ${slug}, ID: ${doc.id}`);
+    this.logger.log(`Deleted doc, slug: ${doc.slug}, ID: ${doc.id}`);
   }
 }

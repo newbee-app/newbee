@@ -2,17 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  auth,
+  authUrl,
   authVersion,
   BaseCreateUserDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
-  login,
-  options,
-  register,
-  webauthn,
+  loginUrl,
+  optionsUrl,
+  registerUrl,
+  webauthnUrl,
 } from '@newbee/shared/data-access';
 import type { User } from '@newbee/shared/util';
 import { magicLinkLogin } from '@newbee/shared/util';
@@ -39,7 +39,7 @@ export class AuthService {
   magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return this.http.post<BaseMagicLinkLoginDto>(
-      `/api/v${authVersion}/${auth}/${magicLinkLogin}/${login}`,
+      `/api/v${authVersion}/${authUrl}/${magicLinkLogin}/${loginUrl}`,
       emailDto
     );
   }
@@ -52,7 +52,7 @@ export class AuthService {
    */
   magicLinkLogin(token: string): Observable<User> {
     return this.http.post<User>(
-      `/api/v${authVersion}/${auth}/${magicLinkLogin}`,
+      `/api/v${authVersion}/${authUrl}/${magicLinkLogin}`,
       { token }
     );
   }
@@ -84,7 +84,7 @@ export class AuthService {
       phoneNumber: phoneNumberString ?? null,
     };
     return this.http.post<BaseUserAndOptionsDto>(
-      `/api/v${authVersion}/${auth}/${webauthn}/${register}`,
+      `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${registerUrl}`,
       createUserDto
     );
   }
@@ -100,7 +100,7 @@ export class AuthService {
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
-      `/api/v${authVersion}/${auth}/${webauthn}/${login}/${options}`,
+      `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}/${optionsUrl}`,
       emailDto
     );
   }
@@ -124,7 +124,7 @@ export class AuthService {
           response,
         };
         return this.http.post<User>(
-          `/api/v${authVersion}/${auth}/${webauthn}/${login}`,
+          `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}`,
           webAuthnLoginDto
         );
       })

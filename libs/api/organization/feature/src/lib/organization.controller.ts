@@ -6,23 +6,24 @@ import {
   Logger,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import {
   CreateOrganizationDto,
-  OrganizationGuard,
   OrganizationService,
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role, User } from '@newbee/api/shared/util';
-import { organization, organizationVersion } from '@newbee/shared/data-access';
+import {
+  organizationUrl,
+  organizationVersion,
+} from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
  */
-@Controller({ path: organization, version: organizationVersion })
+@Controller({ path: organizationUrl, version: organizationVersion })
 export class OrganizationController {
   /**
    * The logger to use when logging anything in the controller.
@@ -73,8 +74,7 @@ export class OrganizationController {
    *
    * @returns The organization associated with the slug, if one exists.
    */
-  @Get(`:${organization}`)
-  @UseGuards(OrganizationGuard)
+  @Get(`:${organizationUrl}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity
@@ -96,12 +96,10 @@ export class OrganizationController {
    * @param updateOrganizationDto The new information for the organization.
    *
    * @returns The updated organization, if it was updated successfully.
-   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Patch(`:${organization}`)
-  @UseGuards(OrganizationGuard)
+  @Patch(`:${organizationUrl}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Organization() organization: OrganizationEntity,
@@ -129,8 +127,7 @@ export class OrganizationController {
    *
    * @param organization The organization to delete.
    */
-  @Delete(`:${organization}`)
-  @UseGuards(OrganizationGuard)
+  @Delete(`:${organizationUrl}`)
   @Role(OrgRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity

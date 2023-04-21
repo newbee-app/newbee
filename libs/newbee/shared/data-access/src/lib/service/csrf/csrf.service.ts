@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BaseCsrfTokenDto,
-  csrf,
+  csrfUrl,
   csrfVersion,
 } from '@newbee/shared/data-access';
 import { Observable } from 'rxjs';
@@ -20,6 +20,6 @@ export class CsrfService {
    * @returns An observable of the CSRF token DTO.
    */
   createToken(): Observable<BaseCsrfTokenDto> {
-    return this.http.get<BaseCsrfTokenDto>(`/api/v${csrfVersion}/${csrf}`);
+    return this.http.get<BaseCsrfTokenDto>(`/api/v${csrfVersion}/${csrfUrl}`);
   }
 }

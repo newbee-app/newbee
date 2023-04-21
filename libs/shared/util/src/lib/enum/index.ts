@@ -8,6 +8,11 @@ export enum OrgRoleEnum {
 }
 
 /**
+ * OrgRoleEnum as a set.
+ */
+export const orgRoleEnumSet: Set<string> = new Set(Object.values(OrgRoleEnum));
+
+/**
  * All of the possible roles a user can have within a team.
  */
 export enum TeamRoleEnum {
@@ -15,6 +20,13 @@ export enum TeamRoleEnum {
   Moderator = 'Team Moderator',
   Owner = 'Team Owner',
 }
+
+/**
+ * TeamRoleEnum as a set.
+ */
+export const teamRoleEnumSet: Set<string> = new Set(
+  Object.values(TeamRoleEnum)
+);
 
 /**
  * All of the possible values for `entry_type` in the NewBee Solr schema.

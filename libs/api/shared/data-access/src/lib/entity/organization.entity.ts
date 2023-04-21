@@ -104,11 +104,17 @@ export class OrganizationEntity implements Organization {
   }
 
   /**
-   * Call `removeAll` on all of the entity's collections.
+   * Call `removeAll` on all of the entity's collections with `orphanRemoval` on.
    * If necessary, call remove all on the individual entities of a collection.
    */
-  async removeAllCollections(): Promise<void> {
-    const collections = [this.teams, this.docs, this.qnas, this.members];
+  async preapreToDelete(): Promise<void> {
+    const collections = [
+      this.teams,
+      this.docs,
+      this.qnas,
+      this.members,
+      this.invites,
+    ];
     for (const collection of collections) {
       if (!collection.isInitialized()) {
         await collection.init();
@@ -116,7 +122,7 @@ export class OrganizationEntity implements Organization {
     }
 
     for (const team of this.teams) {
-      await team.removeAllCollections();
+      await team.prepareToDelete();
     }
 
     for (const collection of collections) {

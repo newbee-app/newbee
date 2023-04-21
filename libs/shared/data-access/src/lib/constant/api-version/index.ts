@@ -39,6 +39,11 @@ export const orgMemberInviteVersion = '1';
 export const teamVersion = '1';
 
 /**
+ * The version of the `team-member` API endpoint.
+ */
+export const teamMemberVersion = '1';
+
+/**
  * The version of the `doc` API endpoint.
  */
 export const docVersion = '1';

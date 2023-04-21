@@ -1,4 +1,11 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DocService } from '@newbee/api/doc/data-access';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
@@ -7,20 +14,41 @@ import { QnaService } from '@newbee/api/qna/data-access';
 import { OrgMemberEntity, PostEntity } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
+  conditionalRoleEnumSet,
+  docKey,
+  organizationKey,
+  orgMemberKey,
   PostRoleEnum,
+  postRoleEnumSet,
+  qnaKey,
   RoleType,
   ROLE_KEY,
+  subjectOrgMemberKey,
+  subjectTeamMemberKey,
+  teamKey,
+  teamMemberKey,
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { doc, organization, qna, team } from '@newbee/shared/data-access';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import {
+  docUrl,
+  organizationUrl,
+  orgMemberUrl,
+  qnaUrl,
+  teamUrl,
+} from '@newbee/shared/data-access';
+import { OrgRoleEnum, teamRoleEnumSet } from '@newbee/shared/util';
 
 /**
  * A guard that prevents users from accessing endpoints annotated with role metadata unless they possess the required roles.
  */
 @Injectable()
 export class RoleGuard implements CanActivate {
+  /**
+   * The logger to use when logging anything in the guard.
+   */
+  private readonly logger = new Logger(RoleGuard.name);
+
   constructor(
     private readonly reflector: Reflector,
     private readonly organizationService: OrganizationService,
@@ -38,107 +66,163 @@ export class RoleGuard implements CanActivate {
    * - The user has a role specified in the roles metadata.
    *
    * @param context The context of the request.
+   *
    * @returns `true` if roles weren't specified or if the user has one of the requisite roles, `false` otherwise.
+   * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`, `teamMemberNotFound`, `docSlugNotFound`, `qnaSlugNotFound`. If any of the services throw a `NotFoundException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If any of the services throws an error.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    let result = false;
+
+    // Get all of the roles annotated at the endpoint
     const roles = this.reflector.get<RoleType[] | undefined>(
       ROLE_KEY,
       context.getHandler()
     );
-    // pass if roles weren't specified
+
+    // If no roles were specified, we should pass
+    // But we don't return right away to annotate the req object with entity data
     if (!roles) {
-      return true;
+      result = true;
     }
 
     const request = context.switchToHttp().getRequest();
     const { params, query, user } = request;
-    const orgSlug: string | undefined = params[organization];
+    const orgSlug: string | undefined = params[organizationUrl];
+
     // fail if org slug wasn't specified but roles were
+    // pass if both org slug and roles weren't specified
     if (!orgSlug) {
-      return false;
+      return result;
     }
 
-    const teamSlug: string | undefined = params[team]
-      ? params[team]
-      : query[team];
-    const docSlug: string | undefined = params[doc];
-    const qnaSlug: string | undefined = params[qna];
+    const orgMemberSlug: string | undefined = params[orgMemberUrl];
+    const teamSlug: string | undefined = params[teamUrl]
+      ? params[teamUrl]
+      : query[teamUrl];
+    const docSlug: string | undefined = params[docUrl];
+    const qnaSlug: string | undefined = params[qnaUrl];
 
     try {
       const organization = await this.organizationService.findOneBySlug(
         orgSlug
       );
+      request[organizationKey] = organization;
+
       const orgMember = await this.orgMemberService.findOneByUserAndOrg(
         user,
         organization
       );
+      request[orgMemberKey] = orgMember;
 
-      if (roles.includes(orgMember.role)) {
-        return true;
-      }
-
+      // If roles includes the org member's role or specific conditional requirements are met, then pass
       if (
-        roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInReq) &&
-        orgMember.role === OrgRoleEnum.Member &&
-        !teamSlug
+        roles?.includes(orgMember.role) ||
+        (roles?.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInReq) &&
+          orgMember.role === OrgRoleEnum.Member &&
+          !teamSlug)
       ) {
-        return true;
+        result = true;
       }
 
-      // if team name was specified, see if team member roles will help user pass
+      // If there are no roles related to teams, posts, or specific conditional requirements and we are not passing yet, just fail as the user cannot possibly have adequate permissions
+      if (
+        !roles?.some(
+          (role) =>
+            teamRoleEnumSet.has(role) ||
+            postRoleEnumSet.has(role) ||
+            conditionalRoleEnumSet.has(role)
+        ) &&
+        !result
+      ) {
+        return result;
+      }
+
+      if (orgMemberSlug) {
+        const subjectOrgMember =
+          await this.orgMemberService.findOneByOrgAndSlug(
+            organization,
+            orgMemberSlug
+          );
+        request[subjectOrgMemberKey] = subjectOrgMember;
+      }
+
+      // If team name was specified, see if team member roles will help user pass
+      // There is a chance that a team member does not exist, as it's possible the user is an org member with adequate permissions to affect team data, so we must handle that
       if (teamSlug) {
         const team = await this.teamService.findOneBySlug(
           organization,
           teamSlug
         );
+        request[teamKey] = team;
+
         const teamMember =
-          await this.teamMemberService.findOneByOrgMemberAndTeam(
+          await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
             team
           );
+        if (teamMember) {
+          request[teamMemberKey] = teamMember;
+          if (roles?.includes(teamMember.role)) {
+            result = true;
+          }
+        }
 
-        if (roles.includes(teamMember.role)) {
-          return true;
+        if (orgMemberSlug) {
+          const subjectOrgMember: OrgMemberEntity =
+            request[subjectOrgMemberKey];
+          const subjectTeamMember =
+            await this.teamMemberService.findOneByOrgMemberAndTeam(
+              subjectOrgMember,
+              team
+            );
+          request[subjectTeamMemberKey] = subjectTeamMember;
         }
       }
 
       // if doc slug was specified, see if doc roles will help user pass
       if (docSlug) {
         const doc = await this.docService.findOneBySlug(docSlug);
-        if (RoleGuard.checkPostRoles(doc, orgMember, roles)) {
-          return true;
-        }
+        request[docKey] = doc;
 
         if (
-          roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInDoc) &&
-          orgMember.role === OrgRoleEnum.Member &&
-          !doc.team
+          (roles && RoleGuard.checkPostRoles(doc, orgMember, roles)) ||
+          (roles?.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInDoc) &&
+            orgMember.role === OrgRoleEnum.Member &&
+            !doc.team)
         ) {
-          return true;
+          result = true;
         }
       }
 
       // if qna slug was specified, see if qna roles will help users pass
       if (qnaSlug) {
         const qna = await this.qnaService.findOneBySlug(qnaSlug);
-        if (RoleGuard.checkPostRoles(qna, orgMember, roles)) {
-          return true;
-        }
+        request[qnaKey] = qna;
 
         if (
-          roles.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInQna) &&
-          orgMember.role === OrgRoleEnum.Member &&
-          !qna.team
+          (roles && RoleGuard.checkPostRoles(qna, orgMember, roles)) ||
+          (roles?.includes(ConditionalRoleEnum.OrgMemberIfNoTeamInQna) &&
+            orgMember.role === OrgRoleEnum.Member &&
+            !qna.team)
         ) {
-          return true;
+          result = true;
         }
+      }
+    } catch (err) {
+      this.logger.error(err);
+
+      if (
+        err instanceof NotFoundException ||
+        err instanceof InternalServerErrorException
+      ) {
+        throw err;
       }
 
       return false;
-    } catch (err) {
-      // fail if any of the services throw an error
-      return false;
     }
+
+    return result;
   }
 
   /**

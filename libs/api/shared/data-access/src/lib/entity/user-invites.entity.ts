@@ -57,10 +57,11 @@ export class UserInvitesEntity {
   }
 
   /**
-   * Calls `removeAll` on all of the entity's collections.
-   * If necessary, calls remove all on the individual entities of a collection.
+   * Prepares to delete this instance by calling `removeAll` on all of the entity's collections with `orphanRemoval` on.
+   *
+   * @throws {Error} Any of the errors `init` can throw.
    */
-  async removeAllCollections(): Promise<void> {
+  async prepareToDelete(): Promise<void> {
     if (!this.orgMemberInvites.isInitialized()) {
       await this.orgMemberInvites.init();
     }

@@ -1,5 +1,4 @@
-import { Body, Controller, Logger, Post, UseGuards } from '@nestjs/common';
-import { OrganizationGuard } from '@newbee/api/organization/data-access';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import {
   QueryDto,
   SearchService,
@@ -10,18 +9,17 @@ import { Organization, Role } from '@newbee/api/shared/util';
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
-  organization,
-  search,
+  organizationUrl,
+  searchUrl,
   searchVersion,
-  suggest,
+  suggestUrl,
 } from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 @Controller({
-  path: `${organization}/:${organization}`,
+  path: `${organizationUrl}/:${organizationUrl}`,
   version: searchVersion,
 })
-@UseGuards(OrganizationGuard)
 export class SearchController {
   /**
    * The logger to use when logging anything in the controller.
@@ -40,7 +38,7 @@ export class SearchController {
    * @returns The results of the search.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(search)
+  @Post(searchUrl)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async search(
     @Body() queryDto: QueryDto,
@@ -68,7 +66,7 @@ export class SearchController {
    * @returns The suggestions.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(suggest)
+  @Post(suggestUrl)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async suggest(
     @Body() suggestDto: SuggestDto,

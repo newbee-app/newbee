@@ -66,11 +66,6 @@ export class OrganizationService {
 
     try {
       await this.organizationRepository.persistAndFlush(organization);
-
-      // Shouldn't execute as it's already initialized, but keep it here for safety
-      if (!organization.members.isInitialized()) {
-        await organization.members.init();
-      }
     } catch (err) {
       this.logger.error(err);
 
@@ -87,6 +82,11 @@ export class OrganizationService {
         numShards: 1,
         config: newOrgConfigset,
       });
+
+      // Shouldn't execute as it's already initialized, but keep it here for safety
+      if (!organization.members.isInitialized()) {
+        await organization.members.init();
+      }
 
       for (const orgMember of organization.members) {
         await this.solrCli.addDocs(
@@ -176,7 +176,7 @@ export class OrganizationService {
    */
   async delete(organization: OrganizationEntity): Promise<void> {
     try {
-      await organization.removeAllCollections();
+      await organization.preapreToDelete();
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);

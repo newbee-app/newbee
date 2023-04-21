@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
@@ -16,7 +17,10 @@ import {
   testBaseMagicLinkLoginDto1,
   testBaseWebAuthnLoginDto1,
 } from '@newbee/shared/data-access';
-import { testPublicKeyCredentialRequestOptions1 } from '@newbee/shared/util';
+import {
+  internalServerError,
+  testPublicKeyCredentialRequestOptions1,
+} from '@newbee/shared/util';
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 
@@ -119,14 +123,24 @@ describe('AuthController', () => {
   });
 
   describe('magicLinkLoginLogin', () => {
-    it('should send a link to the user', async () => {
-      await expect(
-        controller.magicLinkLoginLogin(testBaseEmailDto1)
-      ).resolves.toEqual(testBaseMagicLinkLoginDto1);
+    afterEach(() => {
       expect(strategy.send).toBeCalledTimes(1);
       expect(strategy.send).toBeCalledWith({
         email: testBaseEmailDto1.email,
       });
+    });
+
+    it('should send a link to the user', async () => {
+      await expect(
+        controller.magicLinkLoginLogin(testBaseEmailDto1)
+      ).resolves.toEqual(testBaseMagicLinkLoginDto1);
+    });
+
+    it('should throw an InternalServerErrorException if send throws an error', async () => {
+      jest.spyOn(strategy, 'send').mockRejectedValue(new Error('send'));
+      await expect(
+        controller.magicLinkLoginLogin(testBaseEmailDto1)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 

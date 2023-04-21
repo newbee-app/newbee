@@ -240,7 +240,7 @@ describe('OrganizationService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testOrganizationEntity1.removeAllCollections).toBeCalledTimes(1);
+      expect(testOrganizationEntity1.preapreToDelete).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
     });

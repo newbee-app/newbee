@@ -1,6 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrganizationService } from '@newbee/api/organization/data-access';
 import { SearchService } from '@newbee/api/search/data-access';
 import { testOrganizationEntity1 } from '@newbee/api/shared/data-access';
 import {
@@ -14,7 +13,6 @@ import { SearchController } from './search.controller';
 describe('SearchController', () => {
   let controller: SearchController;
   let service: SearchService;
-  let organizationService: OrganizationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,22 +25,16 @@ describe('SearchController', () => {
             suggest: jest.fn().mockResolvedValue(testBaseSuggestResultDto1),
           }),
         },
-        {
-          provide: OrganizationService,
-          useValue: createMock<OrganizationService>(),
-        },
       ],
     }).compile();
 
     controller = module.get<SearchController>(SearchController);
     service = module.get<SearchService>(SearchService);
-    organizationService = module.get<OrganizationService>(OrganizationService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
-    expect(organizationService).toBeDefined();
   });
 
   describe('search', () => {

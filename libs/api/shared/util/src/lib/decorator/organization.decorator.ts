@@ -1,14 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { organization } from '@newbee/shared/data-access';
+import { organizationKey } from '../constant';
 
 /**
- * The decorator used to extract the `OrganizationEntity` appended to the request by the `OrgGuard`.
+ * The decorator used to extract the `OrganizationEntity` appended to the request by the `RoleGuard`.
  * Used in the parameter of a controller function.
  */
 export const Organization = createParamDecorator(
-  (data: string, ctx: ExecutionContext) => {
+  (data: string | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const org = request[organization];
-    return data ? org?.[data] : org;
+    const organization = request[organizationKey];
+    return data ? organization?.[data] : organization;
   }
 );

@@ -111,7 +111,7 @@ export class TeamEntity implements Team {
    * Call `removeAll` on all of the entity's collections.
    * If necessary, call remove all of the individual entities of a collection.
    */
-  async removeAllCollections(): Promise<void> {
+  async prepareToDelete(): Promise<void> {
     const collections = [this.docs, this.qnas, this.teamMembers];
     for (const collection of collections) {
       if (!collection.isInitialized()) {

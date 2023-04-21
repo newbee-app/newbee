@@ -9,6 +9,13 @@ export enum PostRoleEnum {
 }
 
 /**
+ * PostRoleEnum as a set.
+ */
+export const postRoleEnumSet: Set<string> = new Set(
+  Object.values(PostRoleEnum)
+);
+
+/**
  * Some special cases for user roles that won't be saved to the database, but is useful in designating roles for API endpoints.
  */
 export enum ConditionalRoleEnum {
@@ -27,6 +34,13 @@ export enum ConditionalRoleEnum {
    */
   OrgMemberIfNoTeamInDoc = 'Org Member If No Team In Doc',
 }
+
+/**
+ * ConditionalRoleEnum as a set.
+ */
+export const conditionalRoleEnumSet: Set<string> = new Set(
+  Object.values(ConditionalRoleEnum)
+);
 
 /**
  * All of the possible roles a user can have, for use in designating roles for API endpoints.

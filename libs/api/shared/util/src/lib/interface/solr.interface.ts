@@ -58,7 +58,7 @@ export interface SolrDocFields {
   /**
    * The user that created the post, if the doc is a doc or a qna.
    */
-  creator?: string;
+  creator?: string | null;
 
   /**
    * The user responsible for maintaining the post, if the doc is a doc or a qna.
@@ -129,6 +129,11 @@ export interface SolrDoc extends SolrDocFields, DocResponse {
    * @inheritdoc
    */
   marked_up_to_date_at?: string;
+
+  /**
+   * @inheritdoc
+   */
+  creator?: string;
 
   /**
    * @inheritdoc

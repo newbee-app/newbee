@@ -33,7 +33,6 @@ import {
   orgMemberAlreadyBadRequest,
   orgMemberInvitedBadRequest,
   orgMemberInviteTokenNotFound,
-  userEmailNotFound,
 } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { OrgMemberInviteService } from './org-member-invite.service';
@@ -89,9 +88,7 @@ describe('OrgMemberInviteService', () => {
         {
           provide: UserService,
           useValue: createMock<UserService>({
-            findOneByEmail: jest
-              .fn()
-              .mockRejectedValue(new NotFoundException(userEmailNotFound)),
+            findOneByEmailOrNull: jest.fn().mockResolvedValue(null),
           }),
         },
         {
@@ -106,9 +103,6 @@ describe('OrgMemberInviteService', () => {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
             create: jest.fn().mockResolvedValue(testOrgMemberEntity1),
-            findOneByUserAndOrg: jest
-              .fn()
-              .mockResolvedValue(testOrgMemberEntity1),
           }),
         },
         {
@@ -155,24 +149,24 @@ describe('OrgMemberInviteService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(userService.findOneByEmail).toBeCalledTimes(1);
-      expect(userService.findOneByEmail).toBeCalledWith(testUserEntity1.email);
-      expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
-      expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
-        testUserEntity1,
-        testOrganizationEntity1
+      expect(userService.findOneByEmailOrNull).toBeCalledTimes(1);
+      expect(userService.findOneByEmailOrNull).toBeCalledWith(
+        testUserEntity1.email
       );
     });
 
     it('should throw a BadRequestException if invitee is already an org member', async () => {
       jest
-        .spyOn(userService, 'findOneByEmail')
+        .spyOn(userService, 'findOneByEmailOrNull')
         .mockResolvedValue(testUserEntity1);
+      jest
+        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
+        .mockResolvedValue(testOrgMemberEntity1);
       await expect(
         service.create(
           testOrgMemberInviteEntity1.userInvites.email,
-          testUserEntity1,
           testOrgMemberInviteEntity1.role,
+          testOrgMemberEntity1,
           testOrganizationEntity1
         )
       ).rejects.toThrow(new BadRequestException(orgMemberAlreadyBadRequest));
@@ -204,8 +198,8 @@ describe('OrgMemberInviteService', () => {
         await expect(
           service.create(
             testOrgMemberInviteEntity1.userInvites.email,
-            testUserEntity1,
             testOrgMemberInviteEntity1.role,
+            testOrgMemberEntity1,
             testOrganizationEntity1
           )
         ).resolves.toEqual(testOrgMemberInviteEntity1);
@@ -220,8 +214,8 @@ describe('OrgMemberInviteService', () => {
         await expect(
           service.create(
             testOrgMemberInviteEntity1.userInvites.email,
-            testUserEntity1,
             testOrgMemberInviteEntity1.role,
+            testOrgMemberEntity1,
             testOrganizationEntity1
           )
         ).rejects.toThrow(new BadRequestException(orgMemberInvitedBadRequest));
@@ -234,8 +228,8 @@ describe('OrgMemberInviteService', () => {
         await expect(
           service.create(
             testOrgMemberInviteEntity1.userInvites.email,
-            testUserEntity1,
             testOrgMemberInviteEntity1.role,
+            testOrgMemberEntity1,
             testOrganizationEntity1
           )
         ).rejects.toThrow(
@@ -250,8 +244,8 @@ describe('OrgMemberInviteService', () => {
         await expect(
           service.create(
             testOrgMemberInviteEntity1.userInvites.email,
-            testUserEntity1,
             testOrgMemberInviteEntity1.role,
+            testOrgMemberEntity1,
             testOrganizationEntity1
           )
         ).rejects.toThrow(

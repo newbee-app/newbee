@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -57,6 +57,7 @@ const mockUserEntity = UserEntity as jest.Mock;
 describe('UserService', () => {
   let service: UserService;
   let repository: EntityRepository<UserEntity>;
+  let em: EntityManager;
   let userInvitesService: UserInvitesService;
 
   const testUpdatedUser = { ...testUserEntity1, ...testBaseUpdateUserDto1 };
@@ -69,8 +70,13 @@ describe('UserService', () => {
           provide: getRepositoryToken(UserEntity),
           useValue: createMock<EntityRepository<UserEntity>>({
             findOneOrFail: jest.fn().mockResolvedValue(testUserEntity1),
+            findOne: jest.fn().mockResolvedValue(testUserEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedUser),
           }),
+        },
+        {
+          provide: EntityManager,
+          useValue: createMock<EntityManager>(),
         },
         {
           provide: UserInvitesService,
@@ -95,6 +101,7 @@ describe('UserService', () => {
     repository = module.get<EntityRepository<UserEntity>>(
       getRepositoryToken(UserEntity)
     );
+    em = module.get<EntityManager>(EntityManager);
     userInvitesService = module.get<UserInvitesService>(UserInvitesService);
 
     jest.clearAllMocks();
@@ -108,6 +115,7 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(em).toBeDefined();
     expect(userInvitesService).toBeDefined();
   });
 
@@ -213,6 +221,28 @@ describe('UserService', () => {
     });
   });
 
+  describe('findOneByEmailOrNull', () => {
+    afterEach(() => {
+      expect(repository.findOne).toBeCalledTimes(1);
+      expect(repository.findOne).toBeCalledWith({
+        email: testUserEntity1.email,
+      });
+    });
+
+    it('should get a single user by email', async () => {
+      await expect(
+        service.findOneByEmailOrNull(testUserEntity1.email)
+      ).resolves.toEqual(testUserEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
+      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+      await expect(
+        service.findOneByEmailOrNull(testUserEntity1.email)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
   describe('update', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
@@ -250,7 +280,13 @@ describe('UserService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testUserEntity1.removeAllCollections).toBeCalledTimes(1);
+      expect(repository.populate).toBeCalledTimes(1);
+      expect(repository.populate).toBeCalledWith(testUserEntity1, [
+        'organizations',
+      ]);
+      expect(testUserEntity1.safeToDelete).toBeCalledTimes(1);
+      expect(testUserEntity1.safeToDelete).toBeCalledWith(em);
+      expect(testUserEntity1.prepareToDelete).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserEntity1);
     });

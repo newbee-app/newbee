@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig, Public } from '@newbee/api/shared/util';
 import {
   BaseCsrfTokenDto,
-  csrf,
+  csrfUrl,
   csrfVersion,
 } from '@newbee/shared/data-access';
 import type { CsrfTokenCreator } from 'csrf-csrf';
@@ -12,7 +12,7 @@ import type { Request, Response } from 'express';
 /**
  * The controller that provides API route for generating CSRF tokens.
  */
-@Controller({ path: csrf, version: csrfVersion })
+@Controller({ path: csrfUrl, version: csrfVersion })
 export class CsrfController {
   /**
    * The logger to use to log anything in the controller.

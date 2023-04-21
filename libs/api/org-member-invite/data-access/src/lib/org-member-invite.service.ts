@@ -64,27 +64,24 @@ export class OrgMemberInviteService {
    * Sends an email to the user inviting them to join the organization.
    *
    * @param email The email of the invitee.
-   * @param user The inviter.
    * @param role The role the invitee will have in the organization.
+   * @param inviter The inviter.
    * @param organization The organization the invitee will be invited to.
    *
    * @returns A new `OrgMemberInviteEntity` instance.
+   * @throws {ForbiddenException} `forbiddenError`. If the inviter has a lower role than the invitee.
    * @throws {BadRequestException} `orgMemberAlreadyBadRequest`, `orgMemberInvitedBadRequest`. If the invitee is already an org member or if they've already been invited to the organization.
-   * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`. If the organization or the inviter could not be found.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async create(
     email: string,
-    user: UserEntity,
     role: OrgRoleEnum,
+    inviter: OrgMemberEntity,
     organization: OrganizationEntity
   ): Promise<OrgMemberInviteEntity> {
+    this.orgMemberService.checkRequester(inviter.role, role);
     await this.checkIfOrgMember(organization, email);
 
-    const inviter = await this.orgMemberService.findOneByUserAndOrg(
-      user,
-      organization
-    );
     const userInvites = await this.userInvitesService.findOrCreateOneByEmail(
       email
     );
@@ -242,17 +239,20 @@ export class OrgMemberInviteService {
     organization: OrganizationEntity,
     email: string
   ): Promise<void> {
-    try {
-      const user = await this.userService.findOneByEmail(email);
-      await this.orgMemberService.findOneByUserAndOrg(user, organization);
-      throw new BadRequestException(orgMemberAlreadyBadRequest);
-    } catch (err) {
-      if (err instanceof NotFoundException) {
-        return;
-      }
-
-      throw err;
+    const user = await this.userService.findOneByEmailOrNull(email);
+    if (!user) {
+      return;
     }
+
+    const orgMember = await this.orgMemberService.findOneByUserAndOrgOrNull(
+      user,
+      organization
+    );
+    if (!orgMember) {
+      return;
+    }
+
+    throw new BadRequestException(orgMemberAlreadyBadRequest);
   }
 
   /**

@@ -105,7 +105,10 @@ export class UserChallengeService {
    *
    * @param id The user challenge ID to look for.
    * @param challenge The new challenge string.
+   *
    * @returns The updated `UserChallengeEntity` instance.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateById(
     id: string,
@@ -121,7 +124,10 @@ export class UserChallengeService {
    *
    * @param email The email of the user whose challenge we're looking for.
    * @param challenge The new chllange string.
+   *
    * @returns The updated `UserChallengeEntity` instance.
+   * @throws {NotFoundException} `userChallengeEmailNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateByEmail(
     email: string,

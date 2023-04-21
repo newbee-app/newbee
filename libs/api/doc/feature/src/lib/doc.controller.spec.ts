@@ -1,16 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocService } from '@newbee/api/doc/data-access';
-import { OrgMemberService } from '@newbee/api/org-member/data-access';
-import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   testDocEntity1,
   testOrganizationEntity1,
   testOrgMemberEntity1,
   testTeamEntity1,
-  testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { TeamService } from '@newbee/api/team/data-access';
 import {
   testBaseCreateDocDto1,
   testBaseTeamSlugDto1,
@@ -21,9 +17,6 @@ import { DocController } from './doc.controller';
 describe('DocController', () => {
   let controller: DocController;
   let service: DocService;
-  let orgMemberService: OrgMemberService;
-  let teamService: TeamService;
-  let organizationService: OrganizationService;
 
   const testUpdatedDocEntity = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
 
@@ -35,66 +28,32 @@ describe('DocController', () => {
           provide: DocService,
           useValue: createMock<DocService>({
             create: jest.fn().mockResolvedValue(testDocEntity1),
-            findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedDocEntity),
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedDocEntity),
           }),
-        },
-        {
-          provide: OrgMemberService,
-          useValue: createMock<OrgMemberService>({
-            findOneByUserAndOrg: jest
-              .fn()
-              .mockResolvedValue(testOrgMemberEntity1),
-          }),
-        },
-        {
-          provide: TeamService,
-          useValue: createMock<TeamService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
-          }),
-        },
-        {
-          provide: OrganizationService,
-          useValue: createMock<OrganizationService>(),
         },
       ],
     }).compile();
 
     controller = module.get<DocController>(DocController);
     service = module.get<DocService>(DocService);
-    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
-    teamService = module.get<TeamService>(TeamService);
-    organizationService = module.get<OrganizationService>(OrganizationService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
-    expect(orgMemberService).toBeDefined();
-    expect(teamService).toBeDefined();
-    expect(organizationService).toBeDefined();
   });
 
   it('create should create a doc', async () => {
     await expect(
       controller.create(
         testBaseCreateDocDto1,
-        testUserEntity1,
+        testOrgMemberEntity1,
         testOrganizationEntity1,
+        testTeamEntity1,
         testBaseTeamSlugDto1
       )
     ).resolves.toEqual(testDocEntity1);
-    expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
-    expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
-      testUserEntity1,
-      testOrganizationEntity1
-    );
-    expect(teamService.findOneBySlug).toBeCalledTimes(1);
-    expect(teamService.findOneBySlug).toBeCalledWith(
-      testOrganizationEntity1,
-      testTeamEntity1.slug
-    );
     expect(service.create).toBeCalledTimes(1);
     expect(service.create).toBeCalledWith(
       testBaseCreateDocDto1,
@@ -103,43 +62,34 @@ describe('DocController', () => {
     );
   });
 
-  describe('finds doc', () => {
-    afterEach(() => {
-      expect(service.findOneBySlug).toBeCalledTimes(1);
-      expect(service.findOneBySlug).toBeCalledWith(testDocEntity1.slug);
-    });
+  it('get should get a doc', async () => {
+    await expect(controller.get(testDocEntity1)).resolves.toEqual(
+      testDocEntity1
+    );
+  });
 
-    it('get should get a doc', async () => {
-      await expect(controller.get(testDocEntity1.slug)).resolves.toEqual(
-        testDocEntity1
-      );
-    });
+  it('update should update a doc', async () => {
+    await expect(
+      controller.update(testBaseUpdateDocDto1, testDocEntity1)
+    ).resolves.toEqual(testUpdatedDocEntity);
+    expect(service.update).toBeCalledTimes(1);
+    expect(service.update).toBeCalledWith(
+      testDocEntity1,
+      testBaseUpdateDocDto1
+    );
+  });
 
-    it('update should update a doc', async () => {
-      await expect(
-        controller.update(testDocEntity1.slug, testBaseUpdateDocDto1)
-      ).resolves.toEqual(testUpdatedDocEntity);
-      expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(
-        testDocEntity1,
-        testBaseUpdateDocDto1
-      );
-    });
+  it('markUpToDate should mark a doc as up-to-date', async () => {
+    await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
+      testUpdatedDocEntity
+    );
+    expect(service.markUpToDate).toBeCalledTimes(1);
+    expect(service.markUpToDate).toBeCalledWith(testDocEntity1);
+  });
 
-    it('markUpToDate should mark a doc as up-to-date', async () => {
-      await expect(
-        controller.markUpToDate(testDocEntity1.slug)
-      ).resolves.toEqual(testUpdatedDocEntity);
-      expect(service.markUpToDate).toBeCalledTimes(1);
-      expect(service.markUpToDate).toBeCalledWith(testDocEntity1);
-    });
-
-    it('delete should delete a doc', async () => {
-      await expect(
-        controller.delete(testDocEntity1.slug)
-      ).resolves.toBeUndefined();
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testDocEntity1);
-    });
+  it('delete should delete a doc', async () => {
+    await expect(controller.delete(testDocEntity1)).resolves.toBeUndefined();
+    expect(service.delete).toBeCalledTimes(1);
+    expect(service.delete).toBeCalledWith(testDocEntity1);
   });
 });

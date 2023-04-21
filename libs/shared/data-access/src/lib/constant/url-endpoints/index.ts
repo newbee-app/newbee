@@ -4,103 +4,109 @@ export { magicLinkLogin } from '@newbee/shared/util';
 /**
  * The URL endpoint associated with authentication and authorization.
  */
-export const auth = 'auth';
+export const authUrl = 'auth';
 
 /**
  * The URL endpoint associated with WebAuthn authentication.
  */
-export const webauthn = 'webauthn';
+export const webauthnUrl = 'webauthn';
 
 /**
  * The URL endpoint for logging in.
  */
-export const login = 'login';
+export const loginUrl = 'login';
 
 /**
  * The URL endpoint for registering.
  */
-export const register = 'register';
+export const registerUrl = 'register';
 
 // AUTHENTICATOR endpoints
 /**
  * The URL endpoint assocaited with Authenticator.
  */
-export const authenticator = 'authenticator';
+export const authenticatorUrl = 'authenticator';
 
 /**
  * The URL endpoint for creationg credential options.
  */
-export const options = 'options';
+export const optionsUrl = 'options';
 
 // CSRF endpoints
 /**
  * The URL endpoint associated with generating and receiving a CSRF token.
  */
-export const csrf = 'csrf';
+export const csrfUrl = 'csrf';
 
 // USER endpoints
 /**
  * The URL endpoint associated with User.
  */
-export const user = 'user';
+export const userUrl = 'user';
 
 // ORGANIZATION endpoints
 /**
  * The URL endpoint associated with Organization.
  */
-export const organization = 'org';
+export const organizationUrl = 'org';
 
 // TEAM endpoints
 /**
  * The URL endpoint associated with Team.
  */
-export const team = 'team';
+export const teamUrl = 'team';
 
 // DOC endpoints
 /**
  * The URL endpoint associated with Doc.
  */
-export const doc = 'doc';
+export const docUrl = 'doc';
 
 // QNA endpoints
 /**
  * The URL endpoint associated with Qna.
  */
-export const qna = 'qna';
+export const qnaUrl = 'qna';
 
 /**
  * The URL endpoint associated with the question portion of a Qna.
  */
-export const question = 'question';
+export const questionUrl = 'question';
 
 /**
  * The URL endpoint associated with the answer portion of a Qna.
  */
-export const answer = 'answer';
+export const answerUrl = 'answer';
+
+// ORG-MEMBER endpoints
+/**
+ * The URL endpoint associated with OrgMember.
+ */
+export const orgMemberUrl = 'member';
 
 // SEARCH endpoints
 /**
  * The URL endpoint associated with search.
  */
-export const search = 'search';
+export const searchUrl = 'search';
 
 /**
  * The URL endpoint associated with suggestions.
  */
-export const suggest = 'suggest';
+export const suggestUrl = 'suggest';
 
 // ORG-MEMBER-INVITE endpoints
 /**
  * The URL endpoint associated with invites.
  */
-export const invite = 'invite';
+export const inviteUrl = 'invite';
 
 /**
  * The URL endpoint associated with accepting an invite.
  */
-export const accept = 'accept';
+export const acceptUrl = 'accept';
 
 /**
  * The URL endpoint associated with declining an invite.
  */
-export const decline = 'decline';
+export const declineUrl = 'decline';

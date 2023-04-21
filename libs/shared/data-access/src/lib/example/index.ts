@@ -1,5 +1,6 @@
 import {
   OrgRoleEnum,
+  TeamRoleEnum,
   testAuthenticationCredential1,
   testDoc1,
   testOrganization1,
@@ -18,6 +19,7 @@ import {
   BaseCreateOrgMemberInviteDto,
   BaseCreateQnaDto,
   BaseCreateTeamDto,
+  BaseCreateTeamMemberDto,
   BaseCreateUserDto,
   BaseCsrfTokenDto,
   BaseEmailDto,
@@ -34,9 +36,11 @@ import {
   BaseUpdateAnswerDto,
   BaseUpdateDocDto,
   BaseUpdateOrganizationDto,
+  BaseUpdateOrgMemberDto,
   BaseUpdateQnaDto,
   BaseUpdateQuestionDto,
   BaseUpdateTeamDto,
+  BaseUpdateTeamMemberDto,
   BaseUpdateUserDto,
   BaseUserAndOptionsDto,
   BaseWebAuthnLoginDto,
@@ -203,6 +207,23 @@ export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
 };
 
 /**
+ * An example instance of BaseCreateTeamMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCreateTeamMemberDto1: BaseCreateTeamMemberDto = {
+  role: testTeamMember1.role,
+  orgMemberSlug: testOrgMember1.slug,
+};
+
+/**
+ * An example instance of BaseUpdateTeamMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateTeamMemberDto1: BaseUpdateTeamMemberDto = {
+  role: TeamRoleEnum.Moderator,
+};
+
+/**
  * An example instance of BaseTeamMemberDto.
  * Strictly for use in testing.
  */
@@ -223,12 +244,19 @@ export const testBaseOrgMemberDto1: BaseOrgMemberDto = {
   name: testUser1.name,
   displayName: testUser1.displayName,
   phoneNumber: testUser1.phoneNumber,
-  active: testUser1.active,
   teams: [testBaseTeamMemberDto1],
   createdDocs: [testDoc1],
   maintainedDocs: [testDoc1],
   createdQnas: [testQna1],
   maintainedQnas: [testQna1],
+};
+
+/**
+ * An example instance of BaseUpdateOrgMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseUpdateOrgMemberDto1: BaseUpdateOrgMemberDto = {
+  role: OrgRoleEnum.Moderator,
 };
 
 /**

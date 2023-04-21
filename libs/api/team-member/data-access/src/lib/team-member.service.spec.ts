@@ -4,9 +4,10 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
+  ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,7 +19,9 @@ import {
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
 import {
+  forbiddenError,
   internalServerError,
+  OrgRoleEnum,
   teamMemberNotFound,
   TeamRoleEnum,
   userAlreadyTeamMemberBadRequest,
@@ -35,6 +38,7 @@ const mockTeamMemberEntity = TeamMemberEntity as jest.Mock;
 describe('TeamMemberService', () => {
   let service: TeamMemberService;
   let repository: EntityRepository<TeamMemberEntity>;
+  let em: EntityManager;
 
   const testUpdatedTeamMember = {
     ...testTeamMemberEntity1,
@@ -48,9 +52,15 @@ describe('TeamMemberService', () => {
         {
           provide: getRepositoryToken(TeamMemberEntity),
           useValue: createMock<EntityRepository<TeamMemberEntity>>({
+            findOne: jest.fn().mockResolvedValue(testTeamMemberEntity1),
             findOneOrFail: jest.fn().mockResolvedValue(testTeamMemberEntity1),
+            find: jest.fn().mockResolvedValue([testTeamMemberEntity1]),
             assign: jest.fn().mockResolvedValue(testUpdatedTeamMember),
           }),
+        },
+        {
+          provide: EntityManager,
+          useValue: createMock<EntityManager>(),
         },
       ],
     }).compile();
@@ -59,6 +69,7 @@ describe('TeamMemberService', () => {
     repository = module.get<EntityRepository<TeamMemberEntity>>(
       getRepositoryToken(TeamMemberEntity)
     );
+    em = module.get<EntityManager>(EntityManager);
 
     jest.clearAllMocks();
     mockTeamMemberEntity.mockReturnValue(testTeamMemberEntity1);
@@ -67,6 +78,7 @@ describe('TeamMemberService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(em).toBeDefined();
   });
 
   describe('create', () => {
@@ -86,7 +98,9 @@ describe('TeamMemberService', () => {
         service.create(
           testOrgMemberEntity1,
           testTeamEntity1,
-          testTeamMemberEntity1.role
+          testTeamMemberEntity1.role,
+          OrgRoleEnum.Owner,
+          null
         )
       ).resolves.toEqual(testTeamMemberEntity1);
     });
@@ -99,7 +113,9 @@ describe('TeamMemberService', () => {
         service.create(
           testOrgMemberEntity1,
           testTeamEntity1,
-          testTeamMemberEntity1.role
+          testTeamMemberEntity1.role,
+          OrgRoleEnum.Owner,
+          null
         )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
@@ -114,7 +130,9 @@ describe('TeamMemberService', () => {
         service.create(
           testOrgMemberEntity1,
           testTeamEntity1,
-          testTeamMemberEntity1.role
+          testTeamMemberEntity1.role,
+          OrgRoleEnum.Owner,
+          null
         )
       ).rejects.toThrow(
         new BadRequestException(userAlreadyTeamMemberBadRequest)
@@ -131,7 +149,7 @@ describe('TeamMemberService', () => {
       });
     });
 
-    it('should find a user organization', async () => {
+    it('should find a team member', async () => {
       await expect(
         service.findOneByOrgMemberAndTeam(testOrgMemberEntity1, testTeamEntity1)
       ).resolves.toEqual(testTeamMemberEntity1);
@@ -156,6 +174,35 @@ describe('TeamMemberService', () => {
     });
   });
 
+  describe('findOneByOrgMemberAndTeamOrNull', () => {
+    afterEach(() => {
+      expect(repository.findOne).toBeCalledTimes(1);
+      expect(repository.findOne).toBeCalledWith({
+        orgMember: testOrgMemberEntity1,
+        team: testTeamEntity1,
+      });
+    });
+
+    it('should find a team member', async () => {
+      await expect(
+        service.findOneByOrgMemberAndTeamOrNull(
+          testOrgMemberEntity1,
+          testTeamEntity1
+        )
+      ).resolves.toEqual(testTeamMemberEntity1);
+    });
+
+    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
+      jest.spyOn(repository, 'findOne').mockRejectedValue(new Error('findOne'));
+      await expect(
+        service.findOneByOrgMemberAndTeamOrNull(
+          testOrgMemberEntity1,
+          testTeamEntity1
+        )
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
   describe('updateRole', () => {
     afterEach(() => {
       expect(repository.assign).toBeCalledTimes(1);
@@ -167,27 +214,39 @@ describe('TeamMemberService', () => {
 
     it(`should update an org member's role`, async () => {
       await expect(
-        service.updateRole(testTeamMemberEntity1, testUpdatedTeamMember.role)
+        service.updateRole(
+          testTeamMemberEntity1,
+          testUpdatedTeamMember.role,
+          OrgRoleEnum.Owner,
+          null
+        )
       ).resolves.toEqual(testUpdatedTeamMember);
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.updateRole(testTeamMemberEntity1, testUpdatedTeamMember.role)
+        service.updateRole(
+          testTeamMemberEntity1,
+          testUpdatedTeamMember.role,
+          OrgRoleEnum.Owner,
+          null
+        )
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('delete', () => {
     afterEach(() => {
+      expect(testTeamMemberEntity1.safeToDelete).toBeCalledTimes(1);
+      expect(testTeamMemberEntity1.safeToDelete).toBeCalledWith(em);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
     });
 
     it('should delete a team member', async () => {
       await expect(
-        service.delete(testTeamMemberEntity1)
+        service.delete(testTeamMemberEntity1, OrgRoleEnum.Owner, null)
       ).resolves.toBeUndefined();
     });
 
@@ -195,9 +254,95 @@ describe('TeamMemberService', () => {
       jest
         .spyOn(repository, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(service.delete(testTeamMemberEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
-      );
+      await expect(
+        service.delete(testTeamMemberEntity1, OrgRoleEnum.Owner, null)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('checkRequester', () => {
+    it('should pass if the org role is moderator or higher', () => {
+      expect(
+        service.checkRequester(OrgRoleEnum.Owner, null, TeamRoleEnum.Owner)
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(OrgRoleEnum.Moderator, null, TeamRoleEnum.Owner)
+      ).toBeUndefined();
+    });
+
+    it('should fail if the org role is too low and team role is null', () => {
+      expect(() =>
+        service.checkRequester(OrgRoleEnum.Member, null, TeamRoleEnum.Owner)
+      ).toThrow(new ForbiddenException(forbiddenError));
+    });
+
+    it(`should pass if the requester's team role is greater than or equal to the subject's team role`, () => {
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Member,
+          TeamRoleEnum.Member
+        )
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Moderator,
+          TeamRoleEnum.Member
+        )
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Moderator,
+          TeamRoleEnum.Moderator
+        )
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Owner,
+          TeamRoleEnum.Member
+        )
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Owner,
+          TeamRoleEnum.Moderator
+        )
+      ).toBeUndefined();
+      expect(
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Owner,
+          TeamRoleEnum.Owner
+        )
+      ).toBeUndefined();
+    });
+
+    it(`should fail if the requester's team role is lower than the subject's team role`, () => {
+      expect(() =>
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Member,
+          TeamRoleEnum.Moderator
+        )
+      ).toThrow(new ForbiddenException(forbiddenError));
+      expect(() =>
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Member,
+          TeamRoleEnum.Owner
+        )
+      ).toThrow(new ForbiddenException(forbiddenError));
+      expect(() =>
+        service.checkRequester(
+          OrgRoleEnum.Member,
+          TeamRoleEnum.Moderator,
+          TeamRoleEnum.Owner
+        )
+      ).toThrow(new ForbiddenException(forbiddenError));
     });
   });
 });
