@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouteKeyword } from '@newbee/newbee/navbar/util';
-import { UnauthenticatedActionItemsComponent } from './unauthenticated-action-items.component';
+import { UnauthenticatedActionItemComponent } from './unauthenticated-action-item.component';
 
-describe('UnauthenticatedActionItemsComponent', () => {
-  let component: UnauthenticatedActionItemsComponent;
-  let fixture: ComponentFixture<UnauthenticatedActionItemsComponent>;
+describe('UnauthenticatedActionItemComponent', () => {
+  let component: UnauthenticatedActionItemComponent;
+  let fixture: ComponentFixture<UnauthenticatedActionItemComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CommonModule],
-      declarations: [UnauthenticatedActionItemsComponent],
+      declarations: [UnauthenticatedActionItemComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UnauthenticatedActionItemsComponent);
+    fixture = TestBed.createComponent(UnauthenticatedActionItemComponent);
     component = fixture.componentInstance;
 
     jest.spyOn(component.navigateToLink, 'emit');

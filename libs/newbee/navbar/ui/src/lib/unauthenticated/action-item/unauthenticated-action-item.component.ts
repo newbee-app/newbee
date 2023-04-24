@@ -6,10 +6,10 @@ import { RouteKeyword } from '@newbee/newbee/navbar/util';
  * The right-hand side of the unauthenticated navbar, which gives the user the option to log in or register.
  */
 @Component({
-  selector: 'newbee-unauthenticated-action-items',
-  templateUrl: './unauthenticated-action-items.component.html',
+  selector: 'newbee-unauthenticated-action-item',
+  templateUrl: './unauthenticated-action-item.component.html',
 })
-export class UnauthenticatedActionItemsComponent {
+export class UnauthenticatedActionItemComponent {
   /**
    * An emitter telling the parent component which route to navigate to.
    */
@@ -31,7 +31,7 @@ export class UnauthenticatedActionItemsComponent {
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [UnauthenticatedActionItemsComponent],
-  exports: [UnauthenticatedActionItemsComponent],
+  declarations: [UnauthenticatedActionItemComponent],
+  exports: [UnauthenticatedActionItemComponent],
 })
-export class UnauthenticatedActionItemsComponentModule {}
+export class UnauthenticatedActionItemComponentModule {}

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, NgModule, Output } from '@angular/core';
 import { RouteKeyword } from '@newbee/newbee/navbar/util';
-import { UnauthenticatedActionItemsComponentModule } from './action-items/unauthenticated-action-items.component';
+import { UnauthenticatedActionItemComponentModule } from './action-item/unauthenticated-action-item.component';
 import { UnauthenticatedNavigationComponentModule } from './navigation/unauthenticated-navigation.component';
 
 /**
@@ -30,7 +30,7 @@ export class UnauthenticatedNavbarComponent {
 @NgModule({
   imports: [
     CommonModule,
-    UnauthenticatedActionItemsComponentModule,
+    UnauthenticatedActionItemComponentModule,
     UnauthenticatedNavigationComponentModule,
   ],
   declarations: [UnauthenticatedNavbarComponent],

@@ -6,7 +6,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { UnauthenticatedActionItemsComponentModule } from './action-items/unauthenticated-action-items.component';
+import { UnauthenticatedActionItemComponentModule } from './action-item/unauthenticated-action-item.component';
 import { UnauthenticatedNavigationComponentModule } from './navigation/unauthenticated-navigation.component';
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
@@ -18,7 +18,7 @@ export default {
       imports: [
         CommonModule,
         ClickWrapperComponentModule,
-        UnauthenticatedActionItemsComponentModule,
+        UnauthenticatedActionItemComponentModule,
         UnauthenticatedNavigationComponentModule,
       ],
     }),

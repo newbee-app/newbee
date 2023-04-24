@@ -11,11 +11,6 @@ describe('UnauthenticatedNavigationComponent', () => {
   let component: UnauthenticatedNavigationComponent;
   let fixture: ComponentFixture<UnauthenticatedNavigationComponent>;
   let clickService: ClickService;
-  const testLinks = [
-    RouteKeyword.Features,
-    RouteKeyword.Guides,
-    RouteKeyword.Pricing,
-  ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -35,7 +30,6 @@ describe('UnauthenticatedNavigationComponent', () => {
     component = fixture.componentInstance;
     clickService = TestBed.inject(ClickService);
 
-    component.links = testLinks;
     jest.spyOn(component.navigateToLink, 'emit');
 
     fixture.detectChanges();
@@ -48,11 +42,8 @@ describe('UnauthenticatedNavigationComponent', () => {
   });
 
   it('should have initialized values properly', () => {
-    expect(component.links).toEqual(testLinks);
     expect(component.drawer.nativeElement).toEqual(
-      fixture.nativeElement.querySelector(
-        '#unauthenticated-action-items-drawer'
-      )
+      fixture.nativeElement.querySelector('#unauthenticated-navigation-drawer')
     );
     expect(component.expandIcon.nativeElement).toEqual(
       fixture.nativeElement.querySelector('#expand-icon')
