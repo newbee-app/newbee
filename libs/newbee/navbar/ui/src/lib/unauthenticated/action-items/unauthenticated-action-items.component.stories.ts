@@ -1,22 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { action } from '@storybook/addon-actions';
-import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { UnauthenticatedActionItemsComponent } from './unauthenticated-action-items.component';
 
 export default {
   title: 'UnauthenticatedActionItemsComponent',
   component: UnauthenticatedActionItemsComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [CommonModule],
-    }),
-  ],
+  decorators: [moduleMetadata({ imports: [CommonModule] })],
+  argTypes: { navigateToLink: { action: 'navigateToLink' } },
 } as Meta<UnauthenticatedActionItemsComponent>;
 
-const Template: Story<UnauthenticatedActionItemsComponent> = (
-  args: UnauthenticatedActionItemsComponent
-) => ({
-  props: { ...args, navigateToLink: action('navigateToLink') },
-});
+type Story = StoryObj<UnauthenticatedActionItemsComponent>;
 
-export const Primary = Template.bind({});
+export const Primary: Story = {};

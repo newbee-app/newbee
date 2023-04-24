@@ -1,34 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { ErrorFooterComponent } from './error-footer.component';
 
 export default {
   title: 'ErrorFooterComponent',
   component: ErrorFooterComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [CommonModule],
-    }),
-  ],
+  decorators: [moduleMetadata({ imports: [CommonModule] })],
   args: {
     error: '',
     displayError: true,
   },
 } as Meta<ErrorFooterComponent>;
 
-const Template: Story<ErrorFooterComponent> = (args: ErrorFooterComponent) => ({
-  props: args,
-});
+type Story = StoryObj<ErrorFooterComponent>;
 
-export const NoError = Template.bind({});
+export const NoError: Story = {};
 
-export const WithError = Template.bind({});
-WithError.args = {
-  error: 'Some error',
+export const WithError: Story = {
+  args: { error: 'Some error' },
 };
 
-export const LongError = Template.bind({});
-LongError.args = {
-  error:
-    'Some really really really really really really really really really really really really really really really really really really really really long error',
+export const LongError: Story = {
+  args: {
+    error:
+      'Some really really really really really really really really really really really really really really really really really really really really long error',
+  },
 };

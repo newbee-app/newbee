@@ -4,12 +4,11 @@ import {
   testSelectOption1,
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
-import { action } from '@storybook/addon-actions';
 import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
-  Story,
+  StoryObj,
 } from '@storybook/angular';
 import { ClickWrapperComponentModule } from '../testing';
 import { DropdownComponent } from './dropdown.component';
@@ -22,23 +21,18 @@ export default {
       imports: [CommonModule, ClickWrapperComponentModule],
     }),
     componentWrapperDecorator(
-      (story) => `
-      <newbee-click-wrapper>
-        ${story}
-      </newbee-click-wrapper>
-      `
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
   ],
   args: {
     dropdownText: 'More',
     options: [testSelectOption1, testSelectOption2],
   },
+  argTypes: {
+    selectOption: { action: 'selectOption' },
+  },
 } as Meta<DropdownComponent<Country>>;
 
-const Template: Story<DropdownComponent<Country>> = (
-  args: DropdownComponent<Country>
-) => ({
-  props: { ...args, selectOption: action('selectOption') },
-});
+type Story = StoryObj<DropdownComponent<Country>>;
 
-export const Primary = Template.bind({});
+export const Primary: Story = {};

@@ -68,6 +68,18 @@
           "quiet": true
         }
       }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee-navbar-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-navbar-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-navbar-ui:build-storybook:ci"
+        }
+      }
     }
   },
   "tags": []

@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ClickWrapperComponentModule } from '@newbee/newbee/shared/ui';
-import { action } from '@storybook/addon-actions';
 import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
-  Story,
+  StoryObj,
 } from '@storybook/angular';
 import { UnauthenticatedNavigationComponent } from './unauthenticated-navigation.component';
 
@@ -17,19 +16,12 @@ export default {
       imports: [CommonModule, ClickWrapperComponentModule],
     }),
     componentWrapperDecorator(
-      (story) => `
-      <newbee-click-wrapper>
-        ${story}
-      </newbee-click-wrapper>
-      `
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
   ],
+  argTypes: { navigateToLink: { action: 'navigateToLink' } },
 } as Meta<UnauthenticatedNavigationComponent>;
 
-const Template: Story<UnauthenticatedNavigationComponent> = (
-  args: UnauthenticatedNavigationComponent
-) => ({
-  props: { ...args, navigateToLink: action('navigateToLink') },
-});
+type Story = StoryObj<UnauthenticatedNavigationComponent>;
 
-export const Primary = Template.bind({});
+export const Primary: Story = {};

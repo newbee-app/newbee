@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { action } from '@storybook/addon-actions';
-import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { SpinnerComponentModule } from '../spinner/spinner.component';
 import { ButtonWithSpinnerComponent } from './button-with-spinner.component';
 
@@ -18,12 +17,11 @@ export default {
     buttonText: 'Send',
     buttonId: 'button',
   },
+  argTypes: {
+    buttonClick: { action: 'buttonClick' },
+  },
 } as Meta<ButtonWithSpinnerComponent>;
 
-const Template: Story<ButtonWithSpinnerComponent> = (
-  args: ButtonWithSpinnerComponent
-) => ({
-  props: { ...args, buttonClick: action('buttonClick') },
-});
+type Story = StoryObj<ButtonWithSpinnerComponent>;
 
-export const Primary = Template.bind({});
+export const Primary: Story = {};

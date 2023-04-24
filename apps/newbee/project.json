@@ -172,7 +172,7 @@
       "options": {
         "port": 4400,
         "configDir": "apps/newbee/.storybook",
-        "browserTarget": "newbee:build",
+        "browserTarget": "newbee:build-storybook",
         "compodoc": false
       },
       "configurations": {
@@ -183,11 +183,11 @@
     },
     "build-storybook": {
       "executor": "@storybook/angular:build-storybook",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{options.outputDir}"],
       "options": {
         "outputDir": "dist/storybook/newbee",
         "configDir": "apps/newbee/.storybook",
-        "browserTarget": "newbee:build",
+        "browserTarget": "newbee:build-storybook",
         "compodoc": false
       },
       "configurations": {
@@ -206,6 +206,18 @@
       "configurations": {
         "json": {
           "exportFormat": "json"
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee:build-storybook",
+        "staticFilePath": "dist/storybook/newbee"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee:build-storybook:ci"
         }
       }
     }

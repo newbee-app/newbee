@@ -13,12 +13,11 @@ import {
   phoneNumberIsPhoneNumber,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
-import { action } from '@storybook/addon-actions';
 import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
-  Story,
+  StoryObj,
 } from '@storybook/angular';
 import { BaseFormComponentModule } from '../base-form';
 import { RegisterFormComponent } from './register-form.component';
@@ -39,41 +38,34 @@ export default {
       ],
     }),
     componentWrapperDecorator(
-      (story) => `
-      <newbee-click-wrapper>
-        ${story}
-      </newbee-click-wrapper>
-      `
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
   ],
   args: {
     registerPending: false,
     httpClientError: null,
   },
+  argTypes: {
+    register: { action: 'register' },
+    navigateToLogin: { action: 'navigateToLogin' },
+  },
 } as Meta<RegisterFormComponent>;
 
-const Template: Story<RegisterFormComponent> = (
-  args: RegisterFormComponent
-) => ({
-  props: {
-    ...args,
-    register: action('register'),
-    navigateToLogin: action('navigateToLogin'),
-  },
-});
+type Story = StoryObj<RegisterFormComponent>;
 
-export const WithoutErrors = Template.bind({});
+export const WithoutErrors: Story = {};
 
-export const WithErrors = Template.bind({});
-WithErrors.args = {
-  httpClientError: {
-    status: 400,
-    messages: {
-      email: userEmailTakenBadRequest,
-      name: nameIsNotEmpty,
-      displayName: displayNameIsNotEmpty,
-      phoneNumber: phoneNumberIsPhoneNumber,
-      misc: internalServerError,
+export const WithErrors = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        email: userEmailTakenBadRequest,
+        name: nameIsNotEmpty,
+        displayName: displayNameIsNotEmpty,
+        phoneNumber: phoneNumberIsPhoneNumber,
+        misc: internalServerError,
+      },
     },
   },
 };

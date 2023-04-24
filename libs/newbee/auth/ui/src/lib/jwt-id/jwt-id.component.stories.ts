@@ -2,8 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ErrorFooterComponentModule } from '@newbee/newbee/shared/ui';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { internalServerError } from '@newbee/shared/util';
-import { action } from '@storybook/addon-actions';
-import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { BaseFormComponentModule } from '../base-form';
 import { JwtIdComponent } from './jwt-id.component';
 
@@ -24,18 +23,17 @@ export default {
     email: testBaseMagicLinkLoginDto1.email,
     httpClientError: null,
   },
+  argTypes: {
+    resendLink: { action: 'resendLink' },
+  },
 } as Meta<JwtIdComponent>;
 
-const Template: Story<JwtIdComponent> = (args: JwtIdComponent) => ({
-  props: {
-    ...args,
-    resendLink: action('resendLink'),
+type Story = StoryObj<JwtIdComponent>;
+
+export const NoError: Story = {};
+
+export const WithError: Story = {
+  args: {
+    httpClientError: { status: 500, messages: { misc: internalServerError } },
   },
-});
-
-export const NoError = Template.bind({});
-
-export const WithError = Template.bind({});
-WithError.args = {
-  httpClientError: { status: 500, messages: { misc: internalServerError } },
 };

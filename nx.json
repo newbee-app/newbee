@@ -41,7 +41,9 @@
       "style": "none"
     },
     "@nrwl/angular:storybook-configuration": {
-      "configureCypress": false
+      "configureCypress": false,
+      "generateCypressSpecs": false,
+      "tsConfiguration": true
     },
     "@nrwl/nest:library": {
       "buildable": true
@@ -89,7 +91,12 @@
       "inputs": ["default", "^production"]
     },
     "build-storybook": {
-      "inputs": ["default", "^production", "{workspaceRoot}/.storybook/**/*"]
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/.storybook/**/*",
+        "!{projectRoot}/.storybook/**/*"
+      ]
     }
   },
   "namedInputs": {

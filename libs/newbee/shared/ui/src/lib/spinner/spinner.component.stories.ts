@@ -1,17 +1,12 @@
-import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { SpinnerComponent } from './spinner.component';
 
 export default {
   title: 'SpinnerComponent',
   component: SpinnerComponent,
-  decorators: [moduleMetadata({})],
-  parameters: {
-    layout: 'centered',
-  },
+  parameters: { layout: 'centered' },
 } as Meta<SpinnerComponent>;
 
-const Template: Story<SpinnerComponent> = (args: SpinnerComponent) => ({
-  props: args,
-});
+type Story = StoryObj<SpinnerComponent>;
 
-export const Primary = Template.bind({});
+export const Primary: Story = {};

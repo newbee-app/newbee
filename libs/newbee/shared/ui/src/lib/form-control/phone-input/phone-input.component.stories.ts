@@ -8,7 +8,7 @@ import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
-  Story,
+  StoryObj,
 } from '@storybook/angular';
 import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
 import { ClickWrapperComponentModule } from '../../testing';
@@ -31,21 +31,12 @@ export default {
       ],
     }),
     componentWrapperDecorator(
-      (story) => `
-      <newbee-click-wrapper>
-        ${story}
-      </newbee-click-wrapper>
-      `
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
   ],
-  parameters: {
-    layout: 'centered',
-  },
+  parameters: { layout: 'centered' },
 } as Meta<PhoneInputComponent>;
 
-const Template: Story<PhoneInputComponent> = (args: PhoneInputComponent) => ({
-  props: args,
-});
+type Story = StoryObj<PhoneInputComponent>;
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary: Story = {};

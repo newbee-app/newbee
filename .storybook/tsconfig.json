@@ -1,5 +1,9 @@
 {
   "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true
+  },
+
   "exclude": [
     "../**/*.spec.js",
     "../**/*.test.js",
@@ -18,6 +22,8 @@
     "../**/*.stories.js",
     "../**/*.stories.jsx",
     "../**/*.stories.tsx",
-    "../**/*.stories.mdx"
+    "../**/*.stories.mdx",
+    "*.ts",
+    "*.js"
   ]
 }

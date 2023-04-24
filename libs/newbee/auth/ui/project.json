@@ -1,5 +1,6 @@
 {
   "name": "newbee-auth-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/newbee/auth/ui/src",
   "prefix": "newbee",
@@ -78,6 +79,18 @@
       "configurations": {
         "json": {
           "exportFormat": "json"
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee-auth-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-auth-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-auth-ui:build-storybook:ci"
         }
       }
     }
