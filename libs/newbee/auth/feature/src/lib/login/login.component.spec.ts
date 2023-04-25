@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { LoginFormComponentModule } from '@newbee/newbee/auth/ui';
+import { LoginFormComponent } from '@newbee/newbee/auth/ui';
 import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AppActions, AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -16,7 +16,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginFormComponentModule],
+      imports: [LoginFormComponent],
       declarations: [LoginComponent],
       providers: [
         provideMockStore(),

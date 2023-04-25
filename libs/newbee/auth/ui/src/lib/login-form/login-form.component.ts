@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  NgModule,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -14,17 +8,25 @@ import {
 } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
 import {
-  ButtonWithSpinnerComponentModule,
-  ErrorFooterComponentModule,
+  ButtonWithSpinnerComponent,
+  ErrorFooterComponent,
 } from '@newbee/newbee/shared/ui';
 import { getErrorMessage, HttpClientError } from '@newbee/newbee/shared/util';
-import { BaseFormComponentModule } from '../base-form';
+import { BaseFormComponent } from '../base-form';
 
 /**
  * The dumb UI for logging in an existing user.
  */
 @Component({
   selector: 'newbee-login-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    BaseFormComponent,
+    ButtonWithSpinnerComponent,
+    ErrorFooterComponent,
+  ],
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
@@ -116,16 +118,3 @@ export class LoginFormComponent {
     this.navigateToRegister.emit();
   }
 }
-
-@NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    BaseFormComponentModule,
-    ButtonWithSpinnerComponentModule,
-    ErrorFooterComponentModule,
-  ],
-  declarations: [LoginFormComponent],
-  exports: [LoginFormComponent],
-})
-export class LoginFormComponentModule {}

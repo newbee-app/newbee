@@ -9,8 +9,7 @@ describe('UnauthenticatedActionItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [UnauthenticatedActionItemComponent],
+      imports: [CommonModule, UnauthenticatedActionItemComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UnauthenticatedActionItemComponent);

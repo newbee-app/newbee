@@ -1,12 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import {
-  ButtonWithSpinnerComponentModule,
-  ErrorFooterComponentModule,
-} from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
-import { BaseFormComponentModule } from '../base-form';
 
 import { LoginFormComponent } from './login-form.component';
 
@@ -16,14 +9,7 @@ describe('LoginFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        BaseFormComponentModule,
-        ButtonWithSpinnerComponentModule,
-        ErrorFooterComponentModule,
-      ],
-      declarations: [LoginFormComponent],
+      imports: [LoginFormComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginFormComponent);

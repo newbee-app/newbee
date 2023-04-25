@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonWithSpinnerComponentModule,
-  ClickWrapperComponentModule,
-  ErrorFooterComponentModule,
-  PhoneInputComponentModule,
+  ButtonWithSpinnerComponent,
+  ClickWrapperComponent,
+  ErrorFooterComponent,
+  PhoneInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   displayNameIsNotEmpty,
@@ -19,7 +19,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { BaseFormComponentModule } from '../base-form';
+import { BaseFormComponent } from '../base-form';
 import { RegisterFormComponent } from './register-form.component';
 
 export default {
@@ -30,11 +30,11 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        BaseFormComponentModule,
-        PhoneInputComponentModule,
-        ClickWrapperComponentModule,
-        ButtonWithSpinnerComponentModule,
-        ErrorFooterComponentModule,
+        BaseFormComponent,
+        PhoneInputComponent,
+        ClickWrapperComponent,
+        ButtonWithSpinnerComponent,
+        ErrorFooterComponent,
       ],
     }),
     componentWrapperDecorator(

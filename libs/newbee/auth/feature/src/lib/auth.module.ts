@@ -6,9 +6,9 @@ import {
   AuthService,
 } from '@newbee/newbee/auth/data-access';
 import {
-  JwtIdComponentModule,
-  LoginFormComponentModule,
-  RegisterFormComponentModule,
+  JwtIdComponent,
+  LoginFormComponent,
+  RegisterFormComponent,
 } from '@newbee/newbee/auth/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -23,9 +23,9 @@ import { AuthRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(authFeature),
     EffectsModule.forFeature([AuthEffects]),
-    JwtIdComponentModule,
-    LoginFormComponentModule,
-    RegisterFormComponentModule,
+    JwtIdComponent,
+    LoginFormComponent,
+    RegisterFormComponent,
     AuthRoutingModule,
   ],
   providers: [AuthService],

@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  NgModule,
   OnDestroy,
   Output,
   ViewChild,
@@ -20,6 +19,8 @@ import { Subject, takeUntil } from 'rxjs';
  */
 @Component({
   selector: 'newbee-unauthenticated-navigation',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './unauthenticated-navigation.component.html',
 })
 export class UnauthenticatedNavigationComponent implements OnDestroy {
@@ -114,10 +115,3 @@ export class UnauthenticatedNavigationComponent implements OnDestroy {
     }
   }
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [UnauthenticatedNavigationComponent],
-  exports: [UnauthenticatedNavigationComponent],
-})
-export class UnauthenticatedNavigationComponentModule {}

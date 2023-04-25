@@ -1,17 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { createMock } from '@golevelup/ts-jest';
 import {
   CountryService,
-  PhoneNumberInputDirectiveModule,
-  PhoneNumberPipeModule,
   SelectOption,
   testCountry1,
   testCountry2,
 } from '@newbee/newbee/shared/util';
-import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
-import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';
 
 describe('PhoneInputComponent', () => {
@@ -21,14 +15,7 @@ describe('PhoneInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SearchableSelectComponentModule,
-        PhoneNumberInputDirectiveModule,
-        PhoneNumberPipeModule,
-        ErrorFooterComponentModule,
-      ],
+      imports: [PhoneInputComponent],
       providers: [
         {
           provide: CountryService,
@@ -37,7 +24,6 @@ describe('PhoneInputComponent', () => {
           }),
         },
       ],
-      declarations: [PhoneInputComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PhoneInputComponent);

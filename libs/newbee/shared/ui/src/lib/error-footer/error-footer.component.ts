@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * An error message footer to conditionally display errors.
  */
 @Component({
   selector: 'newbee-error-footer',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './error-footer.component.html',
 })
 export class ErrorFooterComponent {
@@ -19,10 +21,3 @@ export class ErrorFooterComponent {
    */
   @Input() displayError = false;
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [ErrorFooterComponent],
-  exports: [ErrorFooterComponent],
-})
-export class ErrorFooterComponentModule {}

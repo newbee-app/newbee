@@ -1,4 +1,4 @@
-import { Component, HostListener, NgModule } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ClickService } from '@newbee/newbee/shared/util';
 
 /**
@@ -7,6 +7,7 @@ import { ClickService } from '@newbee/newbee/shared/util';
  */
 @Component({
   selector: 'newbee-click-wrapper',
+  standalone: true,
   template: `<div id="click-wrapper"><ng-content></ng-content></div>`,
 })
 export class ClickWrapperComponent {
@@ -17,9 +18,3 @@ export class ClickWrapperComponent {
 
   constructor(private readonly clickService: ClickService) {}
 }
-
-@NgModule({
-  declarations: [ClickWrapperComponent],
-  exports: [ClickWrapperComponent],
-})
-export class ClickWrapperComponentModule {}

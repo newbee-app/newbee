@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouteKeyword } from '@newbee/newbee/navbar/util';
-import { UnauthenticatedActionItemComponentModule } from './action-item/unauthenticated-action-item.component';
-import { UnauthenticatedNavigationComponentModule } from './navigation/unauthenticated-navigation.component';
+import { UnauthenticatedActionItemComponent } from './action-item/unauthenticated-action-item.component';
+import { UnauthenticatedNavigationComponent } from './navigation/unauthenticated-navigation.component';
 
 /**
  * The unauthenticated version of the navbar.
  */
 @Component({
   selector: 'newbee-unauthenticated-navbar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    UnauthenticatedActionItemComponent,
+    UnauthenticatedNavigationComponent,
+  ],
   templateUrl: './unauthenticated-navbar.component.html',
 })
 export class UnauthenticatedNavbarComponent {
@@ -26,14 +32,3 @@ export class UnauthenticatedNavbarComponent {
     this.navigateToLink.emit(link);
   }
 }
-
-@NgModule({
-  imports: [
-    CommonModule,
-    UnauthenticatedActionItemComponentModule,
-    UnauthenticatedNavigationComponentModule,
-  ],
-  declarations: [UnauthenticatedNavbarComponent],
-  exports: [UnauthenticatedNavbarComponent],
-})
-export class UnauthenticatedNavbarComponentModule {}

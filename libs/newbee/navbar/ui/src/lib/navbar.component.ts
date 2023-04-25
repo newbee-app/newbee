@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * The component representing the navbar.
@@ -7,6 +7,8 @@ import { Component, Input, NgModule } from '@angular/core';
  */
 @Component({
   selector: 'newbee-navbar',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
@@ -15,10 +17,3 @@ export class NavbarComponent {
    */
   @Input() authenticated!: boolean;
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [NavbarComponent],
-  exports: [NavbarComponent],
-})
-export class NavbarComponentModule {}

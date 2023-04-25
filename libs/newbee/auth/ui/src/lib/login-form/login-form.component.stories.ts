@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonWithSpinnerComponentModule,
-  ErrorFooterComponentModule,
+  ButtonWithSpinnerComponent,
+  ErrorFooterComponent,
 } from '@newbee/newbee/shared/ui';
 import { internalServerError, userEmailNotFound } from '@newbee/shared/util';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { BaseFormComponentModule } from '../base-form';
+import { BaseFormComponent } from '../base-form';
 import { LoginFormComponent } from './login-form.component';
 
 export default {
@@ -17,9 +17,9 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        BaseFormComponentModule,
-        ButtonWithSpinnerComponentModule,
-        ErrorFooterComponentModule,
+        BaseFormComponent,
+        ButtonWithSpinnerComponent,
+        ErrorFooterComponent,
       ],
     }),
   ],

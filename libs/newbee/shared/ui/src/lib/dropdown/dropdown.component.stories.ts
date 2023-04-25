@@ -10,7 +10,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponentModule } from '../testing';
+import { ClickWrapperComponent } from '../testing';
 import { DropdownComponent } from './dropdown.component';
 
 export default {
@@ -18,7 +18,7 @@ export default {
   component: DropdownComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, ClickWrapperComponentModule],
+      imports: [CommonModule, ClickWrapperComponent],
     }),
     componentWrapperDecorator(
       (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`

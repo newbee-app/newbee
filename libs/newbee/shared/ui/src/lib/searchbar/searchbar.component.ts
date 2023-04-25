@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  NgModule,
   OnDestroy,
   OnInit,
   Output,
@@ -17,6 +16,8 @@ import { Subject, takeUntil } from 'rxjs';
  */
 @Component({
   selector: 'newbee-searchbar',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './searchbar.component.html',
 })
 export class SearchbarComponent implements OnInit, OnDestroy {
@@ -89,10 +90,3 @@ export class SearchbarComponent implements OnInit, OnDestroy {
     event.preventDefault();
   }
 }
-
-@NgModule({
-  imports: [CommonModule, ReactiveFormsModule],
-  declarations: [SearchbarComponent],
-  exports: [SearchbarComponent],
-})
-export class SearchbarComponentModule {}

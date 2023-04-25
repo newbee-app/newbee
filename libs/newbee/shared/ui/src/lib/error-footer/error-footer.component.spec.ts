@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ErrorFooterComponent } from './error-footer.component';
 
@@ -9,8 +8,7 @@ describe('ErrorFooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ErrorFooterComponent],
+      imports: [ErrorFooterComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ErrorFooterComponent);

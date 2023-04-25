@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * A component for displaying tooltips.
  */
 @Component({
   selector: 'newbee-tooltip',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './tooltip.component.html',
 })
 export class TooltipComponent {
@@ -19,10 +21,3 @@ export class TooltipComponent {
    */
   @Input() displayTooltip!: boolean;
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [TooltipComponent],
-  exports: [TooltipComponent],
-})
-export class TooltipComponentModule {}

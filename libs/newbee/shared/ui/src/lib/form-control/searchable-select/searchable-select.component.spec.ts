@@ -1,13 +1,9 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
   Country,
   testSelectOption1,
   testSelectOption2,
 } from '@newbee/newbee/shared/util';
-import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
-import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 const testOptions = [testSelectOption1, testSelectOption2];
@@ -18,13 +14,7 @@ describe('SearchableSelectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SearchbarComponentModule,
-        ErrorFooterComponentModule,
-      ],
-      declarations: [SearchableSelectComponent],
+      imports: [SearchableSelectComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchableSelectComponent<Country>);

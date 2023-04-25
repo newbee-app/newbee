@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  NgModule,
   OnDestroy,
   Output,
 } from '@angular/core';
@@ -16,6 +15,8 @@ import { Subject, takeUntil } from 'rxjs';
  */
 @Component({
   selector: 'newbee-dropdown',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dropdown.component.html',
 })
 export class DropdownComponent<T> implements OnDestroy {
@@ -109,10 +110,3 @@ export class DropdownComponent<T> implements OnDestroy {
     this.shrink();
   }
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [DropdownComponent],
-  exports: [DropdownComponent],
-})
-export class DropdownComponentModule {}

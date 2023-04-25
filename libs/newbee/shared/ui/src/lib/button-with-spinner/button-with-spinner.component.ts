@@ -1,18 +1,14 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  NgModule,
-  Output,
-} from '@angular/core';
-import { SpinnerComponentModule } from '../spinner/spinner.component';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SpinnerComponent } from '../spinner/spinner.component';
 
 /**
  * A button that can display a spinner next to its text when told to do so.
  */
 @Component({
   selector: 'newbee-button-with-spinner',
+  standalone: true,
+  imports: [CommonModule, SpinnerComponent],
   templateUrl: './button-with-spinner.component.html',
 })
 export class ButtonWithSpinnerComponent {
@@ -48,10 +44,3 @@ export class ButtonWithSpinnerComponent {
     this.buttonClick.emit();
   }
 }
-
-@NgModule({
-  imports: [CommonModule, SpinnerComponentModule],
-  declarations: [ButtonWithSpinnerComponent],
-  exports: [ButtonWithSpinnerComponent],
-})
-export class ButtonWithSpinnerComponentModule {}

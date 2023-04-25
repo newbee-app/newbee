@@ -11,9 +11,9 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
-import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
-import { ClickWrapperComponentModule } from '../../testing';
+import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { SearchbarComponent } from '../../searchbar/searchbar.component';
+import { ClickWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
@@ -24,9 +24,9 @@ export default {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        SearchbarComponentModule,
-        ErrorFooterComponentModule,
-        ClickWrapperComponentModule,
+        SearchbarComponent,
+        ErrorFooterComponent,
+        ClickWrapperComponent,
       ],
     }),
     componentWrapperDecorator(

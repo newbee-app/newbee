@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouteKeyword } from '@newbee/newbee/navbar/util';
 
 /**
@@ -7,6 +7,8 @@ import { RouteKeyword } from '@newbee/newbee/navbar/util';
  */
 @Component({
   selector: 'newbee-unauthenticated-action-item',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './unauthenticated-action-item.component.html',
 })
 export class UnauthenticatedActionItemComponent {
@@ -28,10 +30,3 @@ export class UnauthenticatedActionItemComponent {
     this.navigateToLink.emit(link);
   }
 }
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [UnauthenticatedActionItemComponent],
-  exports: [UnauthenticatedActionItemComponent],
-})
-export class UnauthenticatedActionItemComponentModule {}

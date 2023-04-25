@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ClickWrapperComponentModule } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   componentWrapperDecorator,
   Meta,
@@ -13,7 +13,7 @@ export default {
   component: UnauthenticatedNavigationComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, ClickWrapperComponentModule],
+      imports: [CommonModule, ClickWrapperComponent],
     }),
     componentWrapperDecorator(
       (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`

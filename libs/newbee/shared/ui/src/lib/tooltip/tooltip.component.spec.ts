@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TooltipComponent } from './tooltip.component';
 
@@ -10,8 +9,7 @@ describe('TooltipComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [TooltipComponent],
+      imports: [TooltipComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TooltipComponent);

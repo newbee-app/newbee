@@ -1,13 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  ButtonWithSpinnerComponentModule,
-  ErrorFooterComponentModule,
-  PhoneInputComponentModule,
-} from '@newbee/newbee/shared/ui';
+import { AbstractControl } from '@angular/forms';
 import { testUser1 } from '@newbee/shared/util';
-import { BaseFormComponentModule } from '../base-form';
 import { RegisterFormComponent } from './register-form.component';
 
 const {
@@ -25,15 +18,7 @@ describe('RegisterFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        BaseFormComponentModule,
-        PhoneInputComponentModule,
-        ButtonWithSpinnerComponentModule,
-        ErrorFooterComponentModule,
-      ],
-      declarations: [RegisterFormComponent],
+      imports: [RegisterFormComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterFormComponent);

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { SpinnerComponentModule } from '../spinner/spinner.component';
+import { SpinnerComponent } from '../spinner/spinner.component';
 import { ButtonWithSpinnerComponent } from './button-with-spinner.component';
 
 export default {
@@ -8,7 +8,7 @@ export default {
   component: ButtonWithSpinnerComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, SpinnerComponentModule],
+      imports: [CommonModule, SpinnerComponent],
     }),
   ],
   args: {

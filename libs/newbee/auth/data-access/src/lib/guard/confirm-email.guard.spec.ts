@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EmptyComponent, EmptyComponentModule } from '@newbee/newbee/shared/ui';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { authFeature, initialAuthState } from '../store';
@@ -16,7 +16,7 @@ describe('ConfirmEmailGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        EmptyComponentModule,
+        EmptyComponent,
         RouterTestingModule.withRoutes([
           {
             path: 'auth/login',

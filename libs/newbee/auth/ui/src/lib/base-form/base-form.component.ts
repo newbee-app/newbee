@@ -1,4 +1,4 @@
-import { Component, NgModule } from '@angular/core';
+import { Component } from '@angular/core';
 
 /**
  * The template to encapsulate the other forms of the module.
@@ -6,12 +6,7 @@ import { Component, NgModule } from '@angular/core';
  */
 @Component({
   selector: 'newbee-base-form',
+  standalone: true,
   templateUrl: './base-form.component.html',
 })
 export class BaseFormComponent {}
-
-@NgModule({
-  declarations: [BaseFormComponent],
-  exports: [BaseFormComponent],
-})
-export class BaseFormComponentModule {}

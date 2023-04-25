@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { authFeature } from '@newbee/newbee/auth/data-access';
-import { JwtIdComponentModule } from '@newbee/newbee/auth/ui';
+import { JwtIdComponent } from '@newbee/newbee/auth/ui';
 import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
@@ -15,7 +15,7 @@ describe('ConfirmEmailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JwtIdComponentModule],
+      imports: [JwtIdComponent],
       declarations: [ConfirmEmailComponent],
       providers: [provideMockStore()],
     }).compileComponents();

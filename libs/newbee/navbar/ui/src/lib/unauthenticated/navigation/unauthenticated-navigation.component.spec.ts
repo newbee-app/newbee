@@ -14,7 +14,7 @@ describe('UnauthenticatedNavigationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
+      imports: [CommonModule, UnauthenticatedNavigationComponent],
       providers: [
         {
           provide: ClickService,
@@ -23,7 +23,6 @@ describe('UnauthenticatedNavigationComponent', () => {
           }),
         },
       ],
-      declarations: [UnauthenticatedNavigationComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UnauthenticatedNavigationComponent);

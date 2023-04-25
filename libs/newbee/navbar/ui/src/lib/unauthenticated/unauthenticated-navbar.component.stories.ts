@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ClickWrapperComponentModule } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { UnauthenticatedActionItemComponentModule } from './action-item/unauthenticated-action-item.component';
-import { UnauthenticatedNavigationComponentModule } from './navigation/unauthenticated-navigation.component';
+import { UnauthenticatedActionItemComponent } from './action-item/unauthenticated-action-item.component';
+import { UnauthenticatedNavigationComponent } from './navigation/unauthenticated-navigation.component';
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
 export default {
@@ -17,9 +17,9 @@ export default {
     moduleMetadata({
       imports: [
         CommonModule,
-        ClickWrapperComponentModule,
-        UnauthenticatedActionItemComponentModule,
-        UnauthenticatedNavigationComponentModule,
+        ClickWrapperComponent,
+        UnauthenticatedActionItemComponent,
+        UnauthenticatedNavigationComponent,
       ],
     }),
     componentWrapperDecorator(

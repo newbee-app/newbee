@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   Country,
@@ -16,8 +15,7 @@ describe('DropdownComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [DropdownComponent],
+      imports: [DropdownComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DropdownComponent<Country>);

@@ -1,20 +1,16 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  NgModule,
-  Output,
-} from '@angular/core';
-import { ErrorFooterComponentModule } from '@newbee/newbee/shared/ui';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ErrorFooterComponent } from '@newbee/newbee/shared/ui';
 import { HttpClientError } from '@newbee/newbee/shared/util';
-import { BaseFormComponentModule } from '../base-form';
+import { BaseFormComponent } from '../base-form';
 
 /**
  * The dumb UI for displaying a user their JWT ID after a magic link login request.
  */
 @Component({
   selector: 'newbee-jwt-id',
+  standalone: true,
+  imports: [CommonModule, BaseFormComponent, ErrorFooterComponent],
   templateUrl: './jwt-id.component.html',
 })
 export class JwtIdComponent {
@@ -52,10 +48,3 @@ export class JwtIdComponent {
     return this.httpClientError?.messages?.['misc'] ?? '';
   }
 }
-
-@NgModule({
-  imports: [CommonModule, BaseFormComponentModule, ErrorFooterComponentModule],
-  declarations: [JwtIdComponent],
-  exports: [JwtIdComponent],
-})
-export class JwtIdComponentModule {}

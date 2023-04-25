@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import type {
   ControlValueAccessor,
   ValidationErrors,
@@ -25,8 +25,8 @@ import {
   SelectOption,
 } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
-import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
-import { SearchableSelectComponentModule } from '../searchable-select/searchable-select.component';
+import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { SearchableSelectComponent } from '../searchable-select/searchable-select.component';
 
 /**
  * A custom phone input component.
@@ -40,6 +40,15 @@ import { SearchableSelectComponentModule } from '../searchable-select/searchable
  */
 @Component({
   selector: 'newbee-phone-input',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SearchableSelectComponent,
+    PhoneNumberInputDirectiveModule,
+    PhoneNumberPipeModule,
+    ErrorFooterComponent,
+  ],
   templateUrl: './phone-input.component.html',
   providers: [
     {
@@ -277,17 +286,3 @@ export class PhoneInputComponent
     this.writeValue({ number: formattedNumber });
   }
 }
-
-@NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SearchableSelectComponentModule,
-    PhoneNumberInputDirectiveModule,
-    PhoneNumberPipeModule,
-    ErrorFooterComponentModule,
-  ],
-  declarations: [PhoneInputComponent],
-  exports: [PhoneInputComponent],
-})
-export class PhoneInputComponentModule {}

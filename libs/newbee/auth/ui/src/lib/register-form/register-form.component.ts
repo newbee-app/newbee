@@ -1,17 +1,11 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  NgModule,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  ButtonWithSpinnerComponentModule,
-  ErrorFooterComponentModule,
-  PhoneInputComponentModule,
+  ButtonWithSpinnerComponent,
+  ErrorFooterComponent,
+  PhoneInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   CountryService,
@@ -19,13 +13,22 @@ import {
   HttpClientError,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
-import { BaseFormComponentModule } from '../base-form';
+import { BaseFormComponent } from '../base-form';
 
 /**
  * The dumb UI for registering a new user.
  */
 @Component({
   selector: 'newbee-register-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    BaseFormComponent,
+    PhoneInputComponent,
+    ButtonWithSpinnerComponent,
+    ErrorFooterComponent,
+  ],
   templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent {
@@ -126,17 +129,3 @@ export class RegisterFormComponent {
     this.navigateToLogin.emit();
   }
 }
-
-@NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    BaseFormComponentModule,
-    PhoneInputComponentModule,
-    ButtonWithSpinnerComponentModule,
-    ErrorFooterComponentModule,
-  ],
-  declarations: [RegisterFormComponent],
-  exports: [RegisterFormComponent],
-})
-export class RegisterFormComponentModule {}

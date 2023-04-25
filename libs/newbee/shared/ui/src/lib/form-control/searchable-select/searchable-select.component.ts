@@ -5,7 +5,6 @@ import {
   EventEmitter,
   HostListener,
   Input,
-  NgModule,
   OnDestroy,
   Output,
 } from '@angular/core';
@@ -14,8 +13,8 @@ import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
-import { ErrorFooterComponentModule } from '../../error-footer/error-footer.component';
-import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
+import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { SearchbarComponent } from '../../searchbar/searchbar.component';
 
 /**
  * A custom `<select>` component.
@@ -28,6 +27,13 @@ import { SearchbarComponentModule } from '../../searchbar/searchbar.component';
  */
 @Component({
   selector: 'newbee-searchable-select',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SearchbarComponent,
+    ErrorFooterComponent,
+  ],
   templateUrl: './searchable-select.component.html',
   providers: [
     {
@@ -286,15 +292,3 @@ export class SearchableSelectComponent<T>
     this.shrink(emitEvent);
   }
 }
-
-@NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SearchbarComponentModule,
-    ErrorFooterComponentModule,
-  ],
-  declarations: [SearchableSelectComponent],
-  exports: [SearchableSelectComponent],
-})
-export class SearchableSelectComponentModule {}
