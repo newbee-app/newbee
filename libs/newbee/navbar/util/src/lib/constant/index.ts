@@ -1,5 +1,5 @@
 /**
- * All of the possible keywords representing routes
+ * All of the possible keywords representing routes.
  */
 export enum RouteKeyword {
   Home = 'Home',

@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   Country,
-  testSelectOption1,
-  testSelectOption2,
+  testSelectOptionCountry1,
+  testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
 import {
   componentWrapperDecorator,
@@ -46,31 +46,31 @@ export default {
 type Story = StoryObj<SearchableSelectComponent<Country>>;
 
 export const Short: Story = {
-  args: { options: [testSelectOption1, testSelectOption2] },
+  args: { options: [testSelectOptionCountry1, testSelectOptionCountry2] },
 };
 
 export const Long: Story = {
   args: {
     options: [
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
-      testSelectOption1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
     ],
   },
 };
 
 export const Invalid: Story = {
   args: {
-    options: [testSelectOption1, testSelectOption2],
+    options: [testSelectOptionCountry1, testSelectOptionCountry2],
     valid: false,
     errorText: 'Invalid',
   },

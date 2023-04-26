@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   Country,
-  testSelectOption1,
-  testSelectOption2,
+  testSelectOptionCountry1,
+  testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
 import { SearchableSelectComponent } from './searchable-select.component';
-
-const testOptions = [testSelectOption1, testSelectOption2];
 
 describe('SearchableSelectComponent', () => {
   let component: SearchableSelectComponent<Country>;
   let fixture: ComponentFixture<SearchableSelectComponent<Country>>;
+
+  const testOptions = [testSelectOptionCountry1, testSelectOptionCountry2];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -109,8 +109,10 @@ describe('SearchableSelectComponent', () => {
 
   describe('selectedText', () => {
     it('should ouput the selected value', () => {
-      component.writeValue(testSelectOption1.value);
-      expect(component.selectedText).toEqual(testSelectOption1.selectedValue);
+      component.writeValue(testSelectOptionCountry1.value);
+      expect(component.selectedText).toEqual(
+        testSelectOptionCountry1.selectedValue
+      );
     });
 
     it('should be displayed in the DOM', () => {
@@ -129,15 +131,15 @@ describe('SearchableSelectComponent', () => {
     it('should output options restricted by searchbox', () => {
       component.searchTerm = 'united';
       fixture.detectChanges();
-      expect(component.optionsWithSearch).toEqual([testSelectOption1]);
+      expect(component.optionsWithSearch).toEqual([testSelectOptionCountry1]);
     });
   });
 
   describe('writeValue', () => {
     it('should change selectedOption without calling onChange or onTouched', () => {
       component.expand();
-      component.writeValue(testSelectOption2.value);
-      expect(component.value).toEqual(testSelectOption2.value);
+      component.writeValue(testSelectOptionCountry2.value);
+      expect(component.value).toEqual(testSelectOptionCountry2.value);
       expect(component.expanded).toBeFalsy();
       expect(component.onChange).not.toBeCalled();
       expect(component.onTouched).not.toBeCalled();
@@ -156,8 +158,8 @@ describe('SearchableSelectComponent', () => {
   describe('selectOption', () => {
     it('should change selectedOption while calling onChange and onTouched', () => {
       component.expand();
-      component.selectOption(testSelectOption2.value);
-      expect(component.value).toEqual(testSelectOption2.value);
+      component.selectOption(testSelectOptionCountry2.value);
+      expect(component.value).toEqual(testSelectOptionCountry2.value);
       expect(component.expanded).toBeFalsy();
       expect(component.onChange).toBeCalledTimes(1);
       expect(component.onTouched).toBeCalledTimes(1);

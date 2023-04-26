@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import {
   Country,
-  testSelectOption1,
-  testSelectOption2,
+  testSelectOptionCountry1,
+  testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
 import {
   componentWrapperDecorator,
@@ -26,7 +26,7 @@ export default {
   ],
   args: {
     dropdownText: 'More',
-    options: [testSelectOption1, testSelectOption2],
+    options: [testSelectOptionCountry1, testSelectOptionCountry2],
   },
   argTypes: {
     selectOption: { action: 'selectOption' },
@@ -35,4 +35,29 @@ export default {
 
 type Story = StoryObj<DropdownComponent<Country>>;
 
-export const Primary: Story = {};
+export const Short: Story = {};
+
+export const Long: Story = {
+  args: {
+    options: [
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+      testSelectOptionCountry1,
+    ],
+  },
+};

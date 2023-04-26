@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   Country,
-  testSelectOption1,
-  testSelectOption2,
+  testSelectOptionCountry1,
+  testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
 
 import { DropdownComponent } from './dropdown.component';
@@ -11,7 +11,7 @@ describe('DropdownComponent', () => {
   let component: DropdownComponent<Country>;
   let fixture: ComponentFixture<DropdownComponent<Country>>;
 
-  const testOptions = [testSelectOption1, testSelectOption2];
+  const testOptions = [testSelectOptionCountry1, testSelectOptionCountry2];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -90,11 +90,11 @@ describe('DropdownComponent', () => {
     });
 
     it('should emit selectOption and shrink the dropdown', () => {
-      component.select(testSelectOption1);
+      component.select(testSelectOptionCountry1);
       expect(component.expanded).toBeFalsy();
       expect(component.selectOption.emit).toBeCalledTimes(1);
       expect(component.selectOption.emit).toBeCalledWith(
-        testSelectOption1.value
+        testSelectOptionCountry1.value
       );
     });
 
@@ -105,7 +105,7 @@ describe('DropdownComponent', () => {
       expect(component.expanded).toBeFalsy();
       expect(component.selectOption.emit).toBeCalledTimes(1);
       expect(component.selectOption.emit).toBeCalledWith(
-        testSelectOption1.value
+        testSelectOptionCountry1.value
       );
     });
   });
