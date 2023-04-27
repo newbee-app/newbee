@@ -1,32 +1,31 @@
 <newbee-base-form>
-  <div class="space-y-5 max-w-full w-96">
-    <h2 class="text-2xl font-medium text-center">Sign in to your NewBee account</h2>
+  <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
+    <h3>Sign in to your NewBee account</h3>
 
     <form id="login-form" [formGroup]="loginForm" class="space-y-5">
-      <div class="flex flex-col gap-y-2 w-full">
+      <div>
         <label for="email-input" class="sr-only">Email address</label>
-        <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="form-input newbee-form-input rounded-md w-full" [ngClass]="{'newbee-error-outline': showEmailError}">
-        <newbee-error-footer [displayError]="showEmailError" [error]="emailErrorMessage"></newbee-error-footer>
+        <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="input input-bordered w-full" [ngClass]="{'input-error': showEmailError}">
+
+        <div *ngIf="showEmailError" class="mt-2">
+          <newbee-error-alert [text]="emailErrorMessage"></newbee-error-alert>
+        </div>
       </div>
 
       <div id="buttons" class="flex flex-col gap-y-2">
-        <div>
-          <newbee-button-with-spinner buttonId="webauthn-button" buttonText="Log In" [disabled]="loginForm.invalid" [displaySpinner]="loginPending" (buttonClick)="emitWebAuthn()"></newbee-button-with-spinner>
-        </div>
-        <div>
-          <newbee-button-with-spinner buttonId="magic-link-login-button" buttonText="Send Magic Link to Email" [disabled]="loginForm.invalid" [displaySpinner]="magicLinkPending" (buttonClick)="emitMagicLinkLogin()"></newbee-button-with-spinner>
-        </div>
+        <button id="webauthn-button" type="button" [disabled]="loginForm.invalid" class="btn btn-primary" [ngClass]="{'loading': loginPending}" (click)="emitWebAuthn()">Log In</button>
+        <button id="magic-link-login-button" type="button" [disabled]="loginForm.invalid" class="btn btn-primary" [ngClass]="{'loading': magicLinkPending}" (click)="emitMagicLinkLogin()">Send Login Link to Email</button>
 
-        <div class="self-center">
-          <newbee-error-footer [displayError]="true" [error]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-footer>
+        <div *ngIf="httpClientError?.messages?.['misc']">
+          <newbee-error-alert [text]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-alert>
         </div>
       </div>
     </form>
   </div>
 
-  <div class="text-center text-sm">
+  <div class="items-center text-center">
     <p>New to NewBee?</p>
-    <a id="register-link" (click)="emitNavigateToRegister()" class="newbee-hyperlink">
+    <a id="register-link" (click)="emitNavigateToRegister()" class="link link-primary">
       Get started for free!
     </a>
   </div>

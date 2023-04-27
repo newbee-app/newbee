@@ -1,16 +1,24 @@
-<div class="flex flex-col gap-y-2 w-full">
-  <div class="relative w-full hover:cursor-pointer dark:text-white">
-    <button type="button" [disabled]="disabled" (click)="toggleExpand()" class="form-select newbee-form-input w-full rounded-md text-start" [ngClass]="{'newbee-error-outline': !valid}">
-      <span [ngClass]="{'text-outline-primary-light dark:text-outline-primary-dark': value === null}">{{selectedText}}</span>
+<div>
+  <div class="dropdown w-full">
+    <button [disabled]="disabled" (click)="toggleExpand()" tabindex="0" class="btn flex flex-row justify-between w-full">
+      <span>{{selectedText}}</span>
+
+      <span class="transition-all duration-100 ease-in-out" [ngClass]="{'rotate-180': expanded}">
+        <!-- chevron-down svg -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </span>
     </button>
 
-    <div class="flex flex-col items-start absolute top-[calc(100%+0.5rem)] border border-outline-secondary-light dark:border-outline-secondary-dark rounded-b-md w-48 min-w-full max-w-[200%] max-h-56 overflow-auto divide-y divide-outline-secondary-light dark:divide-outline-secondary-dark z-10" [ngClass]="{'hidden': !expanded || disabled}">
-      <div class="w-full sticky top-0">
-        <newbee-searchbar [border]="false" [(searchTerm)]="searchTerm"></newbee-searchbar>
-        </div>
-      <button type="button" *ngFor="let option of optionsWithSearch" (click)="selectOption(option.value)" class="text-start w-full py-2 px-3 bg-bg-primary-light dark:bg-bg-primary-dark hover:bg-highlight-primary-light hover:dark:bg-highlight-primary-dark hover:text-white hover:dark:text-black">{{option.dropdownValue}}</button>
-    </div>
+    <ul tabindex="0" class="dropdown-content menu flex flex-col flex-nowrap w-full mt-2 bg-base-200 rounded-lg max-h-60 overflow-y-scroll">
+      <div><newbee-searchbar [(searchTerm)]="searchTerm"></newbee-searchbar></div>
+
+      <li *ngFor="let option of optionsWithSearch" (click)="selectOption(option.value)"><a class="text-left">{{option.dropdownValue}}</a></li>
+    </ul>
   </div>
 
-  <newbee-error-footer [displayError]="!valid" [error]="errorText"></newbee-error-footer>
+  <div *ngIf="!valid" class="mt-2">
+    <newbee-error-alert [text]="errorText"></newbee-error-alert>
+  </div>
 </div>

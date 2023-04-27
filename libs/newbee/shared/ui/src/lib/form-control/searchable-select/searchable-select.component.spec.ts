@@ -49,22 +49,10 @@ describe('SearchableSelectComponent', () => {
   });
 
   describe('toggleExpand', () => {
-    let optionsElement: () => HTMLDivElement | null;
-
-    beforeEach(() => {
-      optionsElement = () =>
-        fixture.nativeElement.querySelector('div.absolute.hidden');
-    });
-
-    it('should not be visible initially', () => {
-      expect(optionsElement()).not.toBeNull();
-    });
-
-    it('should toggle expand and become visible', () => {
+    it('should toggle expand and become expanded', () => {
       component.toggleExpand();
       fixture.detectChanges();
       expect(component.expanded).toBeTruthy();
-      expect(optionsElement()).toBeNull();
     });
 
     it('should be called when dropdown button is clicked', () => {

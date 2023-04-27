@@ -8,6 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ignoreMouseEvent } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -21,11 +22,6 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './searchbar.component.html',
 })
 export class SearchbarComponent implements OnInit, OnDestroy {
-  /**
-   * Whether to include a border around the input.
-   */
-  @Input() border = true;
-
   /**
    * Whether to include a placeholder saying `Search...`.
    */
@@ -50,6 +46,11 @@ export class SearchbarComponent implements OnInit, OnDestroy {
    * Used to unsubscribe from infinite observables.
    */
   unsubscribe$ = new Subject<void>();
+
+  /**
+   * Call the method to ignore a fed-in mouse event.
+   */
+  ignoreMouseEvent = ignoreMouseEvent;
 
   constructor() {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
@@ -79,14 +80,5 @@ export class SearchbarComponent implements OnInit, OnDestroy {
    */
   clear(): void {
     this.searchbar.setValue('');
-  }
-
-  /**
-   * Actively ignore the fed-in mouse event.
-   *
-   * @param event The mouse event to ignore.
-   */
-  ignoreMouseEvent(event: MouseEvent): void {
-    event.preventDefault();
   }
 }

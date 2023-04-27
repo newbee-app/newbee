@@ -25,7 +25,7 @@ import {
   SelectOption,
 } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
-import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 import { SearchableSelectComponent } from '../searchable-select/searchable-select.component';
 
 /**
@@ -47,7 +47,7 @@ import { SearchableSelectComponent } from '../searchable-select/searchable-selec
     SearchableSelectComponent,
     PhoneNumberInputDirectiveModule,
     PhoneNumberPipeModule,
-    ErrorFooterComponent,
+    ErrorAlertComponent,
   ],
   templateUrl: './phone-input.component.html',
   providers: [

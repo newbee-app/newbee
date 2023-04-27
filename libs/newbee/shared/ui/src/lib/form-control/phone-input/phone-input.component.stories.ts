@@ -10,7 +10,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 import { ClickWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from '../searchable-select/searchable-select.component';
 import { PhoneInputComponent } from './phone-input.component';
@@ -26,7 +26,7 @@ export default {
         SearchableSelectComponent,
         PhoneNumberInputDirectiveModule,
         PhoneNumberPipeModule,
-        ErrorFooterComponent,
+        ErrorAlertComponent,
         ClickWrapperComponent,
       ],
     }),

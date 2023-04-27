@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonWithSpinnerComponent,
   ClickWrapperComponent,
-  ErrorFooterComponent,
+  ErrorAlertComponent,
   PhoneInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
@@ -32,9 +31,8 @@ export default {
         ReactiveFormsModule,
         BaseFormComponent,
         PhoneInputComponent,
+        ErrorAlertComponent,
         ClickWrapperComponent,
-        ButtonWithSpinnerComponent,
-        ErrorFooterComponent,
       ],
     }),
     componentWrapperDecorator(

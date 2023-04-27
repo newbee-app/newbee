@@ -2,22 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .newbee-btn-primary {
-    @apply bg-primary-light/80 dark:bg-primary-dark/80 text-black font-semibold py-2 disabled:opacity-50 enabled:hover:cursor-pointer disabled:hover:cursor-not-allowed transition-all ease-in-out duration-200 enabled:hover:bg-primary-light enabled:dark:hover:bg-primary-dark;
+@layer base {
+  h1 {
+    @apply text-5xl;
   }
 
-  .newbee-hyperlink {
-    @apply text-highlight-primary-light dark:text-highlight-primary-dark visited:text-highlight-secondary-light dark:visited:text-highlight-secondary-dark hover:underline hover:cursor-pointer;
-  }
-}
-
-@layer utilities {
-  .newbee-form-input {
-    @apply border-outline-primary-light dark:border-outline-primary-dark text-black dark:text-white placeholder-outline-primary-light dark:placeholder-outline-primary-dark bg-bg-primary-light dark:bg-bg-primary-dark;
+  h2 {
+    @apply text-4xl;
   }
 
-  .newbee-error-outline {
-    @apply border-error-primary-light dark:border-error-primary-dark focus:border-error-primary-light dark:focus:border-error-primary-dark focus:ring-error-primary-light dark:focus:ring-error-primary-dark;
+  h3 {
+    @apply text-3xl;
+  }
+
+  h4 {
+    @apply text-2xl;
+  }
+
+  h5 {
+    @apply text-xl;
+  }
+
+  h6 {
+    @apply text-lg;
   }
 }

@@ -3,8 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  ButtonWithSpinnerComponent,
-  ErrorFooterComponent,
+  ErrorAlertComponent,
   PhoneInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
@@ -26,8 +25,7 @@ import { BaseFormComponent } from '../base-form';
     ReactiveFormsModule,
     BaseFormComponent,
     PhoneInputComponent,
-    ButtonWithSpinnerComponent,
-    ErrorFooterComponent,
+    ErrorAlertComponent,
   ],
   templateUrl: './register-form.component.html',
 })

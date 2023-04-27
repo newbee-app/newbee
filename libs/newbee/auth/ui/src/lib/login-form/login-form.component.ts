@@ -7,10 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
-import {
-  ButtonWithSpinnerComponent,
-  ErrorFooterComponent,
-} from '@newbee/newbee/shared/ui';
+import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import { getErrorMessage, HttpClientError } from '@newbee/newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
@@ -24,8 +21,7 @@ import { BaseFormComponent } from '../base-form';
     CommonModule,
     ReactiveFormsModule,
     BaseFormComponent,
-    ButtonWithSpinnerComponent,
-    ErrorFooterComponent,
+    ErrorAlertComponent,
   ],
   templateUrl: './login-form.component.html',
 })

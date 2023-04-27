@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'newbee-authenticated-action-item',
@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
   imports: [CommonModule],
   templateUrl: './authenticated-action-item.component.html',
 })
-export class AuthenticatedActionItemComponent {}
+export class AuthenticatedActionItemComponent {
+  @Input() userName!: string;
+}

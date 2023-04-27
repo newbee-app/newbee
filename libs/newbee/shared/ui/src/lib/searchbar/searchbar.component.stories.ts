@@ -12,7 +12,6 @@ export default {
     }),
   ],
   args: {
-    border: true,
     placeholder: true,
     searchTerm: '',
   },
@@ -27,10 +26,6 @@ export const Primary: Story = {};
 
 export const NoPlaceholder: Story = {
   args: { placeholder: false },
-};
-
-export const Borderless: Story = {
-  args: { border: false },
 };
 
 export const InitialSearchValue: Story = {

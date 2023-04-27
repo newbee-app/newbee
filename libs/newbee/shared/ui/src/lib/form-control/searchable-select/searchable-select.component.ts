@@ -13,7 +13,7 @@ import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
-import { ErrorFooterComponent } from '../../error-footer/error-footer.component';
+import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 import { SearchbarComponent } from '../../searchbar/searchbar.component';
 
 /**
@@ -32,7 +32,7 @@ import { SearchbarComponent } from '../../searchbar/searchbar.component';
     CommonModule,
     ReactiveFormsModule,
     SearchbarComponent,
-    ErrorFooterComponent,
+    ErrorAlertComponent,
   ],
   templateUrl: './searchable-select.component.html',
   providers: [
@@ -211,6 +211,10 @@ export class SearchableSelectComponent<T>
     }
 
     this._expanded = false;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     if (emitEvent) {
       this._onTouched();
       this.exited.emit();

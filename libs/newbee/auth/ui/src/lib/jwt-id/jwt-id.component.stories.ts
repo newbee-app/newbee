@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ErrorFooterComponent } from '@newbee/newbee/shared/ui';
+import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { internalServerError } from '@newbee/shared/util';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
@@ -11,7 +11,7 @@ export default {
   component: JwtIdComponent,
   decorators: [
     moduleMetadata({
-      imports: [CommonModule, BaseFormComponent, ErrorFooterComponent],
+      imports: [CommonModule, BaseFormComponent, ErrorAlertComponent],
     }),
   ],
   args: {
