@@ -28,6 +28,16 @@ export class SearchbarComponent implements OnInit, OnDestroy {
   @Input() placeholder = true;
 
   /**
+   * Whether to include the magnifying glass symbol.
+   */
+  @Input() includeSearchSymbol = true;
+
+  /**
+   * Whether to include the x mark symbol.
+   */
+  @Input() includeClearSymbol = true;
+
+  /**
    * Initial value for the searchbar's value
    */
   @Input() searchTerm = '';
@@ -45,26 +55,23 @@ export class SearchbarComponent implements OnInit, OnDestroy {
   /**
    * Used to unsubscribe from infinite observables.
    */
-  unsubscribe$ = new Subject<void>();
+  private readonly unsubscribe$ = new Subject<void>();
 
   /**
    * Call the method to ignore a fed-in mouse event.
    */
   ignoreMouseEvent = ignoreMouseEvent;
 
-  constructor() {
-    this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (value) => {
-        this.searchTermChange.emit(value ?? '');
-      },
-    });
-  }
-
   /**
    * Initialize the searchbar with the value of `searchTerm`.
    */
   ngOnInit(): void {
     this.searchbar.setValue(this.searchTerm, { emitEvent: false });
+    this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: (value) => {
+        this.searchTermChange.emit(value ?? '');
+      },
+    });
   }
 
   /**

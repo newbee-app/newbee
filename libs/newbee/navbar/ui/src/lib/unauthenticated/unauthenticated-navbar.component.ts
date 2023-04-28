@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { RouteKeyword } from '@newbee/newbee/navbar/util';
-import { UnauthenticatedActionItemComponent } from './action-item/unauthenticated-action-item.component';
-import { UnauthenticatedNavigationComponent } from './navigation/unauthenticated-navigation.component';
+import {
+  RouteKeyword,
+  unauthenticatedNavbarRoutes,
+} from '@newbee/newbee/navbar/util';
 
 /**
  * The unauthenticated version of the navbar.
@@ -10,11 +11,7 @@ import { UnauthenticatedNavigationComponent } from './navigation/unauthenticated
 @Component({
   selector: 'newbee-unauthenticated-navbar',
   standalone: true,
-  imports: [
-    CommonModule,
-    UnauthenticatedActionItemComponent,
-    UnauthenticatedNavigationComponent,
-  ],
+  imports: [CommonModule],
   templateUrl: './unauthenticated-navbar.component.html',
 })
 export class UnauthenticatedNavbarComponent {
@@ -22,6 +19,10 @@ export class UnauthenticatedNavbarComponent {
    * The `EventEmitter` that tells the parent component what route to navigate to.
    */
   @Output() navigateToLink = new EventEmitter<RouteKeyword>();
+
+  readonly routeKeyword = RouteKeyword;
+
+  readonly links = unauthenticatedNavbarRoutes;
 
   /**
    * Calls `navigateToLink.emit()` using the given link.

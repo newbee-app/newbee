@@ -10,7 +10,11 @@ import {
 } from '@angular/core';
 import type { ControlValueAccessor } from '@angular/forms';
 import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { ClickService, SelectOption } from '@newbee/newbee/shared/util';
+import {
+  blurActiveElement,
+  ClickService,
+  SelectOption,
+} from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
 import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
@@ -211,9 +215,7 @@ export class SearchableSelectComponent<T>
     }
 
     this._expanded = false;
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+    blurActiveElement();
 
     if (emitEvent) {
       this._onTouched();

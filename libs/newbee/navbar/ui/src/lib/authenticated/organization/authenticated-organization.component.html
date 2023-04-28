@@ -1,4 +1,0 @@
-<div id="authenticated-organization-container" [ngSwitch]="organizations.length" class="flex flex-row items-baseline gap-x-4 md:gap-x-6 text-black dark:text-white">
-  <p *ngSwitchCase="1">{{selectedOrganization.selectedValue}}</p>
-  <newbee-dropdown [dropdownText]="selectedOrganization.selectedValue" [options]="organizations" (selectOption)="selectOption($event)" *ngSwitchDefault></newbee-dropdown>
-</div>

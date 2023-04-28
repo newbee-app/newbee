@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouteKeyword } from '@newbee/newbee/navbar/util';
-import { UnauthenticatedActionItemComponent } from './action-item/unauthenticated-action-item.component';
-import { UnauthenticatedNavigationComponent } from './navigation/unauthenticated-navigation.component';
 
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
@@ -12,12 +10,7 @@ describe('UnauthenticatedNavbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        UnauthenticatedActionItemComponent,
-        UnauthenticatedNavigationComponent,
-        UnauthenticatedNavbarComponent,
-      ],
+      imports: [CommonModule, UnauthenticatedNavbarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UnauthenticatedNavbarComponent);

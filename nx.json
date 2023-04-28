@@ -35,7 +35,8 @@
       "buildable": true
     },
     "@nrwl/angular:component": {
-      "style": "none"
+      "standalone": true,
+      "inlineStyle": true
     },
     "@nrwl/angular:scam": {
       "style": "none"
