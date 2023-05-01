@@ -8,6 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { RouteKeyword } from '@newbee/newbee/navbar/util';
 import { SearchableSelectComponent } from '@newbee/newbee/shared/ui';
 import { SelectOption } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
@@ -29,7 +30,17 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
     SelectOption<string>
   >();
 
+  @Input() darkMode!: boolean;
+
+  @Output() darkModeChange = new EventEmitter<boolean>();
+
+  @Output() navigateToLink = new EventEmitter<RouteKeyword>();
+
+  @Output() logout = new EventEmitter<void>();
+
   organizationSelect = new FormControl('');
+
+  readonly routeKeyword = RouteKeyword;
 
   private readonly unsubscribe$ = new Subject<void>();
 
@@ -57,5 +68,21 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  emitNavigateToLink(route: RouteKeyword): void {
+    this.navigateToLink.emit(route);
+  }
+
+  emitDarkModeChange(): void {
+    this.darkModeChange.emit(!this.darkMode);
+  }
+
+  emitLogout(): void {
+    this.logout.emit();
+  }
+
+  get darkModeText(): string {
+    return `Dark mode: ${this.darkMode ? 'on' : 'off'}`;
   }
 }

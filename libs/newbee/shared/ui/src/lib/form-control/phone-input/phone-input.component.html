@@ -1,11 +1,11 @@
 <div id="phone-input-container" [formGroup]="phoneNumber" class="flex flex-row flex-wrap gap-2 w-full">
-  <div id="country-input-container" class="w-48 grow">
+  <div id="country-input-container" class="w-fit grow">
     <newbee-searchable-select [options]="countryOptions" optionName="Country" formControlName="country" [valid]="!hasError('country') || clean" [errorText]="errorMessage" (exited)="onTouched(); formatNumber();"></newbee-searchable-select>
   </div>
 
   <div id="phone-number-input-container" class="flex flex-col gap-y-2 max-w-full grow">
     <label for="phone-number-input" class="sr-only">Phone number (optional)</label>
-    <input type="tel" id="phone-number-input" formControlName="number" placeholder="Phone number" newbeePhoneNumberInput [country]="value.country ?? null" (blur)="onTouched()" class="input input-bordered rounded-lg truncate" [ngClass]="{'input-error': hasError('number') && !clean}">
+    <input type="tel" id="phone-number-input" formControlName="number" placeholder="Phone number" newbeePhoneNumberInput [country]="value.country ?? null" (blur)="onTouched()" class="input input-bordered rounded-box truncate" [ngClass]="{'input-error': hasError('number') && !clean}">
     <newbee-error-alert *ngIf="hasError('number') && !clean" [text]="errorMessage"></newbee-error-alert>
   </div>
 </div>

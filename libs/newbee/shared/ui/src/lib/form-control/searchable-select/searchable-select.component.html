@@ -1,7 +1,7 @@
 <div>
   <div class="dropdown w-full">
-    <button [disabled]="disabled" (click)="toggleExpand()" tabindex="0" class="btn flex flex-row justify-between w-full">
-      <span>{{selectedText}}</span>
+    <button [disabled]="disabled" (click)="toggleExpand()" tabindex="0" class="btn btn-outline flex flex-row flex-nowrap gap-x-1 justify-between w-full">
+      <span class="truncate">{{selectedText}}</span>
 
       <span class="transition-all duration-100 ease-in-out" [ngClass]="{'rotate-180': expanded}">
         <!-- chevron-down svg -->
@@ -11,7 +11,7 @@
       </span>
     </button>
 
-    <ul tabindex="0" class="dropdown-content menu flex flex-col flex-nowrap w-full mt-2 bg-base-200 rounded-lg max-h-60 overflow-y-scroll">
+    <ul tabindex="0" class="dropdown-content menu flex flex-col flex-nowrap min-w-full w-fit mt-2 bg-base-200 rounded-box max-h-60 overflow-y-scroll">
       <div><newbee-searchbar [(searchTerm)]="searchTerm" [includeSearchSymbol]="false" [includeClearSymbol]="false"></newbee-searchbar></div>
 
       <li *ngFor="let option of optionsWithSearch" (click)="selectOption(option.value)"><a class="text-left">{{option.dropdownValue}}</a></li>

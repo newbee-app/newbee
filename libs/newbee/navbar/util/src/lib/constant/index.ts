@@ -8,6 +8,9 @@ export enum RouteKeyword {
   Pricing = 'Pricing',
   Login = 'Login',
   Register = 'Register',
+  Account = 'Account',
+  CreateDoc = 'CreateDoc',
+  CreateQna = 'CreateQna',
 }
 
 /**
@@ -20,6 +23,9 @@ export const keywordToRoute: { [key in RouteKeyword]: string } = {
   Pricing: '/pricing',
   Login: '/auth/login',
   Register: '/auth/register',
+  Account: '/account',
+  CreateDoc: '/doc/create',
+  CreateQna: '/qna/create',
 };
 
 /**
