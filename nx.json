@@ -60,6 +60,9 @@
     "@nrwl/nest:service": {
       "flat": true,
       "directory": "lib"
+    },
+    "@nrwl/js:library": {
+      "unitTestRunner": "jest"
     }
   },
   "defaultProject": "newbee",
