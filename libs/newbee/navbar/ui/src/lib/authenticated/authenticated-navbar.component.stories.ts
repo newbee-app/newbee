@@ -37,11 +37,9 @@ export default {
     userDisplayName: testUser1.displayName,
     organizations: [testSelectOptionString1, testSelectOptionString2],
     selectedOrganization: testSelectOptionString1,
-    darkMode: true,
   },
   argTypes: {
     selectedOrganizationChange: { action: 'selectedOrganizationChange' },
-    darkModeChange: { action: 'darkModeChange' },
     navigateToLink: { action: 'navigateToLink' },
     logout: { action: 'logout' },
   },
@@ -49,9 +47,4 @@ export default {
 
 type Story = StoryObj<AuthenticatedNavbarComponent>;
 
-export const Primary: Story = {
-  render: (args) => ({
-    props: args,
-    template: `<newbee-authenticated-navbar [userDisplayName]="userDisplayName" [organizations]="organizations" [(selectedOrganization)]="selectedOrganization" [(darkMode)]="darkMode" (selectedOrganizationChange)="selectedOrganizationChange($event)" (darkModeChange)="darkModeChange($event)" (navigateToLink)="navigateToLink($event)" (logout)="logout($event)"></newbee-authenticated-navbar>`,
-  }),
-};
+export const Primary: Story = {};

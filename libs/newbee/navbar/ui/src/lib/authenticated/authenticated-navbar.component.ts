@@ -30,10 +30,6 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
     SelectOption<string>
   >();
 
-  @Input() darkMode!: boolean;
-
-  @Output() darkModeChange = new EventEmitter<boolean>();
-
   @Output() navigateToLink = new EventEmitter<RouteKeyword>();
 
   @Output() logout = new EventEmitter<void>();
@@ -74,15 +70,7 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
     this.navigateToLink.emit(route);
   }
 
-  emitDarkModeChange(): void {
-    this.darkModeChange.emit(!this.darkMode);
-  }
-
   emitLogout(): void {
     this.logout.emit();
-  }
-
-  get darkModeText(): string {
-    return `Dark mode: ${this.darkMode ? 'on' : 'off'}`;
   }
 }
