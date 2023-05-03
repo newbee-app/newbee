@@ -8,9 +8,8 @@ import {
   Output,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouteKeyword } from '@newbee/newbee/navbar/util';
 import { SearchableSelectComponent } from '@newbee/newbee/shared/ui';
-import { SelectOption } from '@newbee/newbee/shared/util';
+import { RouteKeyword, SelectOption } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({

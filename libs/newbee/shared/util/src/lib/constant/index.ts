@@ -1,17 +1,4 @@
-/**
- * All of the possible keywords representing routes.
- */
-export enum RouteKeyword {
-  Home = 'Home',
-  Features = 'Features',
-  Guides = 'Guides',
-  Pricing = 'Pricing',
-  Login = 'Login',
-  Register = 'Register',
-  Account = 'Account',
-  CreateDoc = 'CreateDoc',
-  CreateQna = 'CreateQna',
-}
+import { RouteKeyword } from '../enum';
 
 /**
  * A constant mapping keywords to routes.

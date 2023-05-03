@@ -3,7 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import {
   RouteKeyword,
   unauthenticatedNavbarRoutes,
-} from '@newbee/newbee/navbar/util';
+} from '@newbee/newbee/shared/util';
 
 /**
  * The unauthenticated version of the navbar.
