@@ -7,7 +7,7 @@
       </svg>
     </span>
 
-    <input type="text" [formControl]="searchbar" [placeholder]="placeholder ? 'Search...' : ''" class="input input-bordered w-full">
+    <input type="text" [formControl]="searchbar" [placeholder]="placeholder ? 'Search' : ''" (blur)="onTouched()" class="input input-bordered w-full">
 
     <!-- x-mark svg -->
     <button *ngIf="includeClearSymbol" (click)="clear()" (mousedown)="ignoreMouseEvent($event)" class="btn" [ngClass]="{hidden: !searchbar.value}">

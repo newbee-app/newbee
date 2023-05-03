@@ -8,8 +8,12 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import type { ControlValueAccessor } from '@angular/forms';
-import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import {
   blurActiveElement,
   ClickService,
@@ -18,7 +22,7 @@ import {
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
 import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
-import { SearchbarComponent } from '../../searchbar/searchbar.component';
+import { SearchbarComponent } from '../searchbar/searchbar.component';
 
 /**
  * A custom `<select>` component.
@@ -76,9 +80,9 @@ export class SearchableSelectComponent<T>
   @Output() exited = new EventEmitter<void>();
 
   /**
-   * What to search for in the custom select.
+   * The form control for the searchbar component.
    */
-  searchTerm = '';
+  searchTerm = new FormControl('');
 
   /**
    * Whether the dropdown should be displayed.
@@ -271,11 +275,13 @@ export class SearchableSelectComponent<T>
    * Get the list of options after filtering for the searchbox.
    */
   get optionsWithSearch(): SelectOption<T>[] {
-    return this.options.filter((option) => {
-      return option.dropdownValue
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase());
-    });
+    return this.options.filter((option) =>
+      this.searchTerm.value
+        ? option.dropdownValue
+            .toLowerCase()
+            .includes(this.searchTerm.value?.toLowerCase())
+        : true
+    );
   }
 
   /**

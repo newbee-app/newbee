@@ -12,8 +12,8 @@ import {
   StoryObj,
 } from '@storybook/angular';
 import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
-import { SearchbarComponent } from '../../searchbar/searchbar.component';
 import { ClickWrapperComponent } from '../../testing';
+import { SearchbarComponent } from '../searchbar/searchbar.component';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {

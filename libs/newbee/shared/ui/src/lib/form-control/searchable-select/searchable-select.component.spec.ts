@@ -117,7 +117,7 @@ describe('SearchableSelectComponent', () => {
     });
 
     it('should output options restricted by searchbox', () => {
-      component.searchTerm = 'united';
+      component.searchTerm.setValue('united');
       fixture.detectChanges();
       expect(component.optionsWithSearch).toEqual([testSelectOptionCountry1]);
     });

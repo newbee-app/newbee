@@ -13,10 +13,8 @@ export default {
   ],
   args: {
     placeholder: true,
-    searchTerm: '',
-  },
-  argTypes: {
-    searchTermChange: { action: 'searchTermChange' },
+    includeSearchSymbol: true,
+    includeClearSymbol: true,
   },
 } as Meta<SearchbarComponent>;
 
@@ -28,6 +26,10 @@ export const NoPlaceholder: Story = {
   args: { placeholder: false },
 };
 
-export const InitialSearchValue: Story = {
-  args: { searchTerm: 'Searching' },
+export const NoSearchSymbol: Story = {
+  args: { includeSearchSymbol: false },
+};
+
+export const NoClearSymbol: Story = {
+  args: { includeClearSymbol: false },
 };

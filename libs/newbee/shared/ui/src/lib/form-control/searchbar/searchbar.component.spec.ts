@@ -16,7 +16,6 @@ describe('SearchbarComponent', () => {
     fixture = TestBed.createComponent(SearchbarComponent);
     component = fixture.componentInstance;
 
-    jest.spyOn(component.searchTermChange, 'emit');
     fixture.detectChanges();
   });
 
@@ -25,21 +24,30 @@ describe('SearchbarComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('ngOnInit()', () => {
+  describe('init', () => {
     it('should initialize the searchbar control value', () => {
-      expect(component.searchTerm).toEqual('');
+      expect(component.placeholder).toBeTruthy();
+      expect(component.includeSearchSymbol).toBeTruthy();
+      expect(component.includeClearSymbol).toBeTruthy();
       expect(component.searchbar.value).toEqual('');
-      component.searchTerm = 'search';
-      component.ngOnInit();
-      expect(component.searchbar.value).toEqual('search');
+      expect(component.onChange).toBeDefined();
+      expect(component.onTouched).toBeDefined();
     });
   });
 
-  describe('search', () => {
-    it('should emit when the searchbar value canges', () => {
-      component.searchbar.setValue(testSearchTerm);
-      expect(component.searchTermChange.emit).toBeCalledTimes(1);
-      expect(component.searchTermChange.emit).toBeCalledWith(testSearchTerm);
+  describe('writeValue', () => {
+    it('should change the search value', () => {
+      component.writeValue('searching');
+      expect(component.searchbar.value).toEqual('searching');
+    });
+  });
+
+  describe('setDisabledState', () => {
+    it('should update searchbar form control', () => {
+      component.setDisabledState(true);
+      expect(component.searchbar.disabled).toBeTruthy();
+      component.setDisabledState(false);
+      expect(component.searchbar.disabled).toBeFalsy();
     });
   });
 
