@@ -35,11 +35,9 @@
       "buildable": true
     },
     "@nrwl/angular:component": {
+      "style": "css",
       "standalone": true,
       "inlineStyle": true
-    },
-    "@nrwl/angular:scam": {
-      "style": "none"
     },
     "@nrwl/angular:storybook-configuration": {
       "configureCypress": false,

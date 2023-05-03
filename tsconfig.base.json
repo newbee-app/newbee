@@ -121,6 +121,7 @@
       "@newbee/newbee/auth/feature": ["libs/newbee/auth/feature/src/index.ts"],
       "@newbee/newbee/auth/ui": ["libs/newbee/auth/ui/src/index.ts"],
       "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
+      "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
       "@newbee/newbee/navbar/ui": ["libs/newbee/navbar/ui/src/index.ts"],
       "@newbee/newbee/shared/data-access": [
         "libs/newbee/shared/data-access/src/index.ts"
