@@ -22,4 +22,5 @@ export enum RouteKeyword {
   Account = 'Account',
   CreateDoc = 'CreateDoc',
   CreateQna = 'CreateQna',
+  CreateOrg = 'CreateOrg',
 }

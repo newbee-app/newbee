@@ -2,7 +2,7 @@
   <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
     <h3>Getting started is free, always</h3>
 
-    <form id="register-form" [formGroup]="registerForm" class="space-y-5">
+    <form id="register-form" [formGroup]="registerForm" (ngSubmit)="emitRegister()" class="space-y-5">
       <div class="flex flex-col gap-y-2">
         <div>
           <label for="email-input" class="sr-only">Email address</label>
@@ -33,7 +33,7 @@
       </div>
 
       <div id="buttons">
-        <button id="submit-button" [disabled]="registerForm.invalid" class="btn btn-primary w-full" [ngClass]="{loading: registerPending}" (click)="emitRegister()">Create Account</button>
+        <button id="submit-button" type="submit" [disabled]="registerForm.invalid" class="btn btn-primary w-full" [ngClass]="{loading: registerPending}">Create Account</button>
 
         <div *ngIf="httpClientError?.messages?.['misc']" class="mt-2">
           <newbee-error-alert [text]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-alert>

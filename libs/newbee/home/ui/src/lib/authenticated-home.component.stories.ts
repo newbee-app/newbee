@@ -1,37 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import {
-  ClickWrapperComponent,
-  SearchableSelectComponent,
-} from '@newbee/newbee/shared/ui';
+import { AuthenticatedNavbarComponent } from '@newbee/newbee/navbar/ui';
+import { SearchbarComponent } from '@newbee/newbee/shared/ui';
 import {
   testSelectOptionString1,
   testSelectOptionString2,
 } from '@newbee/newbee/shared/util';
 import { testUser1 } from '@newbee/shared/util';
-import {
-  componentWrapperDecorator,
-  Meta,
-  moduleMetadata,
-  StoryObj,
-} from '@storybook/angular';
-import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { AuthenticatedHomeComponent } from './authenticated-home.component';
 
 export default {
-  title: 'AuthenticatedNavbarComponent',
-  component: AuthenticatedNavbarComponent,
+  title: 'AuthenticatedHomeComponent',
+  component: AuthenticatedHomeComponent,
   decorators: [
     moduleMetadata({
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        SearchableSelectComponent,
-        ClickWrapperComponent,
+        AuthenticatedNavbarComponent,
+        SearchbarComponent,
       ],
     }),
-    componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
-    ),
   ],
   args: {
     userDisplayName: testUser1.displayName,
@@ -40,15 +30,21 @@ export default {
   },
   argTypes: {
     selectedOrganizationChange: { action: 'selectedOrganizationChange' },
+    search: { action: 'search' },
+    suggest: { action: 'suggest' },
     navigateToLink: { action: 'navigateToLink' },
     logout: { action: 'logout' },
   },
-} as Meta<AuthenticatedNavbarComponent>;
+} as Meta<AuthenticatedHomeComponent>;
 
-type Story = StoryObj<AuthenticatedNavbarComponent>;
+type Story = StoryObj<AuthenticatedHomeComponent>;
 
-export const Primary: Story = {};
+export const HasOrgs: Story = {};
 
-export const NoSelectedOrganization: Story = {
+export const NoOrgSelected: Story = {
   args: { selectedOrganization: null },
+};
+
+export const NoOrgs: Story = {
+  args: { organizations: [] },
 };

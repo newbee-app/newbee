@@ -13,6 +13,7 @@ export const keywordToRoute: { [key in RouteKeyword]: string } = {
   Account: '/account',
   CreateDoc: '/doc/create',
   CreateQna: '/qna/create',
+  CreateOrg: '/org/create',
 };
 
 /**

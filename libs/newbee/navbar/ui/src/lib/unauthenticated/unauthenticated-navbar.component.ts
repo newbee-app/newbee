@@ -20,16 +20,22 @@ export class UnauthenticatedNavbarComponent {
    */
   @Output() navigateToLink = new EventEmitter<RouteKeyword>();
 
+  /**
+   * All of the keywords that represent routes.
+   */
   readonly routeKeyword = RouteKeyword;
 
+  /**
+   * All of the possible routes that can be reached from the unauthenticated navbar.
+   */
   readonly links = unauthenticatedNavbarRoutes;
 
   /**
-   * Calls `navigateToLink.emit()` using the given link.
+   * Calls `navigateToLink.emit()` using the given route.
    *
-   * @param link The route to navigate to.
+   * @param route The route to navigate to.
    */
-  emitNavigateToLink(link: RouteKeyword) {
-    this.navigateToLink.emit(link);
+  emitNavigateToLink(route: RouteKeyword) {
+    this.navigateToLink.emit(route);
   }
 }

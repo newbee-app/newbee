@@ -1,6 +1,6 @@
 <div>
   <div class="dropdown w-full">
-    <button [disabled]="disabled" (click)="toggleExpand()" tabindex="0" class="btn btn-outline flex flex-row flex-nowrap gap-x-1 justify-between w-full">
+    <button type="button" [disabled]="disabled" (click)="toggleExpand()" tabindex="0" class="btn btn-outline flex flex-row flex-nowrap gap-x-1 justify-between w-full">
       <span class="truncate">{{selectedText}}</span>
 
       <span class="transition-all duration-100 ease-in-out" [ngClass]="{'rotate-180': expanded}">

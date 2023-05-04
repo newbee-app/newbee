@@ -46,6 +46,48 @@
           "libs/newbee/home/ui/**/*.html"
         ]
       }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/newbee/home/ui/.storybook",
+        "browserTarget": "newbee-home-ui:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee-home-ui",
+        "configDir": "libs/newbee/home/ui/.storybook",
+        "browserTarget": "newbee-home-ui:build-storybook",
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee-home-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-home-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-home-ui:build-storybook:ci"
+        }
+      }
     }
   }
 }

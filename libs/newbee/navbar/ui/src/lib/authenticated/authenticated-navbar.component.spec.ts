@@ -42,6 +42,7 @@ describe('AuthenticatedNavbarComponent', () => {
 
   it('should emit when a new organization is selected', () => {
     component.organizationSelect.setValue(testSelectOptionString2.value);
+    expect(component.selectedOrganization).toEqual(testSelectOptionString2);
     expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
     expect(component.selectedOrganizationChange.emit).toBeCalledWith(
       testSelectOptionString2

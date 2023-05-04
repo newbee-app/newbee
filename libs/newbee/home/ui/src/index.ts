@@ -1,1 +1,1 @@
-export * from './lib/newbee-home-ui.module';
+export * from './lib/authenticated-home.component';

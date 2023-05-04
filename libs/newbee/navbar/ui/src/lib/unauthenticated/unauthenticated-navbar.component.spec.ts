@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouteKeyword } from '@newbee/newbee/navbar/util';
+import { RouteKeyword } from '@newbee/newbee/shared/util';
 
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
