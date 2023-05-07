@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EntityService,
   QnaEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -56,6 +57,7 @@ const mockElongateUuid = elongateUuid as jest.Mock;
 describe('QnaService', () => {
   let service: QnaService;
   let repository: EntityRepository<QnaEntity>;
+  let entityService: EntityService;
   let solrCli: SolrCli;
 
   const testAssignParams = {
@@ -94,6 +96,12 @@ describe('QnaService', () => {
           }),
         },
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
+          }),
+        },
+        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -104,13 +112,13 @@ describe('QnaService', () => {
     repository = module.get<EntityRepository<QnaEntity>>(
       getRepositoryToken(QnaEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockQnaEntity.mockReturnValue(testQnaEntity1);
     mockV4.mockReturnValue(testQnaEntity1.id);
     mockElongateUuid.mockReturnValue(testQnaEntity1.slug);
-    testQnaEntity1.createQnaDocParams.mockReturnValue(testQnaDocParams1);
 
     jest.useFakeTimers().setSystemTime(testNow1);
   });
@@ -118,6 +126,7 @@ describe('QnaService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -212,9 +221,9 @@ describe('QnaService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testUpdatedQna.createQnaDocParams.mockReturnValue(
-        testUpdatedQnaDocParams
-      );
+      jest
+        .spyOn(entityService, 'createQnaDocParams')
+        .mockReturnValue(testUpdatedQnaDocParams);
     });
 
     afterEach(() => {
@@ -280,9 +289,9 @@ describe('QnaService', () => {
 
   describe('markUpToDate', () => {
     beforeEach(() => {
-      testUpdatedQna.createQnaDocParams.mockReturnValue(
-        testUpdatedQnaDocParams
-      );
+      jest
+        .spyOn(entityService, 'createQnaDocParams')
+        .mockReturnValue(testUpdatedQnaDocParams);
     });
 
     afterEach(() => {
@@ -328,6 +337,11 @@ describe('QnaService', () => {
   });
 
   describe('delete', () => {
+    afterEach(() => {
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(testQnaEntity1);
+    });
+
     it('should delete a qna', async () => {
       await expect(service.delete(testQnaEntity1)).resolves.toBeUndefined();
       expect(repository.removeAndFlush).toBeCalledTimes(1);

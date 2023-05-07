@@ -3,7 +3,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -13,16 +13,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  EntityService,
   OrganizationEntity,
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { BaseOrgMemberDto } from '@newbee/shared/data-access';
 import {
   compareOrgRoles,
   forbiddenError,
   internalServerError,
   orgMemberNotFound,
+  OrgMemberRelation,
   OrgRoleEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
@@ -41,7 +42,7 @@ export class OrgMemberService {
   constructor(
     @InjectRepository(OrgMemberEntity)
     private readonly orgMemberRepository: EntityRepository<OrgMemberEntity>,
-    private readonly em: EntityManager,
+    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -77,7 +78,7 @@ export class OrgMemberService {
     try {
       await this.solrCli.addDocs(
         organization.id,
-        await orgMember.createOrgMemberDocParams()
+        await this.entityService.createOrgMemberDocParams(orgMember)
       );
     } catch (err) {
       this.logger.error(err);
@@ -223,8 +224,7 @@ export class OrgMemberService {
 
     // Handle deleting the org member in the database
     try {
-      await orgMember.safeToDelete(this.em);
-      await orgMember.prepareToDelete();
+      await this.entityService.prepareToDelete(orgMember);
       await this.orgMemberRepository.removeAndFlush(orgMember);
     } catch (err) {
       if (err instanceof BadRequestException) {
@@ -245,19 +245,20 @@ export class OrgMemberService {
   }
 
   /**
-   * Takes in an org member and converts it to a `BaseOrgMemberDto`.
+   * Takes in an org member and converts it to aa `OrgMemberRelation`.
    *
    * @param orgMember The org member to convert.
    *
-   * @returns The org member as a `BaseOrgMemberDto`.
+   * @returns The org member as an `OrgMemberRelation`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createOrgMemberDto(
+  async createOrgMemberRelation(
     orgMember: OrgMemberEntity
-  ): Promise<BaseOrgMemberDto> {
+  ): Promise<OrgMemberRelation> {
     try {
       await this.orgMemberRepository.populate(orgMember, [
         'user',
+        'organization',
         'teams.team',
         'createdDocs',
         'maintainedDocs',
@@ -270,28 +271,22 @@ export class OrgMemberService {
     }
 
     const {
-      role,
-      slug,
       user,
+      organization,
       teams,
       createdDocs,
       maintainedDocs,
       createdQnas,
       maintainedQnas,
     } = orgMember;
-    const { email, name, displayName, phoneNumber } = user;
 
     return {
-      role,
-      slug,
-      email,
-      name,
-      displayName,
-      phoneNumber,
+      orgMember,
+      organization,
+      user,
       teams: teams.getItems().map((teamMember) => {
-        const { role, team } = teamMember;
-        const { name, slug } = team;
-        return { name, slug, role };
+        const { team } = teamMember;
+        return { teamMember, team };
       }),
       createdDocs: createdDocs.getItems(),
       maintainedDocs: maintainedDocs.getItems(),

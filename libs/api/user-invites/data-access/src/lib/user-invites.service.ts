@@ -5,7 +5,10 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { UserInvitesEntity } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  UserInvitesEntity,
+} from '@newbee/api/shared/data-access';
 import { internalServerError } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 
@@ -21,7 +24,8 @@ export class UserInvitesService {
 
   constructor(
     @InjectRepository(UserInvitesEntity)
-    private readonly userInvitesRepository: EntityRepository<UserInvitesEntity>
+    private readonly userInvitesRepository: EntityRepository<UserInvitesEntity>,
+    private readonly entityService: EntityService
   ) {}
 
   /**
@@ -56,7 +60,7 @@ export class UserInvitesService {
    */
   async delete(userInvites: UserInvitesEntity): Promise<void> {
     try {
-      await userInvites.prepareToDelete();
+      await this.entityService.prepareToDelete(userInvites);
       await this.userInvitesRepository.removeAndFlush(userInvites);
     } catch (err) {
       this.logger.error(err);

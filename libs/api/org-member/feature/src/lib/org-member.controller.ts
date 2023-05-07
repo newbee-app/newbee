@@ -14,11 +14,11 @@ import {
   SubjectOrgMember,
 } from '@newbee/api/shared/util';
 import {
-  BaseOrgMemberDto,
   organizationUrl,
   orgMemberUrl,
   orgMemberVersion,
 } from '@newbee/shared/data-access';
+import type { OrgMemberRelation } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
@@ -51,12 +51,14 @@ export class OrgMemberController {
   async get(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity
-  ): Promise<BaseOrgMemberDto> {
+  ): Promise<OrgMemberRelation> {
     this.logger.log(
       `Get org member request received in organization ID: ${organization.id}, for slug: ${subjectOrgMember.slug}`
     );
     this.logger.log(`Found org member, slug: ${subjectOrgMember.slug}`);
-    return await this.orgMemberService.createOrgMemberDto(subjectOrgMember);
+    return await this.orgMemberService.createOrgMemberRelation(
+      subjectOrgMember
+    );
   }
 
   /**
@@ -76,7 +78,7 @@ export class OrgMemberController {
     @OrgMember() orgMember: OrgMemberEntity,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity
-  ): Promise<BaseOrgMemberDto> {
+  ): Promise<OrgMemberRelation> {
     this.logger.log(
       `Update org member request received in organization ID: ${organization.id}, for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}`
     );
@@ -91,7 +93,9 @@ export class OrgMemberController {
       `Updated org member for org member slug: ${updatedOrgMember.slug}, in organization ID: ${organization.id}`
     );
 
-    return await this.orgMemberService.createOrgMemberDto(updatedOrgMember);
+    return await this.orgMemberService.createOrgMemberRelation(
+      updatedOrgMember
+    );
   }
 
   /**

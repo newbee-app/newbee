@@ -15,6 +15,7 @@ import { OrgMemberModule } from '@newbee/api/org-member/feature';
 import { OrganizationModule } from '@newbee/api/organization/feature';
 import { QnaModule } from '@newbee/api/qna/feature';
 import { SearchModule } from '@newbee/api/search/feature';
+import { UtilModule } from '@newbee/api/shared/feature';
 import {
   AppConfig,
   appEnvironmentVariablesSchema,
@@ -70,6 +71,9 @@ import { default as appConfig } from '../environments/environment';
         configService.get('solr', { infer: true }),
       inject: [ConfigService],
     }),
+
+    // In-house global static modules
+    UtilModule,
 
     // In-house static modules
     AuthModule,

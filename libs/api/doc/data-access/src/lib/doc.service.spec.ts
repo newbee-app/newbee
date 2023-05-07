@@ -9,6 +9,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   DocEntity,
+  EntityService,
   testDocDocParams1,
   testDocEntity1,
   testOrganizationEntity1,
@@ -56,6 +57,7 @@ const mockElongateUuid = elongateUuid as jest.Mock;
 describe('DocService', () => {
   let service: DocService;
   let repository: EntityRepository<DocEntity>;
+  let entityService: EntityService;
   let solrCli: SolrCli;
 
   const testUpdatedDoc = createMock<DocEntity>({
@@ -81,6 +83,12 @@ describe('DocService', () => {
           }),
         },
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
+          }),
+        },
+        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -91,13 +99,13 @@ describe('DocService', () => {
     repository = module.get<EntityRepository<DocEntity>>(
       getRepositoryToken(DocEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
     mockV4.mockReturnValue(testDocEntity1.id);
     mockElongateUuid.mockReturnValue(testDocEntity1.slug);
-    testDocEntity1.createDocDocParams.mockReturnValue(testDocDocParams1);
 
     jest.useFakeTimers().setSystemTime(testNow1);
   });
@@ -198,9 +206,9 @@ describe('DocService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testUpdatedDoc.createDocDocParams.mockReturnValue(
-        testUpdatedDocDocParams
-      );
+      jest
+        .spyOn(entityService, 'createDocDocParams')
+        .mockReturnValue(testUpdatedDocDocParams);
     });
 
     afterEach(() => {
@@ -252,8 +260,8 @@ describe('DocService', () => {
 
   describe('markUpToDate', () => {
     beforeEach(() => {
-      testUpdatedDoc.createDocDocParams = jest
-        .fn()
+      jest
+        .spyOn(entityService, 'createDocDocParams')
         .mockReturnValue(testUpdatedDocDocParams);
     });
 
@@ -301,6 +309,8 @@ describe('DocService', () => {
 
   describe('delete', () => {
     afterEach(() => {
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(testDocEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testDocEntity1);
     });

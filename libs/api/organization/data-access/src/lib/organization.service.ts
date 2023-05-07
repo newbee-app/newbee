@@ -11,7 +11,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  OrganizationEntity,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import { generateUniqueSlug, newOrgConfigset } from '@newbee/api/shared/util';
 import {
   internalServerError,
@@ -36,6 +40,7 @@ export class OrganizationService {
   constructor(
     @InjectRepository(OrganizationEntity)
     private readonly organizationRepository: EntityRepository<OrganizationEntity>,
+    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -91,7 +96,7 @@ export class OrganizationService {
       for (const orgMember of organization.members) {
         await this.solrCli.addDocs(
           id,
-          await orgMember.createOrgMemberDocParams()
+          await this.entityService.createOrgMemberDocParams(orgMember)
         );
       }
     } catch (err) {
@@ -176,7 +181,7 @@ export class OrganizationService {
    */
   async delete(organization: OrganizationEntity): Promise<void> {
     try {
-      await organization.preapreToDelete();
+      await this.entityService.prepareToDelete(organization);
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);

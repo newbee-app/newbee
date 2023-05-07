@@ -3,7 +3,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -13,6 +13,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  EntityService,
   OrgMemberEntity,
   TeamEntity,
   TeamMemberEntity,
@@ -40,7 +41,7 @@ export class TeamMemberService {
   constructor(
     @InjectRepository(TeamMemberEntity)
     private readonly teamMemberRepository: EntityRepository<TeamMemberEntity>,
-    private readonly em: EntityManager
+    private readonly entityService: EntityService
   ) {}
 
   /**
@@ -183,7 +184,7 @@ export class TeamMemberService {
     this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
 
     try {
-      await teamMember.safeToDelete(this.em);
+      await this.entityService.prepareToDelete(teamMember);
       await this.teamMemberRepository.removeAndFlush(teamMember);
     } catch (err) {
       if (err instanceof BadRequestException) {

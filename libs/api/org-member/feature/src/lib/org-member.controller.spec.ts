@@ -5,10 +5,8 @@ import {
   testOrganizationEntity1,
   testOrgMemberEntity1,
 } from '@newbee/api/shared/data-access';
-import {
-  testBaseOrgMemberDto1,
-  testBaseUpdateOrgMemberDto1,
-} from '@newbee/shared/data-access';
+import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
+import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
 
 describe('OrgMemberController', () => {
@@ -27,9 +25,9 @@ describe('OrgMemberController', () => {
         {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
-            createOrgMemberDto: jest
+            createOrgMemberRelation: jest
               .fn()
-              .mockResolvedValue(testBaseOrgMemberDto1),
+              .mockResolvedValue(testOrgMemberRelation1),
             updateRole: jest.fn().mockResolvedValue(testUpdatedOrgMember),
           }),
         },
@@ -49,9 +47,11 @@ describe('OrgMemberController', () => {
     it('should return an org member as a DTO', async () => {
       await expect(
         controller.get(testOrgMemberEntity1, testOrganizationEntity1)
-      ).resolves.toEqual(testBaseOrgMemberDto1);
-      expect(service.createOrgMemberDto).toBeCalledTimes(1);
-      expect(service.createOrgMemberDto).toBeCalledWith(testOrgMemberEntity1);
+      ).resolves.toEqual(testOrgMemberRelation1);
+      expect(service.createOrgMemberRelation).toBeCalledTimes(1);
+      expect(service.createOrgMemberRelation).toBeCalledWith(
+        testOrgMemberEntity1
+      );
     });
   });
 
@@ -64,15 +64,17 @@ describe('OrgMemberController', () => {
           testOrgMemberEntity1,
           testOrganizationEntity1
         )
-      ).resolves.toEqual(testBaseOrgMemberDto1);
+      ).resolves.toEqual(testOrgMemberRelation1);
       expect(service.updateRole).toBeCalledTimes(1);
       expect(service.updateRole).toBeCalledWith(
         testOrgMemberEntity1,
         testBaseUpdateOrgMemberDto1.role,
         testOrgMemberEntity1.role
       );
-      expect(service.createOrgMemberDto).toBeCalledTimes(1);
-      expect(service.createOrgMemberDto).toBeCalledWith(testUpdatedOrgMember);
+      expect(service.createOrgMemberRelation).toBeCalledTimes(1);
+      expect(service.createOrgMemberRelation).toBeCalledWith(
+        testUpdatedOrgMember
+      );
     });
   });
 

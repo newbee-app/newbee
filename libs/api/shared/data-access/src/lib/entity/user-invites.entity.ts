@@ -6,6 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import type { UserInvites } from '@newbee/shared/util';
 import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { UserEntity } from './user.entity';
 
@@ -13,7 +14,7 @@ import { UserEntity } from './user.entity';
  * The MikroORM entity representing user invites.
  */
 @Entity()
-export class UserInvitesEntity {
+export class UserInvitesEntity implements UserInvites {
   /**
    * The globally unique ID for the user invites.
    * `hidden` is on, so it will never be serialized.
@@ -22,7 +23,7 @@ export class UserInvitesEntity {
   id: string;
 
   /**
-   * The email of the user who was invited.
+   * @inheritdoc
    */
   @Property({ unique: true })
   email: string;
@@ -54,18 +55,5 @@ export class UserInvitesEntity {
   constructor(id: string, email: string) {
     this.id = id;
     this.email = email;
-  }
-
-  /**
-   * Prepares to delete this instance by calling `removeAll` on all of the entity's collections with `orphanRemoval` on.
-   *
-   * @throws {Error} Any of the errors `init` can throw.
-   */
-  async prepareToDelete(): Promise<void> {
-    if (!this.orgMemberInvites.isInitialized()) {
-      await this.orgMemberInvites.init();
-    }
-
-    this.orgMemberInvites.removeAll();
   }
 }

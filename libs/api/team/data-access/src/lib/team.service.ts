@@ -12,6 +12,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  EntityService,
   OrganizationEntity,
   OrgMemberEntity,
   TeamEntity,
@@ -39,6 +40,7 @@ export class TeamService {
   constructor(
     @InjectRepository(TeamEntity)
     private readonly teamRepository: EntityRepository<TeamEntity>,
+    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -82,7 +84,10 @@ export class TeamService {
     }
 
     try {
-      await this.solrCli.addDocs(organization.id, team.createTeamDocParams());
+      await this.solrCli.addDocs(
+        organization.id,
+        this.entityService.createTeamDocParams(team)
+      );
     } catch (err) {
       this.logger.error(err);
       await this.teamRepository.removeAndFlush(team);
@@ -180,7 +185,7 @@ export class TeamService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        updatedTeam.createTeamDocParams()
+        this.entityService.createTeamDocParams(updatedTeam)
       );
     } catch (err) {
       this.logger.error(err);
@@ -198,7 +203,7 @@ export class TeamService {
    */
   async delete(team: TeamEntity): Promise<void> {
     try {
-      await team.prepareToDelete();
+      await this.entityService.prepareToDelete(team);
       await this.teamRepository.removeAndFlush(team);
     } catch (err) {
       this.logger.error(err);

@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EntityService,
   OrgMemberEntity,
   testOrganizationEntity1,
   testOrgMemberDocParams1,
@@ -39,7 +40,7 @@ const mockOrgMemberEntity = OrgMemberEntity as jest.Mock;
 describe('OrgMemberService', () => {
   let service: OrgMemberService;
   let repository: EntityRepository<OrgMemberEntity>;
-  let em: EntityManager;
+  let entityService: EntityService;
   let solrCli: SolrCli;
 
   const testUpdatedOrgMember = createMock<OrgMemberEntity>({
@@ -61,8 +62,12 @@ describe('OrgMemberService', () => {
           }),
         },
         {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createOrgMemberDocParams: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberDocParams1),
+          }),
         },
         {
           provide: SolrCli,
@@ -75,20 +80,17 @@ describe('OrgMemberService', () => {
     repository = module.get<EntityRepository<OrgMemberEntity>>(
       getRepositoryToken(OrgMemberEntity)
     );
-    em = module.get<EntityManager>(EntityManager);
+    entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrgMemberEntity.mockReturnValue(testOrgMemberEntity1);
-    testOrgMemberEntity1.createOrgMemberDocParams.mockResolvedValue(
-      testOrgMemberDocParams1
-    );
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
-    expect(em).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -307,8 +309,10 @@ describe('OrgMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testOrgMemberEntity1.safeToDelete).toBeCalledTimes(1);
-      expect(testOrgMemberEntity1.safeToDelete).toBeCalledWith(em);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(
+        testOrgMemberEntity1
+      );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
     });

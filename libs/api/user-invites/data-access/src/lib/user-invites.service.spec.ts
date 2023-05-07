@@ -4,6 +4,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EntityService,
   testUserInvitesEntity1,
   UserInvitesEntity,
 } from '@newbee/api/shared/data-access';
@@ -27,6 +28,7 @@ const mockUserInvitesEntity = UserInvitesEntity as jest.Mock;
 describe('UserInvitesService', () => {
   let service: UserInvitesService;
   let repository: EntityRepository<UserInvitesEntity>;
+  let entityService: EntityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +40,10 @@ describe('UserInvitesService', () => {
             findOne: jest.fn().mockResolvedValue(testUserInvitesEntity1),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
+        },
       ],
     }).compile();
 
@@ -45,6 +51,7 @@ describe('UserInvitesService', () => {
     repository = module.get<EntityRepository<UserInvitesEntity>>(
       getRepositoryToken(UserInvitesEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
 
     jest.clearAllMocks();
     mockV4.mockReturnValue(testUserInvitesEntity1.id);
@@ -54,6 +61,7 @@ describe('UserInvitesService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('findOrCreateOneByEmail', () => {
@@ -115,7 +123,10 @@ describe('UserInvitesService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testUserInvitesEntity1.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(
+        testUserInvitesEntity1
+      );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserInvitesEntity1);
     });

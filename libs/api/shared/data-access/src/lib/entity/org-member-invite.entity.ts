@@ -7,6 +7,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
+import type { OrgMemberInvite } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -17,7 +18,7 @@ import { UserInvitesEntity } from './user-invites.entity';
  */
 @Entity()
 @Unique<OrgMemberInviteEntity>({ properties: ['organization', 'userInvites'] })
-export class OrgMemberInviteEntity {
+export class OrgMemberInviteEntity implements OrgMemberInvite {
   /**
    * The globally unique ID for the org member invite.
    */
@@ -25,8 +26,7 @@ export class OrgMemberInviteEntity {
   id: string;
 
   /**
-   * The token representing the org member invite.
-   * Represents a shortened version of the `id`.
+   * @inheritdoc
    */
   @Property({ unique: true })
   token: string;
@@ -53,7 +53,7 @@ export class OrgMemberInviteEntity {
   inviter: OrgMemberEntity;
 
   /**
-   * The role the user will have in the organization.
+   * @inheritdoc
    */
   @Enum(() => OrgRoleEnum)
   role: OrgRoleEnum;

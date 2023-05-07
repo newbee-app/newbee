@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EntityService,
   TeamMemberEntity,
   testOrgMemberEntity1,
   testTeamEntity1,
@@ -38,7 +39,7 @@ const mockTeamMemberEntity = TeamMemberEntity as jest.Mock;
 describe('TeamMemberService', () => {
   let service: TeamMemberService;
   let repository: EntityRepository<TeamMemberEntity>;
-  let em: EntityManager;
+  let entityService: EntityService;
 
   const testUpdatedTeamMember = {
     ...testTeamMemberEntity1,
@@ -59,8 +60,8 @@ describe('TeamMemberService', () => {
           }),
         },
         {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
         },
       ],
     }).compile();
@@ -69,7 +70,7 @@ describe('TeamMemberService', () => {
     repository = module.get<EntityRepository<TeamMemberEntity>>(
       getRepositoryToken(TeamMemberEntity)
     );
-    em = module.get<EntityManager>(EntityManager);
+    entityService = module.get<EntityService>(EntityService);
 
     jest.clearAllMocks();
     mockTeamMemberEntity.mockReturnValue(testTeamMemberEntity1);
@@ -78,7 +79,7 @@ describe('TeamMemberService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
-    expect(em).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('create', () => {
@@ -238,8 +239,10 @@ describe('TeamMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testTeamMemberEntity1.safeToDelete).toBeCalledTimes(1);
-      expect(testTeamMemberEntity1.safeToDelete).toBeCalledWith(em);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(
+        testTeamMemberEntity1
+      );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
     });

@@ -1,4 +1,4 @@
-import { TeamRoleEnum } from '../enum';
+import { TeamRoleEnum } from '../../enum';
 
 /**
  * The information associated with a team member.

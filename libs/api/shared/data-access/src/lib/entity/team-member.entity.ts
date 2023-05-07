@@ -1,11 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { BadRequestException } from '@nestjs/common';
-import {
-  cannotDeleteOnlyTeamOwnerBadRequest,
-  TeamMember,
-  TeamRoleEnum,
-} from '@newbee/shared/util';
+import { TeamMember, TeamRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
 
@@ -48,29 +42,5 @@ export class TeamMemberEntity implements TeamMember {
     this.orgMember = orgMember;
     this.team = team;
     this.role = role;
-  }
-
-  /**
-   * Checks whether this instance of TeamMemberEntity is safe to delete and throws a `BadRequestionException` if it's not.
-   * If the team member is the only owner of the team, it's not safe to delete.
-   * Otherwise, it is safe to delete.
-   *
-   * @param em The entity manager to use to find all owners of this team member's team.
-   *
-   * @throws {BadRequestException} `cannotDeleteOnlyTeamOwnerBadRequest`. If the team member is the only owner of the team.
-   * @throws {Error} Any of the errors that `find` can throw.
-   */
-  async safeToDelete(em: EntityManager): Promise<void> {
-    if (this.role !== TeamRoleEnum.Owner) {
-      return;
-    }
-
-    const owners = await em.find(TeamMemberEntity, {
-      role: TeamRoleEnum.Owner,
-      team: this.team,
-    });
-    if (owners.length === 1) {
-      throw new BadRequestException(cannotDeleteOnlyTeamOwnerBadRequest);
-    }
   }
 }

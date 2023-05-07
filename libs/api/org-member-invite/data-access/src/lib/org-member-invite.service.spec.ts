@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   OrgMemberInviteEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -63,6 +64,7 @@ describe('OrgMemberInviteService', () => {
   let service: OrgMemberInviteService;
   let repository: EntityRepository<OrgMemberInviteEntity>;
   let em: EntityManager;
+  let entityService: EntityService;
   let userService: UserService;
   let userInvitesService: UserInvitesService;
   let orgMemberService: OrgMemberService;
@@ -84,6 +86,10 @@ describe('OrgMemberInviteService', () => {
         {
           provide: EntityManager,
           useValue: createMock<EntityManager>(),
+        },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
         },
         {
           provide: UserService,
@@ -123,6 +129,7 @@ describe('OrgMemberInviteService', () => {
       getRepositoryToken(OrgMemberInviteEntity)
     );
     em = module.get<EntityManager>(EntityManager);
+    entityService = module.get<EntityService>(EntityService);
     userService = module.get<UserService>(UserService);
     userInvitesService = module.get<UserInvitesService>(UserInvitesService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
@@ -140,6 +147,7 @@ describe('OrgMemberInviteService', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
     expect(em).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(userService).toBeDefined();
     expect(userInvitesService).toBeDefined();
     expect(orgMemberService).toBeDefined();
@@ -302,6 +310,10 @@ describe('OrgMemberInviteService', () => {
 
     describe('more than one org member invite', () => {
       afterEach(() => {
+        expect(entityService.prepareToDelete).toBeCalledTimes(1);
+        expect(entityService.prepareToDelete).toBeCalledWith(
+          testOrgMemberInviteEntity1
+        );
         expect(repository.removeAndFlush).toBeCalledTimes(1);
         expect(repository.removeAndFlush).toBeCalledWith(
           testOrgMemberInviteEntity1

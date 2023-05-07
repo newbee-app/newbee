@@ -1,4 +1,4 @@
-import { OrgRoleEnum } from '../enum';
+import { OrgRoleEnum } from '../../enum';
 
 /**
  * The information associated with an org member.

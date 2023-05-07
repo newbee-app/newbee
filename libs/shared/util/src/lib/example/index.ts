@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
@@ -10,10 +12,12 @@ import type {
   Doc,
   Organization,
   OrgMember,
+  OrgMemberRelation,
   Post,
   Qna,
   Team,
   TeamMember,
+  TeamMemberRelation,
   User,
   UserChallenge,
   UserSettings,
@@ -206,3 +210,37 @@ export const testAuthenticationCredential1: AuthenticationResponseJSON = {
  * Strictly for use in testing.
  */
 export const testTeamQueryResult1: TeamQueryResult = testTeam1;
+
+/**
+ * An example instance of `TeamMemberRelation`.
+ * Strictly for use in testing.
+ */
+export const testTeamMemberRelation1: TeamMemberRelation = {
+  teamMember: testTeamMember1,
+  team: testTeam1,
+  orgMember: testOrgMember1,
+  organization: testOrganization1,
+  user: testUser1,
+};
+
+const {
+  orgMember: _1,
+  organization: _2,
+  user: _3,
+  ...omittedTeamMemberRelation
+} = testTeamMemberRelation1;
+
+/**
+ * An example instance of `OrgMemberRelation`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberRelation1: OrgMemberRelation = {
+  orgMember: testOrgMember1,
+  organization: testOrganization1,
+  user: testUser1,
+  teams: [omittedTeamMemberRelation],
+  createdDocs: [testDoc1],
+  maintainedDocs: [testDoc1],
+  createdQnas: [testQna1],
+  maintainedQnas: [testQna1],
+};

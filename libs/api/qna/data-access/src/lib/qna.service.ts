@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  EntityService,
   OrgMemberEntity,
   QnaEntity,
   TeamEntity,
@@ -31,6 +32,7 @@ export class QnaService {
   constructor(
     @InjectRepository(QnaEntity)
     private readonly qnaRepository: EntityRepository<QnaEntity>,
+    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -69,7 +71,10 @@ export class QnaService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(collectionName, qna.createQnaDocParams());
+      await this.solrCli.addDocs(
+        collectionName,
+        this.entityService.createQnaDocParams(qna)
+      );
     } catch (err) {
       this.logger.error(err);
       await this.qnaRepository.removeAndFlush(qna);
@@ -141,7 +146,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        updatedQna.createQnaDocParams()
+        this.entityService.createQnaDocParams(updatedQna)
       );
     } catch (err) {
       this.logger.error(err);
@@ -173,7 +178,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        updatedQna.createQnaDocParams()
+        this.entityService.createQnaDocParams(updatedQna)
       );
     } catch (err) {
       this.logger.error(err);
@@ -191,6 +196,7 @@ export class QnaService {
    */
   async delete(qna: QnaEntity): Promise<void> {
     try {
+      await this.entityService.prepareToDelete(qna)
       await this.qnaRepository.removeAndFlush(qna);
     } catch (err) {
       this.logger.error(err);

@@ -3,7 +3,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -12,7 +12,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserAndOptionsDto, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  UserAndOptionsDto,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
@@ -39,7 +43,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
-    private readonly em: EntityManager,
+    private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly solrCli: SolrCli
@@ -194,7 +198,7 @@ export class UserService {
       try {
         await this.solrCli.getVersionAndReplaceDocs(
           organization.id,
-          await orgMember.createOrgMemberDocParams()
+          await this.entityService.createOrgMemberDocParams(orgMember)
         );
       } catch (err) {
         this.logger.error(err);
@@ -223,8 +227,8 @@ export class UserService {
               [orgMember.organization.id, orgMember.slug] as [string, string]
           )
       );
-      await user.safeToDelete(this.em);
-      await user.prepareToDelete();
+
+      await this.entityService.prepareToDelete(user);
       await this.userRepository.removeAndFlush(user);
     } catch (err) {
       this.logger.error(err);

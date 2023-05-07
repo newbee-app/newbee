@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -13,6 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
+  EntityService,
   testUserAndOptionsDto1,
   testUserEntity1,
   testUserInvitesEntity1,
@@ -57,7 +58,7 @@ const mockUserEntity = UserEntity as jest.Mock;
 describe('UserService', () => {
   let service: UserService;
   let repository: EntityRepository<UserEntity>;
-  let em: EntityManager;
+  let entityService: EntityService;
   let userInvitesService: UserInvitesService;
 
   const testUpdatedUser = { ...testUserEntity1, ...testBaseUpdateUserDto1 };
@@ -75,8 +76,8 @@ describe('UserService', () => {
           }),
         },
         {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
         },
         {
           provide: UserInvitesService,
@@ -101,7 +102,7 @@ describe('UserService', () => {
     repository = module.get<EntityRepository<UserEntity>>(
       getRepositoryToken(UserEntity)
     );
-    em = module.get<EntityManager>(EntityManager);
+    entityService = module.get<EntityService>(EntityService);
     userInvitesService = module.get<UserInvitesService>(UserInvitesService);
 
     jest.clearAllMocks();
@@ -115,7 +116,7 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
-    expect(em).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(userInvitesService).toBeDefined();
   });
 
@@ -284,9 +285,8 @@ describe('UserService', () => {
       expect(repository.populate).toBeCalledWith(testUserEntity1, [
         'organizations',
       ]);
-      expect(testUserEntity1.safeToDelete).toBeCalledTimes(1);
-      expect(testUserEntity1.safeToDelete).toBeCalledWith(em);
-      expect(testUserEntity1.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(testUserEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserEntity1);
     });

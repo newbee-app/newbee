@@ -6,9 +6,7 @@ import {
   OneToOne,
   PrimaryKey,
   Property,
-  wrap,
 } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
 import type { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { OrgMemberEntity } from './org-member.entity';
@@ -127,48 +125,5 @@ export class UserEntity implements User {
     this.phoneNumber = phoneNumber;
     this.challenge = new UserChallengeEntity(this, challenge);
     this.invites = invites;
-  }
-
-  /**
-   * Checks whether this instance of UserEntity is safe to delete and throws a `BadRequestException` if it's not.
-   * If any of the orgs the user is a part of is not safe to delete, it is not safe to delete.
-   * Otherwise, it's safe to delete.
-   *
-   * @param em The entity manager to use to find any necessary information from the database.
-   * @throws {BadRequestException} `cannotDeleteMaintainerBadRequest`, `cannotDeleteOnlyTeamOwnerBadRequest`, `cannotDeleteOnlyOrgOwnerBadRequest`. If the org member still maintains any posts, any of the teams the user is in is not safe to delete, or the org member is the only owner of the org.
-   * @throws {Error} Any of the errors `find` can throw.
-   */
-  async safeToDelete(em: EntityManager): Promise<void> {
-    if (!this.organizations.isInitialized()) {
-      await this.organizations.init();
-    }
-    for (const orgMember of this.organizations) {
-      await orgMember.safeToDelete(em);
-    }
-  }
-
-  /**
-   * Prepare to delete this instance by calling `removeAll` on all of the entity's collections with `orphanRemoval` on.
-   */
-  async prepareToDelete(): Promise<void> {
-    if (!wrap(this.invites).isInitialized()) {
-      await wrap(this.invites).init();
-    }
-    await this.invites.prepareToDelete();
-
-    const collections = [this.authenticators, this.organizations];
-    for (const collection of collections) {
-      if (!collection.isInitialized()) {
-        await collection.init();
-      }
-    }
-
-    for (const orgMember of this.organizations) {
-      await orgMember.prepareToDelete();
-    }
-
-    for (const collection of collections) {
-      collection.removeAll();
-    }
   }
 }

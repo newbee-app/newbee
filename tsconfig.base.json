@@ -78,6 +78,7 @@
       "@newbee/api/shared/data-access": [
         "libs/api/shared/data-access/src/index.ts"
       ],
+      "@newbee/api/shared/feature": ["libs/api/shared/feature/src/index.ts"],
       "@newbee/api/shared/util": ["libs/api/shared/util/src/index.ts"],
       "@newbee/api/team-member/data-access": [
         "libs/api/team-member/data-access/src/index.ts"

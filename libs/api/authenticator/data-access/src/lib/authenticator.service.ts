@@ -14,6 +14,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import {
   AuthenticatorEntity,
+  EntityService,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
@@ -48,6 +49,7 @@ export class AuthenticatorService {
     @InjectRepository(AuthenticatorEntity)
     private readonly authenticatorRepository: EntityRepository<AuthenticatorEntity>,
     private readonly configService: ConfigService<AppConfig, true>,
+    private readonly entityService: EntityService,
     private readonly userChallengeService: UserChallengeService
   ) {}
 
@@ -257,6 +259,7 @@ export class AuthenticatorService {
   async deleteOneById(id: string): Promise<void> {
     const authenticator = this.authenticatorRepository.getReference(id);
     try {
+      await this.entityService.prepareToDelete(authenticator);
       await this.authenticatorRepository.removeAndFlush(authenticator);
     } catch (err) {
       this.logger.error(err);

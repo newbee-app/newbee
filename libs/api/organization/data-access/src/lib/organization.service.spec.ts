@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
+  EntityService,
   OrganizationEntity,
   testOrganizationEntity1,
   testUserEntity1,
@@ -46,6 +47,7 @@ const mockV4 = v4 as jest.Mock;
 describe('OrganizationService', () => {
   let service: OrganizationService;
   let repository: EntityRepository<OrganizationEntity>;
+  let entityService: EntityService;
   let solrCli: SolrCli;
 
   const testUpdatedOrganization = {
@@ -66,6 +68,10 @@ describe('OrganizationService', () => {
           }),
         },
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
+        },
+        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -76,6 +82,7 @@ describe('OrganizationService', () => {
     repository = module.get<EntityRepository<OrganizationEntity>>(
       getRepositoryToken(OrganizationEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
@@ -86,6 +93,7 @@ describe('OrganizationService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -240,7 +248,10 @@ describe('OrganizationService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testOrganizationEntity1.preapreToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(
+        testOrganizationEntity1
+      );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity1);
     });

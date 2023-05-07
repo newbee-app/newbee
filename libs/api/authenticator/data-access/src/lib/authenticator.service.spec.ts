@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   AuthenticatorEntity,
+  EntityService,
   testAuthenticatorEntity1,
   testUserChallengeEntity1,
   testUserEntity1,
@@ -54,6 +55,7 @@ const mockAuthenticatorEntity = AuthenticatorEntity as jest.Mock;
 describe('AuthenticatorService', () => {
   let service: AuthenticatorService;
   let repository: EntityRepository<AuthenticatorEntity>;
+  let entityService: EntityService;
   let userChallengeService: UserChallengeService;
 
   const testCounter = 100;
@@ -92,6 +94,10 @@ describe('AuthenticatorService', () => {
           }),
         },
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>(),
+        },
+        {
           provide: UserChallengeService,
           useValue: createMock<UserChallengeService>({
             findOneById: jest.fn().mockResolvedValue(testUserChallengeEntity1),
@@ -108,6 +114,7 @@ describe('AuthenticatorService', () => {
     repository = module.get<EntityRepository<AuthenticatorEntity>>(
       getRepositoryToken(AuthenticatorEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
     userChallengeService =
       module.get<UserChallengeService>(UserChallengeService);
 
@@ -125,6 +132,7 @@ describe('AuthenticatorService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(userChallengeService).toBeDefined();
   });
 
@@ -348,6 +356,10 @@ describe('AuthenticatorService', () => {
       expect(repository.getReference).toBeCalledTimes(1);
       expect(repository.getReference).toBeCalledWith(
         testAuthenticatorEntity1.id
+      );
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(
+        testAuthenticatorEntity1
       );
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(

@@ -102,31 +102,4 @@ export class OrganizationEntity implements Organization {
     this.slug = slug;
     new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
   }
-
-  /**
-   * Call `removeAll` on all of the entity's collections with `orphanRemoval` on.
-   * If necessary, call remove all on the individual entities of a collection.
-   */
-  async preapreToDelete(): Promise<void> {
-    const collections = [
-      this.teams,
-      this.docs,
-      this.qnas,
-      this.members,
-      this.invites,
-    ];
-    for (const collection of collections) {
-      if (!collection.isInitialized()) {
-        await collection.init();
-      }
-    }
-
-    for (const team of this.teams) {
-      await team.prepareToDelete();
-    }
-
-    for (const collection of collections) {
-      collection.removeAll();
-    }
-  }
 }

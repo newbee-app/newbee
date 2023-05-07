@@ -7,7 +7,6 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { TeamDocParams } from '@newbee/api/shared/util';
 import type { Team } from '@newbee/shared/util';
 import { TeamRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
@@ -97,27 +96,5 @@ export class TeamEntity implements Team {
     this.slug = slug;
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
-  }
-
-  /**
-   * Create the fields to add or replace a team doc in a Solr index.
-   * @returns The params to add or replace a team doc using SolrCli.
-   */
-  createTeamDocParams(): TeamDocParams {
-    return new TeamDocParams(this.id, this.slug, this.name);
-  }
-
-  /**
-   * Call `removeAll` on all of the entity's collections.
-   * If necessary, call remove all of the individual entities of a collection.
-   */
-  async prepareToDelete(): Promise<void> {
-    const collections = [this.docs, this.qnas, this.teamMembers];
-    for (const collection of collections) {
-      if (!collection.isInitialized()) {
-        await collection.init();
-      }
-      collection.removeAll();
-    }
   }
 }

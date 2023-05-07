@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   DocEntity,
+  EntityService,
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
@@ -31,6 +32,7 @@ export class DocService {
   constructor(
     @InjectRepository(DocEntity)
     private readonly docRepository: EntityRepository<DocEntity>,
+    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli
   ) {}
 
@@ -62,7 +64,10 @@ export class DocService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(collectionName, doc.createDocDocParams());
+      await this.solrCli.addDocs(
+        collectionName,
+        this.entityService.createDocDocParams(doc)
+      );
     } catch (err) {
       this.logger.error(err);
       await this.docRepository.removeAndFlush(doc);
@@ -127,7 +132,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        updatedDoc.createDocDocParams()
+        this.entityService.createDocDocParams(updatedDoc)
       );
     } catch (err) {
       this.logger.error(err);
@@ -159,7 +164,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        updatedDoc.createDocDocParams()
+        this.entityService.createDocDocParams(updatedDoc)
       );
     } catch (err) {
       this.logger.error(err);
@@ -177,6 +182,7 @@ export class DocService {
    */
   async delete(doc: DocEntity): Promise<void> {
     try {
+      await this.entityService.prepareToDelete(doc);
       await this.docRepository.removeAndFlush(doc);
     } catch (err) {
       this.logger.error(err);

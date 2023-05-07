@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EntityService,
   TeamEntity,
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -48,6 +49,7 @@ const mockV4 = v4 as jest.Mock;
 describe('TeamService', () => {
   let service: TeamService;
   let repository: EntityRepository<TeamEntity>;
+  let entityService: EntityService;
   let solrCli: SolrCli;
 
   const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
@@ -71,6 +73,12 @@ describe('TeamService', () => {
           }),
         },
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createTeamDocParams: jest.fn().mockReturnValue(testTeamDocParams1),
+          }),
+        },
+        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -81,20 +89,18 @@ describe('TeamService', () => {
     repository = module.get<EntityRepository<TeamEntity>>(
       getRepositoryToken(TeamEntity)
     );
+    entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockTeamEntity.mockReturnValue(testTeamEntity1);
     mockV4.mockReturnValue(testTeamEntity1.id);
-
-    testTeamEntity1.createTeamDocParams = jest
-      .fn()
-      .mockReturnValue(testTeamDocParams1);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('create', () => {
@@ -218,8 +224,8 @@ describe('TeamService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      testUpdatedTeam.createTeamDocParams = jest
-        .fn()
+      jest
+        .spyOn(entityService, 'createTeamDocParams')
         .mockReturnValue(testUpdatedTeamDocParams);
     });
 
@@ -278,7 +284,8 @@ describe('TeamService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(testTeamEntity1.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledTimes(1);
+      expect(entityService.prepareToDelete).toBeCalledWith(testTeamEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testTeamEntity1);
     });

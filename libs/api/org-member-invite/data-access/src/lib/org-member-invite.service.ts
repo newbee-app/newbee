@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppOrgMemberInviteConfig } from '@newbee/api/org-member-invite/util';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   OrganizationEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
@@ -49,6 +50,7 @@ export class OrgMemberInviteService {
     @InjectRepository(OrgMemberInviteEntity)
     private readonly orgMemberInviteRepository: EntityRepository<OrgMemberInviteEntity>,
     private readonly em: EntityManager,
+    private readonly entityService: EntityService,
     private readonly userService: UserService,
     private readonly userInvitesService: UserInvitesService,
     private readonly orgMemberService: OrgMemberService,
@@ -166,6 +168,7 @@ export class OrgMemberInviteService {
       if (!userInvites.user && userInvites.orgMemberInvites.length === 1) {
         await this.userInvitesService.delete(userInvites);
       } else {
+        await this.entityService.prepareToDelete(orgMemberInvite);
         await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
       }
     } catch (err) {
