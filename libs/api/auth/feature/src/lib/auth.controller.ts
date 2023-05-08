@@ -14,22 +14,20 @@ import {
   WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import {
-  EmailDto,
-  UserAndOptionsDto,
-  UserEntity,
-} from '@newbee/api/shared/data-access';
+import { EmailDto, UserEntity } from '@newbee/api/shared/data-access';
 import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
   authUrl,
   authVersion,
   BaseMagicLinkLoginDto,
+  BaseUserRelationAndOptionsDto,
   loginUrl,
   optionsUrl,
   registerUrl,
   webauthnUrl,
 } from '@newbee/shared/data-access';
+import type { UserRelation } from '@newbee/shared/util';
 import { internalServerError, magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { Response } from 'express';
@@ -65,17 +63,17 @@ export class AuthController {
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto
-  ): Promise<UserAndOptionsDto> {
+  ): Promise<BaseUserRelationAndOptionsDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
       `WebAuthn register request received for: ${createUserDtoString}`
     );
 
     const userAndOptions = await this.userService.create(createUserDto);
-    const { user } = userAndOptions;
+    const { user, options } = userAndOptions;
     this.logger.log(`User created with ID: ${user.id}, email: ${user.email}`);
 
-    const accessToken = this.authService.login(userAndOptions.user);
+    const accessToken = this.authService.login(user);
     this.logger.log(`Access token created: ${accessToken}`);
 
     res.cookie(
@@ -83,7 +81,10 @@ export class AuthController {
       accessToken,
       this.configService.get('csrf.cookieOptions', { infer: true })
     );
-    return userAndOptions;
+    return {
+      options,
+      userRelation: await this.userService.createUserRelation(user),
+    };
   }
 
   /**
@@ -128,7 +129,7 @@ export class AuthController {
   async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
-  ): Promise<UserEntity> {
+  ): Promise<UserRelation> {
     const { email, response } = webAuthnLoginDto;
     this.logger.log(
       `WebAuthn login verify request received for email: ${email}`
@@ -145,7 +146,7 @@ export class AuthController {
       accessToken,
       this.configService.get('csrf.cookieOptions', { infer: true })
     );
-    return user;
+    return await this.userService.createUserRelation(user);
   }
 
   /**
@@ -186,10 +187,10 @@ export class AuthController {
   @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Post(magicLinkLogin)
-  magicLinkLogin(
+  async magicLinkLogin(
     @Res({ passthrough: true }) res: Response,
     @User() user: UserEntity
-  ): UserEntity {
+  ): Promise<UserRelation> {
     const accessToken = this.authService.login(user);
     this.logger.log(`Access token generated: ${accessToken}`);
 
@@ -198,6 +199,6 @@ export class AuthController {
       accessToken,
       this.configService.get('csrf.cookieOptions', { infer: true })
     );
-    return user;
+    return await this.userService.createUserRelation(user);
   }
 }

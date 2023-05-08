@@ -12,6 +12,7 @@ import {
   testTeamMember1,
   testTeamQueryResult1,
   testUser1,
+  testUserRelation1,
 } from '@newbee/shared/util';
 import {
   BaseCreateDocDto,
@@ -40,7 +41,7 @@ import {
   BaseUpdateTeamDto,
   BaseUpdateTeamMemberDto,
   BaseUpdateUserDto,
-  BaseUserAndOptionsDto,
+  BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
 } from '../dto';
 
@@ -65,10 +66,11 @@ export const testBaseMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
  * An example instance of BaseUserAndOptionsDto.
  * Strictly for use in testing.
  */
-export const testBaseUserAndOptionsDto1: BaseUserAndOptionsDto = {
-  user: testUser1,
-  options: testPublicKeyCredentialCreationOptions1,
-};
+export const testBaseUserRelationAndOptionsDto1: BaseUserRelationAndOptionsDto =
+  {
+    userRelation: testUserRelation1,
+    options: testPublicKeyCredentialCreationOptions1,
+  };
 
 /**
  * An example instance of BaseWebAuthnLoginDto.

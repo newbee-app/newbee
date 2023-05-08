@@ -245,7 +245,7 @@ export class OrgMemberService {
   }
 
   /**
-   * Takes in an org member and converts it to aa `OrgMemberRelation`.
+   * Takes in an org member and converts it to an `OrgMemberRelation`.
    *
    * @param orgMember The org member to convert.
    *

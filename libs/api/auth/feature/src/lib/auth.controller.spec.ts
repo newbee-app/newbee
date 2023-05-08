@@ -6,20 +6,19 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import {
-  testUserAndOptionsDto1,
-  testUserEntity1,
-} from '@newbee/api/shared/data-access';
-import { UserService } from '@newbee/api/user/data-access';
+import { testUserEntity1 } from '@newbee/api/shared/data-access';
+import { testUserAndOptions1, UserService } from '@newbee/api/user/data-access';
 import {
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
+  testBaseUserRelationAndOptionsDto1,
   testBaseWebAuthnLoginDto1,
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
   testPublicKeyCredentialRequestOptions1,
+  testUserRelation1,
 } from '@newbee/shared/util';
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
@@ -40,7 +39,8 @@ describe('AuthController', () => {
         {
           provide: UserService,
           useValue: createMock<UserService>({
-            create: jest.fn().mockResolvedValue(testUserAndOptionsDto1),
+            create: jest.fn().mockResolvedValue(testUserAndOptions1),
+            createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
           }),
         },
         {
@@ -87,11 +87,11 @@ describe('AuthController', () => {
     it('should create a new user and options', async () => {
       await expect(
         controller.webAuthnRegister(response, testBaseCreateUserDto1)
-      ).resolves.toEqual(testUserAndOptionsDto1);
+      ).resolves.toEqual(testBaseUserRelationAndOptionsDto1);
       expect(userService.create).toBeCalledTimes(1);
       expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
       expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserAndOptionsDto1.user);
+      expect(service.login).toBeCalledWith(testUserAndOptions1.user);
     });
   });
 
@@ -111,7 +111,7 @@ describe('AuthController', () => {
     it('should return a LoginDto', async () => {
       await expect(
         controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1)
-      ).resolves.toEqual(testUserEntity1);
+      ).resolves.toEqual(testUserRelation1);
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(
         testBaseWebAuthnLoginDto1.email,
@@ -145,10 +145,10 @@ describe('AuthController', () => {
   });
 
   describe('magicLinkLogin', () => {
-    it('should return an access token', () => {
-      expect(controller.magicLinkLogin(response, testUserEntity1)).toEqual(
-        testUserEntity1
-      );
+    it('should return an access token', async () => {
+      await expect(
+        controller.magicLinkLogin(response, testUserEntity1)
+      ).resolves.toEqual(testUserRelation1);
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);
     });

@@ -6,7 +6,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { testUserRelation1 } from '@newbee/shared/util';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
@@ -77,19 +77,19 @@ describe('AuthReducer', () => {
     it('should update state for loginSuccess', () => {
       let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        AuthActions.loginSuccess({ user: testUser1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
         stateAfterWebauthnLoginChallenge,
-        AuthActions.loginSuccess({ user: testUser1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
         stateAfterWebauthnRegisterChallenge,
-        AuthActions.loginSuccess({ user: testUser1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
       );
       expect(updatedState).toEqual(initialAuthState);
     });

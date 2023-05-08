@@ -6,19 +6,19 @@ import {
   QnaDocParams,
   TeamDocParams,
 } from '@newbee/api/shared/util';
-import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
 import {
-  OrgRoleEnum,
   SolrEntryEnum,
   TeamRoleEnum,
   testAuthenticator1,
   testDoc1,
   testOrganization1,
   testOrgMember1,
+  testOrgMemberInvite1,
   testQna1,
   testTeam1,
   testUser1,
   testUserChallenge1,
+  testUserInvites1,
   testUserSettings1,
 } from '@newbee/shared/util';
 import type {
@@ -27,7 +27,6 @@ import type {
   QueryResponse,
   ResponseHeader,
 } from '@newbee/solr-cli';
-import { UserAndOptionsDto } from '../dto';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -84,20 +83,11 @@ export const testUserSettingsEntity1 = createMock<UserSettingsEntity>({
  * Strictly for use in testing.
  */
 export const testUserInvitesEntity1 = createMock<UserInvitesEntity>({
+  ...testUserInvites1,
   id: '1',
-  email: testUserEntity1.email,
   user: testUserEntity1,
   orgMemberInvites: createMock<Collection<OrgMemberInviteEntity>>(),
 });
-
-/**
- * An example instance of `UserAndOptionsDto`.
- * Strictly for use in testing.
- */
-export const testUserAndOptionsDto1: UserAndOptionsDto = {
-  ...testBaseUserAndOptionsDto1,
-  user: testUserEntity1,
-};
 
 /**
  * An example instance of `OrganizationEntity`.
@@ -137,12 +127,11 @@ export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
  * Strictly for use in testing.
  */
 export const testOrgMemberInviteEntity1 = createMock<OrgMemberInviteEntity>({
+  ...testOrgMemberInvite1,
   id: '1',
-  token: 'token',
   organization: testOrganizationEntity1,
   userInvites: testUserInvitesEntity1,
   inviter: testOrgMemberEntity1,
-  role: OrgRoleEnum.Member,
 });
 
 /**

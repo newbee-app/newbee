@@ -7,14 +7,14 @@ import {
   BaseCreateUserDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
-  BaseUserAndOptionsDto,
+  BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
   loginUrl,
   optionsUrl,
   registerUrl,
   webauthnUrl,
 } from '@newbee/shared/data-access';
-import type { User } from '@newbee/shared/util';
+import type { UserRelation } from '@newbee/shared/util';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -50,8 +50,8 @@ export class AuthService {
    * @param token The token associated with the magic link.
    * @returns An observable containing information about the logged in user.
    */
-  magicLinkLogin(token: string): Observable<User> {
-    return this.http.post<User>(
+  magicLinkLogin(token: string): Observable<UserRelation> {
+    return this.http.post<UserRelation>(
       `/api/v${authVersion}/${authUrl}/${magicLinkLogin}`,
       { token }
     );
@@ -65,7 +65,7 @@ export class AuthService {
    */
   webAuthnRegister(
     registerForm: RegisterForm
-  ): Observable<BaseUserAndOptionsDto> {
+  ): Observable<BaseUserRelationAndOptionsDto> {
     const { email, name, displayName, phoneNumber } = registerForm;
     let phoneNumberString: string | undefined = undefined;
     if (phoneNumber && phoneNumber.number && phoneNumber.country) {
@@ -83,7 +83,7 @@ export class AuthService {
       displayName: displayName ?? null,
       phoneNumber: phoneNumberString ?? null,
     };
-    return this.http.post<BaseUserAndOptionsDto>(
+    return this.http.post<BaseUserRelationAndOptionsDto>(
       `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${registerUrl}`,
       createUserDto
     );
@@ -115,7 +115,7 @@ export class AuthService {
   webAuthnLogin(
     loginForm: LoginForm,
     options: PublicKeyCredentialRequestOptionsJSON
-  ): Observable<User> {
+  ): Observable<UserRelation> {
     const emailDto = this.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
       switchMap((response) => {
@@ -123,7 +123,7 @@ export class AuthService {
           ...emailDto,
           response,
         };
-        return this.http.post<User>(
+        return this.http.post<UserRelation>(
           `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}`,
           webAuthnLoginDto
         );

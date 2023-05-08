@@ -64,6 +64,14 @@ describe('AuthService', () => {
           }),
         },
         {
+          provide: ConfigService,
+          useValue: createMock<ConfigService>(),
+        },
+        {
+          provide: EntityManager,
+          useValue: createMock<EntityManager>(),
+        },
+        {
           provide: AuthenticatorService,
           useValue: createMock<AuthenticatorService>({
             findAllByEmail: jest
@@ -89,14 +97,6 @@ describe('AuthService', () => {
               .fn()
               .mockResolvedValue(testUserChallengeEntity1),
           }),
-        },
-        {
-          provide: ConfigService,
-          useValue: createMock<ConfigService>(),
-        },
-        {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
         },
       ],
     }).compile();

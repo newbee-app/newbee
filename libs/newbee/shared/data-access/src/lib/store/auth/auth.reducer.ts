@@ -1,4 +1,4 @@
-import { User } from '@newbee/shared/util';
+import { UserRelation } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 
@@ -9,14 +9,14 @@ export interface AuthState {
   /**
    * The user's information.
    */
-  user: User | null;
+  userRelation: UserRelation | null;
 }
 
 /**
  * The initial value for `AuthState`.
  */
 export const initialAuthState: AuthState = {
-  user: null,
+  userRelation: null,
 };
 
 /**
@@ -28,16 +28,16 @@ export const authFeature = createFeature({
     initialAuthState,
     on(
       AuthActions.registerWithWebauthnSuccess,
-      (state, { userAndOptionsDto: { user } }): AuthState => ({
+      (state, { userRelationAndOptionsDto: { userRelation } }): AuthState => ({
         ...state,
-        user,
+        userRelation,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { user }): AuthState => ({
+      (state, { userRelation }): AuthState => ({
         ...state,
-        user,
+        userRelation,
       })
     )
   ),

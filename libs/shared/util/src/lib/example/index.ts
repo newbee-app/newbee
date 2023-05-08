@@ -12,6 +12,8 @@ import type {
   Doc,
   Organization,
   OrgMember,
+  OrgMemberInvite,
+  OrgMemberInviteRelation,
   OrgMemberRelation,
   Post,
   Qna,
@@ -20,6 +22,8 @@ import type {
   TeamMemberRelation,
   User,
   UserChallenge,
+  UserInvites,
+  UserRelation,
   UserSettings,
 } from '../interface';
 import type { TeamQueryResult } from '../type';
@@ -147,6 +151,23 @@ export const testQna1: Qna = {
 };
 
 /**
+ * An example instance of UserInvites.
+ * Strictly for use in testing.
+ */
+export const testUserInvites1: UserInvites = {
+  email: testUser1.email,
+};
+
+/**
+ * An example instance of OrgMemberInvite.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberInvite1: OrgMemberInvite = {
+  token: 'token1',
+  role: OrgRoleEnum.Member,
+};
+
+/**
  * An example instance of PublicKeyCredentialCreationOptionsJSON, from the `@simplewebauthn` package.
  * Strictly for use in testing.
  */
@@ -223,13 +244,6 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
   user: testUser1,
 };
 
-const {
-  orgMember: _1,
-  organization: _2,
-  user: _3,
-  ...omittedTeamMemberRelation
-} = testTeamMemberRelation1;
-
 /**
  * An example instance of `OrgMemberRelation`.
  * Strictly for use in testing.
@@ -238,9 +252,29 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
   user: testUser1,
-  teams: [omittedTeamMemberRelation],
+  teams: [testTeamMemberRelation1],
   createdDocs: [testDoc1],
   maintainedDocs: [testDoc1],
   createdQnas: [testQna1],
   maintainedQnas: [testQna1],
+};
+
+/**
+ * An example instance of `OrgMemberInviteRelation`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberInviteRelation1: OrgMemberInviteRelation = {
+  orgMemberInvite: testOrgMemberInvite1,
+  organization: testOrganization1,
+  userInvites: testUserInvites1,
+};
+
+/**
+ * An example instance of `UserRelation`.
+ * Strictly for use in testing.
+ */
+export const testUserRelation1: UserRelation = {
+  user: testUser1,
+  organizations: [testOrgMemberRelation1],
+  invites: [testOrgMemberInviteRelation1],
 };

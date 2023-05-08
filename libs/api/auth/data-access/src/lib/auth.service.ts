@@ -31,10 +31,10 @@ export class AuthService {
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly authenticatorService: AuthenticatorService,
-    private readonly userChallengeService: UserChallengeService,
     private readonly configService: ConfigService<AppAuthConfig, true>,
-    private readonly em: EntityManager
+    private readonly em: EntityManager,
+    private readonly authenticatorService: AuthenticatorService,
+    private readonly userChallengeService: UserChallengeService
   ) {}
 
   /**

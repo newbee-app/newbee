@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -14,7 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
   EntityService,
-  testUserAndOptionsDto1,
   testUserEntity1,
   testUserInvitesEntity1,
   UserEntity,
@@ -33,6 +32,7 @@ import {
 import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
+import { testUserAndOptions1 } from './example';
 import { UserService } from './user.service';
 
 jest.mock('@simplewebauthn/server', () => ({
@@ -76,6 +76,10 @@ describe('UserService', () => {
           }),
         },
         {
+          provide: EntityManager,
+          useValue: createMock<EntityManager>(),
+        },
+        {
           provide: EntityService,
           useValue: createMock<EntityService>(),
         },
@@ -107,7 +111,7 @@ describe('UserService', () => {
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
-      testUserAndOptionsDto1.options
+      testUserAndOptions1.options
     );
     mockV4.mockReturnValue(testUserEntity1.id);
     mockUserEntity.mockReturnValue(testUserEntity1);
@@ -133,7 +137,7 @@ describe('UserService', () => {
 
     it('should create a user', async () => {
       await expect(service.create(testBaseCreateUserDto1)).resolves.toEqual(
-        testUserAndOptionsDto1
+        testUserAndOptions1
       );
     });
 

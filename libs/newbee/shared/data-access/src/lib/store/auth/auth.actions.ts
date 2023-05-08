@@ -1,9 +1,9 @@
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
   BaseMagicLinkLoginDto,
-  BaseUserAndOptionsDto,
+  BaseUserRelationAndOptionsDto,
 } from '@newbee/shared/data-access';
-import { User } from '@newbee/shared/util';
+import { UserRelation } from '@newbee/shared/util';
 import { createActionGroup, props } from '@ngrx/store';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
@@ -43,7 +43,7 @@ export const AuthActions = createActionGroup({
      * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Create Authenticator`, and redirects.
      */
     'Register With WebAuthn Success': props<{
-      userAndOptionsDto: BaseUserAndOptionsDto;
+      userRelationAndOptionsDto: BaseUserRelationAndOptionsDto;
     }>(),
 
     /**
@@ -65,6 +65,6 @@ export const AuthActions = createActionGroup({
      * Indicates that login has been completed successfully.
      * Should save user data to the store.
      */
-    'Login Success': props<{ user: User }>(),
+    'Login Success': props<{ userRelation: UserRelation }>(),
   },
 });

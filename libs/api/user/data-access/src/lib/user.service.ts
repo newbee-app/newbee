@@ -3,7 +3,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -12,13 +12,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  EntityService,
-  UserAndOptionsDto,
-  UserEntity,
-} from '@newbee/api/shared/data-access';
+import { EntityService, UserEntity } from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
+import type { UserRelation } from '@newbee/shared/util';
 import {
   internalServerError,
   userEmailNotFound,
@@ -29,6 +26,7 @@ import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
 import { CreateUserDto, UpdateUserDto } from './dto';
+import type { UserAndOptions } from './interface';
 
 /**
  * The service that interacts with the `UserEntity`.
@@ -43,6 +41,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
@@ -57,7 +56,7 @@ export class UserService {
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async create(createUserDto: CreateUserDto): Promise<UserAndOptionsDto> {
+  async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
     const { email, displayName, name, phoneNumber } = createUserDto;
     const userInvites = await this.userInvitesService.findOrCreateOneByEmail(
       email
@@ -242,5 +241,66 @@ export class UserService {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  /**
+   * Takes in a user and converts it to a `UserEntity`.
+   *
+   * @param user The user to convert.
+   *
+   * @returns The user as a `UserRelation`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createUserRelation(user: UserEntity): Promise<UserRelation> {
+    try {
+      await this.userRepository.populate(user, [
+        'organizations',
+        'invites.orgMemberInvites.organization',
+      ]);
+      await this.em.populate(user.organizations, [
+        'organization',
+        'teams',
+        'createdDocs',
+        'maintainedDocs',
+        'createdQnas',
+        'maintainedQnas',
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    const { organizations, invites } = user;
+    return {
+      user,
+      organizations: organizations.getItems().map((orgMember) => {
+        const {
+          organization,
+          user,
+          teams,
+          createdDocs,
+          maintainedDocs,
+          createdQnas,
+          maintainedQnas,
+        } = orgMember;
+        return {
+          orgMember,
+          organization,
+          user,
+          teams: teams.getItems().map((teamMember) => {
+            const { team } = teamMember;
+            return { teamMember, team };
+          }),
+          createdDocs: createdDocs.getItems(),
+          maintainedDocs: maintainedDocs.getItems(),
+          createdQnas: createdQnas.getItems(),
+          maintainedQnas: maintainedQnas.getItems(),
+        };
+      }),
+      invites: invites.orgMemberInvites.getItems().map((orgMemberInvite) => {
+        const { organization } = orgMemberInvite;
+        return { orgMemberInvite, organization };
+      }),
+    };
   }
 }

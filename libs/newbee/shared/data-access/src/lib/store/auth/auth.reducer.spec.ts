@@ -1,11 +1,11 @@
-import { testBaseUserAndOptionsDto1 } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { testBaseUserRelationAndOptionsDto1 } from '@newbee/shared/data-access';
+import { testUserRelation1 } from '@newbee/shared/util';
 import { AuthActions } from './auth.actions';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
   const stateAfterLoginSuccess: AuthState = {
-    user: testUser1,
+    userRelation: testUserRelation1,
   };
 
   describe('from initial state', () => {
@@ -19,7 +19,7 @@ describe('AuthReducer', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
         AuthActions.registerWithWebauthnSuccess({
-          userAndOptionsDto: testBaseUserAndOptionsDto1,
+          userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
         })
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
@@ -28,7 +28,7 @@ describe('AuthReducer', () => {
     it('should update state for loginSuccess', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.loginSuccess({ user: testUser1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
