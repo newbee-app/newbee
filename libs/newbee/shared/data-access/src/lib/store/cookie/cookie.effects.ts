@@ -4,26 +4,26 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap } from 'rxjs';
 import { catchHttpError } from '../../function';
-import { CsrfService } from '../../service';
-import { CsrfActions } from './csrf.actions';
-import { csrfFeature } from './csrf.reducer';
+import { CookieService } from '../../service';
+import { CookieActions } from './cookie.actions';
+import { cookieFeature } from './cookie.reducer';
 
 /**
- * The effects tied to `CsrfActions`.
+ * The effects tied to `CookieActions`.
  */
 @Injectable()
-export class CsrfEffects {
-  getCsrfToken$ = createEffect(() => {
+export class CookieEffects {
+  initCookies$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(CsrfActions.getCsrfToken),
-      concatLatestFrom(() => this.store.select(csrfFeature.selectCsrfToken)),
+      ofType(CookieActions.initCookies),
+      concatLatestFrom(() => this.store.select(cookieFeature.selectCsrfToken)),
       filter(([, token]) => !token),
       switchMap(() => {
-        return this.csrfService.createToken().pipe(
-          map((csrfTokenDto) => {
-            return CsrfActions.getCsrfTokenSuccess({ csrfTokenDto });
+        return this.cookieService.initCookies().pipe(
+          map((csrfTokenAndDataDto) => {
+            return CookieActions.initCookiesSuccess({ csrfTokenAndDataDto });
           }),
-          catchError(CsrfEffects.catchHttpError)
+          catchError(CookieEffects.catchHttpError)
         );
       })
     );
@@ -31,7 +31,7 @@ export class CsrfEffects {
 
   constructor(
     private readonly actions$: Actions,
-    private readonly csrfService: CsrfService,
+    private readonly cookieService: CookieService,
     private readonly store: Store
   ) {}
 

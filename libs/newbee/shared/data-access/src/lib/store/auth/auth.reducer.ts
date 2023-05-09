@@ -1,5 +1,6 @@
 import { UserRelation } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { CookieActions } from '../cookie';
 import { AuthActions } from './auth.actions';
 
 /**
@@ -36,6 +37,13 @@ export const authFeature = createFeature({
     on(
       AuthActions.loginSuccess,
       (state, { userRelation }): AuthState => ({
+        ...state,
+        userRelation,
+      })
+    ),
+    on(
+      CookieActions.initCookiesSuccess,
+      (state, { csrfTokenAndDataDto: { userRelation } }): AuthState => ({
         ...state,
         userRelation,
       })

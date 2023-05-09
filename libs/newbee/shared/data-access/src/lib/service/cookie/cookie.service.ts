@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  BaseCsrfTokenDto,
-  csrfUrl,
-  csrfVersion,
+  BaseCsrfTokenAndDataDto,
+  cookieUrl,
+  cookieVersion,
 } from '@newbee/shared/data-access';
 import { Observable } from 'rxjs';
 
@@ -12,14 +12,17 @@ import { Observable } from 'rxjs';
  * Specifically handles getting a CSRF token for CSRF prevention.
  */
 @Injectable({ providedIn: 'root' })
-export class CsrfService {
+export class CookieService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Sends a GET request to make the backend generate a CSRF token.
+   * Sends a GET request to make the backend generate a CSRF token and load some initial data using existing cookies.
+   *
    * @returns An observable of the CSRF token DTO.
    */
-  createToken(): Observable<BaseCsrfTokenDto> {
-    return this.http.get<BaseCsrfTokenDto>(`/api/v${csrfVersion}/${csrfUrl}`);
+  initCookies(): Observable<BaseCsrfTokenAndDataDto> {
+    return this.http.get<BaseCsrfTokenAndDataDto>(
+      `/api/v${cookieVersion}/${cookieUrl}`
+    );
   }
 }

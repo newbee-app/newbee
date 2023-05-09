@@ -1,5 +1,5 @@
 {
-  "name": "@newbee/api/csrf/feature",
+  "name": "@newbee/api/cookie/feature",
   "version": "0.0.1",
   "type": "commonjs"
 }

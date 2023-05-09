@@ -4,23 +4,23 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  csrfUrl,
-  csrfVersion,
-  testBaseCsrfTokenDto1,
+  cookieUrl,
+  cookieVersion,
+  testBaseCsrfTokenAndDataDto1,
 } from '@newbee/shared/data-access';
-import { CsrfService } from './csrf.service';
+import { CookieService } from './cookie.service';
 
 describe('CsrfService', () => {
-  let service: CsrfService;
+  let service: CookieService;
   let httpController: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [CsrfService],
+      providers: [CookieService],
     });
 
-    service = TestBed.inject(CsrfService);
+    service = TestBed.inject(CookieService);
     httpController = TestBed.inject(HttpTestingController);
   });
 
@@ -28,12 +28,12 @@ describe('CsrfService', () => {
     httpController.verify();
   });
 
-  describe('createToken', () => {
+  describe('initCookies', () => {
     it('should send out a get request', (done) => {
-      service.createToken().subscribe({
+      service.initCookies().subscribe({
         next: (csrfTokenDto) => {
           try {
-            expect(csrfTokenDto).toEqual(testBaseCsrfTokenDto1);
+            expect(csrfTokenDto).toEqual(testBaseCsrfTokenAndDataDto1);
             done();
           } catch (err) {
             done(err);
@@ -42,10 +42,12 @@ describe('CsrfService', () => {
         error: done.fail,
       });
 
-      const req = httpController.expectOne(`/api/v${csrfVersion}/${csrfUrl}`);
+      const req = httpController.expectOne(
+        `/api/v${cookieVersion}/${cookieUrl}`
+      );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseCsrfTokenDto1);
+      req.flush(testBaseCsrfTokenAndDataDto1);
     });
   });
 });

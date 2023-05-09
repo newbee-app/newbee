@@ -1,6 +1,6 @@
 export * from './auth';
 export * from './authenticator';
-export * from './csrf';
+export * from './cookie';
 export * from './doc';
 export * from './org-member';
 export * from './org-member-invite';

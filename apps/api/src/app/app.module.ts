@@ -8,7 +8,7 @@ import { RoleGuard } from '@newbee/api/auth/data-access';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
 import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
-import { CsrfModule } from '@newbee/api/csrf/feature';
+import { CookieModule } from '@newbee/api/cookie/feature';
 import { DocModule } from '@newbee/api/doc/feature';
 import { OrgMemberInviteModule } from '@newbee/api/org-member-invite/feature';
 import { OrgMemberModule } from '@newbee/api/org-member/feature';
@@ -78,7 +78,7 @@ import { default as appConfig } from '../environments/environment';
     // In-house static modules
     AuthModule,
     AuthenticatorModule,
-    CsrfModule,
+    CookieModule,
     DocModule,
     OrgMemberModule,
     OrgMemberInviteModule,

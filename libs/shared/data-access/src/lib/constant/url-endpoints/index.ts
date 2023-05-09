@@ -32,11 +32,11 @@ export const authenticatorUrl = 'authenticator';
  */
 export const optionsUrl = 'options';
 
-// CSRF endpoints
+// COOKIE endpoints
 /**
- * The URL endpoint associated with generating and receiving a CSRF token.
+ * The URL endpoint associated with working with cookies.
  */
-export const csrfUrl = 'csrf';
+export const cookieUrl = 'cookie';
 
 // USER endpoints
 /**

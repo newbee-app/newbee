@@ -6,6 +6,7 @@ import { AppAuthConfig, UserJwtPayload } from '@newbee/api/auth/util';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorVerifyBadRequest,
   challengeFalsy,
@@ -33,6 +34,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<AppAuthConfig, true>,
     private readonly em: EntityManager,
+    private readonly userService: UserService,
     private readonly authenticatorService: AuthenticatorService,
     private readonly userChallengeService: UserChallengeService
   ) {}
@@ -47,6 +49,21 @@ export class AuthService {
   login(user: UserEntity): string {
     const payload: UserJwtPayload = { sub: user.id };
     return this.jwtService.sign(payload);
+  }
+
+  /**
+   * Verifies a given auth bearer token and gets the user associated with it, if applicable.
+   *
+   * @param token The auth bearer token to examine.
+   *
+   * @returns The user associated with the token.
+   * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  async verifyAuthToken(token: string): Promise<UserEntity> {
+    const { sub: id }: UserJwtPayload = this.jwtService.verify(token);
+    const user = await this.userService.findOneById(id);
+    return user;
   }
 
   /**

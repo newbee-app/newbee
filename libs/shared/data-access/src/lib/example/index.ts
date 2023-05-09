@@ -22,7 +22,7 @@ import {
   BaseCreateTeamDto,
   BaseCreateTeamMemberDto,
   BaseCreateUserDto,
-  BaseCsrfTokenDto,
+  BaseCsrfTokenAndDataDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseQueryDto,
@@ -85,8 +85,9 @@ export const testBaseWebAuthnLoginDto1: BaseWebAuthnLoginDto = {
  * An example instance of BaseCsrfTokenDto.
  * Strictly for use in testing.
  */
-export const testBaseCsrfTokenDto1: BaseCsrfTokenDto = {
+export const testBaseCsrfTokenAndDataDto1: BaseCsrfTokenAndDataDto = {
   csrfToken: 'csrf1',
+  userRelation: testUserRelation1,
 };
 
 /**

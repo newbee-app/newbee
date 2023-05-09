@@ -1,5 +1,5 @@
 import { AuthState } from './auth';
-import { CsrfState } from './csrf';
+import { CookieState } from './cookie';
 import { DarkState } from './dark';
 import { HttpState } from './http';
 
@@ -9,7 +9,7 @@ import { HttpState } from './http';
  */
 export interface AppState {
   auth: AuthState;
-  csrf: CsrfState;
+  csrf: CookieState;
   dark: DarkState;
   http: HttpState;
 }

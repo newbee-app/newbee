@@ -9,9 +9,9 @@ export const authVersion = '1';
 export const authenticatorVersion = '1';
 
 /**
- * The version of the `csrf` API endpoint.
+ * The version of the `cookie` API endpoint.
  */
-export const csrfVersion = '1';
+export const cookieVersion = '1';
 
 /**
  * The version of the `user` API endpoint.

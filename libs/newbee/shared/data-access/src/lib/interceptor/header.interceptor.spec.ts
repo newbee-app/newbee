@@ -4,9 +4,9 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { testBaseCsrfTokenDto1 } from '@newbee/shared/data-access';
+import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
 import { provideMockStore } from '@ngrx/store/testing';
-import { initialCsrfState } from '../store';
+import { initialCookieState } from '../store';
 import { HeaderInterceptor } from './header.interceptor';
 
 describe('HeaderInterceptor', () => {
@@ -19,9 +19,9 @@ describe('HeaderInterceptor', () => {
       providers: [
         provideMockStore({
           initialState: {
-            csrf: {
-              ...initialCsrfState,
-              csrfToken: testBaseCsrfTokenDto1.csrfToken,
+            cookie: {
+              ...initialCookieState,
+              csrfToken: testBaseCsrfTokenAndDataDto1.csrfToken,
             },
           },
         }),
@@ -62,10 +62,10 @@ describe('HeaderInterceptor', () => {
       const headers = req.request.headers;
       expect(headers.get('Content-Type')).toEqual('application/json');
       expect(headers.get('Session-Secret')).toEqual(
-        initialCsrfState.sessionSecret
+        initialCookieState.sessionSecret
       );
       expect(headers.get('X-CSRF-TOKEN')).toEqual(
-        testBaseCsrfTokenDto1.csrfToken
+        testBaseCsrfTokenAndDataDto1.csrfToken
       );
 
       req.flush(testVal);

@@ -13,6 +13,7 @@ import {
   UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorVerifyBadRequest,
   testAuthenticationCredential1,
@@ -37,6 +38,7 @@ const mockVerifyAuthenticationResponse =
 describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
+  let userService: UserService;
   let authenticatorService: AuthenticatorService;
   let userChallengeService: UserChallengeService;
 
@@ -61,6 +63,7 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: createMock<JwtService>({
             sign: jest.fn().mockReturnValue(testAccessToken),
+            verify: jest.fn().mockReturnValue({ sub: testUserEntity1.id }),
           }),
         },
         {
@@ -70,6 +73,12 @@ describe('AuthService', () => {
         {
           provide: EntityManager,
           useValue: createMock<EntityManager>(),
+        },
+        {
+          provide: UserService,
+          useValue: createMock<UserService>({
+            findOneById: jest.fn().mockResolvedValue(testUserEntity1),
+          }),
         },
         {
           provide: AuthenticatorService,
@@ -103,6 +112,7 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
+    userService = module.get<UserService>(UserService);
     authenticatorService =
       module.get<AuthenticatorService>(AuthenticatorService);
     userChallengeService =
@@ -121,6 +131,7 @@ describe('AuthService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(jwtService).toBeDefined();
+    expect(userService).toBeDefined();
     expect(authenticatorService).toBeDefined();
     expect(userChallengeService).toBeDefined();
   });
@@ -130,6 +141,16 @@ describe('AuthService', () => {
       expect(service.login(testUserEntity1)).toEqual(testAccessToken);
       expect(jwtService.sign).toBeCalledTimes(1);
       expect(jwtService.sign).toBeCalledWith(testUserJwtPayload1);
+    });
+  });
+
+  describe('verifyAuthToken', () => {
+    it('should verify an auth token', async () => {
+      await expect(service.verifyAuthToken(testAccessToken)).resolves.toEqual(
+        testUserEntity1
+      );
+      expect(userService.findOneById).toBeCalledTimes(1);
+      expect(userService.findOneById).toBeCalledWith(testUserEntity1.id);
     });
   });
 

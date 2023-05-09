@@ -45,7 +45,7 @@
       "@newbee/api/authenticator/feature": [
         "libs/api/authenticator/feature/src/index.ts"
       ],
-      "@newbee/api/csrf/feature": ["libs/api/csrf/feature/src/index.ts"],
+      "@newbee/api/cookie/feature": ["libs/api/cookie/feature/src/index.ts"],
       "@newbee/api/doc/data-access": ["libs/api/doc/data-access/src/index.ts"],
       "@newbee/api/doc/feature": ["libs/api/doc/feature/src/index.ts"],
       "@newbee/api/org-member-invite/data-access": [

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { CsrfActions } from '@newbee/newbee/shared/data-access';
+import { CookieActions } from '@newbee/newbee/shared/data-access';
 import { ClickService } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 
@@ -29,9 +29,9 @@ export class AppComponent implements OnInit {
   ) {}
 
   /**
-   * Get the app to retrieve a CSRF token as soon as it starts up.
+   * Get the app to retrieve a CSRF token and some initial data as soon as it starts up.
    */
   ngOnInit(): void {
-    this.store.dispatch(CsrfActions.getCsrfToken());
+    this.store.dispatch(CookieActions.initCookies());
   }
 }
