@@ -1,9 +1,10 @@
 import {
   AppState,
   authFeature,
-  csrfFeature,
-  darkFeature,
+  cookieFeature,
   httpFeature,
+  organizationFeature,
+  searchFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ActionReducerMap } from '@ngrx/store';
 
@@ -12,8 +13,9 @@ import { ActionReducerMap } from '@ngrx/store';
  * For use by the global `StoreModule`.
  */
 export const reducers: ActionReducerMap<AppState> = {
-  dark: darkFeature.reducer,
   auth: authFeature.reducer,
+  cookie: cookieFeature.reducer,
   http: httpFeature.reducer,
-  csrf: csrfFeature.reducer,
+  organization: organizationFeature.reducer,
+  search: searchFeature.reducer,
 };

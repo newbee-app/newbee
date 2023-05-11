@@ -28,6 +28,6 @@ import { AuthController } from './auth.controller';
   ],
   controllers: [AuthController],
   providers: [MagicLinkLoginStrategy, AuthService, JwtStrategy],
-  exports: [],
+  exports: [AuthService],
 })
 export class AuthModule {}

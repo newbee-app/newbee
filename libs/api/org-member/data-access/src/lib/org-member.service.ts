@@ -23,7 +23,6 @@ import {
   forbiddenError,
   internalServerError,
   orgMemberNotFound,
-  OrgMemberRelation,
   OrgRoleEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
@@ -242,57 +241,6 @@ export class OrgMemberService {
     } catch (err) {
       this.logger.error(err);
     }
-  }
-
-  /**
-   * Takes in an org member and converts it to an `OrgMemberRelation`.
-   *
-   * @param orgMember The org member to convert.
-   *
-   * @returns The org member as an `OrgMemberRelation`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async createOrgMemberRelation(
-    orgMember: OrgMemberEntity
-  ): Promise<OrgMemberRelation> {
-    try {
-      await this.orgMemberRepository.populate(orgMember, [
-        'user',
-        'organization',
-        'teams.team',
-        'createdDocs',
-        'maintainedDocs',
-        'createdQnas',
-        'maintainedQnas',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const {
-      user,
-      organization,
-      teams,
-      createdDocs,
-      maintainedDocs,
-      createdQnas,
-      maintainedQnas,
-    } = orgMember;
-
-    return {
-      orgMember,
-      organization,
-      user,
-      teams: teams.getItems().map((teamMember) => {
-        const { team } = teamMember;
-        return { teamMember, team };
-      }),
-      createdDocs: createdDocs.getItems(),
-      maintainedDocs: maintainedDocs.getItems(),
-      createdQnas: createdQnas.getItems(),
-      maintainedQnas: maintainedQnas.getItems(),
-    };
   }
 
   /**

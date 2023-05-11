@@ -1,5 +1,5 @@
 import type { Doc, Organization, OrgMember, Qna, User } from '../entity';
-import type { TeamMemberRelation } from './team-member-relation.interface';
+import type { TeamMemberAndTeam } from './team-member-relation.interface';
 
 /**
  * The OrgMember interface with relevant relationship information.
@@ -23,7 +23,7 @@ export interface OrgMemberRelation {
   /**
    * The teams the org member is a part of, and the role they hold in each team.
    */
-  teams: Omit<TeamMemberRelation, 'orgMember' | 'organization' | 'user'>[];
+  teams: TeamMemberAndTeam[];
 
   /**
    * The docs the org member created.
@@ -45,3 +45,8 @@ export interface OrgMemberRelation {
    */
   maintainedQnas: Qna[];
 }
+
+/**
+ * OrgMemberRelation without user information.
+ */
+export type OrgMemberNoUser = Omit<OrgMemberRelation, 'user'>;

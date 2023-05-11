@@ -4,7 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import {
   AuthenticatorEffects,
-  CsrfEffects,
+  CookieEffects,
+  OrganizationEffects,
+  SearchEffects,
 } from '@newbee/newbee/shared/data-access';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
@@ -39,7 +41,12 @@ import { AppRoutingModule } from './routing';
         strictActionTypeUniqueness: true,
       },
     }),
-    EffectsModule.forRoot([AuthenticatorEffects, CsrfEffects]),
+    EffectsModule.forRoot([
+      AuthenticatorEffects,
+      CookieEffects,
+      OrganizationEffects,
+      SearchEffects,
+    ]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
     AppRoutingModule,

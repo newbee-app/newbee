@@ -1,1 +1,1 @@
-<p>home works!</p>
+<newbee-authenticated-home [user]="(user$ | async)!" [organizations]="organizationOptions" [selectedOrganization]="selectedOrganization" (selectedOrganizationChange)="selectOrganization($event?.value ?? null)" (search)="this.search($event)" (suggest)="this.suggest($event)" (navigateToLink)="this.navigateToLink($event)" (logout)="this.logout()"></newbee-authenticated-home>

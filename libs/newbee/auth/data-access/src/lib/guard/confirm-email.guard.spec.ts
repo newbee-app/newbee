@@ -29,7 +29,6 @@ describe('ConfirmEmailGuard', () => {
               },
             ],
           },
-          { path: '', component: EmptyComponent },
         ]),
       ],
       providers: [provideMockStore()],
@@ -39,11 +38,9 @@ describe('ConfirmEmailGuard', () => {
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
 
-    router.initialNavigation();
-  });
-
-  afterEach(() => {
     store.resetSelectors();
+
+    router.initialNavigation();
   });
 
   it('should be defined', () => {
@@ -53,7 +50,7 @@ describe('ConfirmEmailGuard', () => {
   });
 
   describe('valid jwtId and email', () => {
-    it('should navigate to /auth/login/confirm-email', async () => {
+    it('should navigate properly', async () => {
       store.overrideSelector(authFeature.selectAuthState, {
         jwtId: '1234',
         email: testUser1.email,
@@ -68,7 +65,7 @@ describe('ConfirmEmailGuard', () => {
   });
 
   describe('invalid jwtId and email', () => {
-    it('should redirect to /auth/login', async () => {
+    it('should redirect', async () => {
       store.overrideSelector(authFeature.selectAuthState, initialAuthState);
       await expect(
         router.navigate(['/auth/login/confirm-email'])

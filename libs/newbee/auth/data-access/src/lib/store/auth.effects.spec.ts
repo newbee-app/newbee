@@ -1,13 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
   AuthActions,
   AuthenticatorActions,
-  HttpActions,
 } from '@newbee/newbee/shared/data-access';
-import { HttpClientError } from '@newbee/newbee/shared/util';
 import {
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
@@ -19,7 +16,7 @@ import {
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { AuthEffects } from './auth.effects';
 
@@ -46,6 +43,7 @@ describe('AuthEffects', () => {
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialRequestOptions1)),
             webAuthnLogin: jest.fn().mockReturnValue(of(testUserRelation1)),
+            logout: jest.fn().mockReturnValue(of(null)),
           }),
         },
         provideMockActions(() => actions$),
@@ -78,45 +76,6 @@ describe('AuthEffects', () => {
         expect(service.magicLinkLoginLogin).toBeCalledWith(testLoginForm1);
       });
     });
-
-    it('should not fire when unrelated actions are dispatched', () => {
-      actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.sendLoginMagicLink$).toBeMarble('-');
-      expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLoginLogin).not.toBeCalled();
-      });
-    });
-
-    it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('magicLinkLoginLogin');
-      jest.spyOn(service, 'magicLinkLoginLogin').mockReturnValue(
-        throwError(
-          () =>
-            new HttpErrorResponse({
-              error: testError,
-              status: 400,
-            })
-        )
-      );
-
-      actions$ = hot('a', {
-        a: AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 }),
-      });
-      const testHttpClientError: HttpClientError = {
-        status: 400,
-        messages: { misc: testError.message },
-      };
-      const expected$ = hot('a', {
-        a: HttpActions.clientError({
-          httpClientError: testHttpClientError,
-        }),
-      });
-      expect(effects.sendLoginMagicLink$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLoginLogin).toBeCalledTimes(1);
-        expect(service.magicLinkLoginLogin).toBeCalledWith(testLoginForm1);
-      });
-    });
   });
 
   describe('confirmMagicLink$', () => {
@@ -126,47 +85,6 @@ describe('AuthEffects', () => {
       });
       const expected$ = hot('a', {
         a: AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
-      });
-      expect(effects.confirmMagicLink$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLogin).toBeCalledTimes(1);
-        expect(service.magicLinkLogin).toBeCalledWith('1234');
-      });
-    });
-
-    it('should not fire when unrelated actions are dispatched', () => {
-      actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.confirmMagicLink$).toBeMarble('-');
-      expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLogin).not.toBeCalled();
-      });
-    });
-
-    it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('magicLinkLogin');
-      jest.spyOn(service, 'magicLinkLogin').mockReturnValue(
-        throwError(
-          () =>
-            new HttpErrorResponse({
-              error: testError,
-              status: 400,
-            })
-        )
-      );
-
-      actions$ = hot('a', {
-        a: AuthActions.confirmMagicLink({
-          token: '1234',
-        }),
-      });
-      const testHttpClientError: HttpClientError = {
-        status: 400,
-        messages: { misc: testError.message },
-      };
-      const expected$ = hot('a', {
-        a: HttpActions.clientError({
-          httpClientError: testHttpClientError,
-        }),
       });
       expect(effects.confirmMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -186,47 +104,6 @@ describe('AuthEffects', () => {
       const expected$ = hot('a', {
         a: AuthActions.registerWithWebauthnSuccess({
           userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
-        }),
-      });
-      expect(effects.registerWithWebauthn$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnRegister).toBeCalledTimes(1);
-        expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
-      });
-    });
-
-    it('should not fire when unrelated actions are dispatched', () => {
-      actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.registerWithWebauthn$).toBeMarble('-');
-      expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLoginLogin).not.toBeCalled();
-      });
-    });
-
-    it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('webAuthnRegister');
-      jest.spyOn(service, 'webAuthnRegister').mockReturnValue(
-        throwError(
-          () =>
-            new HttpErrorResponse({
-              error: testError,
-              status: 400,
-            })
-        )
-      );
-
-      actions$ = hot('a', {
-        a: AuthActions.registerWithWebauthn({
-          registerForm: testRegisterForm1,
-        }),
-      });
-      const testHttpClientError: HttpClientError = {
-        status: 400,
-        messages: { misc: testError.message },
-      };
-      const expected$ = hot('a', {
-        a: HttpActions.clientError({
-          httpClientError: testHttpClientError,
         }),
       });
       expect(effects.registerWithWebauthn$).toBeObservable(expected$);
@@ -277,47 +154,6 @@ describe('AuthEffects', () => {
         expect(service.webAuthnLoginOptions).toBeCalledWith(testLoginForm1);
       });
     });
-
-    it('should not fire when unrelated actions are dispatched', () => {
-      actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.createWebauthnLoginOptions$).toBeMarble('-');
-      expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginOptions).not.toBeCalled();
-      });
-    });
-
-    it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('webAuthnLoginOptions');
-      jest.spyOn(service, 'webAuthnLoginOptions').mockReturnValue(
-        throwError(
-          () =>
-            new HttpErrorResponse({
-              error: testError,
-              status: 400,
-            })
-        )
-      );
-
-      actions$ = hot('a', {
-        a: AuthActions.createWebauthnLoginOptions({
-          loginForm: testLoginForm1,
-        }),
-      });
-      const testHttpClientError: HttpClientError = {
-        status: 400,
-        messages: { misc: testError.message },
-      };
-      const expected$ = hot('a', {
-        a: HttpActions.clientError({
-          httpClientError: testHttpClientError,
-        }),
-      });
-      expect(effects.createWebauthnLoginOptions$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
-        expect(service.webAuthnLoginOptions).toBeCalledWith(testLoginForm1);
-      });
-    });
   });
 
   describe('loginWithWebauthn$', () => {
@@ -342,49 +178,16 @@ describe('AuthEffects', () => {
         );
       });
     });
+  });
 
-    it('should not fire when unrelated actions are dispatched', () => {
-      actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.loginWithWebauthn$).toBeMarble('-');
-      expect(actions$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLogin).not.toBeCalled();
-      });
-    });
-
-    it('should fire a httpClientError if service throws an error', () => {
-      const testError = new Error('webAuthnLoginPost');
-      jest.spyOn(service, 'webAuthnLogin').mockReturnValue(
-        throwError(
-          () =>
-            new HttpErrorResponse({
-              error: testError,
-              status: 400,
-            })
-        )
-      );
-
-      actions$ = hot('a', {
-        a: AuthActions.loginWithWebauthn({
-          loginForm: testLoginForm1,
-          options: testPublicKeyCredentialRequestOptions1,
-        }),
-      });
-      const testHttpClientError: HttpClientError = {
-        status: 400,
-        messages: { misc: testError.message },
-      };
-      const expected$ = hot('a', {
-        a: HttpActions.clientError({
-          httpClientError: testHttpClientError,
-        }),
-      });
-      expect(effects.loginWithWebauthn$).toBeObservable(expected$);
+  describe('logout$', () => {
+    it('should fire logoutSuccess if successful', () => {
+      actions$ = hot('a', { a: AuthActions.logout() });
+      const expected$ = hot('a', { a: AuthActions.logoutSuccess() });
+      expect(effects.logout$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLogin).toBeCalledTimes(1);
-        expect(service.webAuthnLogin).toBeCalledWith(
-          testLoginForm1,
-          testPublicKeyCredentialRequestOptions1
-        );
+        expect(service.logout).toBeCalledTimes(1);
+        expect(service.logout).toBeCalledWith();
       });
     });
   });

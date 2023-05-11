@@ -4,7 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -74,10 +74,6 @@ describe('UserService', () => {
             findOne: jest.fn().mockResolvedValue(testUserEntity1),
             assign: jest.fn().mockReturnValue(testUpdatedUser),
           }),
-        },
-        {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
         },
         {
           provide: EntityService,

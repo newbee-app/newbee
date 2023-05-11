@@ -8,6 +8,7 @@ import {
   authUrl,
   authVersion,
   loginUrl,
+  logoutUrl,
   optionsUrl,
   registerUrl,
   testBaseCreateUserDto1,
@@ -157,9 +158,9 @@ describe('AuthService', () => {
       service
         .webAuthnLogin(testLoginForm1, testPublicKeyCredentialRequestOptions1)
         .subscribe({
-          next: (user) => {
+          next: (userRelation) => {
             try {
-              expect(user).toEqual(testUserRelation1);
+              expect(userRelation).toEqual(testUserRelation1);
               done();
             } catch (err) {
               done(err);
@@ -180,6 +181,30 @@ describe('AuthService', () => {
       expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);
 
       req.flush(testUserRelation1);
+    });
+  });
+
+  describe('logout', () => {
+    it('should send out a post request', (done) => {
+      service.logout().subscribe({
+        next: () => {
+          try {
+            expect(true).toBeTruthy();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/api/v${authVersion}/${authUrl}/${logoutUrl}`
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual({});
+
+      req.flush(null);
     });
   });
 });

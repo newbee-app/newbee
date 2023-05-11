@@ -4,7 +4,7 @@ import {
   BaseUserRelationAndOptionsDto,
 } from '@newbee/shared/data-access';
 import { UserRelation } from '@newbee/shared/util';
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**
@@ -66,5 +66,16 @@ export const AuthActions = createActionGroup({
      * Should save user data to the store.
      */
     'Login Success': props<{ userRelation: UserRelation }>(),
+
+    /**
+     * Initiate a logout request.
+     */
+    Logout: emptyProps(),
+
+    /**
+     * Indicates that the logout request has been completed successfully.
+     * Should erase all user-specific data from the store.
+     */
+    'Logout Success': emptyProps(),
   },
 });

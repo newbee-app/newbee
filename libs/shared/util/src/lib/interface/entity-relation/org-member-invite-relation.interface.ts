@@ -19,3 +19,11 @@ export interface OrgMemberInviteRelation {
    */
   userInvites: UserInvites;
 }
+
+/**
+ * OrgMemberInviteRelation without user invites information.
+ */
+export type OrgMemberInviteNoUser = Omit<
+  OrgMemberInviteRelation,
+  'userInvites'
+>;

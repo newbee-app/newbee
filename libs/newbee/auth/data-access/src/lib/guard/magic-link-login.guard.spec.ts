@@ -37,11 +37,9 @@ describe('MagicLinkLoginGuard', () => {
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
 
-    router.initialNavigation();
-  });
-
-  afterEach(() => {
     store.resetSelectors();
+
+    router.initialNavigation();
   });
 
   it('should be defined', () => {

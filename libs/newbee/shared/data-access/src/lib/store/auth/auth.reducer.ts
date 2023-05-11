@@ -1,4 +1,4 @@
-import { UserRelation } from '@newbee/shared/util';
+import { User } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { CookieActions } from '../cookie';
 import { AuthActions } from './auth.actions';
@@ -10,14 +10,14 @@ export interface AuthState {
   /**
    * The user's information.
    */
-  userRelation: UserRelation | null;
+  user: User | null;
 }
 
 /**
  * The initial value for `AuthState`.
  */
 export const initialAuthState: AuthState = {
-  userRelation: null,
+  user: null,
 };
 
 /**
@@ -29,24 +29,35 @@ export const authFeature = createFeature({
     initialAuthState,
     on(
       AuthActions.registerWithWebauthnSuccess,
-      (state, { userRelationAndOptionsDto: { userRelation } }): AuthState => ({
+      (
+        state,
+        {
+          userRelationAndOptionsDto: {
+            userRelation: { user },
+          },
+        }
+      ): AuthState => ({
         ...state,
-        userRelation,
+        user,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { userRelation }): AuthState => ({
+      (state, { userRelation: { user } }): AuthState => ({
         ...state,
-        userRelation,
+        user,
       })
     ),
     on(
       CookieActions.initCookiesSuccess,
-      (state, { csrfTokenAndDataDto: { userRelation } }): AuthState => ({
-        ...state,
-        userRelation,
-      })
+      (state, { csrfTokenAndDataDto: { userRelation } }): AuthState => {
+        if (!userRelation) {
+          return state;
+        }
+
+        const { user } = userRelation;
+        return { ...state, user };
+      }
     )
   ),
 });

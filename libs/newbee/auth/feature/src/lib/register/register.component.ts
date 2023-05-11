@@ -83,8 +83,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits `navigateToLogin`, navigate to the login page.
    */
-  onNavigateToLogin(): void {
-    this.router.navigate(['../login'], { relativeTo: this.route });
+  async onNavigateToLogin(): Promise<void> {
+    await this.router.navigate(['../login'], { relativeTo: this.route });
   }
 
   /**

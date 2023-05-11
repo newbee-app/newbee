@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import {
-  testSelectOptionString1,
-  testSelectOptionString2,
+  testSelectOptionOrganization1,
+  testSelectOptionOrganization2,
 } from '@newbee/newbee/shared/util';
 import { testUser1 } from '@newbee/shared/util';
 import { AuthenticatedHomeComponent } from './authenticated-home.component';
@@ -11,7 +11,10 @@ describe('AuthenticatedHomeComponent', () => {
   let component: AuthenticatedHomeComponent;
   let fixture: ComponentFixture<AuthenticatedHomeComponent>;
 
-  const testOrganizations = [testSelectOptionString1, testSelectOptionString2];
+  const testOrganizations = [
+    testSelectOptionOrganization1,
+    testSelectOptionOrganization2,
+  ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -21,9 +24,9 @@ describe('AuthenticatedHomeComponent', () => {
     fixture = TestBed.createComponent(AuthenticatedHomeComponent);
     component = fixture.componentInstance;
 
-    component.userDisplayName = testUser1.displayName ?? '';
+    component.user = testUser1;
     component.organizations = testOrganizations;
-    component.selectedOrganization = testSelectOptionString1;
+    component.selectedOrganization = testSelectOptionOrganization1;
 
     jest.spyOn(component.selectedOrganizationChange, 'emit');
     jest.spyOn(component.search, 'emit');
@@ -41,9 +44,11 @@ describe('AuthenticatedHomeComponent', () => {
 
   describe('init', () => {
     it('should have initialized properly', () => {
-      expect(component.userDisplayName).toEqual(testUser1.displayName);
+      expect(component.user).toEqual(testUser1);
       expect(component.organizations).toEqual(testOrganizations);
-      expect(component.selectedOrganization).toEqual(testSelectOptionString1);
+      expect(component.selectedOrganization).toEqual(
+        testSelectOptionOrganization1
+      );
       expect(component.searchTerm.value).toEqual('');
       expect(component.hasOrgs).toBeTruthy();
       expect(component.orgSelected).toBeTruthy();

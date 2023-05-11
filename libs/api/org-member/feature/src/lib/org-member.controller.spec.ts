@@ -2,9 +2,12 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   testOrganizationEntity1,
   testOrgMemberEntity1,
+  testUserEntity1,
 } from '@newbee/api/shared/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
@@ -12,6 +15,8 @@ import { OrgMemberController } from './org-member.controller';
 describe('OrgMemberController', () => {
   let controller: OrgMemberController;
   let service: OrgMemberService;
+  let entityService: EntityService;
+  let userService: UserService;
 
   const testUpdatedOrgMember = {
     ...testOrgMemberEntity1,
@@ -25,31 +30,64 @@ describe('OrgMemberController', () => {
         {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
+            updateRole: jest.fn().mockResolvedValue(testUpdatedOrgMember),
+          }),
+        },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
             createOrgMemberRelation: jest
               .fn()
               .mockResolvedValue(testOrgMemberRelation1),
-            updateRole: jest.fn().mockResolvedValue(testUpdatedOrgMember),
           }),
+        },
+        {
+          provide: UserService,
+          useValue: createMock<UserService>(),
         },
       ],
     }).compile();
 
     controller = module.get<OrgMemberController>(OrgMemberController);
     service = module.get<OrgMemberService>(OrgMemberService);
+    entityService = module.get<EntityService>(EntityService);
+    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
-  describe('get', () => {
-    it('should return an org member as a DTO', async () => {
+  describe('getAndSelect', () => {
+    it('should get and select the org member', async () => {
       await expect(
-        controller.get(testOrgMemberEntity1, testOrganizationEntity1)
+        controller.getAndSelect(
+          testOrgMemberEntity1,
+          testOrganizationEntity1,
+          testUserEntity1
+        )
       ).resolves.toEqual(testOrgMemberRelation1);
-      expect(service.createOrgMemberRelation).toBeCalledTimes(1);
-      expect(service.createOrgMemberRelation).toBeCalledWith(
+      expect(userService.update).toBeCalledTimes(1);
+      expect(userService.update).toBeCalledWith(testUserEntity1, {
+        selectedOrganization: testOrgMemberEntity1,
+      });
+      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberRelation).toBeCalledWith(
+        testOrgMemberEntity1
+      );
+    });
+  });
+
+  describe('getBySlug', () => {
+    it('should return an org member and its relations', async () => {
+      await expect(
+        controller.getBySlug(testOrgMemberEntity1, testOrganizationEntity1)
+      ).resolves.toEqual(testOrgMemberRelation1);
+      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberRelation).toBeCalledWith(
         testOrgMemberEntity1
       );
     });
@@ -71,8 +109,8 @@ describe('OrgMemberController', () => {
         testBaseUpdateOrgMemberDto1.role,
         testOrgMemberEntity1.role
       );
-      expect(service.createOrgMemberRelation).toBeCalledTimes(1);
-      expect(service.createOrgMemberRelation).toBeCalledWith(
+      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberRelation).toBeCalledWith(
         testUpdatedOrgMember
       );
     });

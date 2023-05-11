@@ -122,6 +122,21 @@ export class AuthEffects {
     );
   });
 
+  logout$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.logout),
+      switchMap(() => {
+        return this.authService.logout().pipe(
+          map(() => AuthActions.logoutSuccess()),
+          tap(async () => {
+            await this.router.navigate(['/']);
+          }),
+          catchError(AuthEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
   constructor(
     private readonly actions$: Actions,
     private readonly authService: AuthService,
@@ -134,7 +149,7 @@ export class AuthEffects {
    * @param err The HTTP error from the response.
    * @returns An observable containing the `[Http] Client Error` action.
    */
-  static catchHttpError(err: HttpErrorResponse) {
+  private static catchHttpError(err: HttpErrorResponse) {
     return catchHttpError(err, (message) => {
       switch (message) {
         case userEmailTakenBadRequest:

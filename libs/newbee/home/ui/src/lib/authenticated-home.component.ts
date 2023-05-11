@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AuthenticatedNavbarComponent } from '@newbee/newbee/navbar/ui';
 import { SearchbarComponent } from '@newbee/newbee/shared/ui';
 import { RouteKeyword, SelectOption } from '@newbee/newbee/shared/util';
+import type { Organization, User } from '@newbee/shared/util';
 
 /**
  * The authenticated version of the home screen.
@@ -23,23 +24,23 @@ export class AuthenticatedHomeComponent {
   /**
    * The display name of the logged in user.
    */
-  @Input() userDisplayName!: string;
+  @Input() user!: User;
 
   /**
    * The organizations of the logged in user.
    */
-  @Input() organizations!: SelectOption<string>[];
+  @Input() organizations!: SelectOption<Organization>[];
 
   /**
    * The current organization of the logged in user.
    */
-  @Input() selectedOrganization: SelectOption<string> | null = null;
+  @Input() selectedOrganization: SelectOption<Organization> | null = null;
 
   /**
    * The event emitter that tells the parent component which organization has been selected.
    */
   @Output() selectedOrganizationChange =
-    new EventEmitter<SelectOption<string> | null>();
+    new EventEmitter<SelectOption<Organization> | null>();
 
   /**
    * The event emitter that tells the parent component when a search has been fired off.

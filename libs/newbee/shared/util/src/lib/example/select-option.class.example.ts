@@ -1,3 +1,4 @@
+import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
 import { SelectOption } from '../class';
 import { testCountry1, testCountry2 } from './country.class.example';
 
@@ -25,10 +26,18 @@ export const testSelectOptionCountry2 = new SelectOption(
  * An example instance of `SelectOption` using `string`.
  * Strictly for use in testing.
  */
-export const testSelectOptionString1 = new SelectOption('Org 1', 'Org 1');
+export const testSelectOptionOrganization1 = new SelectOption(
+  testOrganization1,
+  testOrganization1.slug,
+  testOrganization1.name
+);
 
 /**
  * An example instance of `SelectOption` using `string`.
  * Strictly for use in testing.
  */
-export const testSelectOptionString2 = new SelectOption('Org 2', 'Org 2');
+export const testSelectOptionOrganization2 = new SelectOption(
+  testOrganization2,
+  testOrganization2.slug,
+  testOrganization2.name
+);

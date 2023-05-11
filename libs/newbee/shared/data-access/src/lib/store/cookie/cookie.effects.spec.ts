@@ -55,6 +55,10 @@ describe('CookieEffects', () => {
         }),
       });
       expect(effects.initCookies$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.initCookies).toBeCalledTimes(1);
+        expect(service.initCookies).toBeCalledWith();
+      });
     });
 
     it('should not fire if CSRF token is already set', () => {
@@ -67,6 +71,9 @@ describe('CookieEffects', () => {
       actions$ = hot('a', { a: CookieActions.initCookies() });
       const expected$ = hot('-');
       expect(effects.initCookies$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.initCookies).not.toBeCalled();
+      });
     });
   });
 });
