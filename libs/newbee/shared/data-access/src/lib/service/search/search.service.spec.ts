@@ -7,13 +7,13 @@ import {
   organizationUrl,
   searchUrl,
   searchVersion,
+  suggestUrl,
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
 } from '@newbee/shared/data-access';
 import { testOrganization1 } from '@newbee/shared/util';
-import { suggestUrl } from '@newbee/solr-cli';
 import { SearchService } from './search.service';
 
 describe('SearchService', () => {

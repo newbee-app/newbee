@@ -8,8 +8,8 @@ import {
   organizationUrl,
   searchUrl,
   searchVersion,
+  suggestUrl,
 } from '@newbee/shared/data-access';
-import { suggestUrl } from '@newbee/solr-cli';
 import { Observable } from 'rxjs';
 
 /**
