@@ -1,4 +1,4 @@
-<newbee-authenticated-navbar *ngIf="hasOrgs" [user]="user" [organizations]="organizations" [(selectedOrganization)]="selectedOrganization" (navigateToLink)="navigateToLink.emit($event)" (logout)="logout.emit()">
+<newbee-authenticated-navbar *ngIf="hasOrgs" [user]="user" [organizations]="organizations" [(selectedOrganization)]="selectedOrganization" (selectedOrganizationChange)="emitSelectedOrganizationChange($event)" (navigateToLink)="navigateToLink.emit($event)" (logout)="logout.emit()">
   <div class="mt-16">
     <div *ngIf="orgSelected" id="logo-and-searchbar" class="flex flex-col justify-center items-center gap-y-10">
       <div>

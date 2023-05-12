@@ -208,7 +208,12 @@ export class AuthController {
    * @param res The response object to clear the auth token cookie from.
    */
   @Post(logoutUrl)
-  logout(@Res({ passthrough: true }) res: Response): void {
+  logout(
+    @Res({ passthrough: true }) res: Response,
+    @User() user: UserEntity
+  ): void {
+    this.logger.log(`Logout request received from user ID: ${user.id}`);
     res.clearCookie(authJwtCookie, this.cookieOptions);
+    this.logger.log(`Logged out user ID: ${user.id}`);
   }
 }

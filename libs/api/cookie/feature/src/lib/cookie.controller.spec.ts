@@ -84,5 +84,18 @@ describe('CookieController', () => {
       expect(authService.verifyAuthToken).not.toBeCalled();
       expect(entityService.createUserRelation).not.toBeCalled();
     });
+
+    it('should only return a CSRF token if verify returns null', async () => {
+      jest.spyOn(authService, 'verifyAuthToken').mockResolvedValue(null);
+      await expect(controller.initCookies(request, response)).resolves.toEqual({
+        ...testBaseCsrfTokenAndDataDto1,
+        userRelation: null,
+      });
+      expect(authService.verifyAuthToken).toBeCalledTimes(1);
+      expect(authService.verifyAuthToken).toBeCalledWith(
+        request.signedCookies[authJwtCookie]
+      );
+      expect(entityService.createUserRelation).not.toBeCalled();
+    });
   });
 });

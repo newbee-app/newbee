@@ -1,5 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, ParamMap } from '@angular/router';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  ParamMap,
+} from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -9,7 +13,7 @@ describe('MagicLinkLoginComponent', () => {
   let component: MagicLinkLoginComponent;
   let fixture: ComponentFixture<MagicLinkLoginComponent>;
   let store: MockStore;
-  let route: ActivatedRouteSnapshot;
+  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -17,10 +21,12 @@ describe('MagicLinkLoginComponent', () => {
       providers: [
         provideMockStore(),
         {
-          provide: ActivatedRouteSnapshot,
-          useValue: createMock<ActivatedRouteSnapshot>({
-            queryParamMap: createMock<ParamMap>({
-              get: jest.fn().mockReturnValue('1234'),
+          provide: ActivatedRoute,
+          useValue: createMock<ActivatedRoute>({
+            snapshot: createMock<ActivatedRouteSnapshot>({
+              queryParamMap: createMock<ParamMap>({
+                get: jest.fn().mockReturnValue('1234'),
+              }),
             }),
           }),
         },
@@ -30,7 +36,7 @@ describe('MagicLinkLoginComponent', () => {
     fixture = TestBed.createComponent(MagicLinkLoginComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
-    route = TestBed.inject(ActivatedRouteSnapshot);
+    route = TestBed.inject(ActivatedRoute);
 
     fixture.detectChanges();
   });
@@ -50,6 +56,8 @@ describe('MagicLinkLoginComponent', () => {
             expect(scannedAction).toEqual(
               AuthActions.confirmMagicLink({ token: '1234' })
             );
+            expect(route.snapshot.queryParamMap.get).toBeCalledTimes(1);
+            expect(route.snapshot.queryParamMap.get).toBeCalledWith('token');
             done();
           } catch (err) {
             done(err);
@@ -57,9 +65,6 @@ describe('MagicLinkLoginComponent', () => {
         },
         error: done.fail,
       });
-
-      expect(route.queryParamMap.get).toBeCalledTimes(1);
-      expect(route.queryParamMap.get).toBeCalledWith('token');
     });
   });
 });

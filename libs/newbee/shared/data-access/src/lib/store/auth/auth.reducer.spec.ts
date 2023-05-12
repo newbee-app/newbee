@@ -47,4 +47,14 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
   });
+
+  describe('from login success', () => {
+    it('should update state for logoutSuccess', () => {
+      const updatedState = authFeature.reducer(
+        stateAfterLoginSuccess,
+        AuthActions.logoutSuccess()
+      );
+      expect(updatedState).toEqual(initialAuthState);
+    });
+  });
 });

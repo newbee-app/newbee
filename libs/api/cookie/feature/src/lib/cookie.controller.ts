@@ -60,6 +60,10 @@ export class CookieController {
     }
 
     const user = await this.authService.verifyAuthToken(authToken);
+    if (!user) {
+      return { csrfToken, userRelation: null };
+    }
+
     const userRelation = await this.entityService.createUserRelation(user);
     return { csrfToken, userRelation };
   }

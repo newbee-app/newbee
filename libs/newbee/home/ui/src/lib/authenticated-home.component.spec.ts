@@ -30,7 +30,7 @@ describe('AuthenticatedHomeComponent', () => {
 
     jest.spyOn(component.selectedOrganizationChange, 'emit');
     jest.spyOn(component.search, 'emit');
-    jest.spyOn(component.suggest, 'emit');
+    jest.spyOn(component.searchbar, 'emit');
     jest.spyOn(component.navigateToLink, 'emit');
     jest.spyOn(component.logout, 'emit');
 
@@ -52,6 +52,12 @@ describe('AuthenticatedHomeComponent', () => {
       expect(component.searchTerm.value).toEqual('');
       expect(component.hasOrgs).toBeTruthy();
       expect(component.orgSelected).toBeTruthy();
+    });
+
+    it('should emit suggest when the searchbar changes', () => {
+      component.searchTerm.setValue('hello');
+      expect(component.searchbar.emit).toBeCalledTimes(1);
+      expect(component.searchbar.emit).toBeCalledWith('hello');
     });
   });
 
@@ -90,6 +96,16 @@ describe('AuthenticatedHomeComponent', () => {
       component.emitSearch(submitEvent);
       expect(component.search.emit).toBeCalledTimes(1);
       expect(component.search.emit).toBeCalledWith(component.searchTerm.value);
+    });
+  });
+
+  describe('emitSelectedOrganizationChange', () => {
+    it('should emit selectedOrganizationChange', () => {
+      component.emitSelectedOrganizationChange(testSelectOptionOrganization2);
+      expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
+      expect(component.selectedOrganizationChange.emit).toBeCalledWith(
+        testSelectOptionOrganization2
+      );
     });
   });
 });

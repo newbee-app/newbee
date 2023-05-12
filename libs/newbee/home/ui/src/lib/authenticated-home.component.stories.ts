@@ -34,7 +34,7 @@ export default {
   argTypes: {
     selectedOrganizationChange: { action: 'selectedOrganizationChange' },
     search: { action: 'search' },
-    suggest: { action: 'suggest' },
+    searchbar: { action: 'searchbar' },
     navigateToLink: { action: 'navigateToLink' },
     logout: { action: 'logout' },
   },

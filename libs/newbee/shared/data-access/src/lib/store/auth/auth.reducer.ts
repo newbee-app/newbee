@@ -48,6 +48,7 @@ export const authFeature = createFeature({
         user,
       })
     ),
+    on(AuthActions.logoutSuccess, (): AuthState => initialAuthState),
     on(
       CookieActions.initCookiesSuccess,
       (state, { csrfTokenAndDataDto: { userRelation } }): AuthState => {

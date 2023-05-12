@@ -49,9 +49,6 @@ export class AuthEffects {
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          tap(async () => {
-            await this.router.navigate(['/']);
-          }),
           catchError(AuthEffects.catchHttpError)
         );
       })
@@ -113,14 +110,23 @@ export class AuthEffects {
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          tap(async () => {
-            await this.router.navigate(['/']);
-          }),
           catchError(AuthEffects.catchHttpError)
         );
       })
     );
   });
+
+  loginSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(AuthActions.loginSuccess),
+        tap(async () => {
+          await this.router.navigate(['/']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
 
   logout$ = createEffect(() => {
     return this.actions$.pipe(
@@ -128,14 +134,23 @@ export class AuthEffects {
       switchMap(() => {
         return this.authService.logout().pipe(
           map(() => AuthActions.logoutSuccess()),
-          tap(async () => {
-            await this.router.navigate(['/']);
-          }),
           catchError(AuthEffects.catchHttpError)
         );
       })
     );
   });
+
+  logoutSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(AuthActions.logoutSuccess),
+        tap(async () => {
+          await this.router.navigate(['/auth/login']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
 
   constructor(
     private readonly actions$: Actions,

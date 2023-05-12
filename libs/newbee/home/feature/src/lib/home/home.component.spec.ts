@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthenticatedHomeComponent } from '@newbee/newbee/home/ui';
@@ -22,7 +27,6 @@ import {
 import {
   testOrganization1,
   testOrganization2,
-  testOrgMemberInviteRelation1,
   testOrgMemberRelation1,
   testUser1,
 } from '@newbee/shared/util';
@@ -69,11 +73,14 @@ describe('HomeComponent', () => {
   describe('store', () => {
     it('should set component properties', () => {
       store.overrideSelector(authFeature.selectUser, testUser1);
-      store.overrideSelector(organizationFeature.selectOrganizationState, {
-        organizations: [testOrganization1, testOrganization2],
-        selectedOrganization: testOrgMemberRelation1,
-        invites: [testOrgMemberInviteRelation1],
-      });
+      store.overrideSelector(organizationFeature.selectOrganizations, [
+        testOrganization1,
+        testOrganization2,
+      ]);
+      store.overrideSelector(
+        organizationFeature.selectSelectedOrganization,
+        testOrgMemberRelation1
+      );
       store.refreshState();
       fixture.detectChanges();
 
@@ -128,15 +135,12 @@ describe('HomeComponent', () => {
     });
   });
 
-  describe('suggest', () => {
-    it('should dispatch suggest', (done) => {
-      component.suggest(testBaseSuggestDto1.query);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
+  describe('searchbar', () => {
+    it('should dispatch searchTerm$ and searchTerm$ should dispatch suggest', (done) => {
+      component.searchTerm$.subscribe({
+        next: (searchTerm) => {
           try {
-            expect(scannedAction).toEqual(
-              SearchActions.suggest({ query: testBaseSuggestDto1 })
-            );
+            expect(searchTerm).toEqual(testBaseSuggestDto1.query);
             done();
           } catch (err) {
             done(err);
@@ -144,7 +148,19 @@ describe('HomeComponent', () => {
         },
         error: done.fail,
       });
+
+      component.searchbar(testBaseSuggestDto1.query);
     });
+
+    it('should dispatch suggest', fakeAsync(() => {
+      jest.spyOn(store, 'dispatch');
+      component.searchbar(testBaseSuggestDto1.query);
+      tick(300);
+      expect(store.dispatch).toBeCalledTimes(1);
+      expect(store.dispatch).toBeCalledWith(
+        SearchActions.suggest({ query: testBaseSuggestDto1 })
+      );
+    }));
   });
 
   describe('logout', () => {

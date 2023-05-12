@@ -112,8 +112,13 @@ export class UserEntity implements User {
   /**
    * The organization the user last viewed.
    * Acts as a hidden property, meaning it will never be serialized.
+   * Nullable, so it can be null.
    */
-  @OneToOne(() => OrgMemberEntity, { owner: true, hidden: true })
+  @OneToOne(() => OrgMemberEntity, {
+    owner: true,
+    hidden: true,
+    nullable: true,
+  })
   selectedOrganization: OrgMemberEntity | null = null;
 
   constructor(

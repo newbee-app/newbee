@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
@@ -24,10 +25,12 @@ describe('AuthEffects', () => {
   let actions$ = new Observable<Action>();
   let effects: AuthEffects;
   let service: AuthService;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideMockActions(() => actions$),
         AuthEffects,
         {
           provide: AuthService,
@@ -46,18 +49,25 @@ describe('AuthEffects', () => {
             logout: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        provideMockActions(() => actions$),
+        {
+          provide: Router,
+          useValue: createMock<Router>({
+            navigate: jest.fn().mockResolvedValue(true),
+          }),
+        },
       ],
     });
 
     effects = TestBed.inject(AuthEffects);
     service = TestBed.inject(AuthService);
+    router = TestBed.inject(Router);
   });
 
   it('should be defined', () => {
     expect(actions$).toBeDefined();
     expect(effects).toBeDefined();
     expect(service).toBeDefined();
+    expect(router).toBeDefined();
   });
 
   describe('sendLoginMagicLink$', () => {
@@ -127,6 +137,10 @@ describe('AuthEffects', () => {
         }),
       });
       expect(effects.registerWithWebauthnSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith(['/']);
+      });
     });
 
     it('should not fire when unrelated actions are dispatched', () => {
@@ -180,6 +194,22 @@ describe('AuthEffects', () => {
     });
   });
 
+  describe('loginSuccess$', () => {
+    it('should navigate to home', () => {
+      actions$ = hot('a', {
+        a: AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
+      });
+      const expected$ = hot('a', {
+        a: AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
+      });
+      expect(effects.loginSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith(['/']);
+      });
+    });
+  });
+
   describe('logout$', () => {
     it('should fire logoutSuccess if successful', () => {
       actions$ = hot('a', { a: AuthActions.logout() });
@@ -188,6 +218,18 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.logout).toBeCalledTimes(1);
         expect(service.logout).toBeCalledWith();
+      });
+    });
+  });
+
+  describe('logoutSuccess$', () => {
+    it('should navigate to home', () => {
+      actions$ = hot('a', { a: AuthActions.logoutSuccess() });
+      const expected$ = hot('a', { a: AuthActions.logoutSuccess() });
+      expect(effects.logoutSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith(['/auth/login']);
       });
     });
   });

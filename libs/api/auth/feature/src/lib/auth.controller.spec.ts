@@ -171,7 +171,7 @@ describe('AuthController', () => {
 
   describe('logout', () => {
     it('should call clearCookie', () => {
-      expect(controller.logout(response)).toBeUndefined();
+      expect(controller.logout(response, testUserEntity1)).toBeUndefined();
       expect(response.clearCookie).toBeCalledTimes(1);
       expect(response.clearCookie).toBeCalledWith(authJwtCookie, {});
     });

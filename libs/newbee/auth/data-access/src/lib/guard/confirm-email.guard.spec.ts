@@ -51,7 +51,7 @@ describe('ConfirmEmailGuard', () => {
 
   describe('valid jwtId and email', () => {
     it('should navigate properly', async () => {
-      store.overrideSelector(authFeature.selectAuthState, {
+      store.overrideSelector(authFeature.selectAuthModuleState, {
         jwtId: '1234',
         email: testUser1.email,
         pendingMagicLink: false,
@@ -66,7 +66,10 @@ describe('ConfirmEmailGuard', () => {
 
   describe('invalid jwtId and email', () => {
     it('should redirect', async () => {
-      store.overrideSelector(authFeature.selectAuthState, initialAuthState);
+      store.overrideSelector(
+        authFeature.selectAuthModuleState,
+        initialAuthState
+      );
       await expect(
         router.navigate(['/auth/login/confirm-email'])
       ).resolves.toBeTruthy();
