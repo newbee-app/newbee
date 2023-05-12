@@ -86,6 +86,15 @@ export const testOrganization1: Organization = {
 };
 
 /**
+ * An example instance of Organization.
+ * Strictly for use in testing.
+ */
+export const testOrganization2: Organization = {
+  name: 'Example Org',
+  slug: 'example-org',
+};
+
+/**
  * An example instance of Team.
  * Strictly for use in testing.
  */
@@ -275,6 +284,7 @@ export const testOrgMemberInviteRelation1: OrgMemberInviteRelation = {
  */
 export const testUserRelation1: UserRelation = {
   user: testUser1,
-  organizations: [testOrgMemberRelation1],
+  organizations: [testOrganization1],
+  selectedOrganization: testOrgMemberRelation1,
   invites: [testOrgMemberInviteRelation1],
 };

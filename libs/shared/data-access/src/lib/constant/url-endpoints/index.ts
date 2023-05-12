@@ -21,6 +21,11 @@ export const loginUrl = 'login';
  */
 export const registerUrl = 'register';
 
+/**
+ * The URL endpoint for logging out.
+ */
+export const logoutUrl = 'logout';
+
 // AUTHENTICATOR endpoints
 /**
  * The URL endpoint assocaited with Authenticator.

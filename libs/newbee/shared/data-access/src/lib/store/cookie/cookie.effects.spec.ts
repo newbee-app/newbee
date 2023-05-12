@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -16,6 +17,7 @@ describe('CookieEffects', () => {
   let effects: CookieEffects;
   let service: CookieService;
   let store: MockStore;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -31,12 +33,19 @@ describe('CookieEffects', () => {
               .mockReturnValue(of(testBaseCsrfTokenAndDataDto1)),
           }),
         },
+        {
+          provide: Router,
+          useValue: createMock<Router>({
+            navigate: jest.fn().mockResolvedValue(true),
+          }),
+        },
       ],
     });
 
     effects = TestBed.inject(CookieEffects);
     service = TestBed.inject(CookieService);
     store = TestBed.inject(MockStore);
+    router = TestBed.inject(Router);
   });
 
   it('should be defined', () => {
@@ -44,6 +53,7 @@ describe('CookieEffects', () => {
     expect(effects).toBeDefined();
     expect(service).toBeDefined();
     expect(store).toBeDefined();
+    expect(router).toBeDefined();
   });
 
   describe('initCookies$', () => {
@@ -55,6 +65,10 @@ describe('CookieEffects', () => {
         }),
       });
       expect(effects.initCookies$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.initCookies).toBeCalledTimes(1);
+        expect(service.initCookies).toBeCalledWith();
+      });
     });
 
     it('should not fire if CSRF token is already set', () => {
@@ -67,6 +81,29 @@ describe('CookieEffects', () => {
       actions$ = hot('a', { a: CookieActions.initCookies() });
       const expected$ = hot('-');
       expect(effects.initCookies$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.initCookies).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('initCookiesSuccess$', () => {
+    it('should navigate to home', () => {
+      actions$ = hot('a', {
+        a: CookieActions.initCookiesSuccess({
+          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: CookieActions.initCookiesSuccess({
+          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+        }),
+      });
+      expect(effects.initCookiesSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith(['/']);
+      });
     });
   });
 });

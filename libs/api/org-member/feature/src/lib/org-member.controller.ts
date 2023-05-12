@@ -1,24 +1,36 @@
-import { Body, Controller, Delete, Get, Logger, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import {
   OrgMemberService,
   UpdateOrgMemberDto,
 } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   OrganizationEntity,
   OrgMemberEntity,
+  UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   Organization,
   OrgMember,
   Role,
   SubjectOrgMember,
+  User,
 } from '@newbee/api/shared/util';
+import { UserService } from '@newbee/api/user/data-access';
 import {
   organizationUrl,
   orgMemberUrl,
   orgMemberVersion,
 } from '@newbee/shared/data-access';
-import type { OrgMemberRelation } from '@newbee/shared/util';
+import type { OrgMemberNoUser, OrgMemberRelation } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
@@ -34,7 +46,38 @@ export class OrgMemberController {
    */
   private readonly logger = new Logger(OrgMemberController.name);
 
-  constructor(private readonly orgMemberService: OrgMemberService) {}
+  constructor(
+    private readonly orgMemberService: OrgMemberService,
+    private readonly entityService: EntityService,
+    private readonly userService: UserService
+  ) {}
+
+  /**
+   * The API route for getting the authenticated user's org member data and marking it as the selected organization.
+   *
+   * @param orgMember The org member to get and select.
+   * @param organization The organization to look in.
+   * @param user The authenticated user making the request.
+   *
+   * @returns Information about the selected org member.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  @Post()
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  async getAndSelect(
+    @OrgMember() orgMember: OrgMemberEntity,
+    @Organization() organization: OrganizationEntity,
+    @User() user: UserEntity
+  ): Promise<OrgMemberNoUser> {
+    this.logger.log(
+      `Get and select org member request received in organization ID: ${organization.id} by user ID: ${user.id}`
+    );
+    this.logger.log(`Found org member, slug: ${orgMember.slug}`);
+
+    await this.userService.update(user, { selectedOrganization: orgMember });
+    return await this.entityService.createOrgMemberRelation(orgMember);
+  }
 
   /**
    * The API route for getting an org member.
@@ -48,7 +91,7 @@ export class OrgMemberController {
    */
   @Get(`:${orgMemberUrl}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(
+  async getBySlug(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity
   ): Promise<OrgMemberRelation> {
@@ -56,9 +99,7 @@ export class OrgMemberController {
       `Get org member request received in organization ID: ${organization.id}, for slug: ${subjectOrgMember.slug}`
     );
     this.logger.log(`Found org member, slug: ${subjectOrgMember.slug}`);
-    return await this.orgMemberService.createOrgMemberRelation(
-      subjectOrgMember
-    );
+    return await this.entityService.createOrgMemberRelation(subjectOrgMember);
   }
 
   /**
@@ -93,9 +134,7 @@ export class OrgMemberController {
       `Updated org member for org member slug: ${updatedOrgMember.slug}, in organization ID: ${organization.id}`
     );
 
-    return await this.orgMemberService.createOrgMemberRelation(
-      updatedOrgMember
-    );
+    return await this.entityService.createOrgMemberRelation(updatedOrgMember);
   }
 
   /**

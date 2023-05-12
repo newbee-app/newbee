@@ -16,7 +16,7 @@ export const confirmEmailGuard: CanActivateFn = (): Observable<
   const store = inject(Store);
   const router = inject(Router);
 
-  return store.select(authFeature.selectAuthState).pipe(
+  return store.select(authFeature.selectAuthModuleState).pipe(
     map(({ jwtId, email }) => {
       if (jwtId && email) {
         return true;

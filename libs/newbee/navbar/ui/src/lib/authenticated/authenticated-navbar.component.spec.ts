@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  testSelectOptionString1,
-  testSelectOptionString2,
+  testSelectOptionOrganization1,
+  testSelectOptionOrganization2,
 } from '@newbee/newbee/shared/util';
 import { testUser1 } from '@newbee/shared/util';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
@@ -18,12 +18,12 @@ describe('AuthenticatedNavbarComponent', () => {
     fixture = TestBed.createComponent(AuthenticatedNavbarComponent);
     component = fixture.componentInstance;
 
-    component.userDisplayName = testUser1.displayName ?? '';
+    component.user = testUser1;
     component.organizations = [
-      testSelectOptionString1,
-      testSelectOptionString2,
+      testSelectOptionOrganization1,
+      testSelectOptionOrganization2,
     ];
-    component.selectedOrganization = testSelectOptionString1;
+    component.selectedOrganization = testSelectOptionOrganization1;
     jest.spyOn(component.selectedOrganizationChange, 'emit');
 
     fixture.detectChanges();
@@ -36,16 +36,18 @@ describe('AuthenticatedNavbarComponent', () => {
 
   it('should start with correct values', () => {
     expect(component.organizationSelect.value).toEqual(
-      testSelectOptionString1.value
+      testSelectOptionOrganization1.value
     );
   });
 
   it('should emit when a new organization is selected', () => {
-    component.organizationSelect.setValue(testSelectOptionString2.value);
-    expect(component.selectedOrganization).toEqual(testSelectOptionString2);
+    component.organizationSelect.setValue(testSelectOptionOrganization2.value);
+    expect(component.selectedOrganization).toEqual(
+      testSelectOptionOrganization2
+    );
     expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
     expect(component.selectedOrganizationChange.emit).toBeCalledWith(
-      testSelectOptionString2
+      testSelectOptionOrganization2
     );
   });
 });

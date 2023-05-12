@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, switchMap } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { catchHttpError } from '../../function';
 import { CookieService } from '../../service';
 import { CookieActions } from './cookie.actions';
@@ -29,10 +30,25 @@ export class CookieEffects {
     );
   });
 
+  initCookiesSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(CookieActions.initCookiesSuccess),
+        tap(async ({ csrfTokenAndDataDto }) => {
+          if (csrfTokenAndDataDto.userRelation) {
+            await this.router.navigate(['/']);
+          }
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   constructor(
     private readonly actions$: Actions,
     private readonly cookieService: CookieService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly router: Router
   ) {}
 
   /**

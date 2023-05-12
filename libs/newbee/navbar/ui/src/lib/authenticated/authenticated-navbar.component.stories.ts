@@ -5,8 +5,8 @@ import {
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
-  testSelectOptionString1,
-  testSelectOptionString2,
+  testSelectOptionOrganization1,
+  testSelectOptionOrganization2,
 } from '@newbee/newbee/shared/util';
 import { testUser1 } from '@newbee/shared/util';
 import {
@@ -34,9 +34,12 @@ export default {
     ),
   ],
   args: {
-    userDisplayName: testUser1.displayName,
-    organizations: [testSelectOptionString1, testSelectOptionString2],
-    selectedOrganization: testSelectOptionString1,
+    user: testUser1,
+    organizations: [
+      testSelectOptionOrganization1,
+      testSelectOptionOrganization2,
+    ],
+    selectedOrganization: testSelectOptionOrganization1,
   },
   argTypes: {
     selectedOrganizationChange: { action: 'selectedOrganizationChange' },

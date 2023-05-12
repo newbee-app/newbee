@@ -6,7 +6,8 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import { testUserEntity1 } from '@newbee/api/shared/data-access';
+import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
+import { authJwtCookie } from '@newbee/api/shared/util';
 import { testUserAndOptions1, UserService } from '@newbee/api/user/data-access';
 import {
   testBaseCreateUserDto1,
@@ -26,6 +27,7 @@ import { AuthController } from './auth.controller';
 describe('AuthController', () => {
   let controller: AuthController;
   let service: AuthService;
+  let entityService: EntityService;
   let userService: UserService;
   let strategy: MagicLinkLoginStrategy;
   let response: Response;
@@ -37,10 +39,15 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
+          }),
+        },
+        {
           provide: UserService,
           useValue: createMock<UserService>({
             create: jest.fn().mockResolvedValue(testUserAndOptions1),
-            createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
           }),
         },
         {
@@ -70,6 +77,7 @@ describe('AuthController', () => {
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
+    entityService = module.get<EntityService>(EntityService);
     userService = module.get<UserService>(UserService);
     strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
 
@@ -79,6 +87,7 @@ describe('AuthController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
     expect(userService).toBeDefined();
     expect(strategy).toBeDefined();
   });
@@ -92,6 +101,8 @@ describe('AuthController', () => {
       expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserAndOptions1.user);
+      expect(entityService.createUserRelation).toBeCalledTimes(1);
+      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
     });
   });
 
@@ -119,6 +130,8 @@ describe('AuthController', () => {
       );
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);
+      expect(entityService.createUserRelation).toBeCalledTimes(1);
+      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
     });
   });
 
@@ -151,6 +164,16 @@ describe('AuthController', () => {
       ).resolves.toEqual(testUserRelation1);
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);
+      expect(entityService.createUserRelation).toBeCalledTimes(1);
+      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
+    });
+  });
+
+  describe('logout', () => {
+    it('should call clearCookie', () => {
+      expect(controller.logout(response, testUserEntity1)).toBeUndefined();
+      expect(response.clearCookie).toBeCalledTimes(1);
+      expect(response.clearCookie).toBeCalledWith(authJwtCookie, {});
     });
   });
 });

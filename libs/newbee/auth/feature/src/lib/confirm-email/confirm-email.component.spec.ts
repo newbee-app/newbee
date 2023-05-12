@@ -39,7 +39,7 @@ describe('ConfirmEmailComponent', () => {
 
   describe('jwtId and Email', () => {
     it('should set component properties', () => {
-      store.overrideSelector(authFeature.selectAuthState, {
+      store.overrideSelector(authFeature.selectAuthModuleState, {
         jwtId: '1234',
         email: testUser1.email,
         pendingMagicLink: false,

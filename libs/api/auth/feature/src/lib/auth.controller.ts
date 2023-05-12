@@ -14,7 +14,11 @@ import {
   WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import { EmailDto, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EmailDto,
+  EntityService,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
@@ -23,6 +27,7 @@ import {
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
   loginUrl,
+  logoutUrl,
   optionsUrl,
   registerUrl,
   webauthnUrl,
@@ -30,7 +35,7 @@ import {
 import type { UserRelation } from '@newbee/shared/util';
 import { internalServerError, magicLinkLogin } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
-import type { Response } from 'express';
+import type { CookieOptions, Response } from 'express';
 
 /**
  * The controller that provides API routes for logging in and registering users.
@@ -42,12 +47,19 @@ export class AuthController {
    */
   private readonly logger = new Logger(AuthController.name);
 
+  private readonly cookieOptions: CookieOptions;
+
   constructor(
+    private readonly entityService: EntityService,
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy,
-    private readonly configService: ConfigService<AppAuthConfig, true>
-  ) {}
+    configService: ConfigService<AppAuthConfig, true>
+  ) {
+    this.cookieOptions = configService.get('csrf.cookieOptions', {
+      infer: true,
+    });
+  }
 
   /**
    * A publicly-accessible API route for registering a new user.
@@ -76,14 +88,10 @@ export class AuthController {
     const accessToken = this.authService.login(user);
     this.logger.log(`Access token created: ${accessToken}`);
 
-    res.cookie(
-      authJwtCookie,
-      accessToken,
-      this.configService.get('csrf.cookieOptions', { infer: true })
-    );
+    res.cookie(authJwtCookie, accessToken, this.cookieOptions);
     return {
       options,
-      userRelation: await this.userService.createUserRelation(user),
+      userRelation: await this.entityService.createUserRelation(user),
     };
   }
 
@@ -141,12 +149,8 @@ export class AuthController {
       `Credentials verified and access token created: ${accessToken}`
     );
 
-    res.cookie(
-      authJwtCookie,
-      accessToken,
-      this.configService.get('csrf.cookieOptions', { infer: true })
-    );
-    return await this.userService.createUserRelation(user);
+    res.cookie(authJwtCookie, accessToken, this.cookieOptions);
+    return await this.entityService.createUserRelation(user);
   }
 
   /**
@@ -194,11 +198,22 @@ export class AuthController {
     const accessToken = this.authService.login(user);
     this.logger.log(`Access token generated: ${accessToken}`);
 
-    res.cookie(
-      authJwtCookie,
-      accessToken,
-      this.configService.get('csrf.cookieOptions', { infer: true })
-    );
-    return await this.userService.createUserRelation(user);
+    res.cookie(authJwtCookie, accessToken, this.cookieOptions);
+    return await this.entityService.createUserRelation(user);
+  }
+
+  /**
+   * Called by the user to log out.
+   *
+   * @param res The response object to clear the auth token cookie from.
+   */
+  @Post(logoutUrl)
+  logout(
+    @Res({ passthrough: true }) res: Response,
+    @User() user: UserEntity
+  ): void {
+    this.logger.log(`Logout request received from user ID: ${user.id}`);
+    res.clearCookie(authJwtCookie, this.cookieOptions);
+    this.logger.log(`Logged out user ID: ${user.id}`);
   }
 }

@@ -44,7 +44,7 @@ export const initialAuthState: AuthState = {
  * The reducers and generated selectors for `AuthState`.
  */
 export const authFeature = createFeature({
-  name: 'auth',
+  name: 'authModule',
   reducer: createReducer(
     initialAuthState,
     on(

@@ -1,9 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AuthenticatedNavbarComponent } from '@newbee/newbee/navbar/ui';
 import { SearchbarComponent } from '@newbee/newbee/shared/ui';
 import { RouteKeyword, SelectOption } from '@newbee/newbee/shared/util';
+import type { Organization, User } from '@newbee/shared/util';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The authenticated version of the home screen.
@@ -19,27 +28,27 @@ import { RouteKeyword, SelectOption } from '@newbee/newbee/shared/util';
   ],
   templateUrl: './authenticated-home.component.html',
 })
-export class AuthenticatedHomeComponent {
+export class AuthenticatedHomeComponent implements OnInit, OnDestroy {
   /**
    * The display name of the logged in user.
    */
-  @Input() userDisplayName!: string;
+  @Input() user!: User;
 
   /**
    * The organizations of the logged in user.
    */
-  @Input() organizations!: SelectOption<string>[];
+  @Input() organizations!: SelectOption<Organization>[];
 
   /**
    * The current organization of the logged in user.
    */
-  @Input() selectedOrganization: SelectOption<string> | null = null;
+  @Input() selectedOrganization: SelectOption<Organization> | null = null;
 
   /**
    * The event emitter that tells the parent component which organization has been selected.
    */
   @Output() selectedOrganizationChange =
-    new EventEmitter<SelectOption<string> | null>();
+    new EventEmitter<SelectOption<Organization> | null>();
 
   /**
    * The event emitter that tells the parent component when a search has been fired off.
@@ -49,7 +58,7 @@ export class AuthenticatedHomeComponent {
   /**
    * The event emitter that tells the parent component when the user has typed into the searchbar, so suggestions can be fetched.
    */
-  @Output() suggest = new EventEmitter<string>();
+  @Output() searchbar = new EventEmitter<string>();
 
   /**
    * The event emitter that tells the parent component what route to navigate to.
@@ -72,6 +81,11 @@ export class AuthenticatedHomeComponent {
   readonly routeKeyword = RouteKeyword;
 
   /**
+   * Emits to unsubscribe from all infinite observables.
+   */
+  private readonly unsubscribe$ = new Subject<void>();
+
+  /**
    * Whether organizations have been fed in to the component.
    */
   get hasOrgs(): boolean {
@@ -86,6 +100,29 @@ export class AuthenticatedHomeComponent {
   }
 
   /**
+   * Emit the suggest event with the current searchbar value.
+   */
+  ngOnInit(): void {
+    this.searchTerm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: (value) => {
+        if (!value) {
+          return;
+        }
+
+        this.searchbar.emit(value);
+      },
+    });
+  }
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  /**
    * Emit the search event with the current search value.
    */
   emitSearch(event: SubmitEvent): void {
@@ -95,5 +132,16 @@ export class AuthenticatedHomeComponent {
     }
 
     this.search.emit(this.searchTerm.value);
+  }
+
+  /**
+   * Emit the selectedOrganizationChange event with the selected option value.
+   *
+   * @param option The organization option to select.
+   */
+  emitSelectedOrganizationChange(
+    option: SelectOption<Organization> | null
+  ): void {
+    this.selectedOrganizationChange.emit(option);
   }
 }

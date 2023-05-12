@@ -1,8 +1,8 @@
 import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@newbee/api/auth/data-access';
+import { EntityService } from '@newbee/api/shared/data-access';
 import { AppConfig, authJwtCookie, Public } from '@newbee/api/shared/util';
-import { UserService } from '@newbee/api/user/data-access';
 import {
   BaseCsrfTokenAndDataDto,
   cookieUrl,
@@ -28,8 +28,8 @@ export class CookieController {
 
   constructor(
     configService: ConfigService<AppConfig, true>,
-    private readonly authService: AuthService,
-    private readonly userService: UserService
+    private readonly entityService: EntityService,
+    private readonly authService: AuthService
   ) {
     this.generateToken = configService.get('csrf.generateToken', {
       infer: true,
@@ -60,7 +60,11 @@ export class CookieController {
     }
 
     const user = await this.authService.verifyAuthToken(authToken);
-    const userRelation = await this.userService.createUserRelation(user);
+    if (!user) {
+      return { csrfToken, userRelation: null };
+    }
+
+    const userRelation = await this.entityService.createUserRelation(user);
     return { csrfToken, userRelation };
   }
 }

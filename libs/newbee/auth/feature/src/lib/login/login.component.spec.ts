@@ -107,9 +107,8 @@ describe('LoginComponent', () => {
   });
 
   describe('onNavigateToRegister', () => {
-    it('should call navigate', () => {
-      expect(component).toBeDefined();
-      component.onNavigateToRegister();
+    it('should call navigate', async () => {
+      await component.onNavigateToRegister();
       expect(router.navigate).toBeCalledTimes(1);
       expect(router.navigate).toBeCalledWith(['../register'], {
         relativeTo: route,

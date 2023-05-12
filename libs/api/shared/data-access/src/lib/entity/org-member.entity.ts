@@ -24,6 +24,14 @@ import { UserEntity } from './user.entity';
 @Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
 export class OrgMemberEntity implements OrgMember {
   /**
+   * Gets the ID for the entity as a comma-delimited string.
+   */
+  @Property({ persist: false })
+  get id(): string {
+    return `${this.user.id},${this.organization.id}`;
+  }
+
+  /**
    * The user associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
@@ -88,14 +96,6 @@ export class OrgMemberEntity implements OrgMember {
    */
   @OneToMany(() => QnaEntity, (qna) => qna.maintainer, { hidden: true })
   maintainedQnas = new Collection<QnaEntity>(this);
-
-  /**
-   * Gets the ID for the entity as a comma-delimited string.
-   */
-  @Property({ persist: false })
-  get id(): string {
-    return `${this.user.id},${this.organization.id}`;
-  }
 
   /**
    * Specifies the primary key of the entity.

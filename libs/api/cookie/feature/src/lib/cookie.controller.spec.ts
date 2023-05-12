@@ -2,9 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { AuthService } from '@newbee/api/auth/data-access';
-import { testUserEntity1 } from '@newbee/api/shared/data-access';
+import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
-import { UserService } from '@newbee/api/user/data-access';
 import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
 import { testUserRelation1 } from '@newbee/shared/util';
 import { request, response } from 'express';
@@ -12,8 +11,8 @@ import { CookieController } from './cookie.controller';
 
 describe('CookieController', () => {
   let controller: CookieController;
+  let entityService: EntityService;
   let authService: AuthService;
-  let userService: UserService;
 
   const testToken = 'token';
   const generateToken = jest.fn();
@@ -29,15 +28,15 @@ describe('CookieController', () => {
           }),
         },
         {
-          provide: AuthService,
-          useValue: createMock<AuthService>({
-            verifyAuthToken: jest.fn().mockResolvedValue(testUserEntity1),
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
           }),
         },
         {
-          provide: UserService,
-          useValue: createMock<UserService>({
-            createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
+          provide: AuthService,
+          useValue: createMock<AuthService>({
+            verifyAuthToken: jest.fn().mockResolvedValue(testUserEntity1),
           }),
         },
       ],
@@ -45,7 +44,7 @@ describe('CookieController', () => {
 
     controller = module.get<CookieController>(CookieController);
     authService = module.get<AuthService>(AuthService);
-    userService = module.get<UserService>(UserService);
+    entityService = module.get<EntityService>(EntityService);
 
     request.signedCookies = {};
     request.signedCookies[authJwtCookie] = testToken;
@@ -57,7 +56,7 @@ describe('CookieController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(authService).toBeDefined();
-    expect(userService).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('initCookies', () => {
@@ -72,8 +71,8 @@ describe('CookieController', () => {
       );
       expect(authService.verifyAuthToken).toBeCalledTimes(1);
       expect(authService.verifyAuthToken).toBeCalledWith(testToken);
-      expect(userService.createUserRelation).toBeCalledTimes(1);
-      expect(userService.createUserRelation).toBeCalledWith(testUserEntity1);
+      expect(entityService.createUserRelation).toBeCalledTimes(1);
+      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
     });
 
     it('should only return a CSRF token if request has no auth cookie', async () => {
@@ -83,7 +82,20 @@ describe('CookieController', () => {
         userRelation: null,
       });
       expect(authService.verifyAuthToken).not.toBeCalled();
-      expect(userService.createUserRelation).not.toBeCalled();
+      expect(entityService.createUserRelation).not.toBeCalled();
+    });
+
+    it('should only return a CSRF token if verify returns null', async () => {
+      jest.spyOn(authService, 'verifyAuthToken').mockResolvedValue(null);
+      await expect(controller.initCookies(request, response)).resolves.toEqual({
+        ...testBaseCsrfTokenAndDataDto1,
+        userRelation: null,
+      });
+      expect(authService.verifyAuthToken).toBeCalledTimes(1);
+      expect(authService.verifyAuthToken).toBeCalledWith(
+        request.signedCookies[authJwtCookie]
+      );
+      expect(entityService.createUserRelation).not.toBeCalled();
     });
   });
 });

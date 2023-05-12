@@ -152,6 +152,16 @@ describe('AuthService', () => {
       expect(userService.findOneById).toBeCalledTimes(1);
       expect(userService.findOneById).toBeCalledWith(testUserEntity1.id);
     });
+
+    it('should return null if verify throws an error', async () => {
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new Error('verify');
+      });
+      await expect(
+        service.verifyAuthToken(testAccessToken)
+      ).resolves.toBeNull();
+      expect(userService.findOneById).not.toBeCalled();
+    });
   });
 
   describe('generateLoginChallenge', () => {

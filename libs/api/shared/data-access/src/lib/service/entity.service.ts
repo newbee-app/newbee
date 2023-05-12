@@ -11,6 +11,7 @@ import {
   QnaDocParams,
   TeamDocParams,
 } from '@newbee/api/shared/util';
+import type { OrgMemberRelation, UserRelation } from '@newbee/shared/util';
 import {
   cannotDeleteMaintainerBadReqest,
   cannotDeleteOnlyOrgOwnerBadRequest,
@@ -153,6 +154,92 @@ export class EntityService {
     const { id, slug, user } = orgMember;
     const { name, displayName } = user;
     return new OrgMemberDocParams(id, slug, name, displayName);
+  }
+
+  /**
+   * Takes in an org member and converts it to an `OrgMemberRelation`.
+   *
+   * @param orgMember The org member to convert.
+   *
+   * @returns The org member as an `OrgMemberRelation`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createOrgMemberRelation(
+    orgMember: OrgMemberEntity
+  ): Promise<OrgMemberRelation> {
+    try {
+      await this.em.populate(orgMember, [
+        'user',
+        'organization',
+        'teams.team',
+        'createdDocs',
+        'maintainedDocs',
+        'createdQnas',
+        'maintainedQnas',
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    const {
+      user,
+      organization,
+      teams,
+      createdDocs,
+      maintainedDocs,
+      createdQnas,
+      maintainedQnas,
+    } = orgMember;
+
+    return {
+      orgMember,
+      organization,
+      user,
+      teams: teams.getItems().map((teamMember) => {
+        const { team } = teamMember;
+        return { teamMember, team };
+      }),
+      createdDocs: createdDocs.getItems(),
+      maintainedDocs: maintainedDocs.getItems(),
+      createdQnas: createdQnas.getItems(),
+      maintainedQnas: maintainedQnas.getItems(),
+    };
+  }
+
+  /**
+   * Takes in a user and converts it to a `UserEntity`.
+   *
+   * @param user The user to convert.
+   *
+   * @returns The user as a `UserRelation`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createUserRelation(user: UserEntity): Promise<UserRelation> {
+    try {
+      await this.em.populate(user, [
+        'organizations.organization',
+        'invites.orgMemberInvites.organization',
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    const { invites, organizations, selectedOrganization } = user;
+    return {
+      user,
+      organizations: organizations
+        .getItems()
+        .map((orgMember) => orgMember.organization),
+      selectedOrganization: selectedOrganization
+        ? await this.createOrgMemberRelation(selectedOrganization)
+        : null,
+      invites: invites.orgMemberInvites.getItems().map((orgMemberInvite) => {
+        const { organization } = orgMemberInvite;
+        return { orgMemberInvite, organization };
+      }),
+    };
   }
 
   /**

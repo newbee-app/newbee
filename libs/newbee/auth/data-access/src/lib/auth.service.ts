@@ -10,6 +10,7 @@ import {
   BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
   loginUrl,
+  logoutUrl,
   optionsUrl,
   registerUrl,
   webauthnUrl,
@@ -131,6 +132,23 @@ export class AuthService {
     );
   }
 
+  /**
+   * Logs the user out of the application by sending a request to the backend to invalidate the user's auth token.
+   */
+  logout(): Observable<void> {
+    return this.http.post<void>(
+      `/api/v${authVersion}/${authUrl}/${logoutUrl}`,
+      {}
+    );
+  }
+
+  /**
+   * Converts a login form into an email DTO.
+   *
+   * @param loginForm The login form to convert.
+   *
+   * @returns The email DTO derived from the login form.
+   */
   private loginFormToEmailDto(loginForm: LoginForm): BaseEmailDto {
     return { email: loginForm.email ?? '' };
   }

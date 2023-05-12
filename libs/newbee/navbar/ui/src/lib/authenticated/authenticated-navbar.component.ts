@@ -10,6 +10,7 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SearchableSelectComponent } from '@newbee/newbee/shared/ui';
 import { RouteKeyword, SelectOption } from '@newbee/newbee/shared/util';
+import type { Organization, User } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -25,23 +26,23 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
   /**
    * The display name of the logged in user.
    */
-  @Input() userDisplayName!: string;
+  @Input() user!: User;
 
   /**
    * The organizations of the logged in user, as select options.
    */
-  @Input() organizations!: SelectOption<string>[];
+  @Input() organizations!: SelectOption<Organization>[];
 
   /**
    * The selected organization of the logged in user.
    */
-  @Input() selectedOrganization: SelectOption<string> | null = null;
+  @Input() selectedOrganization: SelectOption<Organization> | null = null;
 
   /**
    * An event emitter that tells the parent component when the selected organization has been changed.
    */
   @Output() selectedOrganizationChange =
-    new EventEmitter<SelectOption<string> | null>();
+    new EventEmitter<SelectOption<Organization> | null>();
 
   /**
    * An event emitter that tells the parent component when a request has been made to navigate to a link.
@@ -56,7 +57,7 @@ export class AuthenticatedNavbarComponent implements OnInit, OnDestroy {
   /**
    * The form control representing the select for the organization.
    */
-  readonly organizationSelect = new FormControl('');
+  readonly organizationSelect = new FormControl<Organization | null>(null);
 
   /**
    * All of the keywords that represent routes.

@@ -1,7 +1,8 @@
-import { AuthState } from './auth';
-import { CookieState } from './cookie';
-import { DarkState } from './dark';
-import { HttpState } from './http';
+import type { AuthState } from './auth';
+import type { CookieState } from './cookie';
+import type { HttpState } from './http';
+import type { OrganizationState } from './organization';
+import type { SearchState } from './search';
 
 /**
  * The global app state.
@@ -9,7 +10,8 @@ import { HttpState } from './http';
  */
 export interface AppState {
   auth: AuthState;
-  csrf: CookieState;
-  dark: DarkState;
+  cookie: CookieState;
   http: HttpState;
+  organization: OrganizationState;
+  search: SearchState;
 }

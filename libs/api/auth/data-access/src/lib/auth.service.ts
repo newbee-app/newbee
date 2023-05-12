@@ -60,10 +60,15 @@ export class AuthService {
    * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async verifyAuthToken(token: string): Promise<UserEntity> {
-    const { sub: id }: UserJwtPayload = this.jwtService.verify(token);
-    const user = await this.userService.findOneById(id);
-    return user;
+  async verifyAuthToken(token: string): Promise<UserEntity | null> {
+    try {
+      const { sub: id }: UserJwtPayload = this.jwtService.verify(token);
+      const user = await this.userService.findOneById(id);
+      return user;
+    } catch (err) {
+      this.logger.error(err);
+      return null;
+    }
   }
 
   /**

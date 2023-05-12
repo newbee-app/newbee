@@ -1,9 +1,10 @@
+import type { EntityData } from '@mikro-orm/core';
 import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -15,7 +16,6 @@ import { ConfigService } from '@nestjs/config';
 import { EntityService, UserEntity } from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
-import type { UserRelation } from '@newbee/shared/util';
 import {
   internalServerError,
   userEmailNotFound,
@@ -25,7 +25,7 @@ import {
 import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto } from './dto';
 import type { UserAndOptions } from './interface';
 
 /**
@@ -41,7 +41,6 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: EntityRepository<UserEntity>,
-    private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
@@ -160,7 +159,7 @@ export class UserService {
    * Updates the given `UserEntity` and saves the changes to the database.
    *
    * @param user The `UserEntity` instance to update.
-   * @param updateUserDto The new details for the user.
+   * @param data The new details for the user.
    *
    * @returns The updated `UserEntity` instance.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
@@ -168,9 +167,9 @@ export class UserService {
    */
   async update(
     user: UserEntity,
-    updateUserDto: UpdateUserDto
+    data: EntityData<UserEntity>
   ): Promise<UserEntity> {
-    const updatedUser = this.userRepository.assign(user, updateUserDto);
+    const updatedUser = this.userRepository.assign(user, data);
 
     try {
       await this.userRepository.flush();
@@ -184,7 +183,7 @@ export class UserService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    if (!updateUserDto.name && !updateUserDto.displayName) {
+    if (!data.name && !data.displayName) {
       return updatedUser;
     }
 
@@ -241,66 +240,5 @@ export class UserService {
     } catch (err) {
       this.logger.error(err);
     }
-  }
-
-  /**
-   * Takes in a user and converts it to a `UserEntity`.
-   *
-   * @param user The user to convert.
-   *
-   * @returns The user as a `UserRelation`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async createUserRelation(user: UserEntity): Promise<UserRelation> {
-    try {
-      await this.userRepository.populate(user, [
-        'organizations',
-        'invites.orgMemberInvites.organization',
-      ]);
-      await this.em.populate(user.organizations, [
-        'organization',
-        'teams',
-        'createdDocs',
-        'maintainedDocs',
-        'createdQnas',
-        'maintainedQnas',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const { organizations, invites } = user;
-    return {
-      user,
-      organizations: organizations.getItems().map((orgMember) => {
-        const {
-          organization,
-          user,
-          teams,
-          createdDocs,
-          maintainedDocs,
-          createdQnas,
-          maintainedQnas,
-        } = orgMember;
-        return {
-          orgMember,
-          organization,
-          user,
-          teams: teams.getItems().map((teamMember) => {
-            const { team } = teamMember;
-            return { teamMember, team };
-          }),
-          createdDocs: createdDocs.getItems(),
-          maintainedDocs: maintainedDocs.getItems(),
-          createdQnas: createdQnas.getItems(),
-          maintainedQnas: maintainedQnas.getItems(),
-        };
-      }),
-      invites: invites.orgMemberInvites.getItems().map((orgMemberInvite) => {
-        const { organization } = orgMemberInvite;
-        return { orgMemberInvite, organization };
-      }),
-    };
   }
 }

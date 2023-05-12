@@ -42,15 +42,17 @@ const routes: Routes = [
     path: '',
     children: [
       {
-        path: '',
-        redirectTo: '/auth/login',
-        pathMatch: 'full',
-      },
-      {
         path: 'auth',
         loadChildren: async () => {
           const m = await import('@newbee/newbee/auth/feature');
           return m.AuthModule;
+        },
+      },
+      {
+        path: '',
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/home/feature');
+          return m.HomeModule;
         },
       },
     ],
@@ -59,7 +61,10 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
+      onSameUrlNavigation: 'reload',
+    }),
   ],
   providers: [{ provide: TitleStrategy, useClass: AppTitleStrategy }],
   exports: [RouterModule],
