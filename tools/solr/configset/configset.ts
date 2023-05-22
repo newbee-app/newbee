@@ -166,6 +166,15 @@ async function create(options: OptionValues): Promise<void> {
 
   const solrCli = createSolrCli(options);
 
+  // Check if the newbeeOrg configset already exists
+  const configsets = (await solrCli.listConfigsets()).configSets;
+  if (configsets.includes(newbeeOrg)) {
+    let res = await solrCli.deleteConfigset(newbeeOrg);
+    console.log(
+      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`
+    );
+  }
+
   // Create the configset
   let res = await solrCli.createConfigset({ name: newbeeOrg });
   console.log(`Creating configset '${newbeeOrg}': ${prettyJson(res)}\n`);
