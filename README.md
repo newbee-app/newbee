@@ -238,7 +238,7 @@ APP_NAME="NewBee"
 APP_DOMAIN="localhost:3333" # Whatever port you used above, it should match here
 APP_URL="http://localhost:3333" # Whatever port you used above, it should match here
 
-POSTGRES_DB_NAME="newbee"
+POSTGRES_DB="newbee"
 POSTGRES_USER="your-postgres-user" # Fill in with your own stuff here
 POSTGRES_PASSWORD="your-postgress-pw" # Fill in with your own stuff here
 

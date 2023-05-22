@@ -81,16 +81,13 @@ export interface AppConfig {
  * All of the environment variables we use in NewBee, validated using the `joi` library.
  */
 export const appEnvironmentVariablesSchema = Joi.object({
-  // API port
-  PORT: Joi.number(),
-
   // App information
   APP_NAME: Joi.string().required(),
-  APP_DOMAIN: Joi.string().required(),
-  APP_URL: Joi.string().required(),
 
   // PostgreSQL
-  POSTGRES_DB_NAME: Joi.string().required(),
+  POSTGRES_HOST: Joi.string().required(),
+  POSTGRES_PORT: Joi.number().required(),
+  POSTGRES_DB: Joi.string().required(),
   POSTGRES_USER: Joi.string().required(),
   POSTGRES_PASSWORD: Joi.string().required(),
 

@@ -1,9 +1,17 @@
 # logs
 logs
 
+# mikro-orm migrations
+migrations
+
 # sensitive env variables
-.env
 *.env
+
+# allow example.env to be committed
+!example.env
+
+# angular stuff
+.angular
 
 # compiled output
 /dist
@@ -42,5 +50,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-.angular

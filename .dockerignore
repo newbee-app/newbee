@@ -1,0 +1,19 @@
+# logs
+logs
+
+# mikro-orm migrations
+migrations
+
+# sensitive env variables (we'll feed this in manually)
+*.env
+
+# angular stuff
+.angular
+
+# compiled output
+/dist
+/tmp
+/out-tsc
+
+# dependencies
+node_modules

@@ -1,0 +1,32 @@
+version: "3"
+name: dep
+services:
+  postgres:
+    container_name: newbee-postgres
+    image: postgres:15.3-alpine
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+  zk:
+    container_name: newbee-zk
+    image: zookeeper:3.8
+    ports:
+      - 2181:2181
+  solr:
+    container_name: newbee-solr
+    build:
+      context: .
+      dockerfile: tools/docker/Dockerfile.solr
+      # Get these arg values from the env file
+      args:
+        ZK_ADMIN_PASSWORD: ${ZK_ADMIN_PASSWORD}
+        ZK_READONLY_PASSWORD: ${ZK_READONLY_PASSWORD}
+        SOLR_USERNAME: ${SOLR_USERNAME}
+        SOLR_FORMAT_PASSWORD: ${SOLR_FORMAT_PASSWORD}
+    ports:
+      - 8983:8983
+    env_file:
+      - .env
+    depends_on:
+      - zk

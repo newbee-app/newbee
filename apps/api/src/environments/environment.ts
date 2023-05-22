@@ -57,7 +57,9 @@ export default (): AppConfig => ({
   },
   database: {
     type: 'postgresql',
-    dbName: process.env['POSTGRES_DB_NAME'] as string,
+    host: process.env['POSTGRES_HOST'] as string,
+    port: parseInt(process.env['POSTGRES_PORT'] as string, 10),
+    dbName: process.env['POSTGRES_DB'] as string,
     user: process.env['POSTGRES_USER'] as string,
     password: process.env['POSTGRES_PASSWORD'] as string,
     forceUtcTimezone: true,

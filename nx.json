@@ -61,6 +61,10 @@
     },
     "@nrwl/js:library": {
       "unitTestRunner": "jest"
+    },
+    "@nrwl/node:library": {
+      "buildable": true,
+      "testEnvironment": "node"
     }
   },
   "defaultProject": "newbee",
