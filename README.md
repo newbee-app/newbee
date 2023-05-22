@@ -15,14 +15,27 @@ NewBee is powered by Nest in the backend and Angular in the frontend, both of wh
 > The official Nest docs: <https://docs.nestjs.com/>  
 > The official Angular docs: <https://angular.io/docs>  
 
-## Setting up from a fresh clone
+## Setup
 
-This process is complicated and unintuitive, at the moment. In the long-term, the goal is to give users 2 options if they want to run NewBee on their own machines:
+In order to clone NewBee and get it up and running (in the recommended way), you'll need:
 
-1. Binary executables available on all 3 major operating systems (Mac OS, Linux, and Windows).
-2. A containerized version of the application.
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Docker Desktop](https://docs.docker.com/get-docker/)
+- [Node.js and NPM](https://github.com/nvm-sh/nvm) (>= 18.12.1 and >= 8.19.2, respectively)
 
-For now, though, you will need to follow these complicated and annoying steps. We apologize in advance for the pain.
+For the purposes of running NewBee for development, the recommendation is to use:
+
+- Docker containers to run Postgres, Solr, and Zookeeper
+- A local copy of Node.js and NPM to run the code
+- The provided `docker-compose.dep.yaml` and `setup.sh` files to simplify the setup process
+
+If you really wish, you can also run the project itself in Docker containers (and the files to do so are provided in the repo). However, this is not recommended as:
+
+- It's slower than running the code locally
+- It's harder to make use of convenient tooling that's easy to access with a local copy of `node_modules`
+- It will require you to have greater knowledge of the project and its tooling to match the development experience you'd have from running the code locally
+
+If you're on Microsoft Windows, we'd recommend making use of [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to do the rest of the steps outlined in this section.
 
 ### Cloning the repo from GitHub
 
@@ -32,9 +45,13 @@ First, you will need to clone [the repo from GitHub](https://github.com/newbee-a
 ~/git > git clone git@github.com:newbee-app/newbee.git
 ```
 
-The above code snippet makes use of SSH, which may not be configured for your specific GitHub account. If you're interested in setting that up, you can check the following resources that GitHub provides: <https://docs.github.com/en/authentication/connecting-to-github-with-ssh>
+The above code snippet makes use of SSH, which may not be configured for your specific GitHub account. If you're interested in setting that up, you can check the following resources that GitHub provides: <https://docs.github.com/en/authentication/connecting-to-github-with-ssh>. Otherwise, just use HTTPS:
 
-### Working with Node.js
+```bash
+~/git > git clone https://github.com/newbee-app/newbee.git
+```
+
+### Getting Node.js
 
 In order to run the code in the repo, you must first ensure that you have a compatible version of Node.js and NPM. As stated in the `package.json` file, you must have have a version of NPM `>= 8.19.2` and a version of Node `>= 18.12.1`. You can check the version of NPM and Node installed on your own machine by doing the following:
 
@@ -45,170 +62,28 @@ v18.12.1
 8.19.2
 ```
 
-If you do not have a compatible version of NPM and Node.js, you will need to install it. For that, we would personally recommend [NVM](https://github.com/nvm-sh/nvm). However, feel free to use whatever tool you wish to get a compatible version of NPM and Node.js.
+If you do not have a compatible version of NPM and Node.js, you will need to install it. For that, we would personally recommend [NVM](https://github.com/nvm-sh/nvm). However, feel free to use whatever tool you wish to get a compatible version of NPM and Node.js, including the [official install link](https://nodejs.org/en/download).
 
-Once you have a compatible version of Node.js and NPM installed, install all of the packages for the project by running the following:
+### Using the setup.sh script
 
-```bash
-~/git > cd newbee
-~/git/newbee > npm i
-```
-
-### Installing non-NPM dependencies
-
-NewBee makes use of Postgres as its primary database and Solr to implement search. If you want to run the backend portion of the app, you will need both.
-
-#### Mac OS
-
-If you are running Mac OS, this is easy to do using Homebrew.
+With that minimal amount of setup out of the way, we recommend using the `setup.sh` script provided at the project's root to get everything ready for development. To do so, just run:
 
 ```bash
-~/ > brew install postgresql@14.7
-~/ > brew install solr@9.1.1
+~/git/newbee > . ./setup.sh
 ```
 
-From here, you will need to modify how Homebrew starts Solr. Do so by modifying the `.plist` file associated with Solr's Homebrew installation, which should be located in `/usr/local/Cellar/solr/9.1.1/homebrew.mxcl.solr.plist`. Change the portion under `ProgramArguments` to append the `-c` flag, which should look like the following:
+The setup script will handle:
 
-```xml
-<!-- homebrew.mxcl.solr.plist -->
-<key>ProgramArguments</key>
-<array>
-  <string>/usr/local/opt/solr/bin/solr</string>
-  <string>start</string>
-  <string>-c</string> <!-- This is the new bit -->
-  <string>-f</string>
-  <string>-s</string>
-  <string>/usr/local/var/lib/solr</string>
-</array>
-```
+- Installing NPM dependencies
+- Generating the env file the project requires
+- Starting up the Docker containers running Postgres, Solr, and Zookeeper using Docker Compose
+- Running Postgres migrations to prepare the Postgres instance for use with NewBee
+- Setting up authentication for Solr and Zookeeper
+- Setting up Solr for use with NewBee
 
-Finally, start it with:
+The script will skip installing NPM dependencies if it detects your project already has a `node_modules` folder and will skip generating the env file if your project already has a `.env` file.
 
-```bash
-~/ > brew services start postgresql@14
-~/ > brew services start solr
-```
-
-#### Windows and Linux
-
-- Follow the steps for installing Postgres here: <https://www.postgresql.org/download/>
-- Follow the steps for installing Solr here: <https://solr.apache.org/downloads.html>
-
-We recommend using version 14.7 for Postgres and version 9.1.1 for Solr. Once you have both installed, start them up. When starting Solr, ensure you start it in Cloud mode with the `-c` flag. The [following guide in the Solr docs](https://solr.apache.org/guide/solr/latest/getting-started/tutorial-five-minutes.html) discusses how to start up Solr under `Launch Solr in SolrCloud Mode`.
-
-### Preparing Postgres
-
-Now that you have a clean instance of Postgres running, we need to set up a new database within it that can be used by NewBee.
-
-First things first, you must create a user that NewBee can use to interact with your Postgres instance. To do so, follow the steps in [this guide](https://phoenixnap.com/kb/postgres-create-user). Ensure this user has `CREATEDB` privileges.
-
-Next, navigate to `tools/mikro-orm`.
-
-```bash
-~/git/newbee > cd tools/mikro-orm
-```
-
-In there, create a new `secret.ts` file, in which you should define the credentials for the user you just created.
-
-```typescript
-// secret.ts
-export const user = 'newbee';
-export const password = 'password';
-```
-
-Next, we'll run the necessary migrations to set up the database that NewBee needs.
-
-```bash
-~/git/newbee/tools/mikro-orm > npx mikro-orm migration:create --initial
-~/git/newbee/tools/mikro-orm > npx mikro-orm migration:up
-```
-
-### Preparing Solr
-
-Now that you have a clean instance of Solr running, we need to create the configs necessary for NewBee to work with it.
-
-First things first, we need to set up authentication. Navigate to `tools/solr/auth`.
-
-```bash
-~/git/newbee > cd tools/solr/auth
-```
-
-#### Zookeeper ACLs
-
-The first thing we'll do is set up an ACL (Access Control List) for Zookeeper, which Solr makes use of in Cloud mode to manage its resources. In the directory, create a file called `zookeeper-creds.json`. Inside it, specify the passwords you want to use for the admin user and readonly user for Zookeeper. We recommend using a password manager like [Bitwarden](https://bitwarden.com/) to generate and maintain these passwords for you. The file should look like the following:
-
-```json
-// zookeeper-creds.json
-{
-  "admin-user": "admin-password",
-  "readonly-user": "readonly-password"
-}
-```
-
-Next, we'll exeucte the `set-up-zookeeper-acl.ts` script. In order to do so, you need to know the following:
-
-1. The command for stopping Solr.
-    - For Mac OS, it might be: `brew services stop solr`
-    - For Windows and Linux, it might be: `${SOLR_HOME}/bin/solr stop`
-2. The command for starting Solr.
-    - For Mac OS, it might be: `brew services start solr`
-    - For Windows and Linux, it might be: `${SOLR_HOME}/bin/solr start -c`
-3. The location of Solr's home directory.
-    - For Mac OS, it might be: `/usr/local/Cellar/solr/9.1.1`
-    - For Windows and Linux, it would be wherever you downloaded Solr to. If you didn't move it, it will probably be in your `Downloads` directory.
-
-Once you know all of the information, feed it into the script and run it:
-
-```bash
-~/git/newbee/tools/solr/auth > npx ts-node set-up-zookeeper-acl.ts --stop "brew services stop solr" --start "brew services start solr" --solr-home /usr/local/Cellar/solr/9.1.1
-```
-
-#### Setting up basic authentication
-
-To set up basic authentication for Solr, you must first create a password. Solr passwords must be specified in a very specific syntax, which is why we created the `basic-auth-pw.ts` script to convert a raw password into a format usable by Solr. When you know what you want your password to be, simply run:
-
-```bash
-~/git/newbee/tols/solr/auth > npx ts-node basic-auth-pw.ts generate "my-password"
-```
-
-Next, create a `security.json` file and make it look like the following:
-
-```json
-// security.json
-{
-  "authentication": {
-    "class": "solr.BasicAuthPlugin",
-    "blockUnknown": true,
-    "forwardCredentials": false,
-    "realm": "NewBee Solr",
-    "credentials": {
-      "your-username": "your-solr-formatted-password" // The output from `basic-auth-pw.ts`
-    }
-  }
-}
-```
-
-Once that's set up, we will use the `set-up-basic-auth.ts` script to formally set up basic authentication like so:
-
-```bash
-~/git/newbee/tols/solr/auth > npx ts-node set-up-basic-auth.ts
-```
-
-#### Setting up the configs
-
-Now that the authentication work is done, we can finally set up the configs needed to use Solr! Navigate to `tools/solr/configset` like so:
-
-```bash
-~/git/newbee > cd tools/solr/configset
-```
-
-Make use of the `configset.ts` script to set up the necessary configs, like so:
-
-```bash
-~/git/newbee/tools/solr/configset > npx ts-node configset.ts upload ./newbee-org-conf.zip --basic-auth "username:raw-password"
-```
-
-The username should be the username you specified in `security.json` and the password should be the raw password, not the Solr-formatted passwords.
+To get all functionality up and running, however, there is one extra step you will need to take manually after running the `setup.sh` script.
 
 ### Setting up SMTP
 
@@ -224,58 +99,11 @@ The following step is necessary if you want to enable magic link login, which is
     - Unless you're setting up SMTP with a service like Amazon SES for an entire domain, this will most likely be the same as username
     - e.g. `johndoe@example.com`
 
-### Setting up environment variables
+Once you have that information, fill in the corresponding fields in the `.env` file generated by the `setup.sh` script. The variables you need to change are at the very top, under a comment that should make it pretty clear which variables you need to change.
 
-There are a couple of environment variables you'll need to set up, which are omitted from version control for the sake of security.
+### Setting up VS Code
 
-To begin, create a `.env` file under `apps/api`. The required environment variables are detailed under `appEnvironmentVariablesSchema` under `libs/api/shared/util/src/lib/config/app.config.ts`. The `.env` file should look roughly like the following:
-
-```bash
-# .env
-PORT="3333" # Optional, defaults to 3333 anyways
-
-APP_NAME="NewBee"
-APP_DOMAIN="localhost:3333" # Whatever port you used above, it should match here
-APP_URL="http://localhost:3333" # Whatever port you used above, it should match here
-
-POSTGRES_DB="newbee"
-POSTGRES_USER="your-postgres-user" # Fill in with your own stuff here
-POSTGRES_PASSWORD="your-postgress-pw" # Fill in with your own stuff here
-
-JWT_SECRET="secret" # Make something up
-COOKIE_SECRET="secret" # Make something up
-
-MAGIC_LINK_LOGIN_VERIFY_LINK="http://localhost:4200/auth/login/magic-link-login"
-
-SMTP_HOST="smtp.example.com" # Fill in with your own stuff here
-SMTP_USERNAME="johndoe@example.com" # Fill in with your own stuff here
-SMTP_PASSWORD="your-email-password" # Fill in with your own stuff here
-SMTP_DEFAULT_FROM="johndoe@example.com" # Fill in with your own stuff here
-
-SOLR_URL="http://127.0.0.1:8983" # This is the default for Solr, but you may need to change this if you didn't use default values
-SOLR_USERNAME="username" # Fill in with your own stuff here
-SOLR_PASSWORD="raw-password" # Fill in with your own stuff here
-```
-
-### Running an instance of NewBee
-
-To set up the backend, go to the repo's root and run the following command:
-
-```bash
-~/git/newbee > npx nx run api:serve
-```
-
-To set up the frontend, go to the repo's root and run the following command:
-
-```bash
-~/git/newbee > npx nx run newbee:serve-ssr
-```
-
-Finally, you're all set! You must have pulled all the hairs on your head clean off. Sorry about that. We promise to make this easier later. Don't know when, though.
-
-### Useful VS Code extensions for working with the code
-
-We recommend the following extensions if you're working on this repo in VS Code:
+While you do not need to use VS Code to work in this project, it's a free and open source option that we'd recommend. If you do decide to work on this repo in VS Code, we recommend the following extensions:
 
 - Angular Language Service
 - Babel JavaScript
@@ -287,6 +115,24 @@ We recommend the following extensions if you're working on this repo in VS Code:
 - Nx Console
 - Prettier
 - Tailwind CSS IntelliSense
+
+### Running an instance of NewBee
+
+To work with this project and execute common tasks like running tests, building the app, or serving the app for development use, we highly recommend making use of VS Code's Nx Console extension. Once you have it installed, it should appear on the VS Code toolbar with a symbol containing an `N`. Once there, look under `GENERATE & RUN TARGET` and you should see options like `generate`, `build`, `serve`, `lint`, and `test`. This is a very convenient tool that should greatly bolster your productivity and justifies the decision to incorporate Nx into the project. However, if you prefer, you can also run each of these commands on the command line.
+
+To set up the backend using the command line, go to the repo's root and run the following command:
+
+```bash
+~/git/newbee > npx nx run api:serve
+```
+
+To set up the frontend using the command line, go to the repo's root and run the following command:
+
+```bash
+~/git/newbee > npx nx run newbee:serve-ssr
+```
+
+For more info on how to use Nx commands, check out the [Nx docs](https://nx.dev/getting-started/intro).
 
 ## The TypeScript configuration
 
