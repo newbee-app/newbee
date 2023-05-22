@@ -16,4 +16,5 @@ COPY tools/solr/docker-solr-setup.sh ./
 
 USER root
 RUN . ./docker-solr-setup.sh
+RUN rm ./docker-solr-setup.sh
 USER $SOLR_UID
