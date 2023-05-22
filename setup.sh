@@ -72,10 +72,11 @@ echo 'Env file successfully generated'
 
 # Start the dependency docker-compose in the background
 echo 'Starting Docker containers'
-docker-compose -f docker-compose.dep.yaml up --build -d
+dc_file='docker-compose.dep.yaml'
+docker-compose -f "$dc_file" up --build -d
 
 # Wait for the services to come up
-while [[ $(docker-compose ps -q | wc -l) != $(docker-compose ps | grep -c ' UP ') ]]; do
+while [[ $(docker-compose -f "$dc_file" ps -q | wc -l) != $(docker-compose -f "$dc_file" ps | grep -c ' UP ') ]]; do
   sleep 1s
 done
 echo 'All Docker containers up and running'
