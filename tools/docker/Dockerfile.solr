@@ -1,0 +1,19 @@
+FROM solr:9.2
+
+WORKDIR /opt/solr
+
+EXPOSE 8983
+
+# Get the following values from the compose file's args
+ARG ZK_ADMIN_PASSWORD
+ARG ZK_READONLY_PASSWORD
+ARG SOLR_USERNAME
+ARG SOLR_FORMAT_PASSWORD
+
+COPY tools/solr/auth/solr.in.sh /etc/default/solr.in.sh
+COPY tools/solr/auth/zkcli.sh ./server/scripts/cloud-scripts/zkcli.sh
+COPY tools/solr/docker-solr-setup.sh ./
+
+USER root
+RUN . ./docker-solr-setup.sh
+USER $SOLR_UID

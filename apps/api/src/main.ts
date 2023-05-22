@@ -47,7 +47,7 @@ async function bootstrap() {
   // Listen for shutdown hooks to work with MikroORM
   app.enableShutdownHooks();
 
-  const port = process.env['PORT'] || 3333;
+  const port = 3333;
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
