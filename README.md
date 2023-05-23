@@ -54,6 +54,8 @@ While you do not need to use VS Code to work in this project, it's a free and op
 
 Once you have both extensions installed, bring up the Command Palette by pressing `Cmd+Shift+P` and enter `Dev Containers: Open Folder in Container...`. Choose the fresh clone of NewBee as the folder and you should now be running the project on VS Code in a dev container! The dev container runs the project in a fresh Ubuntu image that has the NewBee project volume mounted onto it. Your VS Code GUI connects to a VS Code Server running on the dev container, allowing you to utilize the VS Code GUI while isolating all of your actual development to the dev container! This allows us to do things like forego installing a local version of Node and NPM, as these dependencies will be installed in the dev container instead. Additionally, thanks to the volume mount, any changes you make in the dev container will be reflected in the file system of your local machine.
 
+Once the dev container is completely set up and all of the VS Code extensions attached to the container have been installed, reload the window by bringing up the Command Palette (`Cmd+Shift+P`) and enter `Developer: Reload Window`.
+
 > **_Special note for GitHub SSH users:_** If you recall, we recommended that you clone the repo via HTTPS and use GitHub CLI to remember your credentials. If you're set up to use SSH and don't want to use GitHub CLI, you will need to [take some extra steps to share your SSH key with your dev container](https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials). Otherwise, you will need to ensure you are in your local environment to make commits to the remote.
 
 ### Setting up without a VS Code dev container
