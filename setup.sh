@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit with an error if any of the commands exit with an error
 set -e
@@ -47,7 +47,7 @@ SMTP_DEFAULT_FROM='CHANGE_ME'
 
 APP_NAME='NewBee'
 
-POSTGRES_HOST='localhost'
+POSTGRES_HOST='127.0.0.1'
 POSTGRES_PORT='5432'
 POSTGRES_DB='newbee'
 POSTGRES_USER='newbee'

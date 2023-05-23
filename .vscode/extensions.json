@@ -1,9 +1,21 @@
 {
   "recommendations": [
-    "angular.ng-template",
+    "csstools.postcss",
+    "wayou.vscode-todo-highlight",
+    "Angular.ng-template",
+    "mgmcdermott.vscode-language-babel",
+    "EditorConfig.EditorConfig",
+    "IronGeek.vscode-env",
+    "dbaeumer.vscode-eslint",
+    "hashicorp.terraform",
+    "ecmel.vscode-html-css",
+    "VisualStudioExptTeam.vscodeintellicode",
+    "VisualStudioExptTeam.intellicode-api-usage-examples",
+    "christian-kohler.npm-intellisense",
     "nrwl.angular-console",
     "esbenp.prettier-vscode",
-    "firsttris.vscode-jest-runner",
-    "dbaeumer.vscode-eslint"
+    "bradlc.vscode-tailwindcss",
+    "redhat.vscode-xml",
+    "redhat.vscode-yaml"
   ]
 }
