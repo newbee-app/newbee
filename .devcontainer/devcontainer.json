@@ -1,10 +1,10 @@
 {
-	"name": "newbee-dev-container",
+  "name": "newbee-dev-container",
   "image": "mcr.microsoft.com/devcontainers/base:jammy",
-	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/devcontainers/features/node:1": {}
-	},
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
   "runArgs": ["--network=host", "--name=newbee-dev-container"],
   "customizations": {
     "vscode": {
