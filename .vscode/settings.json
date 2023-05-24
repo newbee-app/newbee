@@ -31,5 +31,23 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[env]": {
+    "editor.defaultFormatter": "IronGeek.vscode-env"
+  },
+  "[dotenv]": {
+    "editor.defaultFormatter": "IronGeek.vscode-env"
+  },
+  "[editorconfig]": {
+    "editor.defaultFormatter": "EditorConfig.EditorConfig"
   }
 }

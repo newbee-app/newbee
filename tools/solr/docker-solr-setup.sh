@@ -8,7 +8,8 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "$script_dir"
 
 # Set up the zookeeper credentials file
-zk_creds=$(cat << END
+zk_creds=$(
+  cat <<END
 zkDigestUsername=admin-user
 zkDigestPassword=$ZK_ADMIN_PASSWORD
 zkDigestReadonlyUsername=readonly-user
@@ -16,10 +17,11 @@ zkDigestReadonlyPassword=$ZK_READONLY_PASSWORD
 END
 )
 zk_creds_path=/opt/solr/server/etc/zookeepercredentials.properties
-echo "$zk_creds" > "$zk_creds_path"
+echo "$zk_creds" >"$zk_creds_path"
 
 # Set up the security.json file on Zookeeper
-security_json=$(cat << END
+security_json=$(
+  cat <<END
 {
   "authentication": {
     "class": "solr.BasicAuthPlugin",
@@ -46,4 +48,4 @@ security_json=$(cat << END
 END
 )
 security_json_path=/opt/solr/server/solr/security.json
-echo "$security_json" > "$security_json_path"
+echo "$security_json" >"$security_json_path"

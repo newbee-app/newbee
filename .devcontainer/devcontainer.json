@@ -23,6 +23,7 @@
         "christian-kohler.npm-intellisense",
         "nrwl.angular-console",
         "esbenp.prettier-vscode",
+        "foxundermoon.shell-format",
         "bradlc.vscode-tailwindcss",
         "redhat.vscode-xml",
         "redhat.vscode-yaml"

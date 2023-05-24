@@ -1,26 +1,57 @@
 <div class="drawer">
-  <input type="checkbox" id="navbar-drawer" class="drawer-toggle">
+  <input type="checkbox" id="navbar-drawer" class="drawer-toggle" />
 
   <div class="drawer-content">
     <div class="navbar bg-base-200 rounded-box">
       <div class="navbar-start">
-        <label for="navbar-drawer" class="btn btn-ghost drawer-button md:hidden">
+        <label
+          for="navbar-drawer"
+          class="btn btn-ghost drawer-button md:hidden"
+        >
           <!-- bars-3 svg -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
           </svg>
         </label>
 
         <div class="hidden md:flex flex-row">
-          <a (click)="emitNavigateToLink(routeKeyword.Home)" class="btn btn-ghost normal-case"><h5>New<span class="text-logo">Bee</span></h5></a>
-          <a *ngFor="let link of links" (click)="emitNavigateToLink(link)" class="btn btn-ghost">{{link}}</a>
+          <a
+            (click)="emitNavigateToLink(routeKeyword.Home)"
+            class="btn btn-ghost normal-case"
+            ><h5>New<span class="text-logo">Bee</span></h5></a
+          >
+          <a
+            *ngFor="let link of links"
+            (click)="emitNavigateToLink(link)"
+            class="btn btn-ghost"
+            >{{ link }}</a
+          >
         </div>
       </div>
 
       <div class="navbar-end">
         <div class="flex flex-row gap-x-2">
-          <a (click)="emitNavigateToLink(routeKeyword.Login)" class="btn btn-primary">Login</a>
-          <a (click)="emitNavigateToLink(routeKeyword.Register)" class="btn btn-secondary hidden md:flex">Register</a>
+          <a
+            (click)="emitNavigateToLink(routeKeyword.Login)"
+            class="btn btn-primary"
+            >Login</a
+          >
+          <a
+            (click)="emitNavigateToLink(routeKeyword.Register)"
+            class="btn btn-secondary hidden md:flex"
+            >Register</a
+          >
         </div>
       </div>
     </div>
@@ -32,10 +63,14 @@
     <label for="navbar-drawer" class="drawer-overlay"></label>
     <ul class="menu py-8 px-6 bg-base-200 w-2/3 sm:w-1/2">
       <li><a (click)="emitNavigateToLink(routeKeyword.Home)">Home</a></li>
-      <li *ngFor="let link of links" (click)="emitNavigateToLink(link)"><a>{{link}}</a></li>
+      <li *ngFor="let link of links" (click)="emitNavigateToLink(link)">
+        <a>{{ link }}</a>
+      </li>
       <div class="divider"></div>
       <li><a (click)="emitNavigateToLink(routeKeyword.Login)">Login</a></li>
-      <li><a (click)="emitNavigateToLink(routeKeyword.Register)">Register</a></li>
+      <li>
+        <a (click)="emitNavigateToLink(routeKeyword.Register)">Register</a>
+      </li>
     </ul>
   </div>
 </div>

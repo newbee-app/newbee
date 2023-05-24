@@ -24,11 +24,11 @@ if [[ ! -e .env ]]; then
   echo 'Generating passwords'
   tmp_file=$(mktemp)
   helper_script='tools/scripts/sh-helper.ts'
-  npx ts-node "$helper_script" gen-passwords 5 > "$tmp_file"
+  npx ts-node "$helper_script" gen-passwords 5 >"$tmp_file"
   passwords=()
   while IFS= read -r line; do
     passwords+=("$line")
-  done < "$tmp_file"
+  done <"$tmp_file"
 
   # Generate the special Solr-formatted password
   solr_pw_script='tools/solr/auth/basic-auth-pw.ts'
@@ -38,7 +38,8 @@ if [[ ! -e .env ]]; then
 
   # Create the env file
   echo 'Generating env file'
-  env_file=$(cat << END
+  env_file=$(
+    cat <<END
 # TODO: Variables you MUST change
 SMTP_HOST='CHANGE_ME'
 SMTP_USERNAME='CHANGE_ME'
@@ -72,7 +73,7 @@ ORG_MEMBER_INVITE_ACCEPT_LINK='http://localhost:4200/invite/accept'
 ORG_MEMBER_INVITE_DECLINE_LINK='http://localhost:4200/invite/reject'
 END
   )
-  echo "$env_file" > .env
+  echo "$env_file" >.env
   echo 'Env file successfully generated'
 fi
 

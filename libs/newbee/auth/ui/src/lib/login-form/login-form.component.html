@@ -2,10 +2,23 @@
   <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
     <h3>Sign in to your NewBee account</h3>
 
-    <form id="login-form" [formGroup]="loginForm" (ngSubmit)="emitWebAuthn()" class="space-y-5">
+    <form
+      id="login-form"
+      [formGroup]="loginForm"
+      (ngSubmit)="emitWebAuthn()"
+      class="space-y-5"
+    >
       <div>
         <label for="email-input" class="sr-only">Email address</label>
-        <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="input input-bordered w-full" [ngClass]="{'input-error': showEmailError}">
+        <input
+          type="email"
+          id="email-input"
+          formControlName="email"
+          placeholder="Email address*"
+          required
+          class="input input-bordered w-full"
+          [ngClass]="{ 'input-error': showEmailError }"
+        />
 
         <div *ngIf="showEmailError" class="mt-2">
           <newbee-error-alert [text]="emailErrorMessage"></newbee-error-alert>
@@ -13,11 +26,30 @@
       </div>
 
       <div id="buttons" class="flex flex-col gap-y-2">
-        <button id="webauthn-button" type="submit" [disabled]="loginForm.invalid" class="btn btn-primary" [ngClass]="{'loading': loginPending}">Log In</button>
-        <button id="magic-link-login-button" type="button" [disabled]="loginForm.invalid" class="btn btn-primary" [ngClass]="{'loading': magicLinkPending}" (click)="emitMagicLinkLogin()">Send Login Link to Email</button>
+        <button
+          id="webauthn-button"
+          type="submit"
+          [disabled]="loginForm.invalid"
+          class="btn btn-primary"
+          [ngClass]="{ loading: loginPending }"
+        >
+          Log In
+        </button>
+        <button
+          id="magic-link-login-button"
+          type="button"
+          [disabled]="loginForm.invalid"
+          class="btn btn-primary"
+          [ngClass]="{ loading: magicLinkPending }"
+          (click)="emitMagicLinkLogin()"
+        >
+          Send Login Link to Email
+        </button>
 
         <div *ngIf="httpClientError?.messages?.['misc']">
-          <newbee-error-alert [text]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-alert>
+          <newbee-error-alert
+            [text]="httpClientError?.messages?.['misc'] ?? ''"
+          ></newbee-error-alert>
         </div>
       </div>
     </form>
@@ -25,7 +57,11 @@
 
   <div class="items-center text-center">
     <p>New to NewBee?</p>
-    <a id="register-link" (click)="emitNavigateToRegister()" class="link link-primary">
+    <a
+      id="register-link"
+      (click)="emitNavigateToRegister()"
+      class="link link-primary"
+    >
       Get started for free!
     </a>
   </div>
