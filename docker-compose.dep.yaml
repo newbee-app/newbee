@@ -1,5 +1,5 @@
 version: "3"
-name: dep
+name: newbee-dep
 services:
   postgres:
     container_name: newbee-postgres

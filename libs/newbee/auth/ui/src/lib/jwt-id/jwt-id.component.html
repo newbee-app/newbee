@@ -1,12 +1,22 @@
 <newbee-base-form>
   <div id="check-email" class="items-center text-center">
     <h2 class="font-bold">Check your email for a login link</h2>
-    <p>We've sent a login link to <span class="font-bold">{{email}}</span>. Look for an email with the verification code <span class="font-bold">{{jwtId}}</span>. The link expires shortly, so please click on it soon.</p>
+    <p>
+      We've sent a login link to <span class="font-bold">{{ email }}</span
+      >. Look for an email with the verification code
+      <span class="font-bold">{{ jwtId }}</span
+      >. The link expires shortly, so please click on it soon.
+    </p>
   </div>
 
   <div id="resend-email" class="items-center text-center">
     <div>
-      <p>Can't find your link? Check your spam folder! Or, <a id="resend-link" (click)="emitResendLink()" class="link link-primary">send a new link!</a></p>
+      <p>
+        Can't find your link? Check your spam folder! Or,
+        <a id="resend-link" (click)="emitResendLink()" class="link link-primary"
+          >send a new link!</a
+        >
+      </p>
     </div>
 
     <div *ngIf="httpError" class="mt-2">

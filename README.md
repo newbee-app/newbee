@@ -13,47 +13,54 @@ NewBee is powered by Nest in the backend and Angular in the frontend, both of wh
 
 > The official Nx docs: <https://nx.dev/getting-started/intro>  
 > The official Nest docs: <https://docs.nestjs.com/>  
-> The official Angular docs: <https://angular.io/docs>  
+> The official Angular docs: <https://angular.io/docs>
 
 ## Setup
 
 In order to clone NewBee and get it up and running (in the recommended way), you'll need:
 
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- Git
 - [Docker Desktop](https://docs.docker.com/get-docker/)
-- [Node.js and NPM](https://github.com/nvm-sh/nvm) (>= 18.12.1 and >= 8.19.2, respectively)
+- A code edtior (we recommend [Visual Studio Code](https://code.visualstudio.com/download))
 
 For the purposes of running NewBee for development, the recommendation is to use:
 
 - Docker containers to run Postgres, Solr, and Zookeeper
-- A local copy of Node.js and NPM to run the code
+- A [VS Code dev container](https://code.visualstudio.com/docs/devcontainers/containers) to run the project itself
 - The provided `docker-compose.dep.yaml` and `setup.sh` files to simplify the setup process
 
-If you really wish, you can also run the project itself in Docker containers (and the files to do so are provided in the repo). However, this is not recommended as:
+However, if you prefer, you can forego using the VS Code dev container. If you decide to do so, the setup looks very similar, but you will need a local copy of a compatible version of Node and NPM (>=18.12.1 and >=8.19.2, respectively) on your machine.
 
-- It's slower than running the code locally
-- It's harder to make use of convenient tooling that's easy to access with a local copy of `node_modules`
-- It will require you to have greater knowledge of the project and its tooling to match the development experience you'd have from running the code locally
-
-If you're on Microsoft Windows, we'd recommend making use of [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to do the rest of the steps outlined in this section.
+> **_Special note for Windows users:_** If you're on Microsoft Windows, we'd recommend making use of [WSL](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/) to do the rest of the steps outlined in this section. When setting up Docker Desktop, you should be using `Docker Desktop for Windows` but [configure it to use WSL](https://docs.docker.com/desktop/windows/wsl/). If you're installing Docker Desktop for the first time, it should be enough to ensure the recommended option to use WSL is checked during the installation steps. If you decide to develop using VS Code (as recommended), you can check out this guide about [how to use VS Code in your WSL environment](https://code.visualstudio.com/docs/remote/wsl). The rest of the guide presumes you are in your WSL environment.
 
 ### Cloning the repo from GitHub
 
 First, you will need to clone [the repo from GitHub](https://github.com/newbee-app/newbee). For example:
 
 ```bash
-~/git > git clone git@github.com:newbee-app/newbee.git
-```
-
-The above code snippet makes use of SSH, which may not be configured for your specific GitHub account. If you're interested in setting that up, you can check the following resources that GitHub provides: <https://docs.github.com/en/authentication/connecting-to-github-with-ssh>. Otherwise, just use HTTPS:
-
-```bash
 ~/git > git clone https://github.com/newbee-app/newbee.git
 ```
 
-### Getting Node.js
+We would recommend using [GitHub CLI](https://docs.github.com/en/get-started/getting-started-with-git/caching-your-github-credentials-in-git) to remember your credentials, so you don't have to type in your password every time you take an action that affects the remote. Although you can also use SSH to achieve the same effect, using GitHub CLI will be easier if you decide to take the recommended route of setting up the project with a VS Code dev container. If you use SSH, you can still use a VS Code dev container, but it will require additional work on your part.
 
-In order to run the code in the repo, you must first ensure that you have a compatible version of Node.js and NPM. As stated in the `package.json` file, you must have have a version of NPM `>= 8.19.2` and a version of Node `>= 18.12.1`. You can check the version of NPM and Node installed on your own machine by doing the following:
+### Setting up with a VS Code Dev Container
+
+While you do not need to use VS Code to work in this project, it's a free and open source option that we'd recommend. Using VS code will also slightly simplify the rest of the setup steps. If you do decide to work on this repo in VS Code, you will need the the following extensions:
+
+- `Dev Containers` by Microsoft
+- `WSL` by Microsoft (for Windows users)
+
+> **_Sepcial note for Windows users:_** Make sure you are working in VS Code using WSL. To do so, bring up the Command Palette by pressing `Ctrl+Shift+P` and enter `WSL: Connect to WSL`.
+
+Once you have both extensions installed, bring up the Command Palette by pressing `Cmd+Shift+P` and enter `Dev Containers: Open Folder in Container...`. Choose the fresh clone of NewBee as the folder and you should now be running the project on VS Code in a dev container! The dev container runs the project in a fresh Ubuntu image that has the NewBee project volume mounted onto it. Your VS Code GUI connects to a VS Code Server running on the dev container, allowing you to utilize the VS Code GUI while isolating all of your actual development to the dev container! This allows us to do things like forego installing a local version of Node and NPM, as these dependencies will be installed in the dev container instead. Additionally, thanks to the volume mount, any changes you make in the dev container will be reflected in the file system of your local machine.
+
+Once the dev container is completely set up and all of the VS Code extensions attached to the container have been installed, reload the window by bringing up the Command Palette (`Cmd+Shift+P`) and enter `Developer: Reload Window`.
+
+> **_Special note for GitHub SSH users:_** If you recall, we recommended that you clone the repo via HTTPS and use GitHub CLI to remember your credentials. If you're set up to use SSH and don't want to use GitHub CLI, you will need to [take some extra steps to share your SSH key with your dev container](https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials). Otherwise, you will need to ensure you are in your local environment to make commits to the remote.
+
+### Setting up without a VS Code dev container
+
+Whether or not you're using VS Code, you may not want to make use of dev containers. If this is the case, you will need to install a compatible version of Node and NPM locally. As stated in the `package.json` file, you must have have a version of NPM `>=8.19.2` and a version of Node `>=18.12.1`. You can check the version of NPM and Node installed on your own machine by doing the following:
 
 ```bash
 ~/ > node -v
@@ -62,11 +69,11 @@ v18.12.1
 8.19.2
 ```
 
-If you do not have a compatible version of NPM and Node.js, you will need to install it. For that, we would personally recommend [NVM](https://github.com/nvm-sh/nvm). However, feel free to use whatever tool you wish to get a compatible version of NPM and Node.js, including the [official install link](https://nodejs.org/en/download).
+If you do not have a compatible version of NPM and Node, you will need to install it. For that, we would personally recommend [NVM](https://github.com/nvm-sh/nvm). However, feel free to use whatever tool you wish to get a compatible version of NPM and Node, including the [official install link](https://nodejs.org/en/download).
 
 ### Using the setup.sh script
 
-With that minimal amount of setup out of the way, we recommend using the `setup.sh` script provided at the project's root to get everything ready for development. To do so, just run:
+With that minimal amount of setup out of the way, we recommend using the `setup.sh` script provided at the project's root to get everything ready for development. You should do this whether or not you're running the project inside a dev container. To do so, just run:
 
 ```bash
 ~/git/newbee > . ./setup.sh
@@ -87,34 +94,19 @@ To get all functionality up and running, however, there is one extra step you wi
 
 ### Setting up SMTP
 
-The following step is necessary if you want to enable magic link login, which is when NewBee sends users a link in their email to log in to the app. You will need to set up SMTP with the email address you want to use to send these type of emails. There are [several guides online](https://kinsta.com/blog/gmail-smtp-server/) for how to do this on popular platforms like Gmail. In terms of the information you'll need, jot down the following:
+The following step is overall optional, but necessary if you want to enable magic link login, which is when NewBee sends users a link in their email to log in to the app. You will need to set up SMTP with the email address you want to use to send these type of emails. There are [several guides online](https://kinsta.com/blog/gmail-smtp-server/) for how to do this on popular platforms like Gmail. In terms of the information you'll need, jot down the following:
 
 1. The SMTP host
-    - e.g. `smtp.example.com`
+   - e.g. `smtp.example.com`
 2. The SMTP username
-    - Unless you're setting up SMTP with a service like Amazon SES for an entire domain, this will most likely be your email address
-    - e.g. `johndoe@example.com`
+   - Unless you're setting up SMTP with a service like Amazon SES for an entire domain, this will most likely be your email address
+   - e.g. `johndoe@example.com`
 3. The password
 4. The email address that should appear on the `from` field
-    - Unless you're setting up SMTP with a service like Amazon SES for an entire domain, this will most likely be the same as username
-    - e.g. `johndoe@example.com`
+   - Unless you're setting up SMTP with a service like Amazon SES for an entire domain, this will most likely be the same as username
+   - e.g. `johndoe@example.com`
 
 Once you have that information, fill in the corresponding fields in the `.env` file generated by the `setup.sh` script. The variables you need to change are at the very top, under a comment that should make it pretty clear which variables you need to change.
-
-### Setting up VS Code
-
-While you do not need to use VS Code to work in this project, it's a free and open source option that we'd recommend. If you do decide to work on this repo in VS Code, we recommend the following extensions:
-
-- Angular Language Service
-- Babel JavaScript
-- ENV
-- ESLint
-- IntelliCode
-- markdownlint
-- npm Intellisense
-- Nx Console
-- Prettier
-- Tailwind CSS IntelliSense
 
 ### Running an instance of NewBee
 

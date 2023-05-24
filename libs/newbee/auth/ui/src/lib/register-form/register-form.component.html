@@ -2,41 +2,86 @@
   <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
     <h3>Getting started is free, always</h3>
 
-    <form id="register-form" [formGroup]="registerForm" (ngSubmit)="emitRegister()" class="space-y-5">
+    <form
+      id="register-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="emitRegister()"
+      class="space-y-5"
+    >
       <div class="flex flex-col gap-y-2">
         <div>
           <label for="email-input" class="sr-only">Email address</label>
-          <input type="email" id="email-input" formControlName="email" placeholder="Email address*" required class="input input-bordered w-full" [ngClass]="{'input-error': inputDisplayError('email')}">
+          <input
+            type="email"
+            id="email-input"
+            formControlName="email"
+            placeholder="Email address*"
+            required
+            class="input input-bordered w-full"
+            [ngClass]="{ 'input-error': inputDisplayError('email') }"
+          />
 
           <div *ngIf="inputDisplayError('email')" class="mt-2">
-            <newbee-error-alert [text]="inputErrorMessage('email')"></newbee-error-alert>
+            <newbee-error-alert
+              [text]="inputErrorMessage('email')"
+            ></newbee-error-alert>
           </div>
         </div>
 
         <div>
           <label for="name-input" class="sr-only">Name</label>
-          <input type="text" id="name-input" formControlName="name" placeholder="Name*" required class="input input-bordered w-full" [ngClass]="{'input-error': inputDisplayError('name')}">
+          <input
+            type="text"
+            id="name-input"
+            formControlName="name"
+            placeholder="Name*"
+            required
+            class="input input-bordered w-full"
+            [ngClass]="{ 'input-error': inputDisplayError('name') }"
+          />
 
           <div *ngIf="inputDisplayError('name')" class="mt-2">
-            <newbee-error-alert [text]="inputErrorMessage('name')"></newbee-error-alert>
+            <newbee-error-alert
+              [text]="inputErrorMessage('name')"
+            ></newbee-error-alert>
           </div>
         </div>
 
         <div>
-          <label for="display-name-input" class="sr-only">Display name (optional)</label>
-          <input type="text" id="display-name-input" formControlName="displayName" placeholder="Display name" class="input input-bordered w-full">
+          <label for="display-name-input" class="sr-only"
+            >Display name (optional)</label
+          >
+          <input
+            type="text"
+            id="display-name-input"
+            formControlName="displayName"
+            placeholder="Display name"
+            class="input input-bordered w-full"
+          />
         </div>
 
         <div>
-          <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
+          <newbee-phone-input
+            formControlName="phoneNumber"
+          ></newbee-phone-input>
         </div>
       </div>
 
       <div id="buttons">
-        <button id="submit-button" type="submit" [disabled]="registerForm.invalid" class="btn btn-primary w-full" [ngClass]="{loading: registerPending}">Create Account</button>
+        <button
+          id="submit-button"
+          type="submit"
+          [disabled]="registerForm.invalid"
+          class="btn btn-primary w-full"
+          [ngClass]="{ loading: registerPending }"
+        >
+          Create Account
+        </button>
 
         <div *ngIf="httpClientError?.messages?.['misc']" class="mt-2">
-          <newbee-error-alert [text]="httpClientError?.messages?.['misc'] ?? ''"></newbee-error-alert>
+          <newbee-error-alert
+            [text]="httpClientError?.messages?.['misc'] ?? ''"
+          ></newbee-error-alert>
         </div>
       </div>
     </form>
@@ -44,7 +89,11 @@
 
   <div class="items-center text-center">
     <p>Already using NewBee?</p>
-    <a id="login-link" (click)="emitNavigateToLogin()" class="link link-primary">
+    <a
+      id="login-link"
+      (click)="emitNavigateToLogin()"
+      class="link link-primary"
+    >
       Log in to an existing account
     </a>
   </div>
