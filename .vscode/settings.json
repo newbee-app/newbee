@@ -3,6 +3,9 @@
   "vsicons.presets.angular": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.eol": "\n",
+  "files.associations": {
+    ".env": "env"
+  },
   "editor.defaultFormatter": null,
   "editor.formatOnSave": true,
   "[typescript]": {
@@ -45,9 +48,6 @@
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
   "[env]": {
-    "editor.defaultFormatter": "IronGeek.vscode-env"
-  },
-  "[dotenv]": {
     "editor.defaultFormatter": "IronGeek.vscode-env"
   },
   "[editorconfig]": {
