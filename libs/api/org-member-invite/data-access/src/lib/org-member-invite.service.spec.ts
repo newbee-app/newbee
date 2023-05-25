@@ -372,7 +372,7 @@ describe('OrgMemberInviteService', () => {
         service.acceptInvite(testOrgMemberInviteEntity1.token, testUserEntity1)
       ).resolves.toEqual(testOrgMemberEntity1);
       expect(em.populate).toBeCalledTimes(2);
-      expect(em.populate).toBeCalledWith(OrgMemberInviteEntity, [
+      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
         'organization',
       ]);
       expect(orgMemberService.create).toBeCalledTimes(1);

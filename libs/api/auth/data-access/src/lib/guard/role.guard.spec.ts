@@ -7,6 +7,7 @@ import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
+  OrgMemberEntity,
   testDocEntity1,
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -174,7 +175,7 @@ describe('RoleGuard', () => {
       const testOrgMemberEntity2 = {
         ...testOrgMemberEntity1,
         role: OrgRoleEnum.Member,
-      };
+      } as OrgMemberEntity;
 
       beforeEach(() => {
         jest
@@ -286,7 +287,7 @@ describe('RoleGuard', () => {
         jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
           ...testOrgMemberEntity1,
           role: OrgRoleEnum.Member,
-        });
+        } as OrgMemberEntity);
       });
 
       it(`should return true if org member's role is member and the doc doesn't specify a team`, async () => {
@@ -328,7 +329,7 @@ describe('RoleGuard', () => {
         jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
           ...testOrgMemberEntity1,
           role: OrgRoleEnum.Member,
-        });
+        } as OrgMemberEntity);
       });
 
       it(`should return true if org member's role is member and the qna doesn't specify a team`, async () => {

@@ -8,7 +8,8 @@ import {
 } from '@newbee/api/auth/data-access';
 import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
-import { testUserAndOptions1, UserService } from '@newbee/api/user/data-access';
+import type { UserAndOptions } from '@newbee/api/user/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import {
   testBaseCreateUserDto1,
   testBaseEmailDto1,
@@ -18,6 +19,7 @@ import {
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
+  testPublicKeyCredentialCreationOptions1,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -33,6 +35,10 @@ describe('AuthController', () => {
   let response: Response;
 
   const testAccessToken = 'access';
+  const testUserAndOptions: UserAndOptions = {
+    user: testUserEntity1,
+    options: testPublicKeyCredentialCreationOptions1,
+  };
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -47,7 +53,7 @@ describe('AuthController', () => {
         {
           provide: UserService,
           useValue: createMock<UserService>({
-            create: jest.fn().mockResolvedValue(testUserAndOptions1),
+            create: jest.fn().mockResolvedValue(testUserAndOptions),
           }),
         },
         {
@@ -100,7 +106,7 @@ describe('AuthController', () => {
       expect(userService.create).toBeCalledTimes(1);
       expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
       expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserAndOptions1.user);
+      expect(service.login).toBeCalledWith(testUserAndOptions.user);
       expect(entityService.createUserRelation).toBeCalledTimes(1);
       expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
     });

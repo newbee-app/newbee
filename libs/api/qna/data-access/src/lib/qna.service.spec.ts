@@ -72,10 +72,10 @@ describe('QnaService', () => {
     markedUpToDateAt: testNow1,
     upToDate: true,
   };
-  const testUpdatedQna = createMock<QnaEntity>({
+  const testUpdatedQna = {
     ...testQnaEntity1,
     ...testBaseUpdateQnaDto1,
-  });
+  };
   const testUpdatedQnaDocParams: QnaDocParams = {
     ...testQnaDocParams1,
     qna_title: testUpdatedQna.title,
@@ -241,7 +241,7 @@ describe('QnaService', () => {
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1,
+        testOrganizationEntity1.id,
         testUpdatedQnaDocParams
       );
     });
@@ -254,13 +254,13 @@ describe('QnaService', () => {
           testOrgMemberEntity1
         )
       ).resolves.toEqual(testUpdatedQna);
-      expect(repository.assign).toBeCalledWith(
-        testQnaEntity1,
-        testAssignParams
-      );
+      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+        ...testAssignParams,
+        maintainer: testOrgMemberEntity1,
+      });
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1,
+        testOrganizationEntity1.id,
         testUpdatedQnaDocParams
       );
     });
@@ -281,7 +281,7 @@ describe('QnaService', () => {
       ).resolves.toEqual(testUpdatedQna);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1,
+        testOrganizationEntity1.id,
         testUpdatedQnaDocParams
       );
     });
@@ -309,7 +309,7 @@ describe('QnaService', () => {
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1,
+        testOrganizationEntity1.id,
         testUpdatedQnaDocParams
       );
     });
@@ -330,7 +330,7 @@ describe('QnaService', () => {
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
-        testOrganizationEntity1,
+        testOrganizationEntity1.id,
         testUpdatedQnaDocParams
       );
     });

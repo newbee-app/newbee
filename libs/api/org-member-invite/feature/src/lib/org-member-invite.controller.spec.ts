@@ -56,7 +56,7 @@ describe('OrgMemberInviteController', () => {
         testOrgMemberInviteEntity1.userInvites.email,
         testOrgMemberInviteEntity1.role,
         testOrgMemberEntity1,
-        testOrgMemberInviteEntity1.organization.slug
+        testOrgMemberInviteEntity1.organization
       );
     });
   });

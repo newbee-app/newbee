@@ -1,5 +1,3 @@
-import { createMock } from '@golevelup/ts-jest';
-import { Collection } from '@mikro-orm/core';
 import {
   DocDocParams,
   OrgMemberDocParams,
@@ -46,109 +44,101 @@ import { TeamMemberEntity } from '../entity/team-member.entity';
  * An example instance of `UserEntity`.
  * Strictly for use in testing.
  */
-export const testUserEntity1 = createMock<UserEntity>({
-  ...testUser1,
-  id: '1',
-  organizations: createMock<Collection<OrgMemberEntity>>(),
-});
+export const testUserEntity1 = { ...testUser1, id: '1' } as UserEntity;
 
 /**
  * An example instance of `AuthenticatorEntity`.
  * Strictly for use in testing.
  */
-export const testAuthenticatorEntity1 = createMock<AuthenticatorEntity>({
+export const testAuthenticatorEntity1 = {
   ...testAuthenticator1,
-});
+} as AuthenticatorEntity;
 
 /**
  * An example instance of `UserChallengeEntity`.
  * Strictly for use in testing.
  */
-export const testUserChallengeEntity1 = createMock<UserChallengeEntity>({
+export const testUserChallengeEntity1 = {
   ...testUserChallenge1,
   user: testUserEntity1,
-});
+} as UserChallengeEntity;
 
 /**
  * An example instance of `UserSettingsEntity`.
  * Strictly for use in testing.
  */
-export const testUserSettingsEntity1 = createMock<UserSettingsEntity>({
+export const testUserSettingsEntity1 = {
   ...testUserSettings1,
   user: testUserEntity1,
-});
+} as UserSettingsEntity;
 
 /**
  * An example instance of `UserInvitesEntity`.
  * Strictly for use in testing.
  */
-export const testUserInvitesEntity1 = createMock<UserInvitesEntity>({
+export const testUserInvitesEntity1 = {
   ...testUserInvites1,
   id: '1',
   user: testUserEntity1,
-  orgMemberInvites: createMock<Collection<OrgMemberInviteEntity>>(),
-});
+} as UserInvitesEntity;
 
 /**
  * An example instance of `OrganizationEntity`.
  * Strictly for use in testing.
  */
-export const testOrganizationEntity1 = createMock<OrganizationEntity>({
+export const testOrganizationEntity1 = {
   ...testOrganization1,
   id: 'org1',
-  members: createMock<Collection<OrgMemberEntity>>(),
-});
+} as OrganizationEntity;
 
 /**
  * An example instance of `TeamEntity`.
  * Strictly for use in testing.
  */
-export const testTeamEntity1 = createMock<TeamEntity>({
+export const testTeamEntity1 = {
   ...testTeam1,
   id: '1',
   organization: testOrganizationEntity1,
-  teamMembers: createMock<Collection<TeamMemberEntity>>(),
-});
+} as TeamEntity;
 
 /**
  * An example instance of `OrgMemberEntity`.
  * Strictly for use in testing.
  */
-export const testOrgMemberEntity1 = createMock<OrgMemberEntity>({
+export const testOrgMemberEntity1 = {
   ...testOrgMember1,
   user: testUserEntity1,
   organization: testOrganizationEntity1,
   id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
-  teams: createMock<Collection<TeamMemberEntity>>(),
-});
+} as OrgMemberEntity;
 
 /**
  * An example instance of `OrgMemberInviteEntity`.
  * Strictly for use in testing.
  */
-export const testOrgMemberInviteEntity1 = createMock<OrgMemberInviteEntity>({
+export const testOrgMemberInviteEntity1 = {
   ...testOrgMemberInvite1,
   id: '1',
   organization: testOrganizationEntity1,
   userInvites: testUserInvitesEntity1,
   inviter: testOrgMemberEntity1,
-});
+} as OrgMemberInviteEntity;
 
 /**
  * An example instance of `TeamMemberEntity`.
  * Strictly for use in testing.
  */
-export const testTeamMemberEntity1 = createMock<TeamMemberEntity>({
+export const testTeamMemberEntity1 = {
   orgMember: testOrgMemberEntity1,
   team: testTeamEntity1,
   role: TeamRoleEnum.Owner,
-});
+} as TeamMemberEntity;
 
 /**
  * An example instance of `DocEntity`.
  * Strictly for use in testing.
  */
-export const testDocEntity1 = createMock<DocEntity>({
+export const testDocEntity1 = {
   ...testDoc1,
   id: '1',
   docTxt: 'docTxt',
@@ -156,13 +146,13 @@ export const testDocEntity1 = createMock<DocEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
-});
+} as DocEntity;
 
 /**
  * An example instance of `QnaEntity`.
  * Strictly for use in testing.
  */
-export const testQnaEntity1 = createMock<QnaEntity>({
+export const testQnaEntity1 = {
   ...testQna1,
   id: '1',
   questionTxt: 'questionTxt',
@@ -171,7 +161,7 @@ export const testQnaEntity1 = createMock<QnaEntity>({
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
-});
+} as QnaEntity;
 
 /**
  * An example instance of `OrgMemberDocParams`.
