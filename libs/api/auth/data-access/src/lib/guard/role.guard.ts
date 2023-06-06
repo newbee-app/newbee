@@ -30,13 +30,7 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import {
-  docUrl,
-  organizationUrl,
-  orgMemberUrl,
-  qnaUrl,
-  teamUrl,
-} from '@newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgRoleEnum, teamRoleEnumSet } from '@newbee/shared/util';
 
 /**
@@ -88,7 +82,7 @@ export class RoleGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const { params, query, user } = request;
-    const orgSlug: string | undefined = params[organizationUrl];
+    const orgSlug: string | undefined = params[UrlEndpoint.Organization];
 
     // fail if org slug wasn't specified but roles were
     // pass if both org slug and roles weren't specified
@@ -96,12 +90,12 @@ export class RoleGuard implements CanActivate {
       return result;
     }
 
-    const orgMemberSlug: string | undefined = params[orgMemberUrl];
-    const teamSlug: string | undefined = params[teamUrl]
-      ? params[teamUrl]
-      : query[teamUrl];
-    const docSlug: string | undefined = params[docUrl];
-    const qnaSlug: string | undefined = params[qnaUrl];
+    const orgMemberSlug: string | undefined = params[UrlEndpoint.OrgMember];
+    const teamSlug: string | undefined = params[UrlEndpoint.Team]
+      ? params[UrlEndpoint.Team]
+      : query[UrlEndpoint.Team];
+    const docSlug: string | undefined = params[UrlEndpoint.Doc];
+    const qnaSlug: string | undefined = params[UrlEndpoint.Qna];
 
     try {
       const organization = await this.organizationService.findOneBySlug(

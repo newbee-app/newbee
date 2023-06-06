@@ -26,29 +26,33 @@
         </label>
 
         <div class="hidden md:flex flex-row">
-          <a
-            (click)="emitNavigateToLink(routeKeyword.Home)"
+          <div
+            (click)="emitNavigateToLink('')"
             class="btn btn-ghost normal-case"
-            ><h5>New<span class="text-logo">Bee</span></h5></a
           >
-          <a
-            *ngFor="let link of links"
-            (click)="emitNavigateToLink(link)"
-            class="btn btn-ghost"
-            >{{ link }}</a
-          >
+            <h5>New<span class="text-logo">Bee</span></h5>
+          </div>
+          <div (click)="emitNavigateToLink('features')" class="btn btn-ghost">
+            Features
+          </div>
+          <div (click)="emitNavigateToLink('guides')" class="btn btn-ghost">
+            Guides
+          </div>
+          <div (click)="emitNavigateToLink('pricing')" class="btn btn-ghost">
+            Pricing
+          </div>
         </div>
       </div>
 
       <div class="navbar-end">
         <div class="flex flex-row gap-x-2">
           <a
-            (click)="emitNavigateToLink(routeKeyword.Login)"
+            (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Login)"
             class="btn btn-primary"
             >Login</a
           >
           <a
-            (click)="emitNavigateToLink(routeKeyword.Register)"
+            (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Register)"
             class="btn btn-secondary hidden md:flex"
             >Register</a
           >
@@ -61,15 +65,21 @@
 
   <div class="drawer-side">
     <label for="navbar-drawer" class="drawer-overlay"></label>
-    <ul class="menu py-8 px-6 bg-base-200 w-2/3 sm:w-1/2">
-      <li><a (click)="emitNavigateToLink(routeKeyword.Home)">Home</a></li>
-      <li *ngFor="let link of links" (click)="emitNavigateToLink(link)">
-        <a>{{ link }}</a>
-      </li>
+    <ul class="menu py-8 px-6 bg-base-200 h-full w-2/3 sm:w-1/2">
+      <li><a (click)="emitNavigateToLink('')">Home</a></li>
+      <li><a (click)="emitNavigateToLink('features')">Features</a></li>
+      <li><a (click)="emitNavigateToLink('guides')">Guides</a></li>
+      <li><a (click)="emitNavigateToLink('pricing')">Pricing</a></li>
       <div class="divider"></div>
-      <li><a (click)="emitNavigateToLink(routeKeyword.Login)">Login</a></li>
       <li>
-        <a (click)="emitNavigateToLink(routeKeyword.Register)">Register</a>
+        <a (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Login)"
+          >Login</a
+        >
+      </li>
+      <li>
+        <a (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Register)"
+          >Register</a
+        >
       </li>
     </ul>
   </div>

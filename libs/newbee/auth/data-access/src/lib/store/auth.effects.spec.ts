@@ -9,6 +9,7 @@ import {
 import {
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
   testPublicKeyCredentialRequestOptions1,
@@ -229,7 +230,9 @@ describe('AuthEffects', () => {
       expect(effects.logoutSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/auth/login']);
+        expect(router.navigate).toBeCalledWith([
+          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+        ]);
       });
     });
   });

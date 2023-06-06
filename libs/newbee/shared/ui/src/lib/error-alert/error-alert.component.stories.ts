@@ -1,11 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { ErrorAlertComponent } from './error-alert.component';
 
 export default {
   title: 'ErrorAlertComponent',
   component: ErrorAlertComponent,
-  decorators: [moduleMetadata({ imports: [CommonModule] })],
   args: {
     error: '',
     displayError: true,

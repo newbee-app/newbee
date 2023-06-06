@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -43,6 +50,8 @@ export class SearchbarComponent
    * Whether to include the x mark symbol.
    */
   @Input() includeClearSymbol = true;
+
+  @ViewChild('searchbarInput') searchbarInput!: ElementRef<HTMLInputElement>;
 
   /**
    * The internal form control for the searchbar input.
@@ -149,6 +158,13 @@ export class SearchbarComponent
     } else {
       this.searchbar.enable();
     }
+  }
+
+  /**
+   * Calls focus on the searchbar input.
+   */
+  focusOnInput(): void {
+    this.searchbarInput.nativeElement.focus();
   }
 
   /**

@@ -5,7 +5,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import {
   AuthenticatorEffects,
   CookieEffects,
-  OrganizationEffects,
   SearchEffects,
 } from '@newbee/newbee/shared/data-access';
 import { EffectsModule } from '@ngrx/effects';
@@ -41,12 +40,7 @@ import { AppRoutingModule } from './routing';
         strictActionTypeUniqueness: true,
       },
     }),
-    EffectsModule.forRoot([
-      AuthenticatorEffects,
-      CookieEffects,
-      OrganizationEffects,
-      SearchEffects,
-    ]),
+    EffectsModule.forRoot([AuthenticatorEffects, CookieEffects, SearchEffects]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
     AppRoutingModule,

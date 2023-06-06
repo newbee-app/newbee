@@ -5,8 +5,8 @@ import { EntityService } from '@newbee/api/shared/data-access';
 import { AppConfig, authJwtCookie, Public } from '@newbee/api/shared/util';
 import {
   BaseCsrfTokenAndDataDto,
-  cookieUrl,
   cookieVersion,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import type { CsrfTokenCreator } from 'csrf-csrf';
 import type { Request, Response } from 'express';
@@ -14,7 +14,7 @@ import type { Request, Response } from 'express';
 /**
  * The API endpoints for setting up the user's cookies and initial load of data.
  */
-@Controller({ path: cookieUrl, version: cookieVersion })
+@Controller({ path: UrlEndpoint.Cookie, version: cookieVersion })
 export class CookieController {
   /**
    * The logger to use to log anything in the controller.

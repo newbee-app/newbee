@@ -4,9 +4,9 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  cookieUrl,
   cookieVersion,
   testBaseCsrfTokenAndDataDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { CookieService } from './cookie.service';
 
@@ -43,7 +43,7 @@ describe('CsrfService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${cookieVersion}/${cookieUrl}`
+        `/api/v${cookieVersion}/${UrlEndpoint.Cookie}`
       );
       expect(req.request.method).toEqual('GET');
 

@@ -31,8 +31,8 @@
           type="submit"
           [disabled]="loginForm.invalid"
           class="btn btn-primary"
-          [ngClass]="{ loading: loginPending }"
         >
+          <span *ngIf="loginPending" class="loading loading-spinner"></span>
           Log In
         </button>
         <button
@@ -40,9 +40,9 @@
           type="button"
           [disabled]="loginForm.invalid"
           class="btn btn-primary"
-          [ngClass]="{ loading: magicLinkPending }"
           (click)="emitMagicLinkLogin()"
         >
+          <span *ngIf="magicLinkPending" class="loading loading-spinner"></span>
           Send Login Link to Email
         </button>
 

@@ -1,4 +1,4 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 
 /**
  * A helper function for extracting form control input errors for display.
@@ -25,4 +25,47 @@ export function getErrorMessage(control: AbstractControl | null): string {
   }
 
   return '';
+}
+
+/**
+ * Gets an input from a form group and check that it's clean (pristine and untouched).
+ *
+ * @param formGroup The form group to check.
+ * @param inputName The name of the form group's input to look at.
+ *
+ * @returns `true` if the input is clean, `false` otherwise.
+ */
+export function inputIsClean(formGroup: FormGroup, inputName: string): boolean {
+  const input = formGroup.get(inputName);
+  return !!input?.pristine && !!input.untouched;
+}
+
+/**
+ * Whether the given input is valid.
+ *
+ * @param formGroup The form group to check.
+ * @param inputName The name of the form group's input to look at.
+ *
+ * @returns `true` if the input is valid, `false` otherwise.
+ */
+export function inputIsValid(formGroup: FormGroup, inputName: string): boolean {
+  const input = formGroup.get(inputName);
+  return !!input?.valid;
+}
+
+/**
+ * Whether to display the input as having an error.
+ *
+ * @param formGroup The form group to check.
+ * @param inputName The name of the form group's input to look at.
+ *
+ * @returns `true` if the input should display an error, `false` otherwise.
+ */
+export function inputDisplayError(
+  formGroup: FormGroup,
+  inputName: string
+): boolean {
+  return (
+    !inputIsClean(formGroup, inputName) && !inputIsValid(formGroup, inputName)
+  );
 }

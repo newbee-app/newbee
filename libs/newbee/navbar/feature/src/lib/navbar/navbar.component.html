@@ -1,0 +1,19 @@
+<newbee-unauthenticated-navbar
+  *ngIf="(user$ | async) === null"
+  (navigateToLink)="navigateToLink($event)"
+>
+  <ng-content></ng-content
+></newbee-unauthenticated-navbar>
+
+<newbee-authenticated-navbar
+  *ngIf="user$ | async"
+  [user]="(user$ | async)!"
+  [organizations]="(organizations$ | async) ?? []"
+  [selectedOrganization]="(selectedOrganization$ | async)?.organization ?? null"
+  (selectedOrganizationChange)="selectOrganization($event)"
+  [orgMember]="selectedOrganization$ | async"
+  (navigateToLink)="navigateToLink($event)"
+  (logout)="logout()"
+>
+  <ng-content></ng-content
+></newbee-authenticated-navbar>

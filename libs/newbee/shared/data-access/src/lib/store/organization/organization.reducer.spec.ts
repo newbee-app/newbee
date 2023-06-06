@@ -4,7 +4,6 @@ import {
 } from '@newbee/shared/data-access';
 import {
   testOrganization1,
-  testOrgMemberInviteRelation1,
   testOrgMemberRelation1,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -20,12 +19,19 @@ import {
 describe('OrganizationReducer', () => {
   const stateAfterLoginSuccess: OrganizationState = {
     organizations: [testOrganization1],
-    selectedOrganization: testOrgMemberRelation1,
-    invites: [testOrgMemberInviteRelation1],
+    selectedOrganization: null,
   };
-  const stateAfterSelectOrg: OrganizationState = {
+  const stateAfterGetOrg: OrganizationState = {
     ...stateAfterLoginSuccess,
     selectedOrganization: testOrgMemberRelation1,
+  };
+  const stateAfterCreateOrg: OrganizationState = {
+    ...initialOrganizationState,
+    organizations: [testOrganization1],
+  };
+  const stateAfterResetSelectedOrg: OrganizationState = {
+    ...stateAfterGetOrg,
+    selectedOrganization: null,
   };
 
   describe('from initial state', () => {
@@ -56,17 +62,37 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
+
+    it('should update state for createOrgSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.createOrgSuccess({
+          organization: testOrganization1,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterCreateOrg);
+    });
   });
 
   describe('from login success', () => {
-    it('should update state for getAndSelectOrgSuccess', () => {
+    it('should update state for getOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterLoginSuccess,
-        OrganizationActions.getAndSelectOrgSuccess({
+        OrganizationActions.getOrgSuccess({
           orgMember: testOrgMemberRelation1,
         })
       );
-      expect(updatedState).toEqual(stateAfterSelectOrg);
+      expect(updatedState).toEqual(stateAfterGetOrg);
+    });
+  });
+
+  describe('from get org success', () => {
+    it('should update state for resetSelectedOrg', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterGetOrg,
+        OrganizationActions.resetSelectedOrg()
+      );
+      expect(updatedState).toEqual(stateAfterResetSelectedOrg);
     });
   });
 });

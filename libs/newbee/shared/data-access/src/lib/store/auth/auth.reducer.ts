@@ -1,4 +1,4 @@
-import { User } from '@newbee/shared/util';
+import type { OrgMemberInviteNoUser, User } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { CookieActions } from '../cookie';
 import { AuthActions } from './auth.actions';
@@ -11,6 +11,12 @@ export interface AuthState {
    * The user's information.
    */
   user: User | null;
+  /**
+   * The pending org member invites for the user, including:
+   * - The token and role for the org member invite
+   * - The name and slug of the organization the invite is attached to
+   */
+  invites: OrgMemberInviteNoUser[];
 }
 
 /**
@@ -18,6 +24,7 @@ export interface AuthState {
  */
 export const initialAuthState: AuthState = {
   user: null,
+  invites: [],
 };
 
 /**
@@ -33,19 +40,21 @@ export const authFeature = createFeature({
         state,
         {
           userRelationAndOptionsDto: {
-            userRelation: { user },
+            userRelation: { user, invites },
           },
         }
       ): AuthState => ({
         ...state,
         user,
+        invites,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (state, { userRelation: { user } }): AuthState => ({
+      (state, { userRelation: { user, invites } }): AuthState => ({
         ...state,
         user,
+        invites,
       })
     ),
     on(AuthActions.logoutSuccess, (): AuthState => initialAuthState),
@@ -56,8 +65,8 @@ export const authFeature = createFeature({
           return state;
         }
 
-        const { user } = userRelation;
-        return { ...state, user };
+        const { user, invites } = userRelation;
+        return { ...state, user, invites };
       }
     )
   ),

@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BaseCsrfTokenAndDataDto,
-  cookieUrl,
   cookieVersion,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { Observable } from 'rxjs';
 
@@ -22,7 +22,7 @@ export class CookieService {
    */
   initCookies(): Observable<BaseCsrfTokenAndDataDto> {
     return this.http.get<BaseCsrfTokenAndDataDto>(
-      `/api/v${cookieVersion}/${cookieUrl}`
+      `/api/v${cookieVersion}/${UrlEndpoint.Cookie}`
     );
   }
 }

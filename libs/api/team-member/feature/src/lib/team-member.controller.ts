@@ -20,19 +20,14 @@ import {
   TeamMemberService,
   UpdateTeamMemberDto,
 } from '@newbee/api/team-member/data-access';
-import {
-  organizationUrl,
-  orgMemberUrl,
-  teamMemberVersion,
-  teamUrl,
-} from '@newbee/shared/data-access';
+import { teamMemberVersion, UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamMemberEntity`.
  */
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}/${teamUrl}/:${teamUrl}/${orgMemberUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}/:${UrlEndpoint.Team}/${UrlEndpoint.OrgMember}`,
   version: teamMemberVersion,
 })
 export class TeamMemberController {
@@ -114,7 +109,7 @@ export class TeamMemberController {
    * @returns The udpated team member.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${orgMemberUrl}`)
+  @Patch(`:${UrlEndpoint.OrgMember}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -166,7 +161,7 @@ export class TeamMemberController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${orgMemberUrl}`)
+  @Delete(`:${UrlEndpoint.OrgMember}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

@@ -22,15 +22,10 @@ import {
 import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import {
-  authUrl,
   authVersion,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
-  loginUrl,
-  logoutUrl,
-  optionsUrl,
-  registerUrl,
-  webauthnUrl,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import type { UserRelation } from '@newbee/shared/util';
 import { internalServerError, magicLinkLogin } from '@newbee/shared/util';
@@ -40,7 +35,7 @@ import type { CookieOptions, Response } from 'express';
 /**
  * The controller that provides API routes for logging in and registering users.
  */
-@Controller({ path: authUrl, version: authVersion })
+@Controller({ path: UrlEndpoint.Auth, version: authVersion })
 export class AuthController {
   /**
    * The logger to use to log anything in the controller.
@@ -71,7 +66,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${webauthnUrl}/${registerUrl}`)
+  @Post(`${UrlEndpoint.Webauthn}/${UrlEndpoint.Register}`)
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto
@@ -105,7 +100,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Public()
-  @Post(`${webauthnUrl}/${loginUrl}/${optionsUrl}`)
+  @Post(`${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}/${UrlEndpoint.Options}`)
   async webAuthnLoginOptions(
     @Body() emailDto: EmailDto
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
@@ -133,7 +128,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${webauthnUrl}/${loginUrl}`)
+  @Post(`${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}`)
   async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
     @Body() webAuthnLoginDto: WebAuthnLoginDto
@@ -162,7 +157,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
   @Public()
-  @Post(`${magicLinkLogin}/${loginUrl}`)
+  @Post(`${magicLinkLogin}/${UrlEndpoint.Login}`)
   async magicLinkLoginLogin(
     @Body() emailDto: EmailDto
   ): Promise<BaseMagicLinkLoginDto> {
@@ -207,7 +202,7 @@ export class AuthController {
    *
    * @param res The response object to clear the auth token cookie from.
    */
-  @Post(logoutUrl)
+  @Post(UrlEndpoint.Logout)
   logout(
     @Res({ passthrough: true }) res: Response,
     @User() user: UserEntity

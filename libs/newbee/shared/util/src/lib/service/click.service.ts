@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
 /**
@@ -7,9 +7,16 @@ import { Subject } from 'rxjs';
  * Other apps can subscribe to the service to use the click targets as they need.
  */
 @Injectable({ providedIn: 'root' })
-export class ClickService {
+export class ClickService implements OnDestroy {
   /**
    * The Subject which provides the document's click targets.
    */
   documentClickTarget = new Subject<HTMLElement>();
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.documentClickTarget.complete();
+  }
 }

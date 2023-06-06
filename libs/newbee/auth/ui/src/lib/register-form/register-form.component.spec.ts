@@ -40,8 +40,6 @@ describe('RegisterFormComponent', () => {
   describe('controls', () => {
     describe('email', () => {
       it('should be empty initially', () => {
-        expect(component.inputIsClean('email')).toBeTruthy();
-        expect(component.inputIsValid('email')).toBeFalsy();
         expect(emailControl?.hasError('required')).toBeTruthy();
         expect(emailControl?.value).toEqual('');
       });
@@ -64,8 +62,6 @@ describe('RegisterFormComponent', () => {
 
     describe('name', () => {
       it('should be empty initially', () => {
-        expect(component.inputIsClean('name')).toBeTruthy();
-        expect(component.inputIsValid('name')).toBeFalsy();
         expect(nameControl?.hasError('required')).toBeTruthy();
         expect(nameControl?.value).toEqual('');
       });
@@ -80,8 +76,6 @@ describe('RegisterFormComponent', () => {
 
     describe('display name', () => {
       it('should be empty initially', () => {
-        expect(component.inputIsClean('displayName')).toBeTruthy();
-        expect(component.inputIsValid('displayName')).toBeTruthy();
         expect(displayNameControl?.value).toEqual('');
       });
 

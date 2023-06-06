@@ -5,10 +5,8 @@ import {
   BaseQueryResultDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
-  organizationUrl,
-  searchUrl,
   searchVersion,
-  suggestUrl,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { Observable } from 'rxjs';
 
@@ -30,7 +28,7 @@ export class SearchService {
    */
   search(query: BaseQueryDto, orgSlug: string): Observable<BaseQueryResultDto> {
     return this.http.post<BaseQueryResultDto>(
-      `/api/v${searchVersion}/${organizationUrl}/${orgSlug}/${searchUrl}`,
+      `/api/v${searchVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Search}`,
       query
     );
   }
@@ -48,7 +46,7 @@ export class SearchService {
     orgSlug: string
   ): Observable<BaseSuggestResultDto> {
     return this.http.post<BaseSuggestResultDto>(
-      `/api/v${searchVersion}/${organizationUrl}/${orgSlug}/${suggestUrl}`,
+      `/api/v${searchVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Search}/${UrlEndpoint.Suggest}`,
       query
     );
   }

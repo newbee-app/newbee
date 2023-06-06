@@ -285,6 +285,5 @@ export const testOrgMemberInviteRelation1: OrgMemberInviteRelation = {
 export const testUserRelation1: UserRelation = {
   user: testUser1,
   organizations: [testOrganization1],
-  selectedOrganization: testOrgMemberRelation1,
   invites: [testOrgMemberInviteRelation1],
 };

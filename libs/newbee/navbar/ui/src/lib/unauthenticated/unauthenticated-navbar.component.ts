@@ -1,9 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import {
-  RouteKeyword,
-  unauthenticatedNavbarRoutes,
-} from '@newbee/newbee/shared/util';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 
 /**
  * The unauthenticated version of the navbar.
@@ -18,24 +15,19 @@ export class UnauthenticatedNavbarComponent {
   /**
    * The `EventEmitter` that tells the parent component what route to navigate to.
    */
-  @Output() navigateToLink = new EventEmitter<RouteKeyword>();
+  @Output() navigateToLink = new EventEmitter<string>();
 
   /**
-   * All of the keywords that represent routes.
+   * All possible URL endpoints.
    */
-  readonly routeKeyword = RouteKeyword;
-
-  /**
-   * All of the possible routes that can be reached from the unauthenticated navbar.
-   */
-  readonly links = unauthenticatedNavbarRoutes;
+  readonly urlEndpoint = UrlEndpoint;
 
   /**
    * Calls `navigateToLink.emit()` using the given route.
    *
-   * @param route The route to navigate to.
+   * @param endpoints The route to navigate to.
    */
-  emitNavigateToLink(route: RouteKeyword) {
-    this.navigateToLink.emit(route);
+  emitNavigateToLink(...endpoints: string[]) {
+    this.navigateToLink.emit(`/${endpoints.join('/')}`);
   }
 }

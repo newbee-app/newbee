@@ -9,15 +9,13 @@ import { Organization, Role } from '@newbee/api/shared/util';
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
-  organizationUrl,
-  searchUrl,
   searchVersion,
-  suggestUrl,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Search}`,
   version: searchVersion,
 })
 export class SearchController {
@@ -38,7 +36,7 @@ export class SearchController {
    * @returns The results of the search.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(searchUrl)
+  @Post()
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async search(
     @Body() queryDto: QueryDto,
@@ -66,7 +64,7 @@ export class SearchController {
    * @returns The suggestions.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(suggestUrl)
+  @Post(UrlEndpoint.Suggest)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async suggest(
     @Body() suggestDto: SuggestDto,

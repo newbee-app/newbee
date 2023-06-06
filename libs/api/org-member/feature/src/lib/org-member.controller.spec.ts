@@ -5,9 +5,7 @@ import {
   EntityService,
   testOrganizationEntity1,
   testOrgMemberEntity1,
-  testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { UserService } from '@newbee/api/user/data-access';
 import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
@@ -16,7 +14,6 @@ describe('OrgMemberController', () => {
   let controller: OrgMemberController;
   let service: OrgMemberService;
   let entityService: EntityService;
-  let userService: UserService;
 
   const testUpdatedOrgMember = {
     ...testOrgMemberEntity1,
@@ -41,44 +38,18 @@ describe('OrgMemberController', () => {
               .mockResolvedValue(testOrgMemberRelation1),
           }),
         },
-        {
-          provide: UserService,
-          useValue: createMock<UserService>(),
-        },
       ],
     }).compile();
 
     controller = module.get<OrgMemberController>(OrgMemberController);
     service = module.get<OrgMemberService>(OrgMemberService);
     entityService = module.get<EntityService>(EntityService);
-    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
     expect(entityService).toBeDefined();
-    expect(userService).toBeDefined();
-  });
-
-  describe('getAndSelect', () => {
-    it('should get and select the org member', async () => {
-      await expect(
-        controller.getAndSelect(
-          testOrgMemberEntity1,
-          testOrganizationEntity1,
-          testUserEntity1
-        )
-      ).resolves.toEqual(testOrgMemberRelation1);
-      expect(userService.update).toBeCalledTimes(1);
-      expect(userService.update).toBeCalledWith(testUserEntity1, {
-        selectedOrganization: testOrgMemberEntity1,
-      });
-      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberRelation).toBeCalledWith(
-        testOrgMemberEntity1
-      );
-    });
   });
 
   describe('getBySlug', () => {

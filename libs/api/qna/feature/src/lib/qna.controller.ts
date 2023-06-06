@@ -30,18 +30,14 @@ import {
   Role,
   Team,
 } from '@newbee/api/shared/util';
-import {
-  organizationUrl,
-  qnaUrl,
-  qnaVersion,
-} from '@newbee/shared/data-access';
+import { qnaVersion, UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `QnaEntity`.
  */
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}/${qnaUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Qna}`,
   version: qnaVersion,
 })
 export class QnaController {
@@ -102,7 +98,7 @@ export class QnaController {
    * @returns The qna associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
-  @Get(`:${qnaUrl}`)
+  @Get(`:${UrlEndpoint.Qna}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(@Qna() qna: QnaEntity): Promise<QnaEntity> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
@@ -120,7 +116,7 @@ export class QnaController {
    * @returns The updated qna, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
-  @Patch(`:${qnaUrl}/question`)
+  @Patch(`:${UrlEndpoint.Qna}/question`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -154,7 +150,7 @@ export class QnaController {
    * @returns The updated qna, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
-  @Patch(`:${qnaUrl}/answer`)
+  @Patch(`:${UrlEndpoint.Qna}/answer`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -196,7 +192,7 @@ export class QnaController {
    * @returns The updated qna, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(`:${qnaUrl}`)
+  @Post(`:${UrlEndpoint.Qna}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -221,7 +217,7 @@ export class QnaController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${qnaUrl}`)
+  @Delete(`:${UrlEndpoint.Qna}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

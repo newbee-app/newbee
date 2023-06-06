@@ -1,10 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import {
-  ClickWrapperComponent,
-  ErrorAlertComponent,
-  PhoneInputComponent,
-} from '@newbee/newbee/shared/ui';
 import {
   displayNameIsNotEmpty,
   internalServerError,
@@ -12,29 +5,13 @@ import {
   phoneNumberIsPhoneNumber,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
-import {
-  componentWrapperDecorator,
-  Meta,
-  moduleMetadata,
-  StoryObj,
-} from '@storybook/angular';
-import { BaseFormComponent } from '../base-form';
+import { componentWrapperDecorator, Meta, StoryObj } from '@storybook/angular';
 import { RegisterFormComponent } from './register-form.component';
 
 export default {
   title: 'RegisterFormComponent',
   component: RegisterFormComponent,
   decorators: [
-    moduleMetadata({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        BaseFormComponent,
-        PhoneInputComponent,
-        ErrorAlertComponent,
-        ClickWrapperComponent,
-      ],
-    }),
     componentWrapperDecorator(
       (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
@@ -53,7 +30,7 @@ type Story = StoryObj<RegisterFormComponent>;
 
 export const WithoutErrors: Story = {};
 
-export const WithErrors = {
+export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 400,
@@ -67,3 +44,5 @@ export const WithErrors = {
     },
   },
 };
+
+export const Pending: Story = { args: { registerPending: true } };

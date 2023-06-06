@@ -1,5 +1,4 @@
 {
-  "jest.autoRun": {},
   "vsicons.presets.angular": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.eol": "\n",

@@ -1,19 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { internalServerError } from '@newbee/shared/util';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { BaseFormComponent } from '../base-form';
+import { Meta, StoryObj } from '@storybook/angular';
 import { JwtIdComponent } from './jwt-id.component';
 
 export default {
   title: 'JwtIdComponent',
   component: JwtIdComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [CommonModule, BaseFormComponent, ErrorAlertComponent],
-    }),
-  ],
   args: {
     jwtId: testBaseMagicLinkLoginDto1.jwtId,
     email: testBaseMagicLinkLoginDto1.email,

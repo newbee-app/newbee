@@ -31,9 +31,9 @@
       </span>
     </button>
 
-    <ul
+    <div
       tabindex="0"
-      class="dropdown-content menu flex flex-col flex-nowrap min-w-full w-fit mt-2 bg-base-200 rounded-box max-h-60 overflow-y-scroll"
+      class="dropdown-content flex flex-col flex-nowrap w-full mt-2 bg-base-200 rounded-box max-h-60 overflow-y-scroll"
     >
       <div>
         <newbee-searchbar
@@ -43,13 +43,15 @@
         ></newbee-searchbar>
       </div>
 
-      <li
+      <button
+        type="button"
         *ngFor="let option of optionsWithSearch"
         (click)="selectOption(option.value)"
+        class="btn btn-ghost justify-start text-left normal-case font-normal"
       >
-        <a class="text-left">{{ option.dropdownValue }}</a>
-      </li>
-    </ul>
+        {{ option.dropdownValue }}
+      </button>
+    </div>
   </div>
 
   <div *ngIf="!valid" class="mt-2">

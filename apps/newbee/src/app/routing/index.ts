@@ -7,6 +7,7 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 
 /**
  * How the web page's title should be set for all routes, unless otherwise specified.
@@ -42,10 +43,24 @@ const routes: Routes = [
     path: '',
     children: [
       {
-        path: 'auth',
+        path: UrlEndpoint.Auth,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/auth/feature');
           return m.AuthModule;
+        },
+      },
+      {
+        path: UrlEndpoint.Organization,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/organization/feature');
+          return m.OrgCreateModule;
+        },
+      },
+      {
+        path: `:${UrlEndpoint.Organization}`,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/organization/feature');
+          return m.OrganizationModule;
         },
       },
       {

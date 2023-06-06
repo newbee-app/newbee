@@ -47,6 +47,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Converts a `Partial<LoginForm>` to a `LoginForm`.
+   *
+   * @param partialLoginForm The partial to convert.
+   * @returns A `LoginForm` with empty strings where required properties were falsy.
+   */
+  private static partialToLoginForm(
+    partialLoginForm: Partial<LoginForm>
+  ): LoginForm {
+    const { email } = partialLoginForm;
+    return { email: email ?? '' };
+  }
+
+  /**
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
@@ -81,7 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @param partialLoginForm The login form to feed into the login request.
    */
   onWebAuthn(partialLoginForm: Partial<LoginForm>): void {
-    const loginForm = this.partialToLoginForm(partialLoginForm);
+    const loginForm = LoginComponent.partialToLoginForm(partialLoginForm);
     this.store.dispatch(AuthActions.createWebauthnLoginOptions({ loginForm }));
   }
 
@@ -91,7 +104,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @param partialLoginForm The login form to feed into the login request.
    */
   onMagicLinkLogin(partialLoginForm: Partial<LoginForm>): void {
-    const loginForm = this.partialToLoginForm(partialLoginForm);
+    const loginForm = LoginComponent.partialToLoginForm(partialLoginForm);
     this.store.dispatch(AuthActions.sendLoginMagicLink({ loginForm }));
   }
 
@@ -100,16 +113,5 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   async onNavigateToRegister(): Promise<void> {
     await this.router.navigate(['../register'], { relativeTo: this.route });
-  }
-
-  /**
-   * Converts a `Partial<LoginForm>` to a `LoginForm`.
-   *
-   * @param partialLoginForm The partial to convert.
-   * @returns A `LoginForm` with empty strings where required properties were falsy.
-   */
-  private partialToLoginForm(partialLoginForm: Partial<LoginForm>): LoginForm {
-    const { email } = partialLoginForm;
-    return { email: email ?? '' };
   }
 }

@@ -8,17 +8,13 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
-import {
-  authenticatorUrl,
-  authenticatorVersion,
-  optionsUrl,
-} from '@newbee/shared/data-access';
+import { authenticatorVersion, UrlEndpoint } from '@newbee/shared/data-access';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**
  * The controller that interacts with the `AuthenticatorEntity`.
  */
-@Controller({ path: authenticatorUrl, version: authenticatorVersion })
+@Controller({ path: UrlEndpoint.Authenticator, version: authenticatorVersion })
 export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 
@@ -30,7 +26,7 @@ export class AuthenticatorController {
    * @param user The user to associate with the authenticator.
    * @returns The registration options for the new authenticator.
    */
-  @Post(optionsUrl)
+  @Post(UrlEndpoint.Options)
   async createOptions(
     @User() user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {

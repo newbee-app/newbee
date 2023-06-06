@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Logger,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Patch } from '@nestjs/common';
 import {
   OrgMemberService,
   UpdateOrgMemberDto,
@@ -15,29 +7,22 @@ import {
   EntityService,
   OrganizationEntity,
   OrgMemberEntity,
-  UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   Organization,
   OrgMember,
   Role,
   SubjectOrgMember,
-  User,
 } from '@newbee/api/shared/util';
-import { UserService } from '@newbee/api/user/data-access';
-import {
-  organizationUrl,
-  orgMemberUrl,
-  orgMemberVersion,
-} from '@newbee/shared/data-access';
-import type { OrgMemberNoUser, OrgMemberRelation } from '@newbee/shared/util';
+import { orgMemberVersion, UrlEndpoint } from '@newbee/shared/data-access';
+import type { OrgMemberRelation } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrgMemberEntity`.
  */
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}/${orgMemberUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.OrgMember}`,
   version: orgMemberVersion,
 })
 export class OrgMemberController {
@@ -48,36 +33,8 @@ export class OrgMemberController {
 
   constructor(
     private readonly orgMemberService: OrgMemberService,
-    private readonly entityService: EntityService,
-    private readonly userService: UserService
+    private readonly entityService: EntityService
   ) {}
-
-  /**
-   * The API route for getting the authenticated user's org member data and marking it as the selected organization.
-   *
-   * @param orgMember The org member to get and select.
-   * @param organization The organization to look in.
-   * @param user The authenticated user making the request.
-   *
-   * @returns Information about the selected org member.
-   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
-   */
-  @Post()
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async getAndSelect(
-    @OrgMember() orgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity,
-    @User() user: UserEntity
-  ): Promise<OrgMemberNoUser> {
-    this.logger.log(
-      `Get and select org member request received in organization ID: ${organization.id} by user ID: ${user.id}`
-    );
-    this.logger.log(`Found org member, slug: ${orgMember.slug}`);
-
-    await this.userService.update(user, { selectedOrganization: orgMember });
-    return await this.entityService.createOrgMemberRelation(orgMember);
-  }
 
   /**
    * The API route for getting an org member.
@@ -89,7 +46,7 @@ export class OrgMemberController {
    * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Get(`:${orgMemberUrl}`)
+  @Get(`:${UrlEndpoint.OrgMember}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async getBySlug(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
@@ -112,7 +69,7 @@ export class OrgMemberController {
    *
    * @returns Information about the updated org member.
    */
-  @Patch(`:${orgMemberUrl}`)
+  @Patch(`:${UrlEndpoint.OrgMember}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Body() updateOrgMemberDto: UpdateOrgMemberDto,
@@ -144,7 +101,7 @@ export class OrgMemberController {
    * @param subjectOrgMember The org member being affected.
    * @param organization The organization this is all happening in.
    */
-  @Delete(`:${orgMemberUrl}`)
+  @Delete(`:${UrlEndpoint.OrgMember}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,

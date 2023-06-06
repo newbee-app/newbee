@@ -25,36 +25,13 @@ describe('LoginFormComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('email control', () => {
-    it('should be empty initially', () => {
-      expect(component.showEmailError).toBeFalsy();
-      expect(component.email?.hasError('required')).toBeTruthy();
-      expect(component.email?.value).toEqual('');
-    });
-
-    it('should not accept non-email input', () => {
-      const badEmail = 'johndoe';
-      component.email?.setValue(badEmail);
-      expect(component.email?.value).toEqual(badEmail);
-      expect(component.email?.invalid).toBeTruthy();
-      expect(component.email?.hasError('email')).toBeTruthy();
-    });
-
-    it('should accept valid email input', () => {
-      component.email?.setValue(testUser1.email);
-      expect(component.email?.value).toEqual(testUser1.email);
-      expect(component.email?.valid).toBeTruthy();
-      expect(component.email?.errors).toBeNull();
-    });
-  });
-
   describe('outputs', () => {
     describe('magicLinkLogin', () => {
       let magicLinkLoginEmitSpy: jest.SpyInstance;
 
       beforeEach(() => {
         magicLinkLoginEmitSpy = jest.spyOn(component.magicLinkLogin, 'emit');
-        component.email?.setValue(testUser1.email);
+        component.loginForm.setValue({ email: testUser1.email });
         fixture.detectChanges();
       });
 
@@ -82,7 +59,7 @@ describe('LoginFormComponent', () => {
 
       beforeEach(() => {
         webauthnEmitSpy = jest.spyOn(component.webauthn, 'emit');
-        component.email?.setValue(testUser1.email);
+        component.loginForm.setValue({ email: testUser1.email });
         fixture.detectChanges();
       });
 

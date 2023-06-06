@@ -1,8 +1,4 @@
-import type {
-  Organization,
-  OrgMemberInviteNoUser,
-  OrgMemberNoUser,
-} from '@newbee/shared/util';
+import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
@@ -18,16 +14,9 @@ export interface OrganizationState {
   organizations: Organization[];
 
   /**
-   * The organization the user is looking at right now.
+   * The organization the user is looking at right now and their relation to it.
    */
   selectedOrganization: OrgMemberNoUser | null;
-
-  /**
-   * The pending org member invites for the user, including:
-   * - The token and role for the org member invite
-   * - The name and slug of the organization the invite is attached to
-   */
-  invites: OrgMemberInviteNoUser[];
 }
 
 /**
@@ -36,7 +25,6 @@ export interface OrganizationState {
 export const initialOrganizationState: OrganizationState = {
   organizations: [],
   selectedOrganization: null,
-  invites: [],
 };
 
 /**
@@ -52,26 +40,19 @@ export const organizationFeature = createFeature({
         state,
         {
           userRelationAndOptionsDto: {
-            userRelation: { organizations, selectedOrganization, invites },
+            userRelation: { organizations },
           },
         }
       ): OrganizationState => ({
         ...state,
         organizations,
-        selectedOrganization,
-        invites,
       })
     ),
     on(
       AuthActions.loginSuccess,
-      (
-        state,
-        { userRelation: { organizations, selectedOrganization, invites } }
-      ): OrganizationState => ({
+      (state, { userRelation: { organizations } }): OrganizationState => ({
         ...state,
         organizations,
-        selectedOrganization,
-        invites,
       })
     ),
     on(
@@ -81,16 +62,28 @@ export const organizationFeature = createFeature({
           return state;
         }
 
-        const { organizations, selectedOrganization, invites } = userRelation;
-        return { ...state, organizations, selectedOrganization, invites };
+        const { organizations } = userRelation;
+        return { ...state, organizations };
       }
     ),
     on(
-      OrganizationActions.getAndSelectOrgSuccess,
-      (state, { orgMember }): OrganizationState => ({
-        ...state,
-        selectedOrganization: orgMember,
-      })
-    )
+      OrganizationActions.getOrgSuccess,
+      (state, { orgMember }): OrganizationState => {
+        return {
+          ...state,
+          selectedOrganization: orgMember,
+        };
+      }
+    ),
+    on(
+      OrganizationActions.createOrgSuccess,
+      (state, { organization }): OrganizationState => {
+        const organizations = [...state.organizations, organization];
+        return { ...state, organizations };
+      }
+    ),
+    on(OrganizationActions.resetSelectedOrg, (state): OrganizationState => {
+      return { ...state, selectedOrganization: null };
+    })
   ),
 });

@@ -1,0 +1,25 @@
+<div
+  id="logo-and-searchbar"
+  class="flex flex-col justify-center items-center gap-y-10 mt-16"
+>
+  <div>
+    <h1 class="text-6xl md:text-7xl">New<span class="text-logo">Bee</span></h1>
+  </div>
+
+  <form
+    (submit)="emitSearch($event)"
+    class="flex flex-col gap-2 justify-center items-center w-[30rem] max-w-full"
+  >
+    <div class="w-full">
+      <newbee-searchbar [formControl]="searchTerm" autofocus></newbee-searchbar>
+    </div>
+    <button
+      type="submit"
+      [disabled]="searchTerm.invalid"
+      class="btn btn-primary w-full"
+    >
+      <span *ngIf="searchPending" class="loading loading-spinner"></span>
+      Search
+    </button>
+  </form>
+</div>

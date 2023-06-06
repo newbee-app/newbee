@@ -42,6 +42,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Convert a `Partial<RegisterForm>` to a `RegisterForm`.
+   *
+   * @param partialRegisterForm The partial to convert.
+   * @returns A `RegisterForm` with empty strings where required properties were falsy.
+   */
+  private static partialToRegisterForm(
+    partialRegisterForm: Partial<RegisterForm>
+  ): RegisterForm {
+    const { email, name } = partialRegisterForm;
+    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
+  }
+
+  /**
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
@@ -76,7 +89,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
    * @param partialRegisterForm The register form to feed into the register request.
    */
   onRegister(partialRegisterForm: Partial<RegisterForm>): void {
-    const registerForm = this.partialToRegisterForm(partialRegisterForm);
+    const registerForm =
+      RegisterComponent.partialToRegisterForm(partialRegisterForm);
     this.store.dispatch(AuthActions.registerWithWebauthn({ registerForm }));
   }
 
@@ -85,18 +99,5 @@ export class RegisterComponent implements OnInit, OnDestroy {
    */
   async onNavigateToLogin(): Promise<void> {
     await this.router.navigate(['../login'], { relativeTo: this.route });
-  }
-
-  /**
-   * Convert a `Partial<RegisterForm>` to a `RegisterForm`.
-   *
-   * @param partialRegisterForm The partial to convert.
-   * @returns A `RegisterForm` with empty strings where required properties were falsy.
-   */
-  private partialToRegisterForm(
-    partialRegisterForm: Partial<RegisterForm>
-  ): RegisterForm {
-    const { email, name } = partialRegisterForm;
-    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
   }
 }

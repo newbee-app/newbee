@@ -51,6 +51,14 @@ describe('SearchbarComponent', () => {
     });
   });
 
+  describe('focusOnInput', () => {
+    it('should focus on the input', () => {
+      jest.spyOn(component.searchbarInput.nativeElement, 'focus');
+      component.focusOnInput();
+      expect(component.searchbarInput.nativeElement.focus).toBeCalledTimes(1);
+    });
+  });
+
   describe('clear', () => {
     it('should clear the searchbar', () => {
       component.searchbar.setValue(testSearchTerm);

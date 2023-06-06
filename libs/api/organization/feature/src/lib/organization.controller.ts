@@ -12,25 +12,31 @@ import {
   OrganizationService,
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
-import { OrganizationEntity, UserEntity } from '@newbee/api/shared/data-access';
-import { Organization, Role, User } from '@newbee/api/shared/util';
 import {
-  organizationUrl,
-  organizationVersion,
-} from '@newbee/shared/data-access';
+  EntityService,
+  OrganizationEntity,
+  OrgMemberEntity,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
+import { Organization, OrgMember, Role, User } from '@newbee/api/shared/util';
+import { organizationVersion, UrlEndpoint } from '@newbee/shared/data-access';
+import type { OrgMemberNoUser } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
  */
-@Controller({ path: organizationUrl, version: organizationVersion })
+@Controller({ path: UrlEndpoint.Organization, version: organizationVersion })
 export class OrganizationController {
   /**
    * The logger to use when logging anything in the controller.
    */
   private readonly logger = new Logger(OrganizationController.name);
 
-  constructor(private readonly organizationService: OrganizationService) {}
+  constructor(
+    private readonly organizationService: OrganizationService,
+    private readonly entityService: EntityService
+  ) {}
 
   /**
    * The API route for creating an organization.
@@ -74,18 +80,19 @@ export class OrganizationController {
    *
    * @returns The organization associated with the slug, if one exists.
    */
-  @Get(`:${organizationUrl}`)
+  @Get(`:${UrlEndpoint.Organization}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
-    @Organization() organization: OrganizationEntity
-  ): Promise<OrganizationEntity> {
+    @Organization() organization: OrganizationEntity,
+    @OrgMember() orgMember: OrgMemberEntity
+  ): Promise<OrgMemberNoUser> {
     const { id, slug } = organization;
     this.logger.log(
       `Get organization request received for organization slug: ${slug}`
     );
     this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
 
-    return organization;
+    return await this.entityService.createOrgMemberNoUser(orgMember);
   }
 
   /**
@@ -99,7 +106,7 @@ export class OrganizationController {
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Patch(`:${organizationUrl}`)
+  @Patch(`:${UrlEndpoint.Organization}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Organization() organization: OrganizationEntity,
@@ -127,7 +134,7 @@ export class OrganizationController {
    *
    * @param organization The organization to delete.
    */
-  @Delete(`:${organizationUrl}`)
+  @Delete(`:${UrlEndpoint.Organization}`)
   @Role(OrgRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity

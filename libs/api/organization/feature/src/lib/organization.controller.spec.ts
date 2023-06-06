@@ -2,18 +2,22 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
+  EntityService,
   testOrganizationEntity1,
+  testOrgMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateOrganizationDto1,
   testBaseUpdateOrganizationDto1,
 } from '@newbee/shared/data-access';
+import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { OrganizationController } from './organization.controller';
 
 describe('OrganizationController', () => {
   let controller: OrganizationController;
   let service: OrganizationService;
+  let entityService: EntityService;
 
   const testUpdatedOrganizationEntity = {
     ...testOrganizationEntity1,
@@ -31,16 +35,26 @@ describe('OrganizationController', () => {
             update: jest.fn().mockResolvedValue(testUpdatedOrganizationEntity),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createOrgMemberNoUser: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberRelation1),
+          }),
+        },
       ],
     }).compile();
 
     controller = module.get<OrganizationController>(OrganizationController);
     service = module.get<OrganizationService>(OrganizationService);
+    entityService = module.get<EntityService>(EntityService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('create', () => {
@@ -58,9 +72,9 @@ describe('OrganizationController', () => {
 
   describe('get', () => {
     it('should find and return an organization', async () => {
-      await expect(controller.get(testOrganizationEntity1)).resolves.toEqual(
-        testOrganizationEntity1
-      );
+      await expect(
+        controller.get(testOrganizationEntity1, testOrgMemberEntity1)
+      ).resolves.toEqual(testOrgMemberRelation1);
     });
   });
 

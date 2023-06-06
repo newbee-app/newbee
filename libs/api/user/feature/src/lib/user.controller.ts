@@ -2,12 +2,12 @@ import { Body, Controller, Delete, Logger, Patch } from '@nestjs/common';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
 import { UpdateUserDto, UserService } from '@newbee/api/user/data-access';
-import { userUrl, userVersion } from '@newbee/shared/data-access';
+import { UrlEndpoint, userVersion } from '@newbee/shared/data-access';
 
 /**
  * The controller that interacts with the `UserEntity`.
  */
-@Controller({ path: userUrl, version: userVersion })
+@Controller({ path: UrlEndpoint.User, version: userVersion })
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
