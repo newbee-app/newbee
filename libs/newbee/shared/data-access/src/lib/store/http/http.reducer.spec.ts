@@ -1,5 +1,4 @@
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
-import { AppActions } from '../app.actions';
 import { HttpActions } from './http.actions';
 import { httpFeature, HttpState, initialHttpState } from './http.reducer';
 
@@ -30,14 +29,6 @@ describe('HttpReducer', () => {
       const updatedState = httpFeature.reducer(
         stateAfterClientError,
         HttpActions.resetError()
-      );
-      expect(updatedState).toEqual(initialHttpState);
-    });
-
-    it('resetPendingActions should update state', () => {
-      const updatedState = httpFeature.reducer(
-        stateAfterClientError,
-        AppActions.resetPendingActions()
       );
       expect(updatedState).toEqual(initialHttpState);
     });

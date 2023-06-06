@@ -1,5 +1,4 @@
 import {
-  AppActions,
   HttpActions,
   OrganizationActions,
 } from '@newbee/newbee/shared/data-access';
@@ -42,10 +41,10 @@ describe('OrganizationReducer', () => {
       expect(updatedState).toEqual(initialOrganizationState);
     });
 
-    it('should update state for resetPendingActions', () => {
+    it('should update state for orgCreateComponentInit', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
-        AppActions.resetPendingActions
+        OrganizationActions.orgCreateComponentInit
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });

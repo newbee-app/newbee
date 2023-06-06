@@ -3,10 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
-import {
-  AppActions,
-  OrganizationActions,
-} from '@newbee/newbee/shared/data-access';
+import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgCreateComponent } from './org-create.component';
 
@@ -36,12 +33,14 @@ describe('OrgCreateComponent', () => {
   });
 
   describe('init', () => {
-    it('should dispatch resetPendingActions', (done) => {
+    it('should dispatch orgCreateComponentInit', (done) => {
       component.ngOnInit();
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
-            expect(scannedAction).toEqual(AppActions.resetPendingActions());
+            expect(scannedAction).toEqual(
+              OrganizationActions.orgCreateComponentInit()
+            );
             done();
           } catch (err) {
             done(err);

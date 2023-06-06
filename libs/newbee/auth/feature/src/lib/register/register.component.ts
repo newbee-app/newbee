@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  AppActions,
   AuthActions,
   HttpActions,
   httpFeature,
@@ -58,7 +57,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
-    this.store.dispatch(AppActions.resetPendingActions());
+    this.store.dispatch(AuthActions.resetPendingActions());
 
     this.store
       .select(httpFeature.selectError)

@@ -60,7 +60,8 @@
               <div
                 class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <div
+                <button
+                  type="button"
                   (click)="
                     emitNavigateToLink(
                       selectedOrganization.slug,
@@ -70,8 +71,9 @@
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Edit org settings
-                </div>
-                <div
+                </button>
+                <button
+                  type="button"
                   *ngIf="isAdmin"
                   (click)="
                     emitNavigateToLink(
@@ -82,7 +84,7 @@
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Invite members
-                </div>
+                </button>
               </div>
             </div>
 
@@ -120,7 +122,8 @@
                 tabindex="0"
                 class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <div
+                <button
+                  type="button"
                   (click)="
                     emitNavigateToLink(
                       selectedOrganization!.slug,
@@ -131,8 +134,9 @@
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Create doc
-                </div>
-                <div
+                </button>
+                <button
+                  type="button"
                   (click)="
                     emitNavigateToLink(
                       selectedOrganization!.slug,
@@ -143,8 +147,9 @@
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Create qna
-                </div>
-                <div
+                </button>
+                <button
+                  type="button"
                   (click)="
                     emitNavigateToLink(
                       selectedOrganization!.slug,
@@ -155,7 +160,7 @@
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Create team
-                </div>
+                </button>
               </div>
             </div>
 
@@ -169,18 +174,20 @@
               <div
                 class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <div
+                <button
+                  type="button"
                   (click)="emitNavigateToLink(urlEndpoint.User)"
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Manage your account
-                </div>
-                <div
+                </button>
+                <button
+                  type="button"
                   (click)="emitLogout()"
                   class="btn btn-ghost justify-start text-left normal-case font-normal"
                 >
                   Log out
-                </div>
+                </button>
               </div>
             </div>
           </div>

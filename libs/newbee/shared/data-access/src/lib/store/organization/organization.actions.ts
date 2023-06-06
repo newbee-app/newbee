@@ -19,7 +19,6 @@ export const OrganizationActions = createActionGroup({
      */
     'Get Org Success': props<{ orgMember: OrgMemberNoUser }>(),
 
-    // TODO: change this to take form
     /**
      * Creates a new org with the given information.
      */
@@ -34,5 +33,10 @@ export const OrganizationActions = createActionGroup({
      * Set the selected org to be null.
      */
     'Reset Selected Org': emptyProps(),
+
+    /**
+     * Indicates that the `OrgCreateComponent` has been initialized.
+     */
+    'Org Create Component Init': emptyProps(),
   },
 });

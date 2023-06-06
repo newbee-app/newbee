@@ -77,5 +77,10 @@ export const AuthActions = createActionGroup({
      * Should erase all user-specific data from the store.
      */
     'Logout Success': emptyProps(),
+
+    /**
+     * Resets all of the parts of the state that keep track of pending actions.
+     */
+    'Reset Pending Actions': emptyProps(),
   },
 });

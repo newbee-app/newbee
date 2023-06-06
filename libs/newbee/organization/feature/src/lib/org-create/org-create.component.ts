@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
 import type { CreateOrgForm } from '@newbee/newbee/organization/util';
 import {
-  AppActions,
   HttpActions,
   httpFeature,
   OrganizationActions,
@@ -54,7 +53,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    * Set the httpClientError based on the value in the store.
    */
   ngOnInit(): void {
-    this.store.dispatch(AppActions.resetPendingActions());
+    this.store.dispatch(OrganizationActions.orgCreateComponentInit());
 
     this.store
       .select(httpFeature.selectError)

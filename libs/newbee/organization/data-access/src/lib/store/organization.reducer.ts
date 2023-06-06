@@ -1,5 +1,4 @@
 import {
-  AppActions,
   HttpActions,
   OrganizationActions,
 } from '@newbee/newbee/shared/data-access';
@@ -38,8 +37,8 @@ export const organizationFeature = createFeature({
     ),
     on(
       OrganizationActions.createOrgSuccess,
+      OrganizationActions.orgCreateComponentInit,
       HttpActions.clientError,
-      AppActions.resetPendingActions,
       (): OrganizationState => initialOrganizationState
     )
   ),
