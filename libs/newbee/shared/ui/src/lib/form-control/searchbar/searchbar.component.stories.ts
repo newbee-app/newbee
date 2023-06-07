@@ -1,16 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { SearchbarComponent } from './searchbar.component';
 
 export default {
   title: 'SearchbarComponent',
   component: SearchbarComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [CommonModule, ReactiveFormsModule],
-    }),
-  ],
   args: {
     placeholder: true,
     includeSearchSymbol: true,
@@ -32,4 +25,8 @@ export const NoSearchSymbol: Story = {
 
 export const NoClearSymbol: Story = {
   args: { includeClearSymbol: false },
+};
+
+export const NoSymbols: Story = {
+  args: { includeSearchSymbol: false, includeClearSymbol: false },
 };

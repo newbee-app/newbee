@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  AppActions,
   AuthActions,
   HttpActions,
   httpFeature,
@@ -42,10 +41,23 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Convert a `Partial<RegisterForm>` to a `RegisterForm`.
+   *
+   * @param partialRegisterForm The partial to convert.
+   * @returns A `RegisterForm` with empty strings where required properties were falsy.
+   */
+  private static partialToRegisterForm(
+    partialRegisterForm: Partial<RegisterForm>
+  ): RegisterForm {
+    const { email, name } = partialRegisterForm;
+    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
+  }
+
+  /**
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
-    this.store.dispatch(AppActions.resetPendingActions());
+    this.store.dispatch(AuthActions.resetPendingActions());
 
     this.store
       .select(httpFeature.selectError)
@@ -76,7 +88,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
    * @param partialRegisterForm The register form to feed into the register request.
    */
   onRegister(partialRegisterForm: Partial<RegisterForm>): void {
-    const registerForm = this.partialToRegisterForm(partialRegisterForm);
+    const registerForm =
+      RegisterComponent.partialToRegisterForm(partialRegisterForm);
     this.store.dispatch(AuthActions.registerWithWebauthn({ registerForm }));
   }
 
@@ -85,18 +98,5 @@ export class RegisterComponent implements OnInit, OnDestroy {
    */
   async onNavigateToLogin(): Promise<void> {
     await this.router.navigate(['../login'], { relativeTo: this.route });
-  }
-
-  /**
-   * Convert a `Partial<RegisterForm>` to a `RegisterForm`.
-   *
-   * @param partialRegisterForm The partial to convert.
-   * @returns A `RegisterForm` with empty strings where required properties were falsy.
-   */
-  private partialToRegisterForm(
-    partialRegisterForm: Partial<RegisterForm>
-  ): RegisterForm {
-    const { email, name } = partialRegisterForm;
-    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
   }
 }

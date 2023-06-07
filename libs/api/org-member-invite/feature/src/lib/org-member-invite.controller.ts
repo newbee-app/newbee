@@ -11,11 +11,8 @@ import {
 } from '@newbee/api/shared/data-access';
 import { Organization, OrgMember, Role, User } from '@newbee/api/shared/util';
 import {
-  acceptUrl,
-  declineUrl,
-  inviteUrl,
-  organizationUrl,
   orgMemberInviteVersion,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
@@ -23,7 +20,7 @@ import { OrgRoleEnum } from '@newbee/shared/util';
  * The controller that interacts with `OrgMemberInviteEntity`.
  */
 @Controller({
-  path: inviteUrl,
+  path: UrlEndpoint.Invite,
   version: orgMemberInviteVersion,
 })
 export class OrgMemberInviteController {
@@ -46,7 +43,7 @@ export class OrgMemberInviteController {
    * @throws {BadRequestException} `orgMemberAlreadyBadRequest`, `orgMemberInvitedBadRequest`. If the invitee is already an org member or if they've already been invited to the organization.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(`${organizationUrl}/:${organizationUrl}`)
+  @Post(`${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async invite(
     @Body() createOrgMemberInviteDto: CreateOrgMemberInviteDto,
@@ -77,7 +74,7 @@ export class OrgMemberInviteController {
    * @throws {BadRequestException} `userAlreadyOrgMemberBadRequest`. If the user is already an org member.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(acceptUrl)
+  @Post(UrlEndpoint.Accept)
   async accept(
     @Body() tokenDto: TokenDto,
     @User() user: UserEntity
@@ -105,7 +102,7 @@ export class OrgMemberInviteController {
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(declineUrl)
+  @Post(UrlEndpoint.Decline)
   async decline(
     @Body() tokenDto: TokenDto,
     @User() user: UserEntity

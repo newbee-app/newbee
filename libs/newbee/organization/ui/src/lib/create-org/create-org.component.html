@@ -1,0 +1,57 @@
+<form
+  id="create-org-form"
+  [formGroup]="createOrgForm"
+  (ngSubmit)="emitCreate()"
+  class="flex justify-center content-center w-full"
+>
+  <div class="flex flex-col gap-y-8 max-w-full w-[32rem]">
+    <div class="text-center">
+      <h3>Create an organization</h3>
+    </div>
+
+    <label class="flex flex-col gap-y-2 w-full">
+      <span>What is the name of your organization?</span>
+      <input
+        type="text"
+        id="name-input"
+        formControlName="name"
+        placeholder="My Org"
+        required
+        class="input input-bordered w-full"
+      />
+      <newbee-error-alert
+        *ngIf="inputDisplayError('name')"
+        [text]="inputErrorMessage('name')"
+      ></newbee-error-alert>
+    </label>
+
+    <label class="form-control flex flex-col gap-y-2 w-full">
+      <span>
+        What URL would you like to use for your organization? If you don't
+        specify one, one will be created for you.
+      </span>
+      <div class="join">
+        <button type="button" class="btn no-animation cursor-auto join-item">
+          newbee.app/
+        </button>
+        <input
+          type="text"
+          id="slug-input"
+          formControlName="slug"
+          placeholder="my-org"
+          class="input input-bordered w-full join-item"
+        />
+      </div>
+    </label>
+
+    <button
+      id="create-btn"
+      type="submit"
+      [disabled]="createOrgForm.invalid"
+      class="btn btn-primary w-full"
+    >
+      <span *ngIf="createPending" class="loading loading-spinner"></span>
+      Create Org
+    </button>
+  </div>
+</form>

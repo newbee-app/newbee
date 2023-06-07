@@ -10,6 +10,7 @@ import {
   CountryService,
   getErrorMessage,
   HttpClientError,
+  inputDisplayError,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
@@ -68,34 +69,15 @@ export class RegisterFormComponent {
   ) {}
 
   /**
-   * Whether the given input is clean (pristine and untouched).
-   *
-   * @param inputName The name of the form group's input to look at.
-   * @returns `true` if the input is clean, `false` otherwise.
-   */
-  inputIsClean(inputName: string): boolean {
-    const input = this.registerForm.get(inputName);
-    return !!input?.pristine && !!input.untouched;
-  }
-
-  /**
-   * Whether the given input is valid.
-   *
-   * @param inputName The name of the form group's input to look at.
-   * @returns `true` if the input is valid, `false` otherwise.
-   */
-  inputIsValid(inputName: string): boolean {
-    return !!this.registerForm.get(inputName)?.valid;
-  }
-
-  /**
    * Whether to display the input as having an error.
-   * @param inputName The name of the form group's input to look at.
+   *
+   * @param inputName The input name to check.
+   *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      (!this.inputIsClean(inputName) && !this.inputIsValid(inputName)) ||
+      inputDisplayError(this.registerForm, inputName) ||
       !!this.httpClientError?.messages?.[inputName]
     );
   }
@@ -104,6 +86,7 @@ export class RegisterFormComponent {
    * The given input's error message.
    *
    * @param inputName The name of the form group's input to look at.
+   *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
   inputErrorMessage(inputName: string): string {

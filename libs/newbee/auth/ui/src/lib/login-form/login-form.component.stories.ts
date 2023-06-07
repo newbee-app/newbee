@@ -1,24 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import { internalServerError, userEmailNotFound } from '@newbee/shared/util';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { BaseFormComponent } from '../base-form';
+import { Meta, StoryObj } from '@storybook/angular';
 import { LoginFormComponent } from './login-form.component';
 
 export default {
   title: 'LoginFormComponent',
   component: LoginFormComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        BaseFormComponent,
-        ErrorAlertComponent,
-      ],
-    }),
-  ],
   args: {
     loginPending: false,
     magicLinkPending: false,
@@ -41,5 +27,12 @@ export const WithErrors: Story = {
       status: 500,
       messages: { email: userEmailNotFound, misc: internalServerError },
     },
+  },
+};
+
+export const Pending: Story = {
+  args: {
+    loginPending: true,
+    magicLinkPending: true,
   },
 };

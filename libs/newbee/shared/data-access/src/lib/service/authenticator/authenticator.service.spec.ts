@@ -4,10 +4,9 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  authenticatorUrl,
   authenticatorVersion,
-  optionsUrl,
   testBaseRegistrationResponseDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
   testAuthenticator1,
@@ -60,7 +59,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${authenticatorUrl}/${optionsUrl}`
+        `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({});
@@ -84,7 +83,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${authenticatorUrl}`
+        `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);

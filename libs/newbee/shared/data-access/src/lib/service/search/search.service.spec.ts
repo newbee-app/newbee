@@ -4,14 +4,12 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  organizationUrl,
-  searchUrl,
   searchVersion,
-  suggestUrl,
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { testOrganization1 } from '@newbee/shared/util';
 import { SearchService } from './search.service';
@@ -49,7 +47,7 @@ describe('SearchService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${searchVersion}/${organizationUrl}/${testOrganization1.slug}/${searchUrl}`
+        `/api/v${searchVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Search}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseQueryDto1);
@@ -73,7 +71,7 @@ describe('SearchService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${searchVersion}/${organizationUrl}/${testOrganization1.slug}/${suggestUrl}`
+        `/api/v${searchVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Search}/${UrlEndpoint.Suggest}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseSuggestDto1);

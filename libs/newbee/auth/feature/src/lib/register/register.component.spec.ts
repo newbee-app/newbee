@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { RegisterFormComponent } from '@newbee/newbee/auth/ui';
 import { testRegisterForm1 } from '@newbee/newbee/auth/util';
-import { AppActions, AuthActions } from '@newbee/newbee/shared/data-access';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -55,7 +55,7 @@ describe('RegisterComponent', () => {
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
           try {
-            expect(scannedAction).toEqual(AppActions.resetPendingActions());
+            expect(scannedAction).toEqual(AuthActions.resetPendingActions());
             done();
           } catch (err) {
             done(err);

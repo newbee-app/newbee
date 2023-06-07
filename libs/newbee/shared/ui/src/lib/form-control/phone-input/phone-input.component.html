@@ -3,7 +3,7 @@
   [formGroup]="phoneNumber"
   class="flex flex-row flex-wrap gap-2 w-full"
 >
-  <div id="country-input-container" class="w-fit grow">
+  <div id="country-input-container" class="min-w-fit w-48 grow">
     <newbee-searchable-select
       [options]="countryOptions"
       optionName="Country"
@@ -29,7 +29,7 @@
       newbeePhoneNumberInput
       [country]="value.country ?? null"
       (blur)="onTouched()"
-      class="input input-bordered rounded-box truncate"
+      class="input input-bordered truncate"
       [ngClass]="{ 'input-error': hasError('number') && !clean }"
     />
     <newbee-error-alert

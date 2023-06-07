@@ -6,6 +6,7 @@ import {
   AuthenticatorActions,
   catchHttpError,
 } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   displayNameIsNotEmpty,
   emailIsEmail,
@@ -33,7 +34,9 @@ export class AuthEffects {
             return AuthActions.sendLoginMagicLinkSuccess({ magicLinkLoginDto });
           }),
           tap(async () => {
-            await this.router.navigate(['/auth/login/confirm-email']);
+            await this.router.navigate([
+              `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+            ]);
           }),
           catchError(AuthEffects.catchHttpError)
         );
@@ -145,7 +148,9 @@ export class AuthEffects {
       return this.actions$.pipe(
         ofType(AuthActions.logoutSuccess),
         tap(async () => {
-          await this.router.navigate(['/auth/login']);
+          await this.router.navigate([
+            `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+          ]);
         })
       );
     },

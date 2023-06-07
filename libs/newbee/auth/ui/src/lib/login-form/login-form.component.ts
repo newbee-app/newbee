@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
 import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
-import { getErrorMessage, HttpClientError } from '@newbee/newbee/shared/util';
+import {
+  getErrorMessage,
+  HttpClientError,
+  inputDisplayError,
+} from '@newbee/newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -66,19 +65,13 @@ export class LoginFormComponent {
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * The form control for email.
-   */
-  get email(): AbstractControl<string | null, string | null> | null {
-    return this.loginForm.get('email');
-  }
-
-  /**
    * Whether to show the email control's error message.
+   *
+   * @returns `true` if the login form's email is clean and valid, `false` otherwise.
    */
   get showEmailError(): boolean {
     return (
-      ((!!this.email?.dirty || !!this.email?.touched) &&
-        !!this.email?.invalid) ||
+      inputDisplayError(this.loginForm, 'email') ||
       !!this.httpClientError?.messages?.['email']
     );
   }
@@ -88,7 +81,7 @@ export class LoginFormComponent {
    */
   get emailErrorMessage(): string {
     return (
-      getErrorMessage(this.email) ||
+      getErrorMessage(this.loginForm.get('email')) ||
       (this.httpClientError?.messages?.['email'] ?? '')
     );
   }

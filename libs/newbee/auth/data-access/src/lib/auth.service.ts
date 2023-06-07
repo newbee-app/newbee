@@ -2,18 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
-  authUrl,
   authVersion,
   BaseCreateUserDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
-  loginUrl,
-  logoutUrl,
-  optionsUrl,
-  registerUrl,
-  webauthnUrl,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import type { UserRelation } from '@newbee/shared/util';
 import { magicLinkLogin } from '@newbee/shared/util';
@@ -32,15 +27,26 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * Converts a login form into an email DTO.
+   *
+   * @param loginForm The login form to convert.
+   *
+   * @returns The email DTO derived from the login form.
+   */
+  private static loginFormToEmailDto(loginForm: LoginForm): BaseEmailDto {
+    return { email: loginForm.email ?? '' };
+  }
+
+  /**
    * Convert the given login form to a `BaseEmailDto` and send a POST request to send a magic link for login.
    *
    * @param loginForm The login form containing the necessary email.
    * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
    */
   magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
-    const emailDto = this.loginFormToEmailDto(loginForm);
+    const emailDto = AuthService.loginFormToEmailDto(loginForm);
     return this.http.post<BaseMagicLinkLoginDto>(
-      `/api/v${authVersion}/${authUrl}/${magicLinkLogin}/${loginUrl}`,
+      `/api/v${authVersion}/${UrlEndpoint.Auth}/${magicLinkLogin}/${UrlEndpoint.Login}`,
       emailDto
     );
   }
@@ -53,7 +59,7 @@ export class AuthService {
    */
   magicLinkLogin(token: string): Observable<UserRelation> {
     return this.http.post<UserRelation>(
-      `/api/v${authVersion}/${authUrl}/${magicLinkLogin}`,
+      `/api/v${authVersion}/${UrlEndpoint.Auth}/${magicLinkLogin}`,
       { token }
     );
   }
@@ -85,7 +91,7 @@ export class AuthService {
       phoneNumber: phoneNumberString ?? null,
     };
     return this.http.post<BaseUserRelationAndOptionsDto>(
-      `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${registerUrl}`,
+      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Register}`,
       createUserDto
     );
   }
@@ -99,9 +105,9 @@ export class AuthService {
   webAuthnLoginOptions(
     loginForm: LoginForm
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
-    const emailDto = this.loginFormToEmailDto(loginForm);
+    const emailDto = AuthService.loginFormToEmailDto(loginForm);
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
-      `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}/${optionsUrl}`,
+      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}/${UrlEndpoint.Options}`,
       emailDto
     );
   }
@@ -117,7 +123,7 @@ export class AuthService {
     loginForm: LoginForm,
     options: PublicKeyCredentialRequestOptionsJSON
   ): Observable<UserRelation> {
-    const emailDto = this.loginFormToEmailDto(loginForm);
+    const emailDto = AuthService.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
       switchMap((response) => {
         const webAuthnLoginDto: BaseWebAuthnLoginDto = {
@@ -125,7 +131,7 @@ export class AuthService {
           response,
         };
         return this.http.post<UserRelation>(
-          `/api/v${authVersion}/${authUrl}/${webauthnUrl}/${loginUrl}`,
+          `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}`,
           webAuthnLoginDto
         );
       })
@@ -137,19 +143,8 @@ export class AuthService {
    */
   logout(): Observable<void> {
     return this.http.post<void>(
-      `/api/v${authVersion}/${authUrl}/${logoutUrl}`,
+      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Logout}`,
       {}
     );
-  }
-
-  /**
-   * Converts a login form into an email DTO.
-   *
-   * @param loginForm The login form to convert.
-   *
-   * @returns The email DTO derived from the login form.
-   */
-  private loginFormToEmailDto(loginForm: LoginForm): BaseEmailDto {
-    return { email: loginForm.email ?? '' };
   }
 }

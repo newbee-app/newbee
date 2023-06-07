@@ -1,0 +1,7 @@
+<newbee-navbar>
+  <newbee-create-org
+    [createPending]="(pendingCreate$ | async) ?? false"
+    [httpClientError]="httpClientError"
+    (create)="onCreate($event)"
+  ></newbee-create-org>
+</newbee-navbar>

@@ -18,5 +18,5 @@ export class CreateOrganizationDto implements BaseCreateOrganizationDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
-  slug?: string;
+  slug: string | null = null;
 }

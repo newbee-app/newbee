@@ -1,5 +1,11 @@
-import { FormControl } from '@angular/forms';
-import { getErrorMessage } from './form.function';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { testUser1 } from '@newbee/shared/util';
+import {
+  getErrorMessage,
+  inputDisplayError,
+  inputIsClean,
+  inputIsValid,
+} from './form.function';
 
 describe('FormFunction', () => {
   describe('getErrorMessage', () => {
@@ -41,6 +47,53 @@ describe('FormFunction', () => {
           'Not a valid phone number or country'
         );
       });
+    });
+  });
+
+  describe('form group functions', () => {
+    let group: FormGroup;
+
+    const email = 'email';
+
+    beforeEach(() => {
+      group = new FormGroup({
+        email: new FormControl('', [Validators.email]),
+      });
+    });
+
+    it('should be marked as clean if pristine and untouched', () => {
+      expect(inputIsClean(group, email)).toBeTruthy();
+      group.markAsDirty();
+      expect(inputIsClean(group, email)).toBeTruthy();
+      group.markAsTouched();
+      expect(inputIsClean(group, email)).toBeTruthy();
+    });
+
+    it('should be marked as not clean if dirty', () => {
+      group.get(email)?.markAsDirty();
+      expect(inputIsClean(group, email)).toBeFalsy();
+    });
+
+    it('should be marked as not clean if touched', () => {
+      group.get(email)?.markAsTouched();
+      expect(inputIsClean(group, email)).toBeFalsy();
+    });
+
+    it('should only be marked as valid if valid', () => {
+      group.setValue({ email: testUser1.email });
+      expect(inputIsValid(group, email)).toBeTruthy();
+      group.setValue({ email: 'bademail' });
+      expect(inputIsValid(group, email)).toBeFalsy();
+    });
+
+    it('should only display error if input is not clean and not valid', () => {
+      expect(inputDisplayError(group, email)).toBeFalsy();
+      group.get(email)?.markAsTouched();
+      expect(inputDisplayError(group, email)).toBeFalsy();
+      group.setValue({ email: 'bademail' });
+      expect(inputDisplayError(group, email)).toBeTruthy();
+      group.get(email)?.markAsUntouched();
+      expect(inputDisplayError(group, email)).toBeFalsy();
     });
   });
 });

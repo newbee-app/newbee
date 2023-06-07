@@ -73,8 +73,8 @@
           type="submit"
           [disabled]="registerForm.invalid"
           class="btn btn-primary w-full"
-          [ngClass]="{ loading: registerPending }"
         >
+          <span *ngIf="registerPending" class="loading loading-spinner"></span>
           Create Account
         </button>
 

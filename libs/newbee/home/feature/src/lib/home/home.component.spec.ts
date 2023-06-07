@@ -1,37 +1,13 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { AuthenticatedHomeComponent } from '@newbee/newbee/home/ui';
-import {
-  AuthActions,
-  authFeature,
-  OrganizationActions,
-  organizationFeature,
-  SearchActions,
-} from '@newbee/newbee/shared/data-access';
-import {
-  keywordToRoute,
-  RouteKeyword,
-  testSelectOptionOrganization1,
-  testSelectOptionOrganization2,
-} from '@newbee/newbee/shared/util';
-import {
-  testBaseQueryDto1,
-  testBaseSuggestDto1,
-} from '@newbee/shared/data-access';
-import {
-  testOrganization1,
-  testOrganization2,
-  testOrgMemberRelation1,
-  testUser1,
-} from '@newbee/shared/util';
+import { NoOrgComponent, NoOrgSelectedComponent } from '@newbee/newbee/home/ui';
+import { NavbarComponent } from '@newbee/newbee/navbar/feature';
+import { initialOrganizationState } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
+import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { hot } from 'jest-marbles';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
@@ -42,10 +18,17 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthenticatedHomeComponent],
+      imports: [
+        CommonModule,
+        NavbarComponent,
+        NoOrgComponent,
+        NoOrgSelectedComponent,
+      ],
       declarations: [HomeComponent],
       providers: [
-        provideMockStore(),
+        provideMockStore({
+          initialState: { organization: initialOrganizationState },
+        }),
         {
           provide: Router,
           useValue: createMock<Router>({
@@ -70,122 +53,22 @@ describe('HomeComponent', () => {
     expect(router).toBeDefined();
   });
 
-  describe('store', () => {
-    it('should set component properties', () => {
-      store.overrideSelector(authFeature.selectUser, testUser1);
-      store.overrideSelector(organizationFeature.selectOrganizations, [
-        testOrganization1,
-        testOrganization2,
-      ]);
-      store.overrideSelector(
-        organizationFeature.selectSelectedOrganization,
-        testOrgMemberRelation1
-      );
-      store.refreshState();
-      fixture.detectChanges();
-
-      expect(component.user$).toBeObservable(hot('a', { a: testUser1 }));
-      expect(component.organizationOptions).toEqual([
-        testSelectOptionOrganization1,
-        testSelectOptionOrganization2,
-      ]);
-      expect(component.selectedOrganization).toEqual(
-        testSelectOptionOrganization1
-      );
-    });
-  });
-
-  describe('selectOrganization', () => {
-    it('should dispatch getAndSelectOrg', (done) => {
-      component.selectOrganization(testOrganization1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              OrganizationActions.getAndSelectOrg({
-                orgSlug: testOrganization1.slug,
-              })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-    });
-  });
-
-  describe('search', () => {
-    it('should dispatch search', (done) => {
-      component.search(testBaseQueryDto1.query);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              SearchActions.search({ query: testBaseQueryDto1 })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-    });
-  });
-
-  describe('searchbar', () => {
-    it('should dispatch searchTerm$ and searchTerm$ should dispatch suggest', (done) => {
-      component.searchTerm$.subscribe({
-        next: (searchTerm) => {
-          try {
-            expect(searchTerm).toEqual(testBaseSuggestDto1.query);
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-
-      component.searchbar(testBaseSuggestDto1.query);
-    });
-
-    it('should dispatch suggest', fakeAsync(() => {
-      jest.spyOn(store, 'dispatch');
-      component.searchbar(testBaseSuggestDto1.query);
-      tick(300);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
-        SearchActions.suggest({ query: testBaseSuggestDto1 })
-      );
-    }));
-  });
-
-  describe('logout', () => {
-    it('should dispatch logout', (done) => {
-      component.logout();
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(AuthActions.logout());
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+  describe('noOrg', () => {
+    it('should return true if orgs is empty, false otherwise', () => {
+      expect(component.noOrg).toBeTruthy();
+      component.organizations = [testOrganization1, testOrganization2];
+      expect(component.noOrg).toBeFalsy();
     });
   });
 
   describe('navigateToLink', () => {
     it('should call navigate', async () => {
-      await component.navigateToLink(RouteKeyword.CreateDoc);
+      await component.navigateToLink(
+        `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`
+      );
       expect(router.navigate).toBeCalledTimes(1);
       expect(router.navigate).toBeCalledWith([
-        keywordToRoute[RouteKeyword.CreateDoc],
+        `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`,
       ]);
     });
   });

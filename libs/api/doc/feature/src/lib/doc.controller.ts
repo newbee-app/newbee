@@ -29,18 +29,14 @@ import {
   Role,
   Team,
 } from '@newbee/api/shared/util';
-import {
-  docUrl,
-  docVersion,
-  organizationUrl,
-} from '@newbee/shared/data-access';
+import { docVersion, UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
  */
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}/${docUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Doc}`,
   version: docVersion,
 })
 export class DocController {
@@ -108,7 +104,7 @@ export class DocController {
    * @returns The doc associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${docUrl}`)
+  @Get(`:${UrlEndpoint.Doc}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(@Doc() doc: DocEntity): Promise<DocEntity> {
     this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
@@ -127,7 +123,7 @@ export class DocController {
    * @returns The updated doc, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${docUrl}`)
+  @Patch(`:${UrlEndpoint.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -158,7 +154,7 @@ export class DocController {
    * @returns The updated doc, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(`:${docUrl}`)
+  @Post(`:${UrlEndpoint.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -183,7 +179,7 @@ export class DocController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${docUrl}`)
+  @Delete(`:${UrlEndpoint.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

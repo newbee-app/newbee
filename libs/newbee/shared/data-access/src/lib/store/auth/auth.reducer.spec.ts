@@ -2,7 +2,11 @@ import {
   testBaseCsrfTokenAndDataDto1,
   testBaseUserRelationAndOptionsDto1,
 } from '@newbee/shared/data-access';
-import { testUser1, testUserRelation1 } from '@newbee/shared/util';
+import {
+  testOrgMemberInviteRelation1,
+  testUser1,
+  testUserRelation1,
+} from '@newbee/shared/util';
 import { CookieActions } from '../cookie';
 import { AuthActions } from './auth.actions';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
@@ -10,6 +14,7 @@ import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 describe('AuthReducer', () => {
   const stateAfterLoginSuccess: AuthState = {
     user: testUser1,
+    invites: [testOrgMemberInviteRelation1],
   };
 
   describe('from initial state', () => {

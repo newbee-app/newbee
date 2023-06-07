@@ -1,0 +1,50 @@
+<div
+  class="flex flex-col flex-nowrap gap-y-2 p-4 h-screen w-fit bg-base-300 overflow-y-auto"
+>
+  <newbee-tooltip text="Create an org" placement="right">
+    <button
+      type="button"
+      (click)="emitNavigateToLink(urlEndpoint.Organization, urlEndpoint.New)"
+      class="btn btn-primary w-full"
+    >
+      <!-- plus svg -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-4 h-4"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 4.5v15m7.5-7.5h-15"
+        />
+      </svg>
+    </button>
+  </newbee-tooltip>
+
+  <div class="divider"></div>
+
+  <newbee-tooltip
+    *ngFor="let organization of organizations"
+    [text]="organization.name"
+    placement="right"
+  >
+    <button
+      type="button"
+      (click)="selectOrganization(organization)"
+      class="btn btn-neutral w-full overflow-hidden"
+      [ngClass]="{
+        indicator: isEqual(organization, selectedOrganization)
+      }"
+    >
+      <span
+        *ngIf="isEqual(organization, selectedOrganization)"
+        class="indicator-item indicator-start indicator-middle badge badge-primary badge-xs"
+      ></span>
+      {{ shortenOrgName(organization.name) }}
+    </button>
+  </newbee-tooltip>
+</div>

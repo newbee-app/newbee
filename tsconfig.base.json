@@ -124,7 +124,22 @@
       "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
       "@newbee/newbee/home/feature": ["libs/newbee/home/feature/src/index.ts"],
       "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
+      "@newbee/newbee/navbar/feature": [
+        "libs/newbee/navbar/feature/src/index.ts"
+      ],
       "@newbee/newbee/navbar/ui": ["libs/newbee/navbar/ui/src/index.ts"],
+      "@newbee/newbee/organization/data-access": [
+        "libs/newbee/organization/data-access/src/index.ts"
+      ],
+      "@newbee/newbee/organization/feature": [
+        "libs/newbee/organization/feature/src/index.ts"
+      ],
+      "@newbee/newbee/organization/ui": [
+        "libs/newbee/organization/ui/src/index.ts"
+      ],
+      "@newbee/newbee/organization/util": [
+        "libs/newbee/organization/util/src/index.ts"
+      ],
       "@newbee/newbee/shared/data-access": [
         "libs/newbee/shared/data-access/src/index.ts"
       ],

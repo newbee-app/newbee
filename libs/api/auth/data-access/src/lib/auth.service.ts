@@ -1,5 +1,10 @@
 import { EntityManager } from '@mikro-orm/postgresql';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AppAuthConfig, UserJwtPayload } from '@newbee/api/auth/util';
@@ -10,6 +15,7 @@ import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorVerifyBadRequest,
   challengeFalsy,
+  internalServerError,
 } from '@newbee/shared/util';
 import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server';
 import {
@@ -93,7 +99,7 @@ export class AuthService {
 
     const options = generateAuthenticationOptions({
       allowCredentials,
-      userVerification: 'preferred',
+      userVerification: 'required',
       rpID: this.configService.get('rpInfo.id', { infer: true }),
     });
     await this.userChallengeService.updateByEmail(email, options.challenge);
@@ -117,7 +123,13 @@ export class AuthService {
     response: AuthenticationResponseJSON
   ): Promise<UserEntity> {
     const userChallenge = await this.userChallengeService.findOneByEmail(email);
-    await this.em.populate(userChallenge, ['user']);
+    try {
+      await this.em.populate(userChallenge, ['user']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
     const { user, challenge } = userChallenge;
     if (!challenge) {
       this.logger.error(challengeFalsy('login', challenge, user.id));

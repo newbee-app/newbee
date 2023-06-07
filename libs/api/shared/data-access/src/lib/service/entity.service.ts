@@ -11,7 +11,11 @@ import {
   QnaDocParams,
   TeamDocParams,
 } from '@newbee/api/shared/util';
-import type { OrgMemberRelation, UserRelation } from '@newbee/shared/util';
+import type {
+  OrgMemberNoUser,
+  OrgMemberRelation,
+  UserRelation,
+} from '@newbee/shared/util';
 import {
   cannotDeleteMaintainerBadReqest,
   cannotDeleteOnlyOrgOwnerBadRequest,
@@ -167,9 +171,36 @@ export class EntityService {
   async createOrgMemberRelation(
     orgMember: OrgMemberEntity
   ): Promise<OrgMemberRelation> {
+    const orgMemberNoUser = await this.createOrgMemberNoUser(orgMember);
+
+    try {
+      await this.em.populate(orgMember, ['user']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    const { user } = orgMember;
+
+    return {
+      ...orgMemberNoUser,
+      user,
+    };
+  }
+
+  /**
+   * Takes in an org member and converts it to an `OrgMemberNoUser`.
+   *
+   * @param orgMember The org member to convert.
+   *
+   * @returns The org member as an `OrgMemberNoUser`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createOrgMemberNoUser(
+    orgMember: OrgMemberEntity
+  ): Promise<OrgMemberNoUser> {
     try {
       await this.em.populate(orgMember, [
-        'user',
         'organization',
         'teams.team',
         'createdDocs',
@@ -183,7 +214,6 @@ export class EntityService {
     }
 
     const {
-      user,
       organization,
       teams,
       createdDocs,
@@ -195,7 +225,6 @@ export class EntityService {
     return {
       orgMember,
       organization,
-      user,
       teams: teams.getItems().map((teamMember) => {
         const { team } = teamMember;
         return { teamMember, team };
@@ -226,15 +255,12 @@ export class EntityService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const { invites, organizations, selectedOrganization } = user;
+    const { invites, organizations } = user;
     return {
       user,
       organizations: organizations
         .getItems()
         .map((orgMember) => orgMember.organization),
-      selectedOrganization: selectedOrganization
-        ? await this.createOrgMemberRelation(selectedOrganization)
-        : null,
       invites: invites.orgMemberInvites.getItems().map((orgMemberInvite) => {
         const { organization } = orgMemberInvite;
         return { orgMemberInvite, organization };

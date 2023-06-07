@@ -1,0 +1,93 @@
+{
+  "name": "newbee-organization-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/newbee/organization/ui/src",
+  "prefix": "newbee",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/newbee/organization/ui/ng-package.json",
+        "tailwindConfig": "libs/newbee/organization/ui/tailwind.config.js"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/organization/ui/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/organization/ui/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/newbee/organization/ui/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/organization/ui/**/*.ts",
+          "libs/newbee/organization/ui/**/*.html"
+        ]
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/newbee/organization/ui/.storybook",
+        "browserTarget": "newbee-organization-ui:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee-organization-ui",
+        "configDir": "libs/newbee/organization/ui/.storybook",
+        "browserTarget": "newbee-organization-ui:build-storybook",
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee-organization-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-organization-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-organization-ui:build-storybook:ci"
+        }
+      }
+    }
+  }
+}

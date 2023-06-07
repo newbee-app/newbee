@@ -18,18 +18,14 @@ import {
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
-import {
-  organizationUrl,
-  teamUrl,
-  teamVersion,
-} from '@newbee/shared/data-access';
+import { teamVersion, UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamEntity`.
  */
 @Controller({
-  path: `${organizationUrl}/:${organizationUrl}/${teamUrl}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}`,
   version: teamVersion,
 })
 export class TeamController {
@@ -84,7 +80,7 @@ export class TeamController {
    * @returns The team associated with the slug in the organization, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${teamUrl}`)
+  @Get(`:${UrlEndpoint.Team}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity,
@@ -109,7 +105,7 @@ export class TeamController {
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${teamUrl}`)
+  @Patch(`:${UrlEndpoint.Team}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -144,7 +140,7 @@ export class TeamController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${teamUrl}`)
+  @Delete(`:${UrlEndpoint.Team}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity,

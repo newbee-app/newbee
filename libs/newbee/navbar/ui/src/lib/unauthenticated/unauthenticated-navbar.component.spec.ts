@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouteKeyword } from '@newbee/newbee/shared/util';
 
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
@@ -27,8 +26,8 @@ describe('UnauthenticatedNavbarComponent', () => {
   });
 
   it('should emit navigateToLink', () => {
-    component.emitNavigateToLink(RouteKeyword.Home);
+    component.emitNavigateToLink('');
     expect(component.navigateToLink.emit).toBeCalledTimes(1);
-    expect(component.navigateToLink.emit).toBeCalledWith(RouteKeyword.Home);
+    expect(component.navigateToLink.emit).toBeCalledWith('/');
   });
 });

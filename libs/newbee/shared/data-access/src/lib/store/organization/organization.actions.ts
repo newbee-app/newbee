@@ -1,5 +1,6 @@
-import type { OrgMemberNoUser } from '@newbee/shared/util';
-import { createActionGroup, props } from '@ngrx/store';
+import { CreateOrgForm } from '@newbee/newbee/organization/util';
+import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to `OrganizationState`.
@@ -8,17 +9,34 @@ export const OrganizationActions = createActionGroup({
   source: 'Organization',
   events: {
     /**
-     * Send a request to the API to get and select the given organization.
-     * If the slug is null, it should skip the API.
-     * Should call `Get And Select Org Success` with the result.
+     * Get the given organization and the user's relation to it, reaching out to the API if the necessary information is not in the store.
+     * Should call `Get Org Success` with the result.
      */
-    'Get And Select Org': props<{ orgSlug: string | null }>(),
+    'Get Org': props<{ orgSlug: string }>(),
 
     /**
-     * Indicates that an org was successfully retrieved and selected.
+     * Indicates that an org was successfully retrieved.
      */
-    'Get And Select Org Success': props<{
-      orgMember: OrgMemberNoUser | null;
-    }>(),
+    'Get Org Success': props<{ orgMember: OrgMemberNoUser }>(),
+
+    /**
+     * Creates a new org with the given information.
+     */
+    'Create Org': props<{ createOrgForm: CreateOrgForm }>(),
+
+    /**
+     * Indicates that an org was successfully created.
+     */
+    'Create Org Success': props<{ organization: Organization }>(),
+
+    /**
+     * Set the selected org to be null.
+     */
+    'Reset Selected Org': emptyProps(),
+
+    /**
+     * Indicates that the `OrgCreateComponent` has been initialized.
+     */
+    'Org Create Component Init': emptyProps(),
   },
 });
