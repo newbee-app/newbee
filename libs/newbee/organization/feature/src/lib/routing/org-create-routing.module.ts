@@ -7,6 +7,7 @@ const routes: Routes = [
   {
     path: UrlEndpoint.New,
     component: OrgCreateComponent,
+    title: 'Create org',
   },
   {
     path: '',

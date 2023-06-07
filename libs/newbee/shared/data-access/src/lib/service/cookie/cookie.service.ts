@@ -5,7 +5,7 @@ import {
   cookieVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { Observable } from 'rxjs';
+import { Observable, retry } from 'rxjs';
 
 /**
  * The service tied to the API's CSRF endpoints.
@@ -21,8 +21,10 @@ export class CookieService {
    * @returns An observable of the CSRF token DTO.
    */
   initCookies(): Observable<BaseCsrfTokenAndDataDto> {
-    return this.http.get<BaseCsrfTokenAndDataDto>(
-      `/api/v${cookieVersion}/${UrlEndpoint.Cookie}`
-    );
+    return this.http
+      .get<BaseCsrfTokenAndDataDto>(
+        `/api/v${cookieVersion}/${UrlEndpoint.Cookie}`
+      )
+      .pipe(retry(3));
   }
 }

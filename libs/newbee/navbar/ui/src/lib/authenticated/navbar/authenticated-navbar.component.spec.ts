@@ -64,16 +64,12 @@ describe('AuthenticatedNavbarComponent', () => {
   });
 
   describe('selectOrganization', () => {
-    it('should change the selected organization and emit outputs', () => {
+    it('should change the selected organization and emit', () => {
       component.selectOrganization(testOrganization2);
       expect(component.selectedOrganization).toEqual(testOrganization2);
       expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
       expect(component.selectedOrganizationChange.emit).toBeCalledWith(
         testOrganization2
-      );
-      expect(component.navigateToLink.emit).toBeCalledTimes(1);
-      expect(component.navigateToLink.emit).toBeCalledWith(
-        `/${testOrganization2.slug}`
       );
     });
   });

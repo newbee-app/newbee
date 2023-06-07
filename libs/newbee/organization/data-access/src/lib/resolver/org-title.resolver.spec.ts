@@ -3,7 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { initialOrganizationState } from '@newbee/newbee/shared/data-access';
+import {
+  initialOrganizationState,
+  OrganizationActions,
+} from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
@@ -31,7 +34,12 @@ describe('OrgTitleResolver', () => {
       ],
       providers: [
         provideMockStore({
-          initialState: { organization: initialOrganizationState },
+          initialState: {
+            organization: {
+              ...initialOrganizationState,
+              selectedOrganization: testOrgMemberRelation1,
+            },
+          },
         }),
       ],
     });
@@ -51,29 +59,16 @@ describe('OrgTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  describe('no selected org', () => {
-    it(`should set title to 'Org'`, async () => {
-      await expect(
-        router.navigate([`/${testOrganization1.slug}`])
-      ).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${testOrganization1.slug}`);
-      expect(title.getTitle()).toEqual('Org');
-    });
-  });
-
-  describe('selected org', () => {
-    it(`should set title to organization's name`, async () => {
-      store.setState({
-        organization: {
-          ...initialOrganizationState,
-          selectedOrganization: testOrgMemberRelation1,
-        },
-      });
-      await expect(
-        router.navigate([`/${testOrganization1.slug}`])
-      ).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${testOrganization1.slug}`);
-      expect(title.getTitle()).toEqual(testOrganization1.name);
-    });
+  it(`should dispatch getOrg and set title to organization's name`, async () => {
+    jest.spyOn(store, 'dispatch');
+    await expect(
+      router.navigate([`/${testOrganization1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(store.dispatch).toBeCalledTimes(1);
+    expect(store.dispatch).toBeCalledWith(
+      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
+    );
+    expect(location.path()).toEqual(`/${testOrganization1.slug}`);
+    expect(title.getTitle()).toEqual(testOrganization1.name);
   });
 });

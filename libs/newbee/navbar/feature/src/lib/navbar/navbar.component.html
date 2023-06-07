@@ -9,9 +9,9 @@
   *ngIf="user$ | async"
   [user]="(user$ | async)!"
   [organizations]="(organizations$ | async) ?? []"
-  [selectedOrganization]="(selectedOrganization$ | async)?.organization ?? null"
+  [selectedOrganization]="selectedOrganization?.organization || null"
   (selectedOrganizationChange)="selectOrganization($event)"
-  [orgMember]="selectedOrganization$ | async"
+  [orgMember]="selectedOrganization"
   (navigateToLink)="navigateToLink($event)"
   (logout)="logout()"
 >

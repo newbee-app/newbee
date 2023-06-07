@@ -33,14 +33,14 @@ describe('AuthenticatedGuard', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({ initialState: { cookie: { csrfToken: 'token' } } }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
-
-    store.resetSelectors();
 
     router.initialNavigation();
   });

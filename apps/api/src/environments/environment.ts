@@ -73,8 +73,8 @@ export default (): AppConfig => ({
     },
   },
   throttler: {
-    ttl: 60,
-    limit: 10,
+    ttl: 60, // time-to-live in secs
+    limit: 100, // num requests
   },
   solr: {
     url: process.env['SOLR_URL'] as string,

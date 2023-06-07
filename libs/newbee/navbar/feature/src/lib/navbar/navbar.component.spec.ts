@@ -5,7 +5,7 @@ import {
   AuthActions,
   OrganizationActions,
 } from '@newbee/newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { NavbarComponent } from './navbar.component';
 
@@ -44,7 +44,7 @@ describe('NavbarComponent', () => {
   });
 
   describe('selectOrganization', () => {
-    it('should dispatch getOrg', (done) => {
+    it('should dispatch getOrg if organization is not equal to selectedOrganization', (done) => {
       component.selectOrganization(testOrganization1);
       store.scannedActions$.subscribe({
         next: (scannedAction) => {
@@ -59,6 +59,13 @@ describe('NavbarComponent', () => {
         },
         error: done.fail,
       });
+    });
+
+    it('should not dispatch getOrg if organization is equal to selectedOrganization', () => {
+      component.selectedOrganization = testOrgMemberRelation1;
+      jest.spyOn(store, 'dispatch');
+      component.selectOrganization(testOrganization1);
+      expect(store.dispatch).not.toBeCalled();
     });
   });
 

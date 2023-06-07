@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TooltipComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import type { Organization } from '@newbee/shared/util';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 
 /**
  * The authenticated sidebar, for selecting an organization.

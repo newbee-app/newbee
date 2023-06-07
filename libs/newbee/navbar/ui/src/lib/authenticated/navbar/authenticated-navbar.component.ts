@@ -4,7 +4,7 @@ import { TooltipComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import type { Organization, OrgMemberNoUser, User } from '@newbee/shared/util';
 import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import { AuthenticatedSidebarComponent } from '../sidebar';
 
 /**
@@ -85,7 +85,6 @@ export class AuthenticatedNavbarComponent {
   selectOrganization(organization: Organization): void {
     this.selectedOrganization = organization;
     this.selectedOrganizationChange.emit(organization);
-    this.navigateToLink.emit(`/${organization.slug}`);
   }
 
   /**
