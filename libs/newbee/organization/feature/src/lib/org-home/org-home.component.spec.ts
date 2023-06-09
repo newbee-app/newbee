@@ -31,6 +31,8 @@ describe('OrgHomeComponent', () => {
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -41,43 +43,17 @@ describe('OrgHomeComponent', () => {
   });
 
   describe('search', () => {
-    it('should dispatch search', (done) => {
+    it('should dispatch search', () => {
       component.search(testBaseQueryDto1.query);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              SearchActions.search({ query: testBaseQueryDto1 })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledTimes(1);
+      expect(store.dispatch).toBeCalledWith(
+        SearchActions.search({ query: testBaseQueryDto1 })
+      );
     });
   });
 
   describe('searchbar', () => {
-    it('should dispatch searchTerm$ and searchTerm$ should dispatch suggest', (done) => {
-      component.searchTerm$.subscribe({
-        next: (searchTerm) => {
-          try {
-            expect(searchTerm).toEqual(testBaseSuggestDto1.query);
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-
-      component.searchbar(testBaseSuggestDto1.query);
-    });
-
     it('should dispatch suggest', fakeAsync(() => {
-      jest.spyOn(store, 'dispatch');
       component.searchbar(testBaseSuggestDto1.query);
       tick(300);
       expect(store.dispatch).toBeCalledTimes(1);

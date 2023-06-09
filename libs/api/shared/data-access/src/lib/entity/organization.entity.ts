@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import type { Organization } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
+import slugify from 'slug';
 import { DocEntity } from './doc.entity';
 import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { OrgMemberEntity } from './org-member.entity';
@@ -99,7 +100,7 @@ export class OrganizationEntity implements Organization {
   constructor(id: string, name: string, slug: string, creator: UserEntity) {
     this.id = id;
     this.name = name;
-    this.slug = slug;
+    this.slug = slugify(slug);
     new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
   }
 }

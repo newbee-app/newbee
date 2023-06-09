@@ -12,6 +12,21 @@ export interface OrganizationState {
    * Whether the user is waiting for a response for creating an org.
    */
   pendingCreate: boolean;
+
+  /**
+   * Whether the user is waitig for a response for checking an org slug.
+   */
+  pendingCheck: boolean;
+
+  /**
+   * Whether an org slug is taken for creating an org.
+   */
+  slugTaken: boolean;
+
+  /**
+   * A generated value for an org's slug for creating an org.
+   */
+  generatedSlug: string;
 }
 
 /**
@@ -19,6 +34,9 @@ export interface OrganizationState {
  */
 export const initialOrganizationState: OrganizationState = {
   pendingCreate: false,
+  pendingCheck: false,
+  slugTaken: false,
+  generatedSlug: '',
 };
 
 /**
@@ -33,6 +51,32 @@ export const organizationFeature = createFeature({
       (state): OrganizationState => ({
         ...state,
         pendingCreate: true,
+      })
+    ),
+    on(
+      OrganizationActions.typingSlug,
+      OrganizationActions.checkSlug,
+      (state, { slug }): OrganizationState => ({
+        ...state,
+        pendingCheck: !!slug,
+        slugTaken: false,
+      })
+    ),
+    on(
+      OrganizationActions.checkSlugSuccess,
+      (state, { slugTaken }): OrganizationState => ({
+        ...state,
+        slugTaken,
+        pendingCheck: false,
+      })
+    ),
+    on(
+      OrganizationActions.generateSlugSuccess,
+      (state, { slug }): OrganizationState => ({
+        ...state,
+        generatedSlug: slug,
+        pendingCheck: false,
+        slugTaken: false,
       })
     ),
     on(

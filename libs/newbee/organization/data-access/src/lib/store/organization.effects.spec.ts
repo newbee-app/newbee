@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import {
+  testBaseGeneratedSlugDto1,
+  testBaseSlugTakenDto1,
+} from '@newbee/shared/data-access';
 import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -27,6 +31,10 @@ describe('OrganizationEffects', () => {
           useValue: createMock<OrganizationService>({
             get: jest.fn().mockReturnValue(of(testOrgMemberRelation1)),
             create: jest.fn().mockReturnValue(of(testOrganization1)),
+            checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
+            generateSlug: jest
+              .fn()
+              .mockReturnValue(of(testBaseGeneratedSlugDto1)),
           }),
         },
         {
@@ -105,6 +113,56 @@ describe('OrganizationEffects', () => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([`/${testOrganization1.slug}`]);
       });
+    });
+  });
+
+  describe('checkSlug$', () => {
+    it('should fire checkSlugSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
+      });
+      const expected$ = hot('a', {
+        a: OrganizationActions.checkSlugSuccess({
+          slugTaken: true,
+        }),
+      });
+      expect(effects.checkSlug$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.checkSlug).toBeCalledTimes(1);
+        expect(service.checkSlug).toBeCalledWith(testOrganization1.slug);
+      });
+    });
+
+    it('should do nothing if slug is an empty string', () => {
+      actions$ = hot('a', { a: OrganizationActions.checkSlug({ slug: '' }) });
+      const expected$ = hot('-');
+      expect(effects.checkSlug$).toBeObservable(expected$);
+    });
+  });
+
+  describe('generateSlug$', () => {
+    it('should fire generateSlugSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: OrganizationActions.generateSlug({ name: testOrganization1.name }),
+      });
+      const expected$ = hot('a', {
+        a: OrganizationActions.generateSlugSuccess({
+          slug: testBaseGeneratedSlugDto1.generatedSlug,
+        }),
+      });
+      expect(effects.generateSlug$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.generateSlug).toBeCalledTimes(1);
+        expect(service.generateSlug).toBeCalledWith(testOrganization1.name);
+      });
+    });
+
+    it('should do nothing if name is an empty string', () => {
+      actions$ = hot('a', {
+        a: OrganizationActions.generateSlug({ name: '' }),
+      });
+      const expected$ = hot('-');
+      expect(effects.generateSlug$).toBeObservable(expected$);
     });
   });
 });

@@ -57,35 +57,36 @@
                   />
                 </svg>
               </label>
-              <div
-                class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
+
+              <ul
+                tabindex="0"
+                class="dropdown-content menu flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <button
-                  type="button"
-                  (click)="
-                    emitNavigateToLink(
-                      selectedOrganization.slug,
-                      urlEndpoint.Edit
-                    )
-                  "
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Edit org settings
-                </button>
-                <button
-                  type="button"
-                  *ngIf="isAdmin"
-                  (click)="
-                    emitNavigateToLink(
-                      selectedOrganization.slug,
-                      urlEndpoint.Invite
-                    )
-                  "
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Invite members
-                </button>
-              </div>
+                <li>
+                  <a
+                    (click)="
+                      emitNavigateToLink(
+                        selectedOrganization.slug,
+                        urlEndpoint.Edit
+                      )
+                    "
+                    class="flex"
+                    >Edit org settings</a
+                  >
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      emitNavigateToLink(
+                        selectedOrganization.slug,
+                        urlEndpoint.Invite
+                      )
+                    "
+                    class="flex"
+                    >Invite members</a
+                  >
+                </li>
+              </ul>
             </div>
 
             <p
@@ -118,50 +119,50 @@
                 </label>
               </newbee-tooltip>
 
-              <div
+              <ul
                 tabindex="0"
-                class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
+                class="dropdown-content menu flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <button
-                  type="button"
-                  (click)="
-                    emitNavigateToLink(
-                      selectedOrganization!.slug,
-                      urlEndpoint.Doc,
-                      urlEndpoint.New
-                    )
-                  "
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Create doc
-                </button>
-                <button
-                  type="button"
-                  (click)="
-                    emitNavigateToLink(
-                      selectedOrganization!.slug,
-                      urlEndpoint.Qna,
-                      urlEndpoint.New
-                    )
-                  "
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Create qna
-                </button>
-                <button
-                  type="button"
-                  (click)="
-                    emitNavigateToLink(
-                      selectedOrganization!.slug,
-                      urlEndpoint.Team,
-                      urlEndpoint.New
-                    )
-                  "
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Create team
-                </button>
-              </div>
+                <li>
+                  <a
+                    (click)="
+                      emitNavigateToLink(
+                        selectedOrganization!.slug,
+                        urlEndpoint.Doc,
+                        urlEndpoint.New
+                      )
+                    "
+                    class="flex"
+                    >Create doc</a
+                  >
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      emitNavigateToLink(
+                        selectedOrganization!.slug,
+                        urlEndpoint.Qna,
+                        urlEndpoint.New
+                      )
+                    "
+                    class="flex"
+                    >Create qna</a
+                  >
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      emitNavigateToLink(
+                        selectedOrganization!.slug,
+                        urlEndpoint.Team,
+                        urlEndpoint.New
+                      )
+                    "
+                    class="flex"
+                    >Create team</a
+                  >
+                </li>
+              </ul>
             </div>
 
             <div class="dropdown dropdown-end">
@@ -171,24 +172,17 @@
                 </label>
               </newbee-tooltip>
 
-              <div
-                class="dropdown-content flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
+              <ul
+                tabindex="0"
+                class="dropdown-content menu flex flex-col flex-nowrap mt-2 bg-base-200 rounded-box w-44"
               >
-                <button
-                  type="button"
-                  (click)="emitNavigateToLink(urlEndpoint.User)"
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Manage your account
-                </button>
-                <button
-                  type="button"
-                  (click)="emitLogout()"
-                  class="btn btn-ghost justify-start text-left normal-case font-normal"
-                >
-                  Log out
-                </button>
-              </div>
+                <li>
+                  <a (click)="emitNavigateToLink(urlEndpoint.User)" class="flex"
+                    >Manage your account</a
+                  >
+                </li>
+                <li><a (click)="emitLogout()" class="flex">Log out</a></li>
+              </ul>
             </div>
           </div>
         </div>

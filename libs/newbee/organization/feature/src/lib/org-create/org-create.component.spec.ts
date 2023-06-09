@@ -1,9 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgCreateComponent } from './org-create.component';
 
@@ -23,6 +29,8 @@ describe('OrgCreateComponent', () => {
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -33,42 +41,51 @@ describe('OrgCreateComponent', () => {
   });
 
   describe('init', () => {
-    it('should dispatch orgCreateComponentInit', (done) => {
-      component.ngOnInit();
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              OrganizationActions.orgCreateComponentInit()
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+    it('should dispatch orgCreateComponentInit', () => {
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.orgCreateComponentInit()
+      );
+    });
+  });
+
+  describe('onName', () => {
+    it('should dispatch generateSlug', fakeAsync(() => {
+      component.onName(testOrganization1.name);
+      tick(600);
+      expect(store.dispatch).toBeCalledTimes(2);
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.generateSlug({ name: testOrganization1.name })
+      );
+    }));
+  });
+
+  describe('onSlug', () => {
+    it('should dispatch typingSlug', () => {
+      component.onSlug(testOrganization1.slug);
+      expect(store.dispatch).toBeCalledTimes(2);
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+      );
+    });
+  });
+
+  describe('onFormattedSlug', () => {
+    it('should dispatch checkSlug', () => {
+      component.onFormattedSlug(testOrganization1.slug);
+      expect(store.dispatch).toBeCalledTimes(2);
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.checkSlug({ slug: testOrganization1.slug })
+      );
     });
   });
 
   describe('onCreate', () => {
-    it('should dispatch createOrg', (done) => {
+    it('should dispatch createOrg', () => {
       component.onCreate(testCreateOrgForm1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              OrganizationActions.createOrg({
-                createOrgForm: testCreateOrgForm1,
-              })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledTimes(2);
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.createOrg({ createOrgForm: testCreateOrgForm1 })
+      );
     });
   });
 });

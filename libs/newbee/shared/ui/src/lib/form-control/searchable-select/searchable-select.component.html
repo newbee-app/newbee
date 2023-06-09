@@ -35,13 +35,11 @@
       tabindex="0"
       class="dropdown-content flex flex-col flex-nowrap w-full mt-2 bg-base-200 rounded-box max-h-60 overflow-y-scroll"
     >
-      <div>
-        <newbee-searchbar
-          [formControl]="searchTerm"
-          [includeSearchSymbol]="false"
-          [includeClearSymbol]="false"
-        ></newbee-searchbar>
-      </div>
+      <newbee-searchbar
+        [formControl]="searchTerm"
+        [includeSearchSymbol]="false"
+        [includeClearSymbol]="false"
+      ></newbee-searchbar>
 
       <button
         type="button"

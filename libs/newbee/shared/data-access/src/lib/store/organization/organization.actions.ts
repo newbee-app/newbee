@@ -30,6 +30,31 @@ export const OrganizationActions = createActionGroup({
     'Create Org Success': props<{ organization: Organization }>(),
 
     /**
+     * Indicates that a user is typing in a slug at the moment.
+     */
+    'Typing Slug': props<{ slug: string }>(),
+
+    /**
+     * Check whether an org slug is taken.
+     */
+    'Check Slug': props<{ slug: string }>(),
+
+    /**
+     * Indicates that the org slug was successfully checked.
+     */
+    'Check Slug Success': props<{ slugTaken: boolean }>(),
+
+    /**
+     * Generate a slug for user trying to create an organization.
+     */
+    'Generate Slug': props<{ name: string }>(),
+
+    /**
+     * Indicates that a slug was successfully generated.
+     */
+    'Generate Slug Success': props<{ slug: string }>(),
+
+    /**
      * Set the selected org to be null.
      */
     'Reset Selected Org': emptyProps(),

@@ -6,6 +6,7 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   CreateOrganizationDto,
@@ -13,13 +14,26 @@ import {
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import {
+  CheckSlugDto,
   EntityService,
+  GenerateSlugDto,
   OrganizationEntity,
   OrgMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { Organization, OrgMember, Role, User } from '@newbee/api/shared/util';
-import { organizationVersion, UrlEndpoint } from '@newbee/shared/data-access';
+import {
+  generateUniqueSlug,
+  Organization,
+  OrgMember,
+  Role,
+  User,
+} from '@newbee/api/shared/util';
+import {
+  BaseGeneratedSlugDto,
+  BaseSlugTakenDto,
+  organizationVersion,
+  UrlEndpoint,
+} from '@newbee/shared/data-access';
 import type { OrgMemberNoUser } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
@@ -70,6 +84,52 @@ export class OrganizationController {
     );
 
     return organization;
+  }
+
+  /**
+   * The API route for checking whether an org slug has been taken.
+   *
+   * @param checkSlugDto The org slug to check.
+   *
+   * @returns `true` if the org slug is taken, `false` if not.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  @Get(UrlEndpoint.CheckSlug)
+  async checkSlug(
+    @Query() checkSlugDto: CheckSlugDto
+  ): Promise<BaseSlugTakenDto> {
+    const { slug } = checkSlugDto;
+    this.logger.log(
+      `Check organization slug request received for slug: ${slug}`
+    );
+    const hasSlug = await this.organizationService.hasOneBySlug(slug);
+    this.logger.log(`Organization slug ${slug} taken: ${hasSlug}`);
+
+    return { slugTaken: hasSlug };
+  }
+
+  /**
+   * The API route for generating a new org slug based on a base string.
+   *
+   * @param generateSlugDto The base string to use.
+   *
+   * @returns A unique org slug suitable for use.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  @Get(UrlEndpoint.GenerateSlug)
+  async generateSlug(
+    @Query() generateSlugDto: GenerateSlugDto
+  ): Promise<BaseGeneratedSlugDto> {
+    const { base } = generateSlugDto;
+    this.logger.log(`New organization slug request received for base: ${base}`);
+    const slug = await generateUniqueSlug(
+      async (slugToTry) =>
+        !(await this.organizationService.hasOneBySlug(slugToTry)),
+      base
+    );
+    this.logger.log(`Organization slug ${slug} generated for base ${base}`);
+
+    return { generatedSlug: slug };
   }
 
   /**
