@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { NgControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { SlugPipe, SlugPipeModule } from '../pipe';
 
 @Directive({
@@ -40,11 +40,7 @@ export class SlugInputDirective implements OnInit, OnDestroy {
     }
 
     this.control.control?.valueChanges
-      .pipe(
-        debounceTime(600),
-        distinctUntilChanged(),
-        takeUntil(this.unsubscribe$)
-      )
+      .pipe(debounceTime(600), takeUntil(this.unsubscribe$))
       .subscribe({
         next: (value) => {
           this.formatAndEmit(value);
