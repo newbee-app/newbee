@@ -23,6 +23,7 @@ describe('CreateOrgComponent', () => {
 
     jest.spyOn(component.name, 'emit');
     jest.spyOn(component.slug, 'emit');
+    jest.spyOn(component.formattedSlug, 'emit');
     jest.spyOn(component.create, 'emit');
 
     fixture.detectChanges();
@@ -40,16 +41,22 @@ describe('CreateOrgComponent', () => {
         expect(component.name.emit).toBeCalledTimes(1);
         expect(component.name.emit).toBeCalledWith(testOrganization1.name);
         expect(component.slug.emit).not.toBeCalled();
+        expect(component.formattedSlug.emit).not.toBeCalled();
       });
     });
 
-    describe('slug', () => {
-      it('should emit whenever slug input directive formats', fakeAsync(() => {
+    describe('slug & formattedSlug', () => {
+      it('should emit whenever the user types and after the slug input directive formats', fakeAsync(() => {
         component.createOrgForm.get('slug')?.setValue(testOrganization1.slug);
-        tick(600);
         expect(component.slug.emit).toBeCalledTimes(1);
         expect(component.slug.emit).toBeCalledWith(testOrganization1.slug);
+        tick(600);
+        expect(component.formattedSlug.emit).toBeCalledTimes(1);
+        expect(component.formattedSlug.emit).toBeCalledWith(
+          testOrganization1.slug
+        );
         expect(component.name.emit).not.toBeCalled();
+        expect(component.slug.emit).toBeCalledTimes(1);
         discardPeriodicTasks();
       }));
     });

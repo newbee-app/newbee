@@ -30,6 +30,11 @@ export const OrganizationActions = createActionGroup({
     'Create Org Success': props<{ organization: Organization }>(),
 
     /**
+     * Indicates that a user is typing in a slug at the moment.
+     */
+    'Typing Slug': props<{ slug: string }>(),
+
+    /**
      * Check whether an org slug is taken.
      */
     'Check Slug': props<{ slug: string }>(),

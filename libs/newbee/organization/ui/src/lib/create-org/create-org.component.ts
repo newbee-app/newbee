@@ -76,6 +76,11 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   @Output() slug = new EventEmitter<string>();
 
   /**
+   * The formatted value of the organization slug, only emitted after the SlugInputDirective formats.
+   */
+  @Output() formattedSlug = new EventEmitter<string>();
+
+  /**
    * The emitted create organization form, for use in the smart UI parent.
    */
   @Output() create = new EventEmitter<Partial<CreateOrgForm>>();
@@ -101,6 +106,15 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe({
         next: (name) => {
           this.name.emit(name ?? '');
+        },
+      });
+
+    this.createOrgForm
+      .get('slug')
+      ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (slug) => {
+          this.slug.emit(slug ?? '');
         },
       });
   }

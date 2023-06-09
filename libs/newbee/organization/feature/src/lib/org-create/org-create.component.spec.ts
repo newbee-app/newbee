@@ -60,14 +60,23 @@ describe('OrgCreateComponent', () => {
   });
 
   describe('onSlug', () => {
-    it('should dispatch checkSlug', fakeAsync(() => {
+    it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
-      tick(600);
+      expect(store.dispatch).toBeCalledTimes(2);
+      expect(store.dispatch).toBeCalledWith(
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+      );
+    });
+  });
+
+  describe('onFormattedSlug', () => {
+    it('should dispatch checkSlug', () => {
+      component.onFormattedSlug(testOrganization1.slug);
       expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.checkSlug({ slug: testOrganization1.slug })
       );
-    }));
+    });
   });
 
   describe('onCreate', () => {

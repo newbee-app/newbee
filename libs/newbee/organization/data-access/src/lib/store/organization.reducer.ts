@@ -54,6 +54,7 @@ export const organizationFeature = createFeature({
       })
     ),
     on(
+      OrganizationActions.typingSlug,
       OrganizationActions.checkSlug,
       (state, { slug }): OrganizationState => ({
         ...state,

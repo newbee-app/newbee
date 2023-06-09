@@ -29,11 +29,6 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   readonly name$ = new Subject<string>();
 
   /**
-   * Represents the form's current slug value, for use in checking availability.
-   */
-  readonly slug$ = new Subject<string>();
-
-  /**
    * The auto-generated slug based on the org's name.
    */
   generatedSlug$ = this.store.select(organizationFeature.selectGeneratedSlug);
@@ -99,12 +94,6 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
         this.store.dispatch(OrganizationActions.generateSlug({ name }));
       },
     });
-
-    this.slug$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
-      next: (slug) => {
-        this.store.dispatch(OrganizationActions.checkSlug({ slug }));
-      },
-    });
   }
 
   /**
@@ -113,7 +102,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
 
-    for (const subject of [this.name$, this.slug$, this.unsubscribe$]) {
+    for (const subject of [this.name$, this.unsubscribe$]) {
       subject.complete();
     }
   }
@@ -128,12 +117,21 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When the dumb UI emits a slug event, emit it to the slug$ subject.
+   * When the dumb UI emits a slug event, dispatch it to the store.
    *
    * @param slug The slug to emit.
    */
   onSlug(slug: string): void {
-    this.slug$.next(slug);
+    this.store.dispatch(OrganizationActions.typingSlug({ slug }));
+  }
+
+  /**
+   * When the dumb UI emits a formattedSlug event, dispatch it to the store.
+   *
+   * @param slug
+   */
+  onFormattedSlug(slug: string): void {
+    this.store.dispatch(OrganizationActions.checkSlug({ slug }));
   }
 
   /**

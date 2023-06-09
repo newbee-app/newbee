@@ -15,6 +15,7 @@ export default {
   argTypes: {
     name: { action: 'name' },
     slug: { action: 'slug' },
+    formattedSlug: { action: 'formattedSlug' },
     create: { action: 'create' },
   },
 } as Meta<CreateOrgComponent>;

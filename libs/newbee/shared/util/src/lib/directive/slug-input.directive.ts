@@ -34,10 +34,9 @@ export class SlugInputDirective implements OnInit, OnDestroy {
    * Additionally, slugify the input after the user types with a delay built in.
    */
   ngOnInit(): void {
-    if (this.control.control?.value) {
-      this.control.control.setValue(
-        this.slugPipe.transform(this.control.control.value)
-      );
+    const startingVal = this.control.control?.value;
+    if (startingVal) {
+      this.formatAndEmit(startingVal);
     }
 
     this.control.control?.valueChanges
@@ -48,9 +47,7 @@ export class SlugInputDirective implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (value) => {
-          const formattedSlug = this.slugPipe.transform(value);
-          this.control.control?.setValue(formattedSlug);
-          this.slug.emit(formattedSlug);
+          this.formatAndEmit(value);
         },
       });
   }
@@ -61,6 +58,17 @@ export class SlugInputDirective implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  /**
+   * A helper function that takes in a value, formats it using the slug pipe, and emits the result.
+   *
+   * @param value The string to format.
+   */
+  private formatAndEmit(value: string): void {
+    const formattedSlug = this.slugPipe.transform(value);
+    this.control.control?.setValue(formattedSlug, { emitEvent: false });
+    this.slug.emit(formattedSlug);
   }
 }
 

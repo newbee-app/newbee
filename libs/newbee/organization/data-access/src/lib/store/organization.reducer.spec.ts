@@ -36,6 +36,14 @@ describe('OrganizationReducer', () => {
       expect(updatedState).toEqual(stateAfterCreateOrg);
     });
 
+    it('should update state for typingSlug if slug is not empty string', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+      );
+      expect(updatedState).toEqual(stateAfterCheckSlug);
+    });
+
     it('should update state for checkSlug if slug is not empty string', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
