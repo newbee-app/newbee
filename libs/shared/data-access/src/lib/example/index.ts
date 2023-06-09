@@ -15,6 +15,7 @@ import {
   testUserRelation1,
 } from '@newbee/shared/util';
 import {
+  BaseCheckSlugDto,
   BaseCreateDocDto,
   BaseCreateOrganizationDto,
   BaseCreateOrgMemberInviteDto,
@@ -24,10 +25,13 @@ import {
   BaseCreateUserDto,
   BaseCsrfTokenAndDataDto,
   BaseEmailDto,
+  BaseGeneratedSlugDto,
+  BaseGenerateSlugDto,
   BaseMagicLinkLoginDto,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseRegistrationResponseDto,
+  BaseSlugTakenDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
   BaseTeamSlugDto,
@@ -289,4 +293,36 @@ export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
 export const testBaseQueryResultDto1: BaseQueryResultDto = {
   offset: testBaseQueryDto1.offset,
   team: [testTeamQueryResult1],
+};
+
+/**
+ * An example instance of BaseCheckSlugDto.
+ * Strictly for use in testing.
+ */
+export const testBaseCheckSlugDto1: BaseCheckSlugDto = {
+  slug: testOrganization1.slug,
+};
+
+/**
+ * An example instance of BaseSlugTakenDto.
+ * Strictly for use in testing.
+ */
+export const testBaseSlugTakenDto1: BaseSlugTakenDto = {
+  slugTaken: true,
+};
+
+/**
+ * An example instance of BaseNewSlugDto.
+ * Strictly for use in testing.
+ */
+export const testBaseGenerateSlugDto1: BaseGenerateSlugDto = {
+  base: testOrganization1.name,
+};
+
+/**
+ * An example instance of BaseGeneratedSlugDto.
+ * Strictly for use in testing.
+ */
+export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
+  generatedSlug: testOrganization1.slug,
 };

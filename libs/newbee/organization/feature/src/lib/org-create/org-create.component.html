@@ -1,7 +1,12 @@
 <newbee-navbar>
   <newbee-create-org
-    [createPending]="(pendingCreate$ | async) ?? false"
+    [generatedSlug]="(generatedSlug$ | async)!"
+    [slugTaken]="(slugTaken$ | async)!"
+    [createPending]="(pendingCreate$ | async)!"
+    [checkPending]="(pendingCheck$ | async)!"
     [httpClientError]="httpClientError"
+    (name)="onName($event)"
+    (slug)="onSlug($event)"
     (create)="onCreate($event)"
   ></newbee-create-org>
 </newbee-navbar>

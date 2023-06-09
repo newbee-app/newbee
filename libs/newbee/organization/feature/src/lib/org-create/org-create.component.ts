@@ -8,7 +8,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import type { HttpClientError } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for the create organization screen.
@@ -24,9 +24,34 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
+   * Represents the form's current name value, for use in generating slugs.
+   */
+  readonly name$ = new Subject<string>();
+
+  /**
+   * Represents the form's current slug value, for use in checking availability.
+   */
+  readonly slug$ = new Subject<string>();
+
+  /**
+   * The auto-generated slug based on the org's name.
+   */
+  generatedSlug$ = this.store.select(organizationFeature.selectGeneratedSlug);
+
+  /**
+   * Whether the form's slug value is taken.
+   */
+  slugTaken$ = this.store.select(organizationFeature.selectSlugTaken);
+
+  /**
    * Whether the create action is pending.
    */
   pendingCreate$ = this.store.select(organizationFeature.selectPendingCreate);
+
+  /**
+   * Whether the check slug action is pending.
+   */
+  pendingCheck$ = this.store.select(organizationFeature.selectPendingCheck);
 
   /**
    * Request HTTP error, if any exist.
@@ -68,6 +93,18 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
           this.store.dispatch(HttpActions.resetError());
         },
       });
+
+    this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
+      next: (name) => {
+        this.store.dispatch(OrganizationActions.generateSlug({ name }));
+      },
+    });
+
+    this.slug$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
+      next: (slug) => {
+        this.store.dispatch(OrganizationActions.checkSlug({ slug }));
+      },
+    });
   }
 
   /**
@@ -75,7 +112,28 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+
+    for (const subject of [this.name$, this.slug$, this.unsubscribe$]) {
+      subject.complete();
+    }
+  }
+
+  /**
+   * When the dumb UI emits a name event, emit it to the name$ subject.
+   *
+   * @param name The name to emit.
+   */
+  onName(name: string): void {
+    this.name$.next(name);
+  }
+
+  /**
+   * When the dumb UI emits a slug event, emit it to the slug$ subject.
+   *
+   * @param slug The slug to emit.
+   */
+  onSlug(slug: string): void {
+    this.slug$.next(slug);
   }
 
   /**

@@ -47,6 +47,9 @@ export enum UrlEndpoint {
   Decline = 'decline',
 
   // general endpoints
+  Api = 'api',
   New = 'new',
   Edit = 'edit',
+  CheckSlug = 'check-slug',
+  GenerateSlug = 'generate-slug',
 }

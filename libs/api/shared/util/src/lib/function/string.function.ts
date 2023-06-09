@@ -34,10 +34,10 @@ export async function generateUniqueSlug(
   isUnique: (slugToTry: string) => Promise<boolean>,
   str: string
 ): Promise<string> {
-  const nameAsSlug = slug(str);
-  let slugToTry = nameAsSlug;
+  const strAsSlug = slug(str);
+  let slugToTry = strAsSlug;
   while (!(await isUnique(slugToTry))) {
-    slugToTry = `${nameAsSlug}-${randomBytes(3).toString('hex')}`;
+    slugToTry = `${strAsSlug}-${randomBytes(3).toString('hex')}`;
   }
   return slugToTry;
 }

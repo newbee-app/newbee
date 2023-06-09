@@ -1,6 +1,6 @@
 import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
 import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 /**
  * A verifiable DTO sent from the frontend to the backend to create a new organization.
@@ -16,7 +16,6 @@ export class CreateOrganizationDto implements BaseCreateOrganizationDto {
   /**
    * @inheritdoc
    */
-  @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
-  slug: string | null = null;
+  slug!: string;
 }

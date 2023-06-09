@@ -16,13 +16,14 @@ import {
   OrganizationEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { generateUniqueSlug, newOrgConfigset } from '@newbee/api/shared/util';
+import { newOrgConfigset } from '@newbee/api/shared/util';
 import {
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import slugify from 'slug';
 import { v4 } from 'uuid';
 import { CreateOrganizationDto } from './dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -58,14 +59,7 @@ export class OrganizationService {
     createOrganizationDto: CreateOrganizationDto,
     creator: UserEntity
   ): Promise<OrganizationEntity> {
-    const { name } = createOrganizationDto;
-    let { slug } = createOrganizationDto;
-    if (!slug) {
-      slug = await generateUniqueSlug(
-        async (slugToTry) => !(await this.hasOneBySlug(slugToTry)),
-        name
-      );
-    }
+    const { name, slug } = createOrganizationDto;
     const id = v4();
     const organization = new OrganizationEntity(id, name, slug, creator);
 
@@ -114,9 +108,15 @@ export class OrganizationService {
    * @param slug The slug to check for.
    *
    * @returns `true` if the slug already exists in the database, `false` if not.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async hasOneBySlug(slug: string): Promise<boolean> {
-    return !!(await this.organizationRepository.findOne({ slug }));
+    try {
+      return !!(await this.organizationRepository.findOne({ slug }));
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
@@ -156,6 +156,11 @@ export class OrganizationService {
     organization: OrganizationEntity,
     updateOrganizationDto: UpdateOrganizationDto
   ): Promise<OrganizationEntity> {
+    const { slug } = updateOrganizationDto;
+    if (slug) {
+      updateOrganizationDto.slug = slugify(slug);
+    }
+
     const updatedOrganization = this.organizationRepository.assign(
       organization,
       updateOrganizationDto

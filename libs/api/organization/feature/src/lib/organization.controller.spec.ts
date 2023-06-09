@@ -8,10 +8,15 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
+  testBaseCheckSlugDto1,
   testBaseCreateOrganizationDto1,
+  testBaseGeneratedSlugDto1,
+  testBaseGenerateSlugDto1,
+  testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
 } from '@newbee/shared/data-access';
 import { testOrgMemberRelation1 } from '@newbee/shared/util';
+import slug from 'slug';
 import { OrganizationController } from './organization.controller';
 
 describe('OrganizationController', () => {
@@ -32,6 +37,7 @@ describe('OrganizationController', () => {
           provide: OrganizationService,
           useValue: createMock<OrganizationService>({
             create: jest.fn().mockResolvedValue(testOrganizationEntity1),
+            hasOneBySlug: jest.fn().mockResolvedValue(true),
             update: jest.fn().mockResolvedValue(testUpdatedOrganizationEntity),
           }),
         },
@@ -67,6 +73,34 @@ describe('OrganizationController', () => {
         testBaseCreateOrganizationDto1,
         testUserEntity1
       );
+    });
+  });
+
+  describe('checkSlug', () => {
+    it('should return true if slug is taken, false if not', async () => {
+      await expect(
+        controller.checkSlug(testBaseCheckSlugDto1)
+      ).resolves.toEqual(testBaseSlugTakenDto1);
+      expect(service.hasOneBySlug).toBeCalledTimes(1);
+      expect(service.hasOneBySlug).toBeCalledWith(testBaseCheckSlugDto1.slug);
+      jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
+      await expect(
+        controller.checkSlug(testBaseCheckSlugDto1)
+      ).resolves.toEqual({ slugTaken: false });
+      expect(service.hasOneBySlug).toBeCalledTimes(2);
+      expect(service.hasOneBySlug).toBeCalledWith(testBaseCheckSlugDto1.slug);
+    });
+  });
+
+  describe('generateSlug', () => {
+    it('should generate a unique slug', async () => {
+      jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
+      const sluggedBase = slug(testBaseGenerateSlugDto1.base);
+      await expect(
+        controller.generateSlug(testBaseGenerateSlugDto1)
+      ).resolves.toEqual(testBaseGeneratedSlugDto1);
+      expect(service.hasOneBySlug).toBeCalledTimes(1);
+      expect(service.hasOneBySlug).toBeCalledWith(sluggedBase);
     });
   });
 

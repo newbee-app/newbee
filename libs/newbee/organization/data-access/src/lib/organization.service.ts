@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import type { CreateOrgForm } from '@newbee/newbee/organization/util';
 import {
   BaseCreateOrganizationDto,
+  BaseGeneratedSlugDto,
+  BaseSlugTakenDto,
   organizationVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
@@ -28,7 +30,7 @@ export class OrganizationService {
     createOrgForm: CreateOrgForm
   ): BaseCreateOrganizationDto {
     const { name, slug } = createOrgForm;
-    return { name: name ?? '', slug: slug ?? null };
+    return { name: name ?? '', slug: slug ?? '' };
   }
 
   /**
@@ -40,7 +42,7 @@ export class OrganizationService {
    */
   get(slug: string): Observable<OrgMemberNoUser> {
     return this.http.get<OrgMemberNoUser>(
-      `/api/v${organizationVersion}/${UrlEndpoint.Organization}/${slug}`
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${slug}`
     );
   }
 
@@ -55,8 +57,38 @@ export class OrganizationService {
     const createOrganizationDto =
       OrganizationService.createOrgFormToCreateOrganizationDto(createOrgForm);
     return this.http.post<Organization>(
-      `/api/v${organizationVersion}/${UrlEndpoint.Organization}`,
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}`,
       createOrganizationDto
+    );
+  }
+
+  /**
+   * Send a request to the API to check whether the slug is taken.
+   *
+   * @param slug The org slug to check.
+   *
+   * @returns An observable containing a boolean that is `true` if the slug is taken, `false` otherwise.
+   */
+  checkSlug(slug: string): Observable<BaseSlugTakenDto> {
+    const params = new HttpParams({ fromObject: { slug } });
+    return this.http.get<BaseSlugTakenDto>(
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${UrlEndpoint.CheckSlug}`,
+      { params }
+    );
+  }
+
+  /**
+   * Send a request to the API to generate a slug using the given name as a base.
+   *
+   * @param name The organization name to act as a base for the slug.
+   *
+   * @returns An observable containing the generated slug.
+   */
+  generateSlug(name: string): Observable<BaseGeneratedSlugDto> {
+    const params = new HttpParams({ fromObject: { base: name } });
+    return this.http.get<BaseGeneratedSlugDto>(
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${UrlEndpoint.GenerateSlug}`,
+      { params }
     );
   }
 }

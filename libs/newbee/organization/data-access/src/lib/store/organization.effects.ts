@@ -11,7 +11,7 @@ import {
   slugIsNotEmpty,
 } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { OrganizationService } from '../organization.service';
 
 /**
@@ -58,6 +58,38 @@ export class OrganizationEffects {
     },
     { dispatch: false }
   );
+
+  checkSlug$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.checkSlug),
+      filter(({ slug }) => !!slug),
+      switchMap(({ slug }) => {
+        return this.organizationService.checkSlug(slug).pipe(
+          map(({ slugTaken }) => {
+            return OrganizationActions.checkSlugSuccess({ slugTaken });
+          }),
+          catchError(OrganizationEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
+  generateSlug$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.generateSlug),
+      filter(({ name }) => !!name),
+      switchMap(({ name }) => {
+        return this.organizationService.generateSlug(name).pipe(
+          map(({ generatedSlug }) => {
+            return OrganizationActions.generateSlugSuccess({
+              slug: generatedSlug,
+            });
+          }),
+          catchError(OrganizationEffects.catchHttpError)
+        );
+      })
+    );
+  });
 
   constructor(
     private readonly actions$: Actions,

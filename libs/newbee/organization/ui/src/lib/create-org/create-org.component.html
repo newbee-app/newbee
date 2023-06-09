@@ -26,10 +26,7 @@
     </label>
 
     <label class="form-control flex flex-col gap-y-2 w-full">
-      <span>
-        What URL would you like to use for your organization? If you don't
-        specify one, one will be created for you.
-      </span>
+      <span> What URL would you like to use for your organization? </span>
       <div class="join">
         <button type="button" class="btn no-animation cursor-auto join-item">
           newbee.app/
@@ -39,15 +36,24 @@
           id="slug-input"
           formControlName="slug"
           placeholder="my-org"
+          newbeeSlugInput
+          (slug)="slug.emit($event)"
           class="input input-bordered w-full join-item"
         />
       </div>
+      <div *ngIf="checkPending" class="self-center">
+        <span class="loading loading-dots"></span>
+      </div>
+      <newbee-error-alert
+        *ngIf="!checkPending && slugTaken"
+        text="This slug is already taken, please choose another"
+      ></newbee-error-alert>
     </label>
 
     <button
       id="create-btn"
       type="submit"
-      [disabled]="createOrgForm.invalid"
+      [disabled]="createOrgForm.invalid || checkPending || slugTaken"
       class="btn btn-primary w-full"
     >
       <span *ngIf="createPending" class="loading loading-spinner"></span>

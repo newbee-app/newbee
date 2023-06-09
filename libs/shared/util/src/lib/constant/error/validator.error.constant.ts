@@ -64,6 +64,11 @@ export const queryIsNotEmpty = 'Query cannot be an empty string.';
 export const tokenIsNotEmpty = 'Token cannot be an empty string.';
 
 /**
+ * Constant to say that base cannot be an empty string.
+ */
+export const baseIsNotEmpty = 'Base cannot be an empty string.';
+
+/**
  * Constant to say that the active field must be a boolean value.
  */
 export const activeIsBoolean = 'Active must be true or false.';
