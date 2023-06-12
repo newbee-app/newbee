@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import type { CreateOrgForm } from '@newbee/newbee/organization/util';
+import type { OrgForm } from '@newbee/newbee/organization/util';
 import {
   BaseCreateOrganizationDto,
   BaseGeneratedSlugDto,
@@ -27,7 +27,7 @@ export class OrganizationService {
    * @returns The form as a DTO.
    */
   private static createOrgFormToCreateOrganizationDto(
-    createOrgForm: CreateOrgForm
+    createOrgForm: OrgForm
   ): BaseCreateOrganizationDto {
     const { name, slug } = createOrgForm;
     return { name: name ?? '', slug: slug ?? '' };
@@ -53,7 +53,7 @@ export class OrganizationService {
    *
    * @returns An observable with information about the new organization.
    */
-  create(createOrgForm: CreateOrgForm): Observable<Organization> {
+  create(createOrgForm: OrgForm): Observable<Organization> {
     const createOrganizationDto =
       OrganizationService.createOrgFormToCreateOrganizationDto(createOrgForm);
     return this.http.post<Organization>(

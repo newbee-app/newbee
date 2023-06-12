@@ -1,0 +1,111 @@
+<div class="flex flex-col flex-nowrap">
+  <div class="collapse collapse-arrow">
+    <input type="checkbox" id="edit-collapse" checked />
+    <label for="edit-collapse" class="collapse-title"><h4>Edit</h4></label>
+
+    <form
+      id="edit-org-form"
+      [formGroup]="editOrgForm"
+      (ngSubmit)="emitEdit()"
+      class="collapse-content flex flex-col flex-nowrap gap-y-4 w-full"
+    >
+      <label class="flex flex-col gap-y-2">
+        <p>Org name</p>
+        <input
+          type="text"
+          id="name-input"
+          formControlName="name"
+          class="input input-bordered max-w-full w-full"
+        />
+        <newbee-error-alert
+          *ngIf="editInputDisplayError('name')"
+          [text]="editInputErrorMessage('name')"
+        ></newbee-error-alert>
+      </label>
+
+      <label class="flex flex-col gap-y-2">
+        <p>Org URL</p>
+
+        <div class="join">
+          <button type="button" class="btn no-animation cursor-auto join-item">
+            newbee.app/
+          </button>
+          <input
+            type="text"
+            id="slug-input"
+            formControlName="slug"
+            newbeeSlugInput
+            (slug)="formattedSlug.emit($event)"
+            class="input input-bordered join-item max-w-full w-full"
+          />
+        </div>
+
+        <div *ngIf="checkPending" class="self-center">
+          <span class="loading loading-dots"></span>
+        </div>
+
+        <newbee-error-alert
+          *ngIf="(!checkPending && slugTaken) || editInputDisplayError('slug')"
+          [text]="
+            editInputErrorMessage('slug') ||
+            'This slug is already taken, please choose another'
+          "
+        ></newbee-error-alert>
+      </label>
+
+      <button
+        type="submit"
+        id="edit-btn"
+        [disabled]="
+          editOrgForm.invalid || checkPending || slugTaken || !editDistinct
+        "
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="editPending" class="loading loading-spinner"></span>
+        Update org
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="isOwner" class="divider"></div>
+
+  <div *ngIf="isOwner" class="collapse collapse-arrow">
+    <input type="checkbox" id="delete-collapse" checked />
+    <label for="delete-collapse" class="collapse-title"><h4>Delete</h4></label>
+
+    <form
+      id="delete-org-form"
+      [formGroup]="deleteOrgForm"
+      (ngSubmit)="emitDelete()"
+      class="collapse-content flex flex-col flex-nowrap gap-y-4"
+    >
+      <label class="flex flex-col gap-y-2">
+        <p>
+          Type your org's URL to confirm the deletion. This will delete all data
+          related to your organization. This is a permanent action that cannot
+          be undone.
+        </p>
+
+        <input
+          type="text"
+          id="confirm-delete-input"
+          formControlName="slug"
+          [placeholder]="org.slug"
+          class="input input-bordered"
+        />
+      </label>
+
+      <button
+        type="submit"
+        id="delete-btn"
+        [disabled]="
+          deleteOrgForm.invalid || deletePending || !deleteSlugMatches
+        "
+        class="btn btn-error w-fit"
+      >
+        <span *ngIf="deletePending" class="loading loading-spinner"></span>
+        Delete org
+      </button>
+    </form>
+  </div>
+</div>

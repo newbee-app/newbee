@@ -1,4 +1,4 @@
-import { CreateOrgForm } from '@newbee/newbee/organization/util';
+import { OrgForm } from '@newbee/newbee/organization/util';
 import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -22,7 +22,7 @@ export const OrganizationActions = createActionGroup({
     /**
      * Creates a new org with the given information.
      */
-    'Create Org': props<{ createOrgForm: CreateOrgForm }>(),
+    'Create Org': props<{ createOrgForm: OrgForm }>(),
 
     /**
      * Indicates that an org was successfully created.

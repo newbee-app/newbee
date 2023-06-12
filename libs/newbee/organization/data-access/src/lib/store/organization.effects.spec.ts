@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
+import { testOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import {
   testBaseGeneratedSlugDto1,
@@ -81,7 +81,7 @@ describe('OrganizationEffects', () => {
   describe('create$', () => {
     it('should fire createSuccess if successful', () => {
       actions$ = hot('a', {
-        a: OrganizationActions.createOrg({ createOrgForm: testCreateOrgForm1 }),
+        a: OrganizationActions.createOrg({ createOrgForm: testOrgForm1 }),
       });
       const expected$ = hot('a', {
         a: OrganizationActions.createOrgSuccess({
@@ -91,7 +91,7 @@ describe('OrganizationEffects', () => {
       expect(effects.createOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(testCreateOrgForm1);
+        expect(service.create).toBeCalledWith(testOrgForm1);
       });
     });
   });

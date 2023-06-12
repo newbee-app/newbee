@@ -24,21 +24,21 @@ type Story = StoryObj<CreateOrgComponent>;
 
 export const Primary: Story = {};
 
-export const WithHttpError: Story = {
-  args: {
-    httpClientError: {
-      status: 400,
-      messages: { name: 'An HTTP client error' },
-    },
-  },
+export const GeneratedSlug: Story = {
+  args: { generatedSlug: testOrganization1.slug },
 };
+
+export const SlugTaken: Story = { args: { slugTaken: true } };
 
 export const CreatePending: Story = { args: { createPending: true } };
 
 export const CheckPending: Story = { args: { checkPending: true } };
 
-export const SlugTaken: Story = { args: { slugTaken: true } };
-
-export const GeneratedSlug: Story = {
-  args: { generatedSlug: testOrganization1.slug },
+export const HttpError: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: { slug: 'An HTTP client error' },
+    },
+  },
 };

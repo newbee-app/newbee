@@ -1,10 +1,10 @@
 import { testOrganization1 } from '@newbee/shared/util';
-import { CreateOrgForm } from '../interface';
+import { OrgForm } from '../interface';
 
 const { name, slug } = testOrganization1;
 
 /**
- * An example instance of `CreateOrgForm`.
+ * An example instance of `OrgForm`.
  * Strictly for use in testing.
  */
-export const testCreateOrgForm1: CreateOrgForm = { name, slug };
+export const testOrgForm1: OrgForm = { name, slug };

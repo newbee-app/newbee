@@ -1,1 +1,1 @@
-export * from './create-org-form.interface';
+export * from './org-form.interface';

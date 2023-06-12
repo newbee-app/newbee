@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
-import type { CreateOrgForm } from '@newbee/newbee/organization/util';
+import type { OrgForm } from '@newbee/newbee/organization/util';
 import {
   HttpActions,
   httpFeature,
@@ -63,10 +63,10 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    * @returns The `CreateOrgForm` converted from the partial.
    */
   private static partialToCreateOrgForm(
-    partialCreateOrgForm: Partial<CreateOrgForm>
-  ): CreateOrgForm {
-    const { name } = partialCreateOrgForm;
-    return { ...partialCreateOrgForm, name: name ?? '' };
+    partialCreateOrgForm: Partial<OrgForm>
+  ): OrgForm {
+    const { name, slug } = partialCreateOrgForm;
+    return { ...partialCreateOrgForm, name: name ?? '', slug: slug ?? '' };
   }
 
   /**
@@ -139,7 +139,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    *
    * @param partialCreateOrgForm The form to send to the backend.
    */
-  onCreate(partialCreateOrgForm: Partial<CreateOrgForm>): void {
+  onCreate(partialCreateOrgForm: Partial<OrgForm>): void {
     const createOrgForm =
       OrgCreateComponent.partialToCreateOrgForm(partialCreateOrgForm);
     this.store.dispatch(OrganizationActions.createOrg({ createOrgForm }));

@@ -4,7 +4,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
+import { testOrgForm1 } from '@newbee/newbee/organization/util';
 import {
   organizationVersion,
   testBaseCheckSlugDto1,
@@ -60,7 +60,7 @@ describe('OrganizationService', () => {
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testCreateOrgForm1).subscribe({
+      service.create(testOrgForm1).subscribe({
         next: (organization) => {
           try {
             expect(organization).toEqual(testOrganization1);
