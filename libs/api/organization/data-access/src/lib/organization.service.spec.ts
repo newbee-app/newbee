@@ -252,10 +252,8 @@ describe('OrganizationService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(
-        testOrganizationEntity
-      );
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testOrganizationEntity);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity);
     });

@@ -35,7 +35,11 @@
                 />
               </svg>
             </label>
-            <div *ngIf="selectedOrganization" class="dropdown hidden md:block">
+
+            <div
+              *ngIf="selectedOrganization && isAdmin"
+              class="dropdown hidden md:block"
+            >
               <label
                 tabindex="0"
                 class="btn btn-ghost flex flex-row flex-nowrap gap-x-1"
@@ -88,6 +92,13 @@
                 </li>
               </ul>
             </div>
+
+            <p
+              *ngIf="selectedOrganization && !isAdmin"
+              class="uppercase font-semibold text-sm ml-4 hidden md:block"
+            >
+              {{ selectedOrganization.name }}
+            </p>
 
             <p
               *ngIf="selectedOrganization"
@@ -149,7 +160,7 @@
                     >Create qna</a
                   >
                 </li>
-                <li>
+                <li *ngIf="isAdmin">
                   <a
                     (click)="
                       emitNavigateToLink(
@@ -206,7 +217,10 @@
       <div
         class="flex flex-col flex-nowrap p-4 h-screen bg-base-200 w-full overflow-y-auto"
       >
-        <div *ngIf="selectedOrganization" class="collapse collapse-arrow">
+        <div
+          *ngIf="selectedOrganization && isAdmin"
+          class="collapse collapse-arrow"
+        >
           <input type="checkbox" id="org-collapse" />
           <label for="org-collapse" class="collapse-title">{{
             selectedOrganization.name
@@ -218,7 +232,6 @@
               >Edit org settings</a
             >
             <a
-              *ngIf="isAdmin"
               (click)="
                 emitNavigateToLink(
                   selectedOrganization.slug,
@@ -258,6 +271,7 @@
               >Create question</a
             >
             <a
+              *ngIf="isAdmin"
               (click)="
                 emitNavigateToLink(
                   selectedOrganization!.slug,

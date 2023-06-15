@@ -14,6 +14,18 @@ describe('OrganizationReducer', () => {
     ...initialOrganizationState,
     pendingCreate: true,
   };
+  const stateAfterEditOrg: OrganizationState = {
+    ...initialOrganizationState,
+    pendingEdit: true,
+  };
+  const stateAfterEditOrgSlug: OrganizationState = {
+    ...initialOrganizationState,
+    pendingEditSlug: true,
+  };
+  const stateAfterDeleteOrg: OrganizationState = {
+    ...initialOrganizationState,
+    pendingDelete: true,
+  };
   const stateAfterCheckSlug: OrganizationState = {
     ...initialOrganizationState,
     pendingCheck: true,
@@ -34,6 +46,30 @@ describe('OrganizationReducer', () => {
         OrganizationActions.createOrg
       );
       expect(updatedState).toEqual(stateAfterCreateOrg);
+    });
+
+    it('should update state for editOrg', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.editOrg
+      );
+      expect(updatedState).toEqual(stateAfterEditOrg);
+    });
+
+    it('should update state for editOrgSlug', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.editOrgSlug
+      );
+      expect(updatedState).toEqual(stateAfterEditOrgSlug);
+    });
+
+    it('should update state for deleteOrg', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.deleteOrg
+      );
+      expect(updatedState).toEqual(stateAfterDeleteOrg);
     });
 
     it('should update state for typingSlug if slug is not empty string', () => {
@@ -92,6 +128,34 @@ describe('OrganizationReducer', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
         OrganizationActions.orgCreateComponentInit
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+    });
+
+    it('should update state for resetPendingActions', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterCreateOrg,
+        OrganizationActions.resetPendingActions
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+    });
+  });
+
+  describe('start from edit org', () => {
+    it('should update state for editOrgSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterEditOrg,
+        OrganizationActions.editOrgSuccess
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+    });
+  });
+
+  describe('start from delete org', () => {
+    it('should update state for deleteOrgSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterDeleteOrg,
+        OrganizationActions.deleteOrgSuccess
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });

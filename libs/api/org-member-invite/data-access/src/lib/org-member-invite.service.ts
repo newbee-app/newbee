@@ -163,14 +163,20 @@ export class OrgMemberInviteService {
         'userInvites.orgMemberInvites',
         'userInvites.user',
       ]);
-      const { userInvites } = orgMemberInvite;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
 
-      if (!userInvites.user && userInvites.orgMemberInvites.length === 1) {
-        await this.userInvitesService.delete(userInvites);
-      } else {
-        await this.entityService.prepareToDelete(orgMemberInvite);
-        await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
-      }
+    const { userInvites } = orgMemberInvite;
+    if (!userInvites.user && userInvites.orgMemberInvites.length === 1) {
+      await this.userInvitesService.delete(userInvites);
+      return;
+    }
+
+    await this.entityService.safeToDelete(orgMemberInvite);
+    try {
+      await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

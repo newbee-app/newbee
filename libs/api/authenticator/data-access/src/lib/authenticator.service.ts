@@ -257,9 +257,9 @@ export class AuthenticatorService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async deleteOneById(id: string): Promise<void> {
-    const authenticator = this.authenticatorRepository.getReference(id);
+    const authenticator = await this.findOneById(id);
+    await this.entityService.safeToDelete(authenticator);
     try {
-      await this.entityService.prepareToDelete(authenticator);
       await this.authenticatorRepository.removeAndFlush(authenticator);
     } catch (err) {
       this.logger.error(err);

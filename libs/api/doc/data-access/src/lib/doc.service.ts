@@ -181,17 +181,19 @@ export class DocService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(doc: DocEntity): Promise<void> {
+    const collectionName = doc.organization.id;
+    const { id } = doc;
+    await this.entityService.safeToDelete(doc);
+
     try {
-      await this.entityService.prepareToDelete(doc);
       await this.docRepository.removeAndFlush(doc);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const collectionName = doc.organization.id;
     try {
-      await this.solrCli.deleteDocs(collectionName, { id: doc.id });
+      await this.solrCli.deleteDocs(collectionName, { id });
     } catch (err) {
       this.logger.error(err);
     }

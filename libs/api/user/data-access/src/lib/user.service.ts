@@ -214,19 +214,12 @@ export class UserService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(user: UserEntity): Promise<void> {
-    const collectionNamesAndIds: [string, string][] = [];
-    try {
-      await this.userRepository.populate(user, ['organizations']);
-      collectionNamesAndIds.push(
-        ...user.organizations
-          .getItems()
-          .map(
-            (orgMember) =>
-              [orgMember.organization.id, orgMember.slug] as [string, string]
-          )
-      );
+    await this.entityService.safeToDelete(user);
+    const collectionNamesAndIds: [string, string][] = user.organizations
+      .getItems()
+      .map((orgMember) => [orgMember.organization.id, orgMember.slug]);
 
-      await this.entityService.prepareToDelete(user);
+    try {
       await this.userRepository.removeAndFlush(user);
     } catch (err) {
       this.logger.error(err);

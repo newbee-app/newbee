@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
   AuthActions,
   AuthenticatorActions,
 } from '@newbee/newbee/shared/data-access';
 import {
+  testBaseCreateUserDto1,
+  testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
   UrlEndpoint,
@@ -74,7 +75,7 @@ describe('AuthEffects', () => {
   describe('sendLoginMagicLink$', () => {
     it('should fire sendLoginMagicLinkSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 }),
+        a: AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
       });
       const expected$ = hot('a', {
         a: AuthActions.sendLoginMagicLinkSuccess({
@@ -84,7 +85,7 @@ describe('AuthEffects', () => {
       expect(effects.sendLoginMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.magicLinkLoginLogin).toBeCalledTimes(1);
-        expect(service.magicLinkLoginLogin).toBeCalledWith(testLoginForm1);
+        expect(service.magicLinkLoginLogin).toBeCalledWith(testBaseEmailDto1);
       });
     });
   });
@@ -109,7 +110,7 @@ describe('AuthEffects', () => {
     it('should fire registerWithWebauthnSuccess if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.registerWithWebauthn({
-          registerForm: testRegisterForm1,
+          createUserDto: testBaseCreateUserDto1,
         }),
       });
       const expected$ = hot('a', {
@@ -120,7 +121,7 @@ describe('AuthEffects', () => {
       expect(effects.registerWithWebauthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
-        expect(service.webAuthnRegister).toBeCalledWith(testRegisterForm1);
+        expect(service.webAuthnRegister).toBeCalledWith(testBaseCreateUserDto1);
       });
     });
   });
@@ -154,19 +155,19 @@ describe('AuthEffects', () => {
     it('should fire loginWithWebauthn if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.createWebauthnLoginOptions({
-          loginForm: testLoginForm1,
+          emailDto: testBaseEmailDto1,
         }),
       });
       const expected$ = hot('a', {
         a: AuthActions.loginWithWebauthn({
-          loginForm: testLoginForm1,
+          emailDto: testBaseEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
       expect(effects.createWebauthnLoginOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
-        expect(service.webAuthnLoginOptions).toBeCalledWith(testLoginForm1);
+        expect(service.webAuthnLoginOptions).toBeCalledWith(testBaseEmailDto1);
       });
     });
   });
@@ -175,7 +176,7 @@ describe('AuthEffects', () => {
     it('should fire loginSuccess if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.loginWithWebauthn({
-          loginForm: testLoginForm1,
+          emailDto: testBaseEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
@@ -188,7 +189,7 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLogin).toBeCalledTimes(1);
         expect(service.webAuthnLogin).toBeCalledWith(
-          testLoginForm1,
+          testBaseEmailDto1,
           testPublicKeyCredentialRequestOptions1
         );
       });

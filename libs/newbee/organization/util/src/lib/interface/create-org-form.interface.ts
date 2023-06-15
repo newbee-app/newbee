@@ -3,13 +3,12 @@
  */
 export interface CreateOrgForm {
   /**
-   * The name of the organization to create.
+   * The name of the organization.
    */
   name: string | null;
 
   /**
    * The slug to use to represent the organization.
-   * If not specified, the backend will auto-generate one depending on availability.
    */
-  slug?: string | null;
+  slug: string | null;
 }

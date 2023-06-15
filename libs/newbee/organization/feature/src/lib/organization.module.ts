@@ -6,9 +6,13 @@ import {
   organizationFeature,
   OrganizationService,
 } from '@newbee/newbee/organization/data-access';
-import { OrgSearchbarComponent } from '@newbee/newbee/organization/ui';
+import {
+  EditOrgComponent,
+  OrgSearchbarComponent,
+} from '@newbee/newbee/organization/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { OrgEditComponent } from './org-edit';
 import { OrgHomeComponent } from './org-home/org-home.component';
 import { OrganizationRoutingModule } from './routing';
 
@@ -19,9 +23,10 @@ import { OrganizationRoutingModule } from './routing';
     EffectsModule.forFeature([OrganizationEffects]),
     NavbarComponent,
     OrgSearchbarComponent,
+    EditOrgComponent,
     OrganizationRoutingModule,
   ],
   providers: [OrganizationService],
-  declarations: [OrgHomeComponent],
+  declarations: [OrgHomeComponent, OrgEditComponent],
 })
 export class OrganizationModule {}

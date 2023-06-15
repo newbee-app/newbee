@@ -221,23 +221,21 @@ export class OrgMemberService {
   ): Promise<void> {
     this.checkRequester(requesterOrgRole, orgMember.role);
 
-    // Handle deleting the org member in the database
+    const collectionName = orgMember.organization.id;
+    const id = orgMember.slug;
+    await this.entityService.safeToDelete(orgMember);
+
     try {
-      await this.entityService.prepareToDelete(orgMember);
       await this.orgMemberRepository.removeAndFlush(orgMember);
     } catch (err) {
-      if (err instanceof BadRequestException) {
-        throw err;
-      }
-
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
 
     // Handle deleting the org member in Solr
-    const collectionName = orgMember.organization.id;
+
     try {
-      await this.solrCli.deleteDocs(collectionName, { id: orgMember.slug });
+      await this.solrCli.deleteDocs(collectionName, { id });
     } catch (err) {
       this.logger.error(err);
     }

@@ -59,8 +59,8 @@ export class UserInvitesService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(userInvites: UserInvitesEntity): Promise<void> {
+    await this.entityService.safeToDelete(userInvites);
     try {
-      await this.entityService.prepareToDelete(userInvites);
       await this.userInvitesRepository.removeAndFlush(userInvites);
     } catch (err) {
       this.logger.error(err);

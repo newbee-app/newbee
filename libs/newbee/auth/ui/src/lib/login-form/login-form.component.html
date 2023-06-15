@@ -48,7 +48,7 @@
 
         <div *ngIf="httpClientError?.messages?.['misc']">
           <newbee-error-alert
-            [text]="httpClientError?.messages?.['misc'] ?? ''"
+            [text]="httpClientError?.messages?.['misc']!"
           ></newbee-error-alert>
         </div>
       </div>

@@ -4,7 +4,6 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import {
   organizationVersion,
   testBaseCheckSlugDto1,
@@ -12,9 +11,10 @@ import {
   testBaseGeneratedSlugDto1,
   testBaseGenerateSlugDto1,
   testBaseSlugTakenDto1,
+  testBaseUpdateOrganizationDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
 import { OrganizationService } from './organization.service';
 
 describe('OrganizationService', () => {
@@ -50,7 +50,7 @@ describe('OrganizationService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -60,7 +60,7 @@ describe('OrganizationService', () => {
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testCreateOrgForm1).subscribe({
+      service.create(testBaseCreateOrganizationDto1).subscribe({
         next: (organization) => {
           try {
             expect(organization).toEqual(testOrganization1);
@@ -73,12 +73,61 @@ describe('OrganizationService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${organizationVersion}/${UrlEndpoint.Organization}`
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateOrganizationDto1);
 
       req.flush(testOrganization1);
+    });
+  });
+
+  describe('edit', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .edit(testOrganization2.slug, testBaseUpdateOrganizationDto1)
+        .subscribe({
+          next: (organization) => {
+            try {
+              expect(organization).toEqual(testOrganization1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization2.slug}`
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateOrganizationDto1);
+
+      req.flush(testOrganization1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should send out a delete request', (done) => {
+      service.delete(testOrganization1.slug).subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
     });
   });
 
@@ -100,9 +149,9 @@ describe('OrganizationService', () => {
         fromObject: { ...testBaseCheckSlugDto1 },
       });
       const req = httpController.expectOne(
-        `/api/v${organizationVersion}/${UrlEndpoint.Organization}/${
-          UrlEndpoint.CheckSlug
-        }?${params.toString()}`
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${
+          UrlEndpoint.Organization
+        }/${UrlEndpoint.CheckSlug}?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -128,9 +177,9 @@ describe('OrganizationService', () => {
         fromObject: { ...testBaseGenerateSlugDto1 },
       });
       const req = httpController.expectOne(
-        `/api/v${organizationVersion}/${UrlEndpoint.Organization}/${
-          UrlEndpoint.GenerateSlug
-        }?${params.toString()}`
+        `/${UrlEndpoint.Api}/v${organizationVersion}/${
+          UrlEndpoint.Organization
+        }/${UrlEndpoint.GenerateSlug}?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 

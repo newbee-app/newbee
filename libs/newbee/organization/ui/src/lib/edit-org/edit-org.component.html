@@ -1,0 +1,154 @@
+<div class="flex flex-col flex-nowrap">
+  <div class="collapse collapse-arrow">
+    <input type="checkbox" id="edit-collapse" checked />
+    <label for="edit-collapse" class="collapse-title"><h4>Edit</h4></label>
+
+    <form
+      id="edit-org-form"
+      [formGroup]="editOrgForm"
+      (ngSubmit)="emitEdit()"
+      class="collapse-content flex flex-col flex-nowrap gap-y-4 w-full"
+    >
+      <label class="flex flex-col gap-y-2">
+        <p>Org name</p>
+        <input
+          type="text"
+          id="name-input"
+          formControlName="name"
+          class="input input-bordered max-w-full w-full"
+        />
+        <newbee-error-alert
+          *ngIf="editInputDisplayError('editOrg', 'name')"
+          [text]="editInputErrorMessage('editOrg', 'name')"
+        ></newbee-error-alert>
+      </label>
+
+      <button
+        type="submit"
+        id="edit-btn"
+        [disabled]="editOrgForm.invalid || !editDistinct || editPending"
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="editPending" class="loading loading-spinner"></span>
+        Update org
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="isOwner" class="divider"></div>
+
+  <div *ngIf="isOwner" class="collapse collapse-arrow">
+    <input type="checkbox" id="advanced-collapse" checked />
+    <label for="advanced-collapse" class="collapse-title"
+      ><h4>Advanced</h4></label
+    >
+
+    <div class="collapse-content flex flex-col flex-nowrap gap-y-6">
+      <form
+        id="edit-slug-form"
+        [formGroup]="editOrgSlugForm"
+        (ngSubmit)="emitEditSlug()"
+        class="flex flex-col flex-nowrap gap-y-4 border border-neutral p-4 rounded-box"
+      >
+        <label class="flex flex-col gap-y-2">
+          <h5>Change URL</h5>
+          <p>
+            Changing your org's URL means that your old URL will become
+            available for anyone else to use. Changes may take a few hours to
+            finalize and you may notice some unexpected side effects in the
+            short-term.
+          </p>
+
+          <div class="join">
+            <button
+              type="button"
+              class="btn no-animation cursor-auto join-item"
+            >
+              newbee.app/
+            </button>
+            <input
+              type="text"
+              id="edit-slug-input"
+              formControlName="slug"
+              newbeeSlugInput
+              (slug)="formattedSlug.emit($event)"
+              class="input input-bordered join-item w-full"
+            />
+          </div>
+
+          <div *ngIf="checkPending" class="self-center">
+            <span class="loading loading-dots"></span>
+          </div>
+
+          <newbee-error-alert
+            *ngIf="
+              (!checkPending && slugTaken) ||
+              editInputDisplayError('editOrgSlug', 'slug')
+            "
+            [text]="
+              editInputErrorMessage('editOrgSlug', 'slug') ||
+              'This slug is already taken, please choose another'
+            "
+          ></newbee-error-alert>
+        </label>
+
+        <button
+          type="submit"
+          id="edit-slug-btn"
+          [disabled]="
+            editOrgSlugForm.invalid ||
+            checkPending ||
+            slugTaken ||
+            !editSlugDistinct ||
+            editSlugPending
+          "
+          class="btn btn-primary w-fit"
+        >
+          <span *ngIf="editSlugPending" class="loading loading-spinner"></span>
+          Change URL
+        </button>
+      </form>
+
+      <form
+        id="delete-org-form"
+        [formGroup]="deleteOrgForm"
+        (ngSubmit)="emitDelete()"
+        class="flex flex-col flex-nowrap gap-y-4 border border-neutral p-4 rounded-box"
+      >
+        <label class="flex flex-col gap-y-2">
+          <h5>Delete</h5>
+          <p>
+            Type your org's URL to confirm the deletion. This will delete all
+            data related to your organization. This is a permanent action that
+            cannot be undone.
+          </p>
+
+          <input
+            type="text"
+            id="confirm-delete-input"
+            formControlName="slug"
+            [placeholder]="orgMember.organization.slug"
+            class="input input-bordered"
+          />
+        </label>
+
+        <button
+          type="submit"
+          id="delete-btn"
+          [disabled]="
+            deleteOrgForm.invalid || deletePending || !deleteSlugMatches
+          "
+          class="btn btn-error w-fit"
+        >
+          <span *ngIf="deletePending" class="loading loading-spinner"></span>
+          Delete org
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <newbee-error-alert
+    *ngIf="httpClientError?.messages?.['misc']"
+    [text]="httpClientError?.messages?.['misc'] ?? ''"
+  ></newbee-error-alert>
+</div>

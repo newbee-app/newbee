@@ -23,6 +23,7 @@ export const orgTitleResolver: ResolveFn<string> = (
 
   return store.select(organizationFeature.selectSelectedOrganization).pipe(
     skipWhile((orgMember) => orgMember?.organization.slug !== orgSlug),
+    // add timeout here
     map((orgMember) => {
       return orgMember?.organization.name as string;
     })

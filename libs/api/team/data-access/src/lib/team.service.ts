@@ -202,19 +202,21 @@ export class TeamService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(team: TeamEntity): Promise<void> {
+    const collectionName = team.organization.id;
+    const { id } = team;
+    await this.entityService.safeToDelete(team);
+
     try {
-      await this.entityService.prepareToDelete(team);
       await this.teamRepository.removeAndFlush(team);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const collectionName = team.organization.id;
     try {
       await this.solrCli.deleteDocs(collectionName, [
-        { id: team.id },
-        { query: `team:${team.id}` },
+        { id },
+        { query: `team:${id}` },
       ]);
     } catch (err) {
       this.logger.error(err);

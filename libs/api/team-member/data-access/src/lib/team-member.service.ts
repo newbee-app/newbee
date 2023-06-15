@@ -183,14 +183,10 @@ export class TeamMemberService {
   ): Promise<void> {
     this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
 
+    await this.entityService.safeToDelete(teamMember);
     try {
-      await this.entityService.prepareToDelete(teamMember);
       await this.teamMemberRepository.removeAndFlush(teamMember);
     } catch (err) {
-      if (err instanceof BadRequestException) {
-        throw err;
-      }
-
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }

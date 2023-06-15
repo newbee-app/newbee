@@ -290,12 +290,8 @@ describe('UserService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(repository.populate).toBeCalledTimes(1);
-      expect(repository.populate).toBeCalledWith(testUserEntity, [
-        'organizations',
-      ]);
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(testUserEntity);
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testUserEntity);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserEntity);
     });

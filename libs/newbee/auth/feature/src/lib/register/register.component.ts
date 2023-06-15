@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
-import { RegisterForm } from '@newbee/newbee/auth/util';
+import { RegisterForm, registerFormToDto } from '@newbee/newbee/auth/util';
 import {
   AuthActions,
   HttpActions,
@@ -41,19 +41,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
-   * Convert a `Partial<RegisterForm>` to a `RegisterForm`.
-   *
-   * @param partialRegisterForm The partial to convert.
-   * @returns A `RegisterForm` with empty strings where required properties were falsy.
-   */
-  private static partialToRegisterForm(
-    partialRegisterForm: Partial<RegisterForm>
-  ): RegisterForm {
-    const { email, name } = partialRegisterForm;
-    return { ...partialRegisterForm, email: email ?? '', name: name ?? '' };
-  }
-
-  /**
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
@@ -85,12 +72,14 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits `register`, send a `[Auth] Get WebAuthn Register Challenge` action with the value of the register form.
    *
-   * @param partialRegisterForm The register form to feed into the register request.
+   * @param registerForm The register form to feed into the register request.
    */
-  onRegister(partialRegisterForm: Partial<RegisterForm>): void {
-    const registerForm =
-      RegisterComponent.partialToRegisterForm(partialRegisterForm);
-    this.store.dispatch(AuthActions.registerWithWebauthn({ registerForm }));
+  onRegister(registerForm: Partial<RegisterForm>): void {
+    this.store.dispatch(
+      AuthActions.registerWithWebauthn({
+        createUserDto: registerFormToDto(registerForm),
+      })
+    );
   }
 
   /**

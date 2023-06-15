@@ -309,8 +309,8 @@ describe('DocService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(testDocEntity1);
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testDocEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testDocEntity1);
     });

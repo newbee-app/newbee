@@ -4,14 +4,17 @@ import { Router } from '@angular/router';
 import {
   catchHttpError,
   OrganizationActions,
+  organizationFeature,
 } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
   slugIsNotEmpty,
 } from '@newbee/shared/util';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, filter, map, switchMap, tap } from 'rxjs';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { OrganizationService } from '../organization.service';
 
 /**
@@ -36,8 +39,8 @@ export class OrganizationEffects {
   createOrg$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrganizationActions.createOrg),
-      switchMap(({ createOrgForm }) => {
-        return this.organizationService.create(createOrgForm).pipe(
+      switchMap(({ createOrganizationDto }) => {
+        return this.organizationService.create(createOrganizationDto).pipe(
           map((organization) => {
             return OrganizationActions.createOrgSuccess({ organization });
           }),
@@ -59,11 +62,112 @@ export class OrganizationEffects {
     { dispatch: false }
   );
 
+  editOrg$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.editOrg),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
+        return this.organizationService
+          .edit(
+            selectedOrganization?.organization.slug as string,
+            updateOrganizationDto
+          )
+          .pipe(
+            map((organization) => {
+              return OrganizationActions.editOrgSuccess({
+                newOrg: organization,
+              });
+            }),
+            catchError(OrganizationEffects.catchHttpError)
+          );
+      })
+    );
+  });
+
+  editOrgSlug$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.editOrgSlug),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
+        return this.organizationService
+          .edit(
+            selectedOrganization?.organization.slug as string,
+            updateOrganizationDto
+          )
+          .pipe(
+            map((organization) => {
+              return OrganizationActions.editOrgSlugSuccess({
+                newOrg: organization,
+              });
+            }),
+            catchError(OrganizationEffects.catchHttpError)
+          );
+      })
+    );
+  });
+
+  editOrgSlugSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(OrganizationActions.editOrgSlugSuccess),
+        tap(async ({ newOrg }) => {
+          await this.router.navigate([`/${newOrg.slug}/${UrlEndpoint.Edit}`]);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  deleteOrg$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.deleteOrg),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([, selectedOrganization]) => {
+        return this.organizationService
+          .delete(selectedOrganization?.organization.slug as string)
+          .pipe(
+            map(() => {
+              return OrganizationActions.deleteOrgSuccess();
+            }),
+            catchError(OrganizationEffects.catchHttpError)
+          );
+      })
+    );
+  });
+
+  deleteOrgSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(OrganizationActions.deleteOrgSuccess),
+        tap(async () => {
+          await this.router.navigate(['/']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   checkSlug$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrganizationActions.checkSlug),
       filter(({ slug }) => !!slug),
-      switchMap(({ slug }) => {
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      switchMap(([{ slug }, selectedOrganization]) => {
+        if (selectedOrganization?.organization.slug === slug) {
+          return of(OrganizationActions.checkSlugSuccess({ slugTaken: false }));
+        }
+
         return this.organizationService.checkSlug(slug).pipe(
           map(({ slugTaken }) => {
             return OrganizationActions.checkSlugSuccess({ slugTaken });
@@ -94,6 +198,7 @@ export class OrganizationEffects {
   constructor(
     private readonly actions$: Actions,
     private readonly organizationService: OrganizationService,
+    private readonly store: Store,
     private readonly router: Router
   ) {}
 

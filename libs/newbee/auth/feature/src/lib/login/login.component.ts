@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
-import { LoginForm } from '@newbee/newbee/auth/util';
+import { LoginForm, loginFormToDto } from '@newbee/newbee/auth/util';
 import {
   AuthActions,
   HttpActions,
@@ -46,19 +46,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
-   * Converts a `Partial<LoginForm>` to a `LoginForm`.
-   *
-   * @param partialLoginForm The partial to convert.
-   * @returns A `LoginForm` with empty strings where required properties were falsy.
-   */
-  private static partialToLoginForm(
-    partialLoginForm: Partial<LoginForm>
-  ): LoginForm {
-    const { email } = partialLoginForm;
-    return { email: email ?? '' };
-  }
-
-  /**
    * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
    */
   ngOnInit(): void {
@@ -90,21 +77,25 @@ export class LoginComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits `webauthn`, send a `[Auth] Get WebAuthn Login Challenge` action with the value of the login form.
    *
-   * @param partialLoginForm The login form to feed into the login request.
+   * @param loginForm The login form to feed into the login request.
    */
-  onWebAuthn(partialLoginForm: Partial<LoginForm>): void {
-    const loginForm = LoginComponent.partialToLoginForm(partialLoginForm);
-    this.store.dispatch(AuthActions.createWebauthnLoginOptions({ loginForm }));
+  onWebAuthn(loginForm: Partial<LoginForm>): void {
+    this.store.dispatch(
+      AuthActions.createWebauthnLoginOptions({
+        emailDto: loginFormToDto(loginForm),
+      })
+    );
   }
 
   /**
    * When the dumb UI emits `magicLinkLogin`, send a `[Auth] Send Login Magic Link` action with the value of the login form.
    *
-   * @param partialLoginForm The login form to feed into the login request.
+   * @param loginForm The login form to feed into the login request.
    */
-  onMagicLinkLogin(partialLoginForm: Partial<LoginForm>): void {
-    const loginForm = LoginComponent.partialToLoginForm(partialLoginForm);
-    this.store.dispatch(AuthActions.sendLoginMagicLink({ loginForm }));
+  onMagicLinkLogin(loginForm: Partial<LoginForm>): void {
+    this.store.dispatch(
+      AuthActions.sendLoginMagicLink({ emailDto: loginFormToDto(loginForm) })
+    );
   }
 
   /**

@@ -291,6 +291,13 @@ export class EntityService {
       | UserSettingsEntity
       | UserEntity
   ): Promise<void> {
+    try {
+      await this.em.populate(entity, true);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
     if (
       entity instanceof AuthenticatorEntity ||
       entity instanceof DocEntity ||
@@ -303,20 +310,7 @@ export class EntityService {
       entity instanceof UserSettingsEntity
     ) {
       return;
-    }
-
-    if (entity instanceof OrgMemberEntity) {
-      try {
-        await this.em.populate(entity, [
-          'maintainedDocs',
-          'maintainedQnas',
-          'teams',
-        ]);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
+    } else if (entity instanceof OrgMemberEntity) {
       if (entity.maintainedDocs.length || entity.maintainedQnas.length) {
         throw new BadRequestException(cannotDeleteMaintainerBadReqest);
       }
@@ -349,164 +343,8 @@ export class EntityService {
         throw new BadRequestException(cannotDeleteOnlyTeamOwnerBadRequest);
       }
     } /* UserEntity */ else {
-      try {
-        await this.em.populate(entity, ['organizations']);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
       for (const orgMember of entity.organizations) {
         await this.safeToDelete(orgMember);
-      }
-    }
-  }
-
-  /**
-   * Prepare to delete the given entity by first deleting relations that need to be explicitly deleted.
-   * Throws a BadRequestException if it's unsafe to delete the entity or one of its relations.
-   *
-   * @param entity The entity to prepare to delete.
-   *
-   * @throws {BadRequestException} `cannotDeleteMaintainerBadRequest`, `cannotDeleteOnlyTeamOwnerBadRequest`, `cannotDeleteOnlyOrgOwnerBadRequest`. If trying to delete a user who's the only maintainer of a post, the only team owner, or the only org owner.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async prepareToDelete(
-    entity:
-      | AuthenticatorEntity
-      | DocEntity
-      | OrgMemberInviteEntity
-      | OrgMemberEntity
-      | OrganizationEntity
-      | QnaEntity
-      | TeamMemberEntity
-      | TeamEntity
-      | UserChallengeEntity
-      | UserInvitesEntity
-      | UserSettingsEntity
-      | UserEntity
-  ): Promise<void> {
-    await this.safeToDelete(entity);
-
-    if (
-      entity instanceof AuthenticatorEntity ||
-      entity instanceof DocEntity ||
-      entity instanceof OrgMemberInviteEntity ||
-      entity instanceof QnaEntity ||
-      entity instanceof TeamMemberEntity ||
-      entity instanceof UserChallengeEntity ||
-      entity instanceof UserSettingsEntity
-    ) {
-      return;
-    }
-
-    if (entity instanceof OrgMemberEntity) {
-      try {
-        await this.em.populate(entity, [
-          'teams',
-          'createdDocs',
-          'maintainedDocs',
-          'createdQnas',
-          'maintainedQnas',
-        ]);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
-      const {
-        teams,
-        createdDocs,
-        maintainedDocs,
-        createdQnas,
-        maintainedQnas,
-      } = entity;
-      for (const collection of [
-        teams,
-        createdDocs,
-        maintainedDocs,
-        createdQnas,
-        maintainedQnas,
-      ]) {
-        for (const item of collection.getItems()) {
-          await this.prepareToDelete(item);
-        }
-
-        collection.removeAll();
-      }
-    } else if (entity instanceof OrganizationEntity) {
-      try {
-        await this.em.populate(entity, [
-          'teams',
-          'docs',
-          'qnas',
-          'members',
-          'invites',
-        ]);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
-      const { teams, docs, qnas, members, invites } = entity;
-      for (const collection of [teams, docs, qnas, members, invites]) {
-        for (const item of collection.getItems()) {
-          await this.prepareToDelete(item);
-        }
-
-        collection.removeAll();
-      }
-    } else if (entity instanceof TeamEntity) {
-      try {
-        await this.em.populate(entity, ['docs', 'qnas', 'teamMembers']);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
-      const { docs, qnas, teamMembers } = entity;
-      for (const collection of [docs, qnas, teamMembers]) {
-        for (const item of collection.getItems()) {
-          await this.prepareToDelete(item);
-        }
-
-        collection.removeAll();
-      }
-    } else if (entity instanceof UserInvitesEntity) {
-      try {
-        await this.em.populate(entity, ['orgMemberInvites']);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
-      const { orgMemberInvites } = entity;
-      for (const item of orgMemberInvites.getItems()) {
-        await this.prepareToDelete(item);
-      }
-
-      orgMemberInvites.removeAll();
-    } /* UserEntity */ else {
-      try {
-        await this.em.populate(entity, [
-          'invites',
-          'authenticators',
-          'organizations',
-        ]);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
-      const { invites, authenticators, organizations } = entity;
-      await this.prepareToDelete(invites);
-
-      for (const collection of [authenticators, organizations]) {
-        for (const item of collection.getItems()) {
-          await this.prepareToDelete(item);
-        }
-
-        collection.removeAll();
       }
     }
   }

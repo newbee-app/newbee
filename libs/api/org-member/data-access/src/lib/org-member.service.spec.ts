@@ -309,10 +309,8 @@ describe('OrgMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(
-        testOrgMemberEntity1
-      );
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testOrgMemberEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
     });

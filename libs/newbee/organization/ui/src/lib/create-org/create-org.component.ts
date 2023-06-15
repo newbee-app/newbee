@@ -53,12 +53,12 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Whether to display the spinner on the create button.
    */
-  @Input() createPending!: boolean;
+  @Input() createPending = false;
 
   /**
    * Whether to display a spinner for the slug check.
    */
-  @Input() checkPending!: boolean;
+  @Input() checkPending = false;
 
   /**
    * An HTTP error for the component, if one exists.
@@ -159,7 +159,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    */
   readonly inputDisplayError = (inputName: string): boolean =>
     inputDisplayError(this.createOrgForm, inputName) ||
-    !!this.httpClientError?.messages?.[inputName];
+    !!this.httpClientError?.messages[inputName];
 
   /**
    * The given input's error message.
@@ -168,10 +168,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(inputName: string): string {
-    return (
-      getErrorMessage(this.createOrgForm.get(inputName)) ||
-      (this.httpClientError?.messages?.[inputName] ?? '')
-    );
-  }
+  readonly inputErrorMessage = (inputName: string): string =>
+    getErrorMessage(this.createOrgForm.get(inputName)) ||
+    (this.httpClientError?.messages[inputName] ?? '');
 }

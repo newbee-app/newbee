@@ -73,7 +73,7 @@ export class ConfirmEmailComponent implements OnInit, OnDestroy {
    */
   onResendLink(email: string): void {
     this.store.dispatch(
-      AuthActions.sendLoginMagicLink({ loginForm: { email } })
+      AuthActions.sendLoginMagicLink({ emailDto: { email } })
     );
   }
 }
