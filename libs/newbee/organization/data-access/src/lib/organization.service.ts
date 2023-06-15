@@ -1,10 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import type { OrgForm } from '@newbee/newbee/organization/util';
 import {
   BaseCreateOrganizationDto,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
+  BaseUpdateOrganizationDto,
   organizationVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
@@ -18,20 +18,6 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class OrganizationService {
   constructor(private readonly http: HttpClient) {}
-
-  /**
-   * Converts a `CreateOrgForm` to a `BaseCreateOrganizationDto`.
-   *
-   * @param createOrgForm The form to convert.
-   *
-   * @returns The form as a DTO.
-   */
-  private static createOrgFormToCreateOrganizationDto(
-    createOrgForm: OrgForm
-  ): BaseCreateOrganizationDto {
-    const { name, slug } = createOrgForm;
-    return { name: name ?? '', slug: slug ?? '' };
-  }
 
   /**
    * Sends a request to the API to get the organization associated with the given slug.
@@ -49,16 +35,46 @@ export class OrganizationService {
   /**
    * Send a request to the API to create a new organization with the given information.
    *
-   * @param createOrgForm The form containing the necessary information to create a new org.
+   * @param createOrganizationDto The DTO containing the necessary information to create a new org.
    *
    * @returns An observable with information about the new organization.
    */
-  create(createOrgForm: OrgForm): Observable<Organization> {
-    const createOrganizationDto =
-      OrganizationService.createOrgFormToCreateOrganizationDto(createOrgForm);
+  create(
+    createOrganizationDto: BaseCreateOrganizationDto
+  ): Observable<Organization> {
     return this.http.post<Organization>(
       `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}`,
       createOrganizationDto
+    );
+  }
+
+  /**
+   * Send a request to the API to edit an existing organization with the given information.
+   *
+   * @param updateOrganizationDto The form containing the necessary information to edit an existing org.
+   *
+   * @returns An observable with information about the edited organization.
+   */
+  edit(
+    orgSlug: string,
+    updateOrganizationDto: BaseUpdateOrganizationDto
+  ): Observable<Organization> {
+    return this.http.patch<Organization>(
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${orgSlug}`,
+      updateOrganizationDto
+    );
+  }
+
+  /**
+   * Send a request to the API to delete an existing organization.
+   *
+   * @param orgSlug The slug of the organization to delete.
+   *
+   * @returns A void observable.
+   */
+  delete(orgSlug: string): Observable<null> {
+    return this.http.delete<null>(
+      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${orgSlug}`
     );
   }
 

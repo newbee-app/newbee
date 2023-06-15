@@ -1,7 +1,7 @@
 /**
- * An interface representing a creating/editing organization form.
+ * An interface representing a create organization form.
  */
-export interface OrgForm {
+export interface CreateOrgForm {
   /**
    * The name of the organization.
    */

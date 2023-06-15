@@ -1,5 +1,6 @@
 import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
 import { OrganizationActions } from './organization.actions';
@@ -82,6 +83,48 @@ export const organizationFeature = createFeature({
         return { ...state, organizations };
       }
     ),
+    on(
+      OrganizationActions.editOrgSuccess,
+      OrganizationActions.editOrgSlugSuccess,
+      (state, { newOrg }): OrganizationState => {
+        const { selectedOrganization } = state;
+
+        // this shouldn't happen
+        if (!selectedOrganization) {
+          return state;
+        }
+
+        const organizations = [
+          ...state.organizations.filter(
+            (org) => !isEqual(org, selectedOrganization.organization)
+          ),
+          newOrg,
+        ];
+
+        return {
+          ...state,
+          organizations,
+          selectedOrganization: {
+            ...selectedOrganization,
+            organization: newOrg,
+          },
+        };
+      }
+    ),
+    on(OrganizationActions.deleteOrgSuccess, (state): OrganizationState => {
+      const { selectedOrganization } = state;
+
+      // this shouldn't happen
+      if (!selectedOrganization) {
+        return state;
+      }
+
+      const organizations = state.organizations.filter(
+        (org) => !isEqual(org, selectedOrganization.organization)
+      );
+
+      return { ...state, organizations, selectedOrganization: null };
+    }),
     on(
       OrganizationActions.resetSelectedOrg,
       OrganizationActions.orgCreateComponentInit,

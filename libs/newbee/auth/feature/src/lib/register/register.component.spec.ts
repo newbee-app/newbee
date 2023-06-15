@@ -4,6 +4,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { RegisterFormComponent } from '@newbee/newbee/auth/ui';
 import { testRegisterForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { testBaseCreateUserDto1 } from '@newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -74,7 +75,7 @@ describe('RegisterComponent', () => {
           try {
             expect(scannedAction).toEqual(
               AuthActions.registerWithWebauthn({
-                registerForm: testRegisterForm1,
+                createUserDto: testBaseCreateUserDto1,
               })
             );
             done();

@@ -28,8 +28,8 @@ export class AuthEffects {
   sendLoginMagicLink$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.sendLoginMagicLink),
-      switchMap(({ loginForm }) => {
-        return this.authService.magicLinkLoginLogin(loginForm).pipe(
+      switchMap(({ emailDto }) => {
+        return this.authService.magicLinkLoginLogin(emailDto).pipe(
           map((magicLinkLoginDto) => {
             return AuthActions.sendLoginMagicLinkSuccess({ magicLinkLoginDto });
           }),
@@ -61,8 +61,8 @@ export class AuthEffects {
   registerWithWebauthn$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.registerWithWebauthn),
-      switchMap(({ registerForm }) => {
-        return this.authService.webAuthnRegister(registerForm).pipe(
+      switchMap(({ createUserDto }) => {
+        return this.authService.webAuthnRegister(createUserDto).pipe(
           map((userAndOptionsDto) => {
             return AuthActions.registerWithWebauthnSuccess({
               userRelationAndOptionsDto: userAndOptionsDto,
@@ -91,11 +91,11 @@ export class AuthEffects {
   createWebauthnLoginOptions$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.createWebauthnLoginOptions),
-      switchMap(({ loginForm }) => {
-        return this.authService.webAuthnLoginOptions(loginForm).pipe(
+      switchMap(({ emailDto }) => {
+        return this.authService.webAuthnLoginOptions(emailDto).pipe(
           map((options) => {
             return AuthActions.loginWithWebauthn({
-              loginForm,
+              emailDto,
               options,
             });
           }),
@@ -108,8 +108,8 @@ export class AuthEffects {
   loginWithWebauthn$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.loginWithWebauthn),
-      switchMap(({ loginForm, options }) => {
-        return this.authService.webAuthnLogin(loginForm, options).pipe(
+      switchMap(({ emailDto, options }) => {
+        return this.authService.webAuthnLogin(emailDto, options).pipe(
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),

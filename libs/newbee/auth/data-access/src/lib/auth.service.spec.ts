@@ -3,7 +3,6 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import {
   authVersion,
   testBaseCreateUserDto1,
@@ -52,7 +51,7 @@ describe('AuthService', () => {
 
   describe('magicLinkLoginLogin', () => {
     it('should send out a post request', (done) => {
-      service.magicLinkLoginLogin(testLoginForm1).subscribe({
+      service.magicLinkLoginLogin(testBaseEmailDto1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
             expect(magicLinkLoginDto).toEqual(testBaseMagicLinkLoginDto1);
@@ -100,7 +99,7 @@ describe('AuthService', () => {
 
   describe('webAuthnRegister', () => {
     it('should send out a post request', (done) => {
-      service.webAuthnRegister(testRegisterForm1).subscribe({
+      service.webAuthnRegister(testBaseCreateUserDto1).subscribe({
         next: (userRelationAndOptionsDto) => {
           try {
             expect(userRelationAndOptionsDto).toEqual(
@@ -126,7 +125,7 @@ describe('AuthService', () => {
 
   describe('webAuthnLoginOptions', () => {
     it('should send out a post request', (done) => {
-      service.webAuthnLoginOptions(testLoginForm1).subscribe({
+      service.webAuthnLoginOptions(testBaseEmailDto1).subscribe({
         next: (options) => {
           try {
             expect(options).toEqual(testPublicKeyCredentialRequestOptions1);
@@ -151,7 +150,10 @@ describe('AuthService', () => {
   describe('webauthnLogin', () => {
     it('should send out a post request', (done) => {
       service
-        .webAuthnLogin(testLoginForm1, testPublicKeyCredentialRequestOptions1)
+        .webAuthnLogin(
+          testBaseEmailDto1,
+          testPublicKeyCredentialRequestOptions1
+        )
         .subscribe({
           next: (userRelation) => {
             try {

@@ -58,6 +58,12 @@
             placeholder="Display name"
             class="input input-bordered w-full"
           />
+
+          <div *ngIf="inputDisplayError('displayName')" class="mt-2">
+            <newbee-error-alert
+              [text]="inputErrorMessage('displayName')"
+            ></newbee-error-alert>
+          </div>
         </div>
 
         <div>
@@ -80,7 +86,7 @@
 
         <div *ngIf="httpClientError?.messages?.['misc']" class="mt-2">
           <newbee-error-alert
-            [text]="httpClientError?.messages?.['misc'] ?? ''"
+            [text]="httpClientError?.messages?.['misc']!"
           ></newbee-error-alert>
         </div>
       </div>

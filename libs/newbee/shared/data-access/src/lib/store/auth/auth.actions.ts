@@ -1,5 +1,6 @@
-import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
+  BaseCreateUserDto,
+  BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
 } from '@newbee/shared/data-access';
@@ -17,7 +18,7 @@ export const AuthActions = createActionGroup({
      * Send a magic link login request to the API.
      * Should call `Send Login Magic Link Success` with the result and redirect.
      */
-    'Send Login Magic Link': props<{ loginForm: LoginForm }>(),
+    'Send Login Magic Link': props<{ emailDto: BaseEmailDto }>(),
 
     /**
      * Marks the magic link as successfully sent to the user's email.
@@ -37,7 +38,7 @@ export const AuthActions = createActionGroup({
      * Register a new user and get WebAuthn registration options from the API for registering a new authenticator.
      * Should call `Register With WebAuthn Success` with the result, if successful.
      */
-    'Register With WebAuthn': props<{ registerForm: RegisterForm }>(),
+    'Register With WebAuthn': props<{ createUserDto: BaseCreateUserDto }>(),
 
     /**
      * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Create Authenticator`, and redirects.
@@ -50,14 +51,14 @@ export const AuthActions = createActionGroup({
      * Gets WebAuthn login options from the API for logging in an existing user.
      * Should call `Login With WebAuthn` with the result, if successful.
      */
-    'Create WebAuthn Login Options': props<{ loginForm: LoginForm }>(),
+    'Create WebAuthn Login Options': props<{ emailDto: BaseEmailDto }>(),
 
     /**
      * Sends the authenticator's response back to the API for verification.
      * Should call `Login Success` with the result and redirect.
      */
     'Login With WebAuthn': props<{
-      loginForm: LoginForm;
+      emailDto: BaseEmailDto;
       options: PublicKeyCredentialRequestOptionsJSON;
     }>(),
 

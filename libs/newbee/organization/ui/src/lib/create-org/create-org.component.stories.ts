@@ -38,7 +38,7 @@ export const HttpError: Story = {
   args: {
     httpClientError: {
       status: 400,
-      messages: { slug: 'An HTTP client error' },
+      messages: { misc: 'An HTTP client error' },
     },
   },
 };

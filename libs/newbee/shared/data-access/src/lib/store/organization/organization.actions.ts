@@ -1,4 +1,7 @@
-import { OrgForm } from '@newbee/newbee/organization/util';
+import {
+  BaseCreateOrganizationDto,
+  BaseUpdateOrganizationDto,
+} from '@newbee/shared/data-access';
 import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -22,12 +25,44 @@ export const OrganizationActions = createActionGroup({
     /**
      * Creates a new org with the given information.
      */
-    'Create Org': props<{ createOrgForm: OrgForm }>(),
+    'Create Org': props<{ createOrganizationDto: BaseCreateOrganizationDto }>(),
 
     /**
      * Indicates that an org was successfully created.
      */
     'Create Org Success': props<{ organization: Organization }>(),
+
+    /**
+     * Edits the currently selected organization with the given information.
+     */
+    'Edit Org': props<{ updateOrganizationDto: BaseUpdateOrganizationDto }>(),
+
+    /**
+     * Indicates that the currently selected org was successfully updated.
+     */
+    'Edit Org Success': props<{ newOrg: Organization }>(),
+
+    /**
+     * Edits the currently selected org with a new slug.
+     */
+    'Edit Org Slug': props<{
+      updateOrganizationDto: BaseUpdateOrganizationDto;
+    }>(),
+
+    /**
+     * Indicates that the currently selected org was successfully updated with the new slug.
+     */
+    'Edit Org Slug Success': props<{ newOrg: Organization }>(),
+
+    /**
+     * Send a request to the API to delete the currently selected org.
+     */
+    'Delete Org': emptyProps(),
+
+    /**
+     * Indicates that the currently selected org was successfully deleted.
+     */
+    'Delete Org Success': emptyProps(),
 
     /**
      * Indicates that a user is typing in a slug at the moment.
@@ -58,6 +93,11 @@ export const OrganizationActions = createActionGroup({
      * Set the selected org to be null.
      */
     'Reset Selected Org': emptyProps(),
+
+    /**
+     * Reset the pending actions of the org state.
+     */
+    'Reset Pending Actions': emptyProps(),
 
     /**
      * Indicates that the `OrgCreateComponent` has been initialized.

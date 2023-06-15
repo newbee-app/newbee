@@ -7,8 +7,9 @@ import {
 } from '@angular/core/testing';
 import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
-import { testOrgForm1 } from '@newbee/newbee/organization/util';
+import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { testBaseCreateOrganizationDto1 } from '@newbee/shared/data-access';
 import { testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgCreateComponent } from './org-create.component';
@@ -81,10 +82,12 @@ describe('OrgCreateComponent', () => {
 
   describe('onCreate', () => {
     it('should dispatch createOrg', () => {
-      component.onCreate(testOrgForm1);
+      component.onCreate(testCreateOrgForm1);
       expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.createOrg({ createOrgForm: testOrgForm1 })
+        OrganizationActions.createOrg({
+          createOrganizationDto: testBaseCreateOrganizationDto1,
+        })
       );
     });
   });

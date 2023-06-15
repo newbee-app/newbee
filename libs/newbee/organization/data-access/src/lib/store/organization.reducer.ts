@@ -14,6 +14,21 @@ export interface OrganizationState {
   pendingCreate: boolean;
 
   /**
+   * Whether the user is waiting for a response for editing an org.
+   */
+  pendingEdit: boolean;
+
+  /**
+   * Whether the user is waiting for a response for editing an org slug.
+   */
+  pendingEditSlug: boolean;
+
+  /**
+   * Whether the user is waiting for a response for deleting an org.
+   */
+  pendingDelete: boolean;
+
+  /**
    * Whether the user is waitig for a response for checking an org slug.
    */
   pendingCheck: boolean;
@@ -34,6 +49,9 @@ export interface OrganizationState {
  */
 export const initialOrganizationState: OrganizationState = {
   pendingCreate: false,
+  pendingEdit: false,
+  pendingEditSlug: false,
+  pendingDelete: false,
   pendingCheck: false,
   slugTaken: false,
   generatedSlug: '',
@@ -51,6 +69,27 @@ export const organizationFeature = createFeature({
       (state): OrganizationState => ({
         ...state,
         pendingCreate: true,
+      })
+    ),
+    on(
+      OrganizationActions.editOrg,
+      (state): OrganizationState => ({
+        ...state,
+        pendingEdit: true,
+      })
+    ),
+    on(
+      OrganizationActions.editOrgSlug,
+      (state): OrganizationState => ({
+        ...state,
+        pendingEditSlug: true,
+      })
+    ),
+    on(
+      OrganizationActions.deleteOrg,
+      (state): OrganizationState => ({
+        ...state,
+        pendingDelete: true,
       })
     ),
     on(
@@ -81,6 +120,10 @@ export const organizationFeature = createFeature({
     ),
     on(
       OrganizationActions.createOrgSuccess,
+      OrganizationActions.editOrgSuccess,
+      OrganizationActions.editOrgSlugSuccess,
+      OrganizationActions.deleteOrgSuccess,
+      OrganizationActions.resetPendingActions,
       OrganizationActions.orgCreateComponentInit,
       HttpActions.clientError,
       (): OrganizationState => initialOrganizationState

@@ -4,6 +4,7 @@ import {
 } from '@newbee/shared/data-access';
 import {
   testOrganization1,
+  testOrganization2,
   testOrgMemberRelation1,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -21,16 +22,29 @@ describe('OrganizationReducer', () => {
     organizations: [testOrganization1],
     selectedOrganization: null,
   };
-  const stateAfterGetOrg: OrganizationState = {
+  const stateAfterGetOrgSuccess: OrganizationState = {
     ...stateAfterLoginSuccess,
     selectedOrganization: testOrgMemberRelation1,
   };
-  const stateAfterCreateOrg: OrganizationState = {
+  const stateAfterCreateOrgSuccess: OrganizationState = {
     ...initialOrganizationState,
     organizations: [testOrganization1],
   };
+  const stateAfterEditOrgSuccess: OrganizationState = {
+    ...stateAfterGetOrgSuccess,
+    organizations: [testOrganization2],
+    selectedOrganization: {
+      ...testOrgMemberRelation1,
+      organization: testOrganization2,
+    },
+  };
+  const stateAfterDeleteOrgSuccess: OrganizationState = {
+    ...stateAfterGetOrgSuccess,
+    organizations: [],
+    selectedOrganization: null,
+  };
   const stateAfterResetSelectedOrg: OrganizationState = {
-    ...stateAfterGetOrg,
+    ...stateAfterGetOrgSuccess,
     selectedOrganization: null,
   };
 
@@ -70,7 +84,7 @@ describe('OrganizationReducer', () => {
           organization: testOrganization1,
         })
       );
-      expect(updatedState).toEqual(stateAfterCreateOrg);
+      expect(updatedState).toEqual(stateAfterCreateOrgSuccess);
     });
   });
 
@@ -82,14 +96,42 @@ describe('OrganizationReducer', () => {
           orgMember: testOrgMemberRelation1,
         })
       );
-      expect(updatedState).toEqual(stateAfterGetOrg);
+      expect(updatedState).toEqual(stateAfterGetOrgSuccess);
     });
   });
 
   describe('from get org success', () => {
+    it('should update state for editOrgSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        OrganizationActions.editOrgSuccess({
+          newOrg: testOrganization2,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterEditOrgSuccess);
+    });
+
+    it('should update state for editOrgSlugSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        OrganizationActions.editOrgSlugSuccess({
+          newOrg: testOrganization2,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterEditOrgSuccess);
+    });
+
+    it('should update state for deleteOrgSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        OrganizationActions.deleteOrgSuccess()
+      );
+      expect(updatedState).toEqual(stateAfterDeleteOrgSuccess);
+    });
+
     it('should update state for resetSelectedOrg', () => {
       const updatedState = organizationFeature.reducer(
-        stateAfterGetOrg,
+        stateAfterGetOrgSuccess,
         OrganizationActions.resetSelectedOrg()
       );
       expect(updatedState).toEqual(stateAfterResetSelectedOrg);
@@ -97,7 +139,7 @@ describe('OrganizationReducer', () => {
 
     it('should update state for orgCreateComponentInit', () => {
       const updatedState = organizationFeature.reducer(
-        stateAfterGetOrg,
+        stateAfterGetOrgSuccess,
         OrganizationActions.orgCreateComponentInit()
       );
       expect(updatedState).toEqual(stateAfterResetSelectedOrg);

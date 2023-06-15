@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginForm, RegisterForm } from '@newbee/newbee/auth/util';
 import {
   authVersion,
   BaseCreateUserDto,
@@ -14,8 +13,6 @@ import type { UserRelation } from '@newbee/shared/util';
 import { magicLinkLogin } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
-import type { CountryCode } from 'libphonenumber-js';
-import parsePhoneNumber from 'libphonenumber-js';
 import { from, Observable, switchMap } from 'rxjs';
 
 /**
@@ -27,24 +24,15 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Converts a login form into an email DTO.
+   * Send a POST request to send a magic link for login.
    *
-   * @param loginForm The login form to convert.
+   * @param emailDto The DTO containing the necessary email.
    *
-   * @returns The email DTO derived from the login form.
-   */
-  private static loginFormToEmailDto(loginForm: LoginForm): BaseEmailDto {
-    return { email: loginForm.email ?? '' };
-  }
-
-  /**
-   * Convert the given login form to a `BaseEmailDto` and send a POST request to send a magic link for login.
-   *
-   * @param loginForm The login form containing the necessary email.
    * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
    */
-  magicLinkLoginLogin(loginForm: LoginForm): Observable<BaseMagicLinkLoginDto> {
-    const emailDto = AuthService.loginFormToEmailDto(loginForm);
+  magicLinkLoginLogin(
+    emailDto: BaseEmailDto
+  ): Observable<BaseMagicLinkLoginDto> {
     return this.http.post<BaseMagicLinkLoginDto>(
       `/api/v${authVersion}/${UrlEndpoint.Auth}/${magicLinkLogin}/${UrlEndpoint.Login}`,
       emailDto
@@ -65,31 +53,15 @@ export class AuthService {
   }
 
   /**
-   * Converts the given register form to a `BaseCreateUserDto` and sends a POST request to make the backend create a new user, access token, and generate the options needed to register an authenticator.
+   * Sends a POST request to make the backend create a new user, access token, and generate the options needed to register an authenticator.
    *
-   * @param registerForm The register form containing the necessary information for creating a new user.
+   * @param createUserDto The DTO containing the necessary information for creating a new user.
+   *
    * @returns An observable containing the newly created user, their access token, and the options needed to register an authenticator.
    */
   webAuthnRegister(
-    registerForm: RegisterForm
+    createUserDto: BaseCreateUserDto
   ): Observable<BaseUserRelationAndOptionsDto> {
-    const { email, name, displayName, phoneNumber } = registerForm;
-    let phoneNumberString: string | undefined = undefined;
-    if (phoneNumber && phoneNumber.number && phoneNumber.country) {
-      const { number, country } = phoneNumber;
-      const parsedPhoneNumber = parsePhoneNumber(
-        number,
-        country.regionCode as CountryCode
-      );
-      phoneNumberString = parsedPhoneNumber?.format('E.164');
-    }
-
-    const createUserDto: BaseCreateUserDto = {
-      email: email ?? '',
-      name: name ?? '',
-      displayName: displayName ?? null,
-      phoneNumber: phoneNumberString ?? null,
-    };
     return this.http.post<BaseUserRelationAndOptionsDto>(
       `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Register}`,
       createUserDto
@@ -97,15 +69,15 @@ export class AuthService {
   }
 
   /**
-   * Converts the given login form to a `BaseEmailDto` and sends a POST request to create login authenticator options.
+   * Sends a POST request to create login authenticator options.
    *
-   * @param loginForm The login form containing the necessary email.
+   * @param emailDto The DTO containing the necessary email.
+   *
    * @returns An observable of the options needed to log in with a registered authenticator.
    */
   webAuthnLoginOptions(
-    loginForm: LoginForm
+    emailDto: BaseEmailDto
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
-    const emailDto = AuthService.loginFormToEmailDto(loginForm);
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
       `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}/${UrlEndpoint.Options}`,
       emailDto
@@ -113,17 +85,17 @@ export class AuthService {
   }
 
   /**
-   * Converts the given login form to a `BaseEmailDto` and combines it with the given options to create a `BaseWebAuthnLoginDto`, which it uses to send a POST request to verify the authenticator's response and log the user in.
+   * Combines the email DTO with the given options to create a `BaseWebAuthnLoginDto`, which it uses to send a POST request to verify the authenticator's response and log the user in.
    *
-   * @param loginForm The login form containing the necessary email.
+   * @param emailDto The DTO containing the necessary email.
    * @param options The options to feed into the authenticator.
+   *
    * @returns An observable containing information about the logged in user.
    */
   webAuthnLogin(
-    loginForm: LoginForm,
+    emailDto: BaseEmailDto,
     options: PublicKeyCredentialRequestOptionsJSON
   ): Observable<UserRelation> {
-    const emailDto = AuthService.loginFormToEmailDto(loginForm);
     return from(startAuthentication(options)).pipe(
       switchMap((response) => {
         const webAuthnLoginDto: BaseWebAuthnLoginDto = {

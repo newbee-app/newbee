@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import type { OrgForm } from '@newbee/newbee/organization/util';
+import type { CreateOrgForm } from '@newbee/newbee/organization/util';
 import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
@@ -83,7 +83,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * The emitted create organization form, for use in the smart UI parent.
    */
-  @Output() create = new EventEmitter<Partial<OrgForm>>();
+  @Output() create = new EventEmitter<Partial<CreateOrgForm>>();
 
   /**
    * The internal form to create a new organization.

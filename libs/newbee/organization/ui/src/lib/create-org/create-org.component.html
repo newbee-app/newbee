@@ -60,5 +60,10 @@
       <span *ngIf="createPending" class="loading loading-spinner"></span>
       Create Org
     </button>
+
+    <newbee-error-alert
+      *ngIf="httpClientError?.messages?.['misc']"
+      [text]="httpClientError?.messages?.['misc']!"
+    ></newbee-error-alert>
   </div>
 </form>

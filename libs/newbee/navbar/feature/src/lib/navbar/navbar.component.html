@@ -8,7 +8,7 @@
 <newbee-authenticated-navbar
   *ngIf="user$ | async"
   [user]="(user$ | async)!"
-  [organizations]="(organizations$ | async) ?? []"
+  [organizations]="(organizations$ | async)!"
   [selectedOrganization]="selectedOrganization?.organization || null"
   (selectedOrganizationChange)="selectOrganization($event)"
   [orgMember]="selectedOrganization"

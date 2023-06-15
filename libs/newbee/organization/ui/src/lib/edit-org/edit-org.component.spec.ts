@@ -5,6 +5,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {
+  OrgRoleEnum,
   testOrganization1,
   testOrganization2,
   testOrgMemberRelation1,
@@ -23,11 +24,12 @@ describe('EditOrgComponent', () => {
     fixture = TestBed.createComponent(EditOrgComponent);
     component = fixture.componentInstance;
 
-    component.org = testOrganization1;
     component.orgMember = testOrgMemberRelation1;
 
+    jest.spyOn(component.slug, 'emit');
     jest.spyOn(component.formattedSlug, 'emit');
     jest.spyOn(component.edit, 'emit');
+    jest.spyOn(component.editSlug, 'emit');
     jest.spyOn(component.delete, 'emit');
 
     fixture.detectChanges();
@@ -39,13 +41,21 @@ describe('EditOrgComponent', () => {
   });
 
   describe('outputs', () => {
+    describe('slug', () => {
+      it('should emit whenever the slug input is changed', () => {
+        component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
+        expect(component.slug.emit).toBeCalledTimes(1);
+        expect(component.slug.emit).toBeCalledWith(testOrganization2.slug);
+      });
+    });
+
     describe('formattedSlug', () => {
       it('should emit whenever the slug input is formatted', fakeAsync(() => {
         expect(component.formattedSlug.emit).toBeCalledTimes(1);
         expect(component.formattedSlug.emit).toBeCalledWith(
           testOrganization1.slug
         );
-        component.editOrgForm.patchValue({ slug: testOrganization2.slug });
+        component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
         tick(600);
         expect(component.formattedSlug.emit).toBeCalledTimes(2);
         expect(component.formattedSlug.emit).toBeCalledWith(
@@ -60,6 +70,15 @@ describe('EditOrgComponent', () => {
         expect(component.edit.emit).toBeCalledTimes(1);
         expect(component.edit.emit).toBeCalledWith({
           name: testOrganization1.name,
+        });
+      });
+    });
+
+    describe('editSlug', () => {
+      it('should emit editSlug', () => {
+        component.emitEditSlug();
+        expect(component.editSlug.emit).toBeCalledTimes(1);
+        expect(component.editSlug.emit).toBeCalledWith({
           slug: testOrganization1.slug,
         });
       });
@@ -78,8 +97,16 @@ describe('EditOrgComponent', () => {
     describe('editDistinct', () => {
       it('should be true when edit org form is distinct from org, false otherwise', () => {
         expect(component.editDistinct).toBeFalsy();
-        component.editOrgForm.patchValue({ name: testOrganization2.name });
+        component.editOrgForm.setValue({ name: testOrganization2.name });
         expect(component.editDistinct).toBeTruthy();
+      });
+    });
+
+    describe('editSlugDistinct', () => {
+      it('should be true when edit org slug form is distinct from org, false otherwise', () => {
+        expect(component.editSlugDistinct).toBeFalsy();
+        component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
+        expect(component.editSlugDistinct).toBeTruthy();
       });
     });
 
@@ -94,7 +121,7 @@ describe('EditOrgComponent', () => {
     describe('isOwner', () => {
       it('should be true if org member is the owner of the org, false otherwise', () => {
         expect(component.isOwner).toBeTruthy();
-        component.org = testOrganization2;
+        component.orgMember.orgMember.role = OrgRoleEnum.Moderator;
         expect(component.isOwner).toBeFalsy();
       });
     });

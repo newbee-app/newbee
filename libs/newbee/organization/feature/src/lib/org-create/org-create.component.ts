@@ -1,6 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
-import type { OrgForm } from '@newbee/newbee/organization/util';
+import {
+  CreateOrgForm,
+  createOrgFormToDto,
+} from '@newbee/newbee/organization/util';
 import {
   HttpActions,
   httpFeature,
@@ -56,20 +59,6 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   constructor(private readonly store: Store) {}
 
   /**
-   * Converts a partial of `CreateOrgForm` to the real deal.
-   *
-   * @param partialCreateOrgForm The partial to convert.
-   *
-   * @returns The `CreateOrgForm` converted from the partial.
-   */
-  private static partialToCreateOrgForm(
-    partialCreateOrgForm: Partial<OrgForm>
-  ): OrgForm {
-    const { name, slug } = partialCreateOrgForm;
-    return { ...partialCreateOrgForm, name: name ?? '', slug: slug ?? '' };
-  }
-
-  /**
    * Set the httpClientError based on the value in the store.
    */
   ngOnInit(): void {
@@ -110,7 +99,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits a name event, emit it to the name$ subject.
    *
-   * @param name The name to emit.
+   * @param name The name to dispatch.
    */
   onName(name: string): void {
     this.name$.next(name);
@@ -119,7 +108,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits a slug event, dispatch it to the store.
    *
-   * @param slug The slug to emit.
+   * @param slug The slug to dispatch.
    */
   onSlug(slug: string): void {
     this.store.dispatch(OrganizationActions.typingSlug({ slug }));
@@ -128,20 +117,22 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits a formattedSlug event, dispatch it to the store.
    *
-   * @param slug
+   * @param slug The slug to dispatch.
    */
   onFormattedSlug(slug: string): void {
     this.store.dispatch(OrganizationActions.checkSlug({ slug }));
   }
 
   /**
-   * When the dumb UI emits a create event, send a create action with the value of the create org form.
+   * When the dumb UI emits a create event, send a create action with the value of the org form.
    *
-   * @param partialCreateOrgForm The form to send to the backend.
+   * @param createOrgForm The values to send to the backend.
    */
-  onCreate(partialCreateOrgForm: Partial<OrgForm>): void {
-    const createOrgForm =
-      OrgCreateComponent.partialToCreateOrgForm(partialCreateOrgForm);
-    this.store.dispatch(OrganizationActions.createOrg({ createOrgForm }));
+  onCreate(createOrgForm: Partial<CreateOrgForm>): void {
+    this.store.dispatch(
+      OrganizationActions.createOrg({
+        createOrganizationDto: createOrgFormToDto(createOrgForm),
+      })
+    );
   }
 }

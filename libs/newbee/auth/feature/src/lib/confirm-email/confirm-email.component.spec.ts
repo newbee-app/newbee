@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { authFeature } from '@newbee/newbee/auth/data-access';
 import { JwtIdComponent } from '@newbee/newbee/auth/ui';
-import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { testBaseEmailDto1 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
@@ -27,10 +26,6 @@ describe('ConfirmEmailComponent', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    store.resetSelectors();
-  });
-
   it('should be defined', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
@@ -39,13 +34,14 @@ describe('ConfirmEmailComponent', () => {
 
   describe('jwtId and Email', () => {
     it('should set component properties', () => {
-      store.overrideSelector(authFeature.selectAuthModuleState, {
-        jwtId: '1234',
-        email: testUser1.email,
-        pendingMagicLink: false,
-        pendingWebAuthn: false,
+      store.setState({
+        authModule: {
+          jwtId: '1234',
+          email: testUser1.email,
+          pendingMagicLink: false,
+          pendingWebAuthn: false,
+        },
       });
-      store.refreshState();
 
       expect(component.jwtId$).toBeObservable(hot('a', { a: '1234' }));
       expect(component.email$).toBeObservable(hot('a', { a: testUser1.email }));
@@ -59,7 +55,7 @@ describe('ConfirmEmailComponent', () => {
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 })
+              AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
             );
             done();
           } catch (err) {

@@ -1,4 +1,3 @@
-import { testLoginForm1, testRegisterForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
@@ -35,7 +34,7 @@ describe('AuthReducer', () => {
     it('should update state for sendLoginMagicLink', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 })
+        AuthActions.sendLoginMagicLink
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLink);
     });
@@ -43,9 +42,7 @@ describe('AuthReducer', () => {
     it('should update state for registerWithWebauthn', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.registerWithWebauthn({
-          registerForm: testRegisterForm1,
-        })
+        AuthActions.registerWithWebauthn
       );
       expect(updatedState).toEqual(stateAfterWebauthnRegisterChallenge);
     });
@@ -53,7 +50,7 @@ describe('AuthReducer', () => {
     it('should update state for createWebauthnLoginOptions', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.createWebauthnLoginOptions({ loginForm: testLoginForm1 })
+        AuthActions.createWebauthnLoginOptions
       );
       expect(updatedState).toEqual(stateAfterWebauthnLoginChallenge);
     });

@@ -4,6 +4,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { LoginFormComponent } from '@newbee/newbee/auth/ui';
 import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { testBaseEmailDto1 } from '@newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 
@@ -74,7 +75,7 @@ describe('LoginComponent', () => {
           try {
             expect(scannedAction).toEqual(
               AuthActions.createWebauthnLoginOptions({
-                loginForm: testLoginForm1,
+                emailDto: testBaseEmailDto1,
               })
             );
             done();
@@ -94,7 +95,7 @@ describe('LoginComponent', () => {
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.sendLoginMagicLink({ loginForm: testLoginForm1 })
+              AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
             );
             done();
           } catch (err) {

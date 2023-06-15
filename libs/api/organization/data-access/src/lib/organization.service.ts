@@ -185,8 +185,8 @@ export class OrganizationService {
    * @param organization The `OrganizationEntity` instance to delete.
    */
   async delete(organization: OrganizationEntity): Promise<void> {
+    await this.entityService.prepareToDelete(organization);
     try {
-      await this.entityService.prepareToDelete(organization);
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);
