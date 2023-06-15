@@ -54,7 +54,9 @@
     <button
       id="create-btn"
       type="submit"
-      [disabled]="createOrgForm.invalid || checkPending || slugTaken"
+      [disabled]="
+        createOrgForm.invalid || checkPending || slugTaken || createPending
+      "
       class="btn btn-primary w-full"
     >
       <span *ngIf="createPending" class="loading loading-spinner"></span>

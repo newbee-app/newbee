@@ -239,10 +239,8 @@ describe('TeamMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(
-        testTeamMemberEntity1
-      );
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testTeamMemberEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
     });

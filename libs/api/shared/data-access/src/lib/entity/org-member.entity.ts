@@ -60,12 +60,10 @@ export class OrgMemberEntity implements OrgMember {
   /**
    * The teams the org member is a part of along with the role the org member holds.
    * Acts as a hidden property, meaning it will never be serialized.
-   * `orphanRemoval` is on, so if the org member is deleted, so is its team member entities.
    * Additionally, if a team member is removed from the collection, it is also deleted.
    */
   @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.orgMember, {
     hidden: true,
-    orphanRemoval: true,
   })
   teams = new Collection<TeamMemberEntity>(this);
 

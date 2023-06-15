@@ -123,10 +123,8 @@ describe('UserInvitesService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(
-        testUserInvitesEntity1
-      );
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testUserInvitesEntity1);
       expect(repository.removeAndFlush).toBeCalledTimes(1);
       expect(repository.removeAndFlush).toBeCalledWith(testUserInvitesEntity1);
     });

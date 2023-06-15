@@ -195,17 +195,19 @@ export class QnaService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(qna: QnaEntity): Promise<void> {
+    const collectionName = qna.organization.id;
+    const { id } = qna;
+    await this.entityService.safeToDelete(qna);
+
     try {
-      await this.entityService.prepareToDelete(qna)
       await this.qnaRepository.removeAndFlush(qna);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const collectionName = qna.organization.id;
     try {
-      await this.solrCli.deleteDocs(collectionName, { id: qna.id });
+      await this.solrCli.deleteDocs(collectionName, { id });
     } catch (err) {
       this.logger.error(err);
     }

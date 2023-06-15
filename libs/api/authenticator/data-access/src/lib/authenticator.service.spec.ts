@@ -353,12 +353,8 @@ describe('AuthenticatorService', () => {
 
   describe('deleteOneById', () => {
     afterEach(() => {
-      expect(repository.getReference).toBeCalledTimes(1);
-      expect(repository.getReference).toBeCalledWith(
-        testAuthenticatorEntity1.id
-      );
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(
         testAuthenticatorEntity1
       );
       expect(repository.removeAndFlush).toBeCalledTimes(1);

@@ -338,8 +338,8 @@ describe('QnaService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.prepareToDelete).toBeCalledTimes(1);
-      expect(entityService.prepareToDelete).toBeCalledWith(testQnaEntity1);
+      expect(entityService.safeToDelete).toBeCalledTimes(1);
+      expect(entityService.safeToDelete).toBeCalledWith(testQnaEntity1);
     });
 
     it('should delete a qna', async () => {

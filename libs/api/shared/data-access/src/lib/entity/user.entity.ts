@@ -105,7 +105,6 @@ export class UserEntity implements User {
    */
   @OneToMany(() => OrgMemberEntity, (organization) => organization.user, {
     hidden: true,
-    orphanRemoval: true,
   })
   organizations = new Collection<OrgMemberEntity>(this);
 

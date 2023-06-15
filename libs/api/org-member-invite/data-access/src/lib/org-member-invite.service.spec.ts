@@ -310,8 +310,8 @@ describe('OrgMemberInviteService', () => {
 
     describe('more than one org member invite', () => {
       afterEach(() => {
-        expect(entityService.prepareToDelete).toBeCalledTimes(1);
-        expect(entityService.prepareToDelete).toBeCalledWith(
+        expect(entityService.safeToDelete).toBeCalledTimes(1);
+        expect(entityService.safeToDelete).toBeCalledWith(
           testOrgMemberInviteEntity1
         );
         expect(repository.removeAndFlush).toBeCalledTimes(1);

@@ -183,9 +183,12 @@ export class OrganizationService {
    * Deletes the given `OrganizationEntity` and saves the changes to the database.
    *
    * @param organization The `OrganizationEntity` instance to delete.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(organization: OrganizationEntity): Promise<void> {
-    await this.entityService.prepareToDelete(organization);
+    const { id } = organization;
+    await this.entityService.safeToDelete(organization);
     try {
       await this.organizationRepository.removeAndFlush(organization);
     } catch (err) {
@@ -194,7 +197,7 @@ export class OrganizationService {
     }
 
     try {
-      await this.solrCli.deleteCollection(organization.id);
+      await this.solrCli.deleteCollection(id);
     } catch (err) {
       this.logger.error(err);
     }
