@@ -12,7 +12,7 @@
         ></newbee-authenticated-sidebar>
       </div>
 
-      <div class="w-full">
+      <div class="w-full h-screen overflow-y-auto">
         <div class="navbar w-full">
           <div class="navbar-start">
             <label
@@ -38,7 +38,7 @@
 
             <div
               *ngIf="selectedOrganization && isAdmin"
-              class="dropdown hidden md:block"
+              class="dropdown hidden md:block z-10"
             >
               <label
                 tabindex="0"
@@ -109,7 +109,10 @@
           </div>
 
           <div class="navbar-end hidden md:flex">
-            <div *ngIf="selectedOrganization" class="dropdown dropdown-end">
+            <div
+              *ngIf="selectedOrganization"
+              class="dropdown dropdown-end z-10"
+            >
               <newbee-tooltip text="Create" placement="bottom">
                 <label tabindex="0" class="btn btn-ghost">
                   <!-- document-plus svg -->
@@ -176,7 +179,7 @@
               </ul>
             </div>
 
-            <div class="dropdown dropdown-end">
+            <div class="dropdown dropdown-end z-10">
               <newbee-tooltip text="Account" placement="bottom">
                 <label tabindex="0" class="btn btn-ghost">
                   {{ user.displayName ?? user.name }}
@@ -198,7 +201,9 @@
           </div>
         </div>
 
-        <ng-content></ng-content>
+        <div class="px-4 py-2">
+          <ng-content></ng-content>
+        </div>
       </div>
     </div>
   </div>

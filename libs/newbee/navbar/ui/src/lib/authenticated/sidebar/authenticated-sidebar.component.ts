@@ -68,7 +68,6 @@ export class AuthenticatedSidebarComponent {
   selectOrganization(organization: Organization): void {
     this.selectedOrganization = organization;
     this.selectedOrganizationChange.emit(organization);
-    this.navigateToLink.emit(`/${organization.slug}`);
   }
 
   /**

@@ -1,15 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { LoginForm, loginFormToDto } from '@newbee/newbee/auth/util';
-import {
-  AuthActions,
-  HttpActions,
-  httpFeature,
-} from '@newbee/newbee/shared/data-access';
-import { HttpClientError } from '@newbee/newbee/shared/util';
+import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for logging in an existing user.
@@ -18,12 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-login',
   templateUrl: './login.component.html',
 })
-export class LoginComponent implements OnInit, OnDestroy {
-  /**
-   * Emits to unsubscribe from all infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
-
+export class LoginComponent {
   /**
    * Whether a WebAuthn request is pending.
    */
@@ -37,42 +26,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   /**
    * Request HTTP error, if any exist.
    */
-  httpClientError: HttpClientError | null = null;
+  httpClientError$ = this.store.select(httpFeature.selectError);
 
   constructor(
     private readonly store: Store,
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {}
-
-  /**
-   * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
-   */
-  ngOnInit(): void {
-    this.store.dispatch(AuthActions.resetPendingActions());
-
-    this.store
-      .select(httpFeature.selectError)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (error) => {
-          if (!error) {
-            return;
-          }
-
-          this.httpClientError = error;
-          this.store.dispatch(HttpActions.resetError());
-        },
-      });
-  }
-
-  /**
-   * Unsubscribe from all infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   /**
    * When the dumb UI emits `webauthn`, send a `[Auth] Get WebAuthn Login Challenge` action with the value of the login form.

@@ -6,12 +6,12 @@ import { internalServerError } from '@newbee/shared/util';
  * A dumb UI for displaying a 500 internal server error.
  */
 @Component({
-  selector: 'newbee-internal-server',
+  selector: 'newbee-internal-server-error',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './internal-server.component.html',
+  templateUrl: './internal-server-error.component.html',
 })
-export class InternalServerComponent {
+export class InternalServerErrorComponent {
   /**
    * The text to display for an internal server error.
    */

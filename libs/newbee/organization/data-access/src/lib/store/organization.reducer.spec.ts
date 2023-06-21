@@ -1,6 +1,7 @@
 import {
   HttpActions,
   OrganizationActions,
+  RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import { testOrganization1 } from '@newbee/shared/util';
 import {
@@ -124,18 +125,10 @@ describe('OrganizationReducer', () => {
       expect(updatedState).toEqual(initialOrganizationState);
     });
 
-    it('should update state for orgCreateComponentInit', () => {
+    it('should update state for routerRequest', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
-        OrganizationActions.orgCreateComponentInit
-      );
-      expect(updatedState).toEqual(initialOrganizationState);
-    });
-
-    it('should update state for resetPendingActions', () => {
-      const updatedState = organizationFeature.reducer(
-        stateAfterCreateOrg,
-        OrganizationActions.resetPendingActions
+        RouterActions.routerRequest()
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });

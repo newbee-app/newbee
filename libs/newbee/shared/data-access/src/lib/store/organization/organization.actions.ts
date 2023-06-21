@@ -93,15 +93,5 @@ export const OrganizationActions = createActionGroup({
      * Set the selected org to be null.
      */
     'Reset Selected Org': emptyProps(),
-
-    /**
-     * Reset the pending actions of the org state.
-     */
-    'Reset Pending Actions': emptyProps(),
-
-    /**
-     * Indicates that the `OrgCreateComponent` has been initialized.
-     */
-    'Org Create Component Init': emptyProps(),
   },
 });

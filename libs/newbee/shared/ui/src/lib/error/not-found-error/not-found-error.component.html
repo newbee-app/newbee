@@ -5,9 +5,7 @@
     <p>We could not find the page you are looking for.</p>
     <p>
       Go back to the
-      <a routerLink="/" routerLinkActive="active" class="link link-primary"
-        >home page</a
-      >
+      <a (click)="navigateHome.emit()" class="link link-primary">home page</a>
       or try searching for what you're looking for.
     </p>
   </div>

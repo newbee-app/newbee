@@ -125,12 +125,8 @@ export const organizationFeature = createFeature({
 
       return { ...state, organizations, selectedOrganization: null };
     }),
-    on(
-      OrganizationActions.resetSelectedOrg,
-      OrganizationActions.orgCreateComponentInit,
-      (state): OrganizationState => {
-        return { ...state, selectedOrganization: null };
-      }
-    )
+    on(OrganizationActions.resetSelectedOrg, (state): OrganizationState => {
+      return { ...state, selectedOrganization: null };
+    })
   ),
 });

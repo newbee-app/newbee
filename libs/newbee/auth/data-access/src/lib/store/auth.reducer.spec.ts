@@ -1,4 +1,8 @@
-import { AuthActions, HttpActions } from '@newbee/newbee/shared/data-access';
+import {
+  AuthActions,
+  HttpActions,
+  RouterActions,
+} from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
 import { testUserRelation1 } from '@newbee/shared/util';
@@ -107,22 +111,22 @@ describe('AuthReducer', () => {
       expect(updatedState).toEqual(initialAuthState);
     });
 
-    it('should update state for resetPendingActions', () => {
+    it('should update state for routerRequest', () => {
       let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        AuthActions.resetPendingActions()
+        RouterActions.routerRequest()
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
         stateAfterWebauthnLoginChallenge,
-        AuthActions.resetPendingActions()
+        RouterActions.routerRequest()
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
         stateAfterWebauthnRegisterChallenge,
-        AuthActions.resetPendingActions()
+        RouterActions.routerRequest()
       );
       expect(updatedState).toEqual(initialAuthState);
     });

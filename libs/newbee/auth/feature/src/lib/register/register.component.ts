@@ -1,15 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { RegisterForm, registerFormToDto } from '@newbee/newbee/auth/util';
-import {
-  AuthActions,
-  HttpActions,
-  httpFeature,
-} from '@newbee/newbee/shared/data-access';
-import { HttpClientError } from '@newbee/newbee/shared/util';
+import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for registering a new user.
@@ -18,12 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent implements OnInit, OnDestroy {
-  /**
-   * Emits to unsubscribe from all infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
-
+export class RegisterComponent {
   /**
    * Whether a WebAuthn request is pending.
    */
@@ -32,42 +21,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /**
    * Request HTTP error, if any exist
    */
-  httpClientError: HttpClientError | null = null;
+  httpClientError$ = this.store.select(httpFeature.selectError);
 
   constructor(
     private readonly store: Store,
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {}
-
-  /**
-   * Reset all pending actions and set `httpClientError` to update whenever the store's error changes.
-   */
-  ngOnInit(): void {
-    this.store.dispatch(AuthActions.resetPendingActions());
-
-    this.store
-      .select(httpFeature.selectError)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (error) => {
-          if (!error) {
-            return;
-          }
-
-          this.httpClientError = error;
-          this.store.dispatch(HttpActions.resetError());
-        },
-      });
-  }
-
-  /**
-   * Unsubscribe from all infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   /**
    * When the dumb UI emits `register`, send a `[Auth] Get WebAuthn Register Challenge` action with the value of the register form.

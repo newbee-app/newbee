@@ -7,6 +7,7 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
+import { cookieGuard } from '@newbee/newbee/shared/data-access';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 
 /**
@@ -41,6 +42,7 @@ export class AppTitleStrategy extends TitleStrategy {
 const routes: Routes = [
   {
     path: '',
+    canActivate: [cookieGuard],
     children: [
       {
         path: UrlEndpoint.Auth,

@@ -6,12 +6,12 @@ import { forbiddenError } from '@newbee/shared/util';
  * A dumb UI for displaying a 403 forbidden error.
  */
 @Component({
-  selector: 'newbee-forbidden',
+  selector: 'newbee-forbidden-error',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './forbidden.component.html',
+  templateUrl: './forbidden-error.component.html',
 })
-export class ForbiddenComponent {
+export class ForbiddenErrorComponent {
   /**
    * The text to display for a forbidden error.
    */

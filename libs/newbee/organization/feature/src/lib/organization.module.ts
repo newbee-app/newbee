@@ -10,6 +10,7 @@ import {
   EditOrgComponent,
   OrgSearchbarComponent,
 } from '@newbee/newbee/organization/ui';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrgEditComponent } from './org-edit';
@@ -24,6 +25,7 @@ import { OrganizationRoutingModule } from './routing';
     NavbarComponent,
     OrgSearchbarComponent,
     EditOrgComponent,
+    ErrorScreenComponent,
     OrganizationRoutingModule,
   ],
   providers: [OrganizationService],

@@ -32,5 +32,13 @@ describe('HttpReducer', () => {
       );
       expect(updatedState).toEqual(initialHttpState);
     });
+
+    it('should update state for routerRequest', () => {
+      const updatedState = httpFeature.reducer(
+        stateAfterClientError,
+        HttpActions.resetError()
+      );
+      expect(updatedState).toEqual(initialHttpState);
+    });
   });
 });
