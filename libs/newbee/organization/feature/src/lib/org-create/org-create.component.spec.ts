@@ -41,19 +41,10 @@ describe('OrgCreateComponent', () => {
     expect(store).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should dispatch orgCreateComponentInit', () => {
-      expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.orgCreateComponentInit()
-      );
-    });
-  });
-
   describe('onName', () => {
     it('should dispatch generateSlug', fakeAsync(() => {
       component.onName(testOrganization1.name);
       tick(600);
-      expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.generateSlug({ name: testOrganization1.name })
       );
@@ -63,7 +54,6 @@ describe('OrgCreateComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.typingSlug({ slug: testOrganization1.slug })
       );
@@ -73,7 +63,6 @@ describe('OrgCreateComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.checkSlug({ slug: testOrganization1.slug })
       );
@@ -83,7 +72,6 @@ describe('OrgCreateComponent', () => {
   describe('onCreate', () => {
     it('should dispatch createOrg', () => {
       component.onCreate(testCreateOrgForm1);
-      expect(store.dispatch).toBeCalledTimes(2);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.createOrg({
           createOrganizationDto: testBaseCreateOrganizationDto1,

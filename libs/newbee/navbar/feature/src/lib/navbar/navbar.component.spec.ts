@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import {
-  AuthActions,
-  OrganizationActions,
-} from '@newbee/newbee/shared/data-access';
+import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { NavbarComponent } from './navbar.component';
@@ -34,6 +31,8 @@ describe('NavbarComponent', () => {
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -44,28 +43,16 @@ describe('NavbarComponent', () => {
   });
 
   describe('selectOrganization', () => {
-    it('should dispatch getOrg if organization is not equal to selectedOrganization', (done) => {
-      component.selectOrganization(testOrganization1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+    it('should navigate to org if org is not equal to selectedOrganization', async () => {
+      await component.selectOrganization(testOrganization1);
+      expect(router.navigate).toBeCalledTimes(1);
+      expect(router.navigate).toBeCalledWith([`/${testOrganization1.slug}`]);
     });
 
     it('should not dispatch getOrg if organization is equal to selectedOrganization', () => {
       component.selectedOrganization = testOrgMemberRelation1;
-      jest.spyOn(store, 'dispatch');
       component.selectOrganization(testOrganization1);
-      expect(store.dispatch).not.toBeCalled();
+      expect(router.navigate).not.toBeCalled();
     });
   });
 

@@ -53,10 +53,6 @@ describe('AuthenticatedSidebarComponent', () => {
       expect(component.selectedOrganizationChange.emit).toBeCalledWith(
         testOrganization2
       );
-      expect(component.navigateToLink.emit).toBeCalledTimes(1);
-      expect(component.navigateToLink.emit).toBeCalledWith(
-        `/${testOrganization2.slug}`
-      );
     });
   });
 

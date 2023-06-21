@@ -1,7 +1,7 @@
 <newbee-login-form
-  [loginPending]="(pendingWebAuthn$ | async) ?? false"
-  [magicLinkPending]="(pendingMagicLink$ | async) ?? false"
-  [httpClientError]="httpClientError"
+  [loginPending]="(pendingWebAuthn$ | async)!"
+  [magicLinkPending]="(pendingMagicLink$ | async)!"
+  [httpClientError]="(httpClientError$ | async)!"
   (magicLinkLogin)="onMagicLinkLogin($event)"
   (webauthn)="onWebAuthn($event)"
   (navigateToRegister)="onNavigateToRegister()"

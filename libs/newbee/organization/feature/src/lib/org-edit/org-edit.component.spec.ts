@@ -44,14 +44,6 @@ describe('OrgEditComponent', () => {
     expect(store).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should dispatch resetPendingActions', () => {
-      expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.resetPendingActions()
-      );
-    });
-  });
-
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);

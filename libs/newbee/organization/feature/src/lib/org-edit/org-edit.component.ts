@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { organizationFeature as orgModuleFeature } from '@newbee/newbee/organization/data-access';
 import {
   EditOrgForm,
@@ -7,14 +7,11 @@ import {
   editOrgSlugFormToDto,
 } from '@newbee/newbee/organization/util';
 import {
-  HttpActions,
   httpFeature,
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import type { HttpClientError } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for the edit organization screen.
@@ -23,12 +20,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-org-edit',
   templateUrl: './org-edit.component.html',
 })
-export class OrgEditComponent implements OnInit, OnDestroy {
-  /**
-   * Emits to unsubscribe from all infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
-
+export class OrgEditComponent {
   /**
    * The currently selected organization.
    */
@@ -64,38 +56,9 @@ export class OrgEditComponent implements OnInit, OnDestroy {
   /**
    * Request HTTP error, if any exist.
    */
-  httpClientError: HttpClientError | null = null;
+  httpClientError$ = this.store.select(httpFeature.selectError);
 
   constructor(private readonly store: Store) {}
-
-  /**
-   * Reset all pending actions and set the httpClientError based on the value in the store.
-   */
-  ngOnInit(): void {
-    this.store.dispatch(OrganizationActions.resetPendingActions());
-
-    this.store
-      .select(httpFeature.selectError)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (error) => {
-          if (!error) {
-            return;
-          }
-
-          this.httpClientError = error;
-          this.store.dispatch(HttpActions.resetError());
-        },
-      });
-  }
-
-  /**
-   * Unsubscribe from all infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   /**
    * When the dumb UI emits a slug event, dispatch it to the store.

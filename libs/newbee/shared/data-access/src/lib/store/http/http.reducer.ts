@@ -1,5 +1,6 @@
 import { HttpClientError } from '@newbee/newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { RouterActions } from '../router';
 import { HttpActions } from './http.actions';
 
 /**
@@ -32,6 +33,7 @@ export const httpFeature = createFeature({
     ),
     on(
       HttpActions.resetError,
+      RouterActions.routerRequest,
       (state): HttpState => ({ ...state, error: null })
     )
   ),

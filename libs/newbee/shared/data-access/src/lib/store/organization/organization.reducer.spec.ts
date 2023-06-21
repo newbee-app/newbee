@@ -136,13 +136,5 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterResetSelectedOrg);
     });
-
-    it('should update state for orgCreateComponentInit', () => {
-      const updatedState = organizationFeature.reducer(
-        stateAfterGetOrgSuccess,
-        OrganizationActions.orgCreateComponentInit()
-      );
-      expect(updatedState).toEqual(stateAfterResetSelectedOrg);
-    });
   });
 });

@@ -1,6 +1,7 @@
 import {
   HttpActions,
   OrganizationActions,
+  RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
@@ -123,9 +124,8 @@ export const organizationFeature = createFeature({
       OrganizationActions.editOrgSuccess,
       OrganizationActions.editOrgSlugSuccess,
       OrganizationActions.deleteOrgSuccess,
-      OrganizationActions.resetPendingActions,
-      OrganizationActions.orgCreateComponentInit,
       HttpActions.clientError,
+      RouterActions.routerRequest,
       (): OrganizationState => initialOrganizationState
     )
   ),

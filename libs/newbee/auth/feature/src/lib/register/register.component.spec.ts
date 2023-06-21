@@ -40,6 +40,8 @@ describe('RegisterComponent', () => {
     router = TestBed.inject(Router);
     route = TestBed.inject(ActivatedRoute);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -51,40 +53,14 @@ describe('RegisterComponent', () => {
     expect(route).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should dispatch resetPendingActions', (done) => {
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(AuthActions.resetPendingActions());
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-    });
-  });
-
   describe('onRegister', () => {
-    it('should dispatch registerWithWebauthn action', (done) => {
+    it('should dispatch registerWithWebauthn action', () => {
       component.onRegister(testRegisterForm1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              AuthActions.registerWithWebauthn({
-                createUserDto: testBaseCreateUserDto1,
-              })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledWith(
+        AuthActions.registerWithWebauthn({
+          createUserDto: testBaseCreateUserDto1,
+        })
+      );
     });
   });
 

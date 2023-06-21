@@ -40,6 +40,8 @@ describe('LoginComponent', () => {
     router = TestBed.inject(Router);
     route = TestBed.inject(ActivatedRoute);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -51,59 +53,21 @@ describe('LoginComponent', () => {
     expect(route).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should dispatch resetPendingActions', (done) => {
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(AuthActions.resetPendingActions());
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
-    });
-  });
-
   describe('onWebAuthn', () => {
-    it('should dispatch createWebauthnLoginOptions', (done) => {
+    it('should dispatch createWebauthnLoginOptions', () => {
       component.onWebAuthn(testLoginForm1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              AuthActions.createWebauthnLoginOptions({
-                emailDto: testBaseEmailDto1,
-              })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledWith(
+        AuthActions.createWebauthnLoginOptions({ emailDto: testBaseEmailDto1 })
+      );
     });
   });
 
   describe('onMagicLinkLogin', () => {
-    it('should dispatch sendLoginMagicLink action', (done) => {
+    it('should dispatch sendLoginMagicLink action', () => {
       component.onMagicLinkLogin(testLoginForm1);
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
-            );
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledWith(
+        AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
+      );
     });
   });
 

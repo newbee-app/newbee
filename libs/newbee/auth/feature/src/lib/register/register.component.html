@@ -1,6 +1,6 @@
 <newbee-register-form
-  [registerPending]="(pendingWebAuthn$ | async) ?? false"
-  [httpClientError]="httpClientError"
+  [registerPending]="(pendingWebAuthn$ | async)!"
+  [httpClientError]="(httpClientError$ | async)!"
   (register)="onRegister($event)"
   (navigateToLogin)="onNavigateToLogin()"
 ></newbee-register-form>

@@ -1,16 +1,3 @@
-import { getRouterSelectors } from '@ngrx/router-store';
-
-/**
- * Selectors provided by `@ngrx/router-store` for accessing bits of Angular's router state.
- */
-export const {
-  selectCurrentRoute,
-  selectFragment,
-  selectQueryParams,
-  selectQueryParam,
-  selectRouteParams,
-  selectRouteParam,
-  selectRouteData,
-  selectUrl,
-  selectTitle,
-} = getRouterSelectors();
+export * from './router.actions';
+export * from './router.effects';
+export * from './router.selector';

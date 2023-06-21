@@ -5,6 +5,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import {
   AuthenticatorEffects,
   CookieEffects,
+  RouterEffects,
   SearchEffects,
 } from '@newbee/newbee/shared/data-access';
 import { EffectsModule } from '@ngrx/effects';
@@ -26,6 +27,7 @@ import { AppRoutingModule } from './routing';
  */
 @NgModule({
   imports: [
+    // third party modules
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
@@ -40,9 +42,16 @@ import { AppRoutingModule } from './routing';
         strictActionTypeUniqueness: true,
       },
     }),
-    EffectsModule.forRoot([AuthenticatorEffects, CookieEffects, SearchEffects]),
+    EffectsModule.forRoot([
+      AuthenticatorEffects,
+      CookieEffects,
+      RouterEffects,
+      SearchEffects,
+    ]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
+
+    // routing module
     AppRoutingModule,
   ],
   providers: [httpInterceptorProviders],

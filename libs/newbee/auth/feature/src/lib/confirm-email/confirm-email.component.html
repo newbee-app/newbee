@@ -1,6 +1,6 @@
 <newbee-jwt-id
   [jwtId]="(jwtId$ | async)!"
   [email]="(email$ | async)!"
-  [httpClientError]="httpClientError"
+  [httpClientError]="(httpClientError$ | async)!"
   (resendLink)="onResendLink($event)"
 ></newbee-jwt-id>

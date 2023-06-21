@@ -8,7 +8,6 @@ import {
 import {
   AuthActions,
   authFeature,
-  OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
@@ -76,18 +75,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When the dumb UI emits a `selectedOrganizationChange` event, pass it to the store.
+   * When the dumb UI emits a `selectedOrganizationChange` event, pass it to the router.
    *
    * @param organization The organization to select.
    */
-  selectOrganization(organization: Organization): void {
+  async selectOrganization(organization: Organization): Promise<void> {
     if (isEqual(organization, this.selectedOrganization?.organization)) {
       return;
     }
 
-    this.store.dispatch(
-      OrganizationActions.getOrg({ orgSlug: organization.slug })
-    );
+    await this.router.navigate([`/${organization.slug}`]);
   }
 
   /**

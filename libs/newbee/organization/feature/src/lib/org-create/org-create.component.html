@@ -4,7 +4,7 @@
     [slugTaken]="(slugTaken$ | async)!"
     [createPending]="(pendingCreate$ | async)!"
     [checkPending]="(pendingCheck$ | async)!"
-    [httpClientError]="httpClientError"
+    [httpClientError]="(httpClientError$ | async)!"
     (name)="onName($event)"
     (slug)="onSlug($event)"
     (formattedSlug)="onFormattedSlug($event)"

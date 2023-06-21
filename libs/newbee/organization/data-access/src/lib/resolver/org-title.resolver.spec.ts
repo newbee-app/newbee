@@ -4,12 +4,17 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
+  initialHttpState,
   initialOrganizationState,
   OrganizationActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
+import {
+  forbiddenError,
+  testOrganization1,
+  testOrgMemberRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
 
@@ -32,22 +37,15 @@ describe('OrgTitleResolver', () => {
           { path: '', component: EmptyComponent },
         ]),
       ],
-      providers: [
-        provideMockStore({
-          initialState: {
-            organization: {
-              ...initialOrganizationState,
-              selectedOrganization: testOrgMemberRelation1,
-            },
-          },
-        }),
-      ],
+      providers: [provideMockStore()],
     });
 
     router = TestBed.inject(Router);
     store = TestBed.inject(MockStore);
     location = TestBed.inject(Location);
     title = TestBed.inject(Title);
+
+    jest.spyOn(store, 'dispatch');
 
     router.initialNavigation();
   });
@@ -59,8 +57,13 @@ describe('OrgTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it(`should dispatch getOrg and set title to organization's name`, async () => {
-    jest.spyOn(store, 'dispatch');
+  it(`should dispatch getOrg and set title to org's name`, async () => {
+    store.setState({
+      organization: {
+        ...initialOrganizationState,
+        selectedOrganization: testOrgMemberRelation1,
+      },
+    });
     await expect(
       router.navigate([`/${testOrganization1.slug}`])
     ).resolves.toBeTruthy();
@@ -70,5 +73,19 @@ describe('OrgTitleResolver', () => {
     );
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);
     expect(title.getTitle()).toEqual(testOrganization1.name);
+  });
+
+  it('should set title to Error if store has error instead of selected org', async () => {
+    store.setState({
+      http: {
+        ...initialHttpState,
+        error: { status: 403, messages: { misc: forbiddenError } },
+      },
+    });
+    await expect(
+      router.navigate([`/${testOrganization1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/${testOrganization1.slug}`);
+    expect(title.getTitle()).toEqual('Error');
   });
 });
