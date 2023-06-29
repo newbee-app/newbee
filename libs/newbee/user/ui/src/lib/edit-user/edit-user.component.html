@@ -1,0 +1,52 @@
+<div class="flex flex-col flex-nowrap gap-y-4">
+  <h4>Edit user details</h4>
+
+  <form
+    id="edit-user-form"
+    [formGroup]="editUserForm"
+    (ngSubmit)="emitEdit()"
+    class="flex flex-col flex-nowrap gap-y-4"
+  >
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="name-input">Name</label>
+
+      <input
+        type="text"
+        id="name-input"
+        formControlName="name"
+        required
+        class="input border-neutral"
+      />
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="display-name-input">Display name</label>
+
+      <input
+        type="text"
+        id="display-name-input"
+        formControlName="displayName"
+        class="input border-neutral"
+      />
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="phone-number-input">Phone number</label>
+
+      <newbee-phone-input
+        id="phone-number-input"
+        formControlName="phoneNumber"
+      ></newbee-phone-input>
+    </div>
+
+    <button
+      type="submit"
+      id="edit-btn"
+      [disabled]="editUserForm.invalid || !editDistinct || editPending"
+      class="btn btn-primary w-fit"
+    >
+      <span *ngIf="editPending" class="loading loading-spinner"></span>
+      Update details
+    </button>
+  </form>
+</div>

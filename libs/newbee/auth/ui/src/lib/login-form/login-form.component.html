@@ -16,7 +16,7 @@
           formControlName="email"
           placeholder="Email address*"
           required
-          class="input input-bordered w-full"
+          class="input border-neutral w-full"
           [ngClass]="{ 'input-error': showEmailError }"
         />
 
@@ -29,7 +29,7 @@
         <button
           id="webauthn-button"
           type="submit"
-          [disabled]="loginForm.invalid"
+          [disabled]="loginForm.invalid || loginPending || magicLinkPending"
           class="btn btn-primary"
         >
           <span *ngIf="loginPending" class="loading loading-spinner"></span>
@@ -38,7 +38,7 @@
         <button
           id="magic-link-login-button"
           type="button"
-          [disabled]="loginForm.invalid"
+          [disabled]="loginForm.invalid || loginPending || magicLinkPending"
           class="btn btn-primary"
           (click)="emitMagicLinkLogin()"
         >

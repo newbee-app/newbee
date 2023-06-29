@@ -9,19 +9,19 @@
       (ngSubmit)="emitEdit()"
       class="collapse-content flex flex-col flex-nowrap gap-y-4 w-full"
     >
-      <label class="flex flex-col gap-y-2">
-        <p>Org name</p>
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="name-input">Org name</label>
         <input
           type="text"
           id="name-input"
           formControlName="name"
-          class="input input-bordered max-w-full w-full"
+          class="input border-neutral w-full"
         />
         <newbee-error-alert
           *ngIf="editInputDisplayError('editOrg', 'name')"
           [text]="editInputErrorMessage('editOrg', 'name')"
         ></newbee-error-alert>
-      </label>
+      </div>
 
       <button
         type="submit"
@@ -50,14 +50,19 @@
         (ngSubmit)="emitEditSlug()"
         class="flex flex-col flex-nowrap gap-y-4 border border-neutral p-4 rounded-box"
       >
-        <label class="flex flex-col gap-y-2">
-          <h5>Change URL</h5>
-          <p>
-            Changing your org's URL means that your old URL will become
-            available for anyone else to use. Changes may take a few hours to
-            finalize and you may notice some unexpected side effects in the
-            short-term.
-          </p>
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <label
+            for="edit-slug-input"
+            class="flex flex-col flex-nowrap gap-y-2"
+          >
+            <h5>Change URL</h5>
+            <p>
+              Changing your org's URL means that your old URL will become
+              available for anyone else to use. Changes may take a few hours to
+              finalize and you may notice some unexpected side effects in the
+              short-term.
+            </p>
+          </label>
 
           <div class="join">
             <button
@@ -72,7 +77,7 @@
               formControlName="slug"
               newbeeSlugInput
               (slug)="formattedSlug.emit($event)"
-              class="input input-bordered join-item w-full"
+              class="input border-neutral join-item w-full"
             />
           </div>
 
@@ -90,7 +95,7 @@
               'This slug is already taken, please choose another'
             "
           ></newbee-error-alert>
-        </label>
+        </div>
 
         <button
           type="submit"
@@ -115,22 +120,27 @@
         (ngSubmit)="emitDelete()"
         class="flex flex-col flex-nowrap gap-y-4 border border-neutral p-4 rounded-box"
       >
-        <label class="flex flex-col gap-y-2">
-          <h5>Delete</h5>
-          <p>
-            Type your org's URL to confirm the deletion. This will delete all
-            data related to your organization. This is a permanent action that
-            cannot be undone.
-          </p>
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <label
+            for="confirm-delete-input"
+            class="flex flex-col flex-nowrap gap-y-2"
+          >
+            <h5>Delete</h5>
+            <p>
+              Type your org's URL to confirm the deletion. This will delete all
+              data related to your organization. This is a permanent action that
+              cannot be undone.
+            </p>
+          </label>
 
           <input
             type="text"
             id="confirm-delete-input"
             formControlName="slug"
             [placeholder]="orgMember.organization.slug"
-            class="input input-bordered"
+            class="input border-neutral"
           />
-        </label>
+        </div>
 
         <button
           type="submit"

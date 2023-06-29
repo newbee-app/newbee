@@ -148,6 +148,12 @@
       ],
       "@newbee/newbee/shared/ui": ["libs/newbee/shared/ui/src/index.ts"],
       "@newbee/newbee/shared/util": ["libs/newbee/shared/util/src/index.ts"],
+      "@newbee/newbee/user/data-access": [
+        "libs/newbee/user/data-access/src/index.ts"
+      ],
+      "@newbee/newbee/user/feature": ["libs/newbee/user/feature/src/index.ts"],
+      "@newbee/newbee/user/ui": ["libs/newbee/user/ui/src/index.ts"],
+      "@newbee/newbee/user/util": ["libs/newbee/user/util/src/index.ts"],
       "@newbee/passport-magic-link-login": [
         "libs/publishable/passport-magic-link-login/src/index.ts"
       ],

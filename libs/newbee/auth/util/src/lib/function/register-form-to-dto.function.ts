@@ -1,6 +1,5 @@
+import { phoneInputToString } from '@newbee/newbee/shared/util';
 import { BaseCreateUserDto } from '@newbee/shared/data-access';
-import type { CountryCode } from 'libphonenumber-js';
-import parsePhoneNumber from 'libphonenumber-js';
 import type { RegisterForm } from '../interface';
 
 /**
@@ -14,17 +13,9 @@ export function registerFormToDto(
   registerForm: RegisterForm | Partial<RegisterForm>
 ): BaseCreateUserDto {
   const { email, name, displayName, phoneNumber } = registerForm;
-
-  let phoneNumberString: string | null = null;
-  if (phoneNumber && phoneNumber.number && phoneNumber.country) {
-    const { number, country } = phoneNumber;
-    const parsedPhoneNumber = parsePhoneNumber(
-      number,
-      country.regionCode as CountryCode
-    );
-    phoneNumberString = parsedPhoneNumber?.format('E.164') ?? null;
-  }
-
+  const phoneNumberString = phoneNumber
+    ? phoneInputToString(phoneNumber)
+    : null;
   return {
     email: email ?? '',
     name: name ?? '',

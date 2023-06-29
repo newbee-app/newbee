@@ -7,24 +7,26 @@
   <div class="flex flex-col gap-y-8 max-w-full w-[32rem]">
     <h3 class="text-center">Create an organization</h3>
 
-    <label class="flex flex-col gap-y-2 w-full">
-      <span>What is the name of your organization?</span>
+    <div class="flex flex-col gap-y-2 w-full">
+      <label for="name-input"> What is the name of your organization? </label>
       <input
         type="text"
         id="name-input"
         formControlName="name"
         placeholder="My Org"
         required
-        class="input input-bordered w-full"
+        class="input border-neutral w-full"
       />
       <newbee-error-alert
         *ngIf="inputDisplayError('name')"
         [text]="inputErrorMessage('name')"
       ></newbee-error-alert>
-    </label>
+    </div>
 
-    <label class="form-control flex flex-col gap-y-2 w-full">
-      <span> What URL would you like to use for your organization? </span>
+    <div class="flex flex-col gap-y-2 w-full">
+      <label for="slug-input"
+        >What URL would you like to use for your organization?</label
+      >
       <div class="join">
         <button type="button" class="btn no-animation cursor-auto join-item">
           newbee.app/
@@ -36,7 +38,7 @@
           placeholder="my-org"
           newbeeSlugInput
           (slug)="formattedSlug.emit($event)"
-          class="input input-bordered w-full join-item"
+          class="input border-neutral w-full join-item"
         />
       </div>
       <div *ngIf="checkPending" class="self-center">
@@ -49,7 +51,7 @@
           'This slug is already taken, please choose another'
         "
       ></newbee-error-alert>
-    </label>
+    </div>
 
     <button
       id="create-btn"

@@ -3,13 +3,20 @@ import {
   testSelectOptionCountry1,
   testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
-import { componentWrapperDecorator, Meta, StoryObj } from '@storybook/angular';
+import {
+  componentWrapperDecorator,
+  Meta,
+  moduleMetadata,
+  StoryObj,
+} from '@storybook/angular';
+import { ClickWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
   title: 'SearchableSelectComponent',
   component: SearchableSelectComponent,
   decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
       (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),
