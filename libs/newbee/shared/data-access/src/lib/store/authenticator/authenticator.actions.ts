@@ -1,3 +1,4 @@
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
@@ -5,7 +6,7 @@ import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typ
  * Actions for use in creating authenticator-related effects.
  */
 export const AuthenticatorActions = createActionGroup({
-  source: 'Authenticator',
+  source: UrlEndpoint.Authenticator,
   events: {
     /**
      * Creates registration options from the API for registering a new authenticator for an existing user.

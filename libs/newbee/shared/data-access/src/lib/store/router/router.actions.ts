@@ -1,3 +1,4 @@
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createActionGroup, emptyProps } from '@ngrx/store';
 
 /**
@@ -5,7 +6,7 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
  * Needed because the provided actions are plain strings and don't come with action creators.
  */
 export const RouterActions = createActionGroup({
-  source: 'Router',
+  source: UrlEndpoint.Router,
   events: {
     /**
      * Signifies that the ROUTER_REQUEST action was passed.

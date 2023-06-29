@@ -8,6 +8,7 @@ import {
 import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { OrgSearchbarComponent } from '@newbee/newbee/organization/ui';
 import { SearchActions } from '@newbee/newbee/shared/data-access';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import {
   testBaseQueryDto1,
   testBaseSuggestDto1,
@@ -22,7 +23,12 @@ describe('OrgHomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, NavbarComponent, OrgSearchbarComponent],
+      imports: [
+        CommonModule,
+        NavbarComponent,
+        OrgSearchbarComponent,
+        ErrorScreenComponent,
+      ],
       declarations: [OrgHomeComponent],
       providers: [provideMockStore()],
     }).compileComponents();

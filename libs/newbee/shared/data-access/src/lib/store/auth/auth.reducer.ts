@@ -1,6 +1,8 @@
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import type { OrgMemberInviteNoUser, User } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { CookieActions } from '../cookie';
+import { UserActions } from '../user';
 import { AuthActions } from './auth.actions';
 
 /**
@@ -31,7 +33,7 @@ export const initialAuthState: AuthState = {
  * The reducers and generated selectors for `AuthState`.
  */
 export const authFeature = createFeature({
-  name: 'auth',
+  name: UrlEndpoint.Auth,
   reducer: createReducer(
     initialAuthState,
     on(
@@ -57,7 +59,6 @@ export const authFeature = createFeature({
         invites,
       })
     ),
-    on(AuthActions.logoutSuccess, (): AuthState => initialAuthState),
     on(
       CookieActions.initCookiesSuccess,
       (state, { csrfTokenAndDataDto: { userRelation } }): AuthState => {
@@ -68,6 +69,18 @@ export const authFeature = createFeature({
         const { user, invites } = userRelation;
         return { ...state, user, invites };
       }
+    ),
+    on(
+      UserActions.editUserSuccess,
+      (state, { user }): AuthState => ({
+        ...state,
+        user,
+      })
+    ),
+    on(
+      AuthActions.logoutSuccess,
+      UserActions.deleteUserSuccess,
+      (): AuthState => initialAuthState
     )
   ),
 });

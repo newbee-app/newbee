@@ -1,1 +1,2 @@
-export * from './lib/newbee-user-data-access.module';
+export * from './lib/store';
+export * from './lib/user.service';

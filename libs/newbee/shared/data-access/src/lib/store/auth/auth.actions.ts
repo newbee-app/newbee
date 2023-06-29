@@ -3,6 +3,7 @@ import {
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { UserRelation } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
@@ -12,7 +13,7 @@ import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/type
  * All actions tied to `AuthState`.
  */
 export const AuthActions = createActionGroup({
-  source: 'Auth',
+  source: UrlEndpoint.Auth,
   events: {
     /**
      * Send a magic link login request to the API.

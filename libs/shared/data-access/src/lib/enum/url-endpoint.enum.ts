@@ -52,4 +52,8 @@ export enum UrlEndpoint {
   Edit = 'edit',
   CheckSlug = 'check-slug',
   GenerateSlug = 'generate-slug',
+
+  // misc stuff for use in ngrx stores
+  Http = 'http',
+  Router = 'router',
 }

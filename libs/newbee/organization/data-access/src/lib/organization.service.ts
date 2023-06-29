@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 
 /**
  * The service tied to the API's organization-related endpoints.
- * Handles selecting the organization the user is currently looking at.
+ * Handles CRUD for organizations.
  */
 @Injectable()
 export class OrganizationService {
@@ -51,7 +51,7 @@ export class OrganizationService {
   /**
    * Send a request to the API to edit an existing organization with the given information.
    *
-   * @param updateOrganizationDto The form containing the necessary information to edit an existing org.
+   * @param updateOrganizationDto The DTO containing the necessary information to edit an existing org.
    *
    * @returns An observable with information about the edited organization.
    */

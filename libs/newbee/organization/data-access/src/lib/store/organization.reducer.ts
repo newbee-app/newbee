@@ -3,6 +3,7 @@ import {
   OrganizationActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -62,7 +63,7 @@ export const initialOrganizationState: OrganizationState = {
  * The reducers and generated selectors for `OrganizationState`.
  */
 export const organizationFeature = createFeature({
-  name: 'organizationModule',
+  name: `${UrlEndpoint.Organization}-module`,
   reducer: createReducer(
     initialOrganizationState,
     on(

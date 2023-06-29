@@ -3,6 +3,7 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -44,7 +45,7 @@ export const initialAuthState: AuthState = {
  * The reducers and generated selectors for `AuthState`.
  */
 export const authFeature = createFeature({
-  name: 'authModule',
+  name: `${UrlEndpoint.Auth}Module`,
   reducer: createReducer(
     initialAuthState,
     on(
