@@ -4,6 +4,7 @@ import {
   confirmEmailGuard,
   magicLinkLoginGuard,
 } from '@newbee/newbee/auth/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { ConfirmEmailComponent } from '../confirm-email';
 import { LoginComponent } from '../login/login.component';
 import { MagicLinkLoginComponent } from '../magic-link-login';
@@ -14,7 +15,7 @@ import { RegisterComponent } from '../register/register.component';
  */
 const routes: Routes = [
   {
-    path: 'login',
+    path: UrlEndpoint.Login,
     title: 'Login',
     children: [
       {
@@ -34,13 +35,13 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'register',
+    path: UrlEndpoint.Register,
     title: 'Register',
     component: RegisterComponent,
   },
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: UrlEndpoint.Login,
     pathMatch: 'full',
   },
 ];

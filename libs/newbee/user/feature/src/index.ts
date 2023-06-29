@@ -1,1 +1,1 @@
-export * from './lib/newbee-user-feature.module';
+export * from './lib/user.module';

@@ -1,0 +1,7 @@
+<newbee-navbar>
+  <newbee-edit-user
+    [user]="(user$ | async)!"
+    [editPending]="(editPending$ | async)!"
+    (edit)="onEdit($event)"
+  ></newbee-edit-user>
+</newbee-navbar>

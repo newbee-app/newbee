@@ -16,6 +16,6 @@ export const reducers: ActionReducerMap<AppState> = {
   auth: authFeature.reducer,
   cookie: cookieFeature.reducer,
   http: httpFeature.reducer,
-  organization: organizationFeature.reducer,
+  org: organizationFeature.reducer,
   search: searchFeature.reducer,
 };

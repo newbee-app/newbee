@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { testCountry1 } from '@newbee/newbee/shared/util';
+import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testUser1, testUser2 } from '@newbee/shared/util';
 import { EditUserComponent } from './edit-user.component';
 
@@ -34,10 +34,7 @@ describe('EditUserComponent', () => {
       expect(component.edit.emit).toBeCalledWith({
         name: testUser1.name,
         displayName: testUser1.displayName,
-        phoneNumber: {
-          country: testCountry1,
-          number: testUser1.phoneNumber?.slice(2),
-        },
+        phoneNumber: testPhoneInput1,
       });
     });
   });

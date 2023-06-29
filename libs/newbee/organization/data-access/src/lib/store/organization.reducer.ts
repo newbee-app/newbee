@@ -63,7 +63,7 @@ export const initialOrganizationState: OrganizationState = {
  * The reducers and generated selectors for `OrganizationState`.
  */
 export const organizationFeature = createFeature({
-  name: `${UrlEndpoint.Organization}-module`,
+  name: `${UrlEndpoint.Organization}Module`,
   reducer: createReducer(
     initialOrganizationState,
     on(
