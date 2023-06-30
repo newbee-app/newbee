@@ -27,7 +27,7 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent],
       providers: [
         provideMockStore({
-          initialState: { organization: initialOrganizationState },
+          initialState: { org: initialOrganizationState },
         }),
         {
           provide: Router,

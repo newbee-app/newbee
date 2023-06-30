@@ -1,4 +1,5 @@
 import { HttpClientError } from '@newbee/newbee/shared/util';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
 import { HttpActions } from './http.actions';
@@ -21,7 +22,7 @@ export const initialHttpState: HttpState = {
  * The reducers and generated selectors for `HttpState`.
  */
 export const httpFeature = createFeature({
-  name: 'http',
+  name: UrlEndpoint.Http,
   reducer: createReducer(
     initialHttpState,
     on(

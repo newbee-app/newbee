@@ -12,6 +12,6 @@ export interface AppState {
   auth: AuthState;
   cookie: CookieState;
   http: HttpState;
-  organization: OrganizationState;
+  org: OrganizationState;
   search: SearchState;
 }

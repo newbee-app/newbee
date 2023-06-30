@@ -69,16 +69,6 @@ export const tokenIsNotEmpty = 'Token cannot be an empty string.';
 export const baseIsNotEmpty = 'Base cannot be an empty string.';
 
 /**
- * Constant to say that the active field must be a boolean value.
- */
-export const activeIsBoolean = 'Active must be true or false.';
-
-/**
- * Constant to say that the online field must be a boolean value.
- */
-export const onlineIsBoolean = 'Online must be true or false.';
-
-/**
  * Constant to say that offset must be an int.
  */
 export const offsetIsInt = 'Offset must be an int.';

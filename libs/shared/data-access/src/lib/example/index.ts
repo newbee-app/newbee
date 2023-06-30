@@ -12,6 +12,7 @@ import {
   testTeamMember1,
   testTeamQueryResult1,
   testUser1,
+  testUser2,
   testUserRelation1,
 } from '@newbee/shared/util';
 import {
@@ -110,7 +111,9 @@ export const testBaseCreateUserDto1: BaseCreateUserDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateUserDto1: BaseUpdateUserDto = {
-  name: 'Jane Doe',
+  name: testUser2.name,
+  displayName: null,
+  phoneNumber: null,
 };
 
 /**

@@ -7,6 +7,7 @@ import {
   testEditOrgSlugForm1,
 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgEditComponent } from './org-edit.component';
@@ -18,12 +19,17 @@ describe('OrgEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, NavbarComponent, EditOrgComponent],
+      imports: [
+        CommonModule,
+        NavbarComponent,
+        EditOrgComponent,
+        ErrorScreenComponent,
+      ],
       declarations: [OrgEditComponent],
       providers: [
         provideMockStore({
           initialState: {
-            organization: { selectedOrganization: testOrgMemberRelation1 },
+            org: { selectedOrganization: testOrgMemberRelation1 },
           },
         }),
       ],

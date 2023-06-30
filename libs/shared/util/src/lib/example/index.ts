@@ -73,6 +73,17 @@ export const testUser1: User = {
   email: 'johndoe@example.com',
   name: 'John Doe',
   displayName: 'John',
+  phoneNumber: '+12025550122',
+};
+
+/**
+ * An example instance of User.
+ * Strictly for use in testing.
+ */
+export const testUser2: User = {
+  email: 'janedoe@example.com',
+  name: 'Jane Doe',
+  displayName: null,
   phoneNumber: null,
 };
 

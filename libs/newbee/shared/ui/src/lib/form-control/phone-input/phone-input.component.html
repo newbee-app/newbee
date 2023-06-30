@@ -29,7 +29,7 @@
       newbeePhoneNumberInput
       [country]="value.country ?? null"
       (blur)="onTouched()"
-      class="input input-bordered truncate"
+      class="input border-neutral truncate"
       [ngClass]="{ 'input-error': hasError('number') && !clean }"
     />
     <newbee-error-alert

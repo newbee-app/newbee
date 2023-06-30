@@ -1,6 +1,7 @@
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { SearchActions } from './search.actions';
@@ -32,7 +33,7 @@ export const initialSearchState: SearchState = {
  * The reducers and generated selectors for `SearchState`.
  */
 export const searchFeature = createFeature({
-  name: 'search',
+  name: UrlEndpoint.Search,
   reducer: createReducer(
     initialSearchState,
     on(

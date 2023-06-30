@@ -52,6 +52,13 @@ const routes: Routes = [
         },
       },
       {
+        path: UrlEndpoint.User,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/user/feature');
+          return m.UserModule;
+        },
+      },
+      {
         path: UrlEndpoint.Organization,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/organization/feature');

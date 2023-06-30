@@ -1,16 +1,10 @@
 import { BaseUpdateUserDto } from '@newbee/shared/data-access';
 import {
-  activeIsBoolean,
   displayNameIsNotEmpty,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,
 } from '@newbee/shared/util';
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPhoneNumber } from 'class-validator';
 
 /**
  * The DTO sent from the frontend to the backend for updating the user's value.
@@ -39,11 +33,4 @@ export class UpdateUserDto implements BaseUpdateUserDto {
     message: phoneNumberIsPhoneNumber,
   })
   phoneNumber?: string | null;
-
-  /**
-   * @inheritdoc
-   */
-  @IsOptional()
-  @IsBoolean({ message: activeIsBoolean })
-  active?: boolean;
 }

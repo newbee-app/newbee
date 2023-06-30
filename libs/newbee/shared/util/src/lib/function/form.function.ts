@@ -11,6 +11,8 @@ export function getErrorMessage(control: AbstractControl | null): string {
     return 'You must enter a value';
   } else if (control?.hasError('email')) {
     return 'Not a valid email';
+  } else if (control?.hasError('pattern')) {
+    return 'You must match the specified pattern';
   } else if (control?.hasError('phoneNumber')) {
     const phoneNumberError = control.getError('phoneNumber');
     if (phoneNumberError.missingCountry) {

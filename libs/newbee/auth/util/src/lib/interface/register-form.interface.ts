@@ -1,4 +1,4 @@
-import { PhoneInput } from '@newbee/newbee/shared/util';
+import type { PhoneInput } from '@newbee/newbee/shared/util';
 
 /**
  * An interface representing a register form.

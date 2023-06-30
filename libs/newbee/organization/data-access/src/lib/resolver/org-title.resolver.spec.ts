@@ -59,7 +59,7 @@ describe('OrgTitleResolver', () => {
 
   it(`should dispatch getOrg and set title to org's name`, async () => {
     store.setState({
-      organization: {
+      org: {
         ...initialOrganizationState,
         selectedOrganization: testOrgMemberRelation1,
       },

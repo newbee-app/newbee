@@ -1,3 +1,4 @@
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   displayNameIsNotEmpty,
   internalServerError,
@@ -5,13 +6,19 @@ import {
   phoneNumberIsPhoneNumber,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
-import { componentWrapperDecorator, Meta, StoryObj } from '@storybook/angular';
+import {
+  componentWrapperDecorator,
+  Meta,
+  moduleMetadata,
+  StoryObj,
+} from '@storybook/angular';
 import { RegisterFormComponent } from './register-form.component';
 
 export default {
   title: 'RegisterFormComponent',
   component: RegisterFormComponent,
   decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
       (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
     ),

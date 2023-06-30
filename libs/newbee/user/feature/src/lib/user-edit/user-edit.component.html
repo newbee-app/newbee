@@ -1,0 +1,10 @@
+<newbee-navbar>
+  <newbee-edit-user
+    [user]="(user$ | async)!"
+    [editPending]="(editPending$ | async)!"
+    [deletePending]="(deletePending$ | async)!"
+    [httpClientError]="(httpClientError$ | async)!"
+    (edit)="onEdit($event)"
+    (delete)="onDelete()"
+  ></newbee-edit-user>
+</newbee-navbar>

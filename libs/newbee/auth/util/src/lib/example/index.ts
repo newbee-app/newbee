@@ -1,3 +1,4 @@
+import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testUser1 } from '@newbee/shared/util';
 import { LoginForm, RegisterForm } from '../interface';
 
@@ -16,5 +17,6 @@ export const testLoginForm1: LoginForm = { email };
 export const testRegisterForm1: RegisterForm = {
   email,
   name,
-  ...(displayName ? { displayName } : {}),
+  displayName,
+  phoneNumber: testPhoneInput1,
 };

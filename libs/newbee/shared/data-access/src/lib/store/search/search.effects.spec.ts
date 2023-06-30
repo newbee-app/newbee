@@ -28,7 +28,7 @@ describe('SearchEffects', () => {
       providers: [
         provideMockStore({
           initialState: {
-            organization: { selectedOrganization: testOrgMemberRelation1 },
+            org: { selectedOrganization: testOrgMemberRelation1 },
           },
         }),
         provideMockActions(() => actions$),
@@ -74,7 +74,7 @@ describe('SearchEffects', () => {
     });
 
     it('should not fire if selectedOrganization is null', () => {
-      store.setState({ organization: initialOrganizationState });
+      store.setState({ org: initialOrganizationState });
       actions$ = hot('a', {
         a: SearchActions.search({ query: testBaseQueryDto1 }),
       });
@@ -105,7 +105,7 @@ describe('SearchEffects', () => {
     });
 
     it('should not fire if selectedOrganization is null', () => {
-      store.setState({ organization: initialOrganizationState });
+      store.setState({ org: initialOrganizationState });
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: testBaseSuggestDto1 }),
       });

@@ -5,9 +5,11 @@ import {
 import {
   testOrgMemberInviteRelation1,
   testUser1,
+  testUser2,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { CookieActions } from '../cookie';
+import { UserActions } from '../user';
 import { AuthActions } from './auth.actions';
 import { authFeature, AuthState, initialAuthState } from './auth.reducer';
 
@@ -54,10 +56,29 @@ describe('AuthReducer', () => {
   });
 
   describe('from login success', () => {
+    it('should update state for editUserSuccess', () => {
+      const updatedState = authFeature.reducer(
+        stateAfterLoginSuccess,
+        UserActions.editUserSuccess({ user: testUser2 })
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterLoginSuccess,
+        user: testUser2,
+      });
+    });
+
     it('should update state for logoutSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginSuccess,
         AuthActions.logoutSuccess()
+      );
+      expect(updatedState).toEqual(initialAuthState);
+    });
+
+    it('should update state for deleteUSerSuccess', () => {
+      const updatedState = authFeature.reducer(
+        stateAfterLoginSuccess,
+        UserActions.deleteUserSuccess
       );
       expect(updatedState).toEqual(initialAuthState);
     });

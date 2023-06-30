@@ -133,7 +133,7 @@ describe('OrganizationEffects', () => {
   describe('editOrg$', () => {
     it('should fire editOrgSuccess if successful', () => {
       store.setState({
-        organization: {
+        org: {
           selectedOrganization: testOrgMemberRelation1,
         },
       });
@@ -173,7 +173,7 @@ describe('OrganizationEffects', () => {
   describe('editOrgSlug$', () => {
     it('should fire editOrgSlugSuccess if successful', () => {
       store.setState({
-        organization: {
+        org: {
           selectedOrganization: testOrgMemberRelation1,
         },
       });
@@ -235,7 +235,7 @@ describe('OrganizationEffects', () => {
   describe('deleteOrg$', () => {
     it('should fire deleteOrgSuccess if successful', () => {
       store.setState({
-        organization: {
+        org: {
           selectedOrganization: testOrgMemberRelation1,
         },
       });
@@ -308,7 +308,7 @@ describe('OrganizationEffects', () => {
 
     it('should fire checkSlugSccuess with slugTaken as false if slug is the same as selectedOrganization', () => {
       store.setState({
-        organization: { selectedOrganization: testOrgMemberRelation1 },
+        org: { selectedOrganization: testOrgMemberRelation1 },
       });
       actions$ = hot('a', {
         a: OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
