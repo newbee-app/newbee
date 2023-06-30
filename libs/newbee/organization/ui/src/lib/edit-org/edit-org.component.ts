@@ -220,7 +220,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  readonly editInputDisplayError = (
+  readonly inputDisplayError = (
     formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
     inputName: string
   ): boolean => {
@@ -232,13 +232,14 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   };
 
   /**
-   * The edit org form's input's error message.
+   * The input error message for the given form..
    *
-   * @param inputName The input in the edit org from to look at.
+   * @param formName The name of the form group to look at.
+   * @param inputName The name of the form group's input to look at.
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  readonly editInputErrorMessage = (
+  readonly inputErrorMessage = (
     formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
     inputName: string
   ): string => {

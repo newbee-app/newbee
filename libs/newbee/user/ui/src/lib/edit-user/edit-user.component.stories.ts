@@ -19,9 +19,12 @@ export default {
   ],
   args: {
     user: testUser1,
+    editPending: false,
+    deletePending: false,
   },
   argTypes: {
     edit: { action: 'edit' },
+    delete: { action: 'delete' },
   },
 } as Meta<EditUserComponent>;
 
@@ -31,4 +34,22 @@ export const Primary: Story = {};
 
 export const OptionalsExcluded: Story = {
   args: { user: testUser2 },
+};
+
+export const EditPending: Story = { args: { editPending: true } };
+
+export const DeletePending: Story = { args: { deletePending: true } };
+
+export const HttpError: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        name: 'Name error',
+        displayName: 'Display name error',
+        delete: 'Delete error',
+        misc: 'An HTTP client error',
+      },
+    },
+  },
 };

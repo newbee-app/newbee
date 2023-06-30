@@ -1,4 +1,8 @@
-import { UserActions } from '@newbee/newbee/shared/data-access';
+import {
+  HttpActions,
+  RouterActions,
+  UserActions,
+} from '@newbee/newbee/shared/data-access';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
@@ -49,6 +53,8 @@ export const userFeature = createFeature({
     on(
       UserActions.editUserSuccess,
       UserActions.deleteUserSuccess,
+      HttpActions.clientError,
+      RouterActions.routerRequest,
       (): UserState => initialUserState
     )
   ),

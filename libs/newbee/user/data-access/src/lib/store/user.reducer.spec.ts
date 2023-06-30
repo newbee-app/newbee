@@ -1,4 +1,8 @@
-import { UserActions } from '@newbee/newbee/shared/data-access';
+import {
+  HttpActions,
+  RouterActions,
+  UserActions,
+} from '@newbee/newbee/shared/data-access';
 import { initialUserState, userFeature, UserState } from './user.reducer';
 
 describe('UserReducer', () => {
@@ -32,7 +36,7 @@ describe('UserReducer', () => {
   describe('from altered state', () => {
     it('should update for editUserSuccess', () => {
       const updatedState = userFeature.reducer(
-        initialUserState,
+        stateAfterEditUser,
         UserActions.editUserSuccess
       );
       expect(updatedState).toEqual(initialUserState);
@@ -40,8 +44,24 @@ describe('UserReducer', () => {
 
     it('should update state for deleteUserSuccess', () => {
       const updatedState = userFeature.reducer(
-        initialUserState,
+        stateAfterEditUser,
         UserActions.deleteUserSuccess
+      );
+      expect(updatedState).toEqual(initialUserState);
+    });
+
+    it('should update state for clientError', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterEditUser,
+        HttpActions.clientError
+      );
+      expect(updatedState).toEqual(initialUserState);
+    });
+
+    it('should update state for deleteUserSuccess', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterEditUser,
+        RouterActions.routerRequest
       );
       expect(updatedState).toEqual(initialUserState);
     });

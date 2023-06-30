@@ -1,52 +1,122 @@
 <div class="flex flex-col flex-nowrap gap-y-4">
-  <h4>Edit user details</h4>
-
-  <form
-    id="edit-user-form"
-    [formGroup]="editUserForm"
-    (ngSubmit)="emitEdit()"
-    class="flex flex-col flex-nowrap gap-y-4"
-  >
-    <div class="flex flex-col flex-nowrap gap-y-2">
-      <label for="name-input">Name</label>
-
-      <input
-        type="text"
-        id="name-input"
-        formControlName="name"
-        required
-        class="input border-neutral"
-      />
-    </div>
-
-    <div class="flex flex-col flex-nowrap gap-y-2">
-      <label for="display-name-input">Display name</label>
-
-      <input
-        type="text"
-        id="display-name-input"
-        formControlName="displayName"
-        class="input border-neutral"
-      />
-    </div>
-
-    <div class="flex flex-col flex-nowrap gap-y-2">
-      <label for="phone-number-input">Phone number</label>
-
-      <newbee-phone-input
-        id="phone-number-input"
-        formControlName="phoneNumber"
-      ></newbee-phone-input>
-    </div>
-
-    <button
-      type="submit"
-      id="edit-btn"
-      [disabled]="editUserForm.invalid || !editDistinct || editPending"
-      class="btn btn-primary w-fit"
+  <div class="collapse collapse-arrow z-0">
+    <input type="checkbox" id="edit-collapse" checked />
+    <label for="edit-collapse" class="collapse-title"
+      ><h4>Edit user details</h4></label
     >
-      <span *ngIf="editPending" class="loading loading-spinner"></span>
-      Update details
-    </button>
-  </form>
+
+    <form
+      id="edit-user-form"
+      [formGroup]="editUserForm"
+      (ngSubmit)="emitEdit()"
+      class="collapse-content flex flex-col flex-nowrap gap-y-4"
+    >
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="name-input">Name</label>
+        <input
+          type="text"
+          id="name-input"
+          formControlName="name"
+          required
+          class="input border-neutral"
+        />
+        <newbee-error-alert
+          *ngIf="inputDisplayError('editUser', 'name')"
+          [text]="inputErrorMessage('editUser', 'name')"
+        ></newbee-error-alert>
+      </div>
+
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="display-name-input">Display name</label>
+        <input
+          type="text"
+          id="display-name-input"
+          formControlName="displayName"
+          class="input border-neutral"
+        />
+        <newbee-error-alert
+          *ngIf="inputDisplayError('editUser', 'displayName')"
+          [text]="inputErrorMessage('editUser', 'displayName')"
+        ></newbee-error-alert>
+      </div>
+
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="phone-number-input">Phone number</label>
+        <newbee-phone-input
+          id="phone-number-input"
+          formControlName="phoneNumber"
+        ></newbee-phone-input>
+      </div>
+
+      <button
+        type="submit"
+        id="edit-btn"
+        [disabled]="editUserForm.invalid || !editDistinct || editPending"
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="editPending" class="loading loading-spinner"></span>
+        Update details
+      </button>
+    </form>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="collapse collapse-arrow z-0">
+    <input type="checkbox" id="delete-collapse" checked />
+    <label for="delete-collapse" class="collapse-title"><h4>Delete</h4></label>
+
+    <form
+      id="delete-user-form"
+      [formGroup]="deleteUserForm"
+      (ngSubmit)="emitDelete()"
+      class="collapse-content flex flex-col flex-nowrap gap-y-4"
+    >
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="delete-input" class="flex flex-col flex-nowrap gap-y-2">
+          <h5>Delete your account</h5>
+          <p>
+            Type <span class="font-mono">DELETE</span> to confirm that you want
+            to delete your account. Deleting your account means you will be
+            removed from all of the organizations and teams you are currently
+            in. You will not be able to delete your account if you are currently
+            the sole owner of an organization or team, unless you delete those
+            organizations and teams first. You will also not be able to delete
+            your account if you still actively maintain any posts,
+            maintainership must be transferred before a deletion can take place.
+            This is a permanent action that cannot be undone.
+          </p>
+        </label>
+
+        <input
+          type="text"
+          id="delete-input"
+          formControlName="delete"
+          required
+          placeholder="DELETE"
+          class="input border-neutral"
+        />
+
+        <newbee-error-alert
+          *ngIf="inputDisplayError('deleteUser', 'delete')"
+          [text]="inputErrorMessage('deleteUser', 'delete')"
+        ></newbee-error-alert>
+      </div>
+
+      <button
+        type="submit"
+        id="delete-btn"
+        [disabled]="deleteUserForm.invalid || deletePending"
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="deletePending" class="loading loading-spinner"></span>
+        Delete account
+      </button>
+    </form>
+  </div>
+
+  <newbee-error-alert
+    *ngIf="httpClientError?.messages?.['misc']"
+    [text]="httpClientError?.messages?.['misc'] ?? ''"
+  ></newbee-error-alert>
 </div>

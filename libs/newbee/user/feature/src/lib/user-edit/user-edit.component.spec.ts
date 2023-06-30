@@ -57,4 +57,11 @@ describe('UserEditComponent', () => {
       );
     });
   });
+
+  describe('onDelete', () => {
+    it('should dispatch deleteUser', () => {
+      component.onDelete();
+      expect(store.dispatch).toBeCalledWith(UserActions.deleteUser());
+    });
+  });
 });

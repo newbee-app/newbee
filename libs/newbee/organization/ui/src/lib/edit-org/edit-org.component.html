@@ -18,8 +18,8 @@
           class="input border-neutral w-full"
         />
         <newbee-error-alert
-          *ngIf="editInputDisplayError('editOrg', 'name')"
-          [text]="editInputErrorMessage('editOrg', 'name')"
+          *ngIf="inputDisplayError('editOrg', 'name')"
+          [text]="inputErrorMessage('editOrg', 'name')"
         ></newbee-error-alert>
       </div>
 
@@ -88,10 +88,10 @@
           <newbee-error-alert
             *ngIf="
               (!checkPending && slugTaken) ||
-              editInputDisplayError('editOrgSlug', 'slug')
+              inputDisplayError('editOrgSlug', 'slug')
             "
             [text]="
-              editInputErrorMessage('editOrgSlug', 'slug') ||
+              inputErrorMessage('editOrgSlug', 'slug') ||
               'This slug is already taken, please choose another'
             "
           ></newbee-error-alert>

@@ -18,6 +18,7 @@ describe('EditUserComponent', () => {
     component.user = testUser1;
 
     jest.spyOn(component.edit, 'emit');
+    jest.spyOn(component.delete, 'emit');
 
     fixture.detectChanges();
   });
@@ -27,14 +28,24 @@ describe('EditUserComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('edit', () => {
-    it('should emit edit', () => {
-      component.emitEdit();
-      expect(component.edit.emit).toBeCalledTimes(1);
-      expect(component.edit.emit).toBeCalledWith({
-        name: testUser1.name,
-        displayName: testUser1.displayName,
-        phoneNumber: testPhoneInput1,
+  describe('outputs', () => {
+    describe('emitEdit', () => {
+      it('should emit edit', () => {
+        component.emitEdit();
+        expect(component.edit.emit).toBeCalledTimes(1);
+        expect(component.edit.emit).toBeCalledWith({
+          name: testUser1.name,
+          displayName: testUser1.displayName,
+          phoneNumber: testPhoneInput1,
+        });
+      });
+    });
+
+    describe('emitDelete', () => {
+      it('should emit delete', () => {
+        component.emitDelete();
+        expect(component.delete.emit).toBeCalledTimes(1);
+        expect(component.delete.emit).toBeCalledWith();
       });
     });
   });

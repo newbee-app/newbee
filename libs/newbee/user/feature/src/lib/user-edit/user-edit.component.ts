@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { authFeature, UserActions } from '@newbee/newbee/shared/data-access';
+import {
+  authFeature,
+  httpFeature,
+  UserActions,
+} from '@newbee/newbee/shared/data-access';
 import { userFeature } from '@newbee/newbee/user/data-access';
 import { EditUserForm, editUserFormToDto } from '@newbee/newbee/user/util';
 import { Store } from '@ngrx/store';
@@ -22,6 +26,16 @@ export class UserEditComponent {
    */
   editPending$ = this.store.select(userFeature.selectPendingEdit);
 
+  /**
+   * Whether the delete action is pending.
+   */
+  deletePending$ = this.store.select(userFeature.selectPendingDelete);
+
+  /**
+   * An HTTP error for the component, if one exists.
+   */
+  httpClientError$ = this.store.select(httpFeature.selectError);
+
   constructor(private readonly store: Store) {}
 
   /**
@@ -33,5 +47,12 @@ export class UserEditComponent {
     this.store.dispatch(
       UserActions.editUser({ updateUserDto: editUserFormToDto(editUserForm) })
     );
+  }
+
+  /**
+   * When the dumb UI emits a delete event, send a delete action to the store.
+   */
+  onDelete(): void {
+    this.store.dispatch(UserActions.deleteUser());
   }
 }
