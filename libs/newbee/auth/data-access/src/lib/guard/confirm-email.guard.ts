@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { map, Observable, take } from 'rxjs';
 import { authFeature } from '../store';
@@ -23,7 +24,9 @@ export const confirmEmailGuard: CanActivateFn = (): Observable<
         return true;
       }
 
-      return router.createUrlTree(['/auth/login']);
+      return router.createUrlTree([
+        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+      ]);
     })
   );
 };

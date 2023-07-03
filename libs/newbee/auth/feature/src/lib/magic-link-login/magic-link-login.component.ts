@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { magicLinkLogin } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -20,7 +21,7 @@ export class MagicLinkLoginComponent implements OnInit {
    * Make a request to confirm the magic link token.
    */
   ngOnInit(): void {
-    const token = this.route.snapshot.queryParamMap.get('token');
+    const token = this.route.snapshot.paramMap.get(magicLinkLogin);
     this.store.dispatch(AuthActions.confirmMagicLink({ token: token ?? '' }));
   }
 }
