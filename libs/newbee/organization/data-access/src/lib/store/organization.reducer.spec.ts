@@ -3,7 +3,7 @@ import {
   OrganizationActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+import { testOrganization1, testUser1 } from '@newbee/shared/util';
 import {
   initialOrganizationState,
   organizationFeature,
@@ -172,9 +172,12 @@ describe('OrganizationReducer', () => {
     it('should update state for inviteUserSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterInviteUser,
-        OrganizationActions.inviteUserSuccess
+        OrganizationActions.inviteUserSuccess({ email: testUser1.email })
       );
-      expect(updatedState).toEqual(initialOrganizationState);
+      expect(updatedState).toEqual({
+        ...initialOrganizationState,
+        invitedUser: testUser1.email,
+      });
     });
   });
 });

@@ -1,10 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { InviteMemberForm } from '@newbee/newbee/organization/util';
 import {
   ErrorAlertComponent,
   SearchableSelectComponent,
+  SuccessAlertComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
@@ -25,14 +33,20 @@ import { OrgRoleEnum } from '@newbee/shared/util';
     ReactiveFormsModule,
     SearchableSelectComponent,
     ErrorAlertComponent,
+    SuccessAlertComponent,
   ],
   templateUrl: './invite-member.component.html',
 })
-export class InviteMemberComponent {
+export class InviteMemberComponent implements OnChanges {
   /**
    * Whether to display the spinner on the invite button.
    */
   @Input() invitePending = false;
+
+  /**
+   * The successfully invited user's email address, if a user was successfully invited.
+   */
+  @Input() invitedUser = '';
 
   /**
    * An HTTP error for the component, if one exists.
@@ -66,6 +80,29 @@ export class InviteMemberComponent {
         console.log(this.inviteMemberForm.valid);
       },
     });
+  }
+
+  /**
+   * The text to display in the success alert.
+   */
+  get inviteSuccessText(): string {
+    return `An invite was successfully sent to ${this.invitedUser}`;
+  }
+
+  /**
+   * When the value of `invitedUser` is updated, clear the input.
+   *
+   * @param changes All of the changes to the component's inputs.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    const invitedUser = changes['invitedUser'];
+    if (!invitedUser) {
+      return;
+    }
+
+    this.inviteMemberForm.patchValue({ email: '' });
+    this.inviteMemberForm.markAsPristine();
+    this.inviteMemberForm.markAsUntouched();
   }
 
   /**

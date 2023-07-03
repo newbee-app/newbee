@@ -8,6 +8,7 @@ import { authenticatedGuard } from '@newbee/newbee/shared/data-access';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import { OrgEditComponent } from '../org-edit';
 import { OrgHomeComponent } from '../org-home';
+import { OrgInviteComponent } from '../org-invite';
 
 const routes: Routes = [
   {
@@ -17,12 +18,16 @@ const routes: Routes = [
     canDeactivate: [resetSelectedOrgGuard],
     children: [
       {
-        path: '',
-        component: OrgHomeComponent,
-      },
-      {
         path: UrlEndpoint.Edit,
         component: OrgEditComponent,
+      },
+      {
+        path: UrlEndpoint.Invite,
+        component: OrgInviteComponent,
+      },
+      {
+        path: '',
+        component: OrgHomeComponent,
       },
     ],
   },

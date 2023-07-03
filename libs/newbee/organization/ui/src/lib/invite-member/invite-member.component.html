@@ -12,15 +12,15 @@
       class="flex flex-col flex-nowrap gap-y-4"
     >
       <div class="flex flex-col flex-nowrap gap-y-2">
-        <div class="join">
+        <div class="flex flex-row flex-nowrap gap-x-2">
           <input
             type="text"
             id="email-input"
             formControlName="email"
             placeholder="johndoe@example.com"
-            class="join-item input border-neutral w-full"
+            class="input border-neutral w-full"
           />
-          <div class="join-item w-52">
+          <div class="w-52">
             <newbee-searchable-select
               [options]="roleOptions"
               optionName="role"
@@ -48,6 +48,10 @@
     </form>
 
     <div class="w-full">
+      <newbee-success-alert
+        *ngIf="invitedUser"
+        [text]="inviteSuccessText"
+      ></newbee-success-alert>
       <newbee-error-alert
         *ngIf="httpClientError?.messages?.['misc']"
         [text]="httpClientError?.messages?.['misc'] ?? ''"

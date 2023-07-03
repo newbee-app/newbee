@@ -1,5 +1,6 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { OrgRoleEnum, testUser1 } from '@newbee/shared/util';
 import { InviteMemberComponent } from './invite-member.component';
 
 describe('InviteMemberComponent', () => {
@@ -27,11 +28,25 @@ describe('InviteMemberComponent', () => {
   describe('emitInvite', () => {
     it('should emit invite', () => {
       component.emitInvite();
-      expect(component.invite).toBeCalledTimes(1);
-      expect(component.invite).toBeCalledWith({
+      expect(component.invite.emit).toBeCalledTimes(1);
+      expect(component.invite.emit).toBeCalledWith({
         email: '',
         role: OrgRoleEnum.Member,
       });
+    });
+  });
+
+  describe('changes', () => {
+    it(`should update form's email`, () => {
+      component.ngOnChanges({
+        invitedUser: new SimpleChange('', testUser1.email, true),
+      });
+      expect(component.inviteMemberForm.value).toEqual({
+        email: '',
+        role: OrgRoleEnum.Member,
+      });
+      expect(component.inviteMemberForm.pristine).toBeTruthy();
+      expect(component.inviteMemberForm.untouched).toBeTruthy();
     });
   });
 });

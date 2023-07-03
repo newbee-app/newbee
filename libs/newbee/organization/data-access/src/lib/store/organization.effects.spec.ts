@@ -364,7 +364,9 @@ describe('OrganizationEffects', () => {
         }),
       });
       const expected$ = hot('a', {
-        a: OrganizationActions.inviteUserSuccess(),
+        a: OrganizationActions.inviteUserSuccess({
+          email: testBaseCreateOrgMemberInviteDto1.email,
+        }),
       });
       expect(effects.inviteUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

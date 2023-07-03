@@ -99,9 +99,9 @@ export const OrganizationActions = createActionGroup({
     }>(),
 
     /**
-     * Indicates that an invite was successfully sent to the user.
+     * Indicates that an invite was successfully sent to the given email.
      */
-    'Invite User Success': emptyProps(),
+    'Invite User Success': props<{ email: string }>(),
 
     /**
      * Set the selected org to be null.

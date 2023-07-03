@@ -6,7 +6,6 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'newbee-error-alert',
   standalone: true,
-  imports: [],
   templateUrl: './error-alert.component.html',
 })
 export class ErrorAlertComponent {

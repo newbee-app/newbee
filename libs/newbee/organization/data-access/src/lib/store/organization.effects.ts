@@ -204,6 +204,8 @@ export class OrganizationEffects {
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
+        const { email } = createOrgMemberInviteDto;
+
         return this.organizationService
           .inviteUser(
             selectedOrganization?.organization.slug as string,
@@ -211,7 +213,7 @@ export class OrganizationEffects {
           )
           .pipe(
             map(() => {
-              return OrganizationActions.inviteUserSuccess();
+              return OrganizationActions.inviteUserSuccess({ email });
             }),
             catchError(OrganizationEffects.catchHttpError)
           );

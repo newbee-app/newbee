@@ -49,6 +49,11 @@ export interface OrganizationState {
    * Whether the user is waiting for a response for inviting a user.
    */
   pendingInvite: boolean;
+
+  /**
+   * The successfully invited user's email address.
+   */
+  invitedUser: string;
 }
 
 /**
@@ -63,6 +68,7 @@ export const initialOrganizationState: OrganizationState = {
   slugTaken: false,
   generatedSlug: '',
   pendingInvite: false,
+  invitedUser: '',
 };
 
 /**
@@ -134,11 +140,18 @@ export const organizationFeature = createFeature({
       })
     ),
     on(
+      OrganizationActions.inviteUserSuccess,
+      (state, { email }): OrganizationState => ({
+        ...state,
+        pendingInvite: false,
+        invitedUser: email,
+      })
+    ),
+    on(
       OrganizationActions.createOrgSuccess,
       OrganizationActions.editOrgSuccess,
       OrganizationActions.editOrgSlugSuccess,
       OrganizationActions.deleteOrgSuccess,
-      OrganizationActions.inviteUserSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
       (): OrganizationState => initialOrganizationState

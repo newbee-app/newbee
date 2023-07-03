@@ -1,4 +1,5 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { testUser1 } from '@newbee/shared/util';
 import {
   componentWrapperDecorator,
   Meta,
@@ -18,6 +19,7 @@ export default {
   ],
   args: {
     invitePending: false,
+    invitedUser: '',
     httpClientError: null,
   },
   argTypes: {
@@ -30,6 +32,8 @@ type Story = StoryObj<InviteMemberComponent>;
 export const Primary: Story = {};
 
 export const InvitePending: Story = { args: { invitePending: true } };
+
+export const InvitedUser: Story = { args: { invitedUser: testUser1.email } };
 
 export const HttpError: Story = {
   args: {
