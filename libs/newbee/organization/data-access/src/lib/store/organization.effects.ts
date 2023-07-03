@@ -10,6 +10,7 @@ import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
+  orgRoleIsEnum,
   slugIsNotEmpty,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
@@ -195,6 +196,29 @@ export class OrganizationEffects {
     );
   });
 
+  inviteUser$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.inviteUser),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
+        return this.organizationService
+          .inviteUser(
+            selectedOrganization?.organization.slug as string,
+            createOrgMemberInviteDto
+          )
+          .pipe(
+            map(() => {
+              return OrganizationActions.inviteUserSuccess();
+            }),
+            catchError(OrganizationEffects.catchHttpError)
+          );
+      })
+    );
+  });
+
   constructor(
     private readonly actions$: Actions,
     private readonly organizationService: OrganizationService,
@@ -216,6 +240,8 @@ export class OrganizationEffects {
           return 'slug';
         case nameIsNotEmpty:
           return 'name';
+        case orgRoleIsEnum:
+          return 'role';
         default:
           return 'misc';
       }
