@@ -55,6 +55,11 @@ export class SearchableSelectComponent<T>
   implements OnDestroy, ControlValueAccessor
 {
   /**
+   * Whether to show the searchbar component.
+   */
+  @Input() showSearchbar = true;
+
+  /**
    * All of the possible options for the select.
    */
   @Input() options!: SelectOption<T>[];
