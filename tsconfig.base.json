@@ -124,6 +124,12 @@
       "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
       "@newbee/newbee/home/feature": ["libs/newbee/home/feature/src/index.ts"],
       "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
+      "@newbee/newbee/invite/data-access": [
+        "libs/newbee/invite/data-access/src/index.ts"
+      ],
+      "@newbee/newbee/invite/feature": [
+        "libs/newbee/invite/feature/src/index.ts"
+      ],
       "@newbee/newbee/navbar/feature": [
         "libs/newbee/navbar/feature/src/index.ts"
       ],

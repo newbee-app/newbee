@@ -5,7 +5,7 @@ import { magicLinkLogin } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
- * The empty component made for sending a magic link verification request to the backend.
+ * The component made for sending a magic link verification request to the backend.
  */
 @Component({
   selector: 'newbee-magic-link-login',
@@ -21,7 +21,7 @@ export class MagicLinkLoginComponent implements OnInit {
    * Make a request to confirm the magic link token.
    */
   ngOnInit(): void {
-    const token = this.route.snapshot.paramMap.get(magicLinkLogin);
-    this.store.dispatch(AuthActions.confirmMagicLink({ token: token ?? '' }));
+    const token = this.route.snapshot.paramMap.get(magicLinkLogin) as string;
+    this.store.dispatch(AuthActions.confirmMagicLink({ token: token }));
   }
 }
