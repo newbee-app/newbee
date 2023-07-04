@@ -1,5 +1,6 @@
 /**
- * An interface for convering a `HttpErrorResponse` for internal use.
+ * An interface for converting an `HttpErrorResponse` for internal use.
+ * Primarily used with forms as a way of providing feedback to the user.
  */
 export interface HttpClientError {
   /**

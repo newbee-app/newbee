@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   catchHttpError,
+  catchHttpScreenError,
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
@@ -31,7 +32,7 @@ export class OrganizationEffects {
           map((orgMember) => {
             return OrganizationActions.getOrgSuccess({ orgMember });
           }),
-          catchError(OrganizationEffects.catchHttpError)
+          catchError(catchHttpScreenError)
         );
       })
     );

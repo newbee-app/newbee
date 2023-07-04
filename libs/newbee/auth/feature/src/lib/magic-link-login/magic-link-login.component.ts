@@ -9,7 +9,7 @@ import { Store } from '@ngrx/store';
  */
 @Component({
   selector: 'newbee-magic-link-login',
-  template: '',
+  templateUrl: './magic-link-login.component.html',
 })
 export class MagicLinkLoginComponent implements OnInit {
   constructor(

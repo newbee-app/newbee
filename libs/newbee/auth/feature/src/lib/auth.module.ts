@@ -10,6 +10,7 @@ import {
   LoginFormComponent,
   RegisterFormComponent,
 } from '@newbee/newbee/auth/ui';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ConfirmEmailComponent } from './confirm-email';
@@ -23,6 +24,7 @@ import { AuthRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(authFeature),
     EffectsModule.forFeature([AuthEffects]),
+    ErrorScreenComponent,
     JwtIdComponent,
     LoginFormComponent,
     RegisterFormComponent,

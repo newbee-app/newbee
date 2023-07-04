@@ -1,9 +1,12 @@
-<ng-container [ngSwitch]="httpClientError?.status">
+<ng-container [ngSwitch]="(httpScreenError$ | async)?.status">
   <newbee-forbidden-error *ngSwitchCase="403"></newbee-forbidden-error>
   <newbee-not-found-error
     *ngSwitchCase="404"
     (navigateHome)="onNavigateHome()"
   ></newbee-not-found-error>
+  <newbee-internal-server-error
+    *ngSwitchCase="500"
+  ></newbee-internal-server-error>
 
   <ng-content *ngSwitchDefault></ng-content>
 </ng-container>

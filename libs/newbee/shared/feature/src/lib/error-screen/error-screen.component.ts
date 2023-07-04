@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { httpFeature } from '@newbee/newbee/shared/data-access';
 import {
@@ -7,9 +7,7 @@ import {
   InternalServerErrorComponent,
   NotFoundErrorComponent,
 } from '@newbee/newbee/shared/ui';
-import { HttpClientError } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for the error screen, which will display an error if there is one, or the specified content otherwise.
@@ -25,40 +23,13 @@ import { Subject, takeUntil } from 'rxjs';
   ],
   templateUrl: './error-screen.component.html',
 })
-export class ErrorScreenComponent implements OnInit, OnDestroy {
+export class ErrorScreenComponent {
   /**
-   * Emit to unsubscribe from all infinite observables.
+   * HTTP screen error, if any exist.
    */
-  private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * Request HTTP error, if any exist.
-   */
-  httpClientError: HttpClientError | null = null;
+  httpScreenError$ = this.store.select(httpFeature.selectScreenError);
 
   constructor(private readonly store: Store, private readonly router: Router) {}
-
-  /**
-   * Subscribe to the HTTP error portion of the store.
-   */
-  ngOnInit(): void {
-    this.store
-      .select(httpFeature.selectError)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (error) => {
-          this.httpClientError = error;
-        },
-      });
-  }
-
-  /**
-   * Unsubscribe from all infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   /**
    * When the dumb UI emits a request to navigate home, pass it to the router.

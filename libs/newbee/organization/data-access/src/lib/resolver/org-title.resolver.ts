@@ -22,10 +22,11 @@ export const orgTitleResolver: ResolveFn<string> = (
   store.dispatch(OrganizationActions.getOrg({ orgSlug }));
   return combineLatest([
     store.select(organizationFeature.selectSelectedOrganization),
-    store.select(httpFeature.selectError),
+    store.select(httpFeature.selectScreenError),
   ]).pipe(
     skipWhile(
-      ([orgMember, error]) => orgMember?.organization.slug !== orgSlug && !error
+      ([orgMember, screenError]) =>
+        orgMember?.organization.slug !== orgSlug && !screenError
     ),
     take(1),
     map(([orgMember]) => {
