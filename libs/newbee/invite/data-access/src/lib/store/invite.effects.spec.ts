@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
 import { testBaseTokenDto1 } from '@newbee/shared/data-access';
+import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
@@ -24,7 +25,7 @@ describe('InviteEffects', () => {
         {
           provide: InviteService,
           useValue: createMock<InviteService>({
-            acceptInvite: jest.fn().mockReturnValue(of(null)),
+            acceptInvite: jest.fn().mockReturnValue(of(testOrgMemberRelation1)),
             declineInvite: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -54,7 +55,11 @@ describe('InviteEffects', () => {
       actions$ = hot('a', {
         a: InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 }),
       });
-      const expected$ = hot('a', { a: InviteActions.acceptInviteSuccess() });
+      const expected$ = hot('a', {
+        a: InviteActions.acceptInviteSuccess({
+          orgMember: testOrgMemberRelation1,
+        }),
+      });
       expect(effects.acceptInvite$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.acceptInvite).toBeCalledTimes(1);
@@ -79,8 +84,16 @@ describe('InviteEffects', () => {
 
   describe('inviteSuccess$', () => {
     it('should navigate to home for acceptInviteSuccess', () => {
-      actions$ = hot('a', { a: InviteActions.acceptInviteSuccess() });
-      const expected$ = hot('a', { a: InviteActions.acceptInviteSuccess() });
+      actions$ = hot('a', {
+        a: InviteActions.acceptInviteSuccess({
+          orgMember: testOrgMemberRelation1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: InviteActions.acceptInviteSuccess({
+          orgMember: testOrgMemberRelation1,
+        }),
+      });
       expect(effects.inviteSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);

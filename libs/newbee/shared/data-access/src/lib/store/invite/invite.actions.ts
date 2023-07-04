@@ -1,4 +1,5 @@
 import { BaseTokenDto, UrlEndpoint } from '@newbee/shared/data-access';
+import { OrgMemberNoUser } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 export const InviteActions = createActionGroup({
@@ -12,7 +13,7 @@ export const InviteActions = createActionGroup({
     /**
      * Indicates that the org invite was successfully accepted.
      */
-    'Accept Invite Success': emptyProps(),
+    'Accept Invite Success': props<{ orgMember: OrgMemberNoUser }>(),
 
     /**
      * Decline the given org invite.

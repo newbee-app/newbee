@@ -8,6 +8,7 @@ import {
   testBaseTokenDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
+import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { InviteService } from './invite.service';
 
 describe('InviteService', () => {
@@ -31,9 +32,9 @@ describe('InviteService', () => {
   describe('acceptInvite', () => {
     it('should send out a post request', (done) => {
       service.acceptInvite(testBaseTokenDto1).subscribe({
-        next: (signal) => {
+        next: (orgMember) => {
           try {
-            expect(signal).toBeNull();
+            expect(orgMember).toEqual(testOrgMemberRelation1);
             done();
           } catch (err) {
             done(err);
@@ -48,7 +49,7 @@ describe('InviteService', () => {
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseTokenDto1);
 
-      req.flush(null);
+      req.flush(testOrgMemberRelation1);
     });
   });
 

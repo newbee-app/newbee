@@ -18,8 +18,8 @@ export class InviteEffects {
       ofType(InviteActions.acceptInvite),
       switchMap(({ tokenDto }) => {
         return this.inviteService.acceptInvite(tokenDto).pipe(
-          map(() => {
-            return InviteActions.acceptInviteSuccess();
+          map((orgMember) => {
+            return InviteActions.acceptInviteSuccess({ orgMember });
           }),
           catchError(catchHttpScreenError)
         );

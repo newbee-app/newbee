@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberInviteService } from '@newbee/api/org-member-invite/data-access';
 import {
+  EntityService,
   testOrganizationEntity1,
   testOrgMemberEntity1,
   testOrgMemberInviteEntity1,
@@ -11,11 +12,13 @@ import {
   testBaseCreateOrgMemberInviteDto1,
   testBaseTokenDto1,
 } from '@newbee/shared/data-access';
+import { testOrgMemberRelation1 } from '@newbee/shared/util';
 import { OrgMemberInviteController } from './org-member-invite.controller';
 
 describe('OrgMemberInviteController', () => {
   let controller: OrgMemberInviteController;
   let service: OrgMemberInviteService;
+  let entityService: EntityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,6 +31,14 @@ describe('OrgMemberInviteController', () => {
             acceptInvite: jest.fn().mockResolvedValue(testOrgMemberEntity1),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createOrgMemberNoUser: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberRelation1),
+          }),
+        },
       ],
     }).compile();
 
@@ -35,11 +46,13 @@ describe('OrgMemberInviteController', () => {
       OrgMemberInviteController
     );
     service = module.get<OrgMemberInviteService>(OrgMemberInviteService);
+    entityService = module.get<EntityService>(EntityService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('invite', () => {
@@ -65,11 +78,15 @@ describe('OrgMemberInviteController', () => {
     it('should accept an org member invite', async () => {
       await expect(
         controller.accept(testBaseTokenDto1, testUserEntity1)
-      ).resolves.toBeUndefined();
+      ).resolves.toEqual(testOrgMemberRelation1);
       expect(service.acceptInvite).toBeCalledTimes(1);
       expect(service.acceptInvite).toBeCalledWith(
         testBaseTokenDto1.token,
         testUserEntity1
+      );
+      expect(entityService.createOrgMemberNoUser).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberNoUser).toBeCalledWith(
+        testOrgMemberEntity1
       );
     });
   });

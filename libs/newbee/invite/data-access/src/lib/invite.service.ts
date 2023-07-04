@@ -5,6 +5,7 @@ import {
   orgMemberInviteVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
+import type { OrgMemberNoUser } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -21,8 +22,8 @@ export class InviteService {
    *
    * @returns A null observable.
    */
-  acceptInvite(tokenDto: BaseTokenDto): Observable<null> {
-    return this.http.post<null>(
+  acceptInvite(tokenDto: BaseTokenDto): Observable<OrgMemberNoUser> {
+    return this.http.post<OrgMemberNoUser>(
       `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Accept}`,
       tokenDto
     );

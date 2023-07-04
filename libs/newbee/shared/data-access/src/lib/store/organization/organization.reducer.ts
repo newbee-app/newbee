@@ -4,6 +4,7 @@ import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
+import { InviteActions } from '../invite';
 import { OrganizationActions } from './organization.actions';
 
 /**
@@ -70,12 +71,10 @@ export const organizationFeature = createFeature({
     ),
     on(
       OrganizationActions.getOrgSuccess,
-      (state, { orgMember }): OrganizationState => {
-        return {
-          ...state,
-          selectedOrganization: orgMember,
-        };
-      }
+      (state, { orgMember }): OrganizationState => ({
+        ...state,
+        selectedOrganization: orgMember,
+      })
     ),
     on(
       OrganizationActions.createOrgSuccess,
@@ -126,8 +125,20 @@ export const organizationFeature = createFeature({
 
       return { ...state, organizations, selectedOrganization: null };
     }),
-    on(OrganizationActions.resetSelectedOrg, (state): OrganizationState => {
-      return { ...state, selectedOrganization: null };
-    })
+    on(
+      OrganizationActions.resetSelectedOrg,
+      (state): OrganizationState => ({
+        ...state,
+        selectedOrganization: null,
+      })
+    ),
+    on(
+      InviteActions.acceptInviteSuccess,
+      (state, { orgMember }): OrganizationState => {
+        const { organization } = orgMember;
+        const organizations = [...state.organizations, organization];
+        return { ...state, organizations };
+      }
+    )
   ),
 });
