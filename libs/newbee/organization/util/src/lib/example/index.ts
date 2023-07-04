@@ -1,5 +1,10 @@
-import { testOrganization1 } from '@newbee/shared/util';
-import { CreateOrgForm, EditOrgForm, EditOrgSlugForm } from '../interface';
+import { OrgRoleEnum, testOrganization1, testUser1 } from '@newbee/shared/util';
+import type {
+  CreateOrgForm,
+  EditOrgForm,
+  EditOrgSlugForm,
+  InviteMemberForm,
+} from '../interface';
 
 const { name, slug } = testOrganization1;
 
@@ -20,3 +25,12 @@ export const testEditOrgForm1: EditOrgForm = { name };
  * Strictly for use in testing.
  */
 export const testEditOrgSlugForm1: EditOrgSlugForm = { slug };
+
+/**
+ * An example instance of `InviteMemberForm`.
+ * Strictly for use in testing.
+ */
+export const testInviteMemberForm1: InviteMemberForm = {
+  email: testUser1.email,
+  role: OrgRoleEnum.Member,
+};

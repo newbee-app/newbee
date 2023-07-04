@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { authFeature, initialAuthState } from '../store';
@@ -19,11 +20,11 @@ describe('ConfirmEmailGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: 'auth/login',
+            path: `${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
             component: EmptyComponent,
             children: [
               {
-                path: 'confirm-email',
+                path: UrlEndpoint.ConfirmEmail,
                 component: EmptyComponent,
                 canActivate: [confirmEmailGuard],
               },
@@ -56,9 +57,13 @@ describe('ConfirmEmailGuard', () => {
         pendingWebAuthn: false,
       });
       await expect(
-        router.navigate(['/auth/login/confirm-email'])
+        router.navigate([
+          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+        ])
       ).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/auth/login/confirm-email');
+      expect(location.path()).toEqual(
+        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`
+      );
     });
   });
 
@@ -69,9 +74,13 @@ describe('ConfirmEmailGuard', () => {
         initialAuthState
       );
       await expect(
-        router.navigate(['/auth/login/confirm-email'])
+        router.navigate([
+          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+        ])
       ).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/auth/login');
+      expect(location.path()).toEqual(
+        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`
+      );
     });
   });
 });

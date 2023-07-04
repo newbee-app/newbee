@@ -22,6 +22,8 @@ export default {
     ),
   ],
   args: {
+    showSearchbar: true,
+    options: [testSelectOptionCountry1, testSelectOptionCountry2],
     optionName: 'Country',
     valid: true,
     errorText: '',
@@ -33,9 +35,7 @@ export default {
 
 type Story = StoryObj<SearchableSelectComponent<Country>>;
 
-export const Short: Story = {
-  args: { options: [testSelectOptionCountry1, testSelectOptionCountry2] },
-};
+export const Short: Story = {};
 
 export const Long: Story = {
   args: {
@@ -63,3 +63,5 @@ export const Invalid: Story = {
     errorText: 'Invalid',
   },
 };
+
+export const NoSearchbar: Story = { args: { showSearchbar: false } };

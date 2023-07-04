@@ -219,11 +219,7 @@ export class MagicLinkLoginStrategy extends Strategy {
       jwtid,
     });
 
-    await this.sendMagicLink(
-      payload,
-      `${this.verifyLink}?token=${token}`,
-      jwtid
-    );
+    await this.sendMagicLink(payload, `${this.verifyLink}/${token}`, jwtid);
     return jwtid;
   }
 }

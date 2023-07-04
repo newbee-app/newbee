@@ -73,6 +73,13 @@ const routes: Routes = [
         },
       },
       {
+        path: UrlEndpoint.Invite,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/invite/feature');
+          return m.InviteModule;
+        },
+      },
+      {
         path: '',
         loadChildren: async () => {
           const m = await import('@newbee/newbee/home/feature');

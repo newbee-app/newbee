@@ -5,16 +5,13 @@ export default {
   title: 'ErrorAlertComponent',
   component: ErrorAlertComponent,
   args: {
-    error: '',
-    displayError: true,
+    text: 'Some error',
   },
 } as Meta<ErrorAlertComponent>;
 
 type Story = StoryObj<ErrorAlertComponent>;
 
-export const ShortError: Story = {
-  args: { text: 'Some error' },
-};
+export const ShortError: Story = {};
 
 export const LongError: Story = {
   args: {

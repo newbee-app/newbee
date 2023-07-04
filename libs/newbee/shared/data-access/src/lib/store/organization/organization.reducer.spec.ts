@@ -10,6 +10,7 @@ import {
 } from '@newbee/shared/util';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
+import { InviteActions } from '../invite';
 import { OrganizationActions } from './organization.actions';
 import {
   initialOrganizationState,
@@ -86,9 +87,17 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterCreateOrgSuccess);
     });
+
+    it('should update state for acceptInviteSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        InviteActions.acceptInviteSuccess({ orgMember: testOrgMemberRelation1 })
+      );
+      expect(updatedState).toEqual(stateAfterLoginSuccess);
+    });
   });
 
-  describe('from login success', () => {
+  describe('from altered state', () => {
     it('should update state for getOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterLoginSuccess,
@@ -98,9 +107,7 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterGetOrgSuccess);
     });
-  });
 
-  describe('from get org success', () => {
     it('should update state for editOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterGetOrgSuccess,

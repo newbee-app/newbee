@@ -2,10 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BaseCreateOrganizationDto,
+  BaseCreateOrgMemberInviteDto,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseUpdateOrganizationDto,
   organizationVersion,
+  orgMemberInviteVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
 import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
@@ -70,7 +72,7 @@ export class OrganizationService {
    *
    * @param orgSlug The slug of the organization to delete.
    *
-   * @returns A void observable.
+   * @returns A null observable.
    */
   delete(orgSlug: string): Observable<null> {
     return this.http.delete<null>(
@@ -105,6 +107,24 @@ export class OrganizationService {
     return this.http.get<BaseGeneratedSlugDto>(
       `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${UrlEndpoint.GenerateSlug}`,
       { params }
+    );
+  }
+
+  /**
+   * Send a request to the API to invite a user to the org.
+   *
+   * @param orgSlug The org to invite the user to.
+   * @param createOrgMemberInviteDto The email address and role the invited user should have.
+   *
+   * @returns A null observable.
+   */
+  inviteUser(
+    orgSlug: string,
+    createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto
+  ): Observable<null> {
+    return this.http.post<null>(
+      `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Organization}/${orgSlug}`,
+      createOrgMemberInviteDto
     );
   }
 }

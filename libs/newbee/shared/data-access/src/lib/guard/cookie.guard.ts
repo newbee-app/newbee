@@ -16,9 +16,11 @@ export const cookieGuard: CanActivateFn = (): Observable<boolean> => {
 
   return combineLatest([
     store.select(cookieFeature.selectCookieState),
-    store.select(httpFeature.selectError),
+    store.select(httpFeature.selectScreenError),
   ]).pipe(
-    skipWhile(([cookieState, error]) => !cookieState.csrfToken && !error),
+    skipWhile(
+      ([cookieState, screenError]) => !cookieState.csrfToken && !screenError
+    ),
     take(1),
     map(() => true)
   );

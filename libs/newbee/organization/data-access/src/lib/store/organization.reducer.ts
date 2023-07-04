@@ -44,6 +44,16 @@ export interface OrganizationState {
    * A generated value for an org's slug for creating an org.
    */
   generatedSlug: string;
+
+  /**
+   * Whether the user is waiting for a response for inviting a user.
+   */
+  pendingInvite: boolean;
+
+  /**
+   * The successfully invited user's email address.
+   */
+  invitedUser: string;
 }
 
 /**
@@ -57,6 +67,8 @@ export const initialOrganizationState: OrganizationState = {
   pendingCheck: false,
   slugTaken: false,
   generatedSlug: '',
+  pendingInvite: false,
+  invitedUser: '',
 };
 
 /**
@@ -118,6 +130,21 @@ export const organizationFeature = createFeature({
         generatedSlug: slug,
         pendingCheck: false,
         slugTaken: false,
+      })
+    ),
+    on(
+      OrganizationActions.inviteUser,
+      (state): OrganizationState => ({
+        ...state,
+        pendingInvite: true,
+      })
+    ),
+    on(
+      OrganizationActions.inviteUserSuccess,
+      (state, { email }): OrganizationState => ({
+        ...state,
+        pendingInvite: false,
+        invitedUser: email,
       })
     ),
     on(

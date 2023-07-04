@@ -5,6 +5,7 @@ import {
   TokenDto,
 } from '@newbee/api/org-member-invite/data-access';
 import {
+  EntityService,
   OrganizationEntity,
   OrgMemberEntity,
   UserEntity,
@@ -14,7 +15,7 @@ import {
   orgMemberInviteVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { OrgMemberNoUser, OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrgMemberInviteEntity`.
@@ -30,7 +31,8 @@ export class OrgMemberInviteController {
   private readonly logger = new Logger(OrgMemberInviteController.name);
 
   constructor(
-    private readonly orgMemberInviteService: OrgMemberInviteService
+    private readonly orgMemberInviteService: OrgMemberInviteService,
+    private readonly entityService: EntityService
   ) {}
 
   /**
@@ -78,7 +80,7 @@ export class OrgMemberInviteController {
   async accept(
     @Body() tokenDto: TokenDto,
     @User() user: UserEntity
-  ): Promise<void> {
+  ): Promise<OrgMemberNoUser> {
     const { token } = tokenDto;
     this.logger.log(
       `Accept org member invite request received, token: ${token}, user ID: ${user.id}`
@@ -90,6 +92,7 @@ export class OrgMemberInviteController {
     this.logger.log(
       `Accepted org member invite for token: ${token}, orgMember created with slug: ${orgMember.slug}`
     );
+    return await this.entityService.createOrgMemberNoUser(orgMember);
   }
 
   /**

@@ -3,7 +3,7 @@ import {
   OrganizationActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+import { testOrganization1, testUser1 } from '@newbee/shared/util';
 import {
   initialOrganizationState,
   organizationFeature,
@@ -38,6 +38,10 @@ describe('OrganizationReducer', () => {
   const stateAfterGenerateSlugSuccess: OrganizationState = {
     ...initialOrganizationState,
     generatedSlug: testOrganization1.slug,
+  };
+  const stateAfterInviteUser: OrganizationState = {
+    ...initialOrganizationState,
+    pendingInvite: true,
   };
 
   describe('start from initial state', () => {
@@ -106,9 +110,17 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterGenerateSlugSuccess);
     });
+
+    it('should update state for inviteUser', () => {
+      const updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        OrganizationActions.inviteUser
+      );
+      expect(updatedState).toEqual(stateAfterInviteUser);
+    });
   });
 
-  describe('start from create org', () => {
+  describe('start from altered state', () => {
     it('should update state for createOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
@@ -132,9 +144,7 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
-  });
 
-  describe('start from edit org', () => {
     it('should update state for editOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterEditOrg,
@@ -142,9 +152,7 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
-  });
 
-  describe('start from delete org', () => {
     it('should update state for deleteOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterDeleteOrg,
@@ -152,15 +160,24 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
-  });
 
-  describe('start from check slug', () => {
     it('should update state for checkSlugSuccess', () => {
       const updatedState = organizationFeature.reducer(
-        initialOrganizationState,
+        stateAfterCheckSlug,
         OrganizationActions.checkSlugSuccess({ slugTaken: true })
       );
       expect(updatedState).toEqual(stateAfterCheckSlugSuccess);
+    });
+
+    it('should update state for inviteUserSuccess', () => {
+      const updatedState = organizationFeature.reducer(
+        stateAfterInviteUser,
+        OrganizationActions.inviteUserSuccess({ email: testUser1.email })
+      );
+      expect(updatedState).toEqual({
+        ...initialOrganizationState,
+        invitedUser: testUser1.email,
+      });
     });
   });
 });

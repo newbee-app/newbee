@@ -1,4 +1,7 @@
-import { HttpClientError } from '@newbee/newbee/shared/util';
+import type {
+  HttpClientError,
+  HttpScreenError,
+} from '@newbee/newbee/shared/util';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
@@ -8,7 +11,15 @@ import { HttpActions } from './http.actions';
  * The piece of state holding any outstanding HTTP errors.
  */
 export interface HttpState {
+  /**
+   * The error associated with the request, if it shouldn't take up the whole screen.
+   */
   error: HttpClientError | null;
+
+  /**
+   * The error associated with the request, if it should take up the whole screen.
+   */
+  screenError: HttpScreenError | null;
 }
 
 /**
@@ -16,6 +27,7 @@ export interface HttpState {
  */
 export const initialHttpState: HttpState = {
   error: null,
+  screenError: null,
 };
 
 /**
@@ -33,9 +45,16 @@ export const httpFeature = createFeature({
       })
     ),
     on(
+      HttpActions.screenError,
+      (state, { httpScreenError }): HttpState => ({
+        ...state,
+        screenError: httpScreenError,
+      })
+    ),
+    on(
       HttpActions.resetError,
       RouterActions.routerRequest,
-      (state): HttpState => ({ ...state, error: null })
+      (): HttpState => initialHttpState
     )
   ),
 });

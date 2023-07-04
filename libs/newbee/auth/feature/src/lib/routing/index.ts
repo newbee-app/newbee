@@ -1,10 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  confirmEmailGuard,
-  magicLinkLoginGuard,
-} from '@newbee/newbee/auth/data-access';
+import { confirmEmailGuard } from '@newbee/newbee/auth/data-access';
 import { UrlEndpoint } from '@newbee/shared/data-access';
+import { magicLinkLogin } from '@newbee/shared/util';
 import { ConfirmEmailComponent } from '../confirm-email';
 import { LoginComponent } from '../login/login.component';
 import { MagicLinkLoginComponent } from '../magic-link-login';
@@ -19,14 +17,23 @@ const routes: Routes = [
     title: 'Login',
     children: [
       {
-        path: 'confirm-email',
+        path: UrlEndpoint.ConfirmEmail,
         component: ConfirmEmailComponent,
         canActivate: [confirmEmailGuard],
       },
       {
-        path: 'magic-link-login',
-        component: MagicLinkLoginComponent,
-        canActivate: [magicLinkLoginGuard],
+        path: magicLinkLogin,
+        children: [
+          {
+            path: `:${magicLinkLogin}`,
+            component: MagicLinkLoginComponent,
+          },
+          {
+            path: '',
+            redirectTo: UrlEndpoint.Login,
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: '',

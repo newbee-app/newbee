@@ -1,0 +1,61 @@
+<div class="flex justify-center">
+  <div class="flex flex-col flex-nowrap gap-y-4 md:w-2/3">
+    <div class="flex flex-col flex-nowrap gap-y-2 text-center mb-10">
+      <h4>Invite a user to your org</h4>
+      <p>Specify the email address and role for the user you want to invite</p>
+    </div>
+
+    <form
+      id="invite-member-form"
+      [formGroup]="inviteMemberForm"
+      (ngSubmit)="emitInvite()"
+      class="flex flex-col flex-nowrap gap-y-4"
+    >
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <div class="flex flex-row flex-nowrap gap-x-2">
+          <input
+            type="text"
+            id="email-input"
+            formControlName="email"
+            placeholder="johndoe@example.com"
+            class="input border-neutral w-full"
+          />
+          <div class="w-52">
+            <newbee-searchable-select
+              [options]="roleOptions"
+              optionName="role"
+              [showSearchbar]="false"
+              formControlName="role"
+            ></newbee-searchable-select>
+          </div>
+        </div>
+
+        <newbee-error-alert
+          *ngIf="inputDisplayError('email') || inputDisplayError('role')"
+          [text]="inputErrorMessage('email') || inputErrorMessage('role')"
+        ></newbee-error-alert>
+      </div>
+
+      <button
+        type="submit"
+        id="invite-btn"
+        [disabled]="inviteMemberForm.invalid || invitePending"
+        class="btn btn-primary w-full"
+      >
+        <span *ngIf="invitePending" class="loading loading-spinner"></span>
+        Invite
+      </button>
+    </form>
+
+    <div class="w-full">
+      <newbee-success-alert
+        *ngIf="invitedUser"
+        [text]="inviteSuccessText"
+      ></newbee-success-alert>
+      <newbee-error-alert
+        *ngIf="httpClientError?.messages?.['misc']"
+        [text]="httpClientError?.messages?.['misc'] ?? ''"
+      ></newbee-error-alert>
+    </div>
+  </div>
+</div>

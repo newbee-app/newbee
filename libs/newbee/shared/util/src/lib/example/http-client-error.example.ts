@@ -1,4 +1,4 @@
-import { HttpClientError } from '../interface';
+import type { HttpClientError } from '../interface';
 
 /**
  * An example instance of `HttpClientError`.

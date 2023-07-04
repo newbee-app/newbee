@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   catchHttpError,
+  catchHttpScreenError,
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
@@ -10,6 +11,7 @@ import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
+  orgRoleIsEnum,
   slugIsNotEmpty,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
@@ -30,7 +32,7 @@ export class OrganizationEffects {
           map((orgMember) => {
             return OrganizationActions.getOrgSuccess({ orgMember });
           }),
-          catchError(OrganizationEffects.catchHttpError)
+          catchError(catchHttpScreenError)
         );
       })
     );
@@ -195,6 +197,31 @@ export class OrganizationEffects {
     );
   });
 
+  inviteUser$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrganizationActions.inviteUser),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
+        const { email } = createOrgMemberInviteDto;
+
+        return this.organizationService
+          .inviteUser(
+            selectedOrganization?.organization.slug as string,
+            createOrgMemberInviteDto
+          )
+          .pipe(
+            map(() => {
+              return OrganizationActions.inviteUserSuccess({ email });
+            }),
+            catchError(OrganizationEffects.catchHttpError)
+          );
+      })
+    );
+  });
+
   constructor(
     private readonly actions$: Actions,
     private readonly organizationService: OrganizationService,
@@ -216,6 +243,8 @@ export class OrganizationEffects {
           return 'slug';
         case nameIsNotEmpty:
           return 'name';
+        case orgRoleIsEnum:
+          return 'role';
         default:
           return 'misc';
       }

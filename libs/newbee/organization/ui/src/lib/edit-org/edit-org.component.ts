@@ -232,7 +232,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   };
 
   /**
-   * The input error message for the given form..
+   * The input error message for the given form.
    *
    * @param formName The name of the form group to look at.
    * @param inputName The name of the form group's input to look at.

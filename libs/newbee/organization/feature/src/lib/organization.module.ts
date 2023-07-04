@@ -8,6 +8,7 @@ import {
 } from '@newbee/newbee/organization/data-access';
 import {
   EditOrgComponent,
+  InviteMemberComponent,
   OrgSearchbarComponent,
 } from '@newbee/newbee/organization/ui';
 import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
@@ -15,6 +16,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrgEditComponent } from './org-edit';
 import { OrgHomeComponent } from './org-home/org-home.component';
+import { OrgInviteComponent } from './org-invite';
 import { OrganizationRoutingModule } from './routing';
 
 @NgModule({
@@ -25,10 +27,11 @@ import { OrganizationRoutingModule } from './routing';
     NavbarComponent,
     OrgSearchbarComponent,
     EditOrgComponent,
+    InviteMemberComponent,
     ErrorScreenComponent,
     OrganizationRoutingModule,
   ],
   providers: [OrganizationService],
-  declarations: [OrgHomeComponent, OrgEditComponent],
+  declarations: [OrgHomeComponent, OrgEditComponent, OrgInviteComponent],
 })
 export class OrganizationModule {}

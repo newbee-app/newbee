@@ -4,6 +4,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import {
   testBaseCreateOrganizationDto1,
+  testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   UrlEndpoint,
@@ -45,6 +46,7 @@ describe('OrganizationEffects', () => {
             generateSlug: jest
               .fn()
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
+            inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
         {
@@ -346,6 +348,47 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.generateSlug$).toBeObservable(expected$);
+    });
+  });
+
+  describe('inviteUser$', () => {
+    it('should fire inviteUserSuccess if successful', () => {
+      store.setState({
+        org: {
+          selectedOrganization: testOrgMemberRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: OrganizationActions.inviteUser({
+          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrganizationActions.inviteUserSuccess({
+          email: testBaseCreateOrgMemberInviteDto1.email,
+        }),
+      });
+      expect(effects.inviteUser$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.inviteUser).toBeCalledTimes(1);
+        expect(service.inviteUser).toBeCalledWith(
+          testOrganization1.slug,
+          testBaseCreateOrgMemberInviteDto1
+        );
+      });
+    });
+
+    it('should do nothing if selectedOrganization is null', () => {
+      actions$ = hot('a', {
+        a: OrganizationActions.inviteUser({
+          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.inviteUser$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.inviteUser).not.toBeCalled();
+      });
     });
   });
 });

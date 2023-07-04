@@ -5,14 +5,14 @@ import { cold } from 'jest-marbles';
 import { HttpActions } from '../store';
 import { catchHttpError } from './catch-http-error.function';
 
-describe('CatchHttpError', () => {
+describe('catchHttpError', () => {
   const internalServerHttpClientError: HttpClientError = {
     status: 500,
     messages: { misc: internalServerError },
   };
 
   describe('error is not HttpErrorResponse', () => {
-    it('should return a misc internal server error if error is not an HttpErrorResponse', () => {
+    it('should return a misc internal server error', () => {
       expect(catchHttpError(new Error('error'), () => 'misc')).toBeObservable(
         cold('(a|)', {
           a: HttpActions.clientError({

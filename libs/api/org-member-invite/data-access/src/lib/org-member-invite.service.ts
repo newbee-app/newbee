@@ -99,11 +99,11 @@ export class OrgMemberInviteService {
     const acceptLink =
       this.configService.get('orgMemberInvite.acceptLink', {
         infer: true,
-      }) + `?token=${token}`;
+      }) + `/${token}`;
     const declineLink =
       this.configService.get('orgMemberInvite.declineLink', {
         infer: true,
-      }) + `?token=${token}`;
+      }) + `/${token}`;
 
     try {
       await this.orgMemberInviteRepository.persistAndFlush(orgMemberInvite);

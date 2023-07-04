@@ -6,6 +6,7 @@ import {
 } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
+import { magicLinkLogin } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { MagicLinkLoginComponent } from './magic-link-login.component';
 
@@ -24,7 +25,7 @@ describe('MagicLinkLoginComponent', () => {
           provide: ActivatedRoute,
           useValue: createMock<ActivatedRoute>({
             snapshot: createMock<ActivatedRouteSnapshot>({
-              queryParamMap: createMock<ParamMap>({
+              paramMap: createMock<ParamMap>({
                 get: jest.fn().mockReturnValue('1234'),
               }),
             }),
@@ -38,6 +39,8 @@ describe('MagicLinkLoginComponent', () => {
     store = TestBed.inject(MockStore);
     route = TestBed.inject(ActivatedRoute);
 
+    jest.spyOn(store, 'dispatch');
+
     fixture.detectChanges();
   });
 
@@ -49,22 +52,12 @@ describe('MagicLinkLoginComponent', () => {
   });
 
   describe('selectQueryParams', () => {
-    it('should dispatch confirmMagicLink', (done) => {
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(
-              AuthActions.confirmMagicLink({ token: '1234' })
-            );
-            expect(route.snapshot.queryParamMap.get).toBeCalledTimes(1);
-            expect(route.snapshot.queryParamMap.get).toBeCalledWith('token');
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+    it('should dispatch confirmMagicLink', () => {
+      expect(store.dispatch).toBeCalledWith(
+        AuthActions.confirmMagicLink({ token: '1234' })
+      );
+      expect(route.snapshot.paramMap.get).toBeCalledTimes(1);
+      expect(route.snapshot.paramMap.get).toBeCalledWith(magicLinkLogin);
     });
   });
 });
