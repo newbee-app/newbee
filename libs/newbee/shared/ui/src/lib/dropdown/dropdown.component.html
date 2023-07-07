@@ -1,0 +1,12 @@
+<button type="button" #label (click)="toggleExpand()">
+  <ng-content select="[label]"></ng-content>
+</button>
+
+<div
+  #dropdown
+  role="dropdown"
+  class="absolute bg-neutral rounded-md px-2 py-1 z-40"
+  [ngClass]="{ block: expanded, hidden: !expanded }"
+>
+  <ng-content select="[dropdown]"></ng-content>
+</div>

@@ -20,6 +20,7 @@ import {
 /**
  * A dumb UI for displaying tooltips using FloatingUI.
  * Although DaisyUI has its own tooltip, this implementation using FloatingUI is needed to get around very specific obstacles that come from the Daisy version.
+ * Notably, the Daisy version cannot have the tooltip layer over its parent div.
  */
 @Component({
   selector: 'newbee-tooltip',
@@ -60,33 +61,23 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Compute the absolute position for the tooltip and its arrow.
-   *
-   * @param contentEl
-   * @param tooltipEl
-   * @param arrowEl
-   * @param tooltipPlacement
    */
-  private static async recompute(
-    contentEl: HTMLDivElement,
-    tooltipEl: HTMLDivElement,
-    arrowEl: HTMLDivElement,
-    tooltipPlacement: Placement
-  ): Promise<void> {
+  private async recompute(): Promise<void> {
     // Compute position of the tooltip text
     const { x, y, placement, middlewareData } = await computePosition(
-      contentEl,
-      tooltipEl,
+      this.content.nativeElement,
+      this.tooltip.nativeElement,
       {
-        placement: tooltipPlacement,
+        placement: this.placement,
         middleware: [
           offset(10),
           flip(),
           shift({ padding: 6 }),
-          arrow({ element: arrowEl }),
+          arrow({ element: this.arrow.nativeElement }),
         ],
       }
     );
-    Object.assign(tooltipEl.style, {
+    Object.assign(this.tooltip.nativeElement.style, {
       left: `${x}px`,
       top: `${y}px`,
     });
@@ -100,28 +91,29 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
     }[placement.split('-')[0] as string] as string;
     const arrowX = middlewareData.arrow?.x;
     const arrowY = middlewareData.arrow?.y;
-    Object.assign(arrowEl.style, {
+    Object.assign(this.arrow.nativeElement.style, {
       left: arrowX ? `${arrowX}px` : '',
       top: arrowY ? `${arrowY}px` : '',
       [staticSide]: '-4px',
     });
   }
 
+  /**
+   * Assign cleanup and set up floating UI's autoUpdate with the tooltip.
+   */
   ngAfterViewInit(): void {
     this.cleanup = autoUpdate(
       this.content.nativeElement,
       this.tooltip.nativeElement,
       () => {
-        TooltipComponent.recompute(
-          this.content.nativeElement,
-          this.tooltip.nativeElement,
-          this.arrow.nativeElement,
-          this.placement
-        );
+        this.recompute();
       }
     );
   }
 
+  /**
+   * Call cleanup to clean up the floating UI tooltip.
+   */
   ngOnDestroy(): void {
     this.cleanup();
   }

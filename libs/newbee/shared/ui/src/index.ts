@@ -1,3 +1,4 @@
+export * from './lib/dropdown';
 export * from './lib/error';
 export * from './lib/error-alert';
 export * from './lib/form-control';
