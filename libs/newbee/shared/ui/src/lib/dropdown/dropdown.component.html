@@ -1,12 +1,14 @@
-<button type="button" #label (click)="toggleExpand()">
-  <ng-content select="[label]"></ng-content>
-</button>
+<div class="w-full">
+  <button type="button" #label (click)="toggleExpand()" class="w-full">
+    <ng-content select="[label]"></ng-content>
+  </button>
 
-<div
-  #dropdown
-  role="dropdown"
-  class="absolute bg-neutral rounded-md px-2 py-1 z-40"
-  [ngClass]="{ block: expanded, hidden: !expanded }"
->
-  <ng-content select="[dropdown]"></ng-content>
+  <div
+    #dropdown
+    role="dropdown"
+    class="absolute bg-base-300 rounded-md z-40"
+    [ngClass]="{ hidden: !expanded }"
+  >
+    <ng-content select="[dropdown]"></ng-content>
+  </div>
 </div>

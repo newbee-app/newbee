@@ -3,6 +3,13 @@ import { AbstractControl } from '@angular/forms';
 import { testUser1 } from '@newbee/shared/util';
 import { RegisterFormComponent } from './register-form.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 const {
   email: testEmail1,
   name: testName1,

@@ -1,10 +1,13 @@
-<div>
-  <div class="dropdown w-full">
+<div class="w-full">
+  <newbee-dropdown
+    placement="bottom-start"
+    [expanded]="expanded"
+    (expandedChange)="expandedChange($event)"
+  >
     <button
+      label
       type="button"
       [disabled]="disabled"
-      (click)="toggleExpand()"
-      tabindex="0"
       class="btn btn-outline border-neutral flex flex-row flex-nowrap gap-x-1 justify-between w-full"
     >
       <span class="truncate">{{ selectedText }}</span>
@@ -32,8 +35,8 @@
     </button>
 
     <div
-      tabindex="0"
-      class="dropdown-content flex flex-col flex-nowrap w-full mt-2 bg-base-200 rounded-box max-h-60 overflow-y-auto"
+      dropdown
+      class="flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
     >
       <newbee-searchbar
         *ngIf="showSearchbar"
@@ -51,7 +54,7 @@
         {{ option.dropdownValue }}
       </button>
     </div>
-  </div>
+  </newbee-dropdown>
 
   <div *ngIf="!valid" class="mt-2">
     <newbee-error-alert [text]="errorText"></newbee-error-alert>

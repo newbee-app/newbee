@@ -9,6 +9,13 @@ import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteComponent } from './org-invite.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('OrgInviteComponent', () => {
   let component: OrgInviteComponent;
   let fixture: ComponentFixture<OrgInviteComponent>;

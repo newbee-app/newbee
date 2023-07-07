@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TooltipComponent } from '@newbee/newbee/shared/ui';
+import { DropdownComponent, TooltipComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import type { Organization, OrgMemberNoUser, User } from '@newbee/shared/util';
 import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
@@ -13,7 +13,12 @@ import { AuthenticatedSidebarComponent } from '../sidebar';
 @Component({
   selector: 'newbee-authenticated-navbar',
   standalone: true,
-  imports: [CommonModule, TooltipComponent, AuthenticatedSidebarComponent],
+  imports: [
+    CommonModule,
+    TooltipComponent,
+    DropdownComponent,
+    AuthenticatedSidebarComponent,
+  ],
   templateUrl: './authenticated-navbar.component.html',
 })
 export class AuthenticatedNavbarComponent {

@@ -12,6 +12,13 @@ import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgEditComponent } from './org-edit.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('OrgEditComponent', () => {
   let component: OrgEditComponent;
   let fixture: ComponentFixture<OrgEditComponent>;

@@ -1,26 +1,14 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnDestroy,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {
-  blurActiveElement,
-  ClickService,
-  SelectOption,
-} from '@newbee/newbee/shared/util';
+import { SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
-import { Subject, takeUntil } from 'rxjs';
+import { DropdownComponent } from '../../dropdown';
 import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 import { SearchbarComponent } from '../searchbar/searchbar.component';
 
@@ -41,6 +29,7 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
     ReactiveFormsModule,
     SearchbarComponent,
     ErrorAlertComponent,
+    DropdownComponent,
   ],
   templateUrl: './searchable-select.component.html',
   providers: [
@@ -51,9 +40,7 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
     },
   ],
 })
-export class SearchableSelectComponent<T>
-  implements OnDestroy, ControlValueAccessor
-{
+export class SearchableSelectComponent<T> implements ControlValueAccessor {
   /**
    * Whether to show the searchbar component.
    */
@@ -90,7 +77,7 @@ export class SearchableSelectComponent<T>
   searchTerm = new FormControl('');
 
   /**
-   * Whether the dropdown should be displayed.
+   * Whether the component's dropdown is currently expanded.
    */
   private _expanded = false;
 
@@ -98,11 +85,6 @@ export class SearchableSelectComponent<T>
    * The currently selected value, which starts as null by default.
    */
   private selectedOption: SelectOption<T> | null = null;
-
-  /**
-   * A Subject to unsubscribe from the component's infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
 
   /**
    * Whether the control is disabled.
@@ -125,34 +107,6 @@ export class SearchableSelectComponent<T>
   private _onTouched: () => void = () => {
     return;
   };
-
-  /**
-   * Shrinks the dropdown if the user presses the `esc` key.
-   */
-  @HostListener('keydown.escape')
-  escapeEvent(): void {
-    this.shrink();
-  }
-
-  constructor(clickService: ClickService, elementRef: ElementRef<HTMLElement>) {
-    clickService.documentClickTarget
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (target) => {
-          if (!elementRef.nativeElement.contains(target)) {
-            this.shrink();
-          }
-        },
-      });
-  }
-
-  /**
-   * Unsubscribes from the component's infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   /**
    * Sets the selected option to the given value.
@@ -189,54 +143,6 @@ export class SearchableSelectComponent<T>
    */
   setDisabledState(isDisabled: boolean): void {
     this._disabled = isDisabled;
-  }
-
-  /**
-   * Toggle the dropdown.
-   */
-  toggleExpand(): void {
-    if (this._expanded) {
-      this.shrink();
-    } else {
-      this.expand();
-    }
-  }
-
-  /**
-   * Expand the dropdown, if it's closed.
-   */
-  expand(): void {
-    if (this._expanded) {
-      return;
-    }
-
-    this._expanded = true;
-  }
-
-  /**
-   * Close the dropdown, if it's expanded.
-   *
-   * @param emitEvent Whether to mark the control as touched and emit `exited` after closing the dropdown.
-   */
-  shrink(emitEvent = true): void {
-    if (!this._expanded) {
-      return;
-    }
-
-    this._expanded = false;
-    blurActiveElement();
-
-    if (emitEvent) {
-      this._onTouched();
-      this.exited.emit();
-    }
-  }
-
-  /**
-   * Whether the dropdown should be displayed.
-   */
-  get expanded(): boolean {
-    return this._expanded;
   }
 
   /**
@@ -290,6 +196,13 @@ export class SearchableSelectComponent<T>
   }
 
   /**
+   * Whether the component's dropdown is currently expanded.
+   */
+  get expanded(): boolean {
+    return this._expanded;
+  }
+
+  /**
    * Set the `selectedOption` to the given option.
    * Calls change detection if we emit the event.
    *
@@ -307,5 +220,46 @@ export class SearchableSelectComponent<T>
       this._onChange(option);
     }
     this.shrink(emitEvent);
+  }
+
+  /**
+   * Expand the dropdown, if it's closed.
+   */
+  expand(): void {
+    if (this._expanded) {
+      return;
+    }
+
+    this._expanded = true;
+  }
+
+  /**
+   * Close the dropdown, if it's expanded.
+   *
+   * @param emitEvent Whether to mark the control as touched and emit `exited` after closing the dropdown.
+   */
+  shrink(emitEvent = true): void {
+    if (!this._expanded) {
+      return;
+    }
+
+    this._expanded = false;
+    if (emitEvent) {
+      this._onTouched();
+      this.exited.emit();
+    }
+  }
+
+  /**
+   * Take changes to `expanded` from the dropdown component and relay it to this one.
+   *
+   * @param newExpanded The new value for `expanded`.
+   */
+  expandedChange(newExpanded: boolean): void {
+    if (newExpanded) {
+      this.expand();
+    } else {
+      this.shrink();
+    }
   }
 }

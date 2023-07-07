@@ -8,6 +8,13 @@ import { testBaseCreateUserDto1 } from '@newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('RegisterComponent', () => {
   let fixture: ComponentFixture<RegisterComponent>;
   let component: RegisterComponent;

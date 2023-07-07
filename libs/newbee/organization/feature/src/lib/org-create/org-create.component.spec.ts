@@ -14,6 +14,13 @@ import { testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgCreateComponent } from './org-create.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('OrgCreateComponent', () => {
   let component: OrgCreateComponent;
   let fixture: ComponentFixture<OrgCreateComponent>;

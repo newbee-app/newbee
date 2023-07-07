@@ -17,12 +17,15 @@ export default {
     ),
   ],
   parameters: { layout: 'centered' },
-  args: { placement: 'bottom' },
+  args: { placement: 'bottom', expanded: false },
+  argTypes: {
+    expandedChange: { action: 'expandedChange' },
+  },
   render: (args) => ({
     props: args,
     template: `
     <div class="w-fit">
-      <newbee-dropdown [placement]="placement">
+      <newbee-dropdown [placement]="placement" [expanded]="expanded" (expandedChange)="expandedChange($event)">
         <button label type="button" class="btn btn-primary">Click me</button>
 
         <div dropdown class="flex flex-col flex-nowrap">

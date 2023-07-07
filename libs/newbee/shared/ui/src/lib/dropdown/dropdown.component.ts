@@ -3,8 +3,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
+  HostListener,
   Input,
   OnDestroy,
+  Output,
   ViewChild,
 } from '@angular/core';
 import {
@@ -13,6 +16,7 @@ import {
   flip,
   offset,
   shift,
+  size,
   type Placement,
 } from '@floating-ui/dom';
 import { ClickService } from '@newbee/newbee/shared/util';
@@ -36,11 +40,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
-   * Whether the dropdown is showing or not.
-   */
-  private _expanded = false;
-
-  /**
    * A cleanup function for the floating UI autoUpdate function we set up for the dropdown.
    */
   private cleanup!: () => void;
@@ -51,7 +50,17 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   @Input() placement!: Placement;
 
   /**
-   * The div associated with the content the dropdown should wrap.
+   * Whether the dropdown is showing or not.
+   */
+  @Input() expanded = false;
+
+  /**
+   * Emits whenever the dropdown is expanded or shrunk.
+   */
+  @Output() expandedChange = new EventEmitter<boolean>();
+
+  /**
+   * The button associated with the content the dropdown should wrap.
    */
   @ViewChild('label') label!: ElementRef<HTMLButtonElement>;
 
@@ -59,6 +68,14 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * The div associated with the dropdown.
    */
   @ViewChild('dropdown') dropdown!: ElementRef<HTMLDivElement>;
+
+  /**
+   * Shrinks the dropdown if the user presses the `esc` key.
+   */
+  @HostListener('keydown.escape')
+  escapeEvent(): void {
+    this.shrink();
+  }
 
   /**
    * Subscribe to the user's clicks and shrink the dropdown if the user clicks outside of the dropdown.
@@ -87,7 +104,18 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       this.dropdown.nativeElement,
       {
         placement: this.placement,
-        middleware: [offset(10), flip(), shift({ padding: 6 })],
+        middleware: [
+          offset(10),
+          flip(),
+          shift({ padding: 6 }),
+          size({
+            apply: ({ rects, elements }) => {
+              Object.assign(elements.floating.style, {
+                minWidth: `${rects.reference.width}px`,
+              });
+            },
+          }),
+        ],
       }
     );
     Object.assign(this.dropdown.nativeElement.style, {
@@ -120,18 +148,12 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   }
 
   /**
-   * Show the value for `_expanded`.
-   */
-  get expanded(): boolean {
-    return this._expanded;
-  }
-
-  /**
    * Expand the dropdown.
    */
   expand(): void {
-    if (!this._expanded) {
-      this._expanded = true;
+    if (!this.expanded) {
+      this.expanded = true;
+      this.expandedChange.emit(this.expanded);
     }
   }
 
@@ -139,8 +161,9 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * Shrink the dropdown.
    */
   shrink(): void {
-    if (this._expanded) {
-      this._expanded = false;
+    if (this.expanded) {
+      this.expanded = false;
+      this.expandedChange.emit(this.expanded);
     }
   }
 
@@ -148,7 +171,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * Toggle whether the dropdown is expanded or not.
    */
   toggleExpand(): void {
-    if (this._expanded) {
+    if (this.expanded) {
       this.shrink();
     } else {
       this.expand();
