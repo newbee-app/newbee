@@ -16,6 +16,13 @@ import {
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgHomeComponent } from './org-home.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('OrgHomeComponent', () => {
   let component: OrgHomeComponent;
   let fixture: ComponentFixture<OrgHomeComponent>;

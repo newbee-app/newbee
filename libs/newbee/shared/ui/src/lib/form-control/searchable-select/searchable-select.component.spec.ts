@@ -6,6 +6,13 @@ import {
 } from '@newbee/newbee/shared/util';
 import { SearchableSelectComponent } from './searchable-select.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('SearchableSelectComponent', () => {
   let component: SearchableSelectComponent<Country>;
   let fixture: ComponentFixture<SearchableSelectComponent<Country>>;
@@ -45,29 +52,6 @@ describe('SearchableSelectComponent', () => {
       expect(component.onTouched).toBeDefined();
       expect(component.selectedText).toEqual(`Select ${component.optionName}`);
       expect(component.optionsWithSearch).toEqual(component.options);
-    });
-  });
-
-  describe('toggleExpand', () => {
-    it('should toggle expand and become expanded', () => {
-      component.toggleExpand();
-      fixture.detectChanges();
-      expect(component.expanded).toBeTruthy();
-    });
-
-    it('should be called when dropdown button is clicked', () => {
-      jest.spyOn(component, 'toggleExpand');
-      const dropdownButtonElement: HTMLButtonElement =
-        fixture.nativeElement.querySelector('button');
-      dropdownButtonElement.click();
-      expect(component.toggleExpand).toBeCalledTimes(1);
-    });
-
-    it('should call onTouched and emit exited if closing an expanded toggle', () => {
-      component.toggleExpand();
-      component.toggleExpand();
-      expect(component.onTouched).toBeCalledTimes(1);
-      expect(component.exited.emit).toBeCalledTimes(1);
     });
   });
 
@@ -111,14 +95,8 @@ describe('SearchableSelectComponent', () => {
   });
 
   describe('optionsWithSearch', () => {
-    beforeEach(() => {
-      component.toggleExpand();
-      fixture.detectChanges();
-    });
-
     it('should output options restricted by searchbox', () => {
       component.searchTerm.setValue('united');
-      fixture.detectChanges();
       expect(component.optionsWithSearch).toEqual([testSelectOptionCountry1]);
     });
   });

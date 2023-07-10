@@ -3,6 +3,13 @@ import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testUser1, testUser2 } from '@newbee/shared/util';
 import { EditUserComponent } from './edit-user.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('EditUserComponent', () => {
   let component: EditUserComponent;
   let fixture: ComponentFixture<EditUserComponent>;

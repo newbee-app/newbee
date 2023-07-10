@@ -3,6 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrgRoleEnum, testUser1 } from '@newbee/shared/util';
 import { InviteMemberComponent } from './invite-member.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('InviteMemberComponent', () => {
   let component: InviteMemberComponent;
   let fixture: ComponentFixture<InviteMemberComponent>;

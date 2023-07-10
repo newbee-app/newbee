@@ -51,6 +51,9 @@ export class SearchbarComponent
    */
   @Input() includeClearSymbol = true;
 
+  /**
+   * The input element associated with the searchbar.
+   */
   @ViewChild('searchbarInput') searchbarInput!: ElementRef<HTMLInputElement>;
 
   /**

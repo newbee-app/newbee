@@ -1,15 +1,27 @@
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   testOrganization1,
   testOrganization2,
   testOrgMemberRelation1,
   testUser1,
 } from '@newbee/shared/util';
-import { Meta, StoryObj } from '@storybook/angular';
+import {
+  componentWrapperDecorator,
+  Meta,
+  moduleMetadata,
+  StoryObj,
+} from '@storybook/angular';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
 
 export default {
   title: 'AuthenticatedNavbarComponent',
   component: AuthenticatedNavbarComponent,
+  decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    componentWrapperDecorator(
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+    ),
+  ],
   args: {
     user: testUser1,
     organizations: [testOrganization1, testOrganization2],

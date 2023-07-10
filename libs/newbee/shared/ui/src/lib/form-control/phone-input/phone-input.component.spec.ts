@@ -8,6 +8,13 @@ import {
 } from '@newbee/newbee/shared/util';
 import { PhoneInputComponent } from './phone-input.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('PhoneInputComponent', () => {
   let component: PhoneInputComponent;
   let fixture: ComponentFixture<PhoneInputComponent>;
