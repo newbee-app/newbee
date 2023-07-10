@@ -7,6 +7,7 @@ import {
 import { getRepositoryToken } from '@mikro-orm/nestjs';
 import {
   BadRequestException,
+  ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -26,6 +27,7 @@ import {
   authenticatorIdNotFound,
   authenticatorTakenBadRequest,
   authenticatorVerifyBadRequest,
+  forbiddenError,
   internalServerError,
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
@@ -59,6 +61,7 @@ describe('AuthenticatorService', () => {
   let userChallengeService: UserChallengeService;
 
   const testCounter = 100;
+  const testName = 'MacBook';
 
   const testRegistrationInfo = {
     credentialID: Buffer.from(
@@ -234,6 +237,28 @@ describe('AuthenticatorService', () => {
     });
   });
 
+  describe('findAllByUser', () => {
+    afterEach(() => {
+      expect(repository.find).toBeCalledTimes(1);
+      expect(repository.find).toBeCalledWith({
+        user: testUserEntity1,
+      });
+    });
+
+    it('should get an array of authenticators by user', async () => {
+      await expect(service.findAllByUser(testUserEntity1)).resolves.toEqual([
+        testAuthenticatorEntity1,
+      ]);
+    });
+
+    it('should throw an InternalServerErrorException if find throws an error', async () => {
+      jest.spyOn(repository, 'find').mockRejectedValue(new Error('find'));
+      await expect(service.findAllByUser(testUserEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError)
+      );
+    });
+  });
+
   describe('findAllByEmail', () => {
     afterEach(() => {
       expect(repository.find).toBeCalledTimes(1);
@@ -242,7 +267,7 @@ describe('AuthenticatorService', () => {
       });
     });
 
-    it('should get an array of authenticators by user ID', async () => {
+    it('should get an array of authenticators by user email', async () => {
       await expect(
         service.findAllByEmail(testUserEntity1.email)
       ).resolves.toEqual([testAuthenticatorEntity1]);
@@ -341,6 +366,46 @@ describe('AuthenticatorService', () => {
       await expect(
         service.updateCounterById(testAuthenticatorEntity1.id, testCounter)
       ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.updateCounterById(testAuthenticatorEntity1.id, testCounter)
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('updateNameById', () => {
+    afterEach(() => {
+      expect(repository.findOneOrFail).toBeCalledTimes(1);
+      expect(repository.findOneOrFail).toBeCalledWith(
+        testAuthenticatorEntity1.id
+      );
+    });
+
+    it('should update an authenticator by ID', async () => {
+      jest
+        .spyOn(repository, 'assign')
+        .mockReturnValue({ ...testAuthenticatorEntity1, name: testName });
+      await expect(
+        service.updateNameById(
+          testAuthenticatorEntity1.id,
+          testName,
+          testUserEntity1.id
+        )
+      ).resolves.toEqual({ ...testAuthenticatorEntity1, name: testName });
+      expect(repository.assign).toBeCalledTimes(1);
+      expect(repository.assign).toBeCalledWith(testAuthenticatorEntity1, {
+        name: testName,
+      });
+      expect(repository.flush).toBeCalledTimes(1);
+    });
+
+    it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
+      await expect(
+        service.updateNameById(testAuthenticatorEntity1.id, testName, 'badVal')
+      ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {

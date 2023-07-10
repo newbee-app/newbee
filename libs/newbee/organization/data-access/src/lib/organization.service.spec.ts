@@ -7,11 +7,11 @@ import { TestBed } from '@angular/core/testing';
 import {
   organizationVersion,
   orgMemberInviteVersion,
-  testBaseCheckSlugDto1,
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseGenerateSlugDto1,
+  testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
   UrlEndpoint,
@@ -148,7 +148,7 @@ describe('OrganizationService', () => {
       });
 
       const params = new HttpParams({
-        fromObject: { ...testBaseCheckSlugDto1 },
+        fromObject: { ...testBaseSlugDto1 },
       });
       const req = httpController.expectOne(
         `/${UrlEndpoint.Api}/v${organizationVersion}/${

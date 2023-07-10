@@ -13,12 +13,16 @@ import { UserEntity } from './user.entity';
 @Entity()
 export class AuthenticatorEntity implements Authenticator {
   /**
-   * The globally unique ID for the authenticator.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
+   * @inheritdoc
    */
-  @PrimaryKey({ hidden: true })
+  @PrimaryKey()
   id: string = v4();
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ nullable: true })
+  name: string | null = null;
 
   /**
    * @inheritdoc

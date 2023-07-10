@@ -42,6 +42,9 @@ export class AuthController {
    */
   private readonly logger = new Logger(AuthController.name);
 
+  /**
+   * The options to use when working with cookies.
+   */
   private readonly cookieOptions: CookieOptions;
 
   constructor(

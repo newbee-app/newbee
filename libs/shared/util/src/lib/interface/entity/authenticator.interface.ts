@@ -9,6 +9,16 @@ import type {
  */
 export interface Authenticator {
   /**
+   * The globally unique ID for the authenticator.
+   */
+  id: string;
+
+  /**
+   * An optional human-readable name to attach to the authenticator.
+   */
+  name: string | null;
+
+  /**
    * The globally unique ID of the authenticator's credential.
    */
   credentialId: string;

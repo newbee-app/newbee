@@ -43,6 +43,8 @@ export const testNow1 = new Date();
  * Strictly for use in testing.
  */
 export const testAuthenticator1: Authenticator = {
+  id: '1',
+  name: null,
   credentialId: 'Y3JlZDE', // 'cred1' with base64url encoding
   credentialPublicKey: 'Y3JlZHBrMQ', // 'credpk1' with base64url encoding
   counter: 0,
