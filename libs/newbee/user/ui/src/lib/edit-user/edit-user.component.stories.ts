@@ -1,5 +1,5 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { testUser1, testUser2 } from '@newbee/shared/util';
+import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
 import {
   componentWrapperDecorator,
   Meta,
@@ -19,11 +19,16 @@ export default {
   ],
   args: {
     user: testUser1,
+    authenticators: [testAuthenticator1],
     editPending: false,
+    editNamePending: { '1': false },
     deletePending: false,
   },
   argTypes: {
     edit: { action: 'edit' },
+    addAuthenticator: { action: 'addAuthenticator' },
+    updateName: { action: 'updateName' },
+    deleteAuthenticator: { action: 'deleteAuthenticator' },
     delete: { action: 'delete' },
   },
 } as Meta<EditUserComponent>;
@@ -37,6 +42,10 @@ export const OptionalsExcluded: Story = {
 };
 
 export const EditPending: Story = { args: { editPending: true } };
+
+export const EditNamePending: Story = {
+  args: { editNamePending: { '1': true } },
+};
 
 export const DeletePending: Story = { args: { deletePending: true } };
 

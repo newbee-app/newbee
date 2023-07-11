@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -19,7 +20,7 @@ import {
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
 import type { EditUserForm } from '@newbee/newbee/user/util';
-import type { User } from '@newbee/shared/util';
+import type { Authenticator, User } from '@newbee/shared/util';
 import parsePhoneNumber from 'libphonenumber-js';
 
 /**
@@ -43,9 +44,19 @@ export class EditUserComponent implements OnInit {
   @Input() user!: User;
 
   /**
-   * Whether to display the spinner on the dit button.
+   * The authenticators of the user.
+   */
+  @Input() authenticators: Authenticator[] = [];
+
+  /**
+   * Whether to display the spinner on the edit button.
    */
   @Input() editPending = false;
+
+  /**
+   * Whether to display the spinner on an authenticator.
+   */
+  @Input() editNamePending: { [id: string]: boolean } = {};
 
   /**
    * Whether to display the spinner on the delete button.
@@ -61,6 +72,24 @@ export class EditUserComponent implements OnInit {
    * The emitted edit user form, for use in the smart UI parent.
    */
   @Output() edit = new EventEmitter<Partial<EditUserForm>>();
+
+  /**
+   * Indicates that the user has initiated a request to add a new authenticator.
+   */
+  @Output() addAuthenticator = new EventEmitter<void>();
+
+  /**
+   * The ID and new name value for the authenticator to update, for use in the smart UI parent.
+   */
+  @Output() updateName = new EventEmitter<{
+    id: string;
+    name: string | null;
+  }>();
+
+  /**
+   * The ID of the authenticator to delete, for use in the smart UI parent.
+   */
+  @Output() deleteAuthenticator = new EventEmitter<string>();
 
   /**
    * The emitted delete request, for use in the smart UI parent.
@@ -84,6 +113,16 @@ export class EditUserComponent implements OnInit {
   deleteUserForm = this.fb.group({
     delete: ['', [Validators.required, Validators.pattern('DELETE')]],
   });
+
+  /**
+   * An object mapping authenticator IDs to form controls.
+   */
+  authenticatorNames: { [id: string]: FormControl<string | null> } = {};
+
+  /**
+   * The IDs of the authenticators that are currently being edited.
+   */
+  editingAuthenticators = new Set<string>();
 
   constructor(
     private readonly fb: FormBuilder,
@@ -126,6 +165,12 @@ export class EditUserComponent implements OnInit {
       displayName: this.user.displayName,
       ...(phoneNumber && { phoneNumber }),
     });
+
+    for (const authenticator of this.authenticators) {
+      this.authenticatorNames[authenticator.id] = new FormControl(
+        authenticator.name
+      );
+    }
   }
 
   /**
@@ -136,10 +181,40 @@ export class EditUserComponent implements OnInit {
   }
 
   /**
-   * Emit the `delete` output.
+   * Emit the `updateName` output.
+   *
+   * @param id The ID of the authenticator to update.
    */
-  emitDelete(): void {
-    this.delete.emit();
+  emitUpdateName(id: string): void {
+    const name = this.authenticatorNames[id]?.value ?? null;
+    this.updateName.emit({ id, name });
+    this.editingAuthenticators.delete(id);
+  }
+
+  /**
+   * Mark the given authenticator as being in edit mode.
+   * @param id The ID of the authenticator to put in edit mode.
+   */
+  editAuthenticator(id: string): void {
+    this.editingAuthenticators.add(id);
+  }
+
+  /**
+   * Mark the given authenticator as being in display mode.
+   * @param id The ID of the authenticator to put in display mode.
+   */
+  cancelEditAuthenticator(id: string): void {
+    this.editingAuthenticators.delete(id);
+  }
+
+  /**
+   * Whether the given authenticator has a name value in its form control that's different than its current name value.
+   * @param authenticator The authenticator to check.
+   * @returns `true` if the names are different, `false` otherwise.
+   */
+  nameIsUnique(authenticator: Authenticator): boolean {
+    const name = this.authenticatorNames[authenticator.id]?.value ?? null;
+    return name !== authenticator.name;
   }
 
   /**
