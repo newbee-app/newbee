@@ -13,14 +13,11 @@ export const cookieGuard: CanActivateFn = (): Observable<boolean> => {
   const store = inject(Store);
 
   store.dispatch(CookieActions.initCookies());
-
   return combineLatest([
-    store.select(cookieFeature.selectCookieState),
+    store.select(cookieFeature.selectCsrfToken),
     store.select(httpFeature.selectScreenError),
   ]).pipe(
-    skipWhile(
-      ([cookieState, screenError]) => !cookieState.csrfToken && !screenError
-    ),
+    skipWhile(([csrfToken, screenError]) => !csrfToken && !screenError),
     take(1),
     map(() => true)
   );

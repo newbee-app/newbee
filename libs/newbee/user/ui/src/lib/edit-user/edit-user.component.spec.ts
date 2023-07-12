@@ -1,3 +1,4 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
@@ -24,9 +25,14 @@ describe('EditUserComponent', () => {
 
     component.user = testUser1;
     component.authenticators = [testAuthenticator1];
+    component.editNamePending = [false];
 
     jest.spyOn(component.edit, 'emit');
     jest.spyOn(component.updateName, 'emit');
+
+    component.ngOnChanges({
+      authenticators: new SimpleChange([], [testAuthenticator1], true),
+    });
 
     fixture.detectChanges();
   });
@@ -38,9 +44,7 @@ describe('EditUserComponent', () => {
 
   describe('init', () => {
     it('should initialize authenticatorNames', () => {
-      expect(
-        testAuthenticator1.id in component.authenticatorNames
-      ).toBeTruthy();
+      expect(component.editAuthenticatorForm.controls.names.length).toEqual(1);
     });
   });
 
@@ -59,11 +63,11 @@ describe('EditUserComponent', () => {
 
     describe('emitUpdateName', () => {
       it('should emit updateName', () => {
-        component.editingAuthenticators.add(testAuthenticator1.id);
-        component.authenticatorNames[testAuthenticator1.id]?.setValue(
-          'new name'
-        );
-        component.emitUpdateName(testAuthenticator1.id);
+        component.editAuthenticator(0);
+        component.editAuthenticatorForm.controls.names
+          .at(0)
+          .setValue('new name');
+        component.emitUpdateName(0);
         expect(component.updateName.emit).toBeCalledTimes(1);
         expect(component.updateName.emit).toBeCalledWith({
           id: testAuthenticator1.id,
@@ -76,25 +80,21 @@ describe('EditUserComponent', () => {
 
   describe('editingAuthenticators', () => {
     it('editAuthenticator should add authenticator ID to editingAuthenticators', () => {
-      component.editAuthenticator(testAuthenticator1.id);
-      expect(
-        component.editingAuthenticators.has(testAuthenticator1.id)
-      ).toBeTruthy();
+      component.editAuthenticator(0);
+      expect(component.editingAuthenticators.has(0)).toBeTruthy();
     });
 
     it('cancelEditAuthenticator should delete authenticator ID from editingAuthenticators', () => {
-      component.cancelEditAuthenticator(testAuthenticator1.id);
-      expect(
-        component.editingAuthenticators.has(testAuthenticator1.id)
-      ).toBeFalsy();
+      component.cancelEditAuthenticator(0);
+      expect(component.editingAuthenticators.has(0)).toBeFalsy();
     });
   });
 
   describe('nameIsUnique', () => {
     it(`should return true if input's name is different than authenticator's name`, () => {
-      expect(component.nameIsUnique(testAuthenticator1)).toBeFalsy();
-      component.authenticatorNames[testAuthenticator1.id]?.setValue('new name');
-      expect(component.nameIsUnique(testAuthenticator1)).toBeTruthy();
+      expect(component.nameIsUnique(0)).toBeFalsy();
+      component.editAuthenticatorForm.controls.names.at(0).setValue('new name');
+      expect(component.nameIsUnique(0)).toBeTruthy();
     });
   });
 

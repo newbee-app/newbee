@@ -1,4 +1,5 @@
 import { UrlEndpoint } from '@newbee/shared/data-access';
+import type { Authenticator } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
@@ -8,6 +9,17 @@ import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typ
 export const AuthenticatorActions = createActionGroup({
   source: UrlEndpoint.Authenticator,
   events: {
+    /**
+     * Send a request to the API to get all authenticators belonging to the logged in user.
+     * Should call `Get Authenticators Success` with the result.
+     */
+    'Get Authenticators': emptyProps(),
+
+    /**
+     * Indicates that the logged in user's authenticators were successfully retrieved.
+     */
+    'Get Authenticators Success': props<{ authenticators: Authenticator[] }>(),
+
     /**
      * Creates registration options from the API for registering a new authenticator for an existing user.
      * Should call `Create Authenticator` with the result.
@@ -25,6 +37,6 @@ export const AuthenticatorActions = createActionGroup({
     /**
      * Marks the authenticator registraiton as successful.
      */
-    'Create Authenticator Success': emptyProps(),
+    'Create Authenticator Success': props<{ authenticator: Authenticator }>(),
   },
 });

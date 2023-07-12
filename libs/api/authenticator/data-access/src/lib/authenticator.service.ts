@@ -246,16 +246,23 @@ export class AuthenticatorService {
    *
    * @param id The authenticator ID to look for.
    * @param counter The new counter value.
+   * @param userId The ID of the user making the request.
    *
    * @returns The updated authenticator.
    * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
+   * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID does not match the given user ID.
    * @throws {InternalServerErrorException} `internalServerError`. If any other error is thrown.
    */
   async updateCounterById(
     id: string,
-    counter: number
+    counter: number,
+    userId: string
   ): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
+    if (authenticator.user.id !== userId) {
+      throw new ForbiddenException(forbiddenError);
+    }
+
     authenticator = this.authenticatorRepository.assign(authenticator, {
       counter,
     });
@@ -306,11 +313,17 @@ export class AuthenticatorService {
    * Deltes an authenticator by ID and saves the changes to the database.
    *
    * @param id The authenticator ID to look for.
+   * @param userId The ID of the user making the request.
    *
+   * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async deleteOneById(id: string): Promise<void> {
+  async deleteOneById(id: string, userId: string): Promise<void> {
     const authenticator = await this.findOneById(id);
+    if (authenticator.user.id !== userId) {
+      throw new ForbiddenException(forbiddenError);
+    }
+
     await this.entityService.safeToDelete(authenticator);
     try {
       await this.authenticatorRepository.removeAndFlush(authenticator);

@@ -18,7 +18,7 @@ import {
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
 
-describe('OrgTitleResolver', () => {
+describe('orgTitleResolver', () => {
   let router: Router;
   let store: MockStore;
   let location: Location;

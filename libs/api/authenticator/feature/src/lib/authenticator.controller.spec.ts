@@ -100,4 +100,17 @@ describe('AuthenticatorController', () => {
       );
     });
   });
+
+  describe('delete', () => {
+    it('should delete an authenticator', async () => {
+      await expect(
+        controller.delete(testAuthenticatorEntity1.id, testUserEntity1)
+      ).resolves.toBeUndefined();
+      expect(service.deleteOneById).toBeCalledTimes(1);
+      expect(service.deleteOneById).toBeCalledWith(
+        testAuthenticatorEntity1.id,
+        testUserEntity1.id
+      );
+    });
+  });
 });

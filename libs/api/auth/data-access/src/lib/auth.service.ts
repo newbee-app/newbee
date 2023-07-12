@@ -115,6 +115,7 @@ export class AuthService {
    * @returns The `UserEntity` instance associated with the user, if the challenge is valid and verified.
    * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
    * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
+   * @throws {ForbiddenException} `forbiddenError`. If the user's authenticator is somehow not assigned to the user (should never happen).
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
@@ -172,7 +173,8 @@ export class AuthService {
 
     await this.authenticatorService.updateCounterById(
       authenticator.id,
-      authenticationInfo.newCounter
+      authenticationInfo.newCounter,
+      user.id
     );
     return user;
   }

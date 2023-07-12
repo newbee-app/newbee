@@ -205,7 +205,8 @@ describe('AuthService', () => {
       expect(authenticatorService.updateCounterById).toBeCalledTimes(1);
       expect(authenticatorService.updateCounterById).toBeCalledWith(
         testAuthenticatorEntity1.id,
-        testCounter
+        testCounter,
+        testUserEntity1.id
       );
     });
 

@@ -71,13 +71,22 @@
     <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
       <button
         type="button"
+        [disabled]="addAuthenticatorPending"
         (click)="addAuthenticator.emit()"
         class="btn btn-primary w-fit"
       >
+        <span
+          *ngIf="addAuthenticatorPending"
+          class="loading loading-spinner"
+        ></span>
         Add a new authenticator
       </button>
 
-      <table *ngIf="authenticators.length" class="table table-md">
+      <table
+        *ngIf="authenticators.length"
+        [formGroup]="editAuthenticatorForm"
+        class="table table-md"
+      >
         <thead>
           <tr>
             <th>Name</th>
@@ -86,24 +95,25 @@
           </tr>
         </thead>
 
-        <tbody>
-          <tr *ngFor="let authenticator of authenticators" class="hover">
+        <tbody formArrayName="names">
+          <tr
+            *ngFor="let authenticator of authenticators; let i = index"
+            class="hover"
+          >
             <td class="flex flex-row gap-x-1 justify-between items-center">
-              <ng-container
-                *ngIf="!editingAuthenticators.has(authenticator.id)"
-              >
-                <span *ngIf="!editNamePending[authenticator.id]">{{
+              <ng-container *ngIf="!editingAuthenticators.has(i)">
+                <span *ngIf="!editNamePending[i]">{{
                   authenticator.name
                 }}</span>
                 <span
-                  *ngIf="editNamePending[authenticator.id]"
+                  *ngIf="editNamePending[i]"
                   class="loading loading-dots"
                 ></span>
 
                 <button
                   type="button"
-                  [disabled]="editNamePending[authenticator.id]"
-                  (click)="editAuthenticator(authenticator.id)"
+                  [disabled]="editNamePending[i]"
+                  (click)="editAuthenticator(i)"
                   class="btn btn-ghost btn-xs rounded-md"
                 >
                   <!-- pencil svg -->
@@ -123,17 +133,17 @@
                   </svg>
                 </button>
               </ng-container>
-              <ng-container *ngIf="editingAuthenticators.has(authenticator.id)">
+              <ng-container *ngIf="editingAuthenticators.has(i)">
                 <input
                   type="text"
-                  [formControl]="authenticatorNames[authenticator.id]!"
+                  [formControlName]="i"
                   class="input input-sm border-neutral grow"
                 />
                 <div class="flex flex-row flex-nowrap">
                   <button
                     type="button"
-                    [disabled]="!nameIsUnique(authenticator)"
-                    (click)="emitUpdateName(authenticator.id)"
+                    [disabled]="!nameIsUnique(i)"
+                    (click)="emitUpdateName(i)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
                     <!-- check svg -->
@@ -155,7 +165,7 @@
 
                   <button
                     type="button"
-                    (click)="cancelEditAuthenticator(authenticator.id)"
+                    (click)="cancelEditAuthenticator(i)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
                     <!-- x-mark svg -->

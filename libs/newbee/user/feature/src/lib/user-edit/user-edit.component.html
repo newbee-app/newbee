@@ -1,10 +1,14 @@
 <newbee-navbar>
   <newbee-edit-user
     [user]="(user$ | async)!"
+    [authenticators]="(authenticators$ | async) ?? []"
     [editPending]="(editPending$ | async)!"
+    [addAuthenticatorPending]="(addAuthenticatorsPending$ | async)!"
+    [editNamePending]="(editNamePending$ | async) ?? []"
     [deletePending]="(deletePending$ | async)!"
     [httpClientError]="(httpClientError$ | async)!"
     (edit)="onEdit($event)"
+    (addAuthenticator)="onAddAuthenticator()"
     (delete)="onDelete()"
   ></newbee-edit-user>
 </newbee-navbar>

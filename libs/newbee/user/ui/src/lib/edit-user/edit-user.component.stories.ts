@@ -21,7 +21,8 @@ export default {
     user: testUser1,
     authenticators: [testAuthenticator1],
     editPending: false,
-    editNamePending: { '1': false },
+    addAuthenticatorPending: false,
+    editNamePending: [false],
     deletePending: false,
   },
   argTypes: {
@@ -43,8 +44,12 @@ export const OptionalsExcluded: Story = {
 
 export const EditPending: Story = { args: { editPending: true } };
 
+export const AddAuthenticatorPending: Story = {
+  args: { addAuthenticatorPending: true },
+};
+
 export const EditNamePending: Story = {
-  args: { editNamePending: { '1': true } },
+  args: { editNamePending: [true] },
 };
 
 export const DeletePending: Story = { args: { deletePending: true } };

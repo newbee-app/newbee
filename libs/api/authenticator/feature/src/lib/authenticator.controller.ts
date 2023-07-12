@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
@@ -133,5 +134,23 @@ export class AuthenticatorController {
     );
     this.logger.log(`Authenticator updated for authenticator ID: ${id}`);
     return authenticator;
+  }
+
+  /**
+   * The API route for deleting an authenticator.
+   *
+   * @param id The ID of the authenticator to delete.
+   * @param user The user making the request.
+   */
+  @Delete(`:${UrlEndpoint.Authenticator}`)
+  async delete(
+    @Param(UrlEndpoint.Authenticator) id: string,
+    @User() user: UserEntity
+  ): Promise<void> {
+    this.logger.log(
+      `Delete authenticator request received for authenticator ID: ${id}, from user ID: ${user.id}`
+    );
+    await this.authenticatorService.deleteOneById(id, user.id);
+    this.logger.log(`Successfully deleted authenticator ID: ${id}`);
   }
 }

@@ -44,6 +44,29 @@ describe('AuthenticatorService', () => {
     httpController.verify();
   });
 
+  describe('getAuthenticators', () => {
+    it('should send out a get request', (done) => {
+      service.getAuthenticators().subscribe({
+        next: (authenticators) => {
+          try {
+            expect(authenticators).toEqual([testAuthenticator1]);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush([testAuthenticator1]);
+    });
+  });
+
   describe('createOptions', () => {
     it('should send out a post request', (done) => {
       service.createOptions().subscribe({
@@ -59,7 +82,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`
+        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({});
@@ -83,7 +106,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);

@@ -1,8 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -37,7 +44,7 @@ import parsePhoneNumber from 'libphonenumber-js';
   ],
   templateUrl: './edit-user.component.html',
 })
-export class EditUserComponent implements OnInit {
+export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The user to edit.
    */
@@ -54,9 +61,14 @@ export class EditUserComponent implements OnInit {
   @Input() editPending = false;
 
   /**
-   * Whether to display the spinner on an authenticator.
+   * Whether to display the spinner on the add authenticator button.
    */
-  @Input() editNamePending: { [id: string]: boolean } = {};
+  @Input() addAuthenticatorPending = false;
+
+  /**
+   * Whether to display the loader on an authenticator.
+   */
+  @Input() editNamePending: boolean[] = [];
 
   /**
    * Whether to display the spinner on the delete button.
@@ -115,14 +127,17 @@ export class EditUserComponent implements OnInit {
   });
 
   /**
-   * An object mapping authenticator IDs to form controls.
+   * A form array containing form controls for each authenticator in authenticators.
+   * Wrapped in a redundant form group because Angular requires it (idk why).
    */
-  authenticatorNames: { [id: string]: FormControl<string | null> } = {};
+  editAuthenticatorForm = this.fb.group({
+    names: this.fb.array<string | null>([]),
+  });
 
   /**
-   * The IDs of the authenticators that are currently being edited.
+   * The indexes of the authenticators that are currently being edited.
    */
-  editingAuthenticators = new Set<string>();
+  editingAuthenticators = new Set<number>();
 
   constructor(
     private readonly fb: FormBuilder,
@@ -165,12 +180,26 @@ export class EditUserComponent implements OnInit {
       displayName: this.user.displayName,
       ...(phoneNumber && { phoneNumber }),
     });
+  }
 
-    for (const authenticator of this.authenticators) {
-      this.authenticatorNames[authenticator.id] = new FormControl(
-        authenticator.name
-      );
+  /**
+   * Look out for changes to authenticators and update the form array, if relevant.
+   *
+   * @param changes The changes to the input of the component.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    const authenticators = changes['authenticators'];
+    if (!authenticators) {
+      return;
     }
+
+    const authenticatorNames = this.editAuthenticatorForm.controls.names;
+    authenticatorNames.clear();
+    (authenticators.currentValue as Authenticator[]).forEach(
+      (authenticator) => {
+        authenticatorNames.push(this.fb.control(authenticator.name));
+      }
+    );
   }
 
   /**
@@ -183,37 +212,48 @@ export class EditUserComponent implements OnInit {
   /**
    * Emit the `updateName` output.
    *
-   * @param id The ID of the authenticator to update.
+   * @param index The index of the authenticator to update.
    */
-  emitUpdateName(id: string): void {
-    const name = this.authenticatorNames[id]?.value ?? null;
+  emitUpdateName(index: number): void {
+    const id = this.authenticators[index]?.id;
+    if (!id) {
+      return;
+    }
+
+    const name =
+      this.editAuthenticatorForm.controls.names.at(index).value || null;
     this.updateName.emit({ id, name });
-    this.editingAuthenticators.delete(id);
+    this.editingAuthenticators.delete(index);
   }
 
   /**
    * Mark the given authenticator as being in edit mode.
-   * @param id The ID of the authenticator to put in edit mode.
+   * @param index The index of the authenticator to put in edit mode.
    */
-  editAuthenticator(id: string): void {
-    this.editingAuthenticators.add(id);
+  editAuthenticator(index: number): void {
+    this.editingAuthenticators.add(index);
   }
 
   /**
    * Mark the given authenticator as being in display mode.
-   * @param id The ID of the authenticator to put in display mode.
+   * @param index The index of the authenticator to put in display mode.
    */
-  cancelEditAuthenticator(id: string): void {
-    this.editingAuthenticators.delete(id);
+  cancelEditAuthenticator(index: number): void {
+    this.editingAuthenticators.delete(index);
   }
 
   /**
-   * Whether the given authenticator has a name value in its form control that's different than its current name value.
+   * Whether the authenticator at the given index has a name value in its form control that's different than its current name value.
    * @param authenticator The authenticator to check.
    * @returns `true` if the names are different, `false` otherwise.
    */
-  nameIsUnique(authenticator: Authenticator): boolean {
-    const name = this.authenticatorNames[authenticator.id]?.value ?? null;
+  nameIsUnique(index: number): boolean {
+    const authenticator = this.authenticators[index];
+    if (!authenticator) {
+      return false;
+    }
+
+    const name = this.editAuthenticatorForm.controls.names.at(index).value;
     return name !== authenticator.name;
   }
 

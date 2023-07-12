@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {
+  AuthenticatorActions,
   authFeature,
   httpFeature,
   UserActions,
@@ -22,9 +23,28 @@ export class UserEditComponent {
   user$ = this.store.select(authFeature.selectUser);
 
   /**
+   * The user's authenticators.
+   */
+  authenticators$ = this.store.select(userFeature.selectAuthenticators);
+
+  /**
    * Whether the edit action is pending.
    */
   editPending$ = this.store.select(userFeature.selectPendingEdit);
+
+  /**
+   * Whether the add authenticator action is pending.
+   */
+  addAuthenticatorsPending$ = this.store.select(
+    userFeature.selectPendingAddAuthenticator
+  );
+
+  /**
+   * Whether the edit authenticator action is pending.
+   */
+  editNamePending$ = this.store.select(
+    userFeature.selectPendingEditAuthenticator
+  );
 
   /**
    * Whether the delete action is pending.
@@ -47,6 +67,13 @@ export class UserEditComponent {
     this.store.dispatch(
       UserActions.editUser({ updateUserDto: editUserFormToDto(editUserForm) })
     );
+  }
+
+  /**
+   * When the dumb UI emits an add authenticator event, send an add authenticator action.
+   */
+  onAddAuthenticator(): void {
+    this.store.dispatch(AuthenticatorActions.createRegistrationOptions());
   }
 
   /**

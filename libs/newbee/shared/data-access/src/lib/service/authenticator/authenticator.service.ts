@@ -19,12 +19,22 @@ export class AuthenticatorService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * Sends a GET request to get all of the authenticators of the logged in user.
+   * @returns An observable containing all of the logged in user's authenticators.
+   */
+  getAuthenticators(): Observable<Authenticator[]> {
+    return this.http.get<Authenticator[]>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+    );
+  }
+
+  /**
    * Sends a POST request to make the backend generate public key creation options.
    * @returns An observable of the backend's public key creation options.
    */
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
-      `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`,
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`,
       {}
     );
   }
@@ -44,7 +54,7 @@ export class AuthenticatorService {
           response,
         };
         return this.http.post<Authenticator>(
-          `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`,
+          `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`,
           registrationResponseDto
         );
       })
