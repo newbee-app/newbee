@@ -17,7 +17,12 @@ export default {
     ),
   ],
   parameters: { layout: 'centered' },
-  args: { placement: 'bottom', expanded: false },
+  args: {
+    placement: 'bottom',
+    offset: 10,
+    expanded: false,
+    expandStrategy: 'toggle',
+  },
   argTypes: {
     expandedChange: { action: 'expandedChange' },
   },
@@ -25,7 +30,7 @@ export default {
     props: args,
     template: `
     <div class="w-fit">
-      <newbee-dropdown [placement]="placement" [expanded]="expanded" (expandedChange)="expandedChange($event)">
+      <newbee-dropdown [placement]="placement" [offset]="offset" [expanded]="expanded" [expandStrategy]="expandStrategy" (expandedChange)="expandedChange($event)">
         <button label type="button" class="btn btn-primary">Click me</button>
 
         <div dropdown class="flex flex-col flex-nowrap">
@@ -46,3 +51,7 @@ export const Top: Story = { args: { placement: 'top' } };
 export const Left: Story = { args: { placement: 'left' } };
 
 export const Right: Story = { args: { placement: 'right' } };
+
+export const NoOffset: Story = { args: { offset: 0 } };
+
+export const Expand: Story = { args: { expandStrategy: 'expand' } };

@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SearchbarComponent } from './searchbar.component';
+
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
 
 describe('SearchbarComponent', () => {
   let component: SearchbarComponent;

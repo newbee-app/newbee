@@ -47,7 +47,20 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * Which direction the dropdown should go.
    */
-  @Input() placement!: Placement;
+  @Input() placement: Placement = 'bottom';
+
+  /**
+   * How many px the dropdown should be offset.
+   * Defaults to 10.
+   */
+  @Input() offset = 10;
+
+  /**
+   * How the dropdown should behave when the label is clicked.
+   * Default is `toggle`, which will toggle it on and off.
+   * `expand` will just expand, not shrink.
+   */
+  @Input() expandStrategy: 'toggle' | 'expand' = 'toggle';
 
   /**
    * Whether the dropdown is showing or not.
@@ -105,7 +118,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       {
         placement: this.placement,
         middleware: [
-          offset(10),
+          offset(this.offset),
           flip(),
           shift({ padding: 6 }),
           size({
@@ -174,6 +187,18 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
     if (this.expanded) {
       this.shrink();
     } else {
+      this.expand();
+    }
+  }
+
+  /**
+   * What should happen when the label is clicked.
+   */
+  labelClick(): void {
+    if (this.expandStrategy === 'toggle') {
+      this.toggleExpand();
+    } else {
+      // this.expandStrategy === 'expand'
       this.expand();
     }
   }

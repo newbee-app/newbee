@@ -20,7 +20,6 @@ describe('DropdownComponent', () => {
     fixture = TestBed.createComponent(DropdownComponent);
     component = fixture.componentInstance;
 
-    component.placement = 'bottom';
     jest.spyOn(component.expandedChange, 'emit');
 
     fixture.detectChanges();
@@ -73,6 +72,19 @@ describe('DropdownComponent', () => {
       expect(component.expanded).toBeFalsy();
       expect(component.expandedChange.emit).toBeCalledTimes(2);
       expect(component.expandedChange.emit).toBeCalledWith(false);
+    });
+  });
+
+  describe('labelClick', () => {
+    it('should call relevant expand function based on expandStrategy', () => {
+      jest.spyOn(component, 'toggleExpand');
+      jest.spyOn(component, 'expand');
+
+      component.labelClick();
+      expect(component.toggleExpand).toBeCalledTimes(1);
+
+      component.expandStrategy = 'expand';
+      expect(component.expand).toBeCalledTimes(1);
     });
   });
 });

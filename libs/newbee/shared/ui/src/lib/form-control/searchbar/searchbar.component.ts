@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import {
@@ -15,6 +17,7 @@ import {
 } from '@angular/forms';
 import { ignoreMouseEvent } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
+import { DropdownComponent } from '../../dropdown';
 
 /**
  * A custom searchbar input component.
@@ -23,7 +26,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'newbee-searchbar',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DropdownComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -50,6 +53,16 @@ export class SearchbarComponent
    * Whether to include the x mark symbol.
    */
   @Input() includeClearSymbol = true;
+
+  /**
+   * Suggestions based on the user's search term.
+   */
+  @Input() suggestions: string[] = [];
+
+  /**
+   * Emits if the user clicks on a suggestion.
+   */
+  @Output() selectSuggestion = new EventEmitter<string>();
 
   /**
    * The input element associated with the searchbar.
