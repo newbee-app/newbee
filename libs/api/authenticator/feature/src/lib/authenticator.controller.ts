@@ -141,6 +141,9 @@ export class AuthenticatorController {
    *
    * @param id The ID of the authenticator to delete.
    * @param user The user making the request.
+   *
+   * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Delete(`:${UrlEndpoint.Authenticator}`)
   async delete(

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   authenticatorVersion,
+  BaseNameDto,
   BaseRegistrationResponseDto,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
@@ -58,6 +59,22 @@ export class AuthenticatorService {
           registrationResponseDto
         );
       })
+    );
+  }
+
+  /**
+   * Sends a PATCH request to edit the name of an authenticator.
+   *
+   * @param id The ID of the authenticator to edit.
+   * @param name The new name for the authenticator.
+   *
+   * @returns An observable of the updated authenticator.
+   */
+  editName(id: string, name: string | null): Observable<Authenticator> {
+    const nameDto: BaseNameDto = { name };
+    return this.http.patch<Authenticator>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`,
+      nameDto
     );
   }
 

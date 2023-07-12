@@ -1,5 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { UrlEndpoint } from '@newbee/shared/data-access';
+import {
+  authenticatorTakenBadRequest,
+  authenticatorVerifyBadRequest,
+  userChallengeIdNotFound,
+} from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, switchMap } from 'rxjs';
 import { catchHttpError, catchHttpScreenError } from '../../function';
@@ -57,6 +63,22 @@ export class AuthenticatorEffects {
     );
   });
 
+  editAuthenticatorName$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthenticatorActions.editAuthenticatorName),
+      concatMap(({ id, name }) => {
+        return this.authenticatorService.editName(id, name).pipe(
+          map((authenticator) => {
+            return AuthenticatorActions.editAuthenticatorNameSuccess({
+              authenticator,
+            });
+          }),
+          catchError(AuthenticatorEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
   deleteAuthenticator$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.deleteAuthenticator),
@@ -77,6 +99,15 @@ export class AuthenticatorEffects {
   ) {}
 
   static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, () => 'misc');
+    return catchHttpError(err, (message) => {
+      switch (message) {
+        case userChallengeIdNotFound:
+        case authenticatorVerifyBadRequest:
+        case authenticatorTakenBadRequest:
+          return `${UrlEndpoint.New}-${UrlEndpoint.Authenticator}`;
+        default:
+          return 'misc';
+      }
+    });
   }
 }

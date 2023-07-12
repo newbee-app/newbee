@@ -40,6 +40,19 @@ export const AuthenticatorActions = createActionGroup({
     'Create Authenticator Success': props<{ authenticator: Authenticator }>(),
 
     /**
+     * Send a request to the API to edit an authenticator's name.
+     * Should call `Edit Authenticator Name Success`, if successful.
+     */
+    'Edit Authenticator Name': props<{ id: string; name: string | null }>(),
+
+    /**
+     * Marks the authenticator edit as successful.
+     */
+    'Edit Authenticator Name Success': props<{
+      authenticator: Authenticator;
+    }>(),
+
+    /**
      * Send a request to the API to delete an authenticator by ID.
      */
     'Delete Authenticator': props<{ id: string }>(),

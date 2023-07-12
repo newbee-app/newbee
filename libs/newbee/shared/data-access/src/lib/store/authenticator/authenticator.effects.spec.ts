@@ -31,6 +31,7 @@ describe('AuthenticatorEffects', () => {
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialCreationOptions1)),
             create: jest.fn().mockReturnValue(of(testAuthenticator1)),
+            editName: jest.fn().mockReturnValue(of(testAuthenticator1)),
             delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -99,6 +100,30 @@ describe('AuthenticatorEffects', () => {
         expect(service.create).toBeCalledTimes(1);
         expect(service.create).toBeCalledWith(
           testPublicKeyCredentialCreationOptions1
+        );
+      });
+    });
+  });
+
+  describe('editAuthenticatorName$', () => {
+    it('should fire editAuthenticatorNameSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: AuthenticatorActions.editAuthenticatorName({
+          id: testAuthenticator1.id,
+          name: testAuthenticator1.name,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: AuthenticatorActions.editAuthenticatorNameSuccess({
+          authenticator: testAuthenticator1,
+        }),
+      });
+      expect(effects.editAuthenticatorName$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editName).toBeCalledTimes(1);
+        expect(service.editName).toBeCalledWith(
+          testAuthenticator1.id,
+          testAuthenticator1.name
         );
       });
     });

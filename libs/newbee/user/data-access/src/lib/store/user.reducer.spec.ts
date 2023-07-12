@@ -20,10 +20,19 @@ describe('UserReducer', () => {
     ...initialUserState,
     authenticators: [testAuthenticator1],
     pendingEditAuthenticator: new Map([[testAuthenticator1.id, false]]),
+    pendingDeleteAuthenticator: new Map([[testAuthenticator1.id, false]]),
   };
   const stateAfterCreateRegistrationOptions: UserState = {
     ...initialUserState,
     pendingAddAuthenticator: true,
+  };
+  const stateAfterEditAuthenticatorName: UserState = {
+    ...stateAfterGetAuthenticatorsSuccess,
+    pendingEditAuthenticator: new Map([[testAuthenticator1.id, true]]),
+  };
+  const stateAfterDeleteAuthenticator: UserState = {
+    ...stateAfterGetAuthenticatorsSuccess,
+    pendingDeleteAuthenticator: new Map([[testAuthenticator1.id, true]]),
   };
 
   describe('from initial state', () => {
@@ -85,6 +94,48 @@ describe('UserReducer', () => {
         UserActions.editUserSuccess
       );
       expect(updatedState).toEqual(stateAfterGetAuthenticatorsSuccess);
+    });
+
+    it('should update state for editAuthenticatorName', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterGetAuthenticatorsSuccess,
+        AuthenticatorActions.editAuthenticatorName({
+          id: testAuthenticator1.id,
+          name: testAuthenticator1.name,
+        })
+      );
+      expect(updatedState).toEqual(stateAfterEditAuthenticatorName);
+    });
+
+    it('should update state for editAuthenticatorNameSuccess', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterEditAuthenticatorName,
+        AuthenticatorActions.editAuthenticatorNameSuccess({
+          authenticator: { ...testAuthenticator1, name: 'new' },
+        })
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetAuthenticatorsSuccess,
+        authenticators: [{ ...testAuthenticator1, name: 'new' }],
+      });
+    });
+
+    it('should update state for deleteAuthenticator', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterGetAuthenticatorsSuccess,
+        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id })
+      );
+      expect(updatedState).toEqual(stateAfterDeleteAuthenticator);
+    });
+
+    it('should update state for deleteAuthenticatorSuccess', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterDeleteAuthenticator,
+        AuthenticatorActions.deleteAuthenticatorSuccess({
+          id: testAuthenticator1.id,
+        })
+      );
+      expect(updatedState).toEqual({ ...initialUserState, authenticators: [] });
     });
 
     it('should update state for clientError', () => {

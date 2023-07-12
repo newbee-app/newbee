@@ -85,6 +85,21 @@ describe('UserEditComponent', () => {
     });
   });
 
+  describe('onEditAuthenticator', () => {
+    it('should dispatch editAuthenticatorName', () => {
+      component.onEditAuthenticator({
+        id: testAuthenticator1.id,
+        name: testAuthenticator1.name,
+      });
+      expect(store.dispatch).toBeCalledWith(
+        AuthenticatorActions.editAuthenticatorName({
+          id: testAuthenticator1.id,
+          name: testAuthenticator1.name,
+        })
+      );
+    });
+  });
+
   describe('onDeleteAuthenticator', () => {
     it('should dispatch deleteAuthenticator', () => {
       component.onDeleteAuthenticator(testAuthenticator1.id);

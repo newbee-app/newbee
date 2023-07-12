@@ -11,6 +11,7 @@
       [httpClientError]="(httpClientError$ | async)!"
       (edit)="onEdit($event)"
       (addAuthenticator)="onAddAuthenticator()"
+      (editAuthenticator)="onEditAuthenticator($event)"
       (deleteAuthenticator)="onDeleteAuthenticator($event)"
       (delete)="onDelete()"
     ></newbee-edit-user>

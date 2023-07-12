@@ -27,6 +27,7 @@ import {
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
 import type { EditUserForm } from '@newbee/newbee/user/util';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import type { Authenticator, User } from '@newbee/shared/util';
 import parsePhoneNumber from 'libphonenumber-js';
 
@@ -143,6 +144,8 @@ export class EditUserComponent implements OnInit, OnChanges {
    * The IDs of the authenticators that are currently being edited.
    */
   editingAuthenticators = new Set<string>();
+
+  readonly urlEndpoint = UrlEndpoint;
 
   constructor(
     private readonly fb: FormBuilder,

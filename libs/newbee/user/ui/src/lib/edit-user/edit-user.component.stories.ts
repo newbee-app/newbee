@@ -50,6 +50,17 @@ export const AddAuthenticatorPending: Story = {
   args: { addAuthenticatorPending: true },
 };
 
+export const AddAuthenticatorError: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        'new-authenticator': 'Some error',
+      },
+    },
+  },
+};
+
 export const EditAuthenticatorPending: Story = {
   args: { editAuthenticatorPending: new Map([[testAuthenticator1.id, true]]) },
 };

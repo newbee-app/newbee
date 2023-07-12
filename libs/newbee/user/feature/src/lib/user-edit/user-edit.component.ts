@@ -84,6 +84,14 @@ export class UserEditComponent {
   }
 
   /**
+   * When the dumb UI emits an edit authenticator event, pass it to the store.
+   * @param idAndName The ID of the authenticator to update and a new value for name.
+   */
+  onEditAuthenticator(idAndName: { id: string; name: string | null }): void {
+    this.store.dispatch(AuthenticatorActions.editAuthenticatorName(idAndName));
+  }
+
+  /**
    * When the dumb UI emits a delete authenticator event, pass it to the store.
    * @param id The ID of the authenticator to delete.
    */

@@ -82,6 +82,15 @@
         Add a new authenticator
       </button>
 
+      <newbee-error-alert
+        *ngIf="httpClientError?.messages?.[urlEndpoint.New + '-' + urlEndpoint.Authenticator]"
+        [text]="
+          httpClientError?.messages?.[
+            urlEndpoint.New + '-' + urlEndpoint.Authenticator
+          ] ?? ''
+        "
+      ></newbee-error-alert>
+
       <table
         *ngIf="authenticators.length"
         [formGroup]="editAuthenticatorForm"

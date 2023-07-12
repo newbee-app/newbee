@@ -79,17 +79,19 @@ export const userFeature = createFeature({
     on(
       AuthenticatorActions.getAuthenticatorsSuccess,
       (state, { authenticators }): UserState => {
-        state.pendingEditAuthenticator.clear();
-        state.pendingDeleteAuthenticator.clear();
+        const pendingEditAuthenticator = new Map<string, boolean>();
+        const pendingDeleteAuthenticator = new Map<string, boolean>();
         authenticators.forEach((authenticator) => {
           const { id } = authenticator;
-          state.pendingEditAuthenticator.set(id, false);
-          state.pendingDeleteAuthenticator.set(id, false);
+          pendingEditAuthenticator.set(id, false);
+          pendingDeleteAuthenticator.set(id, false);
         });
 
         return {
           ...state,
           authenticators,
+          pendingEditAuthenticator,
+          pendingDeleteAuthenticator,
         };
       }
     ),
@@ -104,31 +106,75 @@ export const userFeature = createFeature({
       AuthenticatorActions.createAuthenticatorSuccess,
       (state, { authenticator }): UserState => {
         const { id } = authenticator;
-        state.pendingEditAuthenticator.set(id, false);
-        state.pendingDeleteAuthenticator.set(id, false);
+        const pendingEditAuthenticator = new Map(
+          state.pendingEditAuthenticator
+        );
+        const pendingDeleteAuthenticator = new Map(
+          state.pendingDeleteAuthenticator
+        );
+        pendingEditAuthenticator.set(id, false);
+        pendingDeleteAuthenticator.set(id, false);
 
         return {
           ...state,
           pendingAddAuthenticator: false,
           authenticators: [authenticator, ...(state.authenticators ?? [])],
+          pendingEditAuthenticator,
+          pendingDeleteAuthenticator,
         };
       }
     ),
     on(
-      AuthenticatorActions.deleteAuthenticator,
-      (state, { id }): UserState => ({
-        ...state,
-        pendingDeleteAuthenticator: state.pendingDeleteAuthenticator.set(
-          id,
-          true
-        ),
-      })
+      AuthenticatorActions.editAuthenticatorName,
+      (state, { id }): UserState => {
+        const pendingEditAuthenticator = new Map(
+          state.pendingEditAuthenticator
+        );
+        pendingEditAuthenticator.set(id, true);
+
+        return { ...state, pendingEditAuthenticator };
+      }
     ),
+    on(
+      AuthenticatorActions.editAuthenticatorNameSuccess,
+      (state, { authenticator }): UserState => {
+        const pendingEditAuthenticator = new Map(
+          state.pendingEditAuthenticator
+        );
+        pendingEditAuthenticator.set(authenticator.id, false);
+
+        return {
+          ...state,
+          authenticators:
+            state.authenticators?.map((curr) =>
+              curr.id === authenticator.id ? authenticator : curr
+            ) ?? null,
+          pendingEditAuthenticator,
+        };
+      }
+    ),
+    on(AuthenticatorActions.deleteAuthenticator, (state, { id }): UserState => {
+      const pendingDeleteAuthenticator = new Map(
+        state.pendingDeleteAuthenticator
+      );
+      pendingDeleteAuthenticator.set(id, true);
+
+      return {
+        ...state,
+        pendingDeleteAuthenticator,
+      };
+    }),
     on(
       AuthenticatorActions.deleteAuthenticatorSuccess,
       (state, { id }): UserState => {
-        state.pendingEditAuthenticator.delete(id);
-        state.pendingDeleteAuthenticator.delete(id);
+        const pendingEditAuthenticator = new Map(
+          state.pendingEditAuthenticator
+        );
+        const pendingDeleteAuthenticator = new Map(
+          state.pendingDeleteAuthenticator
+        );
+        pendingEditAuthenticator.delete(id);
+        pendingDeleteAuthenticator.delete(id);
 
         return {
           ...state,
@@ -136,6 +182,8 @@ export const userFeature = createFeature({
             state.authenticators?.filter(
               (authenticator) => authenticator.id !== id
             ) ?? null,
+          pendingEditAuthenticator,
+          pendingDeleteAuthenticator,
         };
       }
     ),
