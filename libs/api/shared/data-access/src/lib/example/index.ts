@@ -52,6 +52,7 @@ export const testUserEntity1 = { ...testUser1, id: '1' } as UserEntity;
  */
 export const testAuthenticatorEntity1 = {
   ...testAuthenticator1,
+  user: testUserEntity1,
 } as AuthenticatorEntity;
 
 /**

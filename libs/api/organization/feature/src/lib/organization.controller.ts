@@ -14,11 +14,11 @@ import {
   UpdateOrganizationDto,
 } from '@newbee/api/organization/data-access';
 import {
-  CheckSlugDto,
   EntityService,
   GenerateSlugDto,
   OrganizationEntity,
   OrgMemberEntity,
+  SlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -95,9 +95,7 @@ export class OrganizationController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(UrlEndpoint.CheckSlug)
-  async checkSlug(
-    @Query() checkSlugDto: CheckSlugDto
-  ): Promise<BaseSlugTakenDto> {
+  async checkSlug(@Query() checkSlugDto: SlugDto): Promise<BaseSlugTakenDto> {
     const { slug } = checkSlugDto;
     this.logger.log(
       `Check organization slug request received for slug: ${slug}`

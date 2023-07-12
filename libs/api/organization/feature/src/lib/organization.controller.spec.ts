@@ -8,10 +8,10 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseCheckSlugDto1,
   testBaseCreateOrganizationDto1,
   testBaseGeneratedSlugDto1,
   testBaseGenerateSlugDto1,
+  testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
 } from '@newbee/shared/data-access';
@@ -78,17 +78,17 @@ describe('OrganizationController', () => {
 
   describe('checkSlug', () => {
     it('should return true if slug is taken, false if not', async () => {
-      await expect(
-        controller.checkSlug(testBaseCheckSlugDto1)
-      ).resolves.toEqual(testBaseSlugTakenDto1);
+      await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual(
+        testBaseSlugTakenDto1
+      );
       expect(service.hasOneBySlug).toBeCalledTimes(1);
-      expect(service.hasOneBySlug).toBeCalledWith(testBaseCheckSlugDto1.slug);
+      expect(service.hasOneBySlug).toBeCalledWith(testBaseSlugDto1.slug);
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
-      await expect(
-        controller.checkSlug(testBaseCheckSlugDto1)
-      ).resolves.toEqual({ slugTaken: false });
+      await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual({
+        slugTaken: false,
+      });
       expect(service.hasOneBySlug).toBeCalledTimes(2);
-      expect(service.hasOneBySlug).toBeCalledWith(testBaseCheckSlugDto1.slug);
+      expect(service.hasOneBySlug).toBeCalledWith(testBaseSlugDto1.slug);
     });
   });
 

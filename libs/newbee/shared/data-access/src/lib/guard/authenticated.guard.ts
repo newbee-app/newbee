@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
-import { filter, map, Observable, skipUntil } from 'rxjs';
+import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 import { authFeature, cookieFeature } from '../store';
 
 /**
@@ -17,15 +17,13 @@ export const authenticatedGuard: CanActivateFn = (): Observable<
   const store = inject(Store);
   const router = inject(Router);
 
-  return store.select(authFeature.selectUser).pipe(
-    // Wait until cookies are initialized before checking if the
-    // user is authenticated.
-    skipUntil(
-      store
-        .select(cookieFeature.selectCsrfToken)
-        .pipe(filter((csrfToken) => !!csrfToken))
-    ),
-    map((user) => {
+  return combineLatest([
+    store.select(authFeature.selectUser),
+    store.select(cookieFeature.selectCsrfToken),
+  ]).pipe(
+    skipWhile(([, csrfToken]) => !csrfToken),
+    take(1),
+    map(([user]) => {
       if (user) {
         return true;
       }

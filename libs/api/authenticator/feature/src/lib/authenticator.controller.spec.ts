@@ -5,7 +5,10 @@ import {
   testAuthenticatorEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { testBaseRegistrationResponseDto1 } from '@newbee/shared/data-access';
+import {
+  testBaseNameDto1,
+  testBaseRegistrationResponseDto1,
+} from '@newbee/shared/data-access';
 import {
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
@@ -27,6 +30,12 @@ describe('AuthenticatorController', () => {
               .fn()
               .mockResolvedValue(testPublicKeyCredentialCreationOptions1),
             create: jest.fn().mockResolvedValue(testAuthenticatorEntity1),
+            findAllByUser: jest
+              .fn()
+              .mockResolvedValue([testAuthenticatorEntity1]),
+            updateNameById: jest
+              .fn()
+              .mockResolvedValue(testAuthenticatorEntity1),
           }),
         },
       ],
@@ -39,6 +48,16 @@ describe('AuthenticatorController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+  });
+
+  describe('getAll', () => {
+    it('should get all authenticators', async () => {
+      await expect(controller.getAll(testUserEntity1)).resolves.toEqual([
+        testAuthenticatorEntity1,
+      ]);
+      expect(service.findAllByUser).toBeCalledTimes(1);
+      expect(service.findAllByUser).toBeCalledWith(testUserEntity1);
+    });
   });
 
   describe('createOptions', () => {
@@ -60,6 +79,37 @@ describe('AuthenticatorController', () => {
       expect(service.create).toBeCalledWith(
         testRegistrationResponse1,
         testUserEntity1
+      );
+    });
+  });
+
+  describe('updateName', () => {
+    it(`should update an authenticator's name`, async () => {
+      await expect(
+        controller.updateName(
+          testAuthenticatorEntity1.id,
+          testBaseNameDto1,
+          testUserEntity1
+        )
+      ).resolves.toEqual(testAuthenticatorEntity1);
+      expect(service.updateNameById).toBeCalledTimes(1);
+      expect(service.updateNameById).toBeCalledWith(
+        testAuthenticatorEntity1.id,
+        testBaseNameDto1.name,
+        testUserEntity1.id
+      );
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete an authenticator', async () => {
+      await expect(
+        controller.delete(testAuthenticatorEntity1.id, testUserEntity1)
+      ).resolves.toBeUndefined();
+      expect(service.deleteOneById).toBeCalledTimes(1);
+      expect(service.deleteOneById).toBeCalledWith(
+        testAuthenticatorEntity1.id,
+        testUserEntity1.id
       );
     });
   });

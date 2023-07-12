@@ -1,12 +1,12 @@
-import { BaseCheckSlugDto } from '@newbee/shared/data-access';
+import { BaseSlugDto } from '@newbee/shared/data-access';
 import { slugIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty } from 'class-validator';
 
 /**
- * A verifiable DTO sent from the frontend to the backend to check whether a slug is taken.
+ * A verifiable DTO sent from the frontend to the backend to pass a slug value.
  * Suitable for use in any request.
  */
-export class CheckSlugDto implements BaseCheckSlugDto {
+export class SlugDto implements BaseSlugDto {
   /**
    * @inheritdoc
    */

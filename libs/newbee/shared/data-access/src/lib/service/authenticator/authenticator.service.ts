@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   authenticatorVersion,
+  BaseNameDto,
   BaseRegistrationResponseDto,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
@@ -19,12 +20,22 @@ export class AuthenticatorService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * Sends a GET request to get all of the authenticators of the logged in user.
+   * @returns An observable containing all of the logged in user's authenticators.
+   */
+  getAuthenticators(): Observable<Authenticator[]> {
+    return this.http.get<Authenticator[]>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+    );
+  }
+
+  /**
    * Sends a POST request to make the backend generate public key creation options.
    * @returns An observable of the backend's public key creation options.
    */
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
-      `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`,
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`,
       {}
     );
   }
@@ -44,10 +55,38 @@ export class AuthenticatorService {
           response,
         };
         return this.http.post<Authenticator>(
-          `/api/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`,
+          `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`,
           registrationResponseDto
         );
       })
+    );
+  }
+
+  /**
+   * Sends a PATCH request to edit the name of an authenticator.
+   *
+   * @param id The ID of the authenticator to edit.
+   * @param name The new name for the authenticator.
+   *
+   * @returns An observable of the updated authenticator.
+   */
+  editName(id: string, name: string | null): Observable<Authenticator> {
+    const nameDto: BaseNameDto = { name };
+    return this.http.patch<Authenticator>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`,
+      nameDto
+    );
+  }
+
+  /**
+   * Sends a DELETE request to delete the given authenticator by ID.
+   *
+   * @param id The ID of the authenticator to delete.
+   * @returns A null observable.
+   */
+  delete(id: string): Observable<null> {
+    return this.http.delete<null>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`
     );
   }
 }

@@ -42,6 +42,9 @@ export class AuthController {
    */
   private readonly logger = new Logger(AuthController.name);
 
+  /**
+   * The options to use when working with cookies.
+   */
   private readonly cookieOptions: CookieOptions;
 
   constructor(
@@ -124,6 +127,7 @@ export class AuthController {
    * @returns The logged in user and their access token, if verified.
    * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
    * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
+   * @throws {ForbiddenException} `forbiddenError`. If the user's authenticator is somehow not assigned to the user (should never happen).
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */

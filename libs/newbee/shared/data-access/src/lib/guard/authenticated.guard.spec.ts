@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authFeature } from '../store';
 import { authenticatedGuard } from './authenticated.guard';
 
 describe('AuthenticatedGuard', () => {
@@ -19,7 +19,7 @@ describe('AuthenticatedGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: 'auth/login',
+            path: `${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
             component: EmptyComponent,
           },
           {
@@ -33,9 +33,7 @@ describe('AuthenticatedGuard', () => {
           },
         ]),
       ],
-      providers: [
-        provideMockStore({ initialState: { cookie: { csrfToken: 'token' } } }),
-      ],
+      providers: [provideMockStore()],
     });
 
     store = TestBed.inject(MockStore);
@@ -53,7 +51,10 @@ describe('AuthenticatedGuard', () => {
 
   describe('valid user', () => {
     it('should navigate properly', async () => {
-      store.overrideSelector(authFeature.selectUser, testUser1);
+      store.setState({
+        auth: { user: testUser1 },
+        cookie: { csrfToken: 'token' },
+      });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
       expect(location.path()).toEqual('/test');
     });
@@ -61,9 +62,11 @@ describe('AuthenticatedGuard', () => {
 
   describe('invalid user', () => {
     it('should redirect', async () => {
-      store.overrideSelector(authFeature.selectUser, null);
+      store.setState({ auth: { user: null }, cookie: { csrfToken: 'token' } });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/auth/login');
+      expect(location.path()).toEqual(
+        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`
+      );
     });
   });
 });

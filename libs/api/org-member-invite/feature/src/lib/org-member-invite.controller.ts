@@ -2,12 +2,12 @@ import { Body, Controller, Logger, Post } from '@nestjs/common';
 import {
   CreateOrgMemberInviteDto,
   OrgMemberInviteService,
-  TokenDto,
 } from '@newbee/api/org-member-invite/data-access';
 import {
   EntityService,
   OrganizationEntity,
   OrgMemberEntity,
+  TokenDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { Organization, OrgMember, Role, User } from '@newbee/api/shared/util';

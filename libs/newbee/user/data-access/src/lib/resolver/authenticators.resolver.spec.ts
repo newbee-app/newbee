@@ -2,12 +2,14 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AuthenticatorActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import { UrlEndpoint } from '@newbee/shared/data-access';
+import { testAuthenticator1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { CookieActions } from '../store';
-import { cookieGuard } from './cookie.guard';
+import { authenticatorsResolver } from './authenticators.resolver';
 
-describe('cookieResolver', () => {
+describe('authenticatorsResolver', () => {
   let router: Router;
   let store: MockStore;
   let location: Location;
@@ -18,14 +20,11 @@ describe('cookieResolver', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: 'test',
-            canActivate: [cookieGuard],
+            path: UrlEndpoint.Authenticator,
             component: EmptyComponent,
+            resolve: [authenticatorsResolver],
           },
-          {
-            path: '',
-            component: EmptyComponent,
-          },
+          { path: '', component: EmptyComponent },
         ]),
       ],
       providers: [provideMockStore()],
@@ -46,11 +45,14 @@ describe('cookieResolver', () => {
     expect(location).toBeDefined();
   });
 
-  it('should dispatch initCookies and then navigate', async () => {
-    store.setState({ cookie: { csrfToken: 'token' } });
-    await expect(router.navigate(['/test'])).resolves.toBeTruthy();
+  it('should dispatch getAuthenticators', async () => {
+    store.setState({ userModule: { authenticators: [testAuthenticator1] } });
+    await expect(
+      router.navigate([UrlEndpoint.Authenticator])
+    ).resolves.toBeTruthy();
     expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(CookieActions.initCookies());
-    expect(location.path()).toEqual('/test');
+    expect(store.dispatch).toBeCalledWith(
+      AuthenticatorActions.getAuthenticators()
+    );
   });
 });

@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -19,7 +27,8 @@ import {
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
 import type { EditUserForm } from '@newbee/newbee/user/util';
-import type { User } from '@newbee/shared/util';
+import { UrlEndpoint } from '@newbee/shared/data-access';
+import type { Authenticator, User } from '@newbee/shared/util';
 import parsePhoneNumber from 'libphonenumber-js';
 
 /**
@@ -36,16 +45,36 @@ import parsePhoneNumber from 'libphonenumber-js';
   ],
   templateUrl: './edit-user.component.html',
 })
-export class EditUserComponent implements OnInit {
+export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The user to edit.
    */
   @Input() user!: User;
 
   /**
-   * Whether to display the spinner on the dit button.
+   * The authenticators of the user.
+   */
+  @Input() authenticators: Authenticator[] = [];
+
+  /**
+   * Whether to display the spinner on the edit button.
    */
   @Input() editPending = false;
+
+  /**
+   * Whether to display the spinner on the add authenticator button.
+   */
+  @Input() addAuthenticatorPending = false;
+
+  /**
+   * Whether to display the loader on an authenticator.
+   */
+  @Input() editAuthenticatorPending: Map<string, boolean> = new Map();
+
+  /**
+   * Whether to display the loader on an authenticator.
+   */
+  @Input() deleteAuthenticatorPending: Map<string, boolean> = new Map();
 
   /**
    * Whether to display the spinner on the delete button.
@@ -61,6 +90,24 @@ export class EditUserComponent implements OnInit {
    * The emitted edit user form, for use in the smart UI parent.
    */
   @Output() edit = new EventEmitter<Partial<EditUserForm>>();
+
+  /**
+   * Indicates that the user has initiated a request to add a new authenticator.
+   */
+  @Output() addAuthenticator = new EventEmitter<void>();
+
+  /**
+   * The ID and new name value for the authenticator to update, for use in the smart UI parent.
+   */
+  @Output() editAuthenticator = new EventEmitter<{
+    id: string;
+    name: string | null;
+  }>();
+
+  /**
+   * The ID of the authenticator to delete, for use in the smart UI parent.
+   */
+  @Output() deleteAuthenticator = new EventEmitter<string>();
 
   /**
    * The emitted delete request, for use in the smart UI parent.
@@ -84,6 +131,21 @@ export class EditUserComponent implements OnInit {
   deleteUserForm = this.fb.group({
     delete: ['', [Validators.required, Validators.pattern('DELETE')]],
   });
+
+  /**
+   * A form array containing form controls for each authenticator in authenticators.
+   * Wrapped in a redundant form group because Angular requires it (idk why).
+   */
+  editAuthenticatorForm = this.fb.group({
+    names: this.fb.array<string | null>([]),
+  });
+
+  /**
+   * The IDs of the authenticators that are currently being edited.
+   */
+  editingAuthenticators = new Set<string>();
+
+  readonly urlEndpoint = UrlEndpoint;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -129,6 +191,26 @@ export class EditUserComponent implements OnInit {
   }
 
   /**
+   * Look out for changes to authenticators and update the form array, if relevant.
+   *
+   * @param changes The changes to the input of the component.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    const authenticators = changes['authenticators'];
+    if (!authenticators) {
+      return;
+    }
+
+    const authenticatorNames = this.editAuthenticatorForm.controls.names;
+    authenticatorNames.clear();
+    (authenticators.currentValue as Authenticator[]).forEach(
+      (authenticator) => {
+        authenticatorNames.push(this.fb.control(authenticator.name));
+      }
+    );
+  }
+
+  /**
    * Emit the `edit` output.
    */
   emitEdit(): void {
@@ -136,10 +218,47 @@ export class EditUserComponent implements OnInit {
   }
 
   /**
-   * Emit the `delete` output.
+   * Emit the `updateName` output.
+   *
+   * @param index The index of the authenticator to update.
+   * @param id The ID of the authenticator to update.
    */
-  emitDelete(): void {
-    this.delete.emit();
+  emitEditAuthenticator(index: number, id: string): void {
+    const name =
+      this.editAuthenticatorForm.controls.names.at(index).value || null;
+    this.editAuthenticator.emit({ id, name });
+    this.editingAuthenticators.delete(id);
+  }
+
+  /**
+   * Mark the given authenticator as being in edit mode.
+   *
+   * @param id The ID of the authenticator to put in edit mode.
+   */
+  startEditAuthenticator(id: string): void {
+    this.editingAuthenticators.add(id);
+  }
+
+  /**
+   * Mark the given authenticator as being in display mode.
+   *
+   * @param id The ID of the authenticator to put in display mode.
+   */
+  cancelEditAuthenticator(id: string): void {
+    this.editingAuthenticators.delete(id);
+  }
+
+  /**
+   * Whether the authenticator at the given index has a name value in its form control that's different than its current name value.
+   *
+   * @param index The index of the authenticator to check.
+   * @param authenticator The authenticator to check.
+   *
+   * @returns `true` if the names are different, `false` otherwise.
+   */
+  nameIsUnique(index: number, authenticator: Authenticator): boolean {
+    const name = this.editAuthenticatorForm.controls.names.at(index).value;
+    return name !== authenticator.name;
   }
 
   /**

@@ -1,8 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { UrlEndpoint } from '@newbee/shared/data-access';
+import {
+  authenticatorTakenBadRequest,
+  authenticatorVerifyBadRequest,
+  userChallengeIdNotFound,
+} from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from 'rxjs';
-import { catchHttpError } from '../../function';
+import { catchError, concatMap, map, switchMap } from 'rxjs';
+import { catchHttpError, catchHttpScreenError } from '../../function';
 import { AuthenticatorService } from '../../service';
 import { AuthenticatorActions } from './authenticator.actions';
 
@@ -11,6 +17,22 @@ import { AuthenticatorActions } from './authenticator.actions';
  */
 @Injectable()
 export class AuthenticatorEffects {
+  getAuthenticators$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthenticatorActions.getAuthenticators),
+      switchMap(() => {
+        return this.authenticatorService.getAuthenticators().pipe(
+          map((authenticators) => {
+            return AuthenticatorActions.getAuthenticatorsSuccess({
+              authenticators,
+            });
+          }),
+          catchError(catchHttpScreenError)
+        );
+      })
+    );
+  });
+
   createRegistrationOptions$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createRegistrationOptions),
@@ -28,10 +50,42 @@ export class AuthenticatorEffects {
   createAuthenticator$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createAuthenticator),
-      switchMap(({ options }) => {
+      concatMap(({ options }) => {
         return this.authenticatorService.create(options).pipe(
+          map((authenticator) => {
+            return AuthenticatorActions.createAuthenticatorSuccess({
+              authenticator,
+            });
+          }),
+          catchError(AuthenticatorEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
+  editAuthenticatorName$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthenticatorActions.editAuthenticatorName),
+      concatMap(({ id, name }) => {
+        return this.authenticatorService.editName(id, name).pipe(
+          map((authenticator) => {
+            return AuthenticatorActions.editAuthenticatorNameSuccess({
+              authenticator,
+            });
+          }),
+          catchError(AuthenticatorEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
+  deleteAuthenticator$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthenticatorActions.deleteAuthenticator),
+      concatMap(({ id }) => {
+        return this.authenticatorService.delete(id).pipe(
           map(() => {
-            return AuthenticatorActions.createAuthenticatorSuccess();
+            return AuthenticatorActions.deleteAuthenticatorSuccess({ id });
           }),
           catchError(AuthenticatorEffects.catchHttpError)
         );
@@ -45,6 +99,15 @@ export class AuthenticatorEffects {
   ) {}
 
   static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, () => 'misc');
+    return catchHttpError(err, (message) => {
+      switch (message) {
+        case userChallengeIdNotFound:
+        case authenticatorVerifyBadRequest:
+        case authenticatorTakenBadRequest:
+          return `${UrlEndpoint.New}-${UrlEndpoint.Authenticator}`;
+        default:
+          return 'misc';
+      }
+    });
   }
 }

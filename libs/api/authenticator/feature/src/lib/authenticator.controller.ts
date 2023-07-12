@@ -1,14 +1,25 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import {
   AuthenticatorService,
   RegistrationResponseDto,
 } from '@newbee/api/authenticator/data-access';
 import {
   AuthenticatorEntity,
+  NameDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
 import { authenticatorVersion, UrlEndpoint } from '@newbee/shared/data-access';
+import type { Authenticator } from '@newbee/shared/util';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**
@@ -19,6 +30,25 @@ export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 
   constructor(private readonly authenticatorService: AuthenticatorService) {}
+
+  /**
+   * The API route for getting all authenticators associated with the logged in user.
+   *
+   * @param user The user whose authenticators to look for.
+   *
+   * @returns The authenticators of the logged in user.
+   */
+  @Get()
+  async getAll(@User() user: UserEntity): Promise<Authenticator[]> {
+    this.logger.log(
+      `Get all authenticators request received for user ID: ${user.id}`
+    );
+    const authenticators = await this.authenticatorService.findAllByUser(user);
+    this.logger.log(
+      `${authenticators.length} authenticators found for user ID: ${user.id}`
+    );
+    return authenticators;
+  }
 
   /**
    * The API route for starting the WebAuthn authenticator registration process for a logged in user.
@@ -73,5 +103,57 @@ export class AuthenticatorController {
     );
 
     return authenticator;
+  }
+
+  /**
+   * The API route for updating the authenticator's name value.
+   *
+   * @param id The ID of the authenticator to edit.
+   * @param nameDto The new value for name.
+   * @param user The user making the request.
+   *
+   * @returns The udpated authenticator, if it was updated successfully.
+   * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
+   * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user and the provided user IDs do not match.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other error.
+   */
+  @Patch(`:${UrlEndpoint.Authenticator}`)
+  async updateName(
+    @Param(UrlEndpoint.Authenticator) id: string,
+    @Body() nameDto: NameDto,
+    @User() user: UserEntity
+  ): Promise<AuthenticatorEntity> {
+    const { name } = nameDto;
+    this.logger.log(
+      `Update authenticator name request received for authenticator ID: ${id}, from user ID: ${user.id}, with new name: ${name}`
+    );
+    const authenticator = await this.authenticatorService.updateNameById(
+      id,
+      name,
+      user.id
+    );
+    this.logger.log(`Authenticator updated for authenticator ID: ${id}`);
+    return authenticator;
+  }
+
+  /**
+   * The API route for deleting an authenticator.
+   *
+   * @param id The ID of the authenticator to delete.
+   * @param user The user making the request.
+   *
+   * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  @Delete(`:${UrlEndpoint.Authenticator}`)
+  async delete(
+    @Param(UrlEndpoint.Authenticator) id: string,
+    @User() user: UserEntity
+  ): Promise<void> {
+    this.logger.log(
+      `Delete authenticator request received for authenticator ID: ${id}, from user ID: ${user.id}`
+    );
+    await this.authenticatorService.deleteOneById(id, user.id);
+    this.logger.log(`Successfully deleted authenticator ID: ${id}`);
   }
 }

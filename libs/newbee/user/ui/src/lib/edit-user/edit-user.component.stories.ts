@@ -1,5 +1,5 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { testUser1, testUser2 } from '@newbee/shared/util';
+import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
 import {
   componentWrapperDecorator,
   Meta,
@@ -19,11 +19,19 @@ export default {
   ],
   args: {
     user: testUser1,
+    authenticators: [testAuthenticator1],
     editPending: false,
+    addAuthenticatorPending: false,
+    editAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
+    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
     deletePending: false,
+    httpClientError: null,
   },
   argTypes: {
     edit: { action: 'edit' },
+    addAuthenticator: { action: 'addAuthenticator' },
+    editAuthenticator: { action: 'editAuthenticator' },
+    deleteAuthenticator: { action: 'deleteAuthenticator' },
     delete: { action: 'delete' },
   },
 } as Meta<EditUserComponent>;
@@ -37,6 +45,31 @@ export const OptionalsExcluded: Story = {
 };
 
 export const EditPending: Story = { args: { editPending: true } };
+
+export const AddAuthenticatorPending: Story = {
+  args: { addAuthenticatorPending: true },
+};
+
+export const AddAuthenticatorError: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        'new-authenticator': 'Some error',
+      },
+    },
+  },
+};
+
+export const EditAuthenticatorPending: Story = {
+  args: { editAuthenticatorPending: new Map([[testAuthenticator1.id, true]]) },
+};
+
+export const deleteAuthenticatorPending: Story = {
+  args: {
+    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, true]]),
+  },
+};
 
 export const DeletePending: Story = { args: { deletePending: true } };
 

@@ -16,7 +16,6 @@ import {
   testUserRelation1,
 } from '@newbee/shared/util';
 import {
-  BaseCheckSlugDto,
   BaseCreateDocDto,
   BaseCreateOrganizationDto,
   BaseCreateOrgMemberInviteDto,
@@ -29,9 +28,11 @@ import {
   BaseGeneratedSlugDto,
   BaseGenerateSlugDto,
   BaseMagicLinkLoginDto,
+  BaseNameDto,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseRegistrationResponseDto,
+  BaseSlugDto,
   BaseSlugTakenDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
@@ -299,10 +300,18 @@ export const testBaseQueryResultDto1: BaseQueryResultDto = {
 };
 
 /**
- * An example instance of BaseCheckSlugDto.
+ * An example instance of BaseNameDto.
  * Strictly for use in testing.
  */
-export const testBaseCheckSlugDto1: BaseCheckSlugDto = {
+export const testBaseNameDto1: BaseNameDto = {
+  name: 'new name',
+};
+
+/**
+ * An example instance of BaseSlugDto.
+ * Strictly for use in testing.
+ */
+export const testBaseSlugDto1: BaseSlugDto = {
   slug: testOrganization1.slug,
 };
 
