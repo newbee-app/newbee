@@ -101,19 +101,21 @@
             class="hover"
           >
             <td class="flex flex-row gap-x-1 justify-between items-center">
-              <ng-container *ngIf="!editingAuthenticators.has(i)">
-                <span *ngIf="!editNamePending[i]">{{
+              <ng-container
+                *ngIf="!editingAuthenticators.has(authenticator.id)"
+              >
+                <span *ngIf="!editAuthenticatorPending.get(authenticator.id)">{{
                   authenticator.name
                 }}</span>
                 <span
-                  *ngIf="editNamePending[i]"
+                  *ngIf="editAuthenticatorPending.get(authenticator.id)"
                   class="loading loading-dots"
                 ></span>
 
                 <button
                   type="button"
-                  [disabled]="editNamePending[i]"
-                  (click)="editAuthenticator(i)"
+                  [disabled]="editAuthenticatorPending.get(authenticator.id)"
+                  (click)="startEditAuthenticator(authenticator.id)"
                   class="btn btn-ghost btn-xs rounded-md"
                 >
                   <!-- pencil svg -->
@@ -133,7 +135,7 @@
                   </svg>
                 </button>
               </ng-container>
-              <ng-container *ngIf="editingAuthenticators.has(i)">
+              <ng-container *ngIf="editingAuthenticators.has(authenticator.id)">
                 <input
                   type="text"
                   [formControlName]="i"
@@ -142,8 +144,8 @@
                 <div class="flex flex-row flex-nowrap">
                   <button
                     type="button"
-                    [disabled]="!nameIsUnique(i)"
-                    (click)="emitUpdateName(i)"
+                    [disabled]="!nameIsUnique(i, authenticator)"
+                    (click)="emitEditAuthenticator(i, authenticator.id)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
                     <!-- check svg -->
@@ -165,7 +167,7 @@
 
                   <button
                     type="button"
-                    (click)="cancelEditAuthenticator(i)"
+                    (click)="cancelEditAuthenticator(authenticator.id)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
                     <!-- x-mark svg -->
@@ -190,10 +192,15 @@
             <td>{{ authenticator.id }}</td>
             <td>
               <a
+                *ngIf="!deleteAuthenticatorPending.get(authenticator.id)"
                 (click)="deleteAuthenticator.emit(authenticator.id)"
                 class="text-error cursor-pointer underline"
                 >DELETE</a
               >
+              <span
+                *ngIf="deleteAuthenticatorPending.get(authenticator.id)"
+                class="loading loading-dots"
+              ></span>
             </td>
           </tr>
         </tbody>

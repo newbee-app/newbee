@@ -60,4 +60,16 @@ export class AuthenticatorService {
       })
     );
   }
+
+  /**
+   * Sends a DELETE request to delete the given authenticator by ID.
+   *
+   * @param id The ID of the authenticator to delete.
+   * @returns A null observable.
+   */
+  delete(id: string): Observable<null> {
+    return this.http.delete<null>(
+      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`
+    );
+  }
 }

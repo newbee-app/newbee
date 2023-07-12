@@ -19,7 +19,7 @@ describe('UserReducer', () => {
   const stateAfterGetAuthenticatorsSuccess: UserState = {
     ...initialUserState,
     authenticators: [testAuthenticator1],
-    pendingEditAuthenticator: [false],
+    pendingEditAuthenticator: new Map([[testAuthenticator1.id, false]]),
   };
   const stateAfterCreateRegistrationOptions: UserState = {
     ...initialUserState,

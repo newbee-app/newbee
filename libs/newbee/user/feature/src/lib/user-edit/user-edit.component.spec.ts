@@ -5,6 +5,7 @@ import {
   AuthenticatorActions,
   UserActions,
 } from '@newbee/newbee/shared/data-access';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
 import { testEditUserForm1 } from '@newbee/newbee/user/util';
 import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
@@ -26,7 +27,12 @@ describe('UserEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, NavbarComponent, EditUserComponent],
+      imports: [
+        CommonModule,
+        NavbarComponent,
+        ErrorScreenComponent,
+        EditUserComponent,
+      ],
       declarations: [UserEditComponent],
       providers: [
         provideMockStore({
@@ -34,7 +40,12 @@ describe('UserEditComponent', () => {
             auth: { user: testUser1 },
             userModule: {
               authenticators: [testAuthenticator1],
-              pendingEditAuthenticator: [false],
+              pendingEditAuthenticator: new Map([
+                [testAuthenticator1.id, false],
+              ]),
+              pendingDeleteAuthenticator: new Map([
+                [testAuthenticator1.id, false],
+              ]),
             },
           },
         }),
@@ -70,6 +81,15 @@ describe('UserEditComponent', () => {
       component.onAddAuthenticator();
       expect(store.dispatch).toBeCalledWith(
         AuthenticatorActions.createRegistrationOptions()
+      );
+    });
+  });
+
+  describe('onDeleteAuthenticator', () => {
+    it('should dispatch deleteAuthenticator', () => {
+      component.onDeleteAuthenticator(testAuthenticator1.id);
+      expect(store.dispatch).toBeCalledWith(
+        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id })
       );
     });
   });

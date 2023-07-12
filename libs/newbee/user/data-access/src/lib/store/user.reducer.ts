@@ -30,7 +30,12 @@ export interface UserState {
   /**
    * Whether the user is waiting for a response for editing an authenticator's name.
    */
-  pendingEditAuthenticator: boolean[] | null;
+  pendingEditAuthenticator: Map<string, boolean>;
+
+  /**
+   * Whether the user is waiting for a response for deleting an authenticator.
+   */
+  pendingDeleteAuthenticator: Map<string, boolean>;
 
   /**
    * Whether the user is waiting for a response for deleting a user.
@@ -45,7 +50,8 @@ export const initialUserState: UserState = {
   authenticators: null,
   pendingEdit: false,
   pendingAddAuthenticator: false,
-  pendingEditAuthenticator: null,
+  pendingEditAuthenticator: new Map(),
+  pendingDeleteAuthenticator: new Map(),
   pendingDelete: false,
 };
 
@@ -72,11 +78,20 @@ export const userFeature = createFeature({
     ),
     on(
       AuthenticatorActions.getAuthenticatorsSuccess,
-      (state, { authenticators }): UserState => ({
-        ...state,
-        authenticators,
-        pendingEditAuthenticator: authenticators.map(() => false),
-      })
+      (state, { authenticators }): UserState => {
+        state.pendingEditAuthenticator.clear();
+        state.pendingDeleteAuthenticator.clear();
+        authenticators.forEach((authenticator) => {
+          const { id } = authenticator;
+          state.pendingEditAuthenticator.set(id, false);
+          state.pendingDeleteAuthenticator.set(id, false);
+        });
+
+        return {
+          ...state,
+          authenticators,
+        };
+      }
     ),
     on(
       AuthenticatorActions.createRegistrationOptions,
@@ -87,33 +102,66 @@ export const userFeature = createFeature({
     ),
     on(
       AuthenticatorActions.createAuthenticatorSuccess,
-      (state, { authenticator }): UserState => ({
+      (state, { authenticator }): UserState => {
+        const { id } = authenticator;
+        state.pendingEditAuthenticator.set(id, false);
+        state.pendingDeleteAuthenticator.set(id, false);
+
+        return {
+          ...state,
+          pendingAddAuthenticator: false,
+          authenticators: [authenticator, ...(state.authenticators ?? [])],
+        };
+      }
+    ),
+    on(
+      AuthenticatorActions.deleteAuthenticator,
+      (state, { id }): UserState => ({
         ...state,
-        pendingAddAuthenticator: false,
-        authenticators: [authenticator, ...(state.authenticators ?? [])],
-        pendingEditAuthenticator: [
-          false,
-          ...(state.pendingEditAuthenticator ?? []),
-        ],
+        pendingDeleteAuthenticator: state.pendingDeleteAuthenticator.set(
+          id,
+          true
+        ),
       })
+    ),
+    on(
+      AuthenticatorActions.deleteAuthenticatorSuccess,
+      (state, { id }): UserState => {
+        state.pendingEditAuthenticator.delete(id);
+        state.pendingDeleteAuthenticator.delete(id);
+
+        return {
+          ...state,
+          authenticators:
+            state.authenticators?.filter(
+              (authenticator) => authenticator.id !== id
+            ) ?? null,
+        };
+      }
     ),
     on(
       UserActions.editUserSuccess,
       (state): UserState => ({
+        ...state,
+        pendingEdit: false,
+      })
+    ),
+    on(HttpActions.clientError, (state): UserState => {
+      state.pendingEditAuthenticator.clear();
+      state.pendingDeleteAuthenticator.clear();
+      state.authenticators?.forEach((authenticator) => {
+        const { id } = authenticator;
+        state.pendingEditAuthenticator.set(id, false);
+        state.pendingDeleteAuthenticator.set(id, false);
+      });
+
+      return {
         ...initialUserState,
         authenticators: state.authenticators,
         pendingEditAuthenticator: state.pendingEditAuthenticator,
-      })
-    ),
-    on(
-      HttpActions.clientError,
-      (state): UserState => ({
-        ...initialUserState,
-        authenticators: state.authenticators,
-        pendingEditAuthenticator:
-          state.authenticators && state.authenticators.map(() => false),
-      })
-    ),
+        pendingDeleteAuthenticator: state.pendingDeleteAuthenticator,
+      };
+    }),
     on(
       UserActions.deleteUserSuccess,
       RouterActions.routerRequest,

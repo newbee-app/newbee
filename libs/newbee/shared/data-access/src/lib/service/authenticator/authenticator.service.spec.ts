@@ -114,4 +114,27 @@ describe('AuthenticatorService', () => {
       req.flush(testAuthenticator1);
     });
   });
+
+  describe('delete', () => {
+    it('should send out a delete request', (done) => {
+      service.delete(testAuthenticator1.id).subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${testAuthenticator1.id}`
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
+    });
+  });
 });

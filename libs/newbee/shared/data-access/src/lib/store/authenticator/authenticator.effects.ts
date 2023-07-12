@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from 'rxjs';
+import { catchError, concatMap, map, switchMap } from 'rxjs';
 import { catchHttpError, catchHttpScreenError } from '../../function';
 import { AuthenticatorService } from '../../service';
 import { AuthenticatorActions } from './authenticator.actions';
@@ -44,12 +44,26 @@ export class AuthenticatorEffects {
   createAuthenticator$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createAuthenticator),
-      switchMap(({ options }) => {
+      concatMap(({ options }) => {
         return this.authenticatorService.create(options).pipe(
           map((authenticator) => {
             return AuthenticatorActions.createAuthenticatorSuccess({
               authenticator,
             });
+          }),
+          catchError(AuthenticatorEffects.catchHttpError)
+        );
+      })
+    );
+  });
+
+  deleteAuthenticator$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthenticatorActions.deleteAuthenticator),
+      concatMap(({ id }) => {
+        return this.authenticatorService.delete(id).pipe(
+          map(() => {
+            return AuthenticatorActions.deleteAuthenticatorSuccess({ id });
           }),
           catchError(AuthenticatorEffects.catchHttpError)
         );

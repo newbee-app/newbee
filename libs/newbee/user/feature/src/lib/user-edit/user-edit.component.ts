@@ -42,8 +42,15 @@ export class UserEditComponent {
   /**
    * Whether the edit authenticator action is pending.
    */
-  editNamePending$ = this.store.select(
+  editAuthenticatorPending$ = this.store.select(
     userFeature.selectPendingEditAuthenticator
+  );
+
+  /**
+   * Whether the delete authenticator action is pending.
+   */
+  deleteAuthenticatorPending$ = this.store.select(
+    userFeature.selectPendingDeleteAuthenticator
   );
 
   /**
@@ -74,6 +81,14 @@ export class UserEditComponent {
    */
   onAddAuthenticator(): void {
     this.store.dispatch(AuthenticatorActions.createRegistrationOptions());
+  }
+
+  /**
+   * When the dumb UI emits a delete authenticator event, pass it to the store.
+   * @param id The ID of the authenticator to delete.
+   */
+  onDeleteAuthenticator(id: string): void {
+    this.store.dispatch(AuthenticatorActions.deleteAuthenticator({ id }));
   }
 
   /**

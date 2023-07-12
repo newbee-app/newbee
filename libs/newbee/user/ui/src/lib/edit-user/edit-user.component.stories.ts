@@ -22,13 +22,15 @@ export default {
     authenticators: [testAuthenticator1],
     editPending: false,
     addAuthenticatorPending: false,
-    editNamePending: [false],
+    editAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
+    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
     deletePending: false,
+    httpClientError: null,
   },
   argTypes: {
     edit: { action: 'edit' },
     addAuthenticator: { action: 'addAuthenticator' },
-    updateName: { action: 'updateName' },
+    editAuthenticator: { action: 'editAuthenticator' },
     deleteAuthenticator: { action: 'deleteAuthenticator' },
     delete: { action: 'delete' },
   },
@@ -48,8 +50,14 @@ export const AddAuthenticatorPending: Story = {
   args: { addAuthenticatorPending: true },
 };
 
-export const EditNamePending: Story = {
-  args: { editNamePending: [true] },
+export const EditAuthenticatorPending: Story = {
+  args: { editAuthenticatorPending: new Map([[testAuthenticator1.id, true]]) },
+};
+
+export const deleteAuthenticatorPending: Story = {
+  args: {
+    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, true]]),
+  },
 };
 
 export const DeletePending: Story = { args: { deletePending: true } };

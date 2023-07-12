@@ -31,6 +31,7 @@ describe('AuthenticatorEffects', () => {
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialCreationOptions1)),
             create: jest.fn().mockReturnValue(of(testAuthenticator1)),
+            delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
         provideMockActions(() => actions$),
@@ -99,6 +100,26 @@ describe('AuthenticatorEffects', () => {
         expect(service.create).toBeCalledWith(
           testPublicKeyCredentialCreationOptions1
         );
+      });
+    });
+  });
+
+  describe('deleteAuthenticator$', () => {
+    it('should fire deleteAuthenticatorSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: AuthenticatorActions.deleteAuthenticator({
+          id: testAuthenticator1.id,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: AuthenticatorActions.deleteAuthenticatorSuccess({
+          id: testAuthenticator1.id,
+        }),
+      });
+      expect(effects.deleteAuthenticator$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.delete).toBeCalledTimes(1);
+        expect(service.delete).toBeCalledWith(testAuthenticator1.id);
       });
     });
   });

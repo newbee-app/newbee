@@ -38,5 +38,15 @@ export const AuthenticatorActions = createActionGroup({
      * Marks the authenticator registraiton as successful.
      */
     'Create Authenticator Success': props<{ authenticator: Authenticator }>(),
+
+    /**
+     * Send a request to the API to delete an authenticator by ID.
+     */
+    'Delete Authenticator': props<{ id: string }>(),
+
+    /**
+     * Indicates that an authenticator with the provided ID was successfully deleted.
+     */
+    'Delete Authenticator Success': props<{ id: string }>(),
   },
 });

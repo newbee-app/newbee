@@ -68,7 +68,12 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * Whether to display the loader on an authenticator.
    */
-  @Input() editNamePending: boolean[] = [];
+  @Input() editAuthenticatorPending: Map<string, boolean> = new Map();
+
+  /**
+   * Whether to display the loader on an authenticator.
+   */
+  @Input() deleteAuthenticatorPending: Map<string, boolean> = new Map();
 
   /**
    * Whether to display the spinner on the delete button.
@@ -93,7 +98,7 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The ID and new name value for the authenticator to update, for use in the smart UI parent.
    */
-  @Output() updateName = new EventEmitter<{
+  @Output() editAuthenticator = new EventEmitter<{
     id: string;
     name: string | null;
   }>();
@@ -135,9 +140,9 @@ export class EditUserComponent implements OnInit, OnChanges {
   });
 
   /**
-   * The indexes of the authenticators that are currently being edited.
+   * The IDs of the authenticators that are currently being edited.
    */
-  editingAuthenticators = new Set<number>();
+  editingAuthenticators = new Set<string>();
 
   constructor(
     private readonly fb: FormBuilder,
@@ -213,46 +218,42 @@ export class EditUserComponent implements OnInit, OnChanges {
    * Emit the `updateName` output.
    *
    * @param index The index of the authenticator to update.
+   * @param id The ID of the authenticator to update.
    */
-  emitUpdateName(index: number): void {
-    const id = this.authenticators[index]?.id;
-    if (!id) {
-      return;
-    }
-
+  emitEditAuthenticator(index: number, id: string): void {
     const name =
       this.editAuthenticatorForm.controls.names.at(index).value || null;
-    this.updateName.emit({ id, name });
-    this.editingAuthenticators.delete(index);
+    this.editAuthenticator.emit({ id, name });
+    this.editingAuthenticators.delete(id);
   }
 
   /**
    * Mark the given authenticator as being in edit mode.
-   * @param index The index of the authenticator to put in edit mode.
+   *
+   * @param id The ID of the authenticator to put in edit mode.
    */
-  editAuthenticator(index: number): void {
-    this.editingAuthenticators.add(index);
+  startEditAuthenticator(id: string): void {
+    this.editingAuthenticators.add(id);
   }
 
   /**
    * Mark the given authenticator as being in display mode.
-   * @param index The index of the authenticator to put in display mode.
+   *
+   * @param id The ID of the authenticator to put in display mode.
    */
-  cancelEditAuthenticator(index: number): void {
-    this.editingAuthenticators.delete(index);
+  cancelEditAuthenticator(id: string): void {
+    this.editingAuthenticators.delete(id);
   }
 
   /**
    * Whether the authenticator at the given index has a name value in its form control that's different than its current name value.
+   *
+   * @param index The index of the authenticator to check.
    * @param authenticator The authenticator to check.
+   *
    * @returns `true` if the names are different, `false` otherwise.
    */
-  nameIsUnique(index: number): boolean {
-    const authenticator = this.authenticators[index];
-    if (!authenticator) {
-      return false;
-    }
-
+  nameIsUnique(index: number, authenticator: Authenticator): boolean {
     const name = this.editAuthenticatorForm.controls.names.at(index).value;
     return name !== authenticator.name;
   }
