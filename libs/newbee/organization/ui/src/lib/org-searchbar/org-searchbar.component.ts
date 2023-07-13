@@ -27,6 +27,11 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
   @Input() searchPending = false;
 
   /**
+   * Suggestions based on the user's search term.
+   */
+  @Input() suggestions: string[] = [];
+
+  /**
    * The event emitter that tells the parent component when a search has been fired off.
    */
   @Output() search = new EventEmitter<string>();

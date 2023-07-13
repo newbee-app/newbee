@@ -1,5 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SearchActions } from '@newbee/newbee/shared/data-access';
+import {
+  SearchActions,
+  searchFeature,
+} from '@newbee/newbee/shared/data-access';
 import { BaseQueryDto, BaseSuggestDto } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
@@ -16,6 +19,11 @@ export class OrgHomeComponent implements OnInit, OnDestroy {
    * Represents the searchbar's current value, for use in generating suggestions.
    */
   readonly searchTerm$ = new Subject<string>();
+
+  /**
+   * Suggestions based on the user's search term.
+   */
+  suggestions$ = this.store.select(searchFeature.selectSuggestions);
 
   constructor(private readonly store: Store) {}
 

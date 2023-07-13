@@ -66,10 +66,9 @@
     <button
       type="button"
       *ngFor="let suggestion of suggestions"
+      [innerHTML]="suggestion"
       (click)="selectSuggestion.emit(suggestion)"
       class="btn btn-ghost justify-start text-left normal-case font-normal"
-    >
-      {{ suggestion }}
-    </button>
+    ></button>
   </div>
 </newbee-dropdown>

@@ -11,7 +11,12 @@
     class="flex flex-col gap-2 justify-center items-center w-[30rem] max-w-full"
   >
     <div class="w-full">
-      <newbee-searchbar [formControl]="searchTerm" autofocus></newbee-searchbar>
+      <newbee-searchbar
+        [formControl]="searchTerm"
+        [suggestions]="suggestions"
+        (selectSuggestion)="this.search.emit($event)"
+        autofocus
+      ></newbee-searchbar>
     </div>
     <button
       type="submit"
