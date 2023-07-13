@@ -37,7 +37,9 @@ describe('OrgHomeComponent', () => {
         ErrorScreenComponent,
       ],
       declarations: [OrgHomeComponent],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({ initialState: { search: { suggestions: [] } } }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OrgHomeComponent);

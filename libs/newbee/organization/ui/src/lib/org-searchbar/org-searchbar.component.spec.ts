@@ -2,6 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { OrgSearchbarComponent } from './org-searchbar.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('OrgSearchbarComponent', () => {
   let component: OrgSearchbarComponent;
   let fixture: ComponentFixture<OrgSearchbarComponent>;

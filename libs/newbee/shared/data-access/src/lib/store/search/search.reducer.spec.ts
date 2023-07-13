@@ -9,7 +9,7 @@ import { initialSearchState, searchFeature } from './search.reducer';
 describe('SearchReducer', () => {
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
-    suggestResult: testBaseSuggestResultDto1,
+    suggestions: testBaseSuggestResultDto1.suggestions,
   };
 
   describe('from initial state', () => {
@@ -30,7 +30,7 @@ describe('SearchReducer', () => {
       );
       expect(updatedState).toEqual({
         searchResult: testBaseQueryResultDto1,
-        suggestResult: null,
+        suggestions: [],
       });
     });
   });

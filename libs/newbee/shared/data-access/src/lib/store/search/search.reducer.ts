@@ -1,8 +1,4 @@
-import {
-  BaseQueryResultDto,
-  BaseSuggestResultDto,
-  UrlEndpoint,
-} from '@newbee/shared/data-access';
+import { BaseQueryResultDto, UrlEndpoint } from '@newbee/shared/data-access';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { SearchActions } from './search.actions';
 
@@ -18,7 +14,7 @@ export interface SearchState {
   /**
    * The results of a suggest request.
    */
-  suggestResult: BaseSuggestResultDto | null;
+  suggestions: string[];
 }
 
 /**
@@ -26,7 +22,7 @@ export interface SearchState {
  */
 export const initialSearchState: SearchState = {
   searchResult: null,
-  suggestResult: null,
+  suggestions: [],
 };
 
 /**
@@ -40,16 +36,16 @@ export const searchFeature = createFeature({
       SearchActions.searchSuccess,
       (state, { result }): SearchState => ({
         ...state,
-        suggestResult: null,
+        suggestions: [],
         searchResult: result,
       })
     ),
-    on(
-      SearchActions.suggestSuccess,
-      (state, { result }): SearchState => ({
+    on(SearchActions.suggestSuccess, (state, { result }): SearchState => {
+      const { suggestions } = result;
+      return {
         ...state,
-        suggestResult: result,
-      })
-    )
+        suggestions,
+      };
+    })
   ),
 });
