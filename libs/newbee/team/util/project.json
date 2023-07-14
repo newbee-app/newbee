@@ -1,0 +1,50 @@
+{
+  "name": "newbee-team-util",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/newbee/team/util/src",
+  "prefix": "newbee",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/newbee/team/util/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/team/util/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/team/util/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/newbee/team/util/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/team/util/**/*.ts",
+          "libs/newbee/team/util/**/*.html"
+        ]
+      }
+    }
+  }
+}

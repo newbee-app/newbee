@@ -10,21 +10,21 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import type { CreateOrgForm } from '@newbee/newbee/organization/util';
 import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
-  HttpClientError,
   inputDisplayError,
   SlugInputDirectiveModule,
+  type HttpClientError,
 } from '@newbee/newbee/shared/util';
+import type { CreateTeamForm } from '@newbee/newbee/team/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
- * The display for creating a new org.
+ * The display for creating a new team.
  */
 @Component({
-  selector: 'newbee-create-org',
+  selector: 'newbee-create-team',
   standalone: true,
   imports: [
     CommonModule,
@@ -32,9 +32,9 @@ import { Subject, takeUntil } from 'rxjs';
     ErrorAlertComponent,
     SlugInputDirectiveModule,
   ],
-  templateUrl: './create-org.component.html',
+  templateUrl: './create-team.component.html',
 })
-export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
+export class CreateTeamComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Emit to unsubscribe from all infinite observables.
    */
@@ -66,29 +66,29 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   @Input() httpClientError: HttpClientError | null = null;
 
   /**
-   * The current value of the organization name.
+   * The current value of the team name.
    */
   @Output() name = new EventEmitter<string>();
 
   /**
-   * The current value of the organization slug, not emitted from changes to `generatedSlug`.
+   * The current value of the team slug, not emitted from changes to `generatedSlug`.
    */
   @Output() slug = new EventEmitter<string>();
 
   /**
-   * The formatted value of the organization slug, only emitted after the SlugInputDirective formats.
+   * The formatted value of the team slug, only emitted after the SlugInputDirecrive formats.
    */
   @Output() formattedSlug = new EventEmitter<string>();
 
   /**
-   * The emitted create organization form, for use in the smart UI parent.
+   * The emitted create team form, for use in the smart UI parent.
    */
-  @Output() create = new EventEmitter<Partial<CreateOrgForm>>();
+  @Output() create = new EventEmitter<Partial<CreateTeamForm>>();
 
   /**
-   * The internal form to create a new organization.
+   * The internal form to create a new team.
    */
-  createOrgForm = this.fb.group({
+  createTeamForm = this.fb.group({
     name: ['', [Validators.required]],
     slug: ['', [Validators.required]],
   });
@@ -96,11 +96,11 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * Emit the org name and slug whenever the value changes.
+   * Emits the team name and slug whenever the value changes.
    * Changes from updates to generatedSlug should not be emitted.
    */
   ngOnInit(): void {
-    this.createOrgForm.controls.name.valueChanges
+    this.createTeamForm.controls.name.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (name) => {
@@ -108,7 +108,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
         },
       });
 
-    this.createOrgForm.controls.slug.valueChanges
+    this.createTeamForm.controls.slug.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (slug) => {
@@ -118,7 +118,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Look out for changes to generatedSlug and update the form value, if relevant.
+   * Look out for changes to generatedSlug tand update the form value, if relevant.
    *
    * @param changes The changes to the input of the component.
    */
@@ -128,7 +128,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.createOrgForm.controls.slug.setValue(generatedSlug.currentValue, {
+    this.createTeamForm.controls.slug.setValue(generatedSlug.currentValue, {
       emitEvent: false,
     });
   }
@@ -145,7 +145,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    * Emit the `create` output.
    */
   emitCreate(): void {
-    this.create.emit(this.createOrgForm.value);
+    this.create.emit(this.createTeamForm.value);
   }
 
   /**
@@ -155,9 +155,12 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  readonly inputDisplayError = (inputName: string): boolean =>
-    inputDisplayError(this.createOrgForm, inputName) ||
-    !!this.httpClientError?.messages[inputName];
+  inputDisplayError(inputName: string): boolean {
+    return (
+      inputDisplayError(this.createTeamForm, inputName) ||
+      !!this.httpClientError?.messages[inputName]
+    );
+  }
 
   /**
    * The given input's error message.
@@ -166,7 +169,11 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  readonly inputErrorMessage = (inputName: string): string =>
-    getErrorMessage(this.createOrgForm.get(inputName)) ||
-    (this.httpClientError?.messages[inputName] ?? '');
+  inputErrorMessage(inputName: string): string {
+    return (
+      (getErrorMessage(this.createTeamForm.get(inputName)) ||
+        this.httpClientError?.messages[inputName]) ??
+      ''
+    );
+  }
 }

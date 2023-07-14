@@ -1,0 +1,93 @@
+{
+  "name": "newbee-team-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/newbee/team/ui/src",
+  "prefix": "newbee",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/newbee/team/ui/ng-package.json",
+        "tailwindConfig": "libs/newbee/team/ui/tailwind.config.js"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/team/ui/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/team/ui/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/newbee/team/ui/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/team/ui/**/*.ts",
+          "libs/newbee/team/ui/**/*.html"
+        ]
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/newbee/team/ui/.storybook",
+        "browserTarget": "newbee-team-ui:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee-team-ui",
+        "configDir": "libs/newbee/team/ui/.storybook",
+        "browserTarget": "newbee-team-ui:build-storybook",
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nrwl/web:file-server",
+      "options": {
+        "buildTarget": "newbee-team-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-team-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-team-ui:build-storybook:ci"
+        }
+      }
+    }
+  }
+}

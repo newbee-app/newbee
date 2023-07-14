@@ -1,19 +1,19 @@
 <form
-  id="create-org-form"
-  [formGroup]="createOrgForm"
+  id="create-team-form"
+  [formGroup]="createTeamForm"
   (ngSubmit)="emitCreate()"
   class="flex justify-center content-center w-full"
 >
   <div class="flex flex-col flex-nowrap gap-y-8 max-w-full w-[32rem]">
-    <h3 class="text-center">Create an organization</h3>
+    <h3 class="text-center">Create a team</h3>
 
     <div class="flex flex-col flex-nowrap gap-y-2 w-full">
-      <label for="name-input"> What is the name of your organization?</label>
+      <label for="name-input">What is the name of your team?</label>
       <input
         type="text"
         id="name-input"
         formControlName="name"
-        placeholder="My Org"
+        placeholder="My Team"
         required
         class="input border-neutral w-full"
       />
@@ -25,22 +25,17 @@
 
     <div class="flex flex-col gap-y-2 w-full">
       <label for="slug-input"
-        >What URL would you like to use for your organization?</label
+        >What URL would you like to use for your team?</label
       >
-      <div class="join">
-        <button type="button" class="btn no-animation cursor-auto join-item">
-          newbee.app/
-        </button>
-        <input
-          type="text"
-          id="slug-input"
-          formControlName="slug"
-          placeholder="my-org"
-          newbeeSlugInput
-          (slug)="formattedSlug.emit($event)"
-          class="input border-neutral w-full join-item"
-        />
-      </div>
+      <input
+        type="text"
+        id="slug-input"
+        formControlName="slug"
+        placeholder="my-team"
+        newbeeSlugInput
+        (slug)="formattedSlug.emit($event)"
+        class="input border-neutral w-full"
+      />
       <div *ngIf="checkPending" class="self-center">
         <span class="loading loading-dots"></span>
       </div>
@@ -54,15 +49,15 @@
     </div>
 
     <button
-      id="create-btn"
       type="submit"
+      id="create-btn"
       [disabled]="
-        createOrgForm.invalid || checkPending || slugTaken || createPending
+        createTeamForm.invalid || checkPending || slugTaken || createPending
       "
       class="btn btn-primary w-full"
     >
       <span *ngIf="createPending" class="loading loading-spinner"></span>
-      Create Org
+      Create Team
     </button>
 
     <newbee-error-alert

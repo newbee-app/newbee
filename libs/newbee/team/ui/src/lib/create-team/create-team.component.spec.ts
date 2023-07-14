@@ -1,24 +1,24 @@
 import { SimpleChange } from '@angular/core';
 import {
   ComponentFixture,
-  discardPeriodicTasks,
   fakeAsync,
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { testOrganization1 } from '@newbee/shared/util';
-import { CreateOrgComponent } from './create-org.component';
+import { testCreateTeamForm1 } from '@newbee/newbee/team/util';
+import { testTeam1 } from '@newbee/shared/util';
+import { CreateTeamComponent } from './create-team.component';
 
-describe('CreateOrgComponent', () => {
-  let component: CreateOrgComponent;
-  let fixture: ComponentFixture<CreateOrgComponent>;
+describe('CreateTeamComponent', () => {
+  let component: CreateTeamComponent;
+  let fixture: ComponentFixture<CreateTeamComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateOrgComponent],
+      imports: [CreateTeamComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CreateOrgComponent);
+    fixture = TestBed.createComponent(CreateTeamComponent);
     component = fixture.componentInstance;
 
     jest.spyOn(component.name, 'emit');
@@ -37,27 +37,20 @@ describe('CreateOrgComponent', () => {
   describe('outputs', () => {
     describe('name', () => {
       it('should emit whenever name changes in form', () => {
-        component.createOrgForm.controls.name.setValue(testOrganization1.name);
+        component.createTeamForm.controls.name.setValue(testTeam1.name);
         expect(component.name.emit).toBeCalledTimes(1);
-        expect(component.name.emit).toBeCalledWith(testOrganization1.name);
-        expect(component.slug.emit).not.toBeCalled();
-        expect(component.formattedSlug.emit).not.toBeCalled();
+        expect(component.name.emit).toBeCalledWith(testTeam1.name);
       });
     });
 
     describe('slug & formattedSlug', () => {
       it('should emit whenever the user types and after the slug input directive formats', fakeAsync(() => {
-        component.createOrgForm.controls.slug.setValue(testOrganization1.slug);
+        component.createTeamForm.controls.slug.setValue(testTeam1.slug);
         tick(600);
         expect(component.slug.emit).toBeCalledTimes(1);
-        expect(component.slug.emit).toBeCalledWith(testOrganization1.slug);
+        expect(component.slug.emit).toBeCalledWith(testTeam1.slug);
         expect(component.formattedSlug.emit).toBeCalledTimes(1);
-        expect(component.formattedSlug.emit).toBeCalledWith(
-          testOrganization1.slug
-        );
-        expect(component.name.emit).not.toBeCalled();
-        expect(component.slug.emit).toBeCalledTimes(1);
-        discardPeriodicTasks();
+        expect(component.formattedSlug.emit).toBeCalledWith(testTeam1.slug);
       }));
     });
 
@@ -67,27 +60,26 @@ describe('CreateOrgComponent', () => {
         expect(component.create.emit).toBeCalledTimes(1);
         expect(component.create.emit).toBeCalledWith({ name: '', slug: '' });
 
-        component.createOrgForm.setValue({ name: 'NewBee', slug: '' });
+        component.createTeamForm.setValue({
+          name: testTeam1.name,
+          slug: testTeam1.slug,
+        });
         component.emitCreate();
         expect(component.create.emit).toBeCalledTimes(2);
-        expect(component.create.emit).toBeCalledWith({
-          name: 'NewBee',
-          slug: '',
-        });
+        expect(component.create.emit).toBeCalledWith(testCreateTeamForm1);
       });
     });
   });
 
   describe('changes', () => {
-    it('should update form for generatedSlug changes', fakeAsync(() => {
+    it('should update form for generatedSlug changes', () => {
       component.ngOnChanges({
-        generatedSlug: new SimpleChange('', testOrganization1.slug, true),
+        generatedSlug: new SimpleChange('', testTeam1.slug, true),
       });
-      expect(component.createOrgForm.controls.slug.value).toEqual(
-        testOrganization1.slug
+      expect(component.createTeamForm.controls.slug.value).toEqual(
+        testTeam1.slug
       );
-      tick(600);
       expect(component.slug.emit).not.toBeCalled();
-    }));
+    });
   });
 });

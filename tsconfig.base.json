@@ -154,6 +154,8 @@
       ],
       "@newbee/newbee/shared/ui": ["libs/newbee/shared/ui/src/index.ts"],
       "@newbee/newbee/shared/util": ["libs/newbee/shared/util/src/index.ts"],
+      "@newbee/newbee/team/ui": ["libs/newbee/team/ui/src/index.ts"],
+      "@newbee/newbee/team/util": ["libs/newbee/team/util/src/index.ts"],
       "@newbee/newbee/user/data-access": [
         "libs/newbee/user/data-access/src/index.ts"
       ],

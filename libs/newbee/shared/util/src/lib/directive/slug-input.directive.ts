@@ -10,6 +10,9 @@ import { NgControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { SlugPipe, SlugPipeModule } from '../pipe';
 
+/**
+ * A directive for slug-ifying an input.
+ */
 @Directive({
   selector: '[newbeeSlugInput]',
 })
