@@ -72,7 +72,6 @@ export class OrganizationController {
         user.id
       }, with values: ${JSON.stringify(createOrganizationDto)}`
     );
-
     const organization = await this.organizationService.create(
       createOrganizationDto,
       user
@@ -82,7 +81,6 @@ export class OrganizationController {
         organization
       )}`
     );
-
     return organization;
   }
 

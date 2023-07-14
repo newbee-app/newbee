@@ -9,6 +9,7 @@ import {
 } from '@mikro-orm/core';
 import type { Team } from '@newbee/shared/util';
 import { TeamRoleEnum } from '@newbee/shared/util';
+import slugify from 'slug';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -93,7 +94,7 @@ export class TeamEntity implements Team {
   ) {
     this.id = id;
     this.name = name;
-    this.slug = slug;
+    this.slug = slugify(slug);
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
   }

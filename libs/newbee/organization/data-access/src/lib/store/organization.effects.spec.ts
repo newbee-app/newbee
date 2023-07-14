@@ -289,7 +289,7 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrganizationActions.checkSlugSuccess({
-          slugTaken: true,
+          slugTaken: testBaseSlugTakenDto1.slugTaken,
         }),
       });
       expect(effects.checkSlug$).toBeObservable(expected$);

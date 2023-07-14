@@ -17,7 +17,6 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { generateUniqueSlug } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamSlugNotFound,
@@ -58,17 +57,9 @@ export class TeamService {
     createTeamDto: CreateTeamDto,
     creator: OrgMemberEntity
   ): Promise<TeamEntity> {
-    const id = v4();
-    const { name } = createTeamDto;
-    let { slug } = createTeamDto;
+    const { name, slug } = createTeamDto;
     const { organization } = creator;
-    if (!slug) {
-      slug = await generateUniqueSlug(
-        async (slugToTry) =>
-          !(await this.hasOneBySlug(organization, slugToTry)),
-        name
-      );
-    }
+    const id = v4();
     const team = new TeamEntity(id, name, slug, creator);
 
     try {

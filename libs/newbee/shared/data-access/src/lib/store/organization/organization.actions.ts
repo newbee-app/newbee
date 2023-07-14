@@ -82,7 +82,7 @@ export const OrganizationActions = createActionGroup({
     'Check Slug Success': props<{ slugTaken: boolean }>(),
 
     /**
-     * Generate a slug for user trying to create an organization.
+     * Generate a slug for an org based on its name and availability.
      */
     'Generate Slug': props<{ name: string }>(),
 

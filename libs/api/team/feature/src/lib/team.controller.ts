@@ -6,19 +6,35 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
+  GenerateSlugDto,
   OrganizationEntity,
   OrgMemberEntity,
+  SlugDto,
   TeamEntity,
+  UserEntity,
 } from '@newbee/api/shared/data-access';
-import { Organization, OrgMember, Role, Team } from '@newbee/api/shared/util';
+import {
+  generateUniqueSlug,
+  Organization,
+  OrgMember,
+  Role,
+  Team,
+  User,
+} from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
-import { teamVersion, UrlEndpoint } from '@newbee/shared/data-access';
+import {
+  BaseGeneratedSlugDto,
+  BaseSlugTakenDto,
+  teamVersion,
+  UrlEndpoint,
+} from '@newbee/shared/data-access';
 import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
@@ -67,6 +83,65 @@ export class TeamController {
       `Team created with ID: ${team.id}, ${JSON.stringify(team)}`
     );
     return team;
+  }
+
+  /**
+   * The API route for checking whether a team slug has been taken in an org.
+   *
+   * @param checkSlugDto The team slug to check.
+   * @param organization The organization to check in.
+   * @param user The user making the request.
+   *
+   * @returns `true` if the org slug is taken, `false` otherwise.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  @Get(UrlEndpoint.CheckSlug)
+  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  async checkSlug(
+    @Query() checkSlugDto: SlugDto,
+    @Organization() organization: OrganizationEntity,
+    @User() user: UserEntity
+  ): Promise<BaseSlugTakenDto> {
+    const { slug } = checkSlugDto;
+    this.logger.log(
+      `Check team slug request received for slug: ${slug}, in org ID: ${organization.id}, by user ID: ${user.id}`
+    );
+    const hasSlug = await this.teamService.hasOneBySlug(organization, slug);
+    this.logger.log(`Team slug ${slug} taken: ${hasSlug}`);
+
+    return { slugTaken: hasSlug };
+  }
+
+  /**
+   * The API route for generating a new team slug based on a base string.
+   *
+   * @param generateSlugDto The base string to use.
+   * @param organization The organization the team will be in.
+   * @param user The user making the request.
+   *
+   * @returns A unique team slug suitable fo ruse.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  @Get(UrlEndpoint.GenerateSlug)
+  async generateSlug(
+    @Query() generateSlugDto: GenerateSlugDto,
+    @Organization() organization: OrganizationEntity,
+    @User() user: UserEntity
+  ): Promise<BaseGeneratedSlugDto> {
+    const { base } = generateSlugDto;
+    this.logger.log(
+      `Genereate team slug request received for base: ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`
+    );
+    const slug = await generateUniqueSlug(
+      async (slugToTry) =>
+        !(await this.teamService.hasOneBySlug(organization, slugToTry)),
+      base
+    );
+    this.logger.log(
+      `Team slug ${slug} generated for base ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`
+    );
+
+    return { generatedSlug: slug };
   }
 
   /**
