@@ -83,6 +83,7 @@ describe('OrganizationController', () => {
       );
       expect(service.hasOneBySlug).toBeCalledTimes(1);
       expect(service.hasOneBySlug).toBeCalledWith(testBaseSlugDto1.slug);
+
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
       await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual({
         slugTaken: false,

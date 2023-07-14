@@ -1,0 +1,13 @@
+<newbee-navbar>
+  <newbee-create-team
+    [generatedSlug]="(generatedSlug$ | async)!"
+    [slugTaken]="(slugTaken$ | async)!"
+    [createPending]="(pendingCreate$ | async)!"
+    [checkPending]="(pendingCheck$ | async)!"
+    [httpClientError]="(httpClientError$ | async)!"
+    (name)="onName($event)"
+    (slug)="onSlug($event)"
+    (formattedSlug)="onFormattedSlug($event)"
+    (create)="onCreate($event)"
+  ></newbee-create-team>
+</newbee-navbar>

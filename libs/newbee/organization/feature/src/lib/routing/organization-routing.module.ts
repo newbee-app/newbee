@@ -18,6 +18,13 @@ const routes: Routes = [
     canDeactivate: [resetSelectedOrgGuard],
     children: [
       {
+        path: UrlEndpoint.Team,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/team/feature');
+          return m.TeamModule;
+        },
+      },
+      {
         path: UrlEndpoint.Edit,
         component: OrgEditComponent,
       },

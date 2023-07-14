@@ -18,5 +18,5 @@ export class CreateTeamDto implements BaseCreateTeamDto {
    */
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
-  slug?: string;
+  slug!: string;
 }

@@ -1,48 +1,45 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { organizationFeature } from '@newbee/newbee/organization/data-access';
+import { httpFeature, TeamActions } from '@newbee/newbee/shared/data-access';
+import { teamFeature } from '@newbee/newbee/team/data-access';
 import {
-  CreateOrgForm,
-  createOrgFormToDto,
-} from '@newbee/newbee/organization/util';
-import {
-  httpFeature,
-  OrganizationActions,
-} from '@newbee/newbee/shared/data-access';
+  createTeamFormToDto,
+  type CreateTeamForm,
+} from '@newbee/newbee/team/util';
 import { Store } from '@ngrx/store';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 /**
- * The smart UI for the create organization screen.
+ * The smart UI for the create team screen.
  */
 @Component({
-  selector: 'newbee-org-create',
-  templateUrl: './org-create.component.html',
+  selector: 'newbee-team-create',
+  templateUrl: './team-create.component.html',
 })
-export class OrgCreateComponent implements OnInit, OnDestroy {
+export class TeamCreateComponent implements OnInit, OnDestroy {
   /**
    * Represents the form's current name value, for use in generating slugs.
    */
   readonly name$ = new Subject<string>();
 
   /**
-   * The auto-generated slug based on the org's name.
+   * The auto-generated slug based on the team's name.
    */
-  generatedSlug$ = this.store.select(organizationFeature.selectGeneratedSlug);
+  generatedSlug$ = this.store.select(teamFeature.selectGeneratedSlug);
 
   /**
    * Whether the form's slug value is taken.
    */
-  slugTaken$ = this.store.select(organizationFeature.selectSlugTaken);
+  slugTaken$ = this.store.select(teamFeature.selectSlugTaken);
 
   /**
    * Whether the create action is pending.
    */
-  pendingCreate$ = this.store.select(organizationFeature.selectPendingCreate);
+  pendingCreate$ = this.store.select(teamFeature.selectPendingCreate);
 
   /**
    * Whether the check slug action is pending.
    */
-  pendingCheck$ = this.store.select(organizationFeature.selectPendingCheck);
+  pendingCheck$ = this.store.select(teamFeature.selectPendingCheck);
 
   /**
    * Request HTTP error, if any exist.
@@ -52,12 +49,12 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   constructor(private readonly store: Store) {}
 
   /**
-   * Set up the `name$` subject to generate slug.
+   * Set up the `name$` slug to generate slug.
    */
   ngOnInit(): void {
     this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
       next: (name) => {
-        this.store.dispatch(OrganizationActions.generateSlug({ name }));
+        this.store.dispatch(TeamActions.generateSlug({ name }));
       },
     });
   }
@@ -70,7 +67,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When the dumb UI emits a name event, emit it to the name$ subject.
+   * When the dumb UI emits a name event, emit it to the `name$` subject.
    *
    * @param name The name to dispatch.
    */
@@ -84,7 +81,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    * @param slug The slug to dispatch.
    */
   onSlug(slug: string): void {
-    this.store.dispatch(OrganizationActions.typingSlug({ slug }));
+    this.store.dispatch(TeamActions.typingSlug({ slug }));
   }
 
   /**
@@ -93,18 +90,18 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    * @param slug The slug to dispatch.
    */
   onFormattedSlug(slug: string): void {
-    this.store.dispatch(OrganizationActions.checkSlug({ slug }));
+    this.store.dispatch(TeamActions.checkSlug({ slug }));
   }
 
   /**
-   * When the dumb UI emits a create event, send a create action with the value of the org form.
+   * When the dumb UI emits a create event, send a create action with the value of the team form.
    *
-   * @param createOrgForm The values to send to the backend.
+   * @param createTeamForm The values to send to the backend.
    */
-  onCreate(createOrgForm: Partial<CreateOrgForm>): void {
+  onCreate(createTeamForm: Partial<CreateTeamForm>): void {
     this.store.dispatch(
-      OrganizationActions.createOrg({
-        createOrganizationDto: createOrgFormToDto(createOrgForm),
+      TeamActions.createTeam({
+        createTeamDto: createTeamFormToDto(createTeamForm),
       })
     );
   }
