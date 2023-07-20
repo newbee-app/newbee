@@ -27,7 +27,7 @@ import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
  * The controller that interacts with `TeamMemberEntity`.
  */
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}/:${UrlEndpoint.Team}/${UrlEndpoint.OrgMember}`,
+  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}/:${UrlEndpoint.Team}/${UrlEndpoint.Member}`,
   version: teamMemberVersion,
 })
 export class TeamMemberController {
@@ -109,7 +109,7 @@ export class TeamMemberController {
    * @returns The udpated team member.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${UrlEndpoint.OrgMember}`)
+  @Patch(`:${UrlEndpoint.Member}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -161,7 +161,7 @@ export class TeamMemberController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${UrlEndpoint.OrgMember}`)
+  @Delete(`:${UrlEndpoint.Member}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

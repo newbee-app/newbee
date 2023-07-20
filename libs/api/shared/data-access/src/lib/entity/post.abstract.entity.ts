@@ -1,5 +1,6 @@
 import {
   Entity,
+  Index,
   OptionalProps,
   PrimaryKey,
   Property,
@@ -30,18 +31,21 @@ export abstract class PostEntity implements Post {
    * @inheritdoc
    */
   @Property({ type: 'datetime' })
+  @Index()
   createdAt = new Date();
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'datetime' })
+  @Index()
   updatedAt = this.createdAt;
 
   /**
    * @inheritdoc
    */
   @Property({ type: 'datetime' })
+  @Index()
   markedUpToDateAt = this.createdAt;
 
   /**

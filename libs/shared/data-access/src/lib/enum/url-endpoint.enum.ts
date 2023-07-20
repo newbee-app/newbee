@@ -34,8 +34,8 @@ export enum UrlEndpoint {
   Question = 'question',
   Answer = 'answer',
 
-  // org member endpoints
-  OrgMember = 'member',
+  // member endpoints
+  Member = 'member',
 
   // search endpoints
   Search = 'search',

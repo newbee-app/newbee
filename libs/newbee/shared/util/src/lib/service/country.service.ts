@@ -1,8 +1,8 @@
 import { Inject, Injectable, LOCALE_ID } from '@angular/core';
+import { SupportedLocale } from '@newbee/shared/util';
 import type { CountryCode } from 'libphonenumber-js';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import { Country } from '../class';
-import { SupportedLocale } from '../enum';
 
 /**
  * A global service that helps work with country values.

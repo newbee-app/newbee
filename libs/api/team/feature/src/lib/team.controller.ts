@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  EntityService,
   GenerateSlugDto,
   OrganizationEntity,
   OrgMemberEntity,
@@ -35,7 +36,7 @@ import {
   teamVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { OrgRoleEnum, TeamNoOrg, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamEntity`.
@@ -50,7 +51,10 @@ export class TeamController {
    */
   private readonly logger = new Logger(TeamController.name);
 
-  constructor(private readonly teamService: TeamService) {}
+  constructor(
+    private readonly teamService: TeamService,
+    private readonly entityService: EntityService
+  ) {}
 
   /**
    * The API route for creating a team.
@@ -70,7 +74,7 @@ export class TeamController {
     @Body() createTeamDto: CreateTeamDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity
-  ): Promise<TeamEntity> {
+  ): Promise<TeamNoOrg> {
     this.logger.log(
       `Create team request received from org member slug: ${
         orgMember.slug
@@ -82,7 +86,8 @@ export class TeamController {
     this.logger.log(
       `Team created with ID: ${team.id}, ${JSON.stringify(team)}`
     );
-    return team;
+
+    return await this.entityService.createTeamNoOrg(team);
   }
 
   /**
@@ -160,12 +165,13 @@ export class TeamController {
   async get(
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity
-  ): Promise<TeamEntity> {
+  ): Promise<TeamNoOrg> {
     this.logger.log(
       `Get organization request received for team slug: ${team.slug}, in organization ID: ${organization.id}`
     );
     this.logger.log(`Found team, slug: ${team.slug}, ID: ${team.id}`);
-    return team;
+
+    return await this.entityService.createTeamNoOrg(team);
   }
 
   /**
@@ -203,6 +209,7 @@ export class TeamController {
     this.logger.log(
       `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`
     );
+
     return updatedTeam;
   }
 

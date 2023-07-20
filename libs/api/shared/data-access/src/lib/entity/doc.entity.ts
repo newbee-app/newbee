@@ -43,9 +43,9 @@ export class DocEntity extends PostEntity implements Doc {
   docMarkdoc: string;
 
   /**
-   * The raw markdoc converted into plain text.
+   * @inheritdoc
    */
-  @Property({ type: 'text', hidden: true })
+  @Property({ type: 'text' })
   docTxt: string;
 
   // TODO: add this in later once we figure out what we wanna do with markdoc
