@@ -6,10 +6,13 @@
     >
   </div>
 
-  <p class="opacity-50">
+  <p *ngIf="maintainer; else noMaintainer" class="opacity-50">
     Maintained by
     <a (click)="orgNavigate.emit(maintainer.orgMember.slug)" class="link">{{
       maintainer.user.displayName
     }}</a>
   </p>
+  <ng-template #noMaintainer
+    ><p class="opacity-50">Not actively maintained</p></ng-template
+  >
 </div>

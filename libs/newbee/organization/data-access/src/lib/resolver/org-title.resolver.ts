@@ -12,6 +12,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 /**
  * A resolver to get the title for org pages.
  *
+ * @param route A snapshot of the route the user is trying to navigate to.
  * @returns The name of the selected organization if one has been selected, 'Error' if for some reason one hasn't been.
  */
 export const orgTitleResolver: ResolveFn<string> = (

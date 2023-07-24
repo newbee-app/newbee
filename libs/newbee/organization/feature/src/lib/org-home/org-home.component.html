@@ -1,9 +1,5 @@
-<newbee-navbar>
-  <newbee-error-screen>
-    <newbee-org-searchbar
-      [suggestions]="(suggestions$ | async)!"
-      (search)="search($event)"
-      (searchbar)="searchbar($event)"
-    ></newbee-org-searchbar>
-  </newbee-error-screen>
-</newbee-navbar>
+<newbee-org-searchbar
+  [suggestions]="(suggestions$ | async)!"
+  (search)="search($event)"
+  (searchbar)="searchbar($event)"
+></newbee-org-searchbar>

@@ -7,7 +7,7 @@ import {
   teamVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Team } from '@newbee/shared/util';
+import type { TeamNoOrg } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -19,6 +19,20 @@ export class TeamService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * Sends a request to the API to get a team in the given organization with the given slug.
+   *
+   * @param slug The slug of the team to get.
+   * @param orgSlug The slug of the org to look in.
+   *
+   * @returns An observable containing the team.
+   */
+  get(slug: string, orgSlug: string): Observable<TeamNoOrg> {
+    return this.http.get<TeamNoOrg>(
+      `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}/${slug}`
+    );
+  }
+
+  /**
    * Sends a request to the API to create a team in the given organization with the given information.
    *
    * @param createTeamDto The information for the new team.
@@ -26,8 +40,11 @@ export class TeamService {
    *
    * @returns An observable containing the newly created team.
    */
-  create(createTeamDto: BaseCreateTeamDto, orgSlug: string): Observable<Team> {
-    return this.http.post<Team>(
+  create(
+    createTeamDto: BaseCreateTeamDto,
+    orgSlug: string
+  ): Observable<TeamNoOrg> {
+    return this.http.post<TeamNoOrg>(
       `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}`,
       createTeamDto
     );

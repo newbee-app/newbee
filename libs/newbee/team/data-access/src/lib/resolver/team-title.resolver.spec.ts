@@ -5,20 +5,20 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   initialHttpState,
-  initialOrganizationState,
-  OrganizationActions,
+  initialTeamState,
+  TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   forbiddenError,
-  testOrganization1,
-  testOrgMemberRelation1,
+  testTeam1,
+  testTeamRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { orgTitleResolver } from './org-title.resolver';
+import { teamTitleResolver } from './team-title.resolver';
 
-describe('orgTitleResolver', () => {
+describe('teamTitleResolver', () => {
   let router: Router;
   let store: MockStore;
   let location: Location;
@@ -30,11 +30,17 @@ describe('orgTitleResolver', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `:${UrlEndpoint.Organization}`,
+            path: '',
+            title: 'NewBee',
             component: EmptyComponent,
-            title: orgTitleResolver,
+            children: [
+              {
+                path: `:${UrlEndpoint.Team}`,
+                title: teamTitleResolver,
+                component: EmptyComponent,
+              },
+            ],
           },
-          { path: '', component: EmptyComponent },
         ]),
       ],
       providers: [provideMockStore()],
@@ -57,35 +63,31 @@ describe('orgTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it(`should dispatch getOrg and set title to org's name`, async () => {
+  it(`should dispatch getTeam and set title to team's name appended to existing title`, async () => {
     store.setState({
-      org: {
-        ...initialOrganizationState,
-        selectedOrganization: testOrgMemberRelation1,
+      team: {
+        ...initialTeamState,
+        selectedTeam: testTeamRelation1,
       },
     });
-    await expect(
-      router.navigate([`/${testOrganization1.slug}`])
-    ).resolves.toBeTruthy();
+    await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
     expect(store.dispatch).toBeCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
-      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
+      TeamActions.getTeam({ slug: testTeam1.slug })
     );
-    expect(location.path()).toEqual(`/${testOrganization1.slug}`);
-    expect(title.getTitle()).toEqual(testOrganization1.name);
+    expect(location.path()).toEqual(`/${testTeam1.slug}`);
+    expect(title.getTitle()).toEqual(`${testTeam1.name} - NewBee`);
   });
 
-  it('should set title to Error if store has error instead of selected org', async () => {
+  it(`should set title to Error appended to existing title if store has error instead of selected team`, async () => {
     store.setState({
       http: {
         ...initialHttpState,
         screenError: { status: 403, message: forbiddenError },
       },
     });
-    await expect(
-      router.navigate([`/${testOrganization1.slug}`])
-    ).resolves.toBeTruthy();
-    expect(location.path()).toEqual(`/${testOrganization1.slug}`);
-    expect(title.getTitle()).toEqual('Error');
+    await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/${testTeam1.slug}`);
+    expect(title.getTitle()).toEqual('Error - NewBee');
   });
 });

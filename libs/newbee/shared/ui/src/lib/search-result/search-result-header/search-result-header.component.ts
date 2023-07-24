@@ -21,7 +21,7 @@ export class SearchResultHeaderComponent {
   /**
    * The maintainer of the post.
    */
-  @Input() maintainer!: OrgMemberUser;
+  @Input() maintainer: OrgMemberUser | null = null;
 
   /**
    * Where we should navigate to, relative to the current org.

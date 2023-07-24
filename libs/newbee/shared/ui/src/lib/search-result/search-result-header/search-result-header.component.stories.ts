@@ -12,3 +12,5 @@ export default {
 type Story = StoryObj<SearchResultHeaderComponent>;
 
 export const Primary: Story = {};
+
+export const NoMaintainer: Story = { args: { maintainer: null } };

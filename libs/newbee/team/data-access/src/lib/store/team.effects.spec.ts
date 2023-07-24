@@ -10,6 +10,7 @@ import {
   testOrganization1,
   testOrgMemberRelation1,
   testTeam1,
+  testTeamRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -38,7 +39,8 @@ describe('TeamEffects', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
-            create: jest.fn().mockReturnValue(of(testTeam1)),
+            get: jest.fn().mockReturnValue(of(testTeamRelation1)),
+            create: jest.fn().mockReturnValue(of(testTeamRelation1)),
             checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
             generateSlug: jest
               .fn()
@@ -60,13 +62,40 @@ describe('TeamEffects', () => {
     expect(store).toBeDefined();
   });
 
+  describe('getTeam$', () => {
+    it('should fire getTeamSuccess if successful', () => {
+      actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
+      const expected$ = hot('a', {
+        a: TeamActions.getTeamSuccess({ team: testTeamRelation1 }),
+      });
+      expect(effects.getTeam$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).toBeCalledTimes(1);
+        expect(service.get).toBeCalledWith(
+          testTeam1.slug,
+          testOrganization1.slug
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
+      const expected$ = hot('-');
+      expect(effects.getTeam$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).not.toBeCalled();
+      });
+    });
+  });
+
   describe('createTeam$', () => {
     it('should fire createTeamSuccess if successful', () => {
       actions$ = hot('a', {
         a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
       });
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

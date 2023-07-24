@@ -1,6 +1,6 @@
 import { BaseCreateTeamDto, UrlEndpoint } from '@newbee/shared/data-access';
-import type { Team } from '@newbee/shared/util';
-import { createActionGroup, props } from '@ngrx/store';
+import type { TeamNoOrg } from '@newbee/shared/util';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to teams.
@@ -9,6 +9,16 @@ export const TeamActions = createActionGroup({
   source: UrlEndpoint.Team,
   events: {
     /**
+     * Gets the team associated with the provided slug.
+     */
+    'Get Team': props<{ slug: string }>(),
+
+    /**
+     * Indiciates that a team was successfully retrieved.
+     */
+    'Get Team Success': props<{ team: TeamNoOrg }>(),
+
+    /**
      * Create a team using the given information.
      */
     'Create Team': props<{ createTeamDto: BaseCreateTeamDto }>(),
@@ -16,7 +26,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that a team was successfully created.
      */
-    'Create Team Success': props<{ team: Team }>(),
+    'Create Team Success': props<{ team: TeamNoOrg }>(),
 
     /**
      * Indicates that a user is typing in a slug at the moment.
@@ -42,5 +52,10 @@ export const TeamActions = createActionGroup({
      * Indicates that a slug was successfully generated.
      */
     'Generate Slug Success': props<{ slug: string }>(),
+
+    /**
+     * Reset the value for the selected team.
+     */
+    'Reset Selected Team': emptyProps(),
   },
 });

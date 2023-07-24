@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   catchHttpError,
+  catchHttpScreenError,
   organizationFeature,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
@@ -17,6 +18,26 @@ import { TeamService } from '../team.service';
 
 @Injectable()
 export class TeamEffects {
+  getTeam$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getTeam),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ slug }, selectedOrganization]) => {
+        return this.teamService
+          .get(slug, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map((team) => {
+              return TeamActions.getTeamSuccess({ team });
+            }),
+            catchError(catchHttpScreenError)
+          );
+      })
+    );
+  });
+
   createTeam$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.createTeam),

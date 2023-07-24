@@ -5,6 +5,7 @@ import {
   httpFeature,
   organizationFeature,
   searchFeature,
+  teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ActionReducerMap } from '@ngrx/store';
 
@@ -18,4 +19,5 @@ export const reducers: ActionReducerMap<AppState> = {
   http: httpFeature.reducer,
   org: organizationFeature.reducer,
   search: searchFeature.reducer,
+  team: teamFeature.reducer,
 };

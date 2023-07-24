@@ -11,7 +11,11 @@ import {
   testBaseSlugTakenDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { testOrganization1, testTeam1 } from '@newbee/shared/util';
+import {
+  testOrganization1,
+  testTeam1,
+  testTeamRelation1,
+} from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -32,12 +36,35 @@ describe('TeamService', () => {
     httpController.verify();
   });
 
+  describe('get', () => {
+    it('should send out a get request', (done) => {
+      service.get(testTeam1.slug, testOrganization1.slug).subscribe({
+        next: (team) => {
+          try {
+            expect(team).toEqual(testTeamRelation1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testTeamRelation1);
+    });
+  });
+
   describe('create', () => {
     it('should send out a post request', (done) => {
       service.create(testBaseCreateTeamDto1, testOrganization1.slug).subscribe({
         next: (team) => {
           try {
-            expect(team).toEqual(testTeam1);
+            expect(team).toEqual(testTeamRelation1);
             done();
           } catch (err) {
             done(err);
@@ -52,7 +79,7 @@ describe('TeamService', () => {
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
 
-      req.flush(testTeam1);
+      req.flush(testTeamRelation1);
     });
   });
 
