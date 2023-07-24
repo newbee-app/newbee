@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
   testOrganization1,
@@ -25,6 +27,7 @@ describe('TeamEffects', () => {
   let effects: TeamEffects;
   let service: TeamService;
   let store: MockStore;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,12 +50,19 @@ describe('TeamEffects', () => {
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
           }),
         },
+        {
+          provide: Router,
+          useValue: createMock<Router>({
+            navigate: jest.fn().mockResolvedValue(true),
+          }),
+        },
       ],
     });
 
     effects = TestBed.inject(TeamEffects);
     service = TestBed.inject(TeamService);
     store = TestBed.inject(MockStore);
+    router = TestBed.inject(Router);
   });
 
   it('should be defined', () => {
@@ -60,6 +70,7 @@ describe('TeamEffects', () => {
     expect(effects).toBeDefined();
     expect(service).toBeDefined();
     expect(store).toBeDefined();
+    expect(router).toBeDefined();
   });
 
   describe('getTeam$', () => {
@@ -116,6 +127,24 @@ describe('TeamEffects', () => {
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('createTeamSuccess$', () => {
+    it('should navigate to team', () => {
+      actions$ = hot('a', {
+        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
+      });
+      expect(effects.createTeamSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith([
+          `/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeamRelation1.team.slug}`,
+        ]);
       });
     });
   });
