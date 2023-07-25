@@ -5,6 +5,7 @@ import {
   testOrganizationEntity1,
   testOrgMemberEntity1,
   testTeamEntity1,
+  testTeamMemberEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
@@ -62,6 +63,23 @@ describe('TeamController', () => {
     expect(entityService).toBeDefined();
   });
 
+  describe('create', () => {
+    it('should create a team', async () => {
+      await expect(
+        controller.create(
+          testBaseCreateTeamDto1,
+          testOrgMemberEntity1,
+          testOrganizationEntity1
+        )
+      ).resolves.toEqual(testTeamEntity1);
+      expect(service.create).toBeCalledTimes(1);
+      expect(service.create).toBeCalledWith(
+        testBaseCreateTeamDto1,
+        testOrgMemberEntity1
+      );
+    });
+  });
+
   describe('checkSlug', () => {
     it('should return true if slug is taken, false if not', async () => {
       await expect(
@@ -112,31 +130,28 @@ describe('TeamController', () => {
     });
   });
 
-  describe('calls createTeamNoOrg', () => {
-    afterEach(() => {
+  describe('get', () => {
+    it('should find and return a team and teamMember', async () => {
+      await expect(
+        controller.get(
+          testOrganizationEntity1,
+          testTeamEntity1,
+          testTeamMemberEntity1
+        )
+      ).resolves.toEqual({
+        team: testTeamRelation1,
+        teamMember: testTeamMemberEntity1,
+      });
       expect(entityService.createTeamNoOrg).toBeCalledTimes(1);
       expect(entityService.createTeamNoOrg).toBeCalledWith(testTeamEntity1);
     });
 
-    it('create should create a team', async () => {
+    it('should return null for teamMember if user is not a teamMember', async () => {
       await expect(
-        controller.create(
-          testBaseCreateTeamDto1,
-          testOrgMemberEntity1,
-          testOrganizationEntity1
-        )
-      ).resolves.toEqual(testTeamRelation1);
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
-        testBaseCreateTeamDto1,
-        testOrgMemberEntity1
-      );
-    });
-
-    it('get should find and return a team', async () => {
-      await expect(
-        controller.get(testOrganizationEntity1, testTeamEntity1)
-      ).resolves.toEqual(testTeamRelation1);
+        controller.get(testOrganizationEntity1, testTeamEntity1, undefined)
+      ).resolves.toEqual({ team: testTeamRelation1, teamMember: null });
+      expect(entityService.createTeamNoOrg).toBeCalledTimes(1);
+      expect(entityService.createTeamNoOrg).toBeCalledWith(testTeamEntity1);
     });
   });
 

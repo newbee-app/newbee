@@ -58,6 +58,14 @@ export type OrgMemberNoUser = Omit<OrgMemberRelation, 'user'>;
 export type OrgMemberNoOrg = Omit<OrgMemberRelation, 'organization'>;
 
 /**
+ * OrgMemberRelation without user or org information.
+ */
+export type OrgMemberNoUserOrg = Omit<
+  OrgMemberRelation,
+  'user' | 'organization'
+>;
+
+/**
  * OrgMemberRelation with only user information.
  */
 export type OrgMemberUser = Pick<OrgMemberRelation, 'orgMember' | 'user'>;

@@ -9,13 +9,10 @@ import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
+  testBaseTeamAndMemberDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import {
-  testOrganization1,
-  testTeam1,
-  testTeamRelation1,
-} from '@newbee/shared/util';
+import { testOrganization1, testTeam1 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -41,7 +38,7 @@ describe('TeamService', () => {
       service.get(testTeam1.slug, testOrganization1.slug).subscribe({
         next: (team) => {
           try {
-            expect(team).toEqual(testTeamRelation1);
+            expect(team).toEqual(testBaseTeamAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -55,7 +52,7 @@ describe('TeamService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testTeamRelation1);
+      req.flush(testBaseTeamAndMemberDto1);
     });
   });
 
@@ -64,7 +61,7 @@ describe('TeamService', () => {
       service.create(testBaseCreateTeamDto1, testOrganization1.slug).subscribe({
         next: (team) => {
           try {
-            expect(team).toEqual(testTeamRelation1);
+            expect(team).toEqual(testTeam1);
             done();
           } catch (err) {
             done(err);
@@ -79,7 +76,7 @@ describe('TeamService', () => {
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
 
-      req.flush(testTeamRelation1);
+      req.flush(testTeam1);
     });
   });
 

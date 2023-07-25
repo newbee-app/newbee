@@ -6,13 +6,13 @@ import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
+  testBaseTeamAndMemberDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
   testOrganization1,
   testOrgMemberRelation1,
   testTeam1,
-  testTeamRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -42,8 +42,8 @@ describe('TeamEffects', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
-            get: jest.fn().mockReturnValue(of(testTeamRelation1)),
-            create: jest.fn().mockReturnValue(of(testTeamRelation1)),
+            get: jest.fn().mockReturnValue(of(testBaseTeamAndMemberDto1)),
+            create: jest.fn().mockReturnValue(of(testTeam1)),
             checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
             generateSlug: jest
               .fn()
@@ -77,7 +77,9 @@ describe('TeamEffects', () => {
     it('should fire getTeamSuccess if successful', () => {
       actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
       const expected$ = hot('a', {
-        a: TeamActions.getTeamSuccess({ team: testTeamRelation1 }),
+        a: TeamActions.getTeamSuccess({
+          teamAndMemberDto: testBaseTeamAndMemberDto1,
+        }),
       });
       expect(effects.getTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -106,7 +108,7 @@ describe('TeamEffects', () => {
         a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
+        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
       });
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -134,16 +136,19 @@ describe('TeamEffects', () => {
   describe('createTeamSuccess$', () => {
     it('should navigate to team', () => {
       actions$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
+        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeamRelation1 }),
+        a: [
+          TeamActions.createTeamSuccess({ team: testTeam1 }),
+          testOrgMemberRelation1,
+        ],
       });
       expect(effects.createTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([
-          `/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeamRelation1.team.slug}`,
+          `/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`,
         ]);
       });
     });

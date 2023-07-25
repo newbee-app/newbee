@@ -16,6 +16,11 @@ export class TeamViewComponent {
    */
   selectedTeam$ = this.store.select(teamFeature.selectSelectedTeam);
 
+  /**
+   * The user's role in the team, if they have any.
+   */
+  teamMember$ = this.store.select(teamFeature.selectTeamMember);
+
   constructor(
     private readonly store: Store,
     private readonly router: Router,

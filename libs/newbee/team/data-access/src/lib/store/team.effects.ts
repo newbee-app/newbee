@@ -31,8 +31,8 @@ export class TeamEffects {
         return this.teamService
           .get(slug, selectedOrganization?.organization.slug as string)
           .pipe(
-            map((team) => {
-              return TeamActions.getTeamSuccess({ team });
+            map((teamAndMemberDto) => {
+              return TeamActions.getTeamSuccess({ teamAndMemberDto });
             }),
             catchError(catchHttpScreenError)
           );
@@ -75,7 +75,7 @@ export class TeamEffects {
           await this.router.navigate([
             `/${selectedOrganization?.organization.slug as string}/${
               UrlEndpoint.Team
-            }/${team.team.slug}`,
+            }/${team.slug}`,
           ]);
         })
       );
