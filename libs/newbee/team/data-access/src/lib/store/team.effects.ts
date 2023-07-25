@@ -1,10 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   catchHttpError,
+  catchHttpScreenError,
   organizationFeature,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
+import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   nameIsNotEmpty,
   slugIsNotEmpty,
@@ -12,11 +15,31 @@ import {
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, switchMap } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { TeamService } from '../team.service';
 
 @Injectable()
 export class TeamEffects {
+  getTeam$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getTeam),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization)
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ slug }, selectedOrganization]) => {
+        return this.teamService
+          .get(slug, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map((teamAndMemberDto) => {
+              return TeamActions.getTeamSuccess({ teamAndMemberDto });
+            }),
+            catchError(catchHttpScreenError)
+          );
+      })
+    );
+  });
+
   createTeam$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.createTeam),
@@ -39,6 +62,26 @@ export class TeamEffects {
       })
     );
   });
+
+  createTeamSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TeamActions.createTeamSuccess),
+        concatLatestFrom(() =>
+          this.store.select(organizationFeature.selectSelectedOrganization)
+        ),
+        filter(([, selectedOrganization]) => !!selectedOrganization),
+        tap(async ([{ team }, selectedOrganization]) => {
+          await this.router.navigate([
+            `/${selectedOrganization?.organization.slug as string}/${
+              UrlEndpoint.Team
+            }/${team.slug}`,
+          ]);
+        })
+      );
+    },
+    { dispatch: false }
+  );
 
   checkSlug$ = createEffect(() => {
     return this.actions$.pipe(
@@ -86,7 +129,8 @@ export class TeamEffects {
   constructor(
     private readonly actions$: Actions,
     private readonly teamService: TeamService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly router: Router
   ) {}
 
   /**

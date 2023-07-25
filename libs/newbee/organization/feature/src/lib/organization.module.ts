@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import {
   OrganizationEffects,
   organizationFeature,
@@ -11,7 +10,6 @@ import {
   InviteMemberComponent,
   OrgSearchbarComponent,
 } from '@newbee/newbee/organization/ui';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrgEditComponent } from './org-edit';
@@ -24,11 +22,9 @@ import { OrganizationRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(organizationFeature),
     EffectsModule.forFeature([OrganizationEffects]),
-    NavbarComponent,
     OrgSearchbarComponent,
     EditOrgComponent,
     InviteMemberComponent,
-    ErrorScreenComponent,
     OrganizationRoutingModule,
   ],
   providers: [OrganizationService],

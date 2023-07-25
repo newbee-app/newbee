@@ -3,6 +3,7 @@ import type { CookieState } from './cookie';
 import type { HttpState } from './http';
 import type { OrganizationState } from './organization';
 import type { SearchState } from './search';
+import { TeamState } from './team';
 
 /**
  * The global app state.
@@ -14,4 +15,5 @@ export interface AppState {
   http: HttpState;
   org: OrganizationState;
   search: SearchState;
+  team: TeamState;
 }

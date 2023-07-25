@@ -9,11 +9,13 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  EntityService,
   GenerateSlugDto,
   OrganizationEntity,
   OrgMemberEntity,
   SlugDto,
   TeamEntity,
+  TeamMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -22,6 +24,7 @@ import {
   OrgMember,
   Role,
   Team,
+  TeamMember,
   User,
 } from '@newbee/api/shared/util';
 import {
@@ -32,6 +35,7 @@ import {
 import {
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
+  BaseTeamAndMemberDto,
   teamVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
@@ -50,7 +54,10 @@ export class TeamController {
    */
   private readonly logger = new Logger(TeamController.name);
 
-  constructor(private readonly teamService: TeamService) {}
+  constructor(
+    private readonly teamService: TeamService,
+    private readonly entityService: EntityService
+  ) {}
 
   /**
    * The API route for creating a team.
@@ -159,13 +166,17 @@ export class TeamController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
-  ): Promise<TeamEntity> {
+    @Team() team: TeamEntity,
+    @TeamMember() teamMember: TeamMemberEntity | undefined
+  ): Promise<BaseTeamAndMemberDto> {
     this.logger.log(
-      `Get organization request received for team slug: ${team.slug}, in organization ID: ${organization.id}`
+      `Get team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`
     );
     this.logger.log(`Found team, slug: ${team.slug}, ID: ${team.id}`);
-    return team;
+    return {
+      team: await this.entityService.createTeamNoOrg(team),
+      teamMember: teamMember ?? null,
+    };
   }
 
   /**
@@ -203,6 +214,7 @@ export class TeamController {
     this.logger.log(
       `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`
     );
+
     return updatedTeam;
   }
 

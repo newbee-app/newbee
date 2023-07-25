@@ -113,13 +113,16 @@
               <ng-container
                 *ngIf="!editingAuthenticators.has(authenticator.id)"
               >
-                <span *ngIf="!editAuthenticatorPending.get(authenticator.id)">{{
-                  authenticator.name
-                }}</span>
                 <span
-                  *ngIf="editAuthenticatorPending.get(authenticator.id)"
-                  class="loading loading-dots"
-                ></span>
+                  *ngIf="
+                    !editAuthenticatorPending.get(authenticator.id);
+                    else editAuthenticatorLoading
+                  "
+                  >{{ authenticator.name }}</span
+                >
+                <ng-template #editAuthenticatorLoading
+                  ><span class="loading loading-dots"></span
+                ></ng-template>
 
                 <button
                   type="button"
@@ -201,15 +204,17 @@
             <td>{{ authenticator.id }}</td>
             <td>
               <a
-                *ngIf="!deleteAuthenticatorPending.get(authenticator.id)"
+                *ngIf="
+                  !deleteAuthenticatorPending.get(authenticator.id);
+                  else deleteAuthenticatorLoading
+                "
                 (click)="deleteAuthenticator.emit(authenticator.id)"
                 class="text-error cursor-pointer underline"
                 >DELETE</a
               >
-              <span
-                *ngIf="deleteAuthenticatorPending.get(authenticator.id)"
-                class="loading loading-dots"
-              ></span>
+              <ng-template #deleteAuthenticatorLoading
+                ><span class="loading loading-dots"></span
+              ></ng-template>
             </td>
           </tr>
         </tbody>

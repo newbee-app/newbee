@@ -2,12 +2,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import {
   AuthenticatorEffects,
   CookieEffects,
   RouterEffects,
   SearchEffects,
 } from '@newbee/newbee/shared/data-access';
+import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
@@ -50,6 +52,10 @@ import { AppRoutingModule } from './routing';
     ]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
+
+    // component modules for `AppComponent`
+    NavbarComponent,
+    ErrorScreenComponent,
 
     // routing module
     AppRoutingModule,

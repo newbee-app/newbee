@@ -1,0 +1,6 @@
+<newbee-view-team
+  [team]="(selectedTeam$ | async)!"
+  [teamMember]="teamMember$ | async"
+  (orgNavigate)="onOrgNavigate($event)"
+  (teamNavigate)="onTeamNavigate($event)"
+></newbee-view-team>

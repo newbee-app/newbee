@@ -10,6 +10,11 @@ export interface Doc extends Post {
    */
   docMarkdoc: string;
 
+  /**
+   * The raw markdoc converted into plain text.
+   */
+  docTxt: string;
+
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // /**
   //  * The raw markdoc of the doc rendered into HTML, for display on the frontend.

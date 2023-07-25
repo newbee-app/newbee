@@ -33,7 +33,7 @@ describe('OrgMemberController', () => {
         {
           provide: EntityService,
           useValue: createMock<EntityService>({
-            createOrgMemberRelation: jest
+            createOrgMemberNoOrg: jest
               .fn()
               .mockResolvedValue(testOrgMemberRelation1),
           }),
@@ -57,8 +57,8 @@ describe('OrgMemberController', () => {
       await expect(
         controller.getBySlug(testOrgMemberEntity1, testOrganizationEntity1)
       ).resolves.toEqual(testOrgMemberRelation1);
-      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberRelation).toBeCalledWith(
+      expect(entityService.createOrgMemberNoOrg).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberNoOrg).toBeCalledWith(
         testOrgMemberEntity1
       );
     });
@@ -73,16 +73,12 @@ describe('OrgMemberController', () => {
           testOrgMemberEntity1,
           testOrganizationEntity1
         )
-      ).resolves.toEqual(testOrgMemberRelation1);
+      ).resolves.toEqual(testUpdatedOrgMember);
       expect(service.updateRole).toBeCalledTimes(1);
       expect(service.updateRole).toBeCalledWith(
         testOrgMemberEntity1,
         testBaseUpdateOrgMemberDto1.role,
         testOrgMemberEntity1.role
-      );
-      expect(entityService.createOrgMemberRelation).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberRelation).toBeCalledWith(
-        testUpdatedOrgMember
       );
     });
   });

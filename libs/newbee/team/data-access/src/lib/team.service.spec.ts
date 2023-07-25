@@ -9,6 +9,7 @@ import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
+  testBaseTeamAndMemberDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { testOrganization1, testTeam1 } from '@newbee/shared/util';
@@ -30,6 +31,29 @@ describe('TeamService', () => {
 
   afterEach(() => {
     httpController.verify();
+  });
+
+  describe('get', () => {
+    it('should send out a get request', (done) => {
+      service.get(testTeam1.slug, testOrganization1.slug).subscribe({
+        next: (team) => {
+          try {
+            expect(team).toEqual(testBaseTeamAndMemberDto1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testBaseTeamAndMemberDto1);
+    });
   });
 
   describe('create', () => {

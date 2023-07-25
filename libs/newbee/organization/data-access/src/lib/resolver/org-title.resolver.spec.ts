@@ -79,7 +79,7 @@ describe('orgTitleResolver', () => {
     store.setState({
       http: {
         ...initialHttpState,
-        screenError: { status: 403, messages: { misc: forbiddenError } },
+        screenError: { status: 403, message: forbiddenError },
       },
     });
     await expect(

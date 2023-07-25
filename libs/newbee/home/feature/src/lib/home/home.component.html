@@ -1,9 +1,7 @@
-<newbee-navbar>
-  <div class="mt-16">
-    <newbee-no-org
-      *ngIf="noOrg"
-      (navigateToLink)="navigateToLink($event)"
-    ></newbee-no-org>
-    <newbee-no-org-selected *ngIf="!noOrg"></newbee-no-org-selected>
-  </div>
-</newbee-navbar>
+<newbee-no-org
+  *ngIf="noOrg; else noOrgSelected"
+  (navigateToLink)="navigateToLink($event)"
+></newbee-no-org>
+<ng-template #noOrgSelected
+  ><newbee-no-org-selected></newbee-no-org-selected
+></ng-template>

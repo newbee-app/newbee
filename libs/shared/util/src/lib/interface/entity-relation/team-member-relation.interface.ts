@@ -40,3 +40,11 @@ export interface TeamMemberRelation {
  * TeamMemberRelation with only team-related information.
  */
 export type TeamMemberAndTeam = Pick<TeamMemberRelation, 'teamMember' | 'team'>;
+
+/**
+ * TeamMemberRelation with only user and org member-related information.
+ */
+export type TeamMemberUserOrgMember = Pick<
+  TeamMemberRelation,
+  'teamMember' | 'user' | 'orgMember'
+>;

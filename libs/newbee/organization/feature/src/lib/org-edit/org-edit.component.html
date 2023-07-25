@@ -1,18 +1,14 @@
-<newbee-navbar>
-  <newbee-error-screen>
-    <newbee-edit-org
-      [orgMember]="(selectedOrganization$ | async)!"
-      [slugTaken]="(slugTaken$ | async)!"
-      [editPending]="(editPending$ | async)!"
-      [editSlugPending]="(editSlugPending$ | async)!"
-      [checkPending]="(checkPending$ | async)!"
-      [deletePending]="(deletePending$ | async)!"
-      [httpClientError]="(httpClientError$ | async)!"
-      (slug)="onSlug($event)"
-      (formattedSlug)="onFormattedSlug($event)"
-      (edit)="onEdit($event)"
-      (editSlug)="onEditSlug($event)"
-      (delete)="onDelete()"
-    ></newbee-edit-org>
-  </newbee-error-screen>
-</newbee-navbar>
+<newbee-edit-org
+  [orgMember]="(selectedOrganization$ | async)!"
+  [slugTaken]="(slugTaken$ | async)!"
+  [editPending]="(editPending$ | async)!"
+  [editSlugPending]="(editSlugPending$ | async)!"
+  [checkPending]="(checkPending$ | async)!"
+  [deletePending]="(deletePending$ | async)!"
+  [httpClientError]="(httpClientError$ | async)!"
+  (slug)="onSlug($event)"
+  (formattedSlug)="onFormattedSlug($event)"
+  (edit)="onEdit($event)"
+  (editSlug)="onEditSlug($event)"
+  (delete)="onDelete()"
+></newbee-edit-org>

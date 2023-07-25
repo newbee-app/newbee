@@ -10,6 +10,7 @@ import { OrgRoleEnum, TeamRoleEnum } from '../enum';
 import type {
   Authenticator,
   Doc,
+  DocRelation,
   Organization,
   OrgMember,
   OrgMemberInvite,
@@ -17,9 +18,11 @@ import type {
   OrgMemberRelation,
   Post,
   Qna,
+  QnaRelation,
   Team,
   TeamMember,
   TeamMemberRelation,
+  TeamRelation,
   User,
   UserChallenge,
   UserInvites,
@@ -130,7 +133,7 @@ export const testTeamMember1: TeamMember = {
  */
 export const testOrgMember1: OrgMember = {
   role: OrgRoleEnum.Owner,
-  slug: 'slug',
+  slug: 'test-org-member-1-slug',
 };
 
 /**
@@ -142,8 +145,8 @@ export const testPost1: Post = {
   updatedAt: testNow1,
   markedUpToDateAt: testNow1,
   upToDate: true,
-  title: 'Title',
-  slug: 'slug',
+  title: 'This is the title of a post',
+  slug: 'test-post-1-slug',
 };
 
 /**
@@ -152,7 +155,12 @@ export const testPost1: Post = {
  */
 export const testDoc1: Doc = {
   ...testPost1,
-  docMarkdoc: 'docMarkdoc',
+  title: 'Vacation and PTO policy',
+  slug: 'test-doc-1-slug',
+  docMarkdoc:
+    'All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.',
+  docTxt:
+    'All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedHtml: 'renderedhtml',
 };
@@ -163,11 +171,14 @@ export const testDoc1: Doc = {
  */
 export const testQna1: Qna = {
   ...testPost1,
-  questionMarkdoc: 'questionMarkdoc',
+  title: 'What is our PTO policy?',
+  slug: 'test-qna-1-slug',
+  questionMarkdoc: 'More specifically days I can use to go on vacations.',
+  questionTxt: 'More specifically days I can use to go on vacations.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedQuestion: 'renderedquestion',
-  answerMarkdoc: 'answerMarkdoc',
-  answerTxt: 'answerTxt',
+  answerMarkdoc: 'All employees are entitled to 20 days of PTO per year.',
+  answerTxt: 'All employees are entitled to 20 days of PTO per year.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedAnswer: 'renderedanswer',
 };
@@ -274,11 +285,47 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
   user: testUser1,
-  teams: [testTeamMemberRelation1],
-  createdDocs: [testDoc1],
-  maintainedDocs: [testDoc1],
-  createdQnas: [testQna1],
-  maintainedQnas: [testQna1],
+  teams: { sample: [testTeamMemberRelation1], total: 1 },
+  createdDocs: { sample: [testDoc1], total: 1 },
+  maintainedDocs: { sample: [testDoc1], total: 1 },
+  createdQnas: { sample: [testQna1], total: 1 },
+  maintainedQnas: { sample: [testQna1], total: 1 },
+};
+
+/**
+ * An example instance of `DocRelation`.
+ * Strictly for use in testing.
+ */
+export const testDocRelation1: DocRelation = {
+  doc: testDoc1,
+  organization: testOrganization1,
+  team: testTeam1,
+  creator: testOrgMemberRelation1,
+  maintainer: testOrgMemberRelation1,
+};
+
+/**
+ * An example instance of `QnaRelation`.
+ * Strictly for use in testing.
+ */
+export const testQnaRelation1: QnaRelation = {
+  qna: testQna1,
+  organization: testOrganization1,
+  team: testTeam1,
+  creator: testOrgMemberRelation1,
+  maintainer: testOrgMemberRelation1,
+};
+
+/**
+ * An example instance of `TeamRelation`.
+ * Strictly for use in testing.
+ */
+export const testTeamRelation1: TeamRelation = {
+  team: testTeam1,
+  organization: testOrganization1,
+  docs: { sample: [testDocRelation1], total: 1 },
+  qnas: { sample: [testQnaRelation1], total: 1 },
+  teamMembers: { sample: [testTeamMemberRelation1], total: 1 },
 };
 
 /**

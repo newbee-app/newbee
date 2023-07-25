@@ -6,6 +6,13 @@ import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { NavbarComponent } from './navbar.component';
 
+jest.mock('@floating-ui/dom', () => ({
+  __esModule: true,
+  autoUpdate: jest.fn().mockReturnValue(() => {
+    return;
+  }),
+}));
+
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
@@ -16,7 +23,7 @@ describe('NavbarComponent', () => {
     await TestBed.configureTestingModule({
       imports: [NavbarComponent],
       providers: [
-        provideMockStore(),
+        provideMockStore({ initialState: { auth: { user: null } } }),
         {
           provide: Router,
           useValue: createMock<Router>({
@@ -28,6 +35,7 @@ describe('NavbarComponent', () => {
 
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
+
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
 
@@ -65,19 +73,10 @@ describe('NavbarComponent', () => {
   });
 
   describe('logout', () => {
-    it('should dispatch logout', (done) => {
+    it('should dispatch logout', () => {
       component.logout();
-      store.scannedActions$.subscribe({
-        next: (scannedAction) => {
-          try {
-            expect(scannedAction).toEqual(AuthActions.logout());
-            done();
-          } catch (err) {
-            done(err);
-          }
-        },
-        error: done.fail,
-      });
+      expect(store.dispatch).toBeCalledTimes(1);
+      expect(store.dispatch).toBeCalledWith(AuthActions.logout());
     });
   });
 });

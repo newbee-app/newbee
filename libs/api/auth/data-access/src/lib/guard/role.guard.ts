@@ -90,7 +90,7 @@ export class RoleGuard implements CanActivate {
       return result;
     }
 
-    const orgMemberSlug: string | undefined = params[UrlEndpoint.OrgMember];
+    const orgMemberSlug: string | undefined = params[UrlEndpoint.Member];
     const teamSlug: string | undefined = params[UrlEndpoint.Team]
       ? params[UrlEndpoint.Team]
       : query[UrlEndpoint.Team];

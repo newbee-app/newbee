@@ -9,7 +9,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { translator } from '@newbee/api/shared/util';
-import { OrgMember, OrgRoleEnum } from '@newbee/shared/util';
+import { ascOrgRoleEnum, OrgMember, OrgRoleEnum } from '@newbee/shared/util';
 import { DocEntity } from './doc.entity';
 import { OrganizationEntity } from './organization.entity';
 import { QnaEntity } from './qna.entity';
@@ -48,7 +48,10 @@ export class OrgMemberEntity implements OrgMember {
   /**
    * @inheritdoc
    */
-  @Enum(() => OrgRoleEnum)
+  @Enum({
+    items: () => OrgRoleEnum,
+    customOrder: ascOrgRoleEnum,
+  })
   role: OrgRoleEnum;
 
   /**

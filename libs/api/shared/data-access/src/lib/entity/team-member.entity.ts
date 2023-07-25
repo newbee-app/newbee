@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { TeamMember, TeamRoleEnum } from '@newbee/shared/util';
+import { ascTeamRoleEnum, TeamMember, TeamRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
 
@@ -25,7 +25,10 @@ export class TeamMemberEntity implements TeamMember {
   /**
    * @inheritdoc
    */
-  @Enum(() => TeamRoleEnum)
+  @Enum({
+    items: () => TeamRoleEnum,
+    customOrder: ascTeamRoleEnum,
+  })
   role: TeamRoleEnum;
 
   /**

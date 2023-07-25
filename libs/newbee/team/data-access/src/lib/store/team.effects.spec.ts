@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
+  testBaseTeamAndMemberDto1,
+  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
   testOrganization1,
@@ -24,6 +27,7 @@ describe('TeamEffects', () => {
   let effects: TeamEffects;
   let service: TeamService;
   let store: MockStore;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,11 +42,18 @@ describe('TeamEffects', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
+            get: jest.fn().mockReturnValue(of(testBaseTeamAndMemberDto1)),
             create: jest.fn().mockReturnValue(of(testTeam1)),
             checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
             generateSlug: jest
               .fn()
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
+          }),
+        },
+        {
+          provide: Router,
+          useValue: createMock<Router>({
+            navigate: jest.fn().mockResolvedValue(true),
           }),
         },
       ],
@@ -51,6 +62,7 @@ describe('TeamEffects', () => {
     effects = TestBed.inject(TeamEffects);
     service = TestBed.inject(TeamService);
     store = TestBed.inject(MockStore);
+    router = TestBed.inject(Router);
   });
 
   it('should be defined', () => {
@@ -58,6 +70,36 @@ describe('TeamEffects', () => {
     expect(effects).toBeDefined();
     expect(service).toBeDefined();
     expect(store).toBeDefined();
+    expect(router).toBeDefined();
+  });
+
+  describe('getTeam$', () => {
+    it('should fire getTeamSuccess if successful', () => {
+      actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
+      const expected$ = hot('a', {
+        a: TeamActions.getTeamSuccess({
+          teamAndMemberDto: testBaseTeamAndMemberDto1,
+        }),
+      });
+      expect(effects.getTeam$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).toBeCalledTimes(1);
+        expect(service.get).toBeCalledWith(
+          testTeam1.slug,
+          testOrganization1.slug
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
+      const expected$ = hot('-');
+      expect(effects.getTeam$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).not.toBeCalled();
+      });
+    });
   });
 
   describe('createTeam$', () => {
@@ -87,6 +129,27 @@ describe('TeamEffects', () => {
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('createTeamSuccess$', () => {
+    it('should navigate to team', () => {
+      actions$ = hot('a', {
+        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+      });
+      const expected$ = hot('a', {
+        a: [
+          TeamActions.createTeamSuccess({ team: testTeam1 }),
+          testOrgMemberRelation1,
+        ],
+      });
+      expect(effects.createTeamSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith([
+          `/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`,
+        ]);
       });
     });
   });

@@ -1,10 +1,6 @@
-<newbee-navbar>
-  <newbee-error-screen>
-    <newbee-invite-member
-      [invitePending]="(invitePending$ | async)!"
-      [invitedUser]="(invitedUser$ | async)!"
-      [httpClientError]="(httpClientError$ | async)!"
-      (invite)="onInvite($event)"
-    ></newbee-invite-member>
-  </newbee-error-screen>
-</newbee-navbar>
+<newbee-invite-member
+  [invitePending]="(invitePending$ | async)!"
+  [invitedUser]="(invitedUser$ | async)!"
+  [httpClientError]="(httpClientError$ | async)!"
+  (invite)="onInvite($event)"
+></newbee-invite-member>

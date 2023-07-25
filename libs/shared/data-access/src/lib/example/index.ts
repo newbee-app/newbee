@@ -5,12 +5,14 @@ import {
   testDoc1,
   testOrganization1,
   testOrgMember1,
+  testOrgMemberRelation1,
   testPublicKeyCredentialCreationOptions1,
   testQna1,
   testRegistrationResponse1,
   testTeam1,
   testTeamMember1,
   testTeamQueryResult1,
+  testTeamRelation1,
   testUser1,
   testUser2,
   testUserRelation1,
@@ -29,6 +31,7 @@ import {
   BaseGenerateSlugDto,
   BaseMagicLinkLoginDto,
   BaseNameDto,
+  BaseOrgAndMemberDto,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseRegistrationResponseDto,
@@ -36,6 +39,7 @@ import {
   BaseSlugTakenDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
+  BaseTeamAndMemberDto,
   BaseTeamSlugDto,
   BaseTokenDto,
   BaseUpdateAnswerDto,
@@ -126,6 +130,15 @@ export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
 };
 
 /**
+ * An example instance of BaseOrgAndMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseOrgAndMemberDto1: BaseOrgAndMemberDto = {
+  organization: testOrganization1,
+  orgMember: testOrgMemberRelation1,
+};
+
+/**
  * An example instance of BaseUpdateOrganizationDto.
  * Strictly for use in testing.
  */
@@ -141,6 +154,15 @@ export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
 export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
   name: testTeam1.name,
   slug: testTeam1.slug,
+};
+
+/**
+ * An example instance of BaseTeamAndMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseTeamAndMemberDto1: BaseTeamAndMemberDto = {
+  team: testTeamRelation1,
+  teamMember: testTeamMember1,
 };
 
 /**

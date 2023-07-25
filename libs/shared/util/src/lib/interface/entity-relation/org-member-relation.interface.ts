@@ -1,3 +1,4 @@
+import { Sample } from '../../type';
 import type { Doc, Organization, OrgMember, Qna, User } from '../entity';
 import type { TeamMemberAndTeam } from './team-member-relation.interface';
 
@@ -23,30 +24,48 @@ export interface OrgMemberRelation {
   /**
    * The teams the org member is a part of, and the role they hold in each team.
    */
-  teams: TeamMemberAndTeam[];
+  teams: Sample<TeamMemberAndTeam>;
 
   /**
    * The docs the org member created.
    */
-  createdDocs: Doc[];
+  createdDocs: Sample<Doc>;
 
   /**
    * The docs the org member maintains.
    */
-  maintainedDocs: Doc[];
+  maintainedDocs: Sample<Doc>;
 
   /**
    * The qnas the org member created.
    */
-  createdQnas: Qna[];
+  createdQnas: Sample<Qna>;
 
   /**
    * The qnas the org member maintains.
    */
-  maintainedQnas: Qna[];
+  maintainedQnas: Sample<Qna>;
 }
 
 /**
  * OrgMemberRelation without user information.
  */
 export type OrgMemberNoUser = Omit<OrgMemberRelation, 'user'>;
+
+/**
+ * OrgMemberRelation without org information.
+ */
+export type OrgMemberNoOrg = Omit<OrgMemberRelation, 'organization'>;
+
+/**
+ * OrgMemberRelation without user or org information.
+ */
+export type OrgMemberNoUserOrg = Omit<
+  OrgMemberRelation,
+  'user' | 'organization'
+>;
+
+/**
+ * OrgMemberRelation with only user information.
+ */
+export type OrgMemberUser = Pick<OrgMemberRelation, 'orgMember' | 'user'>;

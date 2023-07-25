@@ -1,19 +1,15 @@
-<newbee-navbar>
-  <newbee-error-screen>
-    <newbee-edit-user
-      [user]="(user$ | async)!"
-      [authenticators]="(authenticators$ | async) ?? []"
-      [editPending]="(editPending$ | async)!"
-      [addAuthenticatorPending]="(addAuthenticatorsPending$ | async)!"
-      [editAuthenticatorPending]="(editAuthenticatorPending$ | async)!"
-      [deleteAuthenticatorPending]="(deleteAuthenticatorPending$ | async)!"
-      [deletePending]="(deletePending$ | async)!"
-      [httpClientError]="(httpClientError$ | async)!"
-      (edit)="onEdit($event)"
-      (addAuthenticator)="onAddAuthenticator()"
-      (editAuthenticator)="onEditAuthenticator($event)"
-      (deleteAuthenticator)="onDeleteAuthenticator($event)"
-      (delete)="onDelete()"
-    ></newbee-edit-user>
-  </newbee-error-screen>
-</newbee-navbar>
+<newbee-edit-user
+  [user]="(user$ | async)!"
+  [authenticators]="(authenticators$ | async) ?? []"
+  [editPending]="(editPending$ | async)!"
+  [addAuthenticatorPending]="(addAuthenticatorsPending$ | async)!"
+  [editAuthenticatorPending]="(editAuthenticatorPending$ | async)!"
+  [deleteAuthenticatorPending]="(deleteAuthenticatorPending$ | async)!"
+  [deletePending]="(deletePending$ | async)!"
+  [httpClientError]="(httpClientError$ | async)!"
+  (edit)="onEdit($event)"
+  (addAuthenticator)="onAddAuthenticator()"
+  (editAuthenticator)="onEditAuthenticator($event)"
+  (deleteAuthenticator)="onDeleteAuthenticator($event)"
+  (delete)="onDelete()"
+></newbee-edit-user>

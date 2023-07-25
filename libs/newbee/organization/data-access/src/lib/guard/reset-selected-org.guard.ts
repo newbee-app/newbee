@@ -11,7 +11,7 @@ import { map, Observable, skipWhile, take } from 'rxjs';
  * A guard that fires the request to reset the selected org.
  * Only fires when the user is attempting to navigate away from the component it encompasses.
  *
- * @returns `true` after the selected org has been reset..
+ * @returns `true` after the selected org has been reset.
  */
 export const resetSelectedOrgGuard: CanDeactivateFn<
   unknown

@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import {
   UserEffects,
   userFeature,
@@ -18,8 +16,6 @@ import { UserEditComponent } from './user-edit';
     CommonModule,
     StoreModule.forFeature(userFeature),
     EffectsModule.forFeature([UserEffects]),
-    NavbarComponent,
-    ErrorScreenComponent,
     EditUserComponent,
     UserRoutingModule,
   ],

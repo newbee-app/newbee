@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import type { OrgMemberInvite } from '@newbee/shared/util';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { ascOrgRoleEnum, OrgRoleEnum } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { UserInvitesEntity } from './user-invites.entity';
@@ -55,7 +55,10 @@ export class OrgMemberInviteEntity implements OrgMemberInvite {
   /**
    * @inheritdoc
    */
-  @Enum(() => OrgRoleEnum)
+  @Enum({
+    items: () => OrgRoleEnum,
+    customOrder: ascOrgRoleEnum,
+  })
   role: OrgRoleEnum;
 
   constructor(
