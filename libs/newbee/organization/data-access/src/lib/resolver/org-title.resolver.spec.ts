@@ -10,11 +10,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
-import {
-  forbiddenError,
-  testOrganization1,
-  testOrgMemberRelation1,
-} from '@newbee/shared/util';
+import { forbiddenError, testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
 
@@ -61,7 +57,7 @@ describe('orgTitleResolver', () => {
     store.setState({
       org: {
         ...initialOrganizationState,
-        selectedOrganization: testOrgMemberRelation1,
+        selectedOrganization: testOrganization1,
       },
     });
     await expect(

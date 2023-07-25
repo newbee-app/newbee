@@ -2,9 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DropdownComponent, TooltipComponent } from '@newbee/newbee/shared/ui';
 import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { Organization, OrgMemberNoUser, User } from '@newbee/shared/util';
+import type {
+  Organization,
+  OrgMemberNoUserOrg,
+  User,
+} from '@newbee/shared/util';
 import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
-import { isEqual } from 'lodash-es';
 import { AuthenticatedSidebarComponent } from '../sidebar';
 
 /**
@@ -45,7 +48,7 @@ export class AuthenticatedNavbarComponent {
   /**
    * Information about the user in the `selectedOrganization`.
    */
-  @Input() orgMember: OrgMemberNoUser | null = null;
+  @Input() orgMember: OrgMemberNoUserOrg | null = null;
 
   /**
    * An event emitter that tells the parent component when a request has been made to navigate to a link.
@@ -70,16 +73,8 @@ export class AuthenticatedNavbarComponent {
       return false;
     }
 
-    const { orgMember, organization } = this.orgMember;
-    if (!isEqual(organization, this.selectedOrganization)) {
-      return false;
-    }
-
-    if (compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) {
-      return true;
-    }
-
-    return false;
+    const { orgMember } = this.orgMember;
+    return compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0;
   }
 
   /**

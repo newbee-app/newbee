@@ -21,7 +21,7 @@ import {
   inputDisplayError,
   SlugInputDirectiveModule,
 } from '@newbee/newbee/shared/util';
-import type { OrgMemberNoUser } from '@newbee/shared/util';
+import type { Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -46,9 +46,14 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
-   * Information about the org and the user's relation to it.
+   * Information about the org.
    */
-  @Input() orgMember!: OrgMemberNoUser;
+  @Input() organization!: Organization;
+
+  /**
+   * Information about the user's relation to it.
+   */
+  @Input() orgMember!: OrgMemberNoUserOrg | null;
 
   /**
    * Whether the current value for the slug is taken.
@@ -133,7 +138,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   get editDistinct(): boolean {
     const { name } = this.editOrgForm.value;
-    return name !== this.orgMember.organization.name;
+    return name !== this.organization.name;
   }
 
   /**
@@ -141,7 +146,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   get editSlugDistinct(): boolean {
     const { slug } = this.editOrgSlugForm.value;
-    return slug !== this.orgMember.organization.slug;
+    return slug !== this.organization.slug;
   }
 
   /**
@@ -149,7 +154,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   get deleteSlugMatches(): boolean {
     const { slug } = this.deleteOrgForm.value;
-    return slug === this.orgMember.organization.slug;
+    return slug === this.organization.slug;
   }
 
   /**
@@ -164,13 +169,11 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.editOrgForm.setValue(
-      {
-        name: this.orgMember.organization.name,
-      },
+      { name: this.organization.name },
       { emitEvent: false }
     );
     this.editOrgSlugForm.setValue(
-      { slug: this.orgMember.organization.slug },
+      { slug: this.organization.slug },
       { emitEvent: false }
     );
 

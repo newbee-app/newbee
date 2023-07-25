@@ -8,7 +8,7 @@ import {
 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
-import { testOrganization1, testOrgMemberRelation1 } from '@newbee/shared/util';
+import { testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgEditComponent } from './org-edit.component';
 
@@ -36,7 +36,7 @@ describe('OrgEditComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrgMemberRelation1 },
+            org: { selectedOrganization: testOrganization1 },
           },
         }),
       ],

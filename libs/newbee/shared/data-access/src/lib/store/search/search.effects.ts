@@ -22,7 +22,7 @@ export class SearchEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ query }, selectedOrganization]) => {
         return this.searchService
-          .search(query, selectedOrganization?.organization?.slug as string)
+          .search(query, selectedOrganization?.slug as string)
           .pipe(
             map((result) => {
               return SearchActions.searchSuccess({ result });
@@ -42,7 +42,7 @@ export class SearchEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ query }, selectedOrganization]) => {
         return this.searchService
-          .suggest(query, selectedOrganization?.organization?.slug as string)
+          .suggest(query, selectedOrganization?.slug as string)
           .pipe(
             map((result) => {
               return SearchActions.suggestSuccess({ result });

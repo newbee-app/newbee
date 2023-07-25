@@ -3,6 +3,7 @@ import {
   OrgRoleEnum,
   testOrganization1,
   testOrganization2,
+  testOrgMember1,
   testOrgMemberRelation1,
   testUser1,
 } from '@newbee/shared/util';
@@ -47,18 +48,17 @@ describe('AuthenticatedNavbarComponent', () => {
   describe('isAdmin', () => {
     it('should be true if org member is moderator or higher', () => {
       expect(component.isAdmin).toBeTruthy();
-      if (!component.orgMember) {
-        return;
-      }
 
-      component.orgMember.orgMember.role = OrgRoleEnum.Moderator;
+      component.orgMember = {
+        ...testOrgMemberRelation1,
+        orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
+      };
       expect(component.isAdmin).toBeTruthy();
 
-      component.orgMember.orgMember.role = OrgRoleEnum.Member;
-      expect(component.isAdmin).toBeFalsy();
-
-      component.orgMember.orgMember.role = OrgRoleEnum.Owner;
-      component.selectedOrganization = testOrganization2;
+      component.orgMember = {
+        ...testOrgMemberRelation1,
+        orgMember: { ...testOrgMember1, role: OrgRoleEnum.Member },
+      };
       expect(component.isAdmin).toBeFalsy();
     });
   });

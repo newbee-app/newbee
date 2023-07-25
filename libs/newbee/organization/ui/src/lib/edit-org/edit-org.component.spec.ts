@@ -8,6 +8,7 @@ import {
   OrgRoleEnum,
   testOrganization1,
   testOrganization2,
+  testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import { EditOrgComponent } from './edit-org.component';
@@ -24,6 +25,7 @@ describe('EditOrgComponent', () => {
     fixture = TestBed.createComponent(EditOrgComponent);
     component = fixture.componentInstance;
 
+    component.organization = testOrganization1;
     component.orgMember = testOrgMemberRelation1;
 
     jest.spyOn(component.slug, 'emit');
@@ -121,7 +123,10 @@ describe('EditOrgComponent', () => {
     describe('isOwner', () => {
       it('should be true if org member is the owner of the org, false otherwise', () => {
         expect(component.isOwner).toBeTruthy();
-        component.orgMember.orgMember.role = OrgRoleEnum.Moderator;
+        component.orgMember = {
+          ...testOrgMemberRelation1,
+          orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
+        };
         expect(component.isOwner).toBeFalsy();
       });
     });

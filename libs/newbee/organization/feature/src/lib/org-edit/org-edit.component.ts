@@ -29,6 +29,11 @@ export class OrgEditComponent {
   );
 
   /**
+   * The user's relation to the currently selected org, if any.
+   */
+  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
+
+  /**
    * Whether the form's slug value is taken, excluding the slug for the currently selected org.
    */
   slugTaken$ = this.store.select(orgModuleFeature.selectSlugTaken);

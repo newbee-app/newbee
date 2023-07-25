@@ -1,10 +1,11 @@
 import {
   BaseCreateOrganizationDto,
   BaseCreateOrgMemberInviteDto,
+  BaseOrgAndMemberDto,
   BaseUpdateOrganizationDto,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
+import type { Organization } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
@@ -22,7 +23,7 @@ export const OrganizationActions = createActionGroup({
     /**
      * Indicates that an org was successfully retrieved.
      */
-    'Get Org Success': props<{ orgMember: OrgMemberNoUser }>(),
+    'Get Org Success': props<{ orgAndMemberDto: BaseOrgAndMemberDto }>(),
 
     /**
      * Creates a new org with the given information.

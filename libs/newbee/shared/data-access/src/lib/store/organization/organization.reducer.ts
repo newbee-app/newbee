@@ -1,5 +1,5 @@
 import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
+import type { Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
@@ -17,9 +17,14 @@ export interface OrganizationState {
   organizations: Organization[];
 
   /**
-   * The organization the user is looking at right now and their relation to it.
+   * The organization the user is looking at right now.
    */
-  selectedOrganization: OrgMemberNoUser | null;
+  selectedOrganization: Organization | null;
+
+  /**
+   * The user's relation to the selected organization, if they have any.
+   */
+  orgMember: OrgMemberNoUserOrg | null;
 }
 
 /**
@@ -28,6 +33,7 @@ export interface OrganizationState {
 export const initialOrganizationState: OrganizationState = {
   organizations: [],
   selectedOrganization: null,
+  orgMember: null,
 };
 
 /**
@@ -71,9 +77,13 @@ export const organizationFeature = createFeature({
     ),
     on(
       OrganizationActions.getOrgSuccess,
-      (state, { orgMember }): OrganizationState => ({
+      (
+        state,
+        { orgAndMemberDto: { organization, orgMember } }
+      ): OrganizationState => ({
         ...state,
-        selectedOrganization: orgMember,
+        selectedOrganization: organization,
+        orgMember,
       })
     ),
     on(
@@ -96,7 +106,7 @@ export const organizationFeature = createFeature({
 
         const organizations = [
           ...state.organizations.filter(
-            (org) => !isEqual(org, selectedOrganization.organization)
+            (org) => !isEqual(org, selectedOrganization)
           ),
           newOrg,
         ];
@@ -104,10 +114,7 @@ export const organizationFeature = createFeature({
         return {
           ...state,
           organizations,
-          selectedOrganization: {
-            ...selectedOrganization,
-            organization: newOrg,
-          },
+          selectedOrganization: newOrg,
         };
       }
     ),
@@ -120,25 +127,30 @@ export const organizationFeature = createFeature({
       }
 
       const organizations = state.organizations.filter(
-        (org) => !isEqual(org, selectedOrganization.organization)
+        (org) => !isEqual(org, selectedOrganization)
       );
 
-      return { ...state, organizations, selectedOrganization: null };
+      return {
+        ...state,
+        organizations,
+        selectedOrganization: null,
+        orgMember: null,
+      };
     }),
     on(
       OrganizationActions.resetSelectedOrg,
       (state): OrganizationState => ({
         ...state,
         selectedOrganization: null,
+        orgMember: null,
       })
     ),
     on(
       InviteActions.acceptInviteSuccess,
-      (state, { orgMember }): OrganizationState => {
-        const { organization } = orgMember;
-        const organizations = [...state.organizations, organization];
-        return { ...state, organizations };
-      }
+      (state, { orgMember: { organization } }): OrganizationState => ({
+        ...state,
+        organizations: [...state.organizations, organization],
+      })
     )
   ),
 });

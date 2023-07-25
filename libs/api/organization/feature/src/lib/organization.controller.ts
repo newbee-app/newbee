@@ -30,11 +30,11 @@ import {
 } from '@newbee/api/shared/util';
 import {
   BaseGeneratedSlugDto,
+  BaseOrgAndMemberDto,
   BaseSlugTakenDto,
   organizationVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { OrgMemberNoUser } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 
 /**
@@ -141,14 +141,16 @@ export class OrganizationController {
   async get(
     @Organization() organization: OrganizationEntity,
     @OrgMember() orgMember: OrgMemberEntity
-  ): Promise<OrgMemberNoUser> {
+  ): Promise<BaseOrgAndMemberDto> {
     const { id, slug } = organization;
     this.logger.log(
       `Get organization request received for organization slug: ${slug}`
     );
     this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
-
-    return await this.entityService.createOrgMemberNoUser(orgMember);
+    return {
+      organization,
+      orgMember: await this.entityService.createOrgMemberNoUserOrg(orgMember),
+    };
   }
 
   /**

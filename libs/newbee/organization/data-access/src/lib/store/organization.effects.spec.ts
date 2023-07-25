@@ -6,14 +6,11 @@ import {
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
+  testBaseOrgAndMemberDto1,
   testBaseSlugTakenDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import {
-  testOrganization1,
-  testOrganization2,
-  testOrgMemberRelation1,
-} from '@newbee/shared/util';
+import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -33,12 +30,14 @@ describe('OrganizationEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
-        provideMockStore(),
+        provideMockStore({
+          initialState: { org: { selectedOrganization: testOrganization1 } },
+        }),
         OrganizationEffects,
         {
           provide: OrganizationService,
           useValue: createMock<OrganizationService>({
-            get: jest.fn().mockReturnValue(of(testOrgMemberRelation1)),
+            get: jest.fn().mockReturnValue(of(testBaseOrgAndMemberDto1)),
             create: jest.fn().mockReturnValue(of(testOrganization1)),
             edit: jest.fn().mockReturnValue(of(testOrganization2)),
             delete: jest.fn().mockReturnValue(of(null)),
@@ -81,7 +80,7 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrganizationActions.getOrgSuccess({
-          orgMember: testOrgMemberRelation1,
+          orgAndMemberDto: testBaseOrgAndMemberDto1,
         }),
       });
       expect(effects.getOrg$).toBeObservable(expected$);
@@ -134,11 +133,6 @@ describe('OrganizationEffects', () => {
 
   describe('editOrg$', () => {
     it('should fire editOrgSuccess if successful', () => {
-      store.setState({
-        org: {
-          selectedOrganization: testOrgMemberRelation1,
-        },
-      });
       actions$ = hot('a', {
         a: OrganizationActions.editOrg({
           updateOrganizationDto: { name: testOrganization1.name },
@@ -159,6 +153,7 @@ describe('OrganizationEffects', () => {
     });
 
     it('should do nothing if selectedOrganization is null', () => {
+      store.setState({});
       actions$ = hot('a', {
         a: OrganizationActions.editOrg({
           updateOrganizationDto: { name: testOrganization1.name },
@@ -174,11 +169,6 @@ describe('OrganizationEffects', () => {
 
   describe('editOrgSlug$', () => {
     it('should fire editOrgSlugSuccess if successful', () => {
-      store.setState({
-        org: {
-          selectedOrganization: testOrgMemberRelation1,
-        },
-      });
       actions$ = hot('a', {
         a: OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testOrganization2.slug },
@@ -199,6 +189,7 @@ describe('OrganizationEffects', () => {
     });
 
     it('should do nothing if selectedOrganization is null', () => {
+      store.setState({});
       actions$ = hot('a', {
         a: OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testOrganization2.slug },
@@ -236,11 +227,6 @@ describe('OrganizationEffects', () => {
 
   describe('deleteOrg$', () => {
     it('should fire deleteOrgSuccess if successful', () => {
-      store.setState({
-        org: {
-          selectedOrganization: testOrgMemberRelation1,
-        },
-      });
       actions$ = hot('a', {
         a: OrganizationActions.deleteOrg(),
       });
@@ -255,6 +241,7 @@ describe('OrganizationEffects', () => {
     });
 
     it('should do nothing if selectedOrganization is null', () => {
+      store.setState({});
       actions$ = hot('a', {
         a: OrganizationActions.deleteOrg(),
       });
@@ -284,6 +271,7 @@ describe('OrganizationEffects', () => {
 
   describe('checkSlug$', () => {
     it('should fire checkSlugSuccess if successful', () => {
+      store.setState({});
       actions$ = hot('a', {
         a: OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       });
@@ -309,9 +297,6 @@ describe('OrganizationEffects', () => {
     });
 
     it('should fire checkSlugSccuess with slugTaken as false if slug is the same as selectedOrganization', () => {
-      store.setState({
-        org: { selectedOrganization: testOrgMemberRelation1 },
-      });
       actions$ = hot('a', {
         a: OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       });
@@ -353,11 +338,6 @@ describe('OrganizationEffects', () => {
 
   describe('inviteUser$', () => {
     it('should fire inviteUserSuccess if successful', () => {
-      store.setState({
-        org: {
-          selectedOrganization: testOrgMemberRelation1,
-        },
-      });
       actions$ = hot('a', {
         a: OrganizationActions.inviteUser({
           createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
@@ -379,6 +359,7 @@ describe('OrganizationEffects', () => {
     });
 
     it('should do nothing if selectedOrganization is null', () => {
+      store.setState({});
       actions$ = hot('a', {
         a: OrganizationActions.inviteUser({
           createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,

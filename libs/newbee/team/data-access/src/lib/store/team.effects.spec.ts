@@ -9,11 +9,7 @@ import {
   testBaseTeamAndMemberDto1,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import {
-  testOrganization1,
-  testOrgMemberRelation1,
-  testTeam1,
-} from '@newbee/shared/util';
+import { testOrganization1, testTeam1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -35,7 +31,7 @@ describe('TeamEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrgMemberRelation1 },
+            org: { selectedOrganization: testOrganization1 },
           },
         }),
         TeamEffects,
@@ -141,7 +137,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('a', {
         a: [
           TeamActions.createTeamSuccess({ team: testTeam1 }),
-          testOrgMemberRelation1,
+          testOrganization1,
         ],
       });
       expect(effects.createTeamSuccess$).toBeObservable(expected$);

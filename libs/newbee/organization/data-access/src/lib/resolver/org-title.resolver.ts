@@ -26,13 +26,13 @@ export const orgTitleResolver: ResolveFn<string> = (
     store.select(httpFeature.selectScreenError),
   ]).pipe(
     skipWhile(
-      ([orgMember, screenError]) =>
-        orgMember?.organization.slug !== orgSlug && !screenError
+      ([selectedOrganization, screenError]) =>
+        selectedOrganization?.slug !== orgSlug && !screenError
     ),
     take(1),
-    map(([orgMember]) => {
-      if (orgMember) {
-        return orgMember.organization.name;
+    map(([selectedOrganization]) => {
+      if (selectedOrganization) {
+        return selectedOrganization.name;
       }
 
       return 'Error';

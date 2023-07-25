@@ -73,14 +73,7 @@ export class InviteMemberComponent implements OnChanges {
     role: [OrgRoleEnum.Member, Validators.required],
   });
 
-  constructor(private readonly fb: FormBuilder) {
-    this.inviteMemberForm.valueChanges.subscribe({
-      next: (value) => {
-        console.log(value);
-        console.log(this.inviteMemberForm.valid);
-      },
-    });
-  }
+  constructor(private readonly fb: FormBuilder) {}
 
   /**
    * The text to display in the success alert.

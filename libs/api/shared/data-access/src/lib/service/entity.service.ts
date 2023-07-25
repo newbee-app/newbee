@@ -15,6 +15,7 @@ import {
 import type {
   OrgMemberNoOrg,
   OrgMemberNoUser,
+  OrgMemberNoUserOrg,
   OrgMemberRelation,
   TeamNoOrg,
   UserRelation,
@@ -213,6 +214,23 @@ export class EntityService {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+  }
+
+  /**
+   * Takes in an org member and converts it to an `OrgMemberNoUserOrg`.
+   *
+   * @param orgMember The org member to convert.
+   *
+   * @returns The org member as an `OrgMemberNoUserOrg`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createOrgMemberNoUserOrg(
+    orgMember: OrgMemberEntity
+  ): Promise<OrgMemberNoUserOrg> {
+    const orgMemberCollections = await this.populateOrgMemberCollections(
+      orgMember
+    );
+    return { orgMember, ...orgMemberCollections };
   }
 
   /**

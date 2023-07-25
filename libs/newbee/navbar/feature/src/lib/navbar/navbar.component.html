@@ -11,10 +11,10 @@
 <ng-template #authenticated>
   <newbee-authenticated-navbar
     [user]="(user$ | async)!"
-    [organizations]="(organizations$ | async)!"
-    [selectedOrganization]="selectedOrganization?.organization || null"
+    [organizations]="(orgState$ | async)!.organizations"
+    [selectedOrganization]="(orgState$ | async)?.selectedOrganization ?? null"
     (selectedOrganizationChange)="selectOrganization($event)"
-    [orgMember]="selectedOrganization"
+    [orgMember]="(orgState$ | async)?.orgMember ?? null"
     (navigateToLink)="navigateToLink($event)"
     (logout)="logout()"
   >

@@ -29,8 +29,8 @@ export class OrganizationEffects {
       ofType(OrganizationActions.getOrg),
       switchMap(({ orgSlug }) => {
         return this.organizationService.get(orgSlug).pipe(
-          map((orgMember) => {
-            return OrganizationActions.getOrgSuccess({ orgMember });
+          map((orgAndMemberDto) => {
+            return OrganizationActions.getOrgSuccess({ orgAndMemberDto });
           }),
           catchError(catchHttpScreenError)
         );
@@ -73,10 +73,7 @@ export class OrganizationEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
         return this.organizationService
-          .edit(
-            selectedOrganization?.organization.slug as string,
-            updateOrganizationDto
-          )
+          .edit(selectedOrganization?.slug as string, updateOrganizationDto)
           .pipe(
             map((organization) => {
               return OrganizationActions.editOrgSuccess({
@@ -98,10 +95,7 @@ export class OrganizationEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
         return this.organizationService
-          .edit(
-            selectedOrganization?.organization.slug as string,
-            updateOrganizationDto
-          )
+          .edit(selectedOrganization?.slug as string, updateOrganizationDto)
           .pipe(
             map((organization) => {
               return OrganizationActions.editOrgSlugSuccess({
@@ -135,7 +129,7 @@ export class OrganizationEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([, selectedOrganization]) => {
         return this.organizationService
-          .delete(selectedOrganization?.organization.slug as string)
+          .delete(selectedOrganization?.slug as string)
           .pipe(
             map(() => {
               return OrganizationActions.deleteOrgSuccess();
@@ -166,7 +160,7 @@ export class OrganizationEffects {
         this.store.select(organizationFeature.selectSelectedOrganization)
       ),
       switchMap(([{ slug }, selectedOrganization]) => {
-        if (selectedOrganization?.organization.slug === slug) {
+        if (selectedOrganization?.slug === slug) {
           return of(OrganizationActions.checkSlugSuccess({ slugTaken: false }));
         }
 
@@ -209,7 +203,7 @@ export class OrganizationEffects {
 
         return this.organizationService
           .inviteUser(
-            selectedOrganization?.organization.slug as string,
+            selectedOrganization?.slug as string,
             createOrgMemberInviteDto
           )
           .pipe(

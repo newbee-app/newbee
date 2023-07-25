@@ -11,6 +11,7 @@ import {
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseGenerateSlugDto1,
+  testBaseOrgAndMemberDto1,
   testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
@@ -40,9 +41,9 @@ describe('OrganizationService', () => {
   describe('get', () => {
     it('should send out a get request', (done) => {
       service.get(testOrganization1.slug).subscribe({
-        next: (orgMember) => {
+        next: (orgAndMemberDto) => {
           try {
-            expect(orgMember).toEqual(testOrganization1);
+            expect(orgAndMemberDto).toEqual(testBaseOrgAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -56,7 +57,7 @@ describe('OrganizationService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testOrganization1);
+      req.flush(testBaseOrgAndMemberDto1);
     });
   });
 

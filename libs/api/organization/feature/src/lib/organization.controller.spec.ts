@@ -44,7 +44,7 @@ describe('OrganizationController', () => {
         {
           provide: EntityService,
           useValue: createMock<EntityService>({
-            createOrgMemberNoUser: jest
+            createOrgMemberNoUserOrg: jest
               .fn()
               .mockResolvedValue(testOrgMemberRelation1),
           }),
@@ -109,7 +109,14 @@ describe('OrganizationController', () => {
     it('should find and return an organization', async () => {
       await expect(
         controller.get(testOrganizationEntity1, testOrgMemberEntity1)
-      ).resolves.toEqual(testOrgMemberRelation1);
+      ).resolves.toEqual({
+        organization: testOrganizationEntity1,
+        orgMember: testOrgMemberRelation1,
+      });
+      expect(entityService.createOrgMemberNoUserOrg).toBeCalledTimes(1);
+      expect(entityService.createOrgMemberNoUserOrg).toBeCalledWith(
+        testOrgMemberEntity1
+      );
     });
   });
 

@@ -29,7 +29,7 @@ export class TeamEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ slug }, selectedOrganization]) => {
         return this.teamService
-          .get(slug, selectedOrganization?.organization.slug as string)
+          .get(slug, selectedOrganization?.slug as string)
           .pipe(
             map((teamAndMemberDto) => {
               return TeamActions.getTeamSuccess({ teamAndMemberDto });
@@ -49,10 +49,7 @@ export class TeamEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ createTeamDto }, selectedOrganization]) => {
         return this.teamService
-          .create(
-            createTeamDto,
-            selectedOrganization?.organization.slug as string
-          )
+          .create(createTeamDto, selectedOrganization?.slug as string)
           .pipe(
             map((team) => {
               return TeamActions.createTeamSuccess({ team });
@@ -73,9 +70,9 @@ export class TeamEffects {
         filter(([, selectedOrganization]) => !!selectedOrganization),
         tap(async ([{ team }, selectedOrganization]) => {
           await this.router.navigate([
-            `/${selectedOrganization?.organization.slug as string}/${
-              UrlEndpoint.Team
-            }/${team.slug}`,
+            `/${selectedOrganization?.slug as string}/${UrlEndpoint.Team}/${
+              team.slug
+            }`,
           ]);
         })
       );
@@ -93,7 +90,7 @@ export class TeamEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ slug }, selectedOrganization]) => {
         return this.teamService
-          .checkSlug(slug, selectedOrganization?.organization.slug as string)
+          .checkSlug(slug, selectedOrganization?.slug as string)
           .pipe(
             map(({ slugTaken }) => {
               return TeamActions.checkSlugSuccess({ slugTaken });
@@ -114,7 +111,7 @@ export class TeamEffects {
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ name }, selectedOrganization]) => {
         return this.teamService
-          .generateSlug(name, selectedOrganization?.organization.slug as string)
+          .generateSlug(name, selectedOrganization?.slug as string)
           .pipe(
             map((generatedSlugDto) => {
               const { generatedSlug } = generatedSlugDto;

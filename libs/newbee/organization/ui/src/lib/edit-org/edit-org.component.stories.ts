@@ -1,5 +1,6 @@
 import {
   OrgRoleEnum,
+  testOrganization1,
   testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
@@ -10,6 +11,7 @@ export default {
   title: 'EditOrgComponent',
   component: EditOrgComponent,
   args: {
+    organization: testOrganization1,
     orgMember: testOrgMemberRelation1,
     slugTaken: false,
     editPending: false,

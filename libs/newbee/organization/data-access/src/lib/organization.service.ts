@@ -4,13 +4,14 @@ import {
   BaseCreateOrganizationDto,
   BaseCreateOrgMemberInviteDto,
   BaseGeneratedSlugDto,
+  BaseOrgAndMemberDto,
   BaseSlugTakenDto,
   BaseUpdateOrganizationDto,
   organizationVersion,
   orgMemberInviteVersion,
   UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Organization, OrgMemberNoUser } from '@newbee/shared/util';
+import type { Organization } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -28,8 +29,8 @@ export class OrganizationService {
    *
    * @returns An observable containing information about the organization and the requester's relation to it.
    */
-  get(slug: string): Observable<OrgMemberNoUser> {
-    return this.http.get<OrgMemberNoUser>(
+  get(slug: string): Observable<BaseOrgAndMemberDto> {
+    return this.http.get<BaseOrgAndMemberDto>(
       `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${slug}`
     );
   }
