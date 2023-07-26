@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 import { cookieGuard } from '@newbee/newbee/shared/data-access';
 import { UrlEndpoint } from '@newbee/shared/data-access';
+import { RootComponent } from '../root';
 
 /**
  * How the web page's title should be set for all routes, unless otherwise specified.
@@ -42,6 +43,7 @@ export class AppTitleStrategy extends TitleStrategy {
 const routes: Routes = [
   {
     path: '',
+    component: RootComponent,
     canActivate: [cookieGuard],
     children: [
       {

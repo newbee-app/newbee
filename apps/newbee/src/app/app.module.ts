@@ -17,6 +17,7 @@ import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { httpInterceptorProviders } from './interceptor';
 import { reducers } from './reducer';
+import { RootComponent } from './root';
 import { AppRoutingModule } from './routing';
 
 /**
@@ -61,7 +62,7 @@ import { AppRoutingModule } from './routing';
     AppRoutingModule,
   ],
   providers: [httpInterceptorProviders],
-  declarations: [AppComponent],
+  declarations: [AppComponent, RootComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
