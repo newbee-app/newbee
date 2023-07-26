@@ -34,6 +34,7 @@ export default {
         <button label type="button" class="btn btn-primary">Click me</button>
 
         <div dropdown class="flex flex-col flex-nowrap">
+          <button type="button" #dropdownNoToggle class="btn btn-ghost justify-start text-left normal-case font-normal">Should not shrink dropdown</button>
           <button type="button" class="btn btn-ghost justify-start text-left normal-case font-normal">A somewhat long message in this button</button>
         </div>
       </newbee-dropdown>

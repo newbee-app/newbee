@@ -1,9 +1,5 @@
 <div class="w-full">
-  <newbee-dropdown
-    placement="bottom-start"
-    [expanded]="expanded"
-    (expandedChange)="expandedChange($event)"
-  >
+  <newbee-dropdown placement="bottom-start">
     <button
       label
       type="button"
@@ -38,12 +34,14 @@
       dropdown
       class="flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
     >
-      <newbee-searchbar
-        *ngIf="showSearchbar"
-        [formControl]="searchTerm"
-        [includeSearchSymbol]="false"
-        [includeClearSymbol]="false"
-      ></newbee-searchbar>
+      <div #dropdownNoToggle>
+        <newbee-searchbar
+          *ngIf="showSearchbar"
+          [formControl]="searchTerm"
+          [includeSearchSymbol]="false"
+          [includeClearSymbol]="false"
+        ></newbee-searchbar>
+      </div>
 
       <button
         type="button"

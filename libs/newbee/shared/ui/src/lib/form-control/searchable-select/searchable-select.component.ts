@@ -82,6 +82,13 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
   private _expanded = false;
 
   /**
+   * Whether the component's dropdown is currently expanded.
+   */
+  get expanded(): boolean {
+    return this._expanded;
+  }
+
+  /**
    * The currently selected value, which starts as null by default.
    */
   private selectedOption: SelectOption<T> | null = null;
@@ -90,6 +97,13 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
    * Whether the control is disabled.
    */
   private _disabled = false;
+
+  /**
+   * Whether the control is disabled.
+   */
+  get disabled(): boolean {
+    return this._disabled;
+  }
 
   /**
    * Called to trigger change detection.
@@ -102,11 +116,25 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
   };
 
   /**
+   * Called to trigger change detection.
+   */
+  get onChange(): (_: T) => void {
+    return this._onChange;
+  }
+
+  /**
    * Called to mark the control as touched.
    */
   private _onTouched: () => void = () => {
     return;
   };
+
+  /**
+   * Called to mark the control as touched.
+   */
+  get onTouched(): () => void {
+    return this._onTouched;
+  }
 
   /**
    * Sets the selected option to the given value.
@@ -146,31 +174,10 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
   }
 
   /**
-   * Whether the control is disabled.
-   */
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  /**
    * The internal value associated with the currently selected option
    */
   get value(): T | null {
     return this.selectedOption?.value ?? null;
-  }
-
-  /**
-   * Called to trigger change detection.
-   */
-  get onChange(): (_: T) => void {
-    return this._onChange;
-  }
-
-  /**
-   * Called to mark the control as touched.
-   */
-  get onTouched(): () => void {
-    return this._onTouched;
   }
 
   /**
@@ -193,13 +200,6 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
             .includes(this.searchTerm.value?.toLowerCase())
         : true
     );
-  }
-
-  /**
-   * Whether the component's dropdown is currently expanded.
-   */
-  get expanded(): boolean {
-    return this._expanded;
   }
 
   /**

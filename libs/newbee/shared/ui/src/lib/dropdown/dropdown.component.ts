@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
+  ContentChild,
   ElementRef,
   EventEmitter,
   HostListener,
@@ -83,6 +84,15 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   @ViewChild('dropdown') dropdown!: ElementRef<HTMLDivElement>;
 
   /**
+   * Any portion of the dropdown that shouldn't toggle expanded when clicked.
+   * Should be specified in the component that's using the dropdown.
+   * Should be specified as a template variable in a plain HTML element like a div, button, etc.
+   */
+  @ContentChild('dropdownNoToggle') dropdownNoToggle:
+    | ElementRef<HTMLElement>
+    | undefined;
+
+  /**
    * Shrinks the dropdown if the user presses the `esc` key.
    */
   @HostListener('keydown.escape')
@@ -101,7 +111,11 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (target) => {
-          if (!elementRef.nativeElement.contains(target)) {
+          if (
+            !elementRef.nativeElement.contains(target) ||
+            (this.dropdown.nativeElement.contains(target) &&
+              !this.dropdownNoToggle?.nativeElement.contains(target))
+          ) {
             this.shrink();
           }
         },
