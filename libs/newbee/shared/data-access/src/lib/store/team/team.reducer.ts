@@ -1,5 +1,4 @@
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { TeamMember, TeamNoOrg } from '@newbee/shared/util';
+import { Keyword, TeamMember, TeamNoOrg } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { TeamActions } from './team.actions';
 
@@ -30,7 +29,7 @@ export const initialTeamState: TeamState = {
  * The reducers and generated selectors for `TeamState`.
  */
 export const teamFeature = createFeature({
-  name: UrlEndpoint.Team,
+  name: Keyword.Team,
   reducer: createReducer(
     initialTeamState,
     on(TeamActions.getTeamSuccess, (state, { teamAndMemberDto }): TeamState => {

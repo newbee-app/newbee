@@ -30,8 +30,7 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { OrgRoleEnum, teamRoleEnumSet } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum, teamRoleEnumSet } from '@newbee/shared/util';
 
 /**
  * A guard that prevents users from accessing endpoints annotated with role metadata unless they possess the required roles.
@@ -82,7 +81,7 @@ export class RoleGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const { params, query, user } = request;
-    const orgSlug: string | undefined = params[UrlEndpoint.Organization];
+    const orgSlug: string | undefined = params[Keyword.Organization];
 
     // fail if org slug wasn't specified but roles were
     // pass if both org slug and roles weren't specified
@@ -90,12 +89,12 @@ export class RoleGuard implements CanActivate {
       return result;
     }
 
-    const orgMemberSlug: string | undefined = params[UrlEndpoint.Member];
-    const teamSlug: string | undefined = params[UrlEndpoint.Team]
-      ? params[UrlEndpoint.Team]
-      : query[UrlEndpoint.Team];
-    const docSlug: string | undefined = params[UrlEndpoint.Doc];
-    const qnaSlug: string | undefined = params[UrlEndpoint.Qna];
+    const orgMemberSlug: string | undefined = params[Keyword.Member];
+    const teamSlug: string | undefined = params[Keyword.Team]
+      ? params[Keyword.Team]
+      : query[Keyword.Team];
+    const docSlug: string | undefined = params[Keyword.Doc];
+    const qnaSlug: string | undefined = params[Keyword.Qna];
 
     try {
       const organization = await this.organizationService.findOneBySlug(

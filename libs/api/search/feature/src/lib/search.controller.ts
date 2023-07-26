@@ -7,16 +7,15 @@ import {
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role } from '@newbee/api/shared/util';
 import {
+  apiVersion,
   BaseQueryResultDto,
   BaseSuggestResultDto,
-  searchVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
 
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Search}`,
-  version: searchVersion,
+  path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Search}`,
+  version: apiVersion.search,
 })
 export class SearchController {
   /**
@@ -64,7 +63,7 @@ export class SearchController {
    * @returns The suggestions.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(UrlEndpoint.Suggest)
+  @Post(Keyword.Suggest)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async suggest(
     @Body() suggestDto: SuggestDto,

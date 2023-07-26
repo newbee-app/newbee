@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 
 @Component({
   selector: 'newbee-no-org',
@@ -16,9 +17,14 @@ export class NoOrgComponent {
   @Output() navigateToLink = new EventEmitter<string>();
 
   /**
-   * All NewBee endpoints.
+   * All NewBee keywords.
    */
-  readonly urlEndpoint = UrlEndpoint;
+  readonly keyword = Keyword;
+
+  /**
+   * All NewBee short URLs.
+   */
+  readonly shortUrl = ShortUrl;
 
   /**
    * Calls `navigateToLink.emit()` using the given routes, joined by backslashes.

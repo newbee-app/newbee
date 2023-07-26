@@ -1,5 +1,4 @@
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { OrgMemberInviteNoUser, User } from '@newbee/shared/util';
+import { Keyword, OrgMemberInviteNoUser, User } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { CookieActions } from '../cookie';
 import { UserActions } from '../user';
@@ -33,7 +32,7 @@ export const initialAuthState: AuthState = {
  * The reducers and generated selectors for `AuthState`.
  */
 export const authFeature = createFeature({
-  name: UrlEndpoint.Auth,
+  name: Keyword.Auth,
   reducer: createReducer(
     initialAuthState,
     on(

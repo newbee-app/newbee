@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  apiVersion,
   BaseCsrfTokenAndDataDto,
-  cookieVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Observable, retry } from 'rxjs';
 
 /**
@@ -23,7 +23,7 @@ export class CookieService {
   initCookies(): Observable<BaseCsrfTokenAndDataDto> {
     return this.http
       .get<BaseCsrfTokenAndDataDto>(
-        `/api/v${cookieVersion}/${UrlEndpoint.Cookie}`
+        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`
       )
       .pipe(retry(3));
   }

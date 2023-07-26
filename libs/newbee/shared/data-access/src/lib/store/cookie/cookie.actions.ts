@@ -1,14 +1,12 @@
-import {
-  BaseCsrfTokenAndDataDto,
-  UrlEndpoint,
-} from '@newbee/shared/data-access';
+import { BaseCsrfTokenAndDataDto } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to `CookieState`.
  */
 export const CookieActions = createActionGroup({
-  source: UrlEndpoint.Cookie,
+  source: Keyword.Cookie,
   events: {
     /**
      * Send a request to get a CSRF token and initial data from the API based on the user's cookies.

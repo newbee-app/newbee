@@ -3,12 +3,8 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  testBaseUpdateUserDto1,
-  UrlEndpoint,
-  userVersion,
-} from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { apiVersion, testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
+import { Keyword, testUser1 } from '@newbee/shared/util';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -44,7 +40,7 @@ describe('UserService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${userVersion}/${UrlEndpoint.User}`
+        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateUserDto1);
@@ -68,7 +64,7 @@ describe('UserService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${userVersion}/${UrlEndpoint.User}`
+        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
       );
       expect(req.request.method).toEqual('DELETE');
 

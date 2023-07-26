@@ -8,9 +8,12 @@ import {
   testBaseGeneratedSlugDto1,
   testBaseOrgAndMemberDto1,
   testBaseSlugTakenDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganization2,
+} from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -219,7 +222,7 @@ describe('OrganizationEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([
-          `/${testOrganization1.slug}/${UrlEndpoint.Edit}`,
+          `/${testOrganization1.slug}/${Keyword.Edit}`,
         ]);
       });
     });

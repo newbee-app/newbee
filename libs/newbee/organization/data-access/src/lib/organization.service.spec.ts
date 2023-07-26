@@ -5,8 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  organizationVersion,
-  orgMemberInviteVersion,
+  apiVersion,
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
@@ -15,9 +14,12 @@ import {
   testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganization2,
+} from '@newbee/shared/util';
 import { OrganizationService } from './organization.service';
 
 describe('OrganizationService', () => {
@@ -53,7 +55,7 @@ describe('OrganizationService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${testOrganization1.slug}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -76,7 +78,7 @@ describe('OrganizationService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateOrganizationDto1);
@@ -102,7 +104,7 @@ describe('OrganizationService', () => {
         });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization2.slug}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${testOrganization2.slug}`
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateOrganizationDto1);
@@ -126,7 +128,7 @@ describe('OrganizationService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${testOrganization1.slug}`
       );
       expect(req.request.method).toEqual('DELETE');
 
@@ -152,9 +154,9 @@ describe('OrganizationService', () => {
         fromObject: { ...testBaseSlugDto1 },
       });
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${
-          UrlEndpoint.Organization
-        }/${UrlEndpoint.CheckSlug}?${params.toString()}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${
+          Keyword.CheckSlug
+        }?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -180,9 +182,9 @@ describe('OrganizationService', () => {
         fromObject: { ...testBaseGenerateSlugDto1 },
       });
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${organizationVersion}/${
-          UrlEndpoint.Organization
-        }/${UrlEndpoint.GenerateSlug}?${params.toString()}`
+        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${
+          Keyword.GenerateSlug
+        }?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -207,7 +209,7 @@ describe('OrganizationService', () => {
         });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Organization}/${testOrganization1.slug}`
+        `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Organization}/${testOrganization1.slug}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateOrgMemberInviteDto1);

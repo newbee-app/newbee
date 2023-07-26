@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthenticatorActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testAuthenticator1 } from '@newbee/shared/util';
+import { Keyword, testAuthenticator1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { authenticatorsResolver } from './authenticators.resolver';
 
@@ -20,7 +19,7 @@ describe('authenticatorsResolver', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: UrlEndpoint.Authenticator,
+            path: Keyword.Authenticator,
             component: EmptyComponent,
             resolve: [authenticatorsResolver],
           },
@@ -48,7 +47,7 @@ describe('authenticatorsResolver', () => {
   it('should dispatch getAuthenticators', async () => {
     store.setState({ userModule: { authenticators: [testAuthenticator1] } });
     await expect(
-      router.navigate([UrlEndpoint.Authenticator])
+      router.navigate([Keyword.Authenticator])
     ).resolves.toBeTruthy();
     expect(store.dispatch).toBeCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(

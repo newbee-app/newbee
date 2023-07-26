@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import { TooltipComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { Organization } from '@newbee/shared/util';
+import { Keyword, Organization } from '@newbee/shared/util';
 import { isEqual } from 'lodash-es';
 
 /**
@@ -36,9 +36,14 @@ export class AuthenticatedSidebarComponent {
   @Output() navigateToLink = new EventEmitter<string>();
 
   /**
-   * All possible URL endpoints.
+   * All NewBee keywords.
    */
-  readonly urlEndpoint = UrlEndpoint;
+  readonly keyword = Keyword;
+
+  /**
+   * All NewBee short URLs.
+   */
+  readonly shortUrl = ShortUrl;
 
   /**
    * Checks if two variables are equal.

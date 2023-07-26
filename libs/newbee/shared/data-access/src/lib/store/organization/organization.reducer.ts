@@ -1,5 +1,4 @@
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import type { Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
+import { Keyword, Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
@@ -40,7 +39,7 @@ export const initialOrganizationState: OrganizationState = {
  * The reducers and generated selectors for `OrganizationState`.
  */
 export const organizationFeature = createFeature({
-  name: UrlEndpoint.Organization,
+  name: Keyword.Organization,
   reducer: createReducer(
     initialOrganizationState,
     on(

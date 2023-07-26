@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   authenticatorTakenBadRequest,
   authenticatorVerifyBadRequest,
+  Keyword,
   userChallengeIdNotFound,
 } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -104,7 +104,7 @@ export class AuthenticatorEffects {
         case userChallengeIdNotFound:
         case authenticatorVerifyBadRequest:
         case authenticatorTakenBadRequest:
-          return `${UrlEndpoint.New}-${UrlEndpoint.Authenticator}`;
+          return `${Keyword.New}-${Keyword.Authenticator}`;
         default:
           return 'misc';
       }

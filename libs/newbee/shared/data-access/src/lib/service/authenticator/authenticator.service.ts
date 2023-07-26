@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  authenticatorVersion,
+  apiVersion,
   BaseNameDto,
   BaseRegistrationResponseDto,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { Authenticator } from '@newbee/shared/util';
+import { Authenticator, Keyword } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 import { from, Observable, switchMap } from 'rxjs';
@@ -25,7 +24,7 @@ export class AuthenticatorService {
    */
   getAuthenticators(): Observable<Authenticator[]> {
     return this.http.get<Authenticator[]>(
-      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
     );
   }
 
@@ -35,7 +34,7 @@ export class AuthenticatorService {
    */
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
-      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`,
+      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${Keyword.Options}`,
       {}
     );
   }
@@ -55,7 +54,7 @@ export class AuthenticatorService {
           response,
         };
         return this.http.post<Authenticator>(
-          `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`,
+          `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
           registrationResponseDto
         );
       })
@@ -73,7 +72,7 @@ export class AuthenticatorService {
   editName(id: string, name: string | null): Observable<Authenticator> {
     const nameDto: BaseNameDto = { name };
     return this.http.patch<Authenticator>(
-      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`,
+      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${id}`,
       nameDto
     );
   }
@@ -86,7 +85,7 @@ export class AuthenticatorService {
    */
   delete(id: string): Observable<null> {
     return this.http.delete<null>(
-      `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${id}`
+      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${id}`
     );
   }
 }

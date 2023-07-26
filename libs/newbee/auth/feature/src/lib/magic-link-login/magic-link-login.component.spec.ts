@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
-import { magicLinkLogin } from '@newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { MagicLinkLoginComponent } from './magic-link-login.component';
 
@@ -57,7 +57,9 @@ describe('MagicLinkLoginComponent', () => {
         AuthActions.confirmMagicLink({ token: '1234' })
       );
       expect(route.snapshot.paramMap.get).toBeCalledTimes(1);
-      expect(route.snapshot.paramMap.get).toBeCalledWith(magicLinkLogin);
+      expect(route.snapshot.paramMap.get).toBeCalledWith(
+        Keyword.MagicLinkLogin
+      );
     });
   });
 });

@@ -1,11 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  BaseUpdateUserDto,
-  UrlEndpoint,
-  userVersion,
-} from '@newbee/shared/data-access';
-import type { User } from '@newbee/shared/util';
+import { apiVersion, BaseUpdateUserDto } from '@newbee/shared/data-access';
+import { Keyword, User } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -25,7 +21,7 @@ export class UserService {
    */
   edit(updateUserDto: BaseUpdateUserDto): Observable<User> {
     return this.http.patch<User>(
-      `/${UrlEndpoint.Api}/v${userVersion}/${UrlEndpoint.User}`,
+      `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`,
       updateUserDto
     );
   }
@@ -35,7 +31,7 @@ export class UserService {
    */
   delete(): Observable<null> {
     return this.http.delete<null>(
-      `/${UrlEndpoint.Api}/v${userVersion}/${UrlEndpoint.User}`
+      `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
     );
   }
 }

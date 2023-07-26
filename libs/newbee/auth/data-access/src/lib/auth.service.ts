@@ -1,16 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  authVersion,
+  apiVersion,
   BaseCreateUserDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { UserRelation } from '@newbee/shared/util';
-import { magicLinkLogin } from '@newbee/shared/util';
+import { Keyword, UserRelation } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import { from, Observable, switchMap } from 'rxjs';
@@ -34,7 +32,7 @@ export class AuthService {
     emailDto: BaseEmailDto
   ): Observable<BaseMagicLinkLoginDto> {
     return this.http.post<BaseMagicLinkLoginDto>(
-      `/api/v${authVersion}/${UrlEndpoint.Auth}/${magicLinkLogin}/${UrlEndpoint.Login}`,
+      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
       emailDto
     );
   }
@@ -47,7 +45,7 @@ export class AuthService {
    */
   magicLinkLogin(token: string): Observable<UserRelation> {
     return this.http.post<UserRelation>(
-      `/api/v${authVersion}/${UrlEndpoint.Auth}/${magicLinkLogin}`,
+      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.MagicLinkLogin}`,
       { token }
     );
   }
@@ -63,7 +61,7 @@ export class AuthService {
     createUserDto: BaseCreateUserDto
   ): Observable<BaseUserRelationAndOptionsDto> {
     return this.http.post<BaseUserRelationAndOptionsDto>(
-      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Register}`,
+      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Register}`,
       createUserDto
     );
   }
@@ -79,7 +77,7 @@ export class AuthService {
     emailDto: BaseEmailDto
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
-      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}/${UrlEndpoint.Options}`,
+      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`,
       emailDto
     );
   }
@@ -103,7 +101,7 @@ export class AuthService {
           response,
         };
         return this.http.post<UserRelation>(
-          `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Webauthn}/${UrlEndpoint.Login}`,
+          `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Login}`,
           webAuthnLoginDto
         );
       })
@@ -115,7 +113,7 @@ export class AuthService {
    */
   logout(): Observable<void> {
     return this.http.post<void>(
-      `/api/v${authVersion}/${UrlEndpoint.Auth}/${UrlEndpoint.Logout}`,
+      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Logout}`,
       {}
     );
   }

@@ -29,18 +29,17 @@ import {
   User,
 } from '@newbee/api/shared/util';
 import {
+  apiVersion,
   BaseGeneratedSlugDto,
   BaseOrgAndMemberDto,
   BaseSlugTakenDto,
-  organizationVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
  */
-@Controller({ path: UrlEndpoint.Organization, version: organizationVersion })
+@Controller({ path: Keyword.Organization, version: apiVersion.organization })
 export class OrganizationController {
   /**
    * The logger to use when logging anything in the controller.
@@ -92,7 +91,7 @@ export class OrganizationController {
    * @returns `true` if the org slug is taken, `false` if not.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  @Get(UrlEndpoint.CheckSlug)
+  @Get(Keyword.CheckSlug)
   async checkSlug(@Query() checkSlugDto: SlugDto): Promise<BaseSlugTakenDto> {
     const { slug } = checkSlugDto;
     this.logger.log(
@@ -112,7 +111,7 @@ export class OrganizationController {
    * @returns A unique org slug suitable for use.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  @Get(UrlEndpoint.GenerateSlug)
+  @Get(Keyword.GenerateSlug)
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto
   ): Promise<BaseGeneratedSlugDto> {
@@ -136,7 +135,7 @@ export class OrganizationController {
    *
    * @returns The organization associated with the slug, if one exists.
    */
-  @Get(`:${UrlEndpoint.Organization}`)
+  @Get(`:${Keyword.Organization}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity,
@@ -164,7 +163,7 @@ export class OrganizationController {
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Patch(`:${UrlEndpoint.Organization}`)
+  @Patch(`:${Keyword.Organization}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Organization() organization: OrganizationEntity,
@@ -192,7 +191,7 @@ export class OrganizationController {
    *
    * @param organization The organization to delete.
    */
-  @Delete(`:${UrlEndpoint.Organization}`)
+  @Delete(`:${Keyword.Organization}`)
   @Role(OrgRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity

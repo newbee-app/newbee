@@ -3,10 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { Keyword, testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authFeature, initialAuthState } from '../store';
+import { initialAuthState } from '../store';
 import { confirmEmailGuard } from './confirm-email.guard';
 
 describe('ConfirmEmailGuard', () => {
@@ -20,11 +19,11 @@ describe('ConfirmEmailGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+            path: `${Keyword.Auth}/${Keyword.Login}`,
             component: EmptyComponent,
             children: [
               {
-                path: UrlEndpoint.ConfirmEmail,
+                path: Keyword.ConfirmEmail,
                 component: EmptyComponent,
                 canActivate: [confirmEmailGuard],
               },
@@ -32,7 +31,11 @@ describe('ConfirmEmailGuard', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: { authModule: initialAuthState },
+        }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
@@ -50,37 +53,33 @@ describe('ConfirmEmailGuard', () => {
 
   describe('valid jwtId and email', () => {
     it('should navigate properly', async () => {
-      store.overrideSelector(authFeature.selectAuthModuleState, {
-        jwtId: '1234',
-        email: testUser1.email,
-        pendingMagicLink: false,
-        pendingWebAuthn: false,
+      store.setState({
+        authModule: {
+          jwtId: '1234',
+          email: testUser1.email,
+          pendingMagicLink: false,
+          pendingWebAuthn: false,
+        },
       });
       await expect(
         router.navigate([
-          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+          `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`,
         ])
       ).resolves.toBeTruthy();
       expect(location.path()).toEqual(
-        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`
+        `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`
       );
     });
   });
 
   describe('invalid jwtId and email', () => {
     it('should redirect', async () => {
-      store.overrideSelector(
-        authFeature.selectAuthModuleState,
-        initialAuthState
-      );
       await expect(
         router.navigate([
-          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+          `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`,
         ])
       ).resolves.toBeTruthy();
-      expect(location.path()).toEqual(
-        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`
-      );
+      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
     });
   });
 });

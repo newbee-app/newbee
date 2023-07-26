@@ -4,12 +4,12 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  authenticatorVersion,
+  apiVersion,
   testBaseNameDto1,
   testBaseRegistrationResponseDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
+  Keyword,
   testAuthenticator1,
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
@@ -60,7 +60,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -83,7 +83,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${UrlEndpoint.Options}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${Keyword.Options}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({});
@@ -107,7 +107,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);
@@ -131,7 +131,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${testAuthenticator1.id}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseNameDto1);
@@ -155,7 +155,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${authenticatorVersion}/${UrlEndpoint.Authenticator}/${testAuthenticator1.id}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`
       );
       expect(req.request.method).toEqual('DELETE');
 

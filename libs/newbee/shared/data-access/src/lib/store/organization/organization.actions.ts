@@ -3,16 +3,15 @@ import {
   BaseCreateOrgMemberInviteDto,
   BaseOrgAndMemberDto,
   BaseUpdateOrganizationDto,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Organization } from '@newbee/shared/util';
+import { Keyword, Organization } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to `OrganizationState`.
  */
 export const OrganizationActions = createActionGroup({
-  source: UrlEndpoint.Organization,
+  source: Keyword.Organization,
   events: {
     /**
      * Get the given organization and the user's relation to it, reaching out to the API if the necessary information is not in the store.

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 
 /**
  * The unauthenticated version of the navbar.
@@ -18,9 +19,14 @@ export class UnauthenticatedNavbarComponent {
   @Output() navigateToLink = new EventEmitter<string>();
 
   /**
-   * All possible URL endpoints.
+   * All NewBee keywords.
    */
-  readonly urlEndpoint = UrlEndpoint;
+  readonly keyword = Keyword;
+
+  /**
+   * All NewBee short URLs.
+   */
+  readonly shortUrl = ShortUrl;
 
   /**
    * Calls `navigateToLink.emit()` using the given route.

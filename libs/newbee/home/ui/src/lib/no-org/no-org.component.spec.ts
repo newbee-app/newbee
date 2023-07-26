@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { NoOrgComponent } from './no-org.component';
 
 describe('NoOrgComponent', () => {
@@ -24,10 +25,10 @@ describe('NoOrgComponent', () => {
 
   it('emitNavigateToLink should emit navigateToLink', () => {
     jest.spyOn(component.navigateToLink, 'emit');
-    component.emitNavigateToLink(UrlEndpoint.Organization, UrlEndpoint.New);
+    component.emitNavigateToLink(ShortUrl.Organization, Keyword.New);
     expect(component.navigateToLink.emit).toBeCalledTimes(1);
     expect(component.navigateToLink.emit).toBeCalledWith(
-      `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`
+      `/${ShortUrl.Organization}/${Keyword.New}`
     );
   });
 });

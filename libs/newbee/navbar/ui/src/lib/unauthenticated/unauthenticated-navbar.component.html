@@ -47,12 +47,12 @@
       <div class="navbar-end">
         <div class="flex flex-row gap-x-2">
           <a
-            (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Login)"
+            (click)="emitNavigateToLink(keyword.Auth, keyword.Login)"
             class="btn btn-primary"
             >Login</a
           >
           <a
-            (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Register)"
+            (click)="emitNavigateToLink(keyword.Auth, keyword.Register)"
             class="btn btn-secondary hidden md:flex"
             >Register</a
           >
@@ -74,12 +74,10 @@
       <li><a (click)="emitNavigateToLink('pricing')">Pricing</a></li>
       <div class="divider"></div>
       <li>
-        <a (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Login)"
-          >Login</a
-        >
+        <a (click)="emitNavigateToLink(keyword.Auth, keyword.Login)">Login</a>
       </li>
       <li>
-        <a (click)="emitNavigateToLink(urlEndpoint.Auth, urlEndpoint.Register)"
+        <a (click)="emitNavigateToLink(keyword.Auth, keyword.Register)"
           >Register</a
         >
       </li>

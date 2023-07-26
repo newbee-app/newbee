@@ -14,16 +14,15 @@ import {
   Role,
   SubjectOrgMember,
 } from '@newbee/api/shared/util';
-import { orgMemberVersion, UrlEndpoint } from '@newbee/shared/data-access';
-import type { OrgMemberNoOrg } from '@newbee/shared/util';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { Keyword, OrgMemberNoOrg, OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrgMemberEntity`.
  */
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Member}`,
-  version: orgMemberVersion,
+  path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Member}`,
+  version: apiVersion.orgMember,
 })
 export class OrgMemberController {
   /**
@@ -46,7 +45,7 @@ export class OrgMemberController {
    * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  @Get(`:${UrlEndpoint.Member}`)
+  @Get(`:${Keyword.Member}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async getBySlug(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
@@ -69,7 +68,7 @@ export class OrgMemberController {
    *
    * @returns Information about the updated org member.
    */
-  @Patch(`:${UrlEndpoint.Member}`)
+  @Patch(`:${Keyword.Member}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Body() updateOrgMemberDto: UpdateOrgMemberDto,
@@ -101,7 +100,7 @@ export class OrgMemberController {
    * @param subjectOrgMember The org member being affected.
    * @param organization The organization this is all happening in.
    */
-  @Delete(`:${UrlEndpoint.Member}`)
+  @Delete(`:${Keyword.Member}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,

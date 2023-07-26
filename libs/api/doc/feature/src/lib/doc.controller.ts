@@ -29,15 +29,15 @@ import {
   Role,
   Team,
 } from '@newbee/api/shared/util';
-import { docVersion, UrlEndpoint } from '@newbee/shared/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
  */
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Doc}`,
-  version: docVersion,
+  path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Doc}`,
+  version: apiVersion.doc,
 })
 export class DocController {
   /**
@@ -104,7 +104,7 @@ export class DocController {
    * @returns The doc associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${UrlEndpoint.Doc}`)
+  @Get(`:${Keyword.Doc}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(@Doc() doc: DocEntity): Promise<DocEntity> {
     this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
@@ -123,7 +123,7 @@ export class DocController {
    * @returns The updated doc, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${UrlEndpoint.Doc}`)
+  @Patch(`:${Keyword.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -154,7 +154,7 @@ export class DocController {
    * @returns The updated doc, if it was updated successfully.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Post(`:${UrlEndpoint.Doc}`)
+  @Post(`:${Keyword.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -179,7 +179,7 @@ export class DocController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${UrlEndpoint.Doc}`)
+  @Delete(`:${Keyword.Doc}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

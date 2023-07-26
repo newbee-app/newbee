@@ -3,15 +3,15 @@ import {
   BaseQueryResultDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { createActionGroup, props } from '@ngrx/store';
 
 /**
  * All actions tied to `SearchState`.
  */
 export const SearchActions = createActionGroup({
-  source: UrlEndpoint.Search,
+  source: Keyword.Search,
   events: {
     /**
      * Send a search request to the API.

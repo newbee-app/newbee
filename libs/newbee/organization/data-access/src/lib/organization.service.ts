@@ -1,17 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  apiVersion,
   BaseCreateOrganizationDto,
   BaseCreateOrgMemberInviteDto,
   BaseGeneratedSlugDto,
   BaseOrgAndMemberDto,
   BaseSlugTakenDto,
   BaseUpdateOrganizationDto,
-  organizationVersion,
-  orgMemberInviteVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Organization } from '@newbee/shared/util';
+import { Keyword, Organization } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -31,7 +29,7 @@ export class OrganizationService {
    */
   get(slug: string): Observable<BaseOrgAndMemberDto> {
     return this.http.get<BaseOrgAndMemberDto>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${slug}`
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${slug}`
     );
   }
 
@@ -46,7 +44,7 @@ export class OrganizationService {
     createOrganizationDto: BaseCreateOrganizationDto
   ): Observable<Organization> {
     return this.http.post<Organization>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}`,
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`,
       createOrganizationDto
     );
   }
@@ -63,7 +61,7 @@ export class OrganizationService {
     updateOrganizationDto: BaseUpdateOrganizationDto
   ): Observable<Organization> {
     return this.http.patch<Organization>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${orgSlug}`,
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${orgSlug}`,
       updateOrganizationDto
     );
   }
@@ -77,7 +75,7 @@ export class OrganizationService {
    */
   delete(orgSlug: string): Observable<null> {
     return this.http.delete<null>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${orgSlug}`
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${orgSlug}`
     );
   }
 
@@ -91,7 +89,7 @@ export class OrganizationService {
   checkSlug(slug: string): Observable<BaseSlugTakenDto> {
     const params = new HttpParams({ fromObject: { slug } });
     return this.http.get<BaseSlugTakenDto>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${UrlEndpoint.CheckSlug}`,
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${Keyword.CheckSlug}`,
       { params }
     );
   }
@@ -106,7 +104,7 @@ export class OrganizationService {
   generateSlug(name: string): Observable<BaseGeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
-      `/${UrlEndpoint.Api}/v${organizationVersion}/${UrlEndpoint.Organization}/${UrlEndpoint.GenerateSlug}`,
+      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${Keyword.GenerateSlug}`,
       { params }
     );
   }
@@ -124,7 +122,7 @@ export class OrganizationService {
     createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto
   ): Observable<null> {
     return this.http.post<null>(
-      `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Organization}/${orgSlug}`,
+      `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Organization}/${orgSlug}`,
       createOrgMemberInviteDto
     );
   }

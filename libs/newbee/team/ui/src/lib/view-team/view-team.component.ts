@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
   DocSearchResultComponent,
   DropdownComponent,
   QnaSearchResultComponent,
   ViewAllBtnComponent,
 } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   compareTeamRoles,
+  Keyword,
   TeamRoleEnum,
   type TeamMember,
   type TeamNoOrg,
@@ -31,9 +32,14 @@ import {
 })
 export class ViewTeamComponent {
   /**
-   * The URL endpoints of NewBee, for use in the template.
+   * All NewBee keywords.
    */
-  readonly urlEndpoint = UrlEndpoint;
+  readonly keyword = Keyword;
+
+  /**
+   * All NewBee short URLs.
+   */
+  readonly shortUrl = ShortUrl;
 
   /**
    * Information about the team we're looking at.

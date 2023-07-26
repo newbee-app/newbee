@@ -7,8 +7,8 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
-import { cookieGuard } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { cookieGuard, ShortUrl } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { RootComponent } from '../root';
 
 /**
@@ -47,35 +47,28 @@ const routes: Routes = [
     canActivate: [cookieGuard],
     children: [
       {
-        path: UrlEndpoint.Auth,
+        path: Keyword.Auth,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/auth/feature');
           return m.AuthModule;
         },
       },
       {
-        path: UrlEndpoint.User,
+        path: Keyword.User,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/user/feature');
           return m.UserModule;
         },
       },
       {
-        path: UrlEndpoint.Organization,
-        loadChildren: async () => {
-          const m = await import('@newbee/newbee/organization/feature');
-          return m.OrgCreateModule;
-        },
-      },
-      {
-        path: `:${UrlEndpoint.Organization}`,
+        path: ShortUrl.Organization,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/organization/feature');
           return m.OrganizationModule;
         },
       },
       {
-        path: UrlEndpoint.Invite,
+        path: Keyword.Invite,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/invite/feature');
           return m.InviteModule;

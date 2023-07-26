@@ -5,14 +5,13 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
-  teamVersion,
+  apiVersion,
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { testOrganization1, testTeam1 } from '@newbee/shared/util';
+import { Keyword, testOrganization1, testTeam1 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -48,7 +47,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -71,7 +70,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${testOrganization1.slug}/${UrlEndpoint.Team}`
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
@@ -96,9 +95,9 @@ describe('TeamService', () => {
 
       const params = new HttpParams({ fromObject: { slug: testTeam1.slug } });
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${
           testOrganization1.slug
-        }/${UrlEndpoint.Team}/${UrlEndpoint.CheckSlug}?${params.toString()}`
+        }/${Keyword.Team}/${Keyword.CheckSlug}?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -122,9 +121,9 @@ describe('TeamService', () => {
 
       const params = new HttpParams({ fromObject: { base: testTeam1.name } });
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${
           testOrganization1.slug
-        }/${UrlEndpoint.Team}/${UrlEndpoint.GenerateSlug}?${params.toString()}`
+        }/${Keyword.Team}/${Keyword.GenerateSlug}?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 

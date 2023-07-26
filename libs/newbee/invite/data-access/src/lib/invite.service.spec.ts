@@ -3,12 +3,8 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  orgMemberInviteVersion,
-  testBaseTokenDto1,
-  UrlEndpoint,
-} from '@newbee/shared/data-access';
-import { testOrgMemberRelation1 } from '@newbee/shared/util';
+import { apiVersion, testBaseTokenDto1 } from '@newbee/shared/data-access';
+import { Keyword, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { InviteService } from './invite.service';
 
 describe('InviteService', () => {
@@ -44,7 +40,7 @@ describe('InviteService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Accept}`
+        `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Accept}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseTokenDto1);
@@ -68,7 +64,7 @@ describe('InviteService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${UrlEndpoint.Api}/v${orgMemberInviteVersion}/${UrlEndpoint.Invite}/${UrlEndpoint.Decline}`
+        `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Decline}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseTokenDto1);

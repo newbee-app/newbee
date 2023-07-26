@@ -5,9 +5,9 @@ import {
   catchHttpError,
   catchHttpScreenError,
   organizationFeature,
+  ShortUrl,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   nameIsNotEmpty,
   slugIsNotEmpty,
@@ -70,7 +70,7 @@ export class TeamEffects {
         filter(([, selectedOrganization]) => !!selectedOrganization),
         tap(async ([{ team }, selectedOrganization]) => {
           await this.router.navigate([
-            `/${selectedOrganization?.slug as string}/${UrlEndpoint.Team}/${
+            `/${selectedOrganization?.slug as string}/${ShortUrl.Team}/${
               team.slug
             }`,
           ]);

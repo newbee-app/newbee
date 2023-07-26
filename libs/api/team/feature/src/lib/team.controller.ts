@@ -33,20 +33,19 @@ import {
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
 import {
+  apiVersion,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
-  teamVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamEntity`.
  */
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}`,
-  version: teamVersion,
+  path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Team}`,
+  version: apiVersion.team,
 })
 export class TeamController {
   /**
@@ -102,7 +101,7 @@ export class TeamController {
    * @returns `true` if the org slug is taken, `false` otherwise.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  @Get(UrlEndpoint.CheckSlug)
+  @Get(Keyword.CheckSlug)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async checkSlug(
     @Query() checkSlugDto: SlugDto,
@@ -129,7 +128,7 @@ export class TeamController {
    * @returns A unique team slug suitable fo ruse.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  @Get(UrlEndpoint.GenerateSlug)
+  @Get(Keyword.GenerateSlug)
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto,
     @Organization() organization: OrganizationEntity,
@@ -162,7 +161,7 @@ export class TeamController {
    * @returns The team associated with the slug in the organization, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Get(`:${UrlEndpoint.Team}`)
+  @Get(`:${Keyword.Team}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity,
@@ -191,7 +190,7 @@ export class TeamController {
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team's slug is being updated and is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${UrlEndpoint.Team}`)
+  @Patch(`:${Keyword.Team}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -227,7 +226,7 @@ export class TeamController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${UrlEndpoint.Team}`)
+  @Delete(`:${Keyword.Team}`)
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity,

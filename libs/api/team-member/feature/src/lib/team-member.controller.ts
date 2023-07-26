@@ -20,15 +20,15 @@ import {
   TeamMemberService,
   UpdateTeamMemberDto,
 } from '@newbee/api/team-member/data-access';
-import { teamMemberVersion, UrlEndpoint } from '@newbee/shared/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamMemberEntity`.
  */
 @Controller({
-  path: `${UrlEndpoint.Organization}/:${UrlEndpoint.Organization}/${UrlEndpoint.Team}/:${UrlEndpoint.Team}/${UrlEndpoint.Member}`,
-  version: teamMemberVersion,
+  path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Team}/:${Keyword.Team}/${Keyword.Member}`,
+  version: apiVersion.teamMember,
 })
 export class TeamMemberController {
   /**
@@ -109,7 +109,7 @@ export class TeamMemberController {
    * @returns The udpated team member.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Patch(`:${UrlEndpoint.Member}`)
+  @Patch(`:${Keyword.Member}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
@@ -161,7 +161,7 @@ export class TeamMemberController {
    *
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Delete(`:${UrlEndpoint.Member}`)
+  @Delete(`:${Keyword.Member}`)
   @Role(
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,

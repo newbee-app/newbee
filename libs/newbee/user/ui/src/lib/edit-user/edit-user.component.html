@@ -83,10 +83,10 @@
       </button>
 
       <newbee-error-alert
-        *ngIf="httpClientError?.messages?.[urlEndpoint.New + '-' + urlEndpoint.Authenticator]"
+        *ngIf="httpClientError?.messages?.[keyword.New + '-' + keyword.Authenticator]"
         [text]="
           httpClientError?.messages?.[
-            urlEndpoint.New + '-' + urlEndpoint.Authenticator
+            keyword.New + '-' + keyword.Authenticator
           ] ?? ''
         "
       ></newbee-error-alert>

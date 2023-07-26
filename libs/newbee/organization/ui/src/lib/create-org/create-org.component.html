@@ -27,20 +27,15 @@
       <label for="slug-input"
         >What URL would you like to use for your organization?</label
       >
-      <div class="join">
-        <button type="button" class="btn no-animation cursor-auto join-item">
-          newbee.app/
-        </button>
-        <input
-          type="text"
-          id="slug-input"
-          formControlName="slug"
-          placeholder="my-org"
-          newbeeSlugInput
-          (slug)="formattedSlug.emit($event)"
-          class="input border-neutral w-full join-item"
-        />
-      </div>
+      <input
+        type="text"
+        id="slug-input"
+        formControlName="slug"
+        placeholder="my-org"
+        newbeeSlugInput
+        (slug)="formattedSlug.emit($event)"
+        class="input border-neutral w-full"
+      />
       <div *ngIf="checkPending" class="self-center">
         <span class="loading loading-dots"></span>
       </div>

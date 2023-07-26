@@ -1,13 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { TeamActions } from '@newbee/newbee/shared/data-access';
+import { ShortUrl, TeamActions } from '@newbee/newbee/shared/data-access';
 import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import { testOrganization1, testTeam1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -144,7 +143,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([
-          `/${testOrganization1.slug}/${UrlEndpoint.Team}/${testTeam1.slug}`,
+          `/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}`,
         ]);
       });
     });

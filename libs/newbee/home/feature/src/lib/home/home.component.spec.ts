@@ -4,9 +4,15 @@ import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { NoOrgComponent, NoOrgSelectedComponent } from '@newbee/newbee/home/ui';
 import { NavbarComponent } from '@newbee/newbee/navbar/feature';
-import { initialOrganizationState } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
+import {
+  initialOrganizationState,
+  ShortUrl,
+} from '@newbee/newbee/shared/data-access';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganization2,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { HomeComponent } from './home.component';
 
@@ -64,11 +70,11 @@ describe('HomeComponent', () => {
   describe('navigateToLink', () => {
     it('should call navigate', async () => {
       await component.navigateToLink(
-        `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`
+        `/${ShortUrl.Organization}/${Keyword.New}`
       );
       expect(router.navigate).toBeCalledTimes(1);
       expect(router.navigate).toBeCalledWith([
-        `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`,
+        `/${ShortUrl.Organization}/${Keyword.New}`,
       ]);
     });
   });

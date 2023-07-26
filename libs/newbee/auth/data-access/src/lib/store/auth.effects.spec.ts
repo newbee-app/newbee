@@ -10,9 +10,9 @@ import {
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
 import {
+  Keyword,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -232,7 +232,7 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([
-          `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+          `/${Keyword.Auth}/${Keyword.Login}`,
         ]);
       });
     });

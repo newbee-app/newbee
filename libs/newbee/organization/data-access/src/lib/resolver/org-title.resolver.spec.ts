@@ -7,9 +7,9 @@ import {
   initialHttpState,
   initialOrganizationState,
   OrganizationActions,
+  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import { forbiddenError, testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
@@ -26,7 +26,7 @@ describe('orgTitleResolver', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `:${UrlEndpoint.Organization}`,
+            path: `:${ShortUrl.Organization}`,
             component: EmptyComponent,
             title: orgTitleResolver,
           },

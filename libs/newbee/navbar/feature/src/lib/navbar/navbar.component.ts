@@ -9,6 +9,7 @@ import {
   AuthActions,
   authFeature,
   organizationFeature,
+  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
 import type { Organization } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
@@ -46,7 +47,9 @@ export class NavbarComponent {
    * @param organization The organization to select.
    */
   async selectOrganization(organization: Organization): Promise<void> {
-    await this.router.navigate([`/${organization.slug}`]);
+    await this.router.navigate([
+      `/${ShortUrl.Organization}/${organization.slug}`,
+    ]);
   }
 
   /**

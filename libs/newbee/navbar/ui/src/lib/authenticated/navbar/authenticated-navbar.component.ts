@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import { DropdownComponent, TooltipComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import type {
+import {
+  compareOrgRoles,
+  Keyword,
   Organization,
   OrgMemberNoUserOrg,
-  User,
+  OrgRoleEnum,
+  type User,
 } from '@newbee/shared/util';
-import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
 import { AuthenticatedSidebarComponent } from '../sidebar';
 
 /**
@@ -61,9 +63,14 @@ export class AuthenticatedNavbarComponent {
   @Output() logout = new EventEmitter<void>();
 
   /**
-   * All possible URL endpoints.
+   * All NewBee keywords.
    */
-  readonly urlEndpoint = UrlEndpoint;
+  readonly keyword = Keyword;
+
+  /**
+   * All NewBee short URLs.
+   */
+  readonly shortUrl = ShortUrl;
 
   /**
    * Whether or not the user has at least `Moderator` permissions in the selected org.

@@ -3,7 +3,7 @@ import type { JwtModuleOptions } from '@nestjs/jwt';
 import type { AppConfig } from '@newbee/api/shared/util';
 import { authJwtCookie } from '@newbee/api/shared/util';
 import type { StrategyOptions as MagicLinkLoginStrategyOtions } from '@newbee/passport-magic-link-login';
-import { magicLinkLogin } from '@newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { StrategyOptions as JwtStrategyOptions } from 'passport-jwt';
 
 /**
@@ -39,7 +39,7 @@ export interface AppAuthConfig extends AppConfig {
 
 const tokenExpiration = '7d';
 export default registerAs(
-  'auth',
+  Keyword.Auth,
   (): AuthConfig => ({
     jwtModule: {
       secret: process.env['JWT_SECRET'] as string,
@@ -53,7 +53,7 @@ export default registerAs(
     magicLinkLogin: {
       secret: process.env['JWT_SECRET'] as string,
       verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'] as string,
-      name: magicLinkLogin,
+      name: Keyword.MagicLinkLogin,
     },
     jwtStrategy: {
       secretOrKey: process.env['JWT_SECRET'] as string,

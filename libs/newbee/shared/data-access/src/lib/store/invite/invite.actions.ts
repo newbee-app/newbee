@@ -1,12 +1,12 @@
-import { BaseTokenDto, UrlEndpoint } from '@newbee/shared/data-access';
-import { OrgMemberNoUser } from '@newbee/shared/util';
+import { BaseTokenDto } from '@newbee/shared/data-access';
+import { Keyword, OrgMemberNoUser } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to inviting users to an org.
  */
 export const InviteActions = createActionGroup({
-  source: UrlEndpoint.Invite,
+  source: Keyword.Invite,
   events: {
     /**
      * Accept the given org invite.

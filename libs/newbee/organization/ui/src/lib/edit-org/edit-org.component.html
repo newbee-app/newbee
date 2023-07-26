@@ -64,22 +64,14 @@
             </p>
           </label>
 
-          <div class="join">
-            <button
-              type="button"
-              class="btn no-animation cursor-auto join-item"
-            >
-              newbee.app/
-            </button>
-            <input
-              type="text"
-              id="edit-slug-input"
-              formControlName="slug"
-              newbeeSlugInput
-              (slug)="formattedSlug.emit($event)"
-              class="input border-neutral join-item w-full"
-            />
-          </div>
+          <input
+            type="text"
+            id="edit-slug-input"
+            formControlName="slug"
+            newbeeSlugInput
+            (slug)="formattedSlug.emit($event)"
+            class="input border-neutral w-full"
+          />
 
           <div *ngIf="checkPending" class="self-center">
             <span class="loading loading-dots"></span>

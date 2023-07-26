@@ -1,0 +1,64 @@
+/**
+ * An enum containing all of the important reused keywords in NewBee, for the sake of standardization and avoiding typos.
+ * For use in URL endpoints, components, services, display, etc.
+ * For use in the backend and the frontend.
+ */
+export enum Keyword {
+  // auth keywords
+  Auth = 'auth',
+  Webauthn = 'webauthn',
+  Login = 'login',
+  Register = 'register',
+  Logout = 'logout',
+  ConfirmEmail = 'confirm-email',
+  MagicLinkLogin = 'magic-link-login',
+
+  // authenticator keywords
+  Authenticator = 'authenticator',
+  Options = 'options',
+
+  // cookie keywords
+  Cookie = 'cookie',
+
+  // user keywords
+  User = 'user',
+
+  // organization keywords
+  Organization = 'org',
+
+  // team keywords
+  Team = 'team',
+
+  // doc keywords
+  Doc = 'doc',
+
+  // qna keywords
+  Qna = 'qna',
+  Question = 'question',
+  Answer = 'answer',
+
+  // member keywords
+  Member = 'member',
+
+  // search keywords
+  Search = 'search',
+  Suggest = 'suggest',
+
+  // org member invite keywords
+  Invite = 'invite',
+  Accept = 'accept',
+  Decline = 'decline',
+
+  // slug keywords
+  CheckSlug = 'check-slug',
+  GenerateSlug = 'generate-slug',
+
+  // general keywords
+  Api = 'api',
+  New = 'new',
+  Edit = 'edit',
+
+  // misc stuff for use in ngrx stores
+  Http = 'http',
+  Router = 'router',
+}

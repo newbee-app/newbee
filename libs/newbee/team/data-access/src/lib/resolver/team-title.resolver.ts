@@ -2,10 +2,10 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import {
   httpFeature,
+  ShortUrl,
   TeamActions,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 
@@ -19,7 +19,7 @@ export const teamTitleResolver: ResolveFn<string> = (
   route: ActivatedRouteSnapshot
 ): Observable<string> => {
   const store = inject(Store);
-  const teamSlug = route.paramMap.get(UrlEndpoint.Team) as string;
+  const teamSlug = route.paramMap.get(ShortUrl.Team) as string;
   store.dispatch(TeamActions.getTeam({ slug: teamSlug }));
   return combineLatest([
     store.select(teamFeature.selectSelectedTeam),

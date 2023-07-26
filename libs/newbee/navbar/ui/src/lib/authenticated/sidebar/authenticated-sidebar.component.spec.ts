@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testOrganization1, testOrganization2 } from '@newbee/shared/util';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganization2,
+} from '@newbee/shared/util';
 import { AuthenticatedSidebarComponent } from './authenticated-sidebar.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -58,10 +62,10 @@ describe('AuthenticatedSidebarComponent', () => {
 
   describe('emitNavigateToLink', () => {
     it('should emit a request to navigate to the link associated with the route keyword', () => {
-      component.emitNavigateToLink(UrlEndpoint.Organization, UrlEndpoint.New);
+      component.emitNavigateToLink(ShortUrl.Organization, Keyword.New);
       expect(component.navigateToLink.emit).toBeCalledTimes(1);
       expect(component.navigateToLink.emit).toBeCalledWith(
-        `/${UrlEndpoint.Organization}/${UrlEndpoint.New}`
+        `/${ShortUrl.Organization}/${Keyword.New}`
       );
     });
   });

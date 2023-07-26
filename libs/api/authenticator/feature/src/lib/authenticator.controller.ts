@@ -18,14 +18,14 @@ import {
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { User } from '@newbee/api/shared/util';
-import { authenticatorVersion, UrlEndpoint } from '@newbee/shared/data-access';
-import type { Authenticator } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { Authenticator, Keyword } from '@newbee/shared/util';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**
  * The controller that interacts with the `AuthenticatorEntity`.
  */
-@Controller({ path: UrlEndpoint.Authenticator, version: authenticatorVersion })
+@Controller({ path: Keyword.Authenticator, version: apiVersion.authenticator })
 export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 
@@ -56,7 +56,7 @@ export class AuthenticatorController {
    * @param user The user to associate with the authenticator.
    * @returns The registration options for the new authenticator.
    */
-  @Post(UrlEndpoint.Options)
+  @Post(Keyword.Options)
   async createOptions(
     @User() user: UserEntity
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
@@ -117,9 +117,9 @@ export class AuthenticatorController {
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user and the provided user IDs do not match.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other error.
    */
-  @Patch(`:${UrlEndpoint.Authenticator}`)
+  @Patch(`:${Keyword.Authenticator}`)
   async updateName(
-    @Param(UrlEndpoint.Authenticator) id: string,
+    @Param(Keyword.Authenticator) id: string,
     @Body() nameDto: NameDto,
     @User() user: UserEntity
   ): Promise<AuthenticatorEntity> {
@@ -145,9 +145,9 @@ export class AuthenticatorController {
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  @Delete(`:${UrlEndpoint.Authenticator}`)
+  @Delete(`:${Keyword.Authenticator}`)
   async delete(
-    @Param(UrlEndpoint.Authenticator) id: string,
+    @Param(Keyword.Authenticator) id: string,
     @User() user: UserEntity
   ): Promise<void> {
     this.logger.log(

@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
   resetSelectedTeamGuard,
   teamTitleResolver,
 } from '@newbee/newbee/team/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { TeamCreateComponent } from '../team-create';
 import { TeamViewComponent } from '../team-view';
 
@@ -13,11 +14,11 @@ const routes: Routes = [
     path: '',
     children: [
       {
-        path: UrlEndpoint.New,
+        path: Keyword.New,
         component: TeamCreateComponent,
       },
       {
-        path: `:${UrlEndpoint.Team}`,
+        path: `:${ShortUrl.Team}`,
         title: teamTitleResolver,
         canDeactivate: [resetSelectedTeamGuard],
         component: TeamViewComponent,

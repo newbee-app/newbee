@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 import { authFeature, cookieFeature } from '../store';
@@ -28,9 +28,7 @@ export const authenticatedGuard: CanActivateFn = (): Observable<
         return true;
       }
 
-      return router.createUrlTree([
-        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
-      ]);
+      return router.createUrlTree([`/${Keyword.Auth}/${Keyword.Login}`]);
     })
   );
 };

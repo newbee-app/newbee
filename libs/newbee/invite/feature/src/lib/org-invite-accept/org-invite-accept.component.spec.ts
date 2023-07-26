@@ -6,7 +6,8 @@ import {
 } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
-import { testBaseTokenDto1, UrlEndpoint } from '@newbee/shared/data-access';
+import { testBaseTokenDto1 } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteAcceptComponent } from './org-invite-accept.component';
 
@@ -54,7 +55,7 @@ describe('OrgInviteAcceptComponent', () => {
   describe('init', () => {
     it('should dispatch acceptInvite', () => {
       expect(route.snapshot.paramMap.get).toBeCalledTimes(1);
-      expect(route.snapshot.paramMap.get).toBeCalledWith(UrlEndpoint.Invite);
+      expect(route.snapshot.paramMap.get).toBeCalledWith(Keyword.Invite);
       expect(store.dispatch).toBeCalledWith(
         InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 })
       );

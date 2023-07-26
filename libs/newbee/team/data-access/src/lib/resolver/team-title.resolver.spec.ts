@@ -6,10 +6,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   initialHttpState,
   initialTeamState,
+  ShortUrl,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   forbiddenError,
   testTeam1,
@@ -35,7 +35,7 @@ describe('teamTitleResolver', () => {
             component: EmptyComponent,
             children: [
               {
-                path: `:${UrlEndpoint.Team}`,
+                path: `:${ShortUrl.Team}`,
                 title: teamTitleResolver,
                 component: EmptyComponent,
               },

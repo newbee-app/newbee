@@ -1,4 +1,4 @@
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { v4 } from 'uuid';
 import { CookieActions } from './cookie.actions';
@@ -30,7 +30,7 @@ export const initialCookieState: CookieState = {
  * The reducers and generated selectors for `CookieState`.
  */
 export const cookieFeature = createFeature({
-  name: UrlEndpoint.Cookie,
+  name: Keyword.Cookie,
   reducer: createReducer(
     initialCookieState,
     on(

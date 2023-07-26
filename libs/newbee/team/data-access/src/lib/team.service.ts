@@ -1,14 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  apiVersion,
   BaseCreateTeamDto,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
-  teamVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Team } from '@newbee/shared/util';
+import { Keyword, Team } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -29,7 +28,7 @@ export class TeamService {
    */
   get(slug: string, orgSlug: string): Observable<BaseTeamAndMemberDto> {
     return this.http.get<BaseTeamAndMemberDto>(
-      `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}/${slug}`
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${slug}`
     );
   }
 
@@ -43,7 +42,7 @@ export class TeamService {
    */
   create(createTeamDto: BaseCreateTeamDto, orgSlug: string): Observable<Team> {
     return this.http.post<Team>(
-      `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}`,
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}`,
       createTeamDto
     );
   }
@@ -59,7 +58,7 @@ export class TeamService {
   checkSlug(slug: string, orgSlug: string): Observable<BaseSlugTakenDto> {
     const params = new HttpParams({ fromObject: { slug } });
     return this.http.get<BaseSlugTakenDto>(
-      `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}/${UrlEndpoint.CheckSlug}`,
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${Keyword.CheckSlug}`,
       { params }
     );
   }
@@ -78,7 +77,7 @@ export class TeamService {
   ): Observable<BaseGeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
-      `/${UrlEndpoint.Api}/v${teamVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Team}/${UrlEndpoint.GenerateSlug}`,
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${Keyword.GenerateSlug}`,
       { params }
     );
   }

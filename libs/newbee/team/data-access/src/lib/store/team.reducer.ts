@@ -3,7 +3,7 @@ import {
   RouterActions,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -45,7 +45,7 @@ export const initialTeamState: TeamState = {
  * The reducers and generated selectors for `TeamState`.
  */
 export const teamFeature = createFeature({
-  name: `${UrlEndpoint.Team}Module`,
+  name: `${Keyword.Team}Module`,
   reducer: createReducer(
     initialTeamState,
     on(

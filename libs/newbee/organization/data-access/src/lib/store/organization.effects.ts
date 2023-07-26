@@ -7,8 +7,8 @@ import {
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
+  Keyword,
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
   orgRoleIsEnum,
@@ -113,7 +113,7 @@ export class OrganizationEffects {
       return this.actions$.pipe(
         ofType(OrganizationActions.editOrgSlugSuccess),
         tap(async ({ newOrg }) => {
-          await this.router.navigate([`/${newOrg.slug}/${UrlEndpoint.Edit}`]);
+          await this.router.navigate([`/${newOrg.slug}/${Keyword.Edit}`]);
         })
       );
     },

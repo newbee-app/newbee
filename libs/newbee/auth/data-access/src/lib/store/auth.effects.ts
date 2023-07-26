@@ -6,10 +6,10 @@ import {
   AuthenticatorActions,
   catchHttpError,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import {
   displayNameIsNotEmpty,
   emailIsEmail,
+  Keyword,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,
   userChallengeEmailNotFound,
@@ -35,7 +35,7 @@ export class AuthEffects {
           }),
           tap(async () => {
             await this.router.navigate([
-              `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}/${UrlEndpoint.ConfirmEmail}`,
+              `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`,
             ]);
           }),
           catchError(AuthEffects.catchHttpError)
@@ -148,9 +148,7 @@ export class AuthEffects {
       return this.actions$.pipe(
         ofType(AuthActions.logoutSuccess),
         tap(async () => {
-          await this.router.navigate([
-            `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
-          ]);
+          await this.router.navigate([`/${Keyword.Auth}/${Keyword.Login}`]);
         })
       );
     },

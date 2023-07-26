@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  apiVersion,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
-  searchVersion,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -28,7 +28,7 @@ export class SearchService {
    */
   search(query: BaseQueryDto, orgSlug: string): Observable<BaseQueryResultDto> {
     return this.http.post<BaseQueryResultDto>(
-      `/api/v${searchVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Search}`,
+      `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}`,
       query
     );
   }
@@ -46,7 +46,7 @@ export class SearchService {
     orgSlug: string
   ): Observable<BaseSuggestResultDto> {
     return this.http.post<BaseSuggestResultDto>(
-      `/api/v${searchVersion}/${UrlEndpoint.Organization}/${orgSlug}/${UrlEndpoint.Search}/${UrlEndpoint.Suggest}`,
+      `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}/${Keyword.Suggest}`,
       query
     );
   }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -21,9 +21,7 @@ export class OrgInviteAcceptComponent implements OnInit {
    * Make a request to accept the invite.
    */
   ngOnInit(): void {
-    const token = this.route.snapshot.paramMap.get(
-      UrlEndpoint.Invite
-    ) as string;
+    const token = this.route.snapshot.paramMap.get(Keyword.Invite) as string;
     this.store.dispatch(InviteActions.acceptInvite({ tokenDto: { token } }));
   }
 }

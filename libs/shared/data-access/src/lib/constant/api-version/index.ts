@@ -1,59 +1,17 @@
 /**
- * The version of the `auth` API endpoint.
+ * All of the current versions for the REST API endpoints.
  */
-export const authVersion = '1';
-
-/**
- * The version of the `authenticator` API endpoint.
- */
-export const authenticatorVersion = '1';
-
-/**
- * The version of the `cookie` API endpoint.
- */
-export const cookieVersion = '1';
-
-/**
- * The version of the `user` API endpoint.
- */
-export const userVersion = '1';
-
-/**
- * The version of the `organization` API endpoint.
- */
-export const organizationVersion = '1';
-
-/**
- * The version of the `org-member` API endpoint.
- */
-export const orgMemberVersion = '1';
-
-/**
- * The version of the `org-member-invite` API endpoint.
- */
-export const orgMemberInviteVersion = '1';
-
-/**
- * The version of the `team` API endpoint.
- */
-export const teamVersion = '1';
-
-/**
- * The version of the `team-member` API endpoint.
- */
-export const teamMemberVersion = '1';
-
-/**
- * The version of the `doc` API endpoint.
- */
-export const docVersion = '1';
-
-/**
- * The version of the `qna` API endpoint.
- */
-export const qnaVersion = '1';
-
-/**
- * The version of the `search` API endpoint.
- */
-export const searchVersion = '1';
+export const apiVersion = {
+  auth: '1',
+  authenticator: '1',
+  cookie: '1',
+  user: '1',
+  organization: '1',
+  orgMember: '1',
+  orgMemberInvite: '1',
+  team: '1',
+  teamMember: '1',
+  doc: '1',
+  qna: '1',
+  search: '1',
+};

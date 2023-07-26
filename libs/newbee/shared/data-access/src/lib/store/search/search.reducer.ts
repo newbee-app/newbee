@@ -1,4 +1,5 @@
-import { BaseQueryResultDto, UrlEndpoint } from '@newbee/shared/data-access';
+import { BaseQueryResultDto } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { SearchActions } from './search.actions';
 
@@ -29,7 +30,7 @@ export const initialSearchState: SearchState = {
  * The reducers and generated selectors for `SearchState`.
  */
 export const searchFeature = createFeature({
-  name: UrlEndpoint.Search,
+  name: Keyword.Search,
   reducer: createReducer(
     initialSearchState,
     on(

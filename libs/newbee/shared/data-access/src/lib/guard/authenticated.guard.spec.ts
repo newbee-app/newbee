@@ -3,8 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { UrlEndpoint } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { Keyword, testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { authenticatedGuard } from './authenticated.guard';
 
@@ -19,7 +18,7 @@ describe('AuthenticatedGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `${UrlEndpoint.Auth}/${UrlEndpoint.Login}`,
+            path: `${Keyword.Auth}/${Keyword.Login}`,
             component: EmptyComponent,
           },
           {
@@ -64,9 +63,7 @@ describe('AuthenticatedGuard', () => {
     it('should redirect', async () => {
       store.setState({ auth: { user: null }, cookie: { csrfToken: 'token' } });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual(
-        `/${UrlEndpoint.Auth}/${UrlEndpoint.Login}`
-      );
+      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
     });
   });
 });

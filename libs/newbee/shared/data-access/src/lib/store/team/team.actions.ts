@@ -1,16 +1,15 @@
 import {
   BaseCreateTeamDto,
   BaseTeamAndMemberDto,
-  UrlEndpoint,
 } from '@newbee/shared/data-access';
-import type { Team } from '@newbee/shared/util';
+import { Keyword, Team } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to teams.
  */
 export const TeamActions = createActionGroup({
-  source: UrlEndpoint.Team,
+  source: Keyword.Team,
   events: {
     /**
      * Gets the team associated with the provided slug.

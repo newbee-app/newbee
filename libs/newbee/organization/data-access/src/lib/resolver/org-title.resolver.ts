@@ -4,8 +4,8 @@ import {
   httpFeature,
   OrganizationActions,
   organizationFeature,
+  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
-import { UrlEndpoint } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 
@@ -19,7 +19,7 @@ export const orgTitleResolver: ResolveFn<string> = (
   route: ActivatedRouteSnapshot
 ): Observable<string> => {
   const store = inject(Store);
-  const orgSlug = route.paramMap.get(UrlEndpoint.Organization) as string;
+  const orgSlug = route.paramMap.get(ShortUrl.Organization) as string;
   store.dispatch(OrganizationActions.getOrg({ orgSlug }));
   return combineLatest([
     store.select(organizationFeature.selectSelectedOrganization),

@@ -70,8 +70,9 @@
                   <a
                     (click)="
                       emitNavigateToLink(
+                        shortUrl.Organization,
                         selectedOrganization.slug,
-                        urlEndpoint.Edit
+                        keyword.Edit
                       )
                     "
                     class="flex"
@@ -82,8 +83,9 @@
                   <a
                     (click)="
                       emitNavigateToLink(
+                        shortUrl.Organization,
                         selectedOrganization.slug,
-                        urlEndpoint.Invite
+                        keyword.Invite
                       )
                     "
                     class="flex"
@@ -138,9 +140,10 @@
                   <a
                     (click)="
                       emitNavigateToLink(
+                        shortUrl.Organization,
                         selectedOrganization!.slug,
-                        urlEndpoint.Doc,
-                        urlEndpoint.New
+                        shortUrl.Doc,
+                        keyword.New
                       )
                     "
                     class="flex"
@@ -151,9 +154,10 @@
                   <a
                     (click)="
                       emitNavigateToLink(
+                        shortUrl.Organization,
                         selectedOrganization!.slug,
-                        urlEndpoint.Qna,
-                        urlEndpoint.New
+                        shortUrl.Qna,
+                        keyword.New
                       )
                     "
                     class="flex"
@@ -164,9 +168,10 @@
                   <a
                     (click)="
                       emitNavigateToLink(
+                        shortUrl.Organization,
                         selectedOrganization!.slug,
-                        urlEndpoint.Team,
-                        urlEndpoint.New
+                        shortUrl.Team,
+                        keyword.New
                       )
                     "
                     class="flex"
@@ -185,7 +190,7 @@
 
               <ul dropdown class="menu flex flex-col flex-nowrap w-44">
                 <li>
-                  <a (click)="emitNavigateToLink(urlEndpoint.User)" class="flex"
+                  <a (click)="emitNavigateToLink(keyword.User)" class="flex"
                     >Manage your account</a
                   >
                 </li>
@@ -226,15 +231,22 @@
           }}</label>
           <div class="collapse-content flex flex-col gap-y-2 flex-nowrap">
             <a
-              (click)="emitNavigateToLink(selectedOrganization.slug)"
+              (click)="
+                emitNavigateToLink(
+                  shortUrl.Organization,
+                  selectedOrganization.slug,
+                  keyword.Edit
+                )
+              "
               class="link link-hover"
               >Edit org</a
             >
             <a
               (click)="
                 emitNavigateToLink(
+                  shortUrl.Organization,
                   selectedOrganization.slug,
-                  urlEndpoint.Invite
+                  keyword.Invite
                 )
               "
               class="link link-hover"
@@ -250,9 +262,10 @@
             <a
               (click)="
                 emitNavigateToLink(
+                  shortUrl.Organization,
                   selectedOrganization!.slug,
-                  urlEndpoint.Doc,
-                  urlEndpoint.New
+                  shortUrl.Doc,
+                  keyword.New
                 )
               "
               class="link link-hover"
@@ -261,9 +274,10 @@
             <a
               (click)="
                 emitNavigateToLink(
+                  shortUrl.Organization,
                   selectedOrganization!.slug,
-                  urlEndpoint.Qna,
-                  urlEndpoint.New
+                  shortUrl.Qna,
+                  keyword.New
                 )
               "
               class="link link-hover"
@@ -273,9 +287,10 @@
               *ngIf="isAdmin"
               (click)="
                 emitNavigateToLink(
+                  shortUrl.Organization,
                   selectedOrganization!.slug,
-                  urlEndpoint.Team,
-                  urlEndpoint.New
+                  shortUrl.Team,
+                  keyword.New
                 )
               "
               class="link link-hover"
@@ -289,7 +304,7 @@
           <label for="account-collapse" class="collapse-title">Account</label>
           <div class="collapse-content flex flex-col flex-nowrap gap-y-2">
             <a
-              (click)="emitNavigateToLink(urlEndpoint.User)"
+              (click)="emitNavigateToLink(keyword.User)"
               class="link link-hover"
               >Manage your account</a
             >
