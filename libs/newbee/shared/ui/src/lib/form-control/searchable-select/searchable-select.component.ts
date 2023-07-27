@@ -8,8 +8,8 @@ import {
 } from '@angular/forms';
 import { SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
+import { AlertComponent } from '../../alert/alert.component';
 import { DropdownComponent } from '../../dropdown';
-import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 import { SearchbarComponent } from '../searchbar/searchbar.component';
 
 /**
@@ -28,7 +28,7 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
     CommonModule,
     ReactiveFormsModule,
     SearchbarComponent,
-    ErrorAlertComponent,
+    AlertComponent,
     DropdownComponent,
   ],
   templateUrl: './searchable-select.component.html',

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
+import { AlertComponent } from '@newbee/newbee/shared/ui';
 import { SlugInputDirectiveModule } from '@newbee/newbee/shared/util';
 
 @Component({
@@ -10,7 +10,7 @@ import { SlugInputDirectiveModule } from '@newbee/newbee/shared/util';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ErrorAlertComponent,
+    AlertComponent,
     SlugInputDirectiveModule,
   ],
   templateUrl: './edit-team.component.html',

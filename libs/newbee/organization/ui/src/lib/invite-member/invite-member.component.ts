@@ -10,9 +10,8 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { InviteMemberForm } from '@newbee/newbee/organization/util';
 import {
-  ErrorAlertComponent,
+  AlertComponent,
   SearchableSelectComponent,
-  SuccessAlertComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
@@ -32,8 +31,7 @@ import { OrgRoleEnum } from '@newbee/shared/util';
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
-    ErrorAlertComponent,
-    SuccessAlertComponent,
+    AlertComponent,
   ],
   templateUrl: './invite-member.component.html',
 })

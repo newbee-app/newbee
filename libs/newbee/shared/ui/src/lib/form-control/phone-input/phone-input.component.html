@@ -32,9 +32,10 @@
       class="input border-neutral truncate"
       [ngClass]="{ 'input-error': hasError('number') && !clean }"
     />
-    <newbee-error-alert
+    <newbee-alert
       *ngIf="hasError('number') && !clean"
+      type="error"
       [text]="errorMessage"
-    ></newbee-error-alert>
+    ></newbee-alert>
   </div>
 </div>

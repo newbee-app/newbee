@@ -14,10 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  ErrorAlertComponent,
-  PhoneInputComponent,
-} from '@newbee/newbee/shared/ui';
+import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   CountryService,
   getErrorMessage,
@@ -40,7 +37,7 @@ import parsePhoneNumber from 'libphonenumber-js';
     CommonModule,
     ReactiveFormsModule,
     PhoneInputComponent,
-    ErrorAlertComponent,
+    AlertComponent,
   ],
   templateUrl: './edit-user.component.html',
 })

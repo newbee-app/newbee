@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { CreateOrgForm } from '@newbee/newbee/organization/util';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
+import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
   HttpClientError,
@@ -29,7 +29,7 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ErrorAlertComponent,
+    AlertComponent,
     SlugInputDirectiveModule,
   ],
   templateUrl: './create-org.component.html',

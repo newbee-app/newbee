@@ -2,10 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
-import {
-  ErrorAlertComponent,
-  PhoneInputComponent,
-} from '@newbee/newbee/shared/ui';
+import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   CountryService,
   getErrorMessage,
@@ -26,7 +23,7 @@ import { BaseFormComponent } from '../base-form';
     ReactiveFormsModule,
     BaseFormComponent,
     PhoneInputComponent,
-    ErrorAlertComponent,
+    AlertComponent,
   ],
   templateUrl: './register-form.component.html',
 })

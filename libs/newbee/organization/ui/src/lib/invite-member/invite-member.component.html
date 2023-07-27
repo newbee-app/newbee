@@ -30,10 +30,11 @@
           </div>
         </div>
 
-        <newbee-error-alert
+        <newbee-alert
           *ngIf="inputDisplayError('email') || inputDisplayError('role')"
+          type="error"
           [text]="inputErrorMessage('email') || inputErrorMessage('role')"
-        ></newbee-error-alert>
+        ></newbee-alert>
       </div>
 
       <button
@@ -48,14 +49,16 @@
     </form>
 
     <div class="w-full">
-      <newbee-success-alert
+      <newbee-alert
         *ngIf="invitedUser"
+        type="success"
         [text]="inviteSuccessText"
-      ></newbee-success-alert>
-      <newbee-error-alert
+      ></newbee-alert>
+      <newbee-alert
         *ngIf="httpClientError?.messages?.['misc']"
+        type="error"
         [text]="httpClientError?.messages?.['misc'] ?? ''"
-      ></newbee-error-alert>
+      ></newbee-alert>
     </div>
   </div>
 </div>

@@ -22,9 +22,10 @@
           />
 
           <div *ngIf="inputDisplayError('email')" class="mt-2">
-            <newbee-error-alert
+            <newbee-alert
+              type="error"
               [text]="inputErrorMessage('email')"
-            ></newbee-error-alert>
+            ></newbee-alert>
           </div>
         </div>
 
@@ -41,9 +42,10 @@
           />
 
           <div *ngIf="inputDisplayError('name')" class="mt-2">
-            <newbee-error-alert
+            <newbee-alert
+              type="error"
               [text]="inputErrorMessage('name')"
-            ></newbee-error-alert>
+            ></newbee-alert>
           </div>
         </div>
 
@@ -60,9 +62,10 @@
           />
 
           <div *ngIf="inputDisplayError('displayName')" class="mt-2">
-            <newbee-error-alert
+            <newbee-alert
+              type="error"
               [text]="inputErrorMessage('displayName')"
-            ></newbee-error-alert>
+            ></newbee-alert>
           </div>
         </div>
 
@@ -85,9 +88,10 @@
         </button>
 
         <div *ngIf="httpClientError?.messages?.['misc']" class="mt-2">
-          <newbee-error-alert
+          <newbee-alert
+            type="error"
             [text]="httpClientError?.messages?.['misc']!"
-          ></newbee-error-alert>
+          ></newbee-alert>
         </div>
       </div>
     </form>

@@ -21,7 +21,7 @@
         />
 
         <div *ngIf="showEmailError" class="mt-2">
-          <newbee-error-alert [text]="emailErrorMessage"></newbee-error-alert>
+          <newbee-alert type="error" [text]="emailErrorMessage"></newbee-alert>
         </div>
       </div>
 
@@ -47,9 +47,10 @@
         </button>
 
         <div *ngIf="httpClientError?.messages?.['misc']">
-          <newbee-error-alert
+          <newbee-alert
+            type="error"
             [text]="httpClientError?.messages?.['misc']!"
-          ></newbee-error-alert>
+          ></newbee-alert>
         </div>
       </div>
     </form>

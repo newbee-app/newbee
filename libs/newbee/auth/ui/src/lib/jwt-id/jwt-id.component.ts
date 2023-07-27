@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
+import { AlertComponent } from '@newbee/newbee/shared/ui';
 import { HttpClientError } from '@newbee/newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
@@ -10,7 +10,7 @@ import { BaseFormComponent } from '../base-form';
 @Component({
   selector: 'newbee-jwt-id',
   standalone: true,
-  imports: [CommonModule, BaseFormComponent, ErrorAlertComponent],
+  imports: [CommonModule, BaseFormComponent, AlertComponent],
   templateUrl: './jwt-id.component.html',
 })
 export class JwtIdComponent {

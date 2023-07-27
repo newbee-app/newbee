@@ -14,7 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { EditOrgForm, EditOrgSlugForm } from '@newbee/newbee/organization/util';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
+import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
   HttpClientError,
@@ -34,7 +34,7 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ErrorAlertComponent,
+    AlertComponent,
     SlugInputDirectiveModule,
   ],
   templateUrl: './edit-org.component.html',

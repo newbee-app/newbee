@@ -17,10 +17,11 @@
         required
         class="input border-neutral w-full"
       />
-      <newbee-error-alert
+      <newbee-alert
         *ngIf="inputDisplayError('name')"
+        type="error"
         [text]="inputErrorMessage('name')"
-      ></newbee-error-alert>
+      ></newbee-alert>
     </div>
 
     <div class="flex flex-col gap-y-2 w-full">
@@ -39,13 +40,14 @@
       <div *ngIf="checkPending" class="self-center">
         <span class="loading loading-dots"></span>
       </div>
-      <newbee-error-alert
+      <newbee-alert
         *ngIf="(!checkPending && slugTaken) || inputDisplayError('slug')"
+        type="error"
         [text]="
           inputErrorMessage('slug') ||
           'This slug is already taken, please choose another'
         "
-      ></newbee-error-alert>
+      ></newbee-alert>
     </div>
 
     <button
@@ -60,9 +62,10 @@
       Create Org
     </button>
 
-    <newbee-error-alert
+    <newbee-alert
       *ngIf="httpClientError?.messages?.['misc']"
+      type="error"
       [text]="httpClientError?.messages?.['misc']!"
-    ></newbee-error-alert>
+    ></newbee-alert>
   </div>
 </form>

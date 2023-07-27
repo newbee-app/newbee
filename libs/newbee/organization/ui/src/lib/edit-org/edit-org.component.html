@@ -17,10 +17,11 @@
           formControlName="name"
           class="input border-neutral w-full"
         />
-        <newbee-error-alert
+        <newbee-alert
           *ngIf="inputDisplayError('editOrg', 'name')"
+          type="error"
           [text]="inputErrorMessage('editOrg', 'name')"
-        ></newbee-error-alert>
+        ></newbee-alert>
       </div>
 
       <button
@@ -77,16 +78,17 @@
             <span class="loading loading-dots"></span>
           </div>
 
-          <newbee-error-alert
+          <newbee-alert
             *ngIf="
               (!checkPending && slugTaken) ||
               inputDisplayError('editOrgSlug', 'slug')
             "
+            type="error"
             [text]="
               inputErrorMessage('editOrgSlug', 'slug') ||
               'This slug is already taken, please choose another'
             "
-          ></newbee-error-alert>
+          ></newbee-alert>
         </div>
 
         <button
@@ -149,8 +151,9 @@
     </div>
   </div>
 
-  <newbee-error-alert
+  <newbee-alert
     *ngIf="httpClientError?.messages?.['misc']"
+    type="error"
     [text]="httpClientError?.messages?.['misc'] ?? ''"
-  ></newbee-error-alert>
+  ></newbee-alert>
 </div>

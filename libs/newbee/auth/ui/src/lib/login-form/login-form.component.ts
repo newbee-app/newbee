@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
-import { ErrorAlertComponent } from '@newbee/newbee/shared/ui';
+import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   getErrorMessage,
   HttpClientError,
@@ -20,7 +20,7 @@ import { BaseFormComponent } from '../base-form';
     CommonModule,
     ReactiveFormsModule,
     BaseFormComponent,
-    ErrorAlertComponent,
+    AlertComponent,
   ],
   templateUrl: './login-form.component.html',
 })
