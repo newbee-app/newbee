@@ -33,7 +33,7 @@
       [ngClass]="{ 'input-error': hasError('number') && !clean }"
     />
     <newbee-alert
-      *ngIf="hasError('number') && !clean"
+      [show]="hasError('number') && !clean"
       type="error"
       [text]="errorMessage"
     ></newbee-alert>

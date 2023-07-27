@@ -18,7 +18,7 @@
         class="input border-neutral w-full"
       />
       <newbee-alert
-        *ngIf="inputDisplayError('name')"
+        [show]="inputDisplayError('name')"
         type="error"
         [text]="inputErrorMessage('name')"
       ></newbee-alert>
@@ -41,7 +41,7 @@
         <span class="loading loading-dots"></span>
       </div>
       <newbee-alert
-        *ngIf="(!checkPending && slugTaken) || inputDisplayError('slug')"
+        [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
         type="error"
         [text]="
           inputErrorMessage('slug') ||
@@ -63,7 +63,7 @@
     </button>
 
     <newbee-alert
-      *ngIf="httpClientError?.messages?.['misc']"
+      [show]="!!httpClientError?.messages?.['misc']"
       type="error"
       [text]="httpClientError?.messages?.['misc']!"
     ></newbee-alert>

@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="flex flex-col flex-nowrap gap-y-2 w-full">
   <newbee-dropdown placement="bottom-start">
     <button
       label
@@ -54,7 +54,5 @@
     </div>
   </newbee-dropdown>
 
-  <div *ngIf="!valid" class="mt-2">
-    <newbee-alert type="error" [text]="errorText"></newbee-alert>
-  </div>
+  <newbee-alert [show]="!valid" type="error" [text]="errorText"></newbee-alert>
 </div>

@@ -1,1 +1,10 @@
-<p>toast works!</p>
+<div [ngClass]="toastClasses">
+  <newbee-alert
+    [header]="header"
+    [text]="text"
+    [type]="type"
+    [includeClearSymbol]="true"
+    [show]="show"
+    (showChange)="onShowChange($event)"
+  ></newbee-alert>
+</div>

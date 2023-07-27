@@ -21,7 +21,7 @@
           class="input border-neutral"
         />
         <newbee-alert
-          *ngIf="inputDisplayError('editUser', 'name')"
+          [show]="inputDisplayError('editUser', 'name')"
           type="error"
           [text]="inputErrorMessage('editUser', 'name')"
         ></newbee-alert>
@@ -36,7 +36,7 @@
           class="input border-neutral"
         />
         <newbee-alert
-          *ngIf="inputDisplayError('editUser', 'displayName')"
+          [show]="inputDisplayError('editUser', 'displayName')"
           type="error"
           [text]="inputErrorMessage('editUser', 'displayName')"
         ></newbee-alert>
@@ -85,7 +85,7 @@
       </button>
 
       <newbee-alert
-        *ngIf="httpClientError?.messages?.[keyword.New + '-' + keyword.Authenticator]"
+        [show]="!!httpClientError?.messages?.[keyword.New + '-' + keyword.Authenticator]"
         type="error"
         [text]="
           httpClientError?.messages?.[
@@ -263,7 +263,7 @@
         />
 
         <newbee-alert
-          *ngIf="inputDisplayError('deleteUser', 'delete')"
+          [show]="inputDisplayError('deleteUser', 'delete')"
           type="error"
           [text]="inputErrorMessage('deleteUser', 'delete')"
         ></newbee-alert>
@@ -282,7 +282,7 @@
   </div>
 
   <newbee-alert
-    *ngIf="httpClientError?.messages?.['misc']"
+    [show]="!!httpClientError?.messages?.['misc']"
     type="error"
     [text]="httpClientError?.messages?.['misc'] ?? ''"
   ></newbee-alert>

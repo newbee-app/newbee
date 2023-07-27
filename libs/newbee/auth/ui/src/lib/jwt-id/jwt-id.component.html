@@ -1,5 +1,5 @@
 <newbee-base-form>
-  <div id="check-email" class="items-center text-center">
+  <div id="check-email" class="flex flex-col flex-nowrap gap-y-2">
     <h2 class="font-bold">Check your email for a login link</h2>
     <p>
       We've sent a login link to <span class="font-bold">{{ email }}</span
@@ -9,18 +9,18 @@
     </p>
   </div>
 
-  <div id="resend-email" class="items-center text-center">
-    <div>
-      <p>
-        Can't find your link? Check your spam folder! Or,
-        <a id="resend-link" (click)="emitResendLink()" class="link link-primary"
-          >send a new link!</a
-        >
-      </p>
-    </div>
+  <div id="resend-email" class="flex flex-col flex-nowrap gap-y-2">
+    <p>
+      Can't find your link? Check your spam folder! Or,
+      <a id="resend-link" (click)="emitResendLink()" class="link link-primary"
+        >send a new link!</a
+      >
+    </p>
 
-    <div *ngIf="httpError" class="mt-2">
-      <newbee-alert type="error" [text]="httpError"></newbee-alert>
-    </div>
+    <newbee-alert
+      [show]="!!httpError"
+      type="error"
+      [text]="httpError"
+    ></newbee-alert>
   </div>
 </newbee-base-form>

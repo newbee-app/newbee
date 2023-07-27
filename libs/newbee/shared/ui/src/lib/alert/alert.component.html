@@ -1,4 +1,4 @@
-<div [ngClass]="['alert', alertType]">
+<div *ngIf="show" [ngClass]="['alert', alertType]">
   <ng-container [ngSwitch]="type">
     <svg
       *ngSwitchCase="'info'"
@@ -61,5 +61,31 @@
     </svg>
   </ng-container>
 
-  <span>{{ text }}</span>
+  <div>
+    <h5 *ngIf="header" class="font-semibold">{{ header }}</h5>
+    <p *ngIf="text">{{ text }}</p>
+  </div>
+
+  <button
+    *ngIf="includeClearSymbol"
+    type="button"
+    (click)="hide()"
+    class="btn btn-ghost btn-sm"
+  >
+    <!-- x-mark svg -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-6 h-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  </button>
 </div>

@@ -1,14 +1,14 @@
 <newbee-base-form>
-  <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
+  <div class="flex flex-col flex-nowrap space-y-5 max-w-full w-[28rem]">
     <h3>Sign in to your NewBee account</h3>
 
     <form
       id="login-form"
       [formGroup]="loginForm"
       (ngSubmit)="emitWebAuthn()"
-      class="space-y-5"
+      class="flex flex-col flex-nowrap space-y-5"
     >
-      <div>
+      <div class="flex flex-col flex-nowrap space-y-2">
         <label for="email-input" class="sr-only">Email address</label>
         <input
           type="email"
@@ -20,9 +20,11 @@
           [ngClass]="{ 'input-error': showEmailError }"
         />
 
-        <div *ngIf="showEmailError" class="mt-2">
-          <newbee-alert type="error" [text]="emailErrorMessage"></newbee-alert>
-        </div>
+        <newbee-alert
+          [show]="showEmailError"
+          type="error"
+          [text]="emailErrorMessage"
+        ></newbee-alert>
       </div>
 
       <div id="buttons" class="flex flex-col gap-y-2">
@@ -46,12 +48,11 @@
           Send Login Link to Email
         </button>
 
-        <div *ngIf="httpClientError?.messages?.['misc']">
-          <newbee-alert
-            type="error"
-            [text]="httpClientError?.messages?.['misc']!"
-          ></newbee-alert>
-        </div>
+        <newbee-alert
+          [show]="!!httpClientError?.messages?.['misc']"
+          type="error"
+          [text]="httpClientError?.messages?.['misc']!"
+        ></newbee-alert>
       </div>
     </form>
   </div>

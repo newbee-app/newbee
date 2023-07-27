@@ -12,10 +12,12 @@ describe('ToastComponent', () => {
 
     fixture = TestBed.createComponent(ToastComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
+    expect(fixture).toBeDefined();
   });
 });

@@ -18,7 +18,7 @@
           class="input border-neutral w-full"
         />
         <newbee-alert
-          *ngIf="inputDisplayError('editOrg', 'name')"
+          [show]="inputDisplayError('editOrg', 'name')"
           type="error"
           [text]="inputErrorMessage('editOrg', 'name')"
         ></newbee-alert>
@@ -79,7 +79,7 @@
           </div>
 
           <newbee-alert
-            *ngIf="
+            [show]="
               (!checkPending && slugTaken) ||
               inputDisplayError('editOrgSlug', 'slug')
             "
@@ -152,7 +152,7 @@
   </div>
 
   <newbee-alert
-    *ngIf="httpClientError?.messages?.['misc']"
+    [show]="!!httpClientError?.messages?.['misc']"
     type="error"
     [text]="httpClientError?.messages?.['misc'] ?? ''"
   ></newbee-alert>

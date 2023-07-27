@@ -31,7 +31,7 @@
         </div>
 
         <newbee-alert
-          *ngIf="inputDisplayError('email') || inputDisplayError('role')"
+          [show]="inputDisplayError('email') || inputDisplayError('role')"
           type="error"
           [text]="inputErrorMessage('email') || inputErrorMessage('role')"
         ></newbee-alert>
@@ -50,12 +50,12 @@
 
     <div class="w-full">
       <newbee-alert
-        *ngIf="invitedUser"
+        [show]="!!invitedUser"
         type="success"
         [text]="inviteSuccessText"
       ></newbee-alert>
       <newbee-alert
-        *ngIf="httpClientError?.messages?.['misc']"
+        [show]="!!httpClientError?.messages?.['misc']"
         type="error"
         [text]="httpClientError?.messages?.['misc'] ?? ''"
       ></newbee-alert>

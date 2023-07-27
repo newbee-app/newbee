@@ -1,82 +1,66 @@
 <newbee-base-form>
-  <div class="space-y-5 max-w-full w-[28rem] items-center text-center">
+  <div class="flex flex-col flex-nowrap space-y-5 max-w-full w-[28rem]">
     <h3>Getting started is free, always</h3>
 
     <form
       id="register-form"
       [formGroup]="registerForm"
       (ngSubmit)="emitRegister()"
-      class="space-y-5"
+      class="flex flex-col flex-nowrap space-y-5"
     >
       <div class="flex flex-col gap-y-2">
-        <div>
-          <label for="email-input" class="sr-only">Email address</label>
-          <input
-            type="email"
-            id="email-input"
-            formControlName="email"
-            placeholder="Email address*"
-            required
-            class="input border-neutral w-full"
-            [ngClass]="{ 'input-error': inputDisplayError('email') }"
-          />
+        <label for="email-input" class="sr-only">Email address</label>
+        <input
+          type="email"
+          id="email-input"
+          formControlName="email"
+          placeholder="Email address*"
+          required
+          class="input border-neutral w-full"
+          [ngClass]="{ 'input-error': inputDisplayError('email') }"
+        />
+        <newbee-alert
+          [show]="inputDisplayError('email')"
+          type="error"
+          [text]="inputErrorMessage('email')"
+        ></newbee-alert>
 
-          <div *ngIf="inputDisplayError('email')" class="mt-2">
-            <newbee-alert
-              type="error"
-              [text]="inputErrorMessage('email')"
-            ></newbee-alert>
-          </div>
-        </div>
+        <label for="name-input" class="sr-only">Name</label>
+        <input
+          type="text"
+          id="name-input"
+          formControlName="name"
+          placeholder="Name*"
+          required
+          class="input border-neutral w-full"
+          [ngClass]="{ 'input-error': inputDisplayError('name') }"
+        />
+        <newbee-alert
+          [show]="inputDisplayError('name')"
+          type="error"
+          [text]="inputErrorMessage('name')"
+        ></newbee-alert>
 
-        <div>
-          <label for="name-input" class="sr-only">Name</label>
-          <input
-            type="text"
-            id="name-input"
-            formControlName="name"
-            placeholder="Name*"
-            required
-            class="input border-neutral w-full"
-            [ngClass]="{ 'input-error': inputDisplayError('name') }"
-          />
+        <label for="display-name-input" class="sr-only"
+          >Display name (optional)</label
+        >
+        <input
+          type="text"
+          id="display-name-input"
+          formControlName="displayName"
+          placeholder="Display name"
+          class="input border-neutral w-full"
+        />
+        <newbee-alert
+          [show]="inputDisplayError('displayName')"
+          type="error"
+          [text]="inputErrorMessage('displayName')"
+        ></newbee-alert>
 
-          <div *ngIf="inputDisplayError('name')" class="mt-2">
-            <newbee-alert
-              type="error"
-              [text]="inputErrorMessage('name')"
-            ></newbee-alert>
-          </div>
-        </div>
-
-        <div>
-          <label for="display-name-input" class="sr-only"
-            >Display name (optional)</label
-          >
-          <input
-            type="text"
-            id="display-name-input"
-            formControlName="displayName"
-            placeholder="Display name"
-            class="input border-neutral w-full"
-          />
-
-          <div *ngIf="inputDisplayError('displayName')" class="mt-2">
-            <newbee-alert
-              type="error"
-              [text]="inputErrorMessage('displayName')"
-            ></newbee-alert>
-          </div>
-        </div>
-
-        <div>
-          <newbee-phone-input
-            formControlName="phoneNumber"
-          ></newbee-phone-input>
-        </div>
+        <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
       </div>
 
-      <div id="buttons">
+      <div id="buttons" class="flex flex-col flex-nowrap gap-y-2">
         <button
           id="submit-button"
           type="submit"
@@ -87,17 +71,16 @@
           Create Account
         </button>
 
-        <div *ngIf="httpClientError?.messages?.['misc']" class="mt-2">
-          <newbee-alert
-            type="error"
-            [text]="httpClientError?.messages?.['misc']!"
-          ></newbee-alert>
-        </div>
+        <newbee-alert
+          [show]="!!httpClientError?.messages?.['misc']"
+          type="error"
+          [text]="httpClientError?.messages?.['misc']!"
+        ></newbee-alert>
       </div>
     </form>
   </div>
 
-  <div class="items-center text-center">
+  <div>
     <p>Already using NewBee?</p>
     <a
       id="login-link"
