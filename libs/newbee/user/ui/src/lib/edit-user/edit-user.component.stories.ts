@@ -1,5 +1,10 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testAuthenticator1,
+  testUser1,
+  testUser2,
+} from '@newbee/shared/util';
 import {
   componentWrapperDecorator,
   Meta,
@@ -73,15 +78,21 @@ export const deleteAuthenticatorPending: Story = {
 
 export const DeletePending: Story = { args: { deletePending: true } };
 
-export const HttpError: Story = {
+export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 400,
       messages: {
         name: 'Name error',
         displayName: 'Display name error',
-        delete: 'Delete error',
-        misc: 'An HTTP client error',
+        phoneNumber: 'Phone number error',
+        [`${Keyword.User}-${Keyword.Edit}`]: 'user-edit error',
+        [`${Keyword.User}-${Keyword.Delete}`]: 'user-delete error',
+        [`${Keyword.Authenticator}-${Keyword.New}`]: 'authenticator-new error',
+        [`${Keyword.Authenticator}-${Keyword.Edit}-${testAuthenticator1.id}`]:
+          'authenticator-edit-1 error',
+        [`${Keyword.Authenticator}-${Keyword.Delete}-${testAuthenticator1.id}`]:
+          'authenticator-delete-1 error',
       },
     },
   },

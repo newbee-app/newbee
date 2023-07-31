@@ -16,23 +16,36 @@
           id="name-input"
           formControlName="name"
           class="input border-neutral w-full"
+          [ngClass]="{
+            'input-error':
+              inputDisplayError('editOrg', 'name') ||
+              !!httpClientErrorMsg(keyword.Organization, keyword.Edit)
+          }"
         />
         <newbee-alert
           [show]="inputDisplayError('editOrg', 'name')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('editOrg', 'name')"
         ></newbee-alert>
       </div>
 
-      <button
-        type="submit"
-        id="edit-btn"
-        [disabled]="editOrgForm.invalid || !editDistinct || editPending"
-        class="btn btn-primary w-fit"
-      >
-        <span *ngIf="editPending" class="loading loading-spinner"></span>
-        Update org
-      </button>
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <button
+          type="submit"
+          id="edit-btn"
+          [disabled]="editOrgForm.invalid || !editDistinct || editPending"
+          class="btn btn-primary w-fit"
+        >
+          <span *ngIf="editPending" class="loading loading-spinner"></span>
+          Update org
+        </button>
+
+        <newbee-alert
+          [show]="!!httpClientErrorMsg(keyword.Organization, keyword.Edit)"
+          [text]="httpClientErrorMsg(keyword.Organization, keyword.Edit)"
+          [type]="alertType.Error"
+        ></newbee-alert>
+      </div>
     </form>
   </div>
 
@@ -72,6 +85,16 @@
             newbeeSlugInput
             (slug)="formattedSlug.emit($event)"
             class="input border-neutral w-full"
+            [ngClass]="{
+              'input-error':
+                (!checkPending && slugTaken) ||
+                inputDisplayError('editOrgSlug', 'slug') ||
+                !!httpClientErrorMsg(
+                  keyword.Organization,
+                  keyword.Slug,
+                  keyword.Edit
+                )
+            }"
           />
 
           <div *ngIf="checkPending" class="self-center">
@@ -83,7 +106,7 @@
               (!checkPending && slugTaken) ||
               inputDisplayError('editOrgSlug', 'slug')
             "
-            type="error"
+            [type]="alertType.Error"
             [text]="
               inputErrorMessage('editOrgSlug', 'slug') ||
               'This slug is already taken, please choose another'
@@ -91,21 +114,44 @@
           ></newbee-alert>
         </div>
 
-        <button
-          type="submit"
-          id="edit-slug-btn"
-          [disabled]="
-            editOrgSlugForm.invalid ||
-            checkPending ||
-            slugTaken ||
-            !editSlugDistinct ||
-            editSlugPending
-          "
-          class="btn btn-primary w-fit"
-        >
-          <span *ngIf="editSlugPending" class="loading loading-spinner"></span>
-          Change URL
-        </button>
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <button
+            type="submit"
+            id="edit-slug-btn"
+            [disabled]="
+              editOrgSlugForm.invalid ||
+              checkPending ||
+              slugTaken ||
+              !editSlugDistinct ||
+              editSlugPending
+            "
+            class="btn btn-primary w-fit"
+          >
+            <span
+              *ngIf="editSlugPending"
+              class="loading loading-spinner"
+            ></span>
+            Change URL
+          </button>
+
+          <newbee-alert
+            [show]="
+              !!httpClientErrorMsg(
+                keyword.Organization,
+                keyword.Slug,
+                keyword.Edit
+              )
+            "
+            [text]="
+              httpClientErrorMsg(
+                keyword.Organization,
+                keyword.Slug,
+                keyword.Edit
+              )
+            "
+            [type]="alertType.Error"
+          ></newbee-alert>
+        </div>
       </form>
 
       <form
@@ -136,24 +182,26 @@
           />
         </div>
 
-        <button
-          type="submit"
-          id="delete-btn"
-          [disabled]="
-            deleteOrgForm.invalid || deletePending || !deleteSlugMatches
-          "
-          class="btn btn-error w-fit"
-        >
-          <span *ngIf="deletePending" class="loading loading-spinner"></span>
-          Delete org
-        </button>
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <button
+            type="submit"
+            id="delete-btn"
+            [disabled]="
+              deleteOrgForm.invalid || deletePending || !deleteSlugMatches
+            "
+            class="btn btn-error w-fit"
+          >
+            <span *ngIf="deletePending" class="loading loading-spinner"></span>
+            Delete org
+          </button>
+
+          <newbee-alert
+            [show]="!!httpClientErrorMsg(keyword.Organization, keyword.Delete)"
+            [text]="httpClientErrorMsg(keyword.Organization, keyword.Delete)"
+            [type]="alertType.Error"
+          ></newbee-alert>
+        </div>
       </form>
     </div>
   </div>
-
-  <newbee-alert
-    [show]="!!httpClientError?.messages?.['misc']"
-    type="error"
-    [text]="httpClientError?.messages?.['misc'] ?? ''"
-  ></newbee-alert>
 </div>

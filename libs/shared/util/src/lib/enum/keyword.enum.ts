@@ -57,8 +57,12 @@ export enum Keyword {
   Api = 'api',
   New = 'new',
   Edit = 'edit',
+  Delete = 'delete',
 
   // misc stuff for use in ngrx stores
   Http = 'http',
+  Toast = 'toast',
+  Misc = 'misc',
   Router = 'router',
+  Slug = 'slug',
 }

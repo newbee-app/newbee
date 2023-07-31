@@ -54,5 +54,9 @@
     </div>
   </newbee-dropdown>
 
-  <newbee-alert [show]="!valid" type="error" [text]="errorText"></newbee-alert>
+  <newbee-alert
+    [show]="!valid"
+    [type]="alertType.Error"
+    [text]="errorText"
+  ></newbee-alert>
 </div>

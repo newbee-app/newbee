@@ -23,10 +23,12 @@ describe('TeamReducer', () => {
   });
 
   describe('from altered state', () => {
-    const updatedState = teamFeature.reducer(
-      stateAfterGetTeamSuccess,
-      TeamActions.resetSelectedTeam
-    );
-    expect(updatedState).toEqual(initialTeamState);
+    it('should update state for resetSelectedTeam', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetTeamSuccess,
+        TeamActions.resetSelectedTeam
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
   });
 });

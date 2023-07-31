@@ -1,5 +1,4 @@
 import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
-import { internalServerError } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { JwtIdComponent } from './jwt-id.component';
 
@@ -22,6 +21,6 @@ export const NoError: Story = {};
 
 export const WithError: Story = {
   args: {
-    httpClientError: { status: 500, messages: { misc: internalServerError } },
+    httpClientError: { status: 500, messages: { misc: 'Misc error' } },
   },
 };

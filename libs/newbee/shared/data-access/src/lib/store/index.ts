@@ -8,4 +8,5 @@ export * from './organization';
 export * from './router';
 export * from './search';
 export * from './team';
+export * from './toast';
 export * from './user';

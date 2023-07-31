@@ -21,7 +21,7 @@
         />
         <newbee-alert
           [show]="inputDisplayError('email')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('email')"
         ></newbee-alert>
 
@@ -37,7 +37,7 @@
         />
         <newbee-alert
           [show]="inputDisplayError('name')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('name')"
         ></newbee-alert>
 
@@ -53,11 +53,16 @@
         />
         <newbee-alert
           [show]="inputDisplayError('displayName')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('displayName')"
         ></newbee-alert>
 
         <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
+        <newbee-alert
+          [show]="inputDisplayError('phoneNumber')"
+          [text]="inputErrorMessage('phoneNumber')"
+          [type]="alertType.Error"
+        ></newbee-alert>
       </div>
 
       <div id="buttons" class="flex flex-col flex-nowrap gap-y-2">
@@ -72,9 +77,9 @@
         </button>
 
         <newbee-alert
-          [show]="!!httpClientError?.messages?.['misc']"
-          type="error"
-          [text]="httpClientError?.messages?.['misc']!"
+          [show]="!!miscError"
+          [type]="alertType.Error"
+          [text]="miscError"
         ></newbee-alert>
       </div>
     </form>

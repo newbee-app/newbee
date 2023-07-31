@@ -34,11 +34,11 @@ export const CreatePending: Story = { args: { createPending: true } };
 
 export const CheckPending: Story = { args: { checkPending: true } };
 
-export const HttpError: Story = {
+export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 400,
-      messages: { misc: 'An HTTP client error' },
+      messages: { name: 'Name error', slug: 'Slug error', misc: 'Misc error' },
     },
   },
 };

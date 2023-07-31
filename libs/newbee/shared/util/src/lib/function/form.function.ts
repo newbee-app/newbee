@@ -6,7 +6,7 @@ import { AbstractControl, FormGroup } from '@angular/forms';
  * @param control The control to look for errors.
  * @returns The form control input's errors if they have any, an empty string if they don't.
  */
-export function getErrorMessage(control: AbstractControl | null): string {
+export function inputErrorMessage(control: AbstractControl | null): string {
   if (control?.hasError('required')) {
     return 'You must enter a value';
   } else if (control?.hasError('email')) {

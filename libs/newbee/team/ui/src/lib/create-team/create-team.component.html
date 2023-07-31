@@ -19,7 +19,7 @@
       />
       <newbee-alert
         [show]="inputDisplayError('name')"
-        type="error"
+        [type]="alertType.Error"
         [text]="inputErrorMessage('name')"
       ></newbee-alert>
     </div>
@@ -42,7 +42,7 @@
       </div>
       <newbee-alert
         [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
-        type="error"
+        [type]="alertType.Error"
         [text]="
           inputErrorMessage('slug') ||
           'This slug is already taken, please choose another'
@@ -50,22 +50,24 @@
       ></newbee-alert>
     </div>
 
-    <button
-      type="submit"
-      id="create-btn"
-      [disabled]="
-        createTeamForm.invalid || checkPending || slugTaken || createPending
-      "
-      class="btn btn-primary w-full"
-    >
-      <span *ngIf="createPending" class="loading loading-spinner"></span>
-      Create Team
-    </button>
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <button
+        type="submit"
+        id="create-btn"
+        [disabled]="
+          createTeamForm.invalid || checkPending || slugTaken || createPending
+        "
+        class="btn btn-primary w-full"
+      >
+        <span *ngIf="createPending" class="loading loading-spinner"></span>
+        Create Team
+      </button>
 
-    <newbee-alert
-      [show]="!!httpClientError?.messages?.['misc']"
-      type="error"
-      [text]="httpClientError?.messages?.['misc']!"
-    ></newbee-alert>
+      <newbee-alert
+        [show]="!!miscError"
+        [type]="alertType.Error"
+        [text]="miscError"
+      ></newbee-alert>
+    </div>
   </div>
 </form>

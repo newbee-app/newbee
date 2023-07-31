@@ -1,3 +1,4 @@
 export * from './enum';
-export * from './generate-log';
+export * from './logging';
 export * from './string';
+export * from './util';

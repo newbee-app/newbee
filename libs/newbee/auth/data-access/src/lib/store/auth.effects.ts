@@ -1,11 +1,16 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   AuthActions,
   AuthenticatorActions,
-  catchHttpError,
+  catchHttpClientError,
+  catchHttpScreenError,
+  ToastActions,
 } from '@newbee/newbee/shared/data-access';
+import {
+  errToHttpClientError,
+  httpClientErrorToToast,
+} from '@newbee/newbee/shared/util';
 import {
   displayNameIsNotEmpty,
   emailIsEmail,
@@ -17,7 +22,7 @@ import {
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 /**
@@ -38,7 +43,7 @@ export class AuthEffects {
               `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`,
             ]);
           }),
-          catchError(AuthEffects.catchHttpError)
+          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
         );
       })
     );
@@ -52,7 +57,7 @@ export class AuthEffects {
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          catchError(AuthEffects.catchHttpError)
+          catchError(catchHttpScreenError)
         );
       })
     );
@@ -68,7 +73,7 @@ export class AuthEffects {
               userRelationAndOptionsDto: userAndOptionsDto,
             });
           }),
-          catchError(AuthEffects.catchHttpError)
+          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
         );
       })
     );
@@ -80,6 +85,7 @@ export class AuthEffects {
       map(({ userRelationAndOptionsDto: userCreatedDto }) => {
         return AuthenticatorActions.createAuthenticator({
           options: userCreatedDto.options,
+          caller: Keyword.Auth,
         });
       }),
       tap(async () => {
@@ -99,7 +105,7 @@ export class AuthEffects {
               options,
             });
           }),
-          catchError(AuthEffects.catchHttpError)
+          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
         );
       })
     );
@@ -113,7 +119,7 @@ export class AuthEffects {
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          catchError(AuthEffects.catchHttpError)
+          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
         );
       })
     );
@@ -137,7 +143,13 @@ export class AuthEffects {
       switchMap(() => {
         return this.authService.logout().pipe(
           map(() => AuthActions.logoutSuccess()),
-          catchError(AuthEffects.catchHttpError)
+          catchError((err) =>
+            of(
+              ToastActions.addToast({
+                toast: httpClientErrorToToast(errToHttpClientError(err)),
+              })
+            )
+          )
         );
       })
     );
@@ -162,28 +174,27 @@ export class AuthEffects {
   ) {}
 
   /**
-   * Helper function to feed into `catchError` to capture HTTP errors from responses, convert them to the internal `HttpClientError` format, and save them in the store.
+   * Helper function to sort error messages.
    *
-   * @param err The HTTP error from the response.
-   * @returns An observable containing the `[Http] Client Error` action.
+   * @param msg The error message to sort.
+   *
+   * @returns The key for the msg's value.
    */
-  private static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, (message) => {
-      switch (message) {
-        case userEmailTakenBadRequest:
-        case userChallengeEmailNotFound:
-        case emailIsEmail:
-        case userEmailNotFound:
-          return 'email';
-        case phoneNumberIsPhoneNumber:
-          return 'phoneNumber';
-        case nameIsNotEmpty:
-          return 'name';
-        case displayNameIsNotEmpty:
-          return 'displayName';
-        default:
-          return 'misc';
-      }
-    });
+  private static sortErrMsg(msg: string): string {
+    switch (msg) {
+      case userEmailTakenBadRequest:
+      case userChallengeEmailNotFound:
+      case emailIsEmail:
+      case userEmailNotFound:
+        return 'email';
+      case phoneNumberIsPhoneNumber:
+        return 'phoneNumber';
+      case nameIsNotEmpty:
+        return 'name';
+      case displayNameIsNotEmpty:
+        return 'displayName';
+      default:
+        return Keyword.Misc;
+    }
   }
 }

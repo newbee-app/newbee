@@ -16,10 +16,12 @@ import {
 } from '@angular/forms';
 import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
+  AlertType,
   CountryService,
-  getErrorMessage,
+  getHttpClientErrorMsg,
   HttpClientError,
   inputDisplayError,
+  inputErrorMessage,
   PhoneInput,
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
@@ -46,6 +48,11 @@ export class EditUserComponent implements OnInit, OnChanges {
    * All NewBee keywords.
    */
   readonly keyword = Keyword;
+
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
 
   /**
    * The user to edit.
@@ -261,6 +268,17 @@ export class EditUserComponent implements OnInit, OnChanges {
   }
 
   /**
+   * Get the error message associated with the key.
+   *
+   * @param key The key to find the error message.
+   *
+   * @returns The error message associated with the key, an empty string if there isn't one.
+   */
+  httpClientErrorMsg(...key: string[]): string {
+    return getHttpClientErrorMsg(this.httpClientError, key.join('-'));
+  }
+
+  /**
    * Whether to display a form input as having an error.
    *
    * @param formName The name of the form group to look at.
@@ -268,16 +286,16 @@ export class EditUserComponent implements OnInit, OnChanges {
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  readonly inputDisplayError = (
+  inputDisplayError(
     formName: 'editUser' | 'deleteUser',
     inputName: string
-  ): boolean => {
+  ): boolean {
     const form = this.getFormGroup(formName);
     return (
       inputDisplayError(form, inputName) ||
-      !!this.httpClientError?.messages[inputName]
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  };
+  }
 
   /**
    * The input error message for the given form.
@@ -287,16 +305,16 @@ export class EditUserComponent implements OnInit, OnChanges {
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  readonly inputErrorMessage = (
+  inputErrorMessage(
     formName: 'editUser' | 'deleteUser',
     inputName: string
-  ): string => {
+  ): string {
     const form = this.getFormGroup(formName);
     return (
-      getErrorMessage(form.get(inputName)) ||
-      (this.httpClientError?.messages[inputName] ?? '')
+      inputErrorMessage(form.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  };
+  }
 
   /**
    * Get the form group associated with the given name.

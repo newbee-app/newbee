@@ -9,9 +9,10 @@ export interface HttpClientError {
   status: number;
 
   /**
-   * The messages associated with the error, mapped from the target to the message.
-   * The target is the part of the component where the message is meant to be displayed.
+   * The messages associated with the error.
+   * Either as an object mapped from the target to the message, as an array of messages, or a single message.
+   * If an object, the target is the part of the component where the message is meant to be displayed.
    * e.g. `{ email: 'Email field is required' }`
    */
-  messages: { [target: string]: string };
+  messages: { [target: string]: string | string[] } | string[] | string;
 }

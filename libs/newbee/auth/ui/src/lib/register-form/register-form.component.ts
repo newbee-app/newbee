@@ -4,12 +4,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '@newbee/newbee/auth/util';
 import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
+  AlertType,
   CountryService,
-  getErrorMessage,
+  getHttpClientErrorMsg,
   HttpClientError,
   inputDisplayError,
+  inputErrorMessage,
   PhoneInput,
 } from '@newbee/newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -28,6 +31,11 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent {
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * Whether to display the spinner on the register button.
    */
@@ -66,6 +74,13 @@ export class RegisterFormComponent {
   ) {}
 
   /**
+   * The misc errors, will be an empty string if there aren't any.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
+  }
+
+  /**
    * Whether to display the input as having an error.
    *
    * @param inputName The input name to check.
@@ -75,7 +90,7 @@ export class RegisterFormComponent {
   inputDisplayError(inputName: string): boolean {
     return (
       inputDisplayError(this.registerForm, inputName) ||
-      !!this.httpClientError?.messages?.[inputName]
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }
 
@@ -88,8 +103,8 @@ export class RegisterFormComponent {
    */
   inputErrorMessage(inputName: string): string {
     return (
-      getErrorMessage(this.registerForm.get(inputName)) ||
-      (this.httpClientError?.messages?.[inputName] ?? '')
+      inputErrorMessage(this.registerForm.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }
 

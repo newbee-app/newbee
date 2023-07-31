@@ -1,13 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  catchHttpError,
+  catchHttpClientError,
   catchHttpScreenError,
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import {
+  emailIsEmail,
   Keyword,
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
@@ -46,7 +46,19 @@ export class OrganizationEffects {
           map((organization) => {
             return OrganizationActions.createOrgSuccess({ organization });
           }),
-          catchError(OrganizationEffects.catchHttpError)
+          catchError((err) =>
+            catchHttpClientError(err, (msg) => {
+              switch (msg) {
+                case organizationSlugTakenBadRequest:
+                case slugIsNotEmpty:
+                  return 'slug';
+                case nameIsNotEmpty:
+                  return 'name';
+                default:
+                  return Keyword.Misc;
+              }
+            })
+          )
         );
       })
     );
@@ -80,7 +92,12 @@ export class OrganizationEffects {
                 newOrg: organization,
               });
             }),
-            catchError(OrganizationEffects.catchHttpError)
+            catchError((err) =>
+              catchHttpClientError(
+                err,
+                () => `${Keyword.Organization}-${Keyword.Edit}`
+              )
+            )
           );
       })
     );
@@ -102,7 +119,12 @@ export class OrganizationEffects {
                 newOrg: organization,
               });
             }),
-            catchError(OrganizationEffects.catchHttpError)
+            catchError((err) =>
+              catchHttpClientError(
+                err,
+                () => `${Keyword.Organization}-${Keyword.Slug}-${Keyword.Edit}`
+              )
+            )
           );
       })
     );
@@ -134,7 +156,12 @@ export class OrganizationEffects {
             map(() => {
               return OrganizationActions.deleteOrgSuccess();
             }),
-            catchError(OrganizationEffects.catchHttpError)
+            catchError((err) =>
+              catchHttpClientError(
+                err,
+                () => `${Keyword.Organization}-${Keyword.Delete}`
+              )
+            )
           );
       })
     );
@@ -167,8 +194,7 @@ export class OrganizationEffects {
         return this.organizationService.checkSlug(slug).pipe(
           map(({ slugTaken }) => {
             return OrganizationActions.checkSlugSuccess({ slugTaken });
-          }),
-          catchError(OrganizationEffects.catchHttpError)
+          })
         );
       })
     );
@@ -184,8 +210,7 @@ export class OrganizationEffects {
             return OrganizationActions.generateSlugSuccess({
               slug: generatedSlug,
             });
-          }),
-          catchError(OrganizationEffects.catchHttpError)
+          })
         );
       })
     );
@@ -210,7 +235,18 @@ export class OrganizationEffects {
             map(() => {
               return OrganizationActions.inviteUserSuccess({ email });
             }),
-            catchError(OrganizationEffects.catchHttpError)
+            catchError((err) =>
+              catchHttpClientError(err, (msg) => {
+                switch (msg) {
+                  case emailIsEmail:
+                    return 'email';
+                  case orgRoleIsEnum:
+                    return 'role';
+                  default:
+                    return Keyword.Misc;
+                }
+              })
+            )
           );
       })
     );
@@ -222,26 +258,4 @@ export class OrganizationEffects {
     private readonly store: Store,
     private readonly router: Router
   ) {}
-
-  /**
-   * Helper function to feed into `catchError` to capture HTTP errors from responses, convert them to the internal `HttpClientError` format, and save them in the store.
-   *
-   * @param err The HTTP error from the response.
-   * @returns An observable containing the `[Http] Client Error` action.
-   */
-  private static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, (message) => {
-      switch (message) {
-        case organizationSlugTakenBadRequest:
-        case slugIsNotEmpty:
-          return 'slug';
-        case nameIsNotEmpty:
-          return 'name';
-        case orgRoleIsEnum:
-          return 'role';
-        default:
-          return 'misc';
-      }
-    });
-  }
 }

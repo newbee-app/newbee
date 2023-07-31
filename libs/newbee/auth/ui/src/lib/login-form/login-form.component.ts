@@ -4,10 +4,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginForm } from '@newbee/newbee/auth/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
-  getErrorMessage,
+  AlertType,
+  getHttpClientErrorMsg,
   HttpClientError,
   inputDisplayError,
+  inputErrorMessage,
 } from '@newbee/newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -25,6 +28,11 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
+  /**
+   * Suported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * Whether to display the spinner on the login button.
    */
@@ -72,7 +80,7 @@ export class LoginFormComponent {
   get showEmailError(): boolean {
     return (
       inputDisplayError(this.loginForm, 'email') ||
-      !!this.httpClientError?.messages?.['email']
+      !!getHttpClientErrorMsg(this.httpClientError, 'email')
     );
   }
 
@@ -81,9 +89,16 @@ export class LoginFormComponent {
    */
   get emailErrorMessage(): string {
     return (
-      getErrorMessage(this.loginForm.get('email')) ||
-      (this.httpClientError?.messages?.['email'] ?? '')
+      inputErrorMessage(this.loginForm.get('email')) ||
+      getHttpClientErrorMsg(this.httpClientError, 'email')
     );
+  }
+
+  /**
+   * The misc errors, will be an empty string if there aren't any.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 
   /**

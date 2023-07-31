@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AlertType } from '@newbee/newbee/shared/util';
 
 /**
  * A simple component that displays an alert.
@@ -24,7 +25,7 @@ export class AlertComponent {
   /**
    * The type of the alert, `error` by default.
    */
-  @Input() type: 'info' | 'success' | 'warning' | 'error' = 'error';
+  @Input() type: AlertType = AlertType.Error;
 
   /**
    * Whether to show a x symbol to clear the alert, defaults to `false`.
@@ -48,13 +49,13 @@ export class AlertComponent {
     // NOTE: half-string, half-variable does not work, so we must use switch
     // i.e. `alert-${this.type}` does not work
     switch (this.type) {
-      case 'info':
+      case AlertType.Info:
         return 'alert-info';
-      case 'success':
+      case AlertType.Success:
         return 'alert-success';
-      case 'warning':
+      case AlertType.Warning:
         return 'alert-warning';
-      case 'error':
+      case AlertType.Error:
         return 'alert-error';
     }
   }
