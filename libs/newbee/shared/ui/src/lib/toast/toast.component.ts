@@ -1,5 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  AlertType,
+  ToastXPosition,
+  ToastYPosition,
+} from '@newbee/newbee/shared/util';
 import { AlertComponent } from '../alert';
 
 /**
@@ -42,13 +54,15 @@ export class ToastComponent implements OnChanges {
   /**
    * The type of alert to use for the toast, `error` by default.
    */
-  @Input() type: 'info' | 'success' | 'warning' | 'error' = 'error';
+  @Input() type: AlertType = AlertType.Error;
 
   /**
    * Where to show the toast.
    */
-  @Input() position: ['top' | 'middle' | 'bottom', 'start' | 'center' | 'end'] =
-    ['bottom', 'center'];
+  @Input() position: [ToastXPosition, ToastYPosition] = [
+    ToastXPosition.Center,
+    ToastYPosition.Bottom,
+  ];
 
   /**
    * How long the toast should stay on the screen, in ms.
@@ -57,33 +71,38 @@ export class ToastComponent implements OnChanges {
   @Input() duration: number | null = null;
 
   /**
+   * Emit to let the parent component know the toast was dismissed, whether by the user or time.
+   */
+  @Output() dismissed = new EventEmitter<void>();
+
+  /**
    * The classses needed to set up the toast div.
    */
   get toastClasses(): string[] {
-    const [y, x] = this.position;
+    const [x, y] = this.position;
     const result: string[] = ['toast'];
 
-    switch (y) {
-      case 'top':
-        result.push('toast-top');
+    switch (x) {
+      case ToastXPosition.Start:
+        result.push('toast-start');
         break;
-      case 'middle':
-        result.push('toast-middle');
+      case ToastXPosition.Center:
+        result.push('toast-center');
         break;
-      case 'bottom':
-        result.push('toast-bottom');
+      case ToastXPosition.End:
+        result.push('toast-end');
         break;
     }
 
-    switch (x) {
-      case 'start':
-        result.push('toast-start');
+    switch (y) {
+      case ToastYPosition.Top:
+        result.push('toast-top');
         break;
-      case 'center':
-        result.push('toast-center');
+      case ToastYPosition.Middle:
+        result.push('toast-middle');
         break;
-      case 'end':
-        result.push('toast-end');
+      case ToastYPosition.Bottom:
+        result.push('toast-bottom');
         break;
     }
 
@@ -126,6 +145,7 @@ export class ToastComponent implements OnChanges {
   dismiss(): void {
     this.clearTimeout();
     this._show = false;
+    this.dismissed.emit();
   }
 
   /**

@@ -1,12 +1,5 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
-  displayNameIsNotEmpty,
-  internalServerError,
-  nameIsNotEmpty,
-  phoneNumberIsPhoneNumber,
-  userEmailTakenBadRequest,
-} from '@newbee/shared/util';
-import {
   componentWrapperDecorator,
   Meta,
   moduleMetadata,
@@ -42,11 +35,11 @@ export const WithErrors: Story = {
     httpClientError: {
       status: 400,
       messages: {
-        email: userEmailTakenBadRequest,
-        name: nameIsNotEmpty,
-        displayName: displayNameIsNotEmpty,
-        phoneNumber: phoneNumberIsPhoneNumber,
-        misc: internalServerError,
+        email: 'Email error',
+        name: 'Name error',
+        displayName: 'Display name error',
+        phoneNumber: 'Phone number error',
+        misc: 'Misc error',
       },
     },
   },

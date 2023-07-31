@@ -136,6 +136,7 @@ describe('AuthEffects', () => {
       const expected$ = hot('a', {
         a: AuthenticatorActions.createAuthenticator({
           options: testBaseUserRelationAndOptionsDto1.options,
+          caller: Keyword.Auth,
         }),
       });
       expect(effects.registerWithWebauthnSuccess$).toBeObservable(expected$);

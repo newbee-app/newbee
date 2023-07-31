@@ -1,21 +1,22 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  catchHttpError,
+  catchHttpClientError,
   catchHttpScreenError,
   organizationFeature,
   ShortUrl,
   TeamActions,
+  teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import {
+  Keyword,
   nameIsNotEmpty,
   slugIsNotEmpty,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { TeamService } from '../team.service';
 
 @Injectable()
@@ -54,7 +55,19 @@ export class TeamEffects {
             map((team) => {
               return TeamActions.createTeamSuccess({ team });
             }),
-            catchError(TeamEffects.catchHttpError)
+            catchError((err) =>
+              catchHttpClientError(err, (msg) => {
+                switch (msg) {
+                  case nameIsNotEmpty:
+                    return 'name';
+                  case slugIsNotEmpty:
+                  case teamSlugTakenBadRequest:
+                    return 'slug';
+                  default:
+                    return Keyword.Misc;
+                }
+              })
+            )
           );
       })
     );
@@ -84,18 +97,22 @@ export class TeamEffects {
     return this.actions$.pipe(
       ofType(TeamActions.checkSlug),
       filter(({ slug }) => !!slug),
-      concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
-      ),
+      concatLatestFrom(() => [
+        this.store.select(organizationFeature.selectSelectedOrganization),
+        this.store.select(teamFeature.selectSelectedTeam),
+      ]),
       filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ slug }, selectedOrganization]) => {
+      switchMap(([{ slug }, selectedOrganization, selectedTeam]) => {
+        if (selectedTeam?.team.slug === slug) {
+          return of(TeamActions.checkSlugSuccess({ slugTaken: false }));
+        }
+
         return this.teamService
           .checkSlug(slug, selectedOrganization?.slug as string)
           .pipe(
             map(({ slugTaken }) => {
               return TeamActions.checkSlugSuccess({ slugTaken });
-            }),
-            catchError(TeamEffects.catchHttpError)
+            })
           );
       })
     );
@@ -116,8 +133,7 @@ export class TeamEffects {
             map((generatedSlugDto) => {
               const { generatedSlug } = generatedSlugDto;
               return TeamActions.generateSlugSuccess({ slug: generatedSlug });
-            }),
-            catchError(TeamEffects.catchHttpError)
+            })
           );
       })
     );
@@ -129,24 +145,4 @@ export class TeamEffects {
     private readonly store: Store,
     private readonly router: Router
   ) {}
-
-  /**
-   * Helper function to feed into `catchError` to capture HTTP errors from responses, convert them to the internal `HttpClientError` format, and save them in the store.
-   *
-   * @param err The HTTP error from the response.
-   * @returns An observable containing the `[Http] Client Error` action.
-   */
-  private static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, (message) => {
-      switch (message) {
-        case nameIsNotEmpty:
-          return 'name';
-        case slugIsNotEmpty:
-        case teamSlugTakenBadRequest:
-          return 'slug';
-        default:
-          return 'misc';
-      }
-    });
-  }
 }

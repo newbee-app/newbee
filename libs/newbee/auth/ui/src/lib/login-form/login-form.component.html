@@ -22,7 +22,7 @@
 
         <newbee-alert
           [show]="showEmailError"
-          type="error"
+          [type]="alertType.Error"
           [text]="emailErrorMessage"
         ></newbee-alert>
       </div>
@@ -49,9 +49,9 @@
         </button>
 
         <newbee-alert
-          [show]="!!httpClientError?.messages?.['misc']"
-          type="error"
-          [text]="httpClientError?.messages?.['misc']!"
+          [show]="!!miscError"
+          [type]="alertType.Error"
+          [text]="miscError"
         ></newbee-alert>
       </div>
     </form>

@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
-import { HttpClientError } from '@newbee/newbee/shared/util';
+import {
+  AlertType,
+  getHttpClientErrorMsg,
+  HttpClientError,
+} from '@newbee/newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -14,6 +19,11 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './jwt-id.component.html',
 })
 export class JwtIdComponent {
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * The JWT ID value to display.
    */
@@ -42,9 +52,9 @@ export class JwtIdComponent {
   }
 
   /**
-   * Extracts the `httpClientError` into a human-readable string.
+   * The misc errors, will be an empty string if there aren't any.
    */
-  get httpError(): string {
-    return this.httpClientError?.messages?.['misc'] ?? '';
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 }

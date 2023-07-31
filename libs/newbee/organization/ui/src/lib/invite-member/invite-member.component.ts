@@ -14,12 +14,14 @@ import {
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
-  getErrorMessage,
+  AlertType,
+  getHttpClientErrorMsg,
   HttpClientError,
   inputDisplayError,
+  inputErrorMessage,
   SelectOption,
 } from '@newbee/newbee/shared/util';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
 
 /**
  * The dumb UI for inviting a user to an org.
@@ -36,6 +38,11 @@ import { OrgRoleEnum } from '@newbee/shared/util';
   templateUrl: './invite-member.component.html',
 })
 export class InviteMemberComponent implements OnChanges {
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * Whether to display the spinner on the invite button.
    */
@@ -104,15 +111,25 @@ export class InviteMemberComponent implements OnChanges {
   }
 
   /**
+   * The misc errors, will be an empty string if there aren't any.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
+  }
+
+  /**
    * Whether to display an input as having an error.
    *
    * @param inputName The name of the input to look at.
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  readonly inputDisplayError = (inputName: string): boolean =>
-    inputDisplayError(this.inviteMemberForm, inputName) ||
-    !!this.httpClientError?.messages[inputName];
+  inputDisplayError(inputName: string): boolean {
+    return (
+      inputDisplayError(this.inviteMemberForm, inputName) ||
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
+  }
 
   /**
    * The input error message for the given form.
@@ -120,7 +137,10 @@ export class InviteMemberComponent implements OnChanges {
    * @param inputName
    * @returns
    */
-  readonly inputErrorMessage = (inputName: string): string =>
-    getErrorMessage(this.inviteMemberForm.get(inputName)) ||
-    (this.httpClientError?.messages[inputName] ?? '');
+  inputErrorMessage(inputName: string): string {
+    return (
+      inputErrorMessage(this.inviteMemberForm.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
+  }
 }

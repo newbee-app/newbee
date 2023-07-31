@@ -35,7 +35,7 @@ export const InvitePending: Story = { args: { invitePending: true } };
 
 export const InvitedUser: Story = { args: { invitedUser: testUser1.email } };
 
-export const HttpError: Story = {
+export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 500,

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  Keyword,
   testAuthenticator1,
   testPublicKeyCredentialCreationOptions1,
 } from '@newbee/shared/util';
@@ -73,6 +74,7 @@ describe('AuthenticatorEffects', () => {
       const expected$ = hot('a', {
         a: AuthenticatorActions.createAuthenticator({
           options: testPublicKeyCredentialCreationOptions1,
+          caller: Keyword.Authenticator,
         }),
       });
       expect(effects.createRegistrationOptions$).toBeObservable(expected$);
@@ -88,6 +90,7 @@ describe('AuthenticatorEffects', () => {
       actions$ = hot('a', {
         a: AuthenticatorActions.createAuthenticator({
           options: testPublicKeyCredentialCreationOptions1,
+          caller: Keyword.Authenticator,
         }),
       });
       const expected$ = hot('a', {

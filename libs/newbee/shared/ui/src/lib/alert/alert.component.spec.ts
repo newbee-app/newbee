@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AlertType } from '@newbee/newbee/shared/util';
 import { AlertComponent } from './alert.component';
 
 describe('AlertComponent', () => {
@@ -26,11 +27,11 @@ describe('AlertComponent', () => {
   describe('alertType', () => {
     it('should return correct alert type', () => {
       expect(component.alertType).toEqual('alert-error');
-      component.type = 'info';
+      component.type = AlertType.Info;
       expect(component.alertType).toEqual('alert-info');
-      component.type = 'success';
+      component.type = AlertType.Success;
       expect(component.alertType).toEqual('alert-success');
-      component.type = 'warning';
+      component.type = AlertType.Warning;
       expect(component.alertType).toEqual('alert-warning');
     });
   });

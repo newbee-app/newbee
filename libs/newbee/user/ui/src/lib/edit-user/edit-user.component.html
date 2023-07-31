@@ -22,7 +22,7 @@
         />
         <newbee-alert
           [show]="inputDisplayError('editUser', 'name')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('editUser', 'name')"
         ></newbee-alert>
       </div>
@@ -37,7 +37,7 @@
         />
         <newbee-alert
           [show]="inputDisplayError('editUser', 'displayName')"
-          type="error"
+          [type]="alertType.Error"
           [text]="inputErrorMessage('editUser', 'displayName')"
         ></newbee-alert>
       </div>
@@ -48,17 +48,30 @@
           id="phone-number-input"
           formControlName="phoneNumber"
         ></newbee-phone-input>
+        <newbee-alert
+          [show]="inputDisplayError('editUser', 'phoneNumber')"
+          [text]="inputErrorMessage('editUser', 'phoneNumber')"
+          [type]="alertType.Error"
+        ></newbee-alert>
       </div>
 
-      <button
-        type="submit"
-        id="edit-btn"
-        [disabled]="editUserForm.invalid || !editDistinct || editPending"
-        class="btn btn-primary w-fit"
-      >
-        <span *ngIf="editPending" class="loading loading-spinner"></span>
-        Update details
-      </button>
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <button
+          type="submit"
+          id="edit-btn"
+          [disabled]="editUserForm.invalid || !editDistinct || editPending"
+          class="btn btn-primary w-fit"
+        >
+          <span *ngIf="editPending" class="loading loading-spinner"></span>
+          Update details
+        </button>
+
+        <newbee-alert
+          [show]="!!httpClientErrorMsg(keyword.User, keyword.Edit)"
+          [text]="httpClientErrorMsg(keyword.User, keyword.Edit)"
+          [type]="alertType.Error"
+        ></newbee-alert>
+      </div>
     </form>
   </div>
 
@@ -71,28 +84,26 @@
     >
 
     <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
-      <button
-        type="button"
-        [disabled]="addAuthenticatorPending"
-        (click)="addAuthenticator.emit()"
-        class="btn btn-primary w-fit"
-      >
-        <span
-          *ngIf="addAuthenticatorPending"
-          class="loading loading-spinner"
-        ></span>
-        Add a new authenticator
-      </button>
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <button
+          type="button"
+          [disabled]="addAuthenticatorPending"
+          (click)="addAuthenticator.emit()"
+          class="btn btn-primary w-fit"
+        >
+          <span
+            *ngIf="addAuthenticatorPending"
+            class="loading loading-spinner"
+          ></span>
+          Add a new authenticator
+        </button>
 
-      <newbee-alert
-        [show]="!!httpClientError?.messages?.[keyword.New + '-' + keyword.Authenticator]"
-        type="error"
-        [text]="
-          httpClientError?.messages?.[
-            keyword.New + '-' + keyword.Authenticator
-          ] ?? ''
-        "
-      ></newbee-alert>
+        <newbee-alert
+          [show]="!!httpClientErrorMsg(keyword.Authenticator, keyword.New)"
+          [text]="httpClientErrorMsg(keyword.Authenticator, keyword.New)"
+          [type]="alertType.Error"
+        ></newbee-alert>
+      </div>
 
       <table
         *ngIf="authenticators.length"
@@ -112,58 +123,32 @@
             *ngFor="let authenticator of authenticators; let i = index"
             class="hover"
           >
-            <td class="flex flex-row gap-x-1 justify-between items-center">
-              <ng-container
-                *ngIf="!editingAuthenticators.has(authenticator.id)"
-              >
-                <span
+            <td class="flex flex-col gap-y-1">
+              <div class="flex flex-row gap-x-1 justify-between items-center">
+                <ng-container
                   *ngIf="
-                    !editAuthenticatorPending.get(authenticator.id);
-                    else editAuthenticatorLoading
+                    !editingAuthenticators.has(authenticator.id);
+                    else editingAuthenticatorsHas
                   "
-                  >{{ authenticator.name }}</span
                 >
-                <ng-template #editAuthenticatorLoading
-                  ><span class="loading loading-dots"></span
-                ></ng-template>
-
-                <button
-                  type="button"
-                  [disabled]="editAuthenticatorPending.get(authenticator.id)"
-                  (click)="startEditAuthenticator(authenticator.id)"
-                  class="btn btn-ghost btn-xs rounded-md"
-                >
-                  <!-- pencil svg -->
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-4 h-4"
+                  <span
+                    *ngIf="
+                      !editAuthenticatorPending.get(authenticator.id);
+                      else editAuthenticatorLoading
+                    "
+                    >{{ authenticator.name }}</span
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-                    />
-                  </svg>
-                </button>
-              </ng-container>
-              <ng-container *ngIf="editingAuthenticators.has(authenticator.id)">
-                <input
-                  type="text"
-                  [formControlName]="i"
-                  class="input input-sm border-neutral grow"
-                />
-                <div class="flex flex-row flex-nowrap">
+                  <ng-template #editAuthenticatorLoading
+                    ><span class="loading loading-dots"></span
+                  ></ng-template>
+
                   <button
                     type="button"
-                    [disabled]="!nameIsUnique(i, authenticator)"
-                    (click)="emitEditAuthenticator(i, authenticator.id)"
+                    [disabled]="editAuthenticatorPending.get(authenticator.id)"
+                    (click)="startEditAuthenticator(authenticator.id)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
-                    <!-- check svg -->
+                    <!-- pencil svg -->
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -175,37 +160,88 @@
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
                       />
                     </svg>
                   </button>
-
-                  <button
-                    type="button"
-                    (click)="cancelEditAuthenticator(authenticator.id)"
-                    class="btn btn-ghost btn-xs rounded-md"
-                  >
-                    <!-- x-mark svg -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-4 h-4"
+                </ng-container>
+                <ng-template #editingAuthenticatorsHas>
+                  <input
+                    type="text"
+                    [formControlName]="i"
+                    class="input input-sm border-neutral grow"
+                  />
+                  <div class="flex flex-row flex-nowrap">
+                    <button
+                      type="button"
+                      [disabled]="!nameIsUnique(i, authenticator)"
+                      (click)="emitEditAuthenticator(i, authenticator.id)"
+                      class="btn btn-ghost btn-xs rounded-md"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </ng-container>
+                      <!-- check svg -->
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M4.5 12.75l6 6 9-13.5"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="cancelEditAuthenticator(authenticator.id)"
+                      class="btn btn-ghost btn-xs rounded-md"
+                    >
+                      <!-- x-mark svg -->
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </ng-template>
+              </div>
+
+              <newbee-alert
+                [show]="
+                  !!httpClientErrorMsg(
+                    keyword.Authenticator,
+                    keyword.Edit,
+                    authenticator.id
+                  )
+                "
+                [text]="
+                  httpClientErrorMsg(
+                    keyword.Authenticator,
+                    keyword.Edit,
+                    authenticator.id
+                  )
+                "
+                [type]="alertType.Error"
+              ></newbee-alert>
             </td>
+
             <td>{{ authenticator.id }}</td>
-            <td>
+
+            <td class="flex flex-col flex-nowrap gap-y-1">
               <a
                 *ngIf="
                   !deleteAuthenticatorPending.get(authenticator.id);
@@ -218,6 +254,24 @@
               <ng-template #deleteAuthenticatorLoading
                 ><span class="loading loading-dots"></span
               ></ng-template>
+
+              <newbee-alert
+                [show]="
+                  !!httpClientErrorMsg(
+                    keyword.Authenticator,
+                    keyword.Delete,
+                    authenticator.id
+                  )
+                "
+                [text]="
+                  httpClientErrorMsg(
+                    keyword.Authenticator,
+                    keyword.Delete,
+                    authenticator.id
+                  )
+                "
+                [type]="alertType.Error"
+              ></newbee-alert>
             </td>
           </tr>
         </tbody>
@@ -261,29 +315,25 @@
           placeholder="DELETE"
           class="input border-neutral"
         />
-
-        <newbee-alert
-          [show]="inputDisplayError('deleteUser', 'delete')"
-          type="error"
-          [text]="inputErrorMessage('deleteUser', 'delete')"
-        ></newbee-alert>
       </div>
 
-      <button
-        type="submit"
-        id="delete-btn"
-        [disabled]="deleteUserForm.invalid || deletePending"
-        class="btn btn-primary w-fit"
-      >
-        <span *ngIf="deletePending" class="loading loading-spinner"></span>
-        Delete account
-      </button>
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <button
+          type="submit"
+          id="delete-btn"
+          [disabled]="deleteUserForm.invalid || deletePending"
+          class="btn btn-primary w-fit"
+        >
+          <span *ngIf="deletePending" class="loading loading-spinner"></span>
+          Delete account
+        </button>
+
+        <newbee-alert
+          [show]="!!httpClientErrorMsg(keyword.User, keyword.Delete)"
+          [text]="httpClientErrorMsg(keyword.User, keyword.Delete)"
+          [type]="alertType.Error"
+        ></newbee-alert>
+      </div>
     </form>
   </div>
-
-  <newbee-alert
-    [show]="!!httpClientError?.messages?.['misc']"
-    type="error"
-    [text]="httpClientError?.messages?.['misc'] ?? ''"
-  ></newbee-alert>
 </div>

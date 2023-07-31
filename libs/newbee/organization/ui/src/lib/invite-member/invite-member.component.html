@@ -11,30 +11,34 @@
       (ngSubmit)="emitInvite()"
       class="flex flex-col flex-nowrap gap-y-4"
     >
-      <div class="flex flex-col flex-nowrap gap-y-2">
-        <div class="flex flex-row flex-nowrap gap-x-2">
+      <div class="flex flex-row flex-wrap gap-x-2">
+        <div class="grow flex flex-col flex-nowrap gap-y-2">
           <input
             type="text"
             id="email-input"
             formControlName="email"
             placeholder="johndoe@example.com"
             class="input border-neutral w-full"
+            [ngClass]="{ 'input-error': inputDisplayError('email') }"
           />
-          <div class="w-52">
-            <newbee-searchable-select
-              [options]="roleOptions"
-              optionName="role"
-              [showSearchbar]="false"
-              formControlName="role"
-            ></newbee-searchable-select>
-          </div>
+
+          <newbee-alert
+            [show]="inputDisplayError('email')"
+            [text]="inputErrorMessage('email')"
+            [type]="alertType.Error"
+          ></newbee-alert>
         </div>
 
-        <newbee-alert
-          [show]="inputDisplayError('email') || inputDisplayError('role')"
-          type="error"
-          [text]="inputErrorMessage('email') || inputErrorMessage('role')"
-        ></newbee-alert>
+        <div class="grow min-w-52">
+          <newbee-searchable-select
+            [options]="roleOptions"
+            optionName="role"
+            [showSearchbar]="false"
+            formControlName="role"
+            [valid]="!inputDisplayError('role')"
+            [errorText]="inputErrorMessage('role')"
+          ></newbee-searchable-select>
+        </div>
       </div>
 
       <button
@@ -51,13 +55,13 @@
     <div class="w-full">
       <newbee-alert
         [show]="!!invitedUser"
-        type="success"
+        [type]="alertType.Success"
         [text]="inviteSuccessText"
       ></newbee-alert>
       <newbee-alert
-        [show]="!!httpClientError?.messages?.['misc']"
-        type="error"
-        [text]="httpClientError?.messages?.['misc'] ?? ''"
+        [show]="!!miscError"
+        [type]="alertType.Error"
+        [text]="miscError"
       ></newbee-alert>
     </div>
   </div>

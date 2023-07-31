@@ -34,7 +34,7 @@
     />
     <newbee-alert
       [show]="hasError('number') && !clean"
-      type="error"
+      [type]="alertType.Error"
       [text]="errorMessage"
     ></newbee-alert>
   </div>

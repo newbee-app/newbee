@@ -31,6 +31,7 @@ export const AuthenticatorActions = createActionGroup({
      */
     'Create Authenticator': props<{
       options: PublicKeyCredentialCreationOptionsJSON;
+      caller: Keyword.Auth | Keyword.Authenticator;
     }>(),
 
     /**

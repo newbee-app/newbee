@@ -16,10 +16,11 @@
         placeholder="My Org"
         required
         class="input border-neutral w-full"
+        [ngClass]="{ 'input-error': inputDisplayError('name') }"
       />
       <newbee-alert
         [show]="inputDisplayError('name')"
-        type="error"
+        [type]="alertType.Error"
         [text]="inputErrorMessage('name')"
       ></newbee-alert>
     </div>
@@ -36,13 +37,19 @@
         newbeeSlugInput
         (slug)="formattedSlug.emit($event)"
         class="input border-neutral w-full"
+        [ngClass]="{
+          'input-error':
+            (!checkPending && slugTaken) || inputDisplayError('slug')
+        }"
       />
+
       <div *ngIf="checkPending" class="self-center">
         <span class="loading loading-dots"></span>
       </div>
+
       <newbee-alert
         [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
-        type="error"
+        [type]="alertType.Error"
         [text]="
           inputErrorMessage('slug') ||
           'This slug is already taken, please choose another'
@@ -50,22 +57,24 @@
       ></newbee-alert>
     </div>
 
-    <button
-      id="create-btn"
-      type="submit"
-      [disabled]="
-        createOrgForm.invalid || checkPending || slugTaken || createPending
-      "
-      class="btn btn-primary w-full"
-    >
-      <span *ngIf="createPending" class="loading loading-spinner"></span>
-      Create Org
-    </button>
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <button
+        id="create-btn"
+        type="submit"
+        [disabled]="
+          createOrgForm.invalid || checkPending || slugTaken || createPending
+        "
+        class="btn btn-primary w-full"
+      >
+        <span *ngIf="createPending" class="loading loading-spinner"></span>
+        Create Org
+      </button>
 
-    <newbee-alert
-      [show]="!!httpClientError?.messages?.['misc']"
-      type="error"
-      [text]="httpClientError?.messages?.['misc']!"
-    ></newbee-alert>
+      <newbee-alert
+        [show]="!!miscError"
+        [type]="alertType.Error"
+        [text]="miscError"
+      ></newbee-alert>
+    </div>
   </div>
 </form>

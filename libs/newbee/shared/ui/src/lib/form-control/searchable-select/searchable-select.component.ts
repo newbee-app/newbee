@@ -6,7 +6,7 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { SelectOption } from '@newbee/newbee/shared/util';
+import { AlertType, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { AlertComponent } from '../../alert/alert.component';
 import { DropdownComponent } from '../../dropdown';
@@ -41,6 +41,11 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
   ],
 })
 export class SearchableSelectComponent<T> implements ControlValueAccessor {
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * Whether to show the searchbar component.
    */

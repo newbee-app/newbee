@@ -9,7 +9,10 @@ import {
   RouterEffects,
   SearchEffects,
 } from '@newbee/newbee/shared/data-access';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
+import {
+  ErrorScreenComponent,
+  StoreToastComponent,
+} from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
@@ -57,6 +60,7 @@ import { AppRoutingModule } from './routing';
     // component modules for `AppComponent`
     NavbarComponent,
     ErrorScreenComponent,
+    StoreToastComponent,
 
     // routing module
     AppRoutingModule,

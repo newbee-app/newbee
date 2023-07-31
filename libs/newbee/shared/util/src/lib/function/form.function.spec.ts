@@ -1,14 +1,14 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { testUser1 } from '@newbee/shared/util';
 import {
-  getErrorMessage,
   inputDisplayError,
+  inputErrorMessage,
   inputIsClean,
   inputIsValid,
 } from './form.function';
 
 describe('FormFunction', () => {
-  describe('getErrorMessage', () => {
+  describe('inputErrorMessage', () => {
     let control: FormControl<string | null>;
 
     beforeEach(() => {
@@ -17,33 +17,33 @@ describe('FormFunction', () => {
 
     it('should work for required', () => {
       control.setErrors({ required: true });
-      expect(getErrorMessage(control)).toEqual('You must enter a value');
+      expect(inputErrorMessage(control)).toEqual('You must enter a value');
     });
 
     it('should work for email', () => {
       control.setErrors({ email: true });
-      expect(getErrorMessage(control)).toEqual('Not a valid email');
+      expect(inputErrorMessage(control)).toEqual('Not a valid email');
     });
 
     describe('phoneNumber', () => {
       it('should work for missingCountry', () => {
         control.setErrors({ phoneNumber: { missingCountry: true } });
-        expect(getErrorMessage(control)).toEqual('You must select a country');
+        expect(inputErrorMessage(control)).toEqual('You must select a country');
       });
 
       it('should work for invalidNumber', () => {
         control.setErrors({ phoneNumber: { invalidNumber: true } });
-        expect(getErrorMessage(control)).toEqual('Not a valid phone number');
+        expect(inputErrorMessage(control)).toEqual('Not a valid phone number');
       });
 
       it('should work for invalidCountry', () => {
         control.setErrors({ phoneNumber: { invalidCountry: true } });
-        expect(getErrorMessage(control)).toEqual('Not a valid country');
+        expect(inputErrorMessage(control)).toEqual('Not a valid country');
       });
 
       it('should work for invalid', () => {
         control.setErrors({ phoneNumber: { invalid: true } });
-        expect(getErrorMessage(control)).toEqual(
+        expect(inputErrorMessage(control)).toEqual(
           'Not a valid phone number or country'
         );
       });

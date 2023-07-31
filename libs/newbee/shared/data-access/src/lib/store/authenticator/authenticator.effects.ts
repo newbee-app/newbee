@@ -1,14 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  authenticatorTakenBadRequest,
-  authenticatorVerifyBadRequest,
-  Keyword,
-  userChallengeIdNotFound,
-} from '@newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, switchMap } from 'rxjs';
-import { catchHttpError, catchHttpScreenError } from '../../function';
+import { catchHttpScreenError } from '../../function';
+import { catchHttpClientError } from '../../function/catch-http-client-error.function';
 import { AuthenticatorService } from '../../service';
 import { AuthenticatorActions } from './authenticator.actions';
 
@@ -39,9 +34,17 @@ export class AuthenticatorEffects {
       switchMap(() => {
         return this.authenticatorService.createOptions().pipe(
           map((options) => {
-            return AuthenticatorActions.createAuthenticator({ options });
+            return AuthenticatorActions.createAuthenticator({
+              options,
+              caller: Keyword.Authenticator,
+            });
           }),
-          catchError(AuthenticatorEffects.catchHttpError)
+          catchError((err) =>
+            catchHttpClientError(
+              err,
+              () => `${Keyword.Authenticator}-${Keyword.New}`
+            )
+          )
         );
       })
     );
@@ -50,14 +53,23 @@ export class AuthenticatorEffects {
   createAuthenticator$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthenticatorActions.createAuthenticator),
-      concatMap(({ options }) => {
+      concatMap(({ options, caller }) => {
         return this.authenticatorService.create(options).pipe(
           map((authenticator) => {
             return AuthenticatorActions.createAuthenticatorSuccess({
               authenticator,
             });
           }),
-          catchError(AuthenticatorEffects.catchHttpError)
+          catchError((err) =>
+            catchHttpClientError(err, () => {
+              switch (caller) {
+                case Keyword.Auth:
+                  return Keyword.Misc;
+                case Keyword.Authenticator:
+                  return `${Keyword.Authenticator}-${Keyword.New}`;
+              }
+            })
+          )
         );
       })
     );
@@ -73,7 +85,12 @@ export class AuthenticatorEffects {
               authenticator,
             });
           }),
-          catchError(AuthenticatorEffects.catchHttpError)
+          catchError((err) =>
+            catchHttpClientError(
+              err,
+              () => `${Keyword.Authenticator}-${Keyword.Edit}-${id}`
+            )
+          )
         );
       })
     );
@@ -87,7 +104,12 @@ export class AuthenticatorEffects {
           map(() => {
             return AuthenticatorActions.deleteAuthenticatorSuccess({ id });
           }),
-          catchError(AuthenticatorEffects.catchHttpError)
+          catchError((err) =>
+            catchHttpClientError(
+              err,
+              () => `${Keyword.Authenticator}-${Keyword.Delete}-${id}`
+            )
+          )
         );
       })
     );
@@ -97,17 +119,4 @@ export class AuthenticatorEffects {
     private readonly actions$: Actions,
     private readonly authenticatorService: AuthenticatorService
   ) {}
-
-  static catchHttpError(err: HttpErrorResponse) {
-    return catchHttpError(err, (message) => {
-      switch (message) {
-        case userChallengeIdNotFound:
-        case authenticatorVerifyBadRequest:
-        case authenticatorTakenBadRequest:
-          return `${Keyword.New}-${Keyword.Authenticator}`;
-        default:
-          return 'misc';
-      }
-    });
-  }
 }

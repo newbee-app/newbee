@@ -18,9 +18,9 @@
     </p>
 
     <newbee-alert
-      [show]="!!httpError"
-      type="error"
-      [text]="httpError"
+      [show]="!!miscError"
+      [type]="alertType.Error"
+      [text]="miscError"
     ></newbee-alert>
   </div>
 </newbee-base-form>

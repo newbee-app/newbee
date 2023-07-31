@@ -1,4 +1,3 @@
-import { internalServerError, userEmailNotFound } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { LoginFormComponent } from './login-form.component';
 
@@ -25,7 +24,7 @@ export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 500,
-      messages: { email: userEmailNotFound, misc: internalServerError },
+      messages: { email: 'Email error', misc: 'Misc error' },
     },
   },
 };

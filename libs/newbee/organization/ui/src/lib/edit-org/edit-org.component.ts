@@ -16,13 +16,19 @@ import {
 import { EditOrgForm, EditOrgSlugForm } from '@newbee/newbee/organization/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
-  getErrorMessage,
+  AlertType,
+  getHttpClientErrorMsg,
   HttpClientError,
   inputDisplayError,
+  inputErrorMessage,
   SlugInputDirectiveModule,
 } from '@newbee/newbee/shared/util';
-import type { Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
-import { OrgRoleEnum } from '@newbee/shared/util';
+import {
+  Keyword,
+  OrgMemberNoUserOrg,
+  OrgRoleEnum,
+  type Organization,
+} from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -44,6 +50,16 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    * Emit to unsubscribe from all infinite observables.
    */
   private readonly unsubscribe$ = new Subject<void>();
+
+  /**
+   * All NewBee keywords.
+   */
+  readonly keyword = Keyword;
+
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
 
   /**
    * Information about the org.
@@ -216,6 +232,17 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get the error message associated with the key.
+   *
+   * @param key The key to find the error message.
+   *
+   * @returns The error message associated with the key, an empty string if there isn't one.
+   */
+  httpClientErrorMsg(...key: string[]): string {
+    return getHttpClientErrorMsg(this.httpClientError, key.join('-'));
+  }
+
+  /**
    * Whether to display a form input as having an error.
    *
    * @param formName The name of the form group to look at.
@@ -223,16 +250,13 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  readonly inputDisplayError = (
+  inputDisplayError(
     formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
     inputName: string
-  ): boolean => {
+  ): boolean {
     const form = this.getFormGroup(formName);
-    return (
-      inputDisplayError(form, inputName) ||
-      !!this.httpClientError?.messages[inputName]
-    );
-  };
+    return inputDisplayError(form, inputName);
+  }
 
   /**
    * The input error message for the given form.
@@ -242,16 +266,13 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  readonly inputErrorMessage = (
+  inputErrorMessage(
     formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
     inputName: string
-  ): string => {
+  ): string {
     const form = this.getFormGroup(formName);
-    return (
-      getErrorMessage(form.get(inputName)) ||
-      (this.httpClientError?.messages[inputName] ?? '')
-    );
-  };
+    return inputErrorMessage(form.get(inputName));
+  }
 
   /**
    * Get the form group associated with the given name.

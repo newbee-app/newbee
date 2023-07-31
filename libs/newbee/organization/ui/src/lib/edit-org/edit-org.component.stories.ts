@@ -1,4 +1,5 @@
 import {
+  Keyword,
   OrgRoleEnum,
   testOrganization1,
   testOrgMember1,
@@ -52,11 +53,16 @@ export const CheckPending: Story = { args: { checkPending: true } };
 
 export const DeletePending: Story = { args: { deletePending: true } };
 
-export const HttpError: Story = {
+export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 400,
-      messages: { misc: 'An HTTP client error' },
+      messages: {
+        [`${Keyword.Organization}-${Keyword.Edit}`]: 'org-edit error',
+        [`${Keyword.Organization}-${Keyword.Slug}-${Keyword.Edit}`]:
+          'org-slug-edit error',
+        [`${Keyword.Organization}-${Keyword.Delete}`]: 'org-delete error',
+      },
     },
   },
 };

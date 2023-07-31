@@ -14,9 +14,10 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import {
+  AlertType,
   Country,
   CountryService,
-  getErrorMessage,
+  inputErrorMessage,
   PhoneInput,
   PhoneNumberInputDirectiveModule,
   PhoneNumberPipe,
@@ -66,6 +67,11 @@ import { SearchableSelectComponent } from '../searchable-select/searchable-selec
 export class PhoneInputComponent
   implements OnDestroy, ControlValueAccessor, Validator
 {
+  /**
+   * Supported alert types.
+   */
+  readonly alertType = AlertType;
+
   /**
    * The internal form group representing a phone number.
    * Includes a country and a phone number string.
@@ -238,7 +244,7 @@ export class PhoneInputComponent
    * Gets the error message for the control, if one exists.
    */
   get errorMessage(): string {
-    return getErrorMessage(this.phoneNumber);
+    return inputErrorMessage(this.phoneNumber);
   }
 
   /**

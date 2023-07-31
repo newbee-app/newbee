@@ -8,7 +8,12 @@ import {
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
 } from '@newbee/shared/data-access';
-import { testOrganization1, testTeam1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testTeam1,
+  testTeamRelation1,
+} from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -30,7 +35,7 @@ describe('TeamEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
           },
         }),
         TeamEffects,
@@ -166,6 +171,27 @@ describe('TeamEffects', () => {
           testTeam1.slug,
           testOrganization1.slug
         );
+      });
+    });
+
+    it('should fire checkSlugSuccess with slugTaken as false if slug is the same as selectedTeam', () => {
+      store.setState({
+        [Keyword.Organization]: {
+          selectedOrganization: testOrganization1,
+        },
+        [Keyword.Team]: {
+          selectedTeam: testTeamRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: TeamActions.checkSlug({ slug: testTeamRelation1.team.slug }),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.checkSlugSuccess({ slugTaken: false }),
+      });
+      expect(effects.checkSlug$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.checkSlug).not.toBeCalled();
       });
     });
 
