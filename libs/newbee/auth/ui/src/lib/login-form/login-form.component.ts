@@ -79,7 +79,7 @@ export class LoginFormComponent {
    */
   get showEmailError(): boolean {
     return (
-      inputDisplayError(this.loginForm, 'email') ||
+      inputDisplayError(this.loginForm.controls.email) ||
       !!getHttpClientErrorMsg(this.httpClientError, 'email')
     );
   }
@@ -89,7 +89,7 @@ export class LoginFormComponent {
    */
   get emailErrorMessage(): string {
     return (
-      inputErrorMessage(this.loginForm.get('email')) ||
+      inputErrorMessage(this.loginForm.controls.email) ||
       getHttpClientErrorMsg(this.httpClientError, 'email')
     );
   }

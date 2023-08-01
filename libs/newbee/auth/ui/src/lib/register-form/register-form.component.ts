@@ -89,7 +89,7 @@ export class RegisterFormComponent {
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      inputDisplayError(this.registerForm, inputName) ||
+      inputDisplayError(this.registerForm.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }

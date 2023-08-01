@@ -172,7 +172,7 @@ export class CreateTeamComponent implements OnInit, OnChanges, OnDestroy {
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      inputDisplayError(this.createTeamForm, inputName) ||
+      inputDisplayError(this.createTeamForm.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }

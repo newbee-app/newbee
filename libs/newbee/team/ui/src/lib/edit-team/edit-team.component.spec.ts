@@ -1,4 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
+import {
+  OrgRoleEnum,
+  testOrgMember1,
+  testTeam1,
+  testTeamMember1,
+} from '@newbee/shared/util';
 import { EditTeamComponent } from './edit-team.component';
 
 describe('EditTeamComponent', () => {
@@ -12,10 +23,101 @@ describe('EditTeamComponent', () => {
 
     fixture = TestBed.createComponent(EditTeamComponent);
     component = fixture.componentInstance;
+
+    component.team = testTeam1;
+    component.orgMember = testOrgMember1;
+
+    jest.spyOn(component.slug, 'emit');
+    jest.spyOn(component.formattedSlug, 'emit');
+    jest.spyOn(component.edit, 'emit');
+    jest.spyOn(component.editSlug, 'emit');
+    jest.spyOn(component.delete, 'emit');
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
+    expect(fixture).toBeDefined();
+  });
+
+  describe('outputs', () => {
+    describe('slug', () => {
+      it('should emit whenever the slug input is changed', () => {
+        component.editTeamSlugForm.setValue({ slug: 'newslug' });
+        expect(component.slug.emit).toBeCalledTimes(1);
+        expect(component.slug.emit).toBeCalledWith('newslug');
+      });
+    });
+
+    describe('formattedSlug', () => {
+      it('should emit whenever the slug input is formatted', fakeAsync(() => {
+        expect(component.formattedSlug.emit).toBeCalledTimes(1);
+        expect(component.formattedSlug.emit).toBeCalledWith(testTeam1.slug);
+        component.editTeamSlugForm.setValue({ slug: 'Newslug' });
+        tick(600);
+        expect(component.formattedSlug.emit).toBeCalledTimes(2);
+        expect(component.formattedSlug.emit).toBeCalledWith('newslug');
+      }));
+    });
+
+    describe('edit', () => {
+      it('should emit edit', () => {
+        component.emitEdit();
+        expect(component.edit.emit).toBeCalledTimes(1);
+        expect(component.edit.emit).toBeCalledWith(testTeam1.name);
+      });
+    });
+
+    describe('editSlug', () => {
+      it('should emit editSlug', () => {
+        component.emitEditSlug();
+        expect(component.editSlug.emit).toBeCalledTimes(1);
+        expect(component.editSlug.emit).toBeCalledWith(testTeam1.slug);
+      });
+    });
+
+    describe('delete', () => {
+      it('should emit delete', () => {
+        component.emitDelete();
+        expect(component.delete.emit).toBeCalledTimes(1);
+      });
+    });
+  });
+
+  describe('getters', () => {
+    describe('editDistinct', () => {
+      it('should be true when edit team form is distinct from team, false otherwise', () => {
+        expect(component.editDistinct).toBeFalsy();
+        component.editTeamForm.setValue({ name: 'new name' });
+        expect(component.editDistinct).toBeTruthy();
+      });
+    });
+
+    describe('editSlugDistinct', () => {
+      it('should be true when edit team slug from is distinct from team, false otherwise', () => {
+        expect(component.editSlugDistinct).toBeFalsy();
+        component.editTeamSlugForm.setValue({ slug: 'newslug' });
+        expect(component.editSlugDistinct).toBeTruthy();
+      });
+    });
+
+    describe('deleteSlugMatches', () => {
+      it(`should be true if the delete team form's slug matches the team's, false otherwise`, () => {
+        expect(component.deleteSlugMatches).toBeFalsy();
+        component.deleteTeamForm.setValue({ slug: testTeam1.slug });
+        expect(component.deleteSlugMatches).toBeTruthy();
+      });
+    });
+
+    describe('canAccessAdvanced', () => {
+      it('should be true if org member is an admin or team member is an owner, false otherwise', () => {
+        expect(component.canAccessAdvanced).toBeTruthy();
+        component.orgMember = { ...testOrgMember1, role: OrgRoleEnum.Member };
+        expect(component.canAccessAdvanced).toBeFalsy();
+        component.teamMember = testTeamMember1;
+        expect(component.canAccessAdvanced).toBeTruthy();
+      });
+    });
   });
 });

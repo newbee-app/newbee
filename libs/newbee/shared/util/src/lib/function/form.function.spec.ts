@@ -1,4 +1,4 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { testUser1 } from '@newbee/shared/util';
 import {
   inputDisplayError,
@@ -50,50 +50,47 @@ describe('FormFunction', () => {
     });
   });
 
-  describe('form group functions', () => {
-    let group: FormGroup;
-
-    const email = 'email';
+  describe('input checkers', () => {
+    let control: FormControl;
 
     beforeEach(() => {
-      group = new FormGroup({
-        email: new FormControl('', [Validators.email]),
-      });
+      control = new FormControl('', Validators.email);
     });
 
     it('should be marked as clean if pristine and untouched', () => {
-      expect(inputIsClean(group, email)).toBeTruthy();
-      group.markAsDirty();
-      expect(inputIsClean(group, email)).toBeTruthy();
-      group.markAsTouched();
-      expect(inputIsClean(group, email)).toBeTruthy();
+      expect(inputIsClean(control)).toBeTruthy();
+      control.markAsDirty();
+      expect(inputIsClean(control)).toBeFalsy();
+      control.markAsPristine();
+      control.markAsTouched();
+      expect(inputIsClean(control)).toBeFalsy();
     });
 
     it('should be marked as not clean if dirty', () => {
-      group.get(email)?.markAsDirty();
-      expect(inputIsClean(group, email)).toBeFalsy();
+      control.markAsDirty();
+      expect(inputIsClean(control)).toBeFalsy();
     });
 
     it('should be marked as not clean if touched', () => {
-      group.get(email)?.markAsTouched();
-      expect(inputIsClean(group, email)).toBeFalsy();
+      control.markAsTouched();
+      expect(inputIsClean(control)).toBeFalsy();
     });
 
     it('should only be marked as valid if valid', () => {
-      group.setValue({ email: testUser1.email });
-      expect(inputIsValid(group, email)).toBeTruthy();
-      group.setValue({ email: 'bademail' });
-      expect(inputIsValid(group, email)).toBeFalsy();
+      control.setValue(testUser1.email);
+      expect(inputIsValid(control)).toBeTruthy();
+      control.setValue('bademail');
+      expect(inputIsValid(control)).toBeFalsy();
     });
 
     it('should only display error if input is not clean and not valid', () => {
-      expect(inputDisplayError(group, email)).toBeFalsy();
-      group.get(email)?.markAsTouched();
-      expect(inputDisplayError(group, email)).toBeFalsy();
-      group.setValue({ email: 'bademail' });
-      expect(inputDisplayError(group, email)).toBeTruthy();
-      group.get(email)?.markAsUntouched();
-      expect(inputDisplayError(group, email)).toBeFalsy();
+      expect(inputDisplayError(control)).toBeFalsy();
+      control.markAsTouched();
+      expect(inputDisplayError(control)).toBeFalsy();
+      control.setValue('bademail');
+      expect(inputDisplayError(control)).toBeTruthy();
+      control.markAsUntouched();
+      expect(inputDisplayError(control)).toBeFalsy();
     });
   });
 });
