@@ -2,12 +2,17 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import {
+  initialTeamState,
+  ShortUrl,
+  TeamActions,
+} from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testUser1 } from '@newbee/shared/util';
+import { Keyword, testTeamRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authenticatedGuard } from './authenticated.guard';
+import { teamGuard } from './team.guard';
 
-describe('authenticatedGuard', () => {
+describe('teamGuard', () => {
   let store: MockStore;
   let router: Router;
   let location: Location;
@@ -18,13 +23,9 @@ describe('authenticatedGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `${Keyword.Auth}/${Keyword.Login}`,
+            path: `:${ShortUrl.Team}`,
             component: EmptyComponent,
-          },
-          {
-            path: 'test',
-            component: EmptyComponent,
-            canActivate: [authenticatedGuard],
+            canActivate: [teamGuard],
           },
           {
             path: '',
@@ -32,12 +33,23 @@ describe('authenticatedGuard', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Team]: {
+              ...initialTeamState,
+              selectedTeam: testTeamRelation1,
+            },
+          },
+        }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
+
+    jest.spyOn(store, 'dispatch');
 
     router.initialNavigation();
   });
@@ -48,22 +60,14 @@ describe('authenticatedGuard', () => {
     expect(location).toBeDefined();
   });
 
-  describe('valid user', () => {
-    it('should navigate properly', async () => {
-      store.setState({
-        auth: { user: testUser1 },
-        cookie: { csrfToken: 'token' },
-      });
-      await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/test');
-    });
-  });
-
-  describe('invalid user', () => {
-    it('should redirect', async () => {
-      store.setState({ auth: { user: null }, cookie: { csrfToken: 'token' } });
-      await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
-    });
+  it('should dispatch store and navigate', async () => {
+    await expect(
+      router.navigate([`/${testTeamRelation1.team.slug}`])
+    ).resolves.toBeTruthy();
+    expect(store.dispatch).toBeCalledTimes(1);
+    expect(store.dispatch).toBeCalledWith(
+      TeamActions.getTeam({ slug: testTeamRelation1.team.slug })
+    );
+    expect(location.path()).toEqual(`/${testTeamRelation1.team.slug}`);
   });
 });

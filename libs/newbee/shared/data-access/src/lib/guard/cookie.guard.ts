@@ -5,7 +5,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 import { CookieActions, cookieFeature, httpFeature } from '../store';
 
 /**
- * A guard that fires the request to init cookies and only proceeds if it succeeds.
+ * A guard that fires the request to init cookies and only proceeds if it completes.
  *
  * @returns `true` after the cookies are initialized.
  */

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
   resetSelectedTeamGuard,
+  teamGuard,
   teamTitleResolver,
 } from '@newbee/newbee/team/data-access';
 import { Keyword } from '@newbee/shared/util';
@@ -20,6 +21,7 @@ const routes: Routes = [
       {
         path: `:${ShortUrl.Team}`,
         title: teamTitleResolver,
+        canActivate: [teamGuard],
         canDeactivate: [resetSelectedTeamGuard],
         component: TeamViewComponent,
       },

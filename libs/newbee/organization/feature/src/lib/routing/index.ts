@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
+  isOrgAdminGuard,
+  orgGuard,
   orgTitleResolver,
   resetSelectedOrgGuard,
 } from '@newbee/newbee/organization/data-access';
@@ -23,7 +25,7 @@ const routes: Routes = [
   {
     path: `:${ShortUrl.Organization}`,
     title: orgTitleResolver,
-    canActivate: [authenticatedGuard],
+    canActivate: [authenticatedGuard, orgGuard],
     canDeactivate: [resetSelectedOrgGuard],
     children: [
       {
@@ -36,10 +38,12 @@ const routes: Routes = [
       {
         path: Keyword.Edit,
         component: OrgEditComponent,
+        canActivate: [isOrgAdminGuard],
       },
       {
         path: Keyword.Invite,
         component: OrgInviteComponent,
+        canActivate: [isOrgAdminGuard],
       },
       {
         path: '',

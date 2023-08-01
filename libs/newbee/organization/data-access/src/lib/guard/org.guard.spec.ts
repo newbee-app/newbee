@@ -2,12 +2,16 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import {
+  OrganizationActions,
+  ShortUrl,
+} from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testUser1 } from '@newbee/shared/util';
+import { Keyword, testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authenticatedGuard } from './authenticated.guard';
+import { orgGuard } from './org.guard';
 
-describe('authenticatedGuard', () => {
+describe('orgGuard', () => {
   let store: MockStore;
   let router: Router;
   let location: Location;
@@ -18,13 +22,9 @@ describe('authenticatedGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `${Keyword.Auth}/${Keyword.Login}`,
+            path: `:${ShortUrl.Organization}`,
             component: EmptyComponent,
-          },
-          {
-            path: 'test',
-            component: EmptyComponent,
-            canActivate: [authenticatedGuard],
+            canActivate: [orgGuard],
           },
           {
             path: '',
@@ -32,12 +32,22 @@ describe('authenticatedGuard', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganization1,
+            },
+          },
+        }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
+
+    jest.spyOn(store, 'dispatch');
 
     router.initialNavigation();
   });
@@ -48,22 +58,14 @@ describe('authenticatedGuard', () => {
     expect(location).toBeDefined();
   });
 
-  describe('valid user', () => {
-    it('should navigate properly', async () => {
-      store.setState({
-        auth: { user: testUser1 },
-        cookie: { csrfToken: 'token' },
-      });
-      await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/test');
-    });
-  });
-
-  describe('invalid user', () => {
-    it('should redirect', async () => {
-      store.setState({ auth: { user: null }, cookie: { csrfToken: 'token' } });
-      await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
-    });
+  it('should dispatch store and navigate', async () => {
+    await expect(
+      router.navigate([`/${testOrganization1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(store.dispatch).toBeCalledTimes(1);
+    expect(store.dispatch).toBeCalledWith(
+      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
+    );
+    expect(location.path()).toEqual(`/${testOrganization1.slug}`);
   });
 });

@@ -1,25 +1,28 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import {
   httpFeature,
   ShortUrl,
+  TeamActions,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 
 /**
- * A resolver to get the title for team pages.
+ * A guard that fires the request to get a team and only proceeds if it completes.
  *
  * @param route A snapshot of the route the user is trying to navigate to.
- * @returns The name of the selected team if one has been selected, 'Error' if for some reason one hasn't been.
+ *
+ * @returns `true` after the team is retrieved.
  */
-export const teamTitleResolver: ResolveFn<string> = (
+export const teamGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot
-): Observable<string> => {
+): Observable<boolean> => {
   const store = inject(Store);
 
   const teamSlug = route.paramMap.get(ShortUrl.Team) as string;
+  store.dispatch(TeamActions.getTeam({ slug: teamSlug }));
 
   return combineLatest([
     store.select(teamFeature.selectSelectedTeam),
@@ -29,16 +32,6 @@ export const teamTitleResolver: ResolveFn<string> = (
       ([team, screenError]) => team?.team.slug !== teamSlug && !screenError
     ),
     take(1),
-    map(([team]) => {
-      const toAppend =
-        route.parent?.title && !route.parent.title.includes('Error')
-          ? ` - ${route.parent.title}`
-          : '';
-      if (team) {
-        return `${team.team.name}${toAppend}`;
-      }
-
-      return `Error${toAppend}`;
-    })
+    map(() => true)
   );
 };

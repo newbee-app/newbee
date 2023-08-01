@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import {
   httpFeature,
+  OrganizationActions,
   organizationFeature,
   ShortUrl,
 } from '@newbee/newbee/shared/data-access';
@@ -9,18 +10,19 @@ import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 
 /**
- * A resolver to get the title for org pages.
+ * A guard that fires the request to get an org and only proceeds if it completes.
  *
  * @param route A snapshot of the route the user is trying to navigate to.
  *
- * @returns The name of the selected organization if one has been selected, 'Error' if for some reason one hasn't been.
+ * @returns `true` after the org is retrieved.
  */
-export const orgTitleResolver: ResolveFn<string> = (
+export const orgGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot
-): Observable<string> => {
+): Observable<boolean> => {
   const store = inject(Store);
 
   const orgSlug = route.paramMap.get(ShortUrl.Organization) as string;
+  store.dispatch(OrganizationActions.getOrg({ orgSlug }));
 
   return combineLatest([
     store.select(organizationFeature.selectSelectedOrganization),
@@ -31,12 +33,6 @@ export const orgTitleResolver: ResolveFn<string> = (
         selectedOrganization?.slug !== orgSlug && !screenError
     ),
     take(1),
-    map(([selectedOrganization]) => {
-      if (selectedOrganization) {
-        return selectedOrganization.name;
-      }
-
-      return 'Error';
-    })
+    map(() => true)
   );
 };

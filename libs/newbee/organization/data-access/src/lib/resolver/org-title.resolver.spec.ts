@@ -6,11 +6,14 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   initialHttpState,
   initialOrganizationState,
-  OrganizationActions,
   ShortUrl,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { forbiddenError, testOrganization1 } from '@newbee/shared/util';
+import {
+  forbiddenError,
+  Keyword,
+  testOrganization1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
 
@@ -41,8 +44,6 @@ describe('orgTitleResolver', () => {
     location = TestBed.inject(Location);
     title = TestBed.inject(Title);
 
-    jest.spyOn(store, 'dispatch');
-
     router.initialNavigation();
   });
 
@@ -53,9 +54,9 @@ describe('orgTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it(`should dispatch getOrg and set title to org's name`, async () => {
+  it(`should set title to org's name`, async () => {
     store.setState({
-      org: {
+      [Keyword.Organization]: {
         ...initialOrganizationState,
         selectedOrganization: testOrganization1,
       },
@@ -63,17 +64,13 @@ describe('orgTitleResolver', () => {
     await expect(
       router.navigate([`/${testOrganization1.slug}`])
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
-      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
-    );
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);
     expect(title.getTitle()).toEqual(testOrganization1.name);
   });
 
   it('should set title to Error if store has error instead of selected org', async () => {
     store.setState({
-      http: {
+      [Keyword.Http]: {
         ...initialHttpState,
         screenError: { status: 403, message: forbiddenError },
       },

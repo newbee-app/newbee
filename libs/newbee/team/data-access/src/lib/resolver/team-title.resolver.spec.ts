@@ -7,11 +7,11 @@ import {
   initialHttpState,
   initialTeamState,
   ShortUrl,
-  TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   forbiddenError,
+  Keyword,
   testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -30,6 +30,17 @@ describe('teamTitleResolver', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
+            path: 'test',
+            title: 'Error',
+            children: [
+              {
+                path: `:${ShortUrl.Team}`,
+                component: EmptyComponent,
+                title: teamTitleResolver,
+              },
+            ],
+          },
+          {
             path: '',
             title: 'NewBee',
             component: EmptyComponent,
@@ -43,15 +54,22 @@ describe('teamTitleResolver', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Team]: {
+              ...initialTeamState,
+              selectedTeam: testTeamRelation1,
+            },
+          },
+        }),
+      ],
     });
 
     router = TestBed.inject(Router);
     store = TestBed.inject(MockStore);
     location = TestBed.inject(Location);
     title = TestBed.inject(Title);
-
-    jest.spyOn(store, 'dispatch');
 
     router.initialNavigation();
   });
@@ -63,18 +81,8 @@ describe('teamTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it(`should dispatch getTeam and set title to team's name appended to existing title`, async () => {
-    store.setState({
-      team: {
-        ...initialTeamState,
-        selectedTeam: testTeamRelation1,
-      },
-    });
+  it(`should set title to team's name appended to existing title`, async () => {
     await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
-      TeamActions.getTeam({ slug: testTeam1.slug })
-    );
     expect(location.path()).toEqual(`/${testTeam1.slug}`);
     expect(title.getTitle()).toEqual(`${testTeam1.name} - NewBee`);
   });
@@ -89,5 +97,13 @@ describe('teamTitleResolver', () => {
     await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testTeam1.slug}`);
     expect(title.getTitle()).toEqual('Error - NewBee');
+  });
+
+  it(`should not append existing title if it's Error`, async () => {
+    await expect(
+      router.navigate([`/test/${testTeam1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/test/${testTeam1.slug}`);
+    expect(title.getTitle()).toEqual(`${testTeam1.name}`);
   });
 });
