@@ -126,7 +126,7 @@ export class InviteMemberComponent implements OnChanges {
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      inputDisplayError(this.inviteMemberForm, inputName) ||
+      inputDisplayError(this.inviteMemberForm.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }

@@ -18,14 +18,14 @@
           class="input border-neutral w-full"
           [ngClass]="{
             'input-error':
-              inputDisplayError('editOrg', 'name') ||
+              inputDisplayError('name') ||
               !!httpClientErrorMsg(keyword.Organization, keyword.Edit)
           }"
         />
         <newbee-alert
-          [show]="inputDisplayError('editOrg', 'name')"
+          [show]="inputDisplayError('name')"
           [type]="alertType.Error"
-          [text]="inputErrorMessage('editOrg', 'name')"
+          [text]="inputErrorMessage('name')"
         ></newbee-alert>
       </div>
 
@@ -88,7 +88,7 @@
             [ngClass]="{
               'input-error':
                 (!checkPending && slugTaken) ||
-                inputDisplayError('editOrgSlug', 'slug') ||
+                inputDisplayError('slug') ||
                 !!httpClientErrorMsg(
                   keyword.Organization,
                   keyword.Slug,
@@ -102,13 +102,10 @@
           </div>
 
           <newbee-alert
-            [show]="
-              (!checkPending && slugTaken) ||
-              inputDisplayError('editOrgSlug', 'slug')
-            "
+            [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
             [type]="alertType.Error"
             [text]="
-              inputErrorMessage('editOrgSlug', 'slug') ||
+              inputErrorMessage('slug') ||
               'This slug is already taken, please choose another'
             "
           ></newbee-alert>
@@ -179,7 +176,14 @@
             formControlName="slug"
             [placeholder]="organization.slug"
             class="input border-neutral"
+            [ngClass]="{ 'input-error': inputDisplayError('delete') }"
           />
+
+          <newbee-alert
+            [show]="inputDisplayError('delete')"
+            [text]="inputErrorMessage('delete')"
+            [type]="alertType.Error"
+          ></newbee-alert>
         </div>
 
         <div class="flex flex-col flex-nowrap gap-y-2">

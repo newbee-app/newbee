@@ -21,11 +21,10 @@ export const isOrgAdminGuard: CanActivateFn = (): Observable<
 
   return store.select(organizationFeature.selectOrgState).pipe(
     take(1),
-    map((orgState) => {
-      const { selectedOrganization, orgMember } = orgState;
+    map(({ selectedOrganization, orgMember }) => {
       if (
         orgMember &&
-        compareOrgRoles(orgMember.orgMember.role, OrgRoleEnum.Moderator) >= 1
+        compareOrgRoles(orgMember.orgMember.role, OrgRoleEnum.Moderator) >= 0
       ) {
         return true;
       }

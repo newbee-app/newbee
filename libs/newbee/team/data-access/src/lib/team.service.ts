@@ -6,6 +6,7 @@ import {
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
+  BaseUpdateTeamDto,
 } from '@newbee/shared/data-access';
 import { Keyword, Team } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
@@ -44,6 +45,40 @@ export class TeamService {
     return this.http.post<Team>(
       `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}`,
       createTeamDto
+    );
+  }
+
+  /**
+   * Send a request to the API to edit the given team in the given organization with the given information.
+   *
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to look for.
+   * @param updateTeamDto The new information for the team.
+   *
+   * @returns An observable containing the edited team.
+   */
+  edit(
+    orgSlug: string,
+    teamSlug: string,
+    updateTeamDto: BaseUpdateTeamDto
+  ): Observable<Team> {
+    return this.http.patch<Team>(
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${teamSlug}`,
+      updateTeamDto
+    );
+  }
+
+  /**
+   * Send a request to the API to delete the given team in the given organization.
+   *
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to look for.
+   *
+   * @returns A null observable.
+   */
+  delete(orgSlug: string, teamSlug: string): Observable<null> {
+    return this.http.delete<null>(
+      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${teamSlug}`
     );
   }
 

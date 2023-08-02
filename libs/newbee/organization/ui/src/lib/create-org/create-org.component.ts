@@ -172,7 +172,7 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      inputDisplayError(this.createOrgForm, inputName) ||
+      inputDisplayError(this.createOrgForm.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }

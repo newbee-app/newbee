@@ -292,7 +292,7 @@ export class EditUserComponent implements OnInit, OnChanges {
   ): boolean {
     const form = this.getFormGroup(formName);
     return (
-      inputDisplayError(form, inputName) ||
+      inputDisplayError(form.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }

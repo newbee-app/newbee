@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { EditOrgComponent } from '@newbee/newbee/organization/ui';
 import {
   testEditOrgForm1,
   testEditOrgSlugForm1,
 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
-import { testOrganization1 } from '@newbee/shared/util';
+import { Keyword, testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgEditComponent } from './org-edit.component';
 
@@ -26,17 +24,12 @@ describe('OrgEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        NavbarComponent,
-        EditOrgComponent,
-        ErrorScreenComponent,
-      ],
+      imports: [CommonModule, EditOrgComponent],
       declarations: [OrgEditComponent],
       providers: [
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
           },
         }),
       ],

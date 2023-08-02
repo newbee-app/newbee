@@ -43,11 +43,14 @@ describe('teamTitleResolver', () => {
           {
             path: '',
             title: 'NewBee',
-            component: EmptyComponent,
             children: [
               {
                 path: `:${ShortUrl.Team}`,
+                component: EmptyComponent,
                 title: teamTitleResolver,
+              },
+              {
+                path: '',
                 component: EmptyComponent,
               },
             ],
@@ -81,7 +84,15 @@ describe('teamTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it(`should set title to team's name appended to existing title`, async () => {
+  it('should use parent title if error detected', async () => {
+    await expect(
+      router.navigate([`/test/${testTeam1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/test/${testTeam1.slug}`);
+    expect(title.getTitle()).toEqual('Error');
+  });
+
+  it(`should set title to team's name appended to existing title if store has selected team`, async () => {
     await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testTeam1.slug}`);
     expect(title.getTitle()).toEqual(`${testTeam1.name} - NewBee`);
@@ -97,13 +108,5 @@ describe('teamTitleResolver', () => {
     await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testTeam1.slug}`);
     expect(title.getTitle()).toEqual('Error - NewBee');
-  });
-
-  it(`should not append existing title if it's Error`, async () => {
-    await expect(
-      router.navigate([`/test/${testTeam1.slug}`])
-    ).resolves.toBeTruthy();
-    expect(location.path()).toEqual(`/test/${testTeam1.slug}`);
-    expect(title.getTitle()).toEqual(`${testTeam1.name}`);
   });
 });

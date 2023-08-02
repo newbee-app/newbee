@@ -16,6 +16,21 @@ export interface TeamState {
   pendingCreate: boolean;
 
   /**
+   * Whether the user is waiting for a response for editing a team.
+   */
+  pendingEdit: boolean;
+
+  /**
+   * Whether the user is waiting for a response for editing a team slug.
+   */
+  pendingEditSlug: boolean;
+
+  /**
+   * Whether the user is waiting for a response for deleting a team.
+   */
+  pendingDelete: boolean;
+
+  /**
    * Whether the user is waiting for a response for checking a team slug.
    */
   pendingCheck: boolean;
@@ -36,6 +51,9 @@ export interface TeamState {
  */
 export const initialTeamState: TeamState = {
   pendingCreate: false,
+  pendingEdit: false,
+  pendingEditSlug: false,
+  pendingDelete: false,
   pendingCheck: false,
   slugTaken: false,
   generatedSlug: '',
@@ -53,6 +71,27 @@ export const teamFeature = createFeature({
       (state): TeamState => ({
         ...state,
         pendingCreate: true,
+      })
+    ),
+    on(
+      TeamActions.editTeam,
+      (state): TeamState => ({
+        ...state,
+        pendingEdit: true,
+      })
+    ),
+    on(
+      TeamActions.editTeamSlug,
+      (state): TeamState => ({
+        ...state,
+        pendingEditSlug: true,
+      })
+    ),
+    on(
+      TeamActions.deleteTeam,
+      (state): TeamState => ({
+        ...state,
+        pendingDelete: true,
       })
     ),
     on(
@@ -83,6 +122,9 @@ export const teamFeature = createFeature({
     ),
     on(
       TeamActions.createTeamSuccess,
+      TeamActions.editTeamSuccess,
+      TeamActions.editTeamSlugSuccess,
+      TeamActions.deleteTeamSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
       (): TeamState => initialTeamState

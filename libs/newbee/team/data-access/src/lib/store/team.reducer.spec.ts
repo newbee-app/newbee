@@ -11,6 +11,18 @@ describe('TeamReducer', () => {
     ...initialTeamState,
     pendingCreate: true,
   };
+  const stateAfterEditTeam: TeamState = {
+    ...initialTeamState,
+    pendingEdit: true,
+  };
+  const stateAfterEditTeamSlug: TeamState = {
+    ...initialTeamState,
+    pendingEditSlug: true,
+  };
+  const stateAfterDeleteTeam: TeamState = {
+    ...initialTeamState,
+    pendingDelete: true,
+  };
   const stateAfterCheckSlug: TeamState = {
     ...initialTeamState,
     pendingCheck: true,
@@ -23,6 +35,30 @@ describe('TeamReducer', () => {
         TeamActions.createTeam
       );
       expect(updatedState).toEqual(stateAfterCreateTeam);
+    });
+
+    it('should update state for editTeam', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.editTeam
+      );
+      expect(updatedState).toEqual(stateAfterEditTeam);
+    });
+
+    it('should update state for editTeamSlug', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.editTeamSlug
+      );
+      expect(updatedState).toEqual(stateAfterEditTeamSlug);
+    });
+
+    it('should update state for deleteTeam', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.deleteTeam
+      );
+      expect(updatedState).toEqual(stateAfterDeleteTeam);
     });
 
     it('should update state for typingSlug if slug is not empty string, not update if slug is empty', () => {
@@ -78,6 +114,30 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCreateTeam,
         TeamActions.createTeamSuccess
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for editTeamSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterEditTeam,
+        TeamActions.editTeamSuccess
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for editTeamSlugSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterEditTeamSlug,
+        TeamActions.editTeamSlugSuccess
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for deleteTeamSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterDeleteTeam,
+        TeamActions.deleteTeamSuccess
       );
       expect(updatedState).toEqual(initialTeamState);
     });

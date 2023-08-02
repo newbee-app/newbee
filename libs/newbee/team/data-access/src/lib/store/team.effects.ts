@@ -83,9 +83,123 @@ export class TeamEffects {
         filter(([, selectedOrganization]) => !!selectedOrganization),
         tap(async ([{ team }, selectedOrganization]) => {
           await this.router.navigate([
-            `/${selectedOrganization?.slug as string}/${ShortUrl.Team}/${
-              team.slug
-            }`,
+            `/${ShortUrl.Organization}/${
+              selectedOrganization?.slug as string
+            }/${ShortUrl.Team}/${team.slug}`,
+          ]);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  editTeam$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.editTeam, TeamActions.editTeamSlug),
+      concatLatestFrom(() => [
+        this.store.select(organizationFeature.selectSelectedOrganization),
+        this.store.select(teamFeature.selectSelectedTeam),
+      ]),
+      filter(
+        ([, selectedOrganization, selectedTeam]) =>
+          !!selectedOrganization && !!selectedTeam
+      ),
+      switchMap(
+        ([{ type, updateTeamDto }, selectedOrganization, selectedTeam]) => {
+          return this.teamService
+            .edit(
+              selectedOrganization?.slug as string,
+              selectedTeam?.team.slug as string,
+              updateTeamDto
+            )
+            .pipe(
+              map((team) => {
+                switch (type) {
+                  case TeamActions.editTeam.type:
+                    return TeamActions.editTeamSuccess({ newTeam: team });
+                  case TeamActions.editTeamSlug.type:
+                    return TeamActions.editTeamSlugSuccess({ newTeam: team });
+                }
+              }),
+              catchError((err) =>
+                catchHttpClientError(
+                  err,
+                  () => `${Keyword.Team}-${Keyword.Edit}`
+                )
+              )
+            );
+        }
+      )
+    );
+  });
+
+  editTeamSlugSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TeamActions.editTeamSlugSuccess),
+        concatLatestFrom(() =>
+          this.store.select(organizationFeature.selectSelectedOrganization)
+        ),
+        filter(([, selectedOrganization]) => !!selectedOrganization),
+        tap(async ([{ newTeam }, selectedOrganization]) => {
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${
+              selectedOrganization?.slug as string
+            }/${ShortUrl.Team}/${newTeam.slug}/${Keyword.Edit}`,
+          ]);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  deleteTeam$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.deleteTeam),
+      concatLatestFrom(() => [
+        this.store.select(organizationFeature.selectSelectedOrganization),
+        this.store.select(teamFeature.selectSelectedTeam),
+      ]),
+      filter(
+        ([, selectedOrganization, selectedTeam]) =>
+          !!selectedOrganization && !!selectedTeam
+      ),
+      switchMap(([, selectedOrganization, selectedTeam]) => {
+        return this.teamService
+          .delete(
+            selectedOrganization?.slug as string,
+            selectedTeam?.team.slug as string
+          )
+          .pipe(
+            map(() => {
+              return TeamActions.deleteTeamSuccess();
+            }),
+            catchError((err) =>
+              catchHttpClientError(
+                err,
+                () => `${Keyword.Team}-${Keyword.Delete}`
+              )
+            )
+          );
+      })
+    );
+  });
+
+  deleteTeamSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TeamActions.deleteTeamSuccess),
+        concatLatestFrom(() =>
+          this.store.select(organizationFeature.selectSelectedOrganization)
+        ),
+        tap(async ([, selectedOrganization]) => {
+          if (!selectedOrganization) {
+            await this.router.navigate(['/']);
+            return;
+          }
+
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${selectedOrganization.slug}`,
           ]);
         })
       );

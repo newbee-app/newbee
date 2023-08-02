@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
+  FormControl,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -245,52 +245,40 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * Whether to display a form input as having an error.
    *
-   * @param formName The name of the form group to look at.
-   * @param inputName The name of the form group's input to look at.
+   * @param inputName The name of the input to look at.
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  inputDisplayError(
-    formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
-    inputName: string
-  ): boolean {
-    const form = this.getFormGroup(formName);
-    return inputDisplayError(form, inputName);
+  inputDisplayError(inputName: 'name' | 'slug' | 'delete'): boolean {
+    return inputDisplayError(this.getFormControl(inputName));
   }
 
   /**
-   * The input error message for the given form.
+   * The input error message for the given form input.
    *
-   * @param formName The name of the form group to look at.
-   * @param inputName The name of the form group's input to look at.
+   * @param inputName The name of the input to look at.
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(
-    formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg',
-    inputName: string
-  ): string {
-    const form = this.getFormGroup(formName);
-    return inputErrorMessage(form.get(inputName));
+  inputErrorMessage(inputName: 'name' | 'slug' | 'delete'): string {
+    return inputErrorMessage(this.getFormControl(inputName));
   }
 
   /**
-   * Get the form group associated with the given name.
+   * Get the form control associated with the given name.
    *
-   * @param formName The name of the form group to get.
+   * @param inputName The name of the form control to get.
    *
-   * @returns The form group associated with the given name.
+   * @returns The form control associated with the given name.
    */
-  private getFormGroup(
-    formName: 'editOrg' | 'editOrgSlug' | 'deleteOrg'
-  ): FormGroup {
-    switch (formName) {
-      case 'editOrg':
-        return this.editOrgForm;
-      case 'editOrgSlug':
-        return this.editOrgSlugForm;
-      case 'deleteOrg':
-        return this.deleteOrgForm;
+  private getFormControl(inputName: 'name' | 'slug' | 'delete'): FormControl {
+    switch (inputName) {
+      case 'name':
+        return this.editOrgForm.controls.name;
+      case 'slug':
+        return this.editOrgSlugForm.controls.slug;
+      case 'delete':
+        return this.deleteOrgForm.controls.slug;
     }
   }
 }

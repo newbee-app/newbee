@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
 
 /**
  * A helper function for extracting form control input errors for display.
@@ -30,44 +30,34 @@ export function inputErrorMessage(control: AbstractControl | null): string {
 }
 
 /**
- * Gets an input from a form group and check that it's clean (pristine and untouched).
+ * Checks whether a form control is clean (pristine and untouched).
  *
- * @param formGroup The form group to check.
- * @param inputName The name of the form group's input to look at.
+ * @param control The control to check.
  *
  * @returns `true` if the input is clean, `false` otherwise.
  */
-export function inputIsClean(formGroup: FormGroup, inputName: string): boolean {
-  const input = formGroup.get(inputName);
-  return !!input?.pristine && !!input.untouched;
+export function inputIsClean(control: AbstractControl | null): boolean {
+  return !!control?.pristine && control.untouched;
 }
 
 /**
- * Whether the given input is valid.
+ * Whether the given form control is valid.
  *
- * @param formGroup The form group to check.
- * @param inputName The name of the form group's input to look at.
+ * @param control The control to check.
  *
  * @returns `true` if the input is valid, `false` otherwise.
  */
-export function inputIsValid(formGroup: FormGroup, inputName: string): boolean {
-  const input = formGroup.get(inputName);
-  return !!input?.valid;
+export function inputIsValid(control: AbstractControl | null): boolean {
+  return !!control?.valid;
 }
 
 /**
- * Whether to display the input as having an error.
+ * Whether to display the form control as having an error.
  *
- * @param formGroup The form group to check.
- * @param inputName The name of the form group's input to look at.
+ * @param control The control to check.
  *
  * @returns `true` if the input should display an error, `false` otherwise.
  */
-export function inputDisplayError(
-  formGroup: FormGroup,
-  inputName: string
-): boolean {
-  return (
-    !inputIsClean(formGroup, inputName) && !inputIsValid(formGroup, inputName)
-  );
+export function inputDisplayError(control: AbstractControl | null): boolean {
+  return !inputIsClean(control) && !inputIsValid(control);
 }
