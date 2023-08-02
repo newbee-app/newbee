@@ -5,6 +5,7 @@ import {
   catchHttpScreenError,
   OrganizationActions,
   organizationFeature,
+  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
 import {
   emailIsEmail,
@@ -69,7 +70,9 @@ export class OrganizationEffects {
       return this.actions$.pipe(
         ofType(OrganizationActions.createOrgSuccess),
         tap(async ({ organization }) => {
-          await this.router.navigate([`/${organization.slug}`]);
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${organization.slug}`,
+          ]);
         })
       );
     },
@@ -78,19 +81,26 @@ export class OrganizationEffects {
 
   editOrg$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(OrganizationActions.editOrg),
+      ofType(OrganizationActions.editOrg, OrganizationActions.editOrgSlug),
       concatLatestFrom(() =>
         this.store.select(organizationFeature.selectSelectedOrganization)
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
+      switchMap(([{ type, updateOrganizationDto }, selectedOrganization]) => {
         return this.organizationService
           .edit(selectedOrganization?.slug as string, updateOrganizationDto)
           .pipe(
             map((organization) => {
-              return OrganizationActions.editOrgSuccess({
-                newOrg: organization,
-              });
+              switch (type) {
+                case OrganizationActions.editOrg.type:
+                  return OrganizationActions.editOrgSuccess({
+                    newOrg: organization,
+                  });
+                case OrganizationActions.editOrgSlug.type:
+                  return OrganizationActions.editOrgSlugSuccess({
+                    newOrg: organization,
+                  });
+              }
             }),
             catchError((err) =>
               catchHttpClientError(
@@ -103,39 +113,14 @@ export class OrganizationEffects {
     );
   });
 
-  editOrgSlug$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(OrganizationActions.editOrgSlug),
-      concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
-      ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ updateOrganizationDto }, selectedOrganization]) => {
-        return this.organizationService
-          .edit(selectedOrganization?.slug as string, updateOrganizationDto)
-          .pipe(
-            map((organization) => {
-              return OrganizationActions.editOrgSlugSuccess({
-                newOrg: organization,
-              });
-            }),
-            catchError((err) =>
-              catchHttpClientError(
-                err,
-                () => `${Keyword.Organization}-${Keyword.Slug}-${Keyword.Edit}`
-              )
-            )
-          );
-      })
-    );
-  });
-
   editOrgSlugSuccess$ = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(OrganizationActions.editOrgSlugSuccess),
         tap(async ({ newOrg }) => {
-          await this.router.navigate([`/${newOrg.slug}/${Keyword.Edit}`]);
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${newOrg.slug}/${Keyword.Edit}`,
+          ]);
         })
       );
     },

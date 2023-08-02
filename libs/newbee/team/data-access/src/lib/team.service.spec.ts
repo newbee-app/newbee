@@ -10,6 +10,7 @@ import {
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
+  testBaseUpdateTeamDto1,
 } from '@newbee/shared/data-access';
 import { Keyword, testOrganization1, testTeam1 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
@@ -76,6 +77,55 @@ describe('TeamService', () => {
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
 
       req.flush(testTeam1);
+    });
+  });
+
+  describe('edit', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .edit(testOrganization1.slug, testTeam1.slug, testBaseUpdateTeamDto1)
+        .subscribe({
+          next: (team) => {
+            try {
+              expect(team).toEqual(testTeam1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateTeamDto1);
+
+      req.flush(testTeam1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should send out a delete request', (done) => {
+      service.delete(testOrganization1.slug, testTeam1.slug).subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
     });
   });
 

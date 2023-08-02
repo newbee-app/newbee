@@ -30,15 +30,16 @@ export const teamTitleResolver: ResolveFn<string> = (
     ),
     take(1),
     map(([team]) => {
-      const toAppend =
-        route.parent?.title && !route.parent.title.includes('Error')
-          ? ` - ${route.parent.title}`
-          : '';
-      if (team) {
-        return `${team.team.name}${toAppend}`;
+      const parentTitle = route.parent?.title ?? '';
+      if (parentTitle.includes('Error')) {
+        return parentTitle;
       }
 
-      return `Error${toAppend}`;
+      if (team) {
+        return `${team.team.name} - ${parentTitle}`;
+      }
+
+      return `Error - ${parentTitle}`;
     })
   );
 };

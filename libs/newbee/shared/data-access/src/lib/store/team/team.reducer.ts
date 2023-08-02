@@ -40,6 +40,25 @@ export const teamFeature = createFeature({
         teamMember,
       };
     }),
-    on(TeamActions.resetSelectedTeam, (): TeamState => initialTeamState)
+    on(
+      TeamActions.editTeamSuccess,
+      TeamActions.editTeamSlugSuccess,
+      (state, { newTeam }): TeamState => {
+        const { selectedTeam } = state;
+        if (!selectedTeam) {
+          return state;
+        }
+
+        return {
+          ...state,
+          selectedTeam: { ...selectedTeam, team: newTeam },
+        };
+      }
+    ),
+    on(
+      TeamActions.deleteTeamSuccess,
+      TeamActions.resetSelectedTeam,
+      (): TeamState => initialTeamState
+    )
   ),
 });

@@ -1,0 +1,16 @@
+<newbee-edit-team
+  [team]="(selectedTeam$ | async)!.team"
+  [orgMember]="(orgMember$ | async)!.orgMember"
+  [teamMember]="teamMember$ | async"
+  [slugTaken]="(slugTaken$ | async)!"
+  [editPending]="(editPending$ | async)!"
+  [editSlugPending]="(editSlugPending$ | async)!"
+  [checkPending]="(checkPending$ | async)!"
+  [deletePending]="(deletePending$ | async)!"
+  [httpClientError]="httpClientError$ | async"
+  (slug)="onSlug($event)"
+  (formattedSlug)="onFormattedSlug($event)"
+  (edit)="onEdit($event)"
+  (editSlug)="onEditSlug($event)"
+  (delete)="onDelete()"
+></newbee-edit-team>

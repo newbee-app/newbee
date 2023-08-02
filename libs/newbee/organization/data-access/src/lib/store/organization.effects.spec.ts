@@ -1,7 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import {
+  OrganizationActions,
+  ShortUrl,
+} from '@newbee/newbee/shared/data-access';
 import {
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
@@ -129,13 +132,15 @@ describe('OrganizationEffects', () => {
       expect(effects.createOrgSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([`/${testOrganization1.slug}`]);
+        expect(router.navigate).toBeCalledWith([
+          `/${ShortUrl.Organization}/${testOrganization1.slug}`,
+        ]);
       });
     });
   });
 
   describe('editOrg$', () => {
-    it('should fire editOrgSuccess if successful', () => {
+    it('should fire editOrgSuccess if successful for editOrg', () => {
       actions$ = hot('a', {
         a: OrganizationActions.editOrg({
           updateOrganizationDto: { name: testOrganization1.name },
@@ -155,23 +160,7 @@ describe('OrganizationEffects', () => {
       });
     });
 
-    it('should do nothing if selectedOrganization is null', () => {
-      store.setState({});
-      actions$ = hot('a', {
-        a: OrganizationActions.editOrg({
-          updateOrganizationDto: { name: testOrganization1.name },
-        }),
-      });
-      const expected$ = hot('-');
-      expect(effects.editOrg$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
-      });
-    });
-  });
-
-  describe('editOrgSlug$', () => {
-    it('should fire editOrgSlugSuccess if successful', () => {
+    it('should fire editOrgSlugSuccess if successful for editOrgSlug', () => {
       actions$ = hot('a', {
         a: OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testOrganization2.slug },
@@ -182,7 +171,7 @@ describe('OrganizationEffects', () => {
           newOrg: testOrganization2,
         }),
       });
-      expect(effects.editOrgSlug$).toBeObservable(expected$);
+      expect(effects.editOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.edit).toBeCalledTimes(1);
         expect(service.edit).toBeCalledWith(testOrganization1.slug, {
@@ -194,8 +183,8 @@ describe('OrganizationEffects', () => {
     it('should do nothing if selectedOrganization is null', () => {
       store.setState({});
       actions$ = hot('a', {
-        a: OrganizationActions.editOrgSlug({
-          updateOrganizationDto: { slug: testOrganization2.slug },
+        a: OrganizationActions.editOrg({
+          updateOrganizationDto: { name: testOrganization1.name },
         }),
       });
       const expected$ = hot('-');
@@ -222,7 +211,7 @@ describe('OrganizationEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith([
-          `/${testOrganization1.slug}/${Keyword.Edit}`,
+          `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Edit}`,
         ]);
       });
     });
@@ -256,7 +245,7 @@ describe('OrganizationEffects', () => {
     });
   });
 
-  describe('deleteOrgSlugSuccess$', () => {
+  describe('deleteOrgSuccess$', () => {
     it('should navigate to home', () => {
       actions$ = hot('a', {
         a: OrganizationActions.deleteOrgSuccess(),

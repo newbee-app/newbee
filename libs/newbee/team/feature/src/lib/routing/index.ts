@@ -2,27 +2,36 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
+  createTeamTitleResolver,
+  isTeamAdminGuard,
   resetSelectedTeamGuard,
   teamGuard,
   teamTitleResolver,
 } from '@newbee/newbee/team/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { TeamCreateComponent } from '../team-create';
+import { TeamEditComponent } from '../team-edit';
 import { TeamViewComponent } from '../team-view';
 
 const routes: Routes = [
   {
-    path: '',
+    path: Keyword.New,
+    component: TeamCreateComponent,
+    title: createTeamTitleResolver,
+  },
+  {
+    path: `:${ShortUrl.Team}`,
+    title: teamTitleResolver,
+    canActivate: [teamGuard],
+    canDeactivate: [resetSelectedTeamGuard],
     children: [
       {
-        path: Keyword.New,
-        component: TeamCreateComponent,
+        path: Keyword.Edit,
+        component: TeamEditComponent,
+        canActivate: [isTeamAdminGuard],
       },
       {
-        path: `:${ShortUrl.Team}`,
-        title: teamTitleResolver,
-        canActivate: [teamGuard],
-        canDeactivate: [resetSelectedTeamGuard],
+        path: '',
         component: TeamViewComponent,
       },
     ],
