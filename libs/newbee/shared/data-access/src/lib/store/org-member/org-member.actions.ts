@@ -1,0 +1,49 @@
+import { BaseUpdateOrgMemberDto } from '@newbee/shared/data-access';
+import { Keyword, OrgMember, type OrgMemberNoOrg } from '@newbee/shared/util';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
+
+/**
+ * All actions tied to `OrgMemberState`.
+ */
+export const OrgMemberActions = createActionGroup({
+  source: Keyword.Member,
+  events: {
+    /**
+     * Gets the org member associated with the given slug.
+     * Should call `Get Org Member Success` with the result.
+     */
+    'Get Org Member': props<{ slug: string }>(),
+
+    /**
+     * Indicates that an org member was successfully retrieved.
+     */
+    'Get Org Member Success': props<{ orgMember: OrgMemberNoOrg }>(),
+
+    /**
+     * Edits the selected org member with the given information.
+     * Should call `Edit Org Member Success` with the result.
+     */
+    'Edit Org Member': props<{ updateOrgMemberDto: BaseUpdateOrgMemberDto }>(),
+
+    /**
+     * Indicates that an org member was successfully updated.
+     */
+    'Edit Org Member Success': props<{ orgMember: OrgMember }>(),
+
+    /**
+     * Deletes the selected org member.
+     * Should call `Delete Org Member Success` if successful.
+     */
+    'Delete Org Member': emptyProps(),
+
+    /**
+     * Indicates that the selected org member was successfully deleted.
+     */
+    'Delete Org Member Success': emptyProps(),
+
+    /**
+     * Set the selected org member to be null.
+     */
+    'Reset Selected Org Member': emptyProps(),
+  },
+});

@@ -28,7 +28,7 @@ describe('TeamReducer', () => {
     pendingCheck: true,
   };
 
-  describe('start from initial state', () => {
+  describe('from initial state', () => {
     it('should update state for createTeam', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
@@ -90,7 +90,7 @@ describe('TeamReducer', () => {
     });
   });
 
-  describe('start from altered state', () => {
+  describe('from altered state', () => {
     it('should update state for checkSlugSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCheckSlug,
