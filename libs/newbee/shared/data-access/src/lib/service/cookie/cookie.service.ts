@@ -13,6 +13,11 @@ import { Observable, retry } from 'rxjs';
  */
 @Injectable({ providedIn: 'root' })
 export class CookieService {
+  /**
+   * The base API URL for dealing with cookies.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**

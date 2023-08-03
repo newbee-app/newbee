@@ -28,6 +28,14 @@ describe('CsrfService', () => {
     httpController.verify();
   });
 
+  describe('baseApiUrl', () => {
+    it('should match expected API URL', () => {
+      expect(CookieService.baseApiUrl).toEqual(
+        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`
+      );
+    });
+  });
+
   describe('initCookies', () => {
     it('should send out a get request', (done) => {
       service.initCookies().subscribe({

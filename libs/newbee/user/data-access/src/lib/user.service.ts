@@ -10,6 +10,11 @@ import { Observable } from 'rxjs';
  */
 @Injectable()
 export class UserService {
+  /**
+   * The base API URL for dealing with the logged-in user.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -20,18 +25,13 @@ export class UserService {
    * @returns An observable containing information about the edited user.
    */
   edit(updateUserDto: BaseUpdateUserDto): Observable<User> {
-    return this.http.patch<User>(
-      `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`,
-      updateUserDto
-    );
+    return this.http.patch<User>(UserService.baseApiUrl, updateUserDto);
   }
 
   /**
    * Sends a request to the API to delete the current user.
    */
   delete(): Observable<null> {
-    return this.http.delete<null>(
-      `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
-    );
+    return this.http.delete<null>(UserService.baseApiUrl);
   }
 }

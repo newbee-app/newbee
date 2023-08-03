@@ -33,6 +33,14 @@ describe('TeamService', () => {
     httpController.verify();
   });
 
+  describe('baseApiUrl', () => {
+    it('should match the expected API route', () => {
+      expect(TeamService.baseApiUrl(testOrganization1.slug)).toEqual(
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}`
+      );
+    });
+  });
+
   describe('get', () => {
     it('should send out a get request', (done) => {
       service.get(testTeam1.slug, testOrganization1.slug).subscribe({
@@ -48,7 +56,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -71,7 +79,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}`
+        TeamService.baseApiUrl(testOrganization1.slug)
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
@@ -97,7 +105,7 @@ describe('TeamService', () => {
         });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateTeamDto1);
@@ -121,7 +129,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
       );
       expect(req.request.method).toEqual('DELETE');
 
@@ -145,9 +153,9 @@ describe('TeamService', () => {
 
       const params = new HttpParams({ fromObject: { slug: testTeam1.slug } });
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${
-          testOrganization1.slug
-        }/${Keyword.Team}/${Keyword.CheckSlug}?${params.toString()}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${
+          Keyword.CheckSlug
+        }?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 
@@ -171,9 +179,9 @@ describe('TeamService', () => {
 
       const params = new HttpParams({ fromObject: { base: testTeam1.name } });
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${
-          testOrganization1.slug
-        }/${Keyword.Team}/${Keyword.GenerateSlug}?${params.toString()}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${
+          Keyword.GenerateSlug
+        }?${params.toString()}`
       );
       expect(req.request.method).toEqual('GET');
 

@@ -19,6 +19,11 @@ import { from, Observable, switchMap } from 'rxjs';
  */
 @Injectable()
 export class AuthService {
+  /**
+   * The base API URL for dealing with authentication.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -32,7 +37,7 @@ export class AuthService {
     emailDto: BaseEmailDto
   ): Observable<BaseMagicLinkLoginDto> {
     return this.http.post<BaseMagicLinkLoginDto>(
-      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
+      `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
       emailDto
     );
   }
@@ -45,7 +50,7 @@ export class AuthService {
    */
   magicLinkLogin(token: string): Observable<UserRelation> {
     return this.http.post<UserRelation>(
-      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.MagicLinkLogin}`,
+      `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}`,
       { token }
     );
   }
@@ -61,7 +66,7 @@ export class AuthService {
     createUserDto: BaseCreateUserDto
   ): Observable<BaseUserRelationAndOptionsDto> {
     return this.http.post<BaseUserRelationAndOptionsDto>(
-      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Register}`,
+      `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Register}`,
       createUserDto
     );
   }
@@ -77,7 +82,7 @@ export class AuthService {
     emailDto: BaseEmailDto
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
-      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`,
+      `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`,
       emailDto
     );
   }
@@ -101,7 +106,7 @@ export class AuthService {
           response,
         };
         return this.http.post<UserRelation>(
-          `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Webauthn}/${Keyword.Login}`,
+          `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}`,
           webAuthnLoginDto
         );
       })
@@ -113,7 +118,7 @@ export class AuthService {
    */
   logout(): Observable<void> {
     return this.http.post<void>(
-      `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}/${Keyword.Logout}`,
+      `${AuthService.baseApiUrl}/${Keyword.Logout}`,
       {}
     );
   }

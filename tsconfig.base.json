@@ -134,6 +134,15 @@
         "libs/newbee/navbar/feature/src/index.ts"
       ],
       "@newbee/newbee/navbar/ui": ["libs/newbee/navbar/ui/src/index.ts"],
+      "@newbee/newbee/org-member/data-access": [
+        "libs/newbee/org-member/data-access/src/index.ts"
+      ],
+      "@newbee/newbee/org-member/feature": [
+        "libs/newbee/org-member/feature/src/index.ts"
+      ],
+      "@newbee/newbee/org-member/ui": [
+        "libs/newbee/org-member/ui/src/index.ts"
+      ],
       "@newbee/newbee/organization/data-access": [
         "libs/newbee/organization/data-access/src/index.ts"
       ],
