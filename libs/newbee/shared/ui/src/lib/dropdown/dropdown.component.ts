@@ -41,11 +41,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
-   * A cleanup function for the floating UI autoUpdate function we set up for the dropdown.
-   */
-  private cleanup!: () => void;
-
-  /**
    * Which direction the dropdown should go.
    */
   @Input() placement: Placement = 'bottom';
@@ -99,6 +94,13 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   escapeEvent(): void {
     this.shrink();
   }
+
+  /**
+   * A cleanup function for the floating UI autoUpdate function we set up for the dropdown.
+   */
+  private cleanup: () => void = () => {
+    return;
+  };
 
   /**
    * Subscribe to the user's clicks and shrink the dropdown if the user clicks outside of the dropdown.

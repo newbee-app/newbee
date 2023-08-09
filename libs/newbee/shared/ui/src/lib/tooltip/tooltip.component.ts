@@ -57,7 +57,9 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   /**
    * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip.
    */
-  private cleanup!: () => void;
+  private cleanup: () => void = () => {
+    return;
+  };
 
   /**
    * Compute the absolute position for the tooltip and its arrow.
