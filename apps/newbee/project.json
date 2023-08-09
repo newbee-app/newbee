@@ -59,18 +59,18 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nrwl/web:file-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "newbee:build:production"
+          "browserTarget": "newbee:build:production"
         },
         "development": {
-          "buildTarget": "newbee:build:development"
+          "browserTarget": "newbee:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
-        "proxyOptions": "apps/newbee/proxy.conf.json"
+        "proxyConfig": "apps/newbee/proxy.conf.json"
       }
     },
     "extract-i18n": {

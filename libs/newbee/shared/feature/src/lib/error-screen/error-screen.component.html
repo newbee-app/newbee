@@ -1,18 +1,18 @@
-<ng-template #content>
-  <ng-content></ng-content>
-</ng-template>
-
-<ng-container [ngSwitch]="(httpScreenError$ | async)?.status">
-  <newbee-forbidden-error *ngSwitchCase="403"></newbee-forbidden-error>
+<ng-container
+  *ngIf="httpScreenError$ | async; else noError; let httpScreenError"
+>
+  <newbee-forbidden-error
+    *ngIf="httpScreenError.status === 403"
+  ></newbee-forbidden-error>
   <newbee-not-found-error
-    *ngSwitchCase="404"
+    *ngIf="httpScreenError.status === 404"
     (navigateHome)="onNavigateHome()"
   ></newbee-not-found-error>
   <newbee-internal-server-error
-    *ngSwitchCase="500"
+    *ngIf="httpScreenError.status === 500"
   ></newbee-internal-server-error>
-
-  <ng-container *ngSwitchDefault>
-    <ng-container *ngTemplateOutlet="content"></ng-container>
-  </ng-container>
 </ng-container>
+
+<ng-template #noError>
+  <ng-content></ng-content>
+</ng-template>

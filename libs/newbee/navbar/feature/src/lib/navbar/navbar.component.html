@@ -2,22 +2,20 @@
   <ng-content></ng-content>
 </ng-template>
 
-<newbee-unauthenticated-navbar
-  *ngIf="(user$ | async) === null; else authenticated"
+<newbee-authenticated-navbar
+  *ngIf="user$ | async; else unauthenticated; let user"
+  [user]="user"
+  [organizations]="(orgState$ | async)!.organizations"
+  [selectedOrganization]="(orgState$ | async)?.selectedOrganization ?? null"
+  (selectedOrganizationChange)="selectOrganization($event)"
+  [orgMember]="(orgState$ | async)?.orgMember ?? null"
   (navigateToLink)="navigateToLink($event)"
+  (logout)="logout()"
 >
   <ng-container *ngTemplateOutlet="content"></ng-container>
-</newbee-unauthenticated-navbar>
-<ng-template #authenticated>
-  <newbee-authenticated-navbar
-    [user]="(user$ | async)!"
-    [organizations]="(orgState$ | async)!.organizations"
-    [selectedOrganization]="(orgState$ | async)?.selectedOrganization ?? null"
-    (selectedOrganizationChange)="selectOrganization($event)"
-    [orgMember]="(orgState$ | async)?.orgMember ?? null"
-    (navigateToLink)="navigateToLink($event)"
-    (logout)="logout()"
-  >
+</newbee-authenticated-navbar>
+<ng-template #unauthenticated>
+  <newbee-unauthenticated-navbar (navigateToLink)="navigateToLink($event)">
     <ng-container *ngTemplateOutlet="content"></ng-container>
-  </newbee-authenticated-navbar>
+  </newbee-unauthenticated-navbar>
 </ng-template>
