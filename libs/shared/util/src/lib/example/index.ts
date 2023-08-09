@@ -16,6 +16,7 @@ import type {
   OrgMemberInvite,
   OrgMemberInviteRelation,
   OrgMemberRelation,
+  OrgMemberUser,
   Post,
   Qna,
   QnaRelation,
@@ -278,18 +279,12 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
 };
 
 /**
- * An example instance of `OrgMemberRelation`.
+ * An example instance of `OrgMemberUser`.
  * Strictly for use in testing.
  */
-export const testOrgMemberRelation1: OrgMemberRelation = {
+export const testOrgMemberUser1: OrgMemberUser = {
   orgMember: testOrgMember1,
-  organization: testOrganization1,
   user: testUser1,
-  teams: { sample: [testTeamMemberRelation1], total: 1 },
-  createdDocs: { sample: [testDoc1], total: 1 },
-  maintainedDocs: { sample: [testDoc1], total: 1 },
-  createdQnas: { sample: [testQna1], total: 1 },
-  maintainedQnas: { sample: [testQna1], total: 1 },
 };
 
 /**
@@ -300,8 +295,8 @@ export const testDocRelation1: DocRelation = {
   doc: testDoc1,
   organization: testOrganization1,
   team: testTeam1,
-  creator: testOrgMemberRelation1,
-  maintainer: testOrgMemberRelation1,
+  creator: testOrgMemberUser1,
+  maintainer: testOrgMemberUser1,
 };
 
 /**
@@ -312,8 +307,23 @@ export const testQnaRelation1: QnaRelation = {
   qna: testQna1,
   organization: testOrganization1,
   team: testTeam1,
-  creator: testOrgMemberRelation1,
-  maintainer: testOrgMemberRelation1,
+  creator: testOrgMemberUser1,
+  maintainer: testOrgMemberUser1,
+};
+
+/**
+ * An example instance of `OrgMemberRelation`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberRelation1: OrgMemberRelation = {
+  orgMember: testOrgMember1,
+  organization: testOrganization1,
+  user: testUser1,
+  teams: { sample: [testTeamMemberRelation1], total: 1 },
+  createdDocs: { sample: [testDocRelation1], total: 1 },
+  maintainedDocs: { sample: [testDocRelation1], total: 1 },
+  createdQnas: { sample: [testQnaRelation1], total: 1 },
+  maintainedQnas: { sample: [testQnaRelation1], total: 1 },
 };
 
 /**

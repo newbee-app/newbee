@@ -4,9 +4,12 @@ import {
   cookieFeature,
   httpFeature,
   organizationFeature,
+  orgMemberFeature,
   searchFeature,
   teamFeature,
+  toastFeature,
 } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { ActionReducerMap } from '@ngrx/store';
 
 /**
@@ -14,10 +17,12 @@ import { ActionReducerMap } from '@ngrx/store';
  * For use by the global `StoreModule`.
  */
 export const reducers: ActionReducerMap<AppState> = {
-  auth: authFeature.reducer,
-  cookie: cookieFeature.reducer,
-  http: httpFeature.reducer,
-  org: organizationFeature.reducer,
-  search: searchFeature.reducer,
-  team: teamFeature.reducer,
+  [Keyword.Auth]: authFeature.reducer,
+  [Keyword.Cookie]: cookieFeature.reducer,
+  [Keyword.Http]: httpFeature.reducer,
+  [Keyword.Member]: orgMemberFeature.reducer,
+  [Keyword.Organization]: organizationFeature.reducer,
+  [Keyword.Search]: searchFeature.reducer,
+  [Keyword.Team]: teamFeature.reducer,
+  [Keyword.Toast]: toastFeature.reducer,
 };

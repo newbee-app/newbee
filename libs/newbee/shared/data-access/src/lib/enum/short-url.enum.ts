@@ -7,4 +7,5 @@ export enum ShortUrl {
   Team = 't',
   Doc = 'd',
   Qna = 'q',
+  Member = 'm',
 }

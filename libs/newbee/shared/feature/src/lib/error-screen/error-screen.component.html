@@ -1,3 +1,7 @@
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>
+
 <ng-container [ngSwitch]="(httpScreenError$ | async)?.status">
   <newbee-forbidden-error *ngSwitchCase="403"></newbee-forbidden-error>
   <newbee-not-found-error
@@ -8,5 +12,7 @@
     *ngSwitchCase="500"
   ></newbee-internal-server-error>
 
-  <ng-content *ngSwitchDefault></ng-content>
+  <ng-container *ngSwitchDefault>
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </ng-container>
 </ng-container>

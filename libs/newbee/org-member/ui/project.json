@@ -68,7 +68,8 @@
         "outputDir": "dist/storybook/newbee-org-member-ui",
         "configDir": "libs/newbee/org-member/ui/.storybook",
         "browserTarget": "newbee-org-member-ui:build-storybook",
-        "compodoc": false
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
       },
       "configurations": {
         "ci": {

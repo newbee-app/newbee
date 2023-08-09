@@ -1,1 +1,1 @@
-export * from './lib/newbee-org-member-ui.module';
+export * from './lib/view-org-member';

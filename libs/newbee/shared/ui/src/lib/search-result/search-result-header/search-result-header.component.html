@@ -6,13 +6,22 @@
     >
   </div>
 
-  <p *ngIf="maintainer; else noMaintainer" class="opacity-50">
-    Maintained by
-    <a (click)="orgNavigate.emit(maintainer.orgMember.slug)" class="link">{{
-      maintainer.user.displayName
-    }}</a>
+  <p *ngIf="maintainer || creator" class="opacity-50">
+    <span *ngIf="maintainer; else noMaintainer">
+      Maintained by
+      <a (click)="orgNavigate.emit(maintainer.orgMember.slug)" class="link">{{
+        maintainer.user.displayName
+      }}</a>
+    </span>
+    <ng-template #noMaintainer
+      ><span>Not actively maintained</span></ng-template
+    >
+
+    <span *ngIf="creator">
+      | Created by
+      <a (click)="orgNavigate.emit(creator.orgMember.slug)" class="link">
+        {{ creator.user.displayName }}
+      </a>
+    </span>
   </p>
-  <ng-template #noMaintainer
-    ><p class="opacity-50">Not actively maintained</p></ng-template
-  >
 </div>

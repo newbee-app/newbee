@@ -24,6 +24,11 @@ export class SearchResultHeaderComponent {
   @Input() maintainer: OrgMemberUser | null = null;
 
   /**
+   * The creator of the post.
+   */
+  @Input() creator: OrgMemberUser | null = null;
+
+  /**
    * Where we should navigate to, relative to the current org.
    */
   @Output() orgNavigate = new EventEmitter<string>();

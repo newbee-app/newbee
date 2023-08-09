@@ -1,3 +1,4 @@
+import { AlertType } from '@newbee/newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { AlertComponent } from './alert.component';
 
@@ -7,7 +8,7 @@ export default {
   args: {
     header: 'Header text',
     text: 'Some text',
-    type: 'error',
+    type: AlertType.Error,
     includeClearSymbol: true,
     show: true,
   },
@@ -24,10 +25,10 @@ export const TextOnly: Story = { args: { header: '' } };
 
 export const NoClearSymbol: Story = { args: { includeClearSymbol: false } };
 
-export const Info: Story = { args: { type: 'info' } };
+export const Info: Story = { args: { type: AlertType.Info } };
 
-export const Success: Story = { args: { type: 'success' } };
+export const Success: Story = { args: { type: AlertType.Success } };
 
-export const Warning: Story = { args: { type: 'warning' } };
+export const Warning: Story = { args: { type: AlertType.Warning } };
 
 export const NoShow: Story = { args: { show: false } };
