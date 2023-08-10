@@ -7,7 +7,11 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
-import { cookieGuard, ShortUrl } from '@newbee/newbee/shared/data-access';
+import {
+  cookieGuard,
+  isPlatformBrowserGuard,
+  ShortUrl,
+} from '@newbee/newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { RootComponent } from '../root';
 
@@ -44,7 +48,7 @@ const routes: Routes = [
   {
     path: '',
     component: RootComponent,
-    canActivate: [cookieGuard],
+    canActivate: [isPlatformBrowserGuard, cookieGuard],
     children: [
       {
         path: Keyword.Auth,
