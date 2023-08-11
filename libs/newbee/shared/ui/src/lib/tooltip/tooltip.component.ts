@@ -1,10 +1,12 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import type { Placement } from '@floating-ui/dom';
@@ -61,6 +63,8 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
     return;
   };
 
+  constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {}
+
   /**
    * Compute the absolute position for the tooltip and its arrow.
    */
@@ -104,6 +108,10 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
    * Assign cleanup and set up floating UI's autoUpdate with the tooltip.
    */
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this.cleanup = autoUpdate(
       this.content.nativeElement,
       this.tooltip.nativeElement,

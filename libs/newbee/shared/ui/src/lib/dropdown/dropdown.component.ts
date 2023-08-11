@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -6,9 +6,11 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  Inject,
   Input,
   OnDestroy,
   Output,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import {
@@ -108,7 +110,11 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * @param clickService The global click service that shows where the user clicked.
    * @param elementRef The ElementRef for the entire component.
    */
-  constructor(clickService: ClickService, elementRef: ElementRef<HTMLElement>) {
+  constructor(
+    clickService: ClickService,
+    elementRef: ElementRef<HTMLElement>,
+    @Inject(PLATFORM_ID) private readonly platformId: object
+  ) {
     clickService.documentClickTarget
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -157,6 +163,10 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * Assign cleanup and set up floating UI's autoUpdate with the dropdown.
    */
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this.cleanup = autoUpdate(
       this.label.nativeElement,
       this.dropdown.nativeElement,

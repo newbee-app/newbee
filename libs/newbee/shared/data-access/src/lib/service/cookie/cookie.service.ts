@@ -27,9 +27,7 @@ export class CookieService {
    */
   initCookies(): Observable<BaseCsrfTokenAndDataDto> {
     return this.http
-      .get<BaseCsrfTokenAndDataDto>(
-        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`
-      )
+      .get<BaseCsrfTokenAndDataDto>(CookieService.baseApiUrl)
       .pipe(retry(3));
   }
 }
