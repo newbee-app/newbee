@@ -5,20 +5,21 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   initialHttpState,
-  initialTeamState,
+  initialOrgMemberState,
   ShortUrl,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   forbiddenError,
   Keyword,
-  testTeam1,
-  testTeamRelation1,
+  testOrgMember1,
+  testOrgMemberRelation1,
+  testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { teamTitleResolver } from './team-title.resolver';
+import { orgMemberTitleResolver } from './org-member-title.resolver';
 
-describe('teamTitleResolver', () => {
+describe('orgMemberTitleResolver', () => {
   let router: Router;
   let store: MockStore;
   let location: Location;
@@ -34,9 +35,9 @@ describe('teamTitleResolver', () => {
             title: 'Error',
             children: [
               {
-                path: `:${ShortUrl.Team}`,
+                path: `:${ShortUrl.Member}`,
                 component: EmptyComponent,
-                title: teamTitleResolver,
+                title: orgMemberTitleResolver,
               },
             ],
           },
@@ -45,9 +46,9 @@ describe('teamTitleResolver', () => {
             title: 'NewBee',
             children: [
               {
-                path: `:${ShortUrl.Team}`,
+                path: `:${ShortUrl.Member}`,
                 component: EmptyComponent,
-                title: teamTitleResolver,
+                title: orgMemberTitleResolver,
               },
               {
                 path: '',
@@ -60,9 +61,9 @@ describe('teamTitleResolver', () => {
       providers: [
         provideMockStore({
           initialState: {
-            [Keyword.Team]: {
-              ...initialTeamState,
-              selectedTeam: testTeamRelation1,
+            [Keyword.Member]: {
+              ...initialOrgMemberState,
+              selectedOrgMember: testOrgMemberRelation1,
             },
           },
         }),
@@ -84,29 +85,33 @@ describe('teamTitleResolver', () => {
     expect(title).toBeDefined();
   });
 
-  it('should use parent title if error detected', async () => {
+  it('should use parent tile if error detected', async () => {
     await expect(
-      router.navigate([`/test/${testTeam1.slug}`])
+      router.navigate([`/test/${testOrgMember1.slug}`])
     ).resolves.toBeTruthy();
-    expect(location.path()).toEqual(`/test/${testTeam1.slug}`);
+    expect(location.path()).toEqual(`/test/${testOrgMember1.slug}`);
     expect(title.getTitle()).toEqual('Error');
   });
 
-  it(`should set title to team's name prepended to existing title if store has selected team`, async () => {
-    await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
-    expect(location.path()).toEqual(`/${testTeam1.slug}`);
-    expect(title.getTitle()).toEqual(`${testTeam1.name} - NewBee`);
+  it(`should title to org member's name prepended to existing title if store has selected org member`, async () => {
+    await expect(
+      router.navigate([`/${testOrgMember1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/${testOrgMember1.slug}`);
+    expect(title.getTitle()).toEqual(`${testUser1.displayName} - NewBee`);
   });
 
-  it(`should set title to Error prepended to existing title if store has error instead of selected team`, async () => {
+  it(`should set title to Error prepended to existing title if store has error instead of selected org member`, async () => {
     store.setState({
       [Keyword.Http]: {
         ...initialHttpState,
         screenError: { status: 403, message: forbiddenError },
       },
     });
-    await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
-    expect(location.path()).toEqual(`/${testTeam1.slug}`);
+    await expect(
+      router.navigate([`/${testOrgMember1.slug}`])
+    ).resolves.toBeTruthy();
+    expect(location.path()).toEqual(`/${testOrgMember1.slug}`);
     expect(title.getTitle()).toEqual('Error - NewBee');
   });
 });

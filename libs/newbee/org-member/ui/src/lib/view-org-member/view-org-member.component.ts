@@ -62,6 +62,16 @@ export class ViewOrgMemberComponent implements OnInit {
   @Input() userOrgMember: OrgMember | null = null;
 
   /**
+   * Whether to display a loader for the org member's role.
+   */
+  @Input() editPending = false;
+
+  /**
+   * Whether to display a loader for the whole screen.
+   */
+  @Input() deletePending = false;
+
+  /**
    * Where to navigate to, relative to the current org.
    */
   @Output() orgNavigate = new EventEmitter<string>();

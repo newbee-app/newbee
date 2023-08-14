@@ -55,6 +55,8 @@ export default {
       },
     },
     userOrgMember: testOrgMember1,
+    editPending: false,
+    deletePending: false,
   },
   argTypes: {
     orgNavigate: { action: 'orgNavigate' },
@@ -82,3 +84,7 @@ export const LongDisplayName: Story = {
     },
   },
 };
+
+export const editPending: Story = { args: { editPending: true } };
+
+export const deletePending: Story = { args: { deletePending: true } };

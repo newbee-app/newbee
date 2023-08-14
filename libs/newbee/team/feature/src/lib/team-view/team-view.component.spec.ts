@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { ViewTeamComponent } from '@newbee/newbee/team/ui';
-import { testTeamRelation1 } from '@newbee/shared/util';
+import { Keyword, testTeamRelation1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamViewComponent } from './team-view.component';
 
@@ -27,7 +27,7 @@ describe('TeamViewComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            team: {
+            [Keyword.Team]: {
               selectedTeam: testTeamRelation1,
             },
           },
