@@ -2,12 +2,13 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { initialAuthState } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { Keyword, testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { authenticatedGuard } from './authenticated.guard';
+import { notAuthenticatedGuard } from './not-authenticated.guard';
 
-describe('authenticatedGuard', () => {
+describe('notAuthenticatedGuard', () => {
   let store: MockStore;
   let router: Router;
   let location: Location;
@@ -18,13 +19,9 @@ describe('authenticatedGuard', () => {
         EmptyComponent,
         RouterTestingModule.withRoutes([
           {
-            path: `${Keyword.Auth}/${Keyword.Login}`,
-            component: EmptyComponent,
-          },
-          {
             path: 'test',
             component: EmptyComponent,
-            canActivate: [authenticatedGuard],
+            canActivate: [notAuthenticatedGuard],
           },
           {
             path: '',
@@ -49,24 +46,24 @@ describe('authenticatedGuard', () => {
   });
 
   describe('logged in', () => {
-    it('should navigate properly', async () => {
+    it('should redirect', async () => {
       store.setState({
         [Keyword.Auth]: { user: testUser1 },
         [Keyword.Cookie]: { csrfToken: 'token' },
       });
-      await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/test');
+      await expect(router.navigate(['/test'])).resolves.toBeFalsy();
+      expect(location.path()).toEqual('/');
     });
   });
 
   describe('not logged in', () => {
-    it('should redirect', async () => {
+    it('should navigate properly', async () => {
       store.setState({
-        [Keyword.Auth]: { user: null },
+        [Keyword.Auth]: initialAuthState,
         [Keyword.Cookie]: { csrfToken: 'token' },
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
+      expect(location.path()).toEqual('/test');
     });
   });
 });

@@ -1,16 +1,15 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { Keyword } from '@newbee/shared/util';
+import { authFeature, cookieFeature } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
-import { authFeature, cookieFeature } from '../store';
 
 /**
- * A route guard that prevents users from accessing the link if the store doesn't contain user information (user is not logged in).
+ * A route guard that prevents users from accessing the link if the store contains user information (user is logged in).
  *
  * @returns `true` if access is allowed, a `UrlTree` to redirect the user otherwise.
  */
-export const authenticatedGuard: CanActivateFn = (): Observable<
+export const notAuthenticatedGuard: CanActivateFn = (): Observable<
   boolean | UrlTree
 > => {
   const store = inject(Store);
@@ -24,10 +23,10 @@ export const authenticatedGuard: CanActivateFn = (): Observable<
     take(1),
     map(([user]) => {
       if (user) {
-        return true;
+        return router.createUrlTree(['/']);
       }
 
-      return router.createUrlTree([`/${Keyword.Auth}/${Keyword.Login}`]);
+      return true;
     })
   );
 };
