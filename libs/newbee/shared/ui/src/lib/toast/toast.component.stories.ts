@@ -1,3 +1,4 @@
+import { ToastXPosition, ToastYPosition } from '@newbee/newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { ToastComponent } from './toast.component';
 
@@ -8,7 +9,7 @@ export default {
     header: 'Header',
     text: 'Text',
     type: 'error',
-    position: ['bottom', 'center'],
+    position: [ToastXPosition.Center, ToastYPosition.Bottom],
     duration: null,
   },
 } as Meta<ToastComponent>;

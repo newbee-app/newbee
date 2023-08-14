@@ -45,6 +45,14 @@ describe('AuthenticatorService', () => {
     httpController.verify();
   });
 
+  describe('baseApiUrl', () => {
+    it('should match the expected API route', () => {
+      expect(AuthenticatorService.baseApiUrl).toEqual(
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
+      );
+    });
+  });
+
   describe('getAuthenticators', () => {
     it('should send out a get request', (done) => {
       service.getAuthenticators().subscribe({

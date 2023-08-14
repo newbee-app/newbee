@@ -1,19 +1,24 @@
+import { Keyword } from '@newbee/shared/util';
 import type { AuthState } from './auth';
 import type { CookieState } from './cookie';
 import type { HttpState } from './http';
+import type { OrgMemberState } from './org-member';
 import type { OrganizationState } from './organization';
 import type { SearchState } from './search';
-import { TeamState } from './team';
+import type { TeamState } from './team';
+import type { ToastState } from './toast';
 
 /**
  * The global app state.
  * Able to be accessed from any portion of the frontend, right from first paint.
  */
 export interface AppState {
-  auth: AuthState;
-  cookie: CookieState;
-  http: HttpState;
-  org: OrganizationState;
-  search: SearchState;
-  team: TeamState;
+  [Keyword.Auth]: AuthState;
+  [Keyword.Cookie]: CookieState;
+  [Keyword.Http]: HttpState;
+  [Keyword.Member]: OrgMemberState;
+  [Keyword.Organization]: OrganizationState;
+  [Keyword.Search]: SearchState;
+  [Keyword.Team]: TeamState;
+  [Keyword.Toast]: ToastState;
 }

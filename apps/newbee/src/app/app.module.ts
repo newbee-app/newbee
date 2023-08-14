@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -6,6 +6,7 @@ import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import {
   AuthenticatorEffects,
   CookieEffects,
+  HeaderInterceptor,
   RouterEffects,
   SearchEffects,
 } from '@newbee/newbee/shared/data-access';
@@ -18,7 +19,6 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
-import { httpInterceptorProviders } from './interceptor';
 import { reducers } from './reducer';
 import { RootComponent } from './root';
 import { AppRoutingModule } from './routing';
@@ -65,7 +65,13 @@ import { AppRoutingModule } from './routing';
     // routing module
     AppRoutingModule,
   ],
-  providers: [httpInterceptorProviders],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HeaderInterceptor,
+      multi: true,
+    },
+  ],
   declarations: [AppComponent, RootComponent],
   bootstrap: [AppComponent],
 })

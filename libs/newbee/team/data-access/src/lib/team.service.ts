@@ -20,6 +20,17 @@ export class TeamService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * Get the base API URL for dealing with a team.
+   *
+   * @param orgSlug The slug of the org to look in.
+   *
+   * @returns The base API URL for dealing with a team.
+   */
+  static baseApiUrl(orgSlug: string): string {
+    return `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}`;
+  }
+
+  /**
    * Sends a request to the API to get a team in the given organization with the given slug.
    *
    * @param slug The slug of the team to get.
@@ -29,7 +40,7 @@ export class TeamService {
    */
   get(slug: string, orgSlug: string): Observable<BaseTeamAndMemberDto> {
     return this.http.get<BaseTeamAndMemberDto>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${slug}`
+      `${TeamService.baseApiUrl(orgSlug)}/${slug}`
     );
   }
 
@@ -42,10 +53,7 @@ export class TeamService {
    * @returns An observable containing the newly created team.
    */
   create(createTeamDto: BaseCreateTeamDto, orgSlug: string): Observable<Team> {
-    return this.http.post<Team>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}`,
-      createTeamDto
-    );
+    return this.http.post<Team>(TeamService.baseApiUrl(orgSlug), createTeamDto);
   }
 
   /**
@@ -63,7 +71,7 @@ export class TeamService {
     updateTeamDto: BaseUpdateTeamDto
   ): Observable<Team> {
     return this.http.patch<Team>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${teamSlug}`,
+      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}`,
       updateTeamDto
     );
   }
@@ -78,7 +86,7 @@ export class TeamService {
    */
   delete(orgSlug: string, teamSlug: string): Observable<null> {
     return this.http.delete<null>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${teamSlug}`
+      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}`
     );
   }
 
@@ -93,7 +101,7 @@ export class TeamService {
   checkSlug(slug: string, orgSlug: string): Observable<BaseSlugTakenDto> {
     const params = new HttpParams({ fromObject: { slug } });
     return this.http.get<BaseSlugTakenDto>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${Keyword.CheckSlug}`,
+      `${TeamService.baseApiUrl(orgSlug)}/${Keyword.CheckSlug}`,
       { params }
     );
   }
@@ -112,7 +120,7 @@ export class TeamService {
   ): Observable<BaseGeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
-      `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}/${Keyword.GenerateSlug}`,
+      `${TeamService.baseApiUrl(orgSlug)}/${Keyword.GenerateSlug}`,
       { params }
     );
   }

@@ -25,6 +25,14 @@ describe('UserService', () => {
     httpController.verify();
   });
 
+  describe('baseApiUrl', () => {
+    it('should match the expected API route', () => {
+      expect(UserService.baseApiUrl).toEqual(
+        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
+      );
+    });
+  });
+
   describe('edit', () => {
     it('should send out an patch request', (done) => {
       service.edit(testBaseUpdateUserDto1).subscribe({
@@ -39,9 +47,7 @@ describe('UserService', () => {
         error: done.fail,
       });
 
-      const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
-      );
+      const req = httpController.expectOne(UserService.baseApiUrl);
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateUserDto1);
 
@@ -63,9 +69,7 @@ describe('UserService', () => {
         error: done.fail,
       });
 
-      const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
-      );
+      const req = httpController.expectOne(UserService.baseApiUrl);
       expect(req.request.method).toEqual('DELETE');
 
       req.flush(null);

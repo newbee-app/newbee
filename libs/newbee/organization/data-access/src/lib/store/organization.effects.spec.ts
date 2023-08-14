@@ -37,7 +37,9 @@ describe('OrganizationEffects', () => {
       providers: [
         provideMockActions(() => actions$),
         provideMockStore({
-          initialState: { org: { selectedOrganization: testOrganization1 } },
+          initialState: {
+            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+          },
         }),
         OrganizationEffects,
         {

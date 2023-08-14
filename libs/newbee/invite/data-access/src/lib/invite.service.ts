@@ -9,6 +9,11 @@ import { Observable } from 'rxjs';
  */
 @Injectable()
 export class InviteService {
+  /**
+   * Get the base API URL for dealing with org member invites.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -20,7 +25,7 @@ export class InviteService {
    */
   acceptInvite(tokenDto: BaseTokenDto): Observable<OrgMemberNoUser> {
     return this.http.post<OrgMemberNoUser>(
-      `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Accept}`,
+      `${InviteService.baseApiUrl}/${Keyword.Accept}`,
       tokenDto
     );
   }
@@ -34,7 +39,7 @@ export class InviteService {
    */
   declineInvite(tokenDto: BaseTokenDto): Observable<null> {
     return this.http.post<null>(
-      `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Decline}`,
+      `${InviteService.baseApiUrl}/${Keyword.Decline}`,
       tokenDto
     );
   }

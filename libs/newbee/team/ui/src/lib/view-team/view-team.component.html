@@ -1,10 +1,13 @@
-<div class="flex flex-col flex-nowrap gap-y-6 overscroll-y-auto">
-  <div class="flex flex-row flex-wrap gap-2 justify-between items-center">
-    <h2>{{ team.team.name }}</h2>
+<div>
+  <div *ngIf="isAdmin; else teamName" class="w-fit">
+    <newbee-dropdown placement="bottom-start">
+      <h2
+        label
+        class="flex flex-row flex-nowrap items-center underline text-left"
+      >
+        {{ team.team.name }}
 
-    <newbee-dropdown *ngIf="isAdmin" placement="bottom-end">
-      <button label type="button" class="btn btn-outline">
-        <!-- cog-6-tooth svg -->
+        <!-- chevron-down svg -->
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -16,21 +19,18 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
           />
         </svg>
-      </button>
+      </h2>
 
-      <ul dropdown class="menu flex flex-col flex-nowrap w-44">
+      <ul dropdown class="menu flex flex-col flex-nowrap">
         <li>
           <a (click)="teamNavigate.emit(keyword.Edit)" class="flex"
             >Edit team</a
           >
+        </li>
+        <li>
           <a (click)="teamNavigate.emit(keyword.Invite)" class="flex"
             >Invite members</a
           >
@@ -39,112 +39,117 @@
     </newbee-dropdown>
   </div>
 
-  <div class="flex flex-col flex-nowrap gap-y-4">
-    <div class="flex flex-col flex-nowrap">
-      <h4>Members</h4>
-      <a (click)="teamNavigate.emit(keyword.Member)" class="link opacity-50">{{
-        totalMembers
+  <ng-template #teamName>
+    <h2>{{ team.team.name }}</h2>
+  </ng-template>
+
+  <div class="divider"></div>
+</div>
+
+<div>
+  <h4>Members</h4>
+  <a (click)="teamNavigate.emit(shortUrl.Member)" class="link opacity-50">{{
+    totalMembers
+  }}</a>
+
+  <div class="flex flex-row flex-nowrap gap-x-4 mt-6 pb-6 overflow-x-auto">
+    <button
+      type="button"
+      *ngFor="let member of team.teamMembers.sample"
+      (click)="orgNavigate.emit(member.orgMember.slug)"
+      class="flex-none card shadow-xl p-4 bg-base-200 w-52 truncate"
+    >
+      <h5 class="underline">{{ member.user.displayName }}</h5>
+      <p>{{ member.user.name }}</p>
+      <a [href]="'mailto:' + member.user.email" class="link link-info">{{
+        member.user.email
       }}</a>
+      <p class="opacity-50">{{ member.teamMember.role }}</p>
+    </button>
 
-      <div class="flex flex-row flex-nowrap gap-x-4 mt-6 pb-6 overflow-x-auto">
-        <button
-          type="button"
-          *ngFor="let member of team.teamMembers.sample"
-          (click)="orgNavigate.emit(member.orgMember.slug)"
-          class="flex-none card shadow-xl p-4 bg-base-200 w-52 truncate"
-        >
-          <h5 class="underline underline-offset-2">
-            {{ member.user.displayName }}
-          </h5>
-          <p class="">{{ member.user.name }}</p>
-          <p class="opacity-50">{{ member.teamMember.role }}</p>
-        </button>
+    <button
+      type="button"
+      (click)="teamNavigate.emit(shortUrl.Member)"
+      class="flex-none card shadow-xl p-4 bg-base-200 w-52 flex justify-center items-center"
+    >
+      <!-- arrow-right svg -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+        />
+      </svg>
+      View all
+    </button>
+  </div>
 
-        <button
-          type="button"
-          (click)="teamNavigate.emit(keyword.Member)"
-          class="flex-none card shadow-xl p-4 bg-base-200 w-52 flex justify-center items-center"
-        >
-          <!-- arrow-right svg -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-            />
-          </svg>
-          View all
-        </button>
-      </div>
+  <div class="divider">
+    <a (click)="teamNavigate.emit(shortUrl.Member)" class="link">View all</a>
+  </div>
+</div>
 
-      <div class="divider">
-        <a (click)="teamNavigate.emit(keyword.Member)" class="link">View all</a>
-      </div>
+<div *ngIf="team.qnas.total">
+  <h4>Top questions</h4>
+  <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link opacity-50">{{
+    totalQnas
+  }}</a>
+
+  <div class="flex flex-row flex-nowrap">
+    <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
+      <newbee-qna-search-result
+        *ngFor="let qna of team.qnas.sample"
+        [qna]="qna"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-qna-search-result>
     </div>
 
-    <div *ngIf="team.qnas.total" class="flex flex-col flex-nowrap">
-      <h4>Top questions</h4>
-      <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link opacity-50">{{
-        totalQnas
-      }}</a>
+    <div
+      class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
+    >
+      <newbee-view-all-btn
+        (clicked)="teamNavigate.emit(shortUrl.Qna)"
+      ></newbee-view-all-btn>
+    </div>
+  </div>
 
-      <div class="flex flex-row flex-nowrap">
-        <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-          <newbee-qna-search-result
-            *ngFor="let qna of team.qnas.sample"
-            [qna]="qna"
-            (orgNavigate)="orgNavigate.emit($event)"
-          ></newbee-qna-search-result>
-        </div>
+  <div class="divider">
+    <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link">View all</a>
+  </div>
+</div>
 
-        <div
-          class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
-        >
-          <newbee-view-all-btn
-            (clicked)="teamNavigate.emit(shortUrl.Qna)"
-          ></newbee-view-all-btn>
-        </div>
-      </div>
+<div *ngIf="team.docs.total">
+  <h4>Top docs</h4>
+  <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link opacity-50">{{
+    totalDocs
+  }}</a>
 
-      <div class="divider">
-        <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link">View all</a>
-      </div>
+  <div class="flex flex-row flex-nowrap">
+    <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
+      <newbee-doc-search-result
+        *ngFor="let doc of team.docs.sample"
+        [doc]="doc"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-doc-search-result>
     </div>
 
-    <div *ngIf="team.docs.total" class="flex flex-col flex-nowrap">
-      <h4>Top docs</h4>
-      <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link opacity-50">{{
-        totalDocs
-      }}</a>
-
-      <div class="flex flex-row flex-nowrap">
-        <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-          <newbee-doc-search-result
-            *ngFor="let doc of team.docs.sample"
-            [doc]="doc"
-            (orgNavigate)="orgNavigate.emit($event)"
-          ></newbee-doc-search-result>
-        </div>
-
-        <div
-          class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
-        >
-          <newbee-view-all-btn
-            (clicked)="teamNavigate.emit(shortUrl.Doc)"
-          ></newbee-view-all-btn>
-        </div>
-      </div>
-
-      <div class="divider">
-        <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link">View all</a>
-      </div>
+    <div
+      class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
+    >
+      <newbee-view-all-btn
+        (clicked)="teamNavigate.emit(shortUrl.Doc)"
+      ></newbee-view-all-btn>
     </div>
+  </div>
+
+  <div class="divider">
+    <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link">View all</a>
   </div>
 </div>

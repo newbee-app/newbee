@@ -16,6 +16,11 @@ import { from, Observable, switchMap } from 'rxjs';
  */
 @Injectable({ providedIn: 'root' })
 export class AuthenticatorService {
+  /**
+   * The base API URL for dealing with authenticators.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -23,9 +28,7 @@ export class AuthenticatorService {
    * @returns An observable containing all of the logged in user's authenticators.
    */
   getAuthenticators(): Observable<Authenticator[]> {
-    return this.http.get<Authenticator[]>(
-      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
-    );
+    return this.http.get<Authenticator[]>(AuthenticatorService.baseApiUrl);
   }
 
   /**
@@ -34,7 +37,7 @@ export class AuthenticatorService {
    */
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
-      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${Keyword.Options}`,
+      `${AuthenticatorService.baseApiUrl}/${Keyword.Options}`,
       {}
     );
   }
@@ -54,7 +57,7 @@ export class AuthenticatorService {
           response,
         };
         return this.http.post<Authenticator>(
-          `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
+          AuthenticatorService.baseApiUrl,
           registrationResponseDto
         );
       })
@@ -72,7 +75,7 @@ export class AuthenticatorService {
   editName(id: string, name: string | null): Observable<Authenticator> {
     const nameDto: BaseNameDto = { name };
     return this.http.patch<Authenticator>(
-      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${id}`,
+      `${AuthenticatorService.baseApiUrl}/${id}`,
       nameDto
     );
   }
@@ -84,8 +87,6 @@ export class AuthenticatorService {
    * @returns A null observable.
    */
   delete(id: string): Observable<null> {
-    return this.http.delete<null>(
-      `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${id}`
-    );
+    return this.http.delete<null>(`${AuthenticatorService.baseApiUrl}/${id}`);
   }
 }

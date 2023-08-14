@@ -7,7 +7,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { CookieActions } from '../store';
 import { cookieGuard } from './cookie.guard';
 
-describe('cookieResolver', () => {
+describe('cookieGuard', () => {
   let router: Router;
   let store: MockStore;
   let location: Location;

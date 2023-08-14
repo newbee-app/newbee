@@ -31,6 +31,14 @@ describe('SearchService', () => {
     httpController.verify();
   });
 
+  describe('baseApiUrl', () => {
+    it('should match the expected API route', () => {
+      expect(SearchService.baseApiUrl(testOrganization1.slug)).toEqual(
+        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`
+      );
+    });
+  });
+
   describe('search', () => {
     it('should send out a post request', (done) => {
       service.search(testBaseQueryDto1, testOrganization1.slug).subscribe({
@@ -46,7 +54,7 @@ describe('SearchService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`
+        SearchService.baseApiUrl(testOrganization1.slug)
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseQueryDto1);
@@ -70,7 +78,7 @@ describe('SearchService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}/${Keyword.Suggest}`
+        `${SearchService.baseApiUrl(testOrganization1.slug)}/${Keyword.Suggest}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseSuggestDto1);

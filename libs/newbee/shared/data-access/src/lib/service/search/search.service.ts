@@ -19,6 +19,17 @@ export class SearchService {
   constructor(private readonly http: HttpClient) {}
 
   /**
+   * The base API URL for dealing with search.
+   *
+   * @param orgSlug The slug of the org to search in.
+   *
+   * @returns The base API URL for dealing with search.
+   */
+  static baseApiUrl(orgSlug: string): string {
+    return `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}`;
+  }
+
+  /**
    * Sends a search request with the given query to the given organization.
    *
    * @param query The search query.
@@ -28,7 +39,7 @@ export class SearchService {
    */
   search(query: BaseQueryDto, orgSlug: string): Observable<BaseQueryResultDto> {
     return this.http.post<BaseQueryResultDto>(
-      `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}`,
+      SearchService.baseApiUrl(orgSlug),
       query
     );
   }
@@ -46,7 +57,7 @@ export class SearchService {
     orgSlug: string
   ): Observable<BaseSuggestResultDto> {
     return this.http.post<BaseSuggestResultDto>(
-      `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}/${Keyword.Suggest}`,
+      `${SearchService.baseApiUrl(orgSlug)}/${Keyword.Suggest}`,
       query
     );
   }

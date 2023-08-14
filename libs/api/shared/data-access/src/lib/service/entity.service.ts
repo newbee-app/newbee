@@ -13,10 +13,12 @@ import {
   TeamDocParams,
 } from '@newbee/api/shared/util';
 import type {
+  DocMembers,
   OrgMemberNoOrg,
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
   OrgMemberRelation,
+  QnaMembers,
   TeamNoOrg,
   UserRelation,
 } from '@newbee/shared/util';
@@ -290,10 +292,22 @@ export class EntityService {
           sample: teams.map((team) => ({ teamMember: team, team: team.team })),
           total: teamsCount,
         },
-        createdDocs: { sample: createdDocs, total: createdDocsCount },
-        maintainedDocs: { sample: maintainedDocs, total: maintainedDocsCount },
-        createdQnas: { sample: createdQnas, total: createdQnasCount },
-        maintainedQnas: { sample: maintainedQnas, total: maintainedQnasCount },
+        createdDocs: {
+          sample: await this.createDocMembers(createdDocs),
+          total: createdDocsCount,
+        },
+        maintainedDocs: {
+          sample: await this.createDocMembers(maintainedDocs),
+          total: maintainedDocsCount,
+        },
+        createdQnas: {
+          sample: await this.createQnaMembers(createdQnas),
+          total: createdQnasCount,
+        },
+        maintainedQnas: {
+          sample: await this.createQnaMembers(maintainedQnas),
+          total: maintainedQnasCount,
+        },
       };
     } catch (err) {
       this.logger.error(err);
@@ -318,18 +332,12 @@ export class EntityService {
       const [docs, docsCount] = await this.em.findAndCount(
         DocEntity,
         { team },
-        {
-          ...postFindAndCountOptions,
-          populate: ['creator.user', 'maintainer.user'],
-        }
+        postFindAndCountOptions
       );
       const [qnas, qnasCount] = await this.em.findAndCount(
         QnaEntity,
         { team },
-        {
-          ...postFindAndCountOptions,
-          populate: ['creator.user', 'maintainer.user'],
-        }
+        postFindAndCountOptions
       );
       const [teamMembers, teamMembersCount] = await this.em.findAndCount(
         TeamMemberEntity,
@@ -345,31 +353,11 @@ export class EntityService {
       return {
         team,
         docs: {
-          sample: docs.map((doc) => ({
-            doc,
-            creator: doc.creator && {
-              orgMember: doc.creator,
-              user: doc.creator.user,
-            },
-            maintainer: doc.maintainer && {
-              orgMember: doc.maintainer,
-              user: doc.maintainer.user,
-            },
-          })),
+          sample: await this.createDocMembers(docs),
           total: docsCount,
         },
         qnas: {
-          sample: qnas.map((qna) => ({
-            qna,
-            creator: qna.creator && {
-              orgMember: qna.creator,
-              user: qna.creator.user,
-            },
-            maintainer: qna.maintainer && {
-              orgMember: qna.maintainer,
-              user: qna.maintainer.user,
-            },
-          })),
+          sample: await this.createQnaMembers(qnas),
           total: qnasCount,
         },
         teamMembers: {
@@ -385,6 +373,62 @@ export class EntityService {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+  }
+
+  /**
+   * Takes in an array of `DocEntity` and converts it into an array of `DocMembers`.
+   *
+   * @param docs The docs to convert.
+   *
+   * @returns The entities as `DocMembers`.
+   */
+  async createDocMembers(docs: DocEntity[]): Promise<DocMembers[]> {
+    try {
+      await this.em.populate(docs, ['creator.user', 'maintainer.user']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return docs.map((doc) => ({
+      doc,
+      creator: doc.creator && {
+        orgMember: doc.creator,
+        user: doc.creator.user,
+      },
+      maintainer: doc.maintainer && {
+        orgMember: doc.maintainer,
+        user: doc.maintainer.user,
+      },
+    }));
+  }
+
+  /**
+   * Takes in an array of `QnaEntity` and converts it into an array of `QnaMembers`.
+   *
+   * @param qnas The qnas to convert.
+   *
+   * @returns The entities as `QnaMembers`.
+   */
+  async createQnaMembers(qnas: QnaEntity[]): Promise<QnaMembers[]> {
+    try {
+      await this.em.populate(qnas, ['creator.user', 'maintainer.user']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return qnas.map((qna) => ({
+      qna,
+      creator: qna.creator && {
+        orgMember: qna.creator,
+        user: qna.creator.user,
+      },
+      maintainer: qna.maintainer && {
+        orgMember: qna.maintainer,
+        user: qna.maintainer.user,
+      },
+    }));
   }
 
   /**

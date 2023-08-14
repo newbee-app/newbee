@@ -3,7 +3,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { apiVersion, testBaseTokenDto1 } from '@newbee/shared/data-access';
+import { testBaseTokenDto1 } from '@newbee/shared/data-access';
 import { Keyword, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { InviteService } from './invite.service';
 
@@ -40,7 +40,7 @@ describe('InviteService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Accept}`
+        `${InviteService.baseApiUrl}/${Keyword.Accept}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseTokenDto1);
@@ -64,7 +64,7 @@ describe('InviteService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Decline}`
+        `${InviteService.baseApiUrl}/${Keyword.Decline}`
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseTokenDto1);

@@ -33,9 +33,7 @@ export const teamTitleResolver: ResolveFn<string> = (
       const parentTitle = route.parent?.title ?? '';
       if (parentTitle.includes('Error')) {
         return parentTitle;
-      }
-
-      if (team) {
+      } else if (team) {
         return `${team.team.name} - ${parentTitle}`;
       }
 

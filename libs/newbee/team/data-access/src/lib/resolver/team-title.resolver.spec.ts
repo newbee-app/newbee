@@ -92,15 +92,15 @@ describe('teamTitleResolver', () => {
     expect(title.getTitle()).toEqual('Error');
   });
 
-  it(`should set title to team's name appended to existing title if store has selected team`, async () => {
+  it(`should set title to team's name prepended to existing title if store has selected team`, async () => {
     await expect(router.navigate([`/${testTeam1.slug}`])).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testTeam1.slug}`);
     expect(title.getTitle()).toEqual(`${testTeam1.name} - NewBee`);
   });
 
-  it(`should set title to Error appended to existing title if store has error instead of selected team`, async () => {
+  it(`should set title to Error prepended to existing title if store has error instead of selected team`, async () => {
     store.setState({
-      http: {
+      [Keyword.Http]: {
         ...initialHttpState,
         screenError: { status: 403, message: forbiddenError },
       },

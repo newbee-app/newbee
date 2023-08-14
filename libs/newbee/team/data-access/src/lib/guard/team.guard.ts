@@ -14,7 +14,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  *
  * @param route A snapshot of the route the user is trying to navigate to.
  *
- * @returns `true` after the team is retrieved.
+ * @returns `true` after the team is retrieved or an error is thrown.
  */
 export const teamGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot

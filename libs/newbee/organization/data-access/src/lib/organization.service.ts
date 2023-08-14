@@ -18,6 +18,11 @@ import { Observable } from 'rxjs';
  */
 @Injectable()
 export class OrganizationService {
+  /**
+   * The base API URL for dealing with orgs.
+   */
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`;
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -29,7 +34,7 @@ export class OrganizationService {
    */
   get(slug: string): Observable<BaseOrgAndMemberDto> {
     return this.http.get<BaseOrgAndMemberDto>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${slug}`
+      `${OrganizationService.baseApiUrl}/${slug}`
     );
   }
 
@@ -44,7 +49,7 @@ export class OrganizationService {
     createOrganizationDto: BaseCreateOrganizationDto
   ): Observable<Organization> {
     return this.http.post<Organization>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`,
+      OrganizationService.baseApiUrl,
       createOrganizationDto
     );
   }
@@ -61,7 +66,7 @@ export class OrganizationService {
     updateOrganizationDto: BaseUpdateOrganizationDto
   ): Observable<Organization> {
     return this.http.patch<Organization>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${orgSlug}`,
+      `${OrganizationService.baseApiUrl}/${orgSlug}`,
       updateOrganizationDto
     );
   }
@@ -75,7 +80,7 @@ export class OrganizationService {
    */
   delete(orgSlug: string): Observable<null> {
     return this.http.delete<null>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${orgSlug}`
+      `${OrganizationService.baseApiUrl}/${orgSlug}`
     );
   }
 
@@ -89,7 +94,7 @@ export class OrganizationService {
   checkSlug(slug: string): Observable<BaseSlugTakenDto> {
     const params = new HttpParams({ fromObject: { slug } });
     return this.http.get<BaseSlugTakenDto>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${Keyword.CheckSlug}`,
+      `${OrganizationService.baseApiUrl}/${Keyword.CheckSlug}`,
       { params }
     );
   }
@@ -104,7 +109,7 @@ export class OrganizationService {
   generateSlug(name: string): Observable<BaseGeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
-      `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}/${Keyword.GenerateSlug}`,
+      `${OrganizationService.baseApiUrl}/${Keyword.GenerateSlug}`,
       { params }
     );
   }
@@ -122,7 +127,7 @@ export class OrganizationService {
     createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto
   ): Observable<null> {
     return this.http.post<null>(
-      `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}/${Keyword.Organization}/${orgSlug}`,
+      `${OrganizationService.baseApiUrl}/${orgSlug}`,
       createOrgMemberInviteDto
     );
   }

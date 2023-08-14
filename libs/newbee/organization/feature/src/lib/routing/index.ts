@@ -36,6 +36,13 @@ const routes: Routes = [
         },
       },
       {
+        path: ShortUrl.Member,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/org-member/feature');
+          return m.OrgMemberModule;
+        },
+      },
+      {
         path: Keyword.Edit,
         component: OrgEditComponent,
         canActivate: [isOrgAdminGuard],

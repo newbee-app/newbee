@@ -2,6 +2,7 @@ import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   testDocRelation1,
   testQnaRelation1,
+  testTeam1,
   testTeamMember1,
   testTeamMemberRelation1,
   testTeamRelation1,
@@ -58,3 +59,15 @@ type Story = StoryObj<ViewTeamComponent>;
 export const Primary: Story = {};
 
 export const NoTeamMember: Story = { args: { teamMember: null } };
+
+export const LongTeamName: Story = {
+  args: {
+    team: {
+      ...testTeamRelation1,
+      team: {
+        ...testTeam1,
+        name: 'Really really really really really really really really long team name',
+      },
+    },
+  },
+};
