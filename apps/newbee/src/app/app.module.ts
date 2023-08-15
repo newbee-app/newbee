@@ -8,7 +8,6 @@ import {
   CookieEffects,
   HeaderInterceptor,
   RouterEffects,
-  SearchEffects,
 } from '@newbee/newbee/shared/data-access';
 import {
   ErrorScreenComponent,
@@ -48,12 +47,7 @@ import { AppRoutingModule } from './routing';
         strictActionTypeUniqueness: true,
       },
     }),
-    EffectsModule.forRoot([
-      AuthenticatorEffects,
-      CookieEffects,
-      RouterEffects,
-      SearchEffects,
-    ]),
+    EffectsModule.forRoot([AuthenticatorEffects, CookieEffects, RouterEffects]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
 

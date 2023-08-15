@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import {
+  catchHttpScreenError,
+  organizationFeature,
+  SearchActions,
+} from '@newbee/newbee/shared/data-access';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap } from 'rxjs';
-import { catchHttpScreenError } from '../../function';
-import { SearchService } from '../../service';
-import { organizationFeature } from '../organization';
-import { SearchActions } from './search.actions';
+import { SearchService } from '../search.service';
 
 /**
  * The effects tied to `SearchActions`.

@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
  * The service tied to the API's search endpoints.
  * Handles search and suggest.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class SearchService {
   constructor(private readonly http: HttpClient) {}
 

@@ -1,6 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  initialOrganizationState,
+  SearchActions,
+} from '@newbee/newbee/shared/data-access';
+import {
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
@@ -12,9 +16,7 @@ import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
-import { SearchService } from '../../service';
-import { initialOrganizationState } from '../organization';
-import { SearchActions } from './search.actions';
+import { SearchService } from '../search.service';
 import { SearchEffects } from './search.effects';
 
 describe('SearchEffects', () => {

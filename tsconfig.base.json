@@ -155,6 +155,13 @@
       "@newbee/newbee/organization/util": [
         "libs/newbee/organization/util/src/index.ts"
       ],
+      "@newbee/newbee/search/data-access": [
+        "libs/newbee/search/data-access/src/index.ts"
+      ],
+      "@newbee/newbee/search/feature": [
+        "libs/newbee/search/feature/src/index.ts"
+      ],
+      "@newbee/newbee/search/ui": ["libs/newbee/search/ui/src/index.ts"],
       "@newbee/newbee/shared/data-access": [
         "libs/newbee/shared/data-access/src/index.ts"
       ],
