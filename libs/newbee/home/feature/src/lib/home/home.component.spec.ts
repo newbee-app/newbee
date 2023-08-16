@@ -3,11 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { NoOrgComponent, NoOrgSelectedComponent } from '@newbee/newbee/home/ui';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
-import {
-  initialOrganizationState,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { initialOrganizationState } from '@newbee/newbee/shared/data-access';
+import { NavbarComponent } from '@newbee/newbee/shared/feature';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testOrganization1,

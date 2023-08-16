@@ -1,1 +1,1 @@
-export * from './lib/newbee-search-ui.module';
+export * from './lib/search-results';

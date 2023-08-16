@@ -2,7 +2,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import {
   AuthenticatorEffects,
   CookieEffects,
@@ -11,6 +10,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import {
   ErrorScreenComponent,
+  NavbarComponent,
   StoreToastComponent,
 } from '@newbee/newbee/shared/feature';
 import { EffectsModule } from '@ngrx/effects';

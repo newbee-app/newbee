@@ -7,7 +7,8 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
-import { cookieGuard, ShortUrl } from '@newbee/newbee/shared/data-access';
+import { cookieGuard } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { RootComponent } from '../root';
 

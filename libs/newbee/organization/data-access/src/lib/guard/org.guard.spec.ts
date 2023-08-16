@@ -2,11 +2,9 @@ import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import {
-  OrganizationActions,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, testOrganization1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgGuard } from './org.guard';

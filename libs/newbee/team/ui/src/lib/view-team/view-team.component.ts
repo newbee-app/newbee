@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
   DocSearchResultComponent,
   DropdownComponent,
   QnaSearchResultComponent,
   ViewAllBtnComponent,
 } from '@newbee/newbee/shared/ui';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   compareTeamRoles,
   Keyword,

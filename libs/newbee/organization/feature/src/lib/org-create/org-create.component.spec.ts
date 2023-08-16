@@ -5,7 +5,6 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
@@ -28,7 +27,7 @@ describe('OrgCreateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, NavbarComponent, CreateOrgComponent],
+      imports: [CommonModule, CreateOrgComponent],
       declarations: [OrgCreateComponent],
       providers: [provideMockStore()],
     }).compileComponents();

@@ -130,10 +130,6 @@
       "@newbee/newbee/invite/feature": [
         "libs/newbee/invite/feature/src/index.ts"
       ],
-      "@newbee/newbee/navbar/feature": [
-        "libs/newbee/navbar/feature/src/index.ts"
-      ],
-      "@newbee/newbee/navbar/ui": ["libs/newbee/navbar/ui/src/index.ts"],
       "@newbee/newbee/org-member/data-access": [
         "libs/newbee/org-member/data-access/src/index.ts"
       ],

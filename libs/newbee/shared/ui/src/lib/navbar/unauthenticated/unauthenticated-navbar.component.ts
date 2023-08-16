@@ -3,16 +3,18 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 
+/**
+ * The unauthenticated version of the navbar.
+ */
 @Component({
-  selector: 'newbee-no-org',
+  selector: 'newbee-unauthenticated-navbar',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './no-org.component.html',
-  styles: [],
+  templateUrl: './unauthenticated-navbar.component.html',
 })
-export class NoOrgComponent {
+export class UnauthenticatedNavbarComponent {
   /**
-   * The event emitter that tells the parent component what route to navigate to.
+   * The `EventEmitter` that tells the parent component what route to navigate to.
    */
   @Output() navigateToLink = new EventEmitter<string>();
 
@@ -27,11 +29,11 @@ export class NoOrgComponent {
   readonly shortUrl = ShortUrl;
 
   /**
-   * Calls `navigateToLink.emit()` using the given routes, joined by backslashes.
+   * Calls `navigateToLink.emit()` using the given route.
    *
-   * @param endpoints The endpoints of the route to navigate to.
+   * @param endpoints The route to navigate to.
    */
-  emitNavigateToLink(...endpoints: string[]): void {
+  emitNavigateToLink(...endpoints: string[]) {
     this.navigateToLink.emit(`/${endpoints.join('/')}`);
   }
 }

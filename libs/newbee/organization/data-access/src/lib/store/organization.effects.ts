@@ -5,8 +5,8 @@ import {
   catchHttpScreenError,
   OrganizationActions,
   organizationFeature,
-  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   emailIsEmail,
   Keyword,

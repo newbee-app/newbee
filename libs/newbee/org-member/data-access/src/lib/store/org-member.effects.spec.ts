@@ -4,8 +4,8 @@ import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
   OrgMemberActions,
-  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,

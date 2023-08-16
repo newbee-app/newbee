@@ -5,7 +5,7 @@ import {
   orgMemberTitleResolver,
   resetSelectedOrgMemberGuard,
 } from '@newbee/newbee/org-member/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { OrgMemberViewComponent } from '../org-member-view';
 
 const routes: Routes = [

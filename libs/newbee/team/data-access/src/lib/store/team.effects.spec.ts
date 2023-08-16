@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
-  ShortUrl,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,

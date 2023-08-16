@@ -6,10 +6,8 @@ import {
   orgTitleResolver,
   resetSelectedOrgGuard,
 } from '@newbee/newbee/organization/data-access';
-import {
-  authenticatedGuard,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { authenticatedGuard } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { OrgCreateComponent } from '../org-create';
 import { OrgEditComponent } from '../org-edit';

@@ -4,10 +4,10 @@ import {
   catchHttpClientError,
   catchHttpScreenError,
   organizationFeature,
-  ShortUrl,
   TeamActions,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   nameIsNotEmpty,

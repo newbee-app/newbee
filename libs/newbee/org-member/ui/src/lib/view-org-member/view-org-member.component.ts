@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
   DocSearchResultComponent,
   DropdownComponent,
@@ -9,7 +8,7 @@ import {
   SearchableSelectComponent,
   ViewAllBtnComponent,
 } from '@newbee/newbee/shared/ui';
-import { SelectOption } from '@newbee/newbee/shared/util';
+import { SelectOption, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   compareOrgRoles,
   Keyword,

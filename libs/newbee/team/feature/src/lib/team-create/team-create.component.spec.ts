@@ -5,7 +5,6 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
 import { testCreateTeamForm1 } from '@newbee/newbee/team/util';
@@ -28,7 +27,7 @@ describe('TeamCreateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, NavbarComponent, CreateTeamComponent],
+      imports: [CommonModule, CreateTeamComponent],
       declarations: [TeamCreateComponent],
       providers: [provideMockStore()],
     }).compileComponents();
