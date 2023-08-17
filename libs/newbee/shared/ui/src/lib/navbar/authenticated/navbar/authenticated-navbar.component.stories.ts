@@ -27,9 +27,13 @@ export default {
     organizations: [testOrganization1, testOrganization2],
     selectedOrganization: testOrganization1,
     orgMember: testOrgMemberRelation1,
+    pastOrgHome: false,
+    initialSearchTerm: '',
+    searchSuggestions: [],
   },
   argTypes: {
     selectedOrganizationChange: { action: 'selectedOrganizationChange' },
+    search: { action: 'search' },
     navigateToLink: { action: 'navigateToLink' },
     logout: { action: 'logout' },
   },
@@ -42,4 +46,17 @@ export const SelectedOrg: Story = {};
 
 export const NoSelectedOrg: Story = {
   args: { selectedOrganization: null },
+};
+
+export const pastOrgHome: Story = { args: { pastOrgHome: true } };
+
+export const initialSearchTerm: Story = {
+  args: { ...pastOrgHome.args, initialSearchTerm: 'searching' },
+};
+
+export const searchSuggestions: Story = {
+  args: {
+    ...initialSearchTerm.args,
+    searchSuggestions: ['searching for', 'searching this', 'searching that'],
+  },
 };

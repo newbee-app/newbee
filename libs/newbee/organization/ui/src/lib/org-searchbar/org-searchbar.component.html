@@ -7,17 +7,19 @@
   </div>
 
   <form
-    (submit)="emitSearch($event)"
+    [formGroup]="searchTerm"
+    (ngSubmit)="emitSearch()"
     class="flex flex-col gap-2 justify-center items-center w-[30rem] max-w-full"
   >
     <div class="w-full">
       <newbee-searchbar
-        [formControl]="searchTerm"
+        formControlName="searchbar"
         [suggestions]="suggestions"
-        (selectSuggestion)="this.search.emit($event)"
+        (selectSuggestion)="selectSuggestion($event)"
         autofocus
       ></newbee-searchbar>
     </div>
+
     <button
       type="submit"
       [disabled]="searchTerm.invalid"

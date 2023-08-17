@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -113,6 +114,14 @@ export class SearchbarComponent
    */
   get onTouched(): () => void {
     return this._onTouched;
+  }
+
+  /**
+   * When `esc` is pressed, blur the input.
+   */
+  @HostListener('keydown.escape')
+  escapeEvent(): void {
+    this.searchbarInput.nativeElement.blur();
   }
 
   /**
