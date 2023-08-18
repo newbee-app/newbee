@@ -1,1 +1,42 @@
-<p>search-results works!</p>
+<form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
+  <newbee-searchbar
+    formControlName="searchbar"
+    [suggestions]="searchSuggestions"
+    (selectSuggestion)="selectSuggestion($event)"
+  ></newbee-searchbar>
+</form>
+
+<div class="tabs mt-6">
+  <a
+    (click)="changeTab(searchTab.All)"
+    class="tab tab-bordered text-base"
+    [ngClass]="{ 'tab-active': selectedTab === searchTab.All }"
+    >All</a
+  >
+  <a
+    (click)="changeTab(searchTab.Qna)"
+    class="tab tab-bordered text-lg"
+    [ngClass]="{ 'tab-active': selectedTab === searchTab.Qna }"
+    >QnAs</a
+  >
+  <a
+    (click)="changeTab(searchTab.Doc)"
+    class="tab tab-bordered text-base"
+    [ngClass]="{ 'tab-active': selectedTab === searchTab.Doc }"
+    >Docs</a
+  >
+  <a
+    (click)="changeTab(searchTab.Team)"
+    class="tab tab-bordered text-base"
+    [ngClass]="{ 'tab-active': selectedTab === searchTab.Team }"
+    >Teams</a
+  >
+  <a
+    (click)="changeTab(searchTab.People)"
+    class="tab tab-bordered text-base"
+    [ngClass]="{ 'tab-active': selectedTab === searchTab.People }"
+    >People</a
+  >
+</div>
+
+<div class="divider"></div>

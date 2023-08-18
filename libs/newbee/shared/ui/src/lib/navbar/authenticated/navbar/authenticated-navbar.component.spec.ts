@@ -64,35 +64,6 @@ describe('AuthenticatedNavbarComponent', () => {
     });
   });
 
-  describe('ngOnInit', () => {
-    it(`should set the searchbar's value`, () => {
-      component.initialSearchTerm = 'searching';
-      component.ngOnInit();
-      expect(component.searchTerm.value).toEqual({ searchbar: 'searching' });
-    });
-  });
-
-  describe('selectSuggestion', () => {
-    it('should set the search term and emit search', () => {
-      component.selectSuggestion('suggestion');
-      expect(component.searchTerm.value).toEqual({ searchbar: 'suggestion' });
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith('suggestion');
-    });
-  });
-
-  describe('emitSearch', () => {
-    it(`should emit the search term if it's not empty`, () => {
-      component.emitSearch();
-      expect(component.search.emit).not.toBeCalled();
-
-      component.searchTerm.setValue({ searchbar: 'searching' });
-      component.emitSearch();
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith('searching');
-    });
-  });
-
   describe('selectOrganization', () => {
     it('should change the selected organization and emit', () => {
       component.selectOrganization(testOrganization2);
