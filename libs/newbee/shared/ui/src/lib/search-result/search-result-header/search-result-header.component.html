@@ -1,7 +1,7 @@
 <div class="flex flex-col flex-nowrap">
   <div class="flex flex-row flex-nowrap gap-x-2 items-center">
     <newbee-up-to-date-btn [post]="post"></newbee-up-to-date-btn>
-    <a (click)="orgNavigate.emit(post.slug)" class="link link-info"
+    <a (click)="postNavigate()" class="link link-info"
       ><h5>{{ post.title }}</h5></a
     >
   </div>
@@ -9,9 +9,11 @@
   <p *ngIf="maintainer || creator" class="opacity-50">
     <span *ngIf="maintainer; else noMaintainer">
       Maintained by
-      <a (click)="orgNavigate.emit(maintainer.orgMember.slug)" class="link">{{
-        maintainer.user.displayName
-      }}</a>
+      <a
+        (click)="emitOrgNavigate(shortUrl.Member, maintainer.orgMember.slug)"
+        class="link"
+        >{{ maintainer.user.displayName }}</a
+      >
     </span>
     <ng-template #noMaintainer
       ><span>Not actively maintained</span></ng-template
@@ -19,7 +21,10 @@
 
     <span *ngIf="creator">
       | Created by
-      <a (click)="orgNavigate.emit(creator.orgMember.slug)" class="link">
+      <a
+        (click)="emitOrgNavigate(shortUrl.Member, creator.orgMember.slug)"
+        class="link"
+      >
         {{ creator.user.displayName }}
       </a>
     </span>

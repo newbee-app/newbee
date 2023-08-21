@@ -34,7 +34,6 @@ describe('AuthenticatedNavbarComponent', () => {
     component.orgMember = testOrgMemberRelation1;
 
     jest.spyOn(component.selectedOrganizationChange, 'emit');
-    jest.spyOn(component.search, 'emit');
     jest.spyOn(component.navigateToLink, 'emit');
     jest.spyOn(component.logout, 'emit');
 

@@ -16,6 +16,13 @@ import { enableProdMode } from '@angular/core';
 
 import { environment } from './environments/environment';
 
+// Needed to share cookies between the browser and server for SSR
+// Otherwise, it will cause flickering when authenticated
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as xhr2 from 'xhr2';
+xhr2.prototype._restrictedHeaders = {};
+
 if (environment.production) {
   enableProdMode();
 }

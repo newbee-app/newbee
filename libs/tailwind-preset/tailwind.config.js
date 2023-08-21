@@ -10,6 +10,11 @@ module.exports = {
         // used for the logo
         logo: colors.yellow['500'],
       },
+      spacing: {
+        close: '1rem',
+        mid: '2.5rem',
+        far: '6rem',
+      },
     },
   },
   plugins: [

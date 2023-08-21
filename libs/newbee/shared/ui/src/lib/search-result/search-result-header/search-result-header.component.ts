@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import type { OrgMemberUser, Post } from '@newbee/shared/util';
+import { ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  postIsDoc,
+  postIsQna,
+  type OrgMemberUser,
+  type Post,
+} from '@newbee/shared/util';
 import { UpToDateBtnComponent } from '../../btn';
 
 /**
@@ -13,6 +19,11 @@ import { UpToDateBtnComponent } from '../../btn';
   templateUrl: './search-result-header.component.html',
 })
 export class SearchResultHeaderComponent {
+  /**
+   * All of the possible short URLs.
+   */
+  readonly shortUrl = ShortUrl;
+
   /**
    * The post the search result is about.
    */
@@ -32,4 +43,24 @@ export class SearchResultHeaderComponent {
    * Where we should navigate to, relative to the current org.
    */
   @Output() orgNavigate = new EventEmitter<string>();
+
+  /**
+   * Emit the `orgNavigate` output with the given paths joined by `/`.
+   *
+   * @param paths The paths to join.
+   */
+  emitOrgNavigate(...paths: string[]): void {
+    this.orgNavigate.emit(`/${paths.join('/')}`);
+  }
+
+  /**
+   * Navigate to the displayed post relative to the current org.
+   */
+  postNavigate(): void {
+    if (postIsDoc(this.post)) {
+      this.emitOrgNavigate(ShortUrl.Doc, this.post.slug);
+    } else if (postIsQna(this.post)) {
+      this.emitOrgNavigate(ShortUrl.Qna, this.post.slug);
+    }
+  }
 }

@@ -6,7 +6,9 @@ import {
   DropdownComponent,
   QnaSearchResultComponent,
   SearchableSelectComponent,
+  TeamSearchResultComponent,
   ViewAllBtnComponent,
+  ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
 import { SelectOption, ShortUrl } from '@newbee/newbee/shared/util';
 import {
@@ -28,7 +30,9 @@ import {
     ReactiveFormsModule,
     DropdownComponent,
     ViewAllBtnComponent,
+    ViewAllCardBtnComponent,
     SearchableSelectComponent,
+    TeamSearchResultComponent,
     DocSearchResultComponent,
     QnaSearchResultComponent,
   ],

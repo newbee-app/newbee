@@ -1,7 +1,7 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ServerModule } from '@angular/platform-server';
-import { IsPlatformServerInterceptor } from '@newbee/newbee/shared/data-access';
+import { NgUniversalInterceptor } from '@newbee/newbee/ng-universal/data-access';
 import { BASE_API_URL } from '@newbee/newbee/shared/util';
 import { baseApiUrl } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -19,7 +19,7 @@ import { AppModule } from './app.module';
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: IsPlatformServerInterceptor,
+      useClass: NgUniversalInterceptor,
       multi: true,
     },
   ],

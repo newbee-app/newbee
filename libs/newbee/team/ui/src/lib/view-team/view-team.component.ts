@@ -3,8 +3,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   DocSearchResultComponent,
   DropdownComponent,
+  MemberSearchResultComponent,
   QnaSearchResultComponent,
   ViewAllBtnComponent,
+  ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
@@ -25,6 +27,8 @@ import {
     CommonModule,
     DropdownComponent,
     ViewAllBtnComponent,
+    ViewAllCardBtnComponent,
+    MemberSearchResultComponent,
     DocSearchResultComponent,
     QnaSearchResultComponent,
   ],

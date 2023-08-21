@@ -130,6 +130,9 @@
       "@newbee/newbee/invite/feature": [
         "libs/newbee/invite/feature/src/index.ts"
       ],
+      "@newbee/newbee/ng-universal/data-access": [
+        "libs/newbee/ng-universal/data-access/src/index.ts"
+      ],
       "@newbee/newbee/org-member/data-access": [
         "libs/newbee/org-member/data-access/src/index.ts"
       ],
@@ -158,6 +161,7 @@
         "libs/newbee/search/feature/src/index.ts"
       ],
       "@newbee/newbee/search/ui": ["libs/newbee/search/ui/src/index.ts"],
+      "@newbee/newbee/search/util": ["libs/newbee/search/util/src/index.ts"],
       "@newbee/newbee/shared/data-access": [
         "libs/newbee/shared/data-access/src/index.ts"
       ],

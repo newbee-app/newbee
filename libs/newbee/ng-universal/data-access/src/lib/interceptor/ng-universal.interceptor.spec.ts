@@ -7,12 +7,14 @@ import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BASE_API_URL } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
-import { IsPlatformServerInterceptor } from './is-platform-server.interceptor';
+import { REQUEST } from '@nguniversal/express-engine/tokens';
+import { NgUniversalInterceptor } from './ng-universal.interceptor';
 
-describe('IsPlatformServerInterceptor', () => {
+describe('NgUniversalInterceptor', () => {
   let httpController: HttpTestingController;
   let http: HttpClient;
   const baseApiUrl = 'http://localhost:3333';
+  const testCookie = 'cookie';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +22,7 @@ describe('IsPlatformServerInterceptor', () => {
       providers: [
         {
           provide: HTTP_INTERCEPTORS,
-          useClass: IsPlatformServerInterceptor,
+          useClass: NgUniversalInterceptor,
           multi: true,
         },
         {
@@ -30,6 +32,10 @@ describe('IsPlatformServerInterceptor', () => {
         {
           provide: PLATFORM_ID,
           useValue: 'server',
+        },
+        {
+          provide: REQUEST,
+          useValue: { headers: { cookie: testCookie } },
         },
       ],
     });
@@ -43,7 +49,7 @@ describe('IsPlatformServerInterceptor', () => {
   });
 
   describe('intercept', () => {
-    it('should clone the request and prepend the base API URL to the URL', (done) => {
+    it('should clone the request, prepend the base API URL to the URL, and add the request cookie', (done) => {
       const testVal = 'testVal';
       http.get<string>(`/${Keyword.Api}/test`).subscribe({
         next: (val) => {
@@ -59,6 +65,9 @@ describe('IsPlatformServerInterceptor', () => {
 
       const req = httpController.expectOne(`${baseApiUrl}/${Keyword.Api}/test`);
       expect(req.request.method).toEqual('GET');
+
+      const headers = req.request.headers;
+      expect(headers.get('Cookie')).toEqual(testCookie);
 
       req.flush(testVal);
     });
