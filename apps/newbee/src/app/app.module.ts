@@ -13,6 +13,7 @@ import {
   NavbarComponent,
   StoreToastComponent,
 } from '@newbee/newbee/shared/feature';
+import { TemplateMarkerDirectiveModule } from '@newbee/newbee/shared/util';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
@@ -51,7 +52,8 @@ import { AppRoutingModule } from './routing';
     StoreRouterConnectingModule.forRoot(),
     extModules,
 
-    // component modules for `AppComponent`
+    // directive/component modules for `RootComponent`
+    TemplateMarkerDirectiveModule,
     NavbarComponent,
     ErrorScreenComponent,
     StoreToastComponent,
