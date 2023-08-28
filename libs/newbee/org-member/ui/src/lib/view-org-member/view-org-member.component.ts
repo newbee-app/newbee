@@ -10,7 +10,11 @@ import {
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
-import { SelectOption, ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  PhoneNumberPipeModule,
+  SelectOption,
+  ShortUrl,
+} from '@newbee/newbee/shared/util';
 import {
   compareOrgRoles,
   Keyword,
@@ -28,6 +32,7 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    PhoneNumberPipeModule,
     DropdownComponent,
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,

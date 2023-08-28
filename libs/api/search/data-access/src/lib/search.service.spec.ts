@@ -100,7 +100,9 @@ describe('SearchService', () => {
       await expect(
         service.query(testOrganizationEntity1, testBaseQueryDto1)
       ).resolves.toEqual({
+        total: testQueryResponse2.response.numFound,
         offset: testBaseQueryDto1.offset,
+        results: [],
         suggestion:
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });

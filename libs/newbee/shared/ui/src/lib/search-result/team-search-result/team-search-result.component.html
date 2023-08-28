@@ -1,9 +1,22 @@
-<button
-  type="button"
-  (click)="teamNavigate()"
-  class="flex-none card shadow-xl p-4 bg-base-200 w-56 truncate"
->
-  <h5 class="underline">{{ team.name }}</h5>
-  <p class="link link-info">{{ team.slug }}</p>
+<ng-template #teamContent>
+  <newbee-search-result-header
+    [searchResult]="team"
+    (orgNavigate)="orgNavigate.emit($event)"
+  ></newbee-search-result-header>
   <p *ngIf="teamRole" class="opacity-50">{{ teamRole }}</p>
-</button>
+</ng-template>
+
+<ng-container [ngSwitch]="format">
+  <button
+    *ngSwitchCase="'card'"
+    type="button"
+    (click)="teamNavigate()"
+    class="flex-none card shadow-xl p-4 bg-base-200 w-56 truncate"
+  >
+    <ng-container *ngTemplateOutlet="teamContent"></ng-container>
+  </button>
+
+  <ng-container *ngSwitchCase="'list'">
+    <ng-container *ngTemplateOutlet="teamContent"></ng-container>
+  </ng-container>
+</ng-container>

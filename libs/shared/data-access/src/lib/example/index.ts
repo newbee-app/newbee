@@ -8,6 +8,7 @@ import {
   testOrgMemberRelation1,
   testPublicKeyCredentialCreationOptions1,
   testQna1,
+  testQueryResult1,
   testRegistrationResponse1,
   testTeam1,
   testTeamMember1,
@@ -317,8 +318,8 @@ export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
  * Strictly for use in testing.
  */
 export const testBaseQueryResultDto1: BaseQueryResultDto = {
+  ...testQueryResult1,
   offset: testBaseQueryDto1.offset,
-  team: [testTeamQueryResult1],
 };
 
 /**

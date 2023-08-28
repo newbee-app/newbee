@@ -144,6 +144,13 @@
       <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
         orgMember.user.email
       }}</a>
+      <a
+        *ngIf="orgMember.user.phoneNumber"
+        [href]="'tel:' + orgMember.user.phoneNumber"
+        class="link link-info block"
+      >
+        {{ orgMember.user.phoneNumber | phoneNumber }}
+      </a>
       <p *ngIf="!editPending; else pendingDots" class="opacity-50">
         {{ orgMember.orgMember.role }}
       </p>
@@ -158,7 +165,7 @@
       totalTeams
     }}</a>
 
-    <div class="flex flex-row flex-nowrap gap-x-4 mt-6 pb-6 overflow-x-auto">
+    <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
       <newbee-team-search-result
         *ngFor="let team of orgMember.teams.sample"
         [team]="team.team"

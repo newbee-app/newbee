@@ -1,15 +1,46 @@
-<button
-  type="button"
-  (click)="orgMemberNavigate()"
-  class="flex-none card shadow-xl p-4 bg-base-200 w-56 truncate"
->
-  <h5 class="underline">{{ orgMember.user.displayName }}</h5>
-  <p>{{ orgMember.user.name }}</p>
-  <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
-    orgMember.user.email
-  }}</a>
-  <p class="opacity-50">
-    {{ orgMember.orgMember.role }}
-    <span *ngIf="teamRole"> | {{ teamRole }}</span>
-  </p>
-</button>
+<ng-container [ngSwitch]="format">
+  <button
+    *ngSwitchCase="'card'"
+    type="button"
+    (click)="orgMemberNavigate()"
+    class="flex-none card shadow-xl p-4 bg-base-200 w-56 truncate"
+  >
+    <newbee-search-result-header
+      [searchResult]="orgMember"
+      (orgNavigate)="orgNavigate.emit($event)"
+    ></newbee-search-result-header>
+    <p *ngIf="orgMember.user.displayName">{{ orgMember.user.name }}</p>
+    <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
+      orgMember.user.email
+    }}</a>
+    <a
+      *ngIf="orgMember.user.phoneNumber"
+      [href]="'tel:' + orgMember.user.phoneNumber"
+      class="link link-info"
+      >{{ orgMember.user.phoneNumber | phoneNumber }}</a
+    >
+    <p class="opacity-50">{{ permissionsLine }}</p>
+  </button>
+
+  <ng-container *ngSwitchCase="'list'">
+    <newbee-search-result-header
+      [searchResult]="orgMember"
+      (orgNavigate)="orgNavigate.emit($event)"
+    ></newbee-search-result-header>
+    <p *ngIf="orgMember.user.displayName">{{ orgMember.user.name }}</p>
+    <p>
+      <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
+        orgMember.user.email
+      }}</a
+      ><span *ngIf="orgMember.user.phoneNumber">
+        |
+        <a
+          [href]="'tel:' + orgMember.user.phoneNumber"
+          class="link link-info"
+          >{{ orgMember.user.phoneNumber | phoneNumber }}</a
+        ></span
+      >
+    </p>
+    <p class="opacity-50">{{ permissionsLine }}</p>
+  </ng-container>
+</ng-container>

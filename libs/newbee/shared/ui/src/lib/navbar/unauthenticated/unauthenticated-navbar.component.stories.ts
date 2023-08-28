@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { UnauthenticatedNavbarComponent } from './unauthenticated-navbar.component';
 
 export default {
-  title: 'UnauthenticatedNavbarComponent',
+  title: 'Navbar/UnauthenticatedNavbarComponent',
   component: UnauthenticatedNavbarComponent,
   argTypes: {
     navigateToLink: { action: 'navigateToLink' },

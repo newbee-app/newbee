@@ -1,10 +1,8 @@
 <div class="flex flex-col flex-nowrap gap-y-2">
-  <newbee-search-result-header
-    [post]="doc.doc"
-    [maintainer]="doc.maintainer"
-    [creator]="doc.creator"
+  <newbee-post-search-result-header
+    [searchResult]="doc"
     (orgNavigate)="orgNavigate.emit($event)"
-  ></newbee-search-result-header>
+  ></newbee-post-search-result-header>
 
-  <p>{{ doc.doc.docTxt }}</p>
+  <p>{{ doc.doc.docSnippet }}</p>
 </div>

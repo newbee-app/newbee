@@ -59,7 +59,7 @@ async function main(): Promise<void> {
     .option(
       '-z, --zookeeper <zookeeper>',
       `The location of Solr's Zookeeper instance`,
-      'localhost:9983'
+      'localhost:2181'
     )
     .action(download);
 
@@ -100,8 +100,10 @@ async function create(options: OptionValues): Promise<void> {
 
   // Related to field types
   const entryType = 'entry_type';
+  const orgRoleType = 'org_role_type';
   const solrEnumFieldType = 'solr.EnumFieldType';
   const entryEnumName = 'entry';
+  const orgRoleEnumName = 'org_role';
   const basicText = 'basic_text';
   const solrTextField = 'solr.TextField';
   const standard = 'standard';
@@ -120,6 +122,9 @@ async function create(options: OptionValues): Promise<void> {
   const slug = 'slug';
   const userName = 'user_name';
   const userDisplayName = 'user_display_name';
+  const userEmail = 'user_email';
+  const userPhoneNumber = 'user_phone_number';
+  const userOrgRole = 'org_role';
   const teamName = 'team_name';
   const team = 'team';
   const createdAt = 'created_at';
@@ -212,6 +217,15 @@ async function create(options: OptionValues): Promise<void> {
         docValues: true,
       },
 
+      // An enum describing possible roles for org members
+      {
+        name: orgRoleType,
+        class: solrEnumFieldType,
+        enumsConfig: enumsConfigXml,
+        enumName: orgRoleEnumName,
+        docValues: true,
+      },
+
       // A basic text field with minimal analysis done on it
       {
         name: basicText,
@@ -223,7 +237,7 @@ async function create(options: OptionValues): Promise<void> {
         },
       },
 
-      // An extension of the basic text field type that also applies a edge n-gram filter of size 2-10 for the index analyzer
+      // An extension of the basic text field type that also applies an edge n-gram filter of size 2-10 for the index analyzer
       {
         name: edgeNGramText,
         class: solrTextField,
@@ -280,8 +294,11 @@ async function create(options: OptionValues): Promise<void> {
       { name: slug, type: stringFieldType, required: true },
 
       // Applicable for user
+      { name: userEmail, type: stringFieldType },
       { name: userName, type: textGeneral, multiValued: false },
       { name: userDisplayName, type: textGeneral, multiValued: false },
+      { name: userPhoneNumber, type: stringFieldType },
+      { name: userOrgRole, type: orgRoleType },
 
       // Applicable for team
       { name: teamName, type: textGeneral, multiValued: false },
@@ -307,8 +324,10 @@ async function create(options: OptionValues): Promise<void> {
 
     // Create all of the needed copy fields
     'add-copy-field': [
+      { source: userEmail, dest: suggestCopyFields },
       { source: userName, dest: suggestCopyFields },
       { source: userDisplayName, dest: suggestCopyFields },
+      { source: userPhoneNumber, dest: suggestCopyFields },
       { source: teamName, dest: suggestCopyFields },
       { source: docTitle, dest: suggestCopyFields },
       { source: docTxt, dest: commonCopyFields },

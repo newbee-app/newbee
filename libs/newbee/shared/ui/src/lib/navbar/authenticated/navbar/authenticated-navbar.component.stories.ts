@@ -14,7 +14,7 @@ import { ClickWrapperComponent } from '../../../testing';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
 
 export default {
-  title: 'AuthenticatedNavbarComponent',
+  title: 'Navbar/AuthenticatedNavbarComponent',
   component: AuthenticatedNavbarComponent,
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { InternalServerErrorComponent } from './internal-server-error.component';
 
 export default {
-  title: 'InternalServerErrorComponent',
+  title: 'Error/InternalServerErrorComponent',
   component: InternalServerErrorComponent,
 } as Meta<InternalServerErrorComponent>;
 

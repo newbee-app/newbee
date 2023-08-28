@@ -2,6 +2,7 @@ import {
   testBaseQueryResultDto1,
   testBaseSuggestResultDto1,
 } from '@newbee/shared/data-access';
+import { testQueryResult1 } from '@newbee/shared/util';
 import { SearchActions } from './search.actions';
 import type { SearchState } from './search.reducer';
 import { initialSearchState, searchFeature } from './search.reducer';
@@ -29,7 +30,7 @@ describe('SearchReducer', () => {
         SearchActions.searchSuccess({ result: testBaseQueryResultDto1 })
       );
       expect(updatedState).toEqual({
-        searchResult: testBaseQueryResultDto1,
+        searchResult: testQueryResult1,
         suggestions: [],
       });
     });

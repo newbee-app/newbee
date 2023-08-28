@@ -6,4 +6,9 @@
     <value>team</value>
     <value>user</value>
   </enum>
+  <enum name="org_role">
+    <value>Org Member</value>
+    <value>Org Moderator</value>
+    <value>Org Owner</value>
+  </enum>
 </enumsConfig>

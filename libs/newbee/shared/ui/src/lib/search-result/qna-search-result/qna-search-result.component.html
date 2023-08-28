@@ -1,10 +1,8 @@
 <div class="flex flex-col flex-nowrap gap-y-2">
-  <newbee-search-result-header
-    [post]="qna.qna"
-    [maintainer]="qna.maintainer"
-    [creator]="qna.creator"
+  <newbee-post-search-result-header
+    [searchResult]="qna"
     (orgNavigate)="orgNavigate.emit($event)"
-  ></newbee-search-result-header>
+  ></newbee-post-search-result-header>
 
   <div class="flex flex-row flex-nowrap gap-x-2">
     <!-- arrow-right svg -->
@@ -23,6 +21,6 @@
       />
     </svg>
 
-    <p>{{ qna.qna.answerTxt }}</p>
+    <p>{{ qna.qna.answerSnippet }}</p>
   </div>
 </div>

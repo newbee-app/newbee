@@ -13,7 +13,7 @@ import { ClickWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
-  title: 'SearchableSelectComponent',
+  title: 'Form Control/SearchableSelectComponent',
   component: SearchableSelectComponent,
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),

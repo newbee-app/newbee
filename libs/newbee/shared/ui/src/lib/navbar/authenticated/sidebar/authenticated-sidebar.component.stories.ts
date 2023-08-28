@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { AuthenticatedSidebarComponent } from './authenticated-sidebar.component';
 
 export default {
-  title: 'AuthenticatedSidebarComponent',
+  title: 'Navbar/AuthenticatedSidebarComponent',
   component: AuthenticatedSidebarComponent,
   args: {
     organizations: [testOrganization1, testOrganization2],

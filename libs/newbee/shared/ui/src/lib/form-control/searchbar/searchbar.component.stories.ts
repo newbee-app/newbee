@@ -9,7 +9,7 @@ import { ClickWrapperComponent } from '../../testing';
 import { SearchbarComponent } from './searchbar.component';
 
 export default {
-  title: 'SearchbarComponent',
+  title: 'Form Control/SearchbarComponent',
   component: SearchbarComponent,
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),

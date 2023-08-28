@@ -1,11 +1,11 @@
-import { testQnaRelation1 } from '@newbee/shared/util';
+import { testQnaQueryResult1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { QnaSearchResultComponent } from './qna-search-result.component';
 
 export default {
-  title: 'QnaSearchResultComponent',
+  title: 'Search Result/QnaSearchResultComponent',
   component: QnaSearchResultComponent,
-  args: { qna: testQnaRelation1 },
+  args: { qna: testQnaQueryResult1 },
   argTypes: { orgNavigate: { action: 'orgNavigate' } },
 } as Meta<QnaSearchResultComponent>;
 

@@ -1,11 +1,11 @@
-import { testDocRelation1 } from '@newbee/shared/util';
+import { testDocQueryResult1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { DocSearchResultComponent } from './doc-search-result.component';
 
 export default {
-  title: 'DocSearchResultComponent',
+  title: 'Search Result/DocSearchResultComponent',
   component: DocSearchResultComponent,
-  args: { doc: testDocRelation1 },
+  args: { doc: testDocQueryResult1 },
   argTypes: { orgNavigate: { action: 'orgNavigate' } },
 } as Meta<DocSearchResultComponent>;
 

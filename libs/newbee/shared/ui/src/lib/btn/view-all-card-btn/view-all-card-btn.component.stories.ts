@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { ViewAllCardBtnComponent } from './view-all-card-btn.component';
 
 export default {
-  title: 'ViewAllCardBtnComponent',
+  title: 'Btn/ViewAllCardBtnComponent',
   component: ViewAllCardBtnComponent,
   argTypes: { clicked: { action: 'clicked' } },
 } as Meta<ViewAllCardBtnComponent>;

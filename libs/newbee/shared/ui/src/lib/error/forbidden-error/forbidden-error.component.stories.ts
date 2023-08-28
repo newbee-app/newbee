@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { ForbiddenErrorComponent } from './forbidden-error.component';
 
 export default {
-  title: 'ForbiddenErrorComponent',
+  title: 'Error/ForbiddenErrorComponent',
   component: ForbiddenErrorComponent,
 } as Meta<ForbiddenErrorComponent>;
 

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { ViewAllBtnComponent } from './view-all-btn.component';
 
 export default {
-  title: 'ViewAllBtnComponent',
+  title: 'Btn/ViewAllBtnComponent',
   component: ViewAllBtnComponent,
   parameters: { layout: 'centered' },
   argTypes: { clicked: { action: 'clicked' } },

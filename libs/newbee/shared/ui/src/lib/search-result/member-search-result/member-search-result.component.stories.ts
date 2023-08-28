@@ -1,12 +1,13 @@
-import { TeamRoleEnum, testOrgMemberRelation1 } from '@newbee/shared/util';
+import { TeamRoleEnum, testOrgMemberQueryResult1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { MemberSearchResultComponent } from './member-search-result.component';
 
 export default {
-  title: 'MemberSearchResultComponent',
+  title: 'Search Result/MemberSearchResultComponent',
   component: MemberSearchResultComponent,
   args: {
-    orgMember: testOrgMemberRelation1,
+    format: 'card',
+    orgMember: testOrgMemberQueryResult1,
     teamRole: TeamRoleEnum.Owner,
   },
   argTypes: {
@@ -16,6 +17,12 @@ export default {
 
 type Story = StoryObj<MemberSearchResultComponent>;
 
-export const Primary: Story = {};
+export const Card: Story = {};
 
-export const NoTeamRole: Story = { args: { teamRole: null } };
+export const CardNoTeamRole: Story = { args: { teamRole: null } };
+
+export const List: Story = { args: { format: 'list' } };
+
+export const ListNoTeamRole: Story = {
+  args: { format: 'list', teamRole: null },
+};
