@@ -2,16 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
-  DocSearchResultComponent,
   DropdownComponent,
-  QnaSearchResultComponent,
   SearchableSelectComponent,
-  TeamSearchResultComponent,
+  SearchResultComponent,
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   PhoneNumberPipeModule,
+  SearchResultFormat,
   SelectOption,
   ShortUrl,
 } from '@newbee/newbee/shared/util';
@@ -37,9 +36,7 @@ import {
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,
     SearchableSelectComponent,
-    TeamSearchResultComponent,
-    DocSearchResultComponent,
-    QnaSearchResultComponent,
+    SearchResultComponent,
   ],
   templateUrl: './view-org-member.component.html',
 })
@@ -53,6 +50,11 @@ export class ViewOrgMemberComponent implements OnInit {
    * All NewBee short URLs.
    */
   readonly shortUrl = ShortUrl;
+
+  /**
+   * All search result display formats.
+   */
+  readonly searchResultFormat = SearchResultFormat;
 
   /**
    * The select form control for changing the org member's role.

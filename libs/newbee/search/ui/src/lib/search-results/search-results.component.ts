@@ -9,8 +9,13 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchTab } from '@newbee/newbee/search/util';
-import { SearchbarComponent } from '@newbee/newbee/shared/ui';
-import { BaseQueryResultDto } from '@newbee/shared/data-access';
+import {
+  SearchbarComponent,
+  SearchResultComponent,
+} from '@newbee/newbee/shared/ui';
+import { SearchResultFormat } from '@newbee/newbee/shared/util';
+import type { QueryResult } from '@newbee/shared/util';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -19,7 +24,13 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'newbee-search-results',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SearchbarComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InfiniteScrollModule,
+    SearchbarComponent,
+    SearchResultComponent,
+  ],
   templateUrl: './search-results.component.html',
 })
 export class SearchResultsComponent implements OnInit, OnDestroy {
@@ -35,9 +46,8 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   /**
    * The search results themselves.
-   * TODO: can't be a BaseQueryResultDto bc that's in data-access, fix that.
    */
-  @Input() searchResults: BaseQueryResultDto | null = null;
+  @Input() searchResults: QueryResult | null = null;
 
   /**
    * The event emitter that tells the parent component when a search has been fired off.
@@ -55,6 +65,16 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Output() tabChange = new EventEmitter<SearchTab>();
 
   /**
+   * Where to navigate to, relative to the current org.
+   */
+  @Output() orgNavigate = new EventEmitter<string>();
+
+  /**
+   * Indicates that the user has scrolled to the bottom of the search results.
+   */
+  @Output() scrolled = new EventEmitter<void>();
+
+  /**
    * Emits to unsubscribe from all infinite observables.
    */
   private readonly unsubscribe$ = new Subject<void>();
@@ -63,6 +83,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * All of the possible values for a search tab.
    */
   readonly searchTab = SearchTab;
+
+  /**
+   * All search result display formats.
+   */
+  readonly searchResultFormat = SearchResultFormat;
 
   /**
    * The currently selected search tab value.

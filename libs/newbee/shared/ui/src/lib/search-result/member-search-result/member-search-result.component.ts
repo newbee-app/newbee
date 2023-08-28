@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PhoneNumberPipeModule, ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  PhoneNumberPipeModule,
+  SearchResultFormat,
+  ShortUrl,
+} from '@newbee/newbee/shared/util';
 import {
   TeamRoleEnum,
   userDisplayName,
@@ -26,7 +30,7 @@ export class MemberSearchResultComponent {
   /**
    * The format in which the search result should be shown.
    */
-  @Input() format: 'card' | 'list' = 'card';
+  @Input() format = SearchResultFormat.List;
 
   /**
    * Information about the org member to display.

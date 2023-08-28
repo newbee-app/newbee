@@ -8,7 +8,7 @@ import {
   resultIsQnaQueryResult,
   resultIsTeamQueryResult,
   userDisplayName,
-  type AllQueryResults,
+  type QueryResultType,
 } from '@newbee/shared/util';
 import {
   SearchResultTypeBtnComponent,
@@ -29,7 +29,7 @@ export class SearchResultHeaderComponent {
   /**
    * The search result to display.
    */
-  @Input() searchResult!: AllQueryResults;
+  @Input() searchResult!: QueryResultType;
 
   /**
    * Where to navigate to, relative to the org.
@@ -73,14 +73,14 @@ export class SearchResultHeaderComponent {
   headerClick(): void {
     if (resultIsOrgMemberQueryResult(this.searchResult)) {
       this.orgNavigate.emit(
-        `/${ShortUrl.Member}/${this.searchResult.orgMember.slug}`
+        `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`
       );
     } else if (resultIsTeamQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Team}/${this.searchResult.slug}`);
+      this.orgNavigate.emit(`${ShortUrl.Team}/${this.searchResult.slug}`);
     } else if (resultIsDocQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Doc}/${this.searchResult.doc.slug}`);
+      this.orgNavigate.emit(`${ShortUrl.Doc}/${this.searchResult.doc.slug}`);
     } else if (resultIsQnaQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Qna}/${this.searchResult.qna.slug}`);
+      this.orgNavigate.emit(`${ShortUrl.Qna}/${this.searchResult.qna.slug}`);
     }
   }
 }

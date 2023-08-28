@@ -10,13 +10,13 @@
       (orgNavigate)="orgNavigate.emit($event)"
     ></newbee-search-result-header>
     <p *ngIf="orgMember.user.displayName">{{ orgMember.user.name }}</p>
-    <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
+    <a [href]="'mailto:' + orgMember.user.email" class="link">{{
       orgMember.user.email
     }}</a>
     <a
       *ngIf="orgMember.user.phoneNumber"
       [href]="'tel:' + orgMember.user.phoneNumber"
-      class="link link-info"
+      class="link"
       >{{ orgMember.user.phoneNumber | phoneNumber }}</a
     >
     <p class="opacity-50">{{ permissionsLine }}</p>
@@ -29,16 +29,14 @@
     ></newbee-search-result-header>
     <p *ngIf="orgMember.user.displayName">{{ orgMember.user.name }}</p>
     <p>
-      <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
+      <a [href]="'mailto:' + orgMember.user.email" class="link">{{
         orgMember.user.email
       }}</a
       ><span *ngIf="orgMember.user.phoneNumber">
         |
-        <a
-          [href]="'tel:' + orgMember.user.phoneNumber"
-          class="link link-info"
-          >{{ orgMember.user.phoneNumber | phoneNumber }}</a
-        ></span
+        <a [href]="'tel:' + orgMember.user.phoneNumber" class="link">{{
+          orgMember.user.phoneNumber | phoneNumber
+        }}</a></span
       >
     </p>
     <p class="opacity-50">{{ permissionsLine }}</p>

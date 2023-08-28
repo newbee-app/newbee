@@ -166,12 +166,13 @@
     }}</a>
 
     <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
-      <newbee-team-search-result
+      <newbee-search-result
         *ngFor="let team of orgMember.teams.sample"
-        [team]="team.team"
+        [format]="searchResultFormat.Card"
+        [searchResult]="team.team"
         [teamRole]="team.teamMember.role"
         (orgNavigate)="orgNavigate.emit($event)"
-      ></newbee-team-search-result>
+      ></newbee-search-result>
 
       <newbee-view-all-card-btn
         (clicked)="memberNavigate.emit(shortUrl.Team)"
@@ -191,11 +192,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-qna-search-result
+        <newbee-search-result
           *ngFor="let qna of orgMember.createdQnas.sample"
-          [qna]="qna"
+          [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-qna-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -220,11 +221,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-qna-search-result
+        <newbee-search-result
           *ngFor="let qna of orgMember.maintainedQnas.sample"
-          [qna]="qna"
+          [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-qna-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -249,11 +250,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-doc-search-result
+        <newbee-search-result
           *ngFor="let doc of orgMember.createdDocs.sample"
-          [doc]="doc"
+          [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-doc-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -278,11 +279,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-doc-search-result
+        <newbee-search-result
           *ngFor="let doc of orgMember.maintainedDocs.sample"
-          [doc]="doc"
+          [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-doc-search-result>
+        ></newbee-search-result>
       </div>
 
       <div

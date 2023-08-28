@@ -1,44 +1,65 @@
-<div class="mt-close">
-  <form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
-    <newbee-searchbar
-      formControlName="searchbar"
-      [suggestions]="searchSuggestions"
-      (selectSuggestion)="selectSuggestion($event)"
-    ></newbee-searchbar>
-  </form>
+<div infiniteScroll (scrolled)="scrolled.emit()">
+  <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
+    <form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
+      <newbee-searchbar
+        formControlName="searchbar"
+        [suggestions]="searchSuggestions"
+        (selectSuggestion)="selectSuggestion($event)"
+      ></newbee-searchbar>
+    </form>
 
-  <div class="tabs mt-6">
-    <a
-      (click)="changeTab(searchTab.All)"
-      class="tab tab-bordered text-base"
-      [ngClass]="{ 'tab-active': selectedTab === searchTab.All }"
-      >All</a
-    >
-    <a
-      (click)="changeTab(searchTab.Qna)"
-      class="tab tab-bordered text-lg"
-      [ngClass]="{ 'tab-active': selectedTab === searchTab.Qna }"
-      >QnAs</a
-    >
-    <a
-      (click)="changeTab(searchTab.Doc)"
-      class="tab tab-bordered text-base"
-      [ngClass]="{ 'tab-active': selectedTab === searchTab.Doc }"
-      >Docs</a
-    >
-    <a
-      (click)="changeTab(searchTab.Team)"
-      class="tab tab-bordered text-base"
-      [ngClass]="{ 'tab-active': selectedTab === searchTab.Team }"
-      >Teams</a
-    >
-    <a
-      (click)="changeTab(searchTab.People)"
-      class="tab tab-bordered text-base"
-      [ngClass]="{ 'tab-active': selectedTab === searchTab.People }"
-      >People</a
-    >
+    <div class="tabs tabs-boxed mt-4 w-fit">
+      <a
+        (click)="changeTab(searchTab.All)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': selectedTab === searchTab.All }"
+        >All</a
+      >
+      <a
+        (click)="changeTab(searchTab.Qna)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': selectedTab === searchTab.Qna }"
+        >QnAs</a
+      >
+      <a
+        (click)="changeTab(searchTab.Doc)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': selectedTab === searchTab.Doc }"
+        >Docs</a
+      >
+      <a
+        (click)="changeTab(searchTab.Team)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': selectedTab === searchTab.Team }"
+        >Teams</a
+      >
+      <a
+        (click)="changeTab(searchTab.People)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': selectedTab === searchTab.People }"
+        >People</a
+      >
+    </div>
+
+    <div class="divider my-0"></div>
   </div>
 
-  <div class="divider"></div>
+  <ng-container *ngIf="searchResults">
+    <p class="text-sm opacity-50 mt-2 mb-6">
+      {{ searchResults.total }} results found
+    </p>
+
+    <div
+      *ngIf="searchResults.results.length"
+      class="flex flex-col flex-nowrap gap-y-8"
+    >
+      <newbee-search-result
+        *ngFor="let searchResult of searchResults.results"
+        [searchResult]="searchResult"
+        [format]="searchResultFormat.List"
+        (orgNavigate)="orgNavigate.emit($event)"
+      >
+      </newbee-search-result>
+    </div>
+  </ng-container>
 </div>

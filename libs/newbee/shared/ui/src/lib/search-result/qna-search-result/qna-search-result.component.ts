@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import type { QnaQueryResult } from '@newbee/shared/util';
+import { ShortUrl } from '@newbee/newbee/shared/util';
+import { Keyword, type QnaQueryResult } from '@newbee/shared/util';
 import { PostSearchResultHeaderComponent } from '../header';
 
 /**
@@ -22,4 +23,13 @@ export class QnaSearchResultComponent {
    * Where we should navigate to, relative to the current org.
    */
   @Output() orgNavigate = new EventEmitter<string>();
+
+  /**
+   * Navigate to the URL to edit the QnA.
+   */
+  editQna(): void {
+    this.orgNavigate.emit(
+      `${ShortUrl.Qna}/${this.qna.qna.slug}/${Keyword.Edit}`
+    );
+  }
 }

@@ -6,7 +6,7 @@ import {
   resultIsQnaQueryResult,
   resultIsTeamQueryResult,
   SolrEntryEnum,
-  type AllQueryResults,
+  type QueryResultType,
 } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
 import { TooltipComponent } from '../../tooltip';
@@ -24,7 +24,7 @@ export class SearchResultTypeBtnComponent {
   /**
    * The search result to create a button for.
    */
-  @Input() searchResult!: AllQueryResults;
+  @Input() searchResult!: QueryResultType;
 
   /**
    * Get the type of the search result as a string.

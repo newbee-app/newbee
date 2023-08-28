@@ -1,4 +1,4 @@
-import type { AllQueryResults, QueryResult } from '@newbee/shared/util';
+import type { QueryResult, QueryResultType } from '@newbee/shared/util';
 
 /**
  * The DTO sent from the backend to the frontend as a result of a query request.
@@ -17,7 +17,7 @@ export class BaseQueryResultDto implements QueryResult {
   /**
    * @inheritdoc
    */
-  results!: AllQueryResults[];
+  results!: QueryResultType[];
 
   /**
    * @inheritdoc

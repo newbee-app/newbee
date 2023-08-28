@@ -1,4 +1,4 @@
-import { testQnaQueryResult1 } from '@newbee/shared/util';
+import { testPost1, testQnaQueryResult1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { QnaSearchResultComponent } from './qna-search-result.component';
 
@@ -12,3 +12,12 @@ export default {
 type Story = StoryObj<QnaSearchResultComponent>;
 
 export const Primary: Story = {};
+
+export const NoAnswer: Story = {
+  args: {
+    qna: {
+      ...testQnaQueryResult1,
+      qna: { ...testPost1, questionSnippet: null, answerSnippet: null },
+    },
+  },
+};

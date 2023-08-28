@@ -4,13 +4,13 @@ import {
   testQnaQueryResult1,
   testTeamQueryResult1,
 } from '../../example';
-import { AllQueryResults } from '../../type';
+import type { QueryResultType } from '../../type';
 import {
   resultIsDocQueryResult,
   resultIsOrgMemberQueryResult,
   resultIsQnaQueryResult,
   resultIsTeamQueryResult,
-} from './search-result.type-guard.function';
+} from './query-result.type-guard.function';
 
 describe('search result type guards', () => {
   const allQueryResults = [
@@ -19,7 +19,7 @@ describe('search result type guards', () => {
     testDocQueryResult1,
     testQnaQueryResult1,
   ];
-  let allQueryResultsSet: Set<AllQueryResults>;
+  let allQueryResultsSet: Set<QueryResultType>;
 
   beforeEach(() => {
     allQueryResultsSet = new Set(allQueryResults);

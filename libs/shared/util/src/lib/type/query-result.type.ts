@@ -48,7 +48,7 @@ export type QnaQueryResult = Omit<QnaNoOrg, 'qna'> & {
 /**
  * A union type representing all possible query types.
  */
-export type AllQueryResults =
+export type QueryResultType =
   | OrgMemberQueryResult
   | TeamQueryResult
   | DocQueryResult

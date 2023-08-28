@@ -1,8 +1,8 @@
 import type {
-  AllQueryResults,
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,
+  QueryResultType,
   TeamQueryResult,
 } from '../../type';
 
@@ -13,7 +13,7 @@ import type {
  * @returns `true` if the query result is an `OrgMemberQueryResult`, `false` otherwise.
  */
 export function resultIsOrgMemberQueryResult(
-  queryResult: AllQueryResults
+  queryResult: QueryResultType
 ): queryResult is OrgMemberQueryResult {
   return 'orgMember' in queryResult && 'user' in queryResult;
 }
@@ -25,7 +25,7 @@ export function resultIsOrgMemberQueryResult(
  * @returns `true` if the query result is a `TeamQueryResult`, `false` otherwise.
  */
 export function resultIsTeamQueryResult(
-  queryResult: AllQueryResults
+  queryResult: QueryResultType
 ): queryResult is TeamQueryResult {
   return 'name' in queryResult && 'slug' in queryResult;
 }
@@ -37,7 +37,7 @@ export function resultIsTeamQueryResult(
  * @returns `true` if the query result is an `DocQueryResult`, `false` otherwise.
  */
 export function resultIsDocQueryResult(
-  queryResult: AllQueryResults
+  queryResult: QueryResultType
 ): queryResult is DocQueryResult {
   return 'doc' in queryResult;
 }
@@ -49,7 +49,7 @@ export function resultIsDocQueryResult(
  * @returns `true` if the query result is an `QnaQueryResult`, `false` otherwise.
  */
 export function resultIsQnaQueryResult(
-  queryResult: AllQueryResults
+  queryResult: QueryResultType
 ): queryResult is QnaQueryResult {
   return 'qna' in queryResult;
 }

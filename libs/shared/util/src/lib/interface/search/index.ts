@@ -1,4 +1,4 @@
-import { AllQueryResults } from '../../type';
+import type { QueryResultType } from '../../type';
 
 /**
  * Represents the response the frontend receives from the backend after submitting a search query.
@@ -18,7 +18,7 @@ export interface QueryResult {
   /**
    * The results of the query.
    */
-  results: AllQueryResults[];
+  results: QueryResultType[];
 
   /**
    * An alternative query the user might have meant, if the original query found little to no results.

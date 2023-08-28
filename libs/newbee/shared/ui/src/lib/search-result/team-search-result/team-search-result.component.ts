@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import { TeamRoleEnum, type TeamQueryResult } from '@newbee/shared/util';
 import { SearchResultTypeBtnComponent } from '../../btn';
 import { SearchResultHeaderComponent } from '../header';
@@ -22,7 +22,7 @@ export class TeamSearchResultComponent {
   /**
    * The format in which the search result should be shown.
    */
-  @Input() format: 'card' | 'list' = 'card';
+  @Input() format = SearchResultFormat.List;
 
   /**
    * The team to display.
