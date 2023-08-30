@@ -1,1 +1,1 @@
-export * from './lib/newbee-search-feature.module';
+export * from './lib/search.module';

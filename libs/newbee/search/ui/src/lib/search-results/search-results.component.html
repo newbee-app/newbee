@@ -4,6 +4,7 @@
       <newbee-searchbar
         formControlName="searchbar"
         [suggestions]="searchSuggestions"
+        [suggestPending]="suggestPending"
         (selectSuggestion)="selectSuggestion($event)"
       ></newbee-searchbar>
     </form>
@@ -12,36 +13,40 @@
       <a
         (click)="changeTab(searchTab.All)"
         class="tab text-base"
-        [ngClass]="{ 'tab-active': selectedTab === searchTab.All }"
+        [ngClass]="{ 'tab-active': tab === searchTab.All }"
         >All</a
       >
       <a
         (click)="changeTab(searchTab.Qna)"
         class="tab text-base"
-        [ngClass]="{ 'tab-active': selectedTab === searchTab.Qna }"
+        [ngClass]="{ 'tab-active': tab === searchTab.Qna }"
         >QnAs</a
       >
       <a
         (click)="changeTab(searchTab.Doc)"
         class="tab text-base"
-        [ngClass]="{ 'tab-active': selectedTab === searchTab.Doc }"
+        [ngClass]="{ 'tab-active': tab === searchTab.Doc }"
         >Docs</a
       >
       <a
         (click)="changeTab(searchTab.Team)"
         class="tab text-base"
-        [ngClass]="{ 'tab-active': selectedTab === searchTab.Team }"
+        [ngClass]="{ 'tab-active': tab === searchTab.Team }"
         >Teams</a
       >
       <a
         (click)="changeTab(searchTab.People)"
         class="tab text-base"
-        [ngClass]="{ 'tab-active': selectedTab === searchTab.People }"
+        [ngClass]="{ 'tab-active': tab === searchTab.People }"
         >People</a
       >
     </div>
 
     <div class="divider my-0"></div>
+  </div>
+
+  <div *ngIf="searchPending" class="flex justify-center mt-2">
+    <span class="loading loading-spinner"></span>
   </div>
 
   <ng-container *ngIf="searchResults">

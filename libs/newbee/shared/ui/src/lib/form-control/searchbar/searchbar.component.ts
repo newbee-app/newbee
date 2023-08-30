@@ -61,6 +61,11 @@ export class SearchbarComponent
   @Input() suggestions: string[] = [];
 
   /**
+   * Whether to display a loader to indicate suggestions are pending.
+   */
+  @Input() suggestPending = false;
+
+  /**
    * Emits if the user clicks on a suggestion.
    */
   @Output() selectSuggestion = new EventEmitter<string>();

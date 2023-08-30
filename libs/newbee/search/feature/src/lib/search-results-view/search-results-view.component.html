@@ -1,0 +1,13 @@
+<newbee-search-results
+  [initialSearchTerm]="searchTerm"
+  [tab]="tab"
+  (tabChange)="onTabChange($event)"
+  [searchSuggestions]="(searchSuggestions$ | async)!"
+  [searchResults]="searchResults"
+  [searchPending]="(searchPending$ | async)!"
+  [suggestPending]="(suggestPending$ | async)!"
+  (search)="onSearch($event)"
+  (searchbar)="onSearchbar($event)"
+  (orgNavigate)="onOrgNavigate($event)"
+  (scrolled)="onScrolled()"
+></newbee-search-results>

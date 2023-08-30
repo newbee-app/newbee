@@ -1,5 +1,6 @@
 import { Keyword, QueryResult } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
 
 /**
@@ -15,6 +16,16 @@ export interface SearchState {
    * The results of a suggest request.
    */
   suggestions: string[];
+
+  /**
+   * Whether the user is waiting for a search request.
+   */
+  pendingSearch: boolean;
+
+  /**
+   * Whether the user is waiting for a suggest request.
+   */
+  pendingSuggest: boolean;
 }
 
 /**
@@ -23,6 +34,8 @@ export interface SearchState {
 export const initialSearchState: SearchState = {
   searchResult: null,
   suggestions: [],
+  pendingSearch: false,
+  pendingSuggest: false,
 };
 
 /**
@@ -33,11 +46,26 @@ export const searchFeature = createFeature({
   reducer: createReducer(
     initialSearchState,
     on(
+      SearchActions.search,
+      (state): SearchState => ({
+        ...state,
+        searchResult: null,
+        pendingSearch: true,
+      })
+    ),
+    on(
       SearchActions.searchSuccess,
       (state, { result }): SearchState => ({
         ...state,
-        suggestions: [],
         searchResult: result,
+        pendingSearch: false,
+      })
+    ),
+    on(
+      SearchActions.suggest,
+      (state): SearchState => ({
+        ...state,
+        pendingSuggest: true,
       })
     ),
     on(SearchActions.suggestSuccess, (state, { result }): SearchState => {
@@ -45,7 +73,9 @@ export const searchFeature = createFeature({
       return {
         ...state,
         suggestions,
+        pendingSuggest: false,
       };
-    })
+    }),
+    on(RouterActions.routerRequest, (): SearchState => initialSearchState)
   ),
 });

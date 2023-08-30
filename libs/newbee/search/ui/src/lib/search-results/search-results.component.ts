@@ -40,6 +40,16 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Input() initialSearchTerm = '';
 
   /**
+   * The currently selected search tab value.
+   */
+  @Input() tab = SearchTab.All;
+
+  /**
+   * The event emitter that tells the parent component when the user has changed search tabs, so the results can be filtered.
+   */
+  @Output() tabChange = new EventEmitter<SearchTab>();
+
+  /**
    * Suggestions for the searchbar based on its current value.
    */
   @Input() searchSuggestions: string[] = [];
@@ -50,6 +60,16 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Input() searchResults: QueryResult | null = null;
 
   /**
+   * Whether to display a loader to indicate a search is occurring.
+   */
+  @Input() searchPending = false;
+
+  /**
+   * Whether to display a loader to indicate suggestions are being generated.
+   */
+  @Input() suggestPending = false;
+
+  /**
    * The event emitter that tells the parent component when a search has been fired off.
    */
   @Output() search = new EventEmitter<string>();
@@ -58,11 +78,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * The event emitter that tells the parent component when the user has typed into the searchbar, so suggestions can be fetched.
    */
   @Output() searchbar = new EventEmitter<string>();
-
-  /**
-   * The event emitter that tells the parent component when the user has changed search tabs, so the results can be filtered.
-   */
-  @Output() tabChange = new EventEmitter<SearchTab>();
 
   /**
    * Where to navigate to, relative to the current org.
@@ -88,11 +103,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * All search result display formats.
    */
   readonly searchResultFormat = SearchResultFormat;
-
-  /**
-   * The currently selected search tab value.
-   */
-  selectedTab = SearchTab.All;
 
   /**
    * The search term coming from the searchbar.
@@ -135,11 +145,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * @param tab The new value for the search tab.
    */
   changeTab(tab: SearchTab): void {
-    if (this.selectedTab === tab) {
+    if (this.tab === tab) {
       return;
     }
 
-    this.selectedTab = tab;
+    this.tab = tab;
     this.tabChange.emit(tab);
   }
 

@@ -25,5 +25,5 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
    */
   @IsOptional()
   @IsEnum(SolrEntryEnum, { message: typeIsEnum })
-  type?: SolrEntryEnum;
+  type: SolrEntryEnum | null = null;
 }

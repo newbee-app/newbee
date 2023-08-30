@@ -303,6 +303,7 @@ export const testBaseSuggestDto1: BaseSuggestDto = {
 export const testBaseQueryDto1: BaseQueryDto = {
   ...testBaseSuggestDto1,
   offset: 0,
+  type: null,
 };
 
 /**

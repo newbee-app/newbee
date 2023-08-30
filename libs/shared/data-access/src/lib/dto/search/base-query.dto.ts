@@ -13,7 +13,7 @@ export class BaseQueryDto extends BaseSuggestDto {
 
   /**
    * The type of entry to look for.
-   * Leave undefined to search in all.
+   * Specify null to search in all.
    */
-  type?: SolrEntryEnum;
+  type: SolrEntryEnum | null = null;
 }

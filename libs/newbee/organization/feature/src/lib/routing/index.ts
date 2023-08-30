@@ -41,6 +41,13 @@ const routes: Routes = [
         },
       },
       {
+        path: Keyword.Search,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/search/feature');
+          return m.SearchModule;
+        },
+      },
+      {
         path: Keyword.Edit,
         component: OrgEditComponent,
         canActivate: [isOrgAdminGuard],

@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseQueryDto, BaseSuggestDto } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 /**
  * The smart UI for the organization home screen.
@@ -14,46 +14,37 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'newbee-org-home',
   templateUrl: './org-home.component.html',
 })
-export class OrgHomeComponent implements OnInit, OnDestroy {
+export class OrgHomeComponent {
   /**
-   * Represents the searchbar's current value, for use in generating suggestions.
+   * Whether the search action is pending.
    */
-  readonly searchTerm$ = new Subject<string>();
+  searchPending$ = this.store.select(searchFeature.selectPendingSearch);
+
+  /**
+   * Whether the suggest action is pending.
+   */
+  suggestPending$ = this.store.select(searchFeature.selectPendingSuggest);
 
   /**
    * Suggestions based on the user's search term.
    */
   suggestions$ = this.store.select(searchFeature.selectSuggestions);
 
-  constructor(private readonly store: Store) {}
-
-  /**
-   * Set up deboucing on the searchbar to reasonably limit requests to the API.
-   */
-  ngOnInit(): void {
-    this.searchTerm$.pipe(debounceTime(300), distinctUntilChanged()).subscribe({
-      next: (searchTerm: string): void => {
-        const suggestDto: BaseSuggestDto = { query: searchTerm };
-        this.store.dispatch(SearchActions.suggest({ query: suggestDto }));
-      },
-    });
-  }
-
-  /**
-   * Unsubscribe from all infinite observables.
-   */
-  ngOnDestroy(): void {
-    this.searchTerm$.complete();
-  }
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) {}
 
   /**
    * When the dumb UI emits a search event, send a search action with the value of the search term.
    *
    * @param searchTerm The value of the search term.
    */
-  search(searchTerm: string): void {
-    const queryDto: BaseQueryDto = { query: searchTerm, offset: 0 };
-    this.store.dispatch(SearchActions.search({ query: queryDto }));
+  async onSearch(searchTerm: string): Promise<void> {
+    await this.router.navigate([`${Keyword.Search}/${searchTerm}`], {
+      relativeTo: this.route,
+    });
   }
 
   /**
@@ -61,7 +52,9 @@ export class OrgHomeComponent implements OnInit, OnDestroy {
    *
    * @param searchTerm The value of the searchbar.
    */
-  searchbar(searchTerm: string): void {
-    this.searchTerm$.next(searchTerm);
+  onSearchbar(searchTerm: string): void {
+    this.store.dispatch(
+      SearchActions.suggest({ query: { query: searchTerm } })
+    );
   }
 }

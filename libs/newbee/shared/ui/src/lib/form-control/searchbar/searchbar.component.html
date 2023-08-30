@@ -60,9 +60,13 @@
 
   <div
     dropdown
-    *ngIf="suggestions.length"
+    *ngIf="suggestPending || suggestions.length"
     class="flex flex-col flex-nowrap overflow-y-auto"
   >
+    <button disabled *ngIf="suggestPending" type="button" class="btn btn-ghost">
+      <span class="loading loading-dots"></span>
+    </button>
+
     <button
       type="button"
       *ngFor="let suggestion of suggestions"

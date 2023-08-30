@@ -1,3 +1,4 @@
+import { SearchTab } from '@newbee/newbee/search/util';
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   testDocQueryResult1,
@@ -25,6 +26,7 @@ export default {
   ],
   args: {
     initialSearchTerm: '',
+    tab: SearchTab.All,
     searchSuggestions: [],
     searchResults: {
       ...testQueryResult1,
@@ -40,11 +42,13 @@ export default {
         testQnaQueryResult1,
       ],
     },
+    searchPending: false,
+    suggestPending: false,
   },
   argTypes: {
+    tabChange: { action: 'tabChange' },
     search: { action: 'search' },
     searchbar: { action: 'searchbar' },
-    tabChange: { action: 'tabChange' },
     orgNavigate: { action: 'orgNavigate' },
     scrolled: { action: 'scrolled' },
   },
@@ -64,3 +68,9 @@ export const Suggestions: Story = {
     searchSuggestions: ['searching this', 'searching that'],
   },
 };
+
+export const SearchPending: Story = {
+  args: { searchResults: null, searchPending: true },
+};
+
+export const SuggestPending: Story = { args: { suggestPending: true } };

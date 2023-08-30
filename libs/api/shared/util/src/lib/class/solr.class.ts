@@ -2,6 +2,9 @@ import { OrgRoleEnum, SolrEntryEnum } from '@newbee/shared/util';
 import type { AddDocParams, DocInput } from '@newbee/solr-cli';
 import type { SolrDocFields } from '../interface';
 
+/**
+ * A class compatible with an org member Solr doc.
+ */
 export class OrgMemberDocParams implements SolrDocFields, AddDocParams {
   readonly entry_type = SolrEntryEnum.User;
 
@@ -12,12 +15,15 @@ export class OrgMemberDocParams implements SolrDocFields, AddDocParams {
     readonly user_name: string,
     readonly user_display_name: string | null,
     readonly user_phone_number: string | null,
-    readonly role: OrgRoleEnum
+    readonly org_role: OrgRoleEnum
   ) {}
 
   [docFields: string]: DocInput;
 }
 
+/**
+ * A class compatible with a team Solr doc.
+ */
 export class TeamDocParams implements SolrDocFields, AddDocParams {
   readonly entry_type = SolrEntryEnum.Team;
 
@@ -30,6 +36,9 @@ export class TeamDocParams implements SolrDocFields, AddDocParams {
   [docFields: string]: DocInput;
 }
 
+/**
+ * A class compatible with a doc Solr doc.
+ */
 export class DocDocParams implements SolrDocFields, AddDocParams {
   readonly entry_type = SolrEntryEnum.Doc;
 
@@ -50,6 +59,9 @@ export class DocDocParams implements SolrDocFields, AddDocParams {
   [docFields: string]: DocInput;
 }
 
+/**
+ * A class compatible with a qna Solr doc.
+ */
 export class QnaDocParams implements SolrDocFields, AddDocParams {
   readonly entry_type = SolrEntryEnum.Qna;
 
