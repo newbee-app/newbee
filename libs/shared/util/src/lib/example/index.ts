@@ -318,6 +318,7 @@ export const testQueryResult1: QueryResult = {
   total: 1,
   offset: 0,
   results: [testTeamQueryResult1],
+  suggestion: null,
 };
 
 /**

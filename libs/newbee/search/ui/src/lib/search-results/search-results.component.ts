@@ -65,11 +65,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Input() searchPending = false;
 
   /**
-   * Whether to display a loader to indicate suggestions are being generated.
-   */
-  @Input() suggestPending = false;
-
-  /**
    * The event emitter that tells the parent component when a search has been fired off.
    */
   @Output() search = new EventEmitter<string>();
@@ -122,11 +117,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (value) => {
-          if (!value) {
-            return;
-          }
-
-          this.searchbar.emit(value);
+          this.searchbar.emit(value ?? '');
         },
       });
   }
@@ -137,6 +128,19 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  /**
+   * The number of results that were found, expressed as a string.
+   */
+  get resultsFound(): string {
+    if (!this.searchResults) {
+      return '';
+    }
+
+    return `${this.searchResults.total} ${
+      this.searchResults.total === 1 ? 'result' : 'results'
+    } found`;
   }
 
   /**

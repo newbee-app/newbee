@@ -4,7 +4,6 @@
       <newbee-searchbar
         formControlName="searchbar"
         [suggestions]="searchSuggestions"
-        [suggestPending]="suggestPending"
         (selectSuggestion)="selectSuggestion($event)"
       ></newbee-searchbar>
     </form>
@@ -50,13 +49,22 @@
   </div>
 
   <ng-container *ngIf="searchResults">
-    <p class="text-sm opacity-50 mt-2 mb-6">
-      {{ searchResults.total }} results found
+    <p class="text-sm opacity-50 mt-2">
+      {{ resultsFound }}
+    </p>
+
+    <p *ngIf="searchResults.suggestion" class="text-error mt-2">
+      Did you mean
+      <a
+        (click)="selectSuggestion(searchResults.suggestion)"
+        class="link link-info"
+        >{{ searchResults.suggestion }}</a
+      >
     </p>
 
     <div
       *ngIf="searchResults.results.length"
-      class="flex flex-col flex-nowrap gap-y-8"
+      class="flex flex-col flex-nowrap gap-y-8 mt-6"
     >
       <newbee-search-result
         *ngFor="let searchResult of searchResults.results"

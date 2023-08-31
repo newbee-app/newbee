@@ -21,11 +21,6 @@ export class OrgHomeComponent {
   searchPending$ = this.store.select(searchFeature.selectPendingSearch);
 
   /**
-   * Whether the suggest action is pending.
-   */
-  suggestPending$ = this.store.select(searchFeature.selectPendingSuggest);
-
-  /**
    * Suggestions based on the user's search term.
    */
   suggestions$ = this.store.select(searchFeature.selectSuggestions);

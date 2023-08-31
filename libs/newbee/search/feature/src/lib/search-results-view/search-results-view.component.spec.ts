@@ -120,7 +120,7 @@ describe('SearchResultsViewComponent', () => {
     it('should navigate relative to org', async () => {
       await component.onOrgNavigate('test');
       expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../..', 'test'], {
+      expect(router.navigate).toBeCalledWith(['../../test'], {
         relativeTo: route,
       });
     });
@@ -143,7 +143,7 @@ describe('SearchResultsViewComponent', () => {
       component.onScrolled();
       expect(store.dispatch).toBeCalledWith(
         SearchActions.search({
-          query: { offset: 9, type: null, query: testSearchTerm },
+          query: { offset: 9, query: testSearchTerm },
         })
       );
     });

@@ -22,9 +22,7 @@ export const searchGuard: CanActivateFn = (
   const store = inject(Store);
 
   const query = route.paramMap.get(Keyword.Search) ?? '';
-  store.dispatch(
-    SearchActions.search({ query: { offset: 0, type: null, query } })
-  );
+  store.dispatch(SearchActions.search({ query: { offset: 0, query } }));
   store.dispatch(SearchActions.suggest({ query: { query } }));
 
   return combineLatest([

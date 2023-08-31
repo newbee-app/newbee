@@ -27,11 +27,6 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
   @Input() searchPending = false;
 
   /**
-   * Whether to display the spinner on the searchbar suggestions.
-   */
-  @Input() suggestPending = false;
-
-  /**
    * Suggestions based on the user's search term.
    */
   @Input() suggestions: string[] = [];
@@ -66,11 +61,7 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (value) => {
-          if (!value) {
-            return;
-          }
-
-          this.searchbar.emit(value);
+          this.searchbar.emit(value ?? '');
         },
       });
   }

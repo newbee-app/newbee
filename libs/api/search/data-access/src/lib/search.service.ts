@@ -38,12 +38,12 @@ export class SearchService {
   /**
    * The left portion of what to surround query matches with.
    */
-  private readonly leftSurround = '<b>';
+  private readonly leftSurround = '<strong>';
 
   /**
    * The right portion of what to surround query matches with.
    */
-  private readonly rightSurround = '</b>';
+  private readonly rightSurround = '</strong>';
 
   constructor(private readonly solrCli: SolrCli) {}
 
@@ -138,7 +138,7 @@ export class SearchService {
     queryDto: QueryDto
   ): Promise<BaseQueryResultDto> {
     const { query, offset } = queryDto;
-    const result: BaseQueryResultDto = { offset, total: 0, results: [] };
+    const result = new BaseQueryResultDto(offset);
 
     // this should never happen, but leave it for safety
     if (!query) {

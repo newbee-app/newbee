@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   apiVersion,
@@ -38,9 +38,10 @@ export class SearchService {
    * @returns An observable containing the results of the search.
    */
   search(query: BaseQueryDto, orgSlug: string): Observable<BaseQueryResultDto> {
-    return this.http.post<BaseQueryResultDto>(
+    const params = new HttpParams({ fromObject: { ...query } });
+    return this.http.get<BaseQueryResultDto>(
       SearchService.baseApiUrl(orgSlug),
-      query
+      { params }
     );
   }
 
@@ -56,9 +57,10 @@ export class SearchService {
     query: BaseSuggestDto,
     orgSlug: string
   ): Observable<BaseSuggestResultDto> {
-    return this.http.post<BaseSuggestResultDto>(
+    const params = new HttpParams({ fromObject: { ...query } });
+    return this.http.get<BaseSuggestResultDto>(
       `${SearchService.baseApiUrl(orgSlug)}/${Keyword.Suggest}`,
-      query
+      { params }
     );
   }
 }

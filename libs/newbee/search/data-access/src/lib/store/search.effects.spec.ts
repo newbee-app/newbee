@@ -5,6 +5,7 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
+  BaseQueryResultDto,
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
@@ -58,7 +59,7 @@ describe('SearchEffects', () => {
   });
 
   describe('search$', () => {
-    it('should fire searchSuccess if successful', () => {
+    it('should fire searchSuccess and contact API if successful', () => {
       actions$ = hot('a', {
         a: SearchActions.search({ query: testBaseQueryDto1 }),
       });
@@ -72,6 +73,19 @@ describe('SearchEffects', () => {
           testBaseQueryDto1,
           testOrganization1.slug
         );
+      });
+    });
+
+    it('should fire searchSuccess and not contact API if query is empty', () => {
+      actions$ = hot('a', {
+        a: SearchActions.search({ query: { query: '', offset: 0 } }),
+      });
+      const expected$ = hot('a', {
+        a: SearchActions.searchSuccess({ result: new BaseQueryResultDto(0) }),
+      });
+      expect(effects.search$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).not.toBeCalled();
       });
     });
 
@@ -89,7 +103,7 @@ describe('SearchEffects', () => {
   });
 
   describe('suggest$', () => {
-    it('should fire suggestSuccess if successful', () => {
+    it('should fire suggestSuccess and contact API if successful', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: testBaseSuggestDto1 }),
       });
@@ -103,6 +117,19 @@ describe('SearchEffects', () => {
           testBaseSuggestDto1,
           testOrganization1.slug
         );
+      });
+    });
+
+    it('should fire suggestSuccess and not contact API if query is empty', () => {
+      actions$ = hot('a', {
+        a: SearchActions.suggest({ query: { query: '' } }),
+      });
+      const expected$ = hot('a', {
+        a: SearchActions.suggestSuccess({ result: { suggestions: [] } }),
+      });
+      expect(effects.suggest$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.suggest).not.toBeCalled();
       });
     });
 

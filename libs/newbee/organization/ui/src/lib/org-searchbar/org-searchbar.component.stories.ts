@@ -18,7 +18,6 @@ export default {
   ],
   args: {
     searchPending: false,
-    suggestPending: false,
   },
   argTypes: {
     search: { action: 'search' },
@@ -31,5 +30,3 @@ type Story = StoryObj<OrgSearchbarComponent>;
 export const Primary: Story = {};
 
 export const SearchPending: Story = { args: { searchPending: true } };
-
-export const SuggestPending: Story = { args: { suggestPending: true } };

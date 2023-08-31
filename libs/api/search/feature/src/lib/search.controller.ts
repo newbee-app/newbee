@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Controller, Get, Logger, Query } from '@nestjs/common';
 import {
   QueryDto,
   SearchService,
@@ -35,10 +35,10 @@ export class SearchController {
    * @returns The results of the search.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post()
+  @Get()
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async search(
-    @Body() queryDto: QueryDto,
+    @Query() queryDto: QueryDto,
     @Organization() organization: OrganizationEntity
   ): Promise<BaseQueryResultDto> {
     this.logger.log(
@@ -63,10 +63,10 @@ export class SearchController {
    * @returns The suggestions.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Post(Keyword.Suggest)
+  @Get(Keyword.Suggest)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async suggest(
-    @Body() suggestDto: SuggestDto,
+    @Query() suggestDto: SuggestDto,
     @Organization() organization: OrganizationEntity
   ): Promise<BaseSuggestResultDto> {
     this.logger.log(

@@ -21,11 +21,6 @@ export interface SearchState {
    * Whether the user is waiting for a search request.
    */
   pendingSearch: boolean;
-
-  /**
-   * Whether the user is waiting for a suggest request.
-   */
-  pendingSuggest: boolean;
 }
 
 /**
@@ -35,7 +30,6 @@ export const initialSearchState: SearchState = {
   searchResult: null,
   suggestions: [],
   pendingSearch: false,
-  pendingSuggest: false,
 };
 
 /**
@@ -61,19 +55,11 @@ export const searchFeature = createFeature({
         pendingSearch: false,
       })
     ),
-    on(
-      SearchActions.suggest,
-      (state): SearchState => ({
-        ...state,
-        pendingSuggest: true,
-      })
-    ),
     on(SearchActions.suggestSuccess, (state, { result }): SearchState => {
       const { suggestions } = result;
       return {
         ...state,
         suggestions,
-        pendingSuggest: false,
       };
     }),
     on(RouterActions.routerRequest, (): SearchState => initialSearchState)

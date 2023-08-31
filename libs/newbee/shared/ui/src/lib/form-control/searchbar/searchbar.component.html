@@ -1,4 +1,9 @@
-<newbee-dropdown placement="bottom" [offset]="5" expandStrategy="expand">
+<newbee-dropdown
+  placement="bottom"
+  [offset]="5"
+  expandStrategy="expand"
+  [(expanded)]="suggestionsExpanded"
+>
   <div label class="join w-full">
     <!-- magnifying-glass svg -->
     <button
@@ -58,21 +63,17 @@
     </button>
   </div>
 
-  <div
+  <ul
     dropdown
-    *ngIf="suggestPending || suggestions.length"
-    class="flex flex-col flex-nowrap overflow-y-auto"
+    *ngIf="suggestions.length"
+    class="menu flex flex-col flex-nowrap overflow-y-auto"
   >
-    <button disabled *ngIf="suggestPending" type="button" class="btn btn-ghost">
-      <span class="loading loading-dots"></span>
-    </button>
-
-    <button
-      type="button"
-      *ngFor="let suggestion of suggestions"
-      [innerHTML]="suggestion"
-      (click)="selectSuggestion.emit(suggestion)"
-      class="btn btn-ghost justify-start text-left normal-case font-normal"
-    ></button>
-  </div>
+    <li *ngFor="let suggestion of suggestions">
+      <a
+        [innerHTML]="suggestion"
+        (click)="selectSuggestion.emit(stripHtmlTags(suggestion))"
+        class="flex gap-x-0"
+      ></a>
+    </li>
+  </ul>
 </newbee-dropdown>

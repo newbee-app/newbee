@@ -14,11 +14,6 @@ const routes: Routes = [
     title: searchTitleResolver,
     canActivate: [searchGuard],
   },
-  {
-    path: '',
-    redirectTo: '..',
-    pathMatch: 'full',
-  },
 ];
 
 @NgModule({

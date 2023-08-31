@@ -92,7 +92,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * Shrinks the dropdown if the user presses the `esc` key.
    */
-  @HostListener('keydown.escape')
+  @HostListener('keyup.escape')
   escapeEvent(): void {
     this.shrink();
   }

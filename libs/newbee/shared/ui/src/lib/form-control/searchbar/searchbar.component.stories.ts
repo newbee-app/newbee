@@ -22,7 +22,6 @@ export default {
     includeSearchSymbol: true,
     includeClearSymbol: true,
     suggestions: [],
-    suggestPending: false,
   },
   argTypes: {
     selectSuggestion: { action: 'selectSuggestion' },
@@ -35,12 +34,6 @@ export const Primary: Story = {};
 
 export const Suggestions: Story = {
   args: { suggestions: range(10).map((num) => `suggestion ${num}`) },
-};
-
-export const SuggestPending: Story = { args: { suggestPending: true } };
-
-export const SuggestionsAndPending: Story = {
-  args: { ...Suggestions.args, ...SuggestPending.args },
 };
 
 export const NoPlaceholder: Story = {

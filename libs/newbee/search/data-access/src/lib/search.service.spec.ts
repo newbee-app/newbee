@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -40,7 +41,7 @@ describe('SearchService', () => {
   });
 
   describe('search', () => {
-    it('should send out a post request', (done) => {
+    it('should send out a get request', (done) => {
       service.search(testBaseQueryDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
@@ -53,18 +54,20 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
+      const params = new HttpParams({ fromObject: { ...testBaseQueryDto1 } });
       const req = httpController.expectOne(
-        SearchService.baseApiUrl(testOrganization1.slug)
+        `${SearchService.baseApiUrl(
+          testOrganization1.slug
+        )}?${params.toString()}`
       );
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseQueryDto1);
+      expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseQueryResultDto1);
     });
   });
 
   describe('suggest', () => {
-    it('should send out a post request', (done) => {
+    it('should send out a get request', (done) => {
       service.suggest(testBaseSuggestDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
@@ -77,11 +80,13 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
+      const params = new HttpParams({ fromObject: { ...testBaseSuggestDto1 } });
       const req = httpController.expectOne(
-        `${SearchService.baseApiUrl(testOrganization1.slug)}/${Keyword.Suggest}`
+        `${SearchService.baseApiUrl(testOrganization1.slug)}/${
+          Keyword.Suggest
+        }?${params.toString()}`
       );
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseSuggestDto1);
+      expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseSuggestResultDto1);
     });

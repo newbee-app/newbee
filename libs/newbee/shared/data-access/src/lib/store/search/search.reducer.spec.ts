@@ -13,10 +13,6 @@ describe('SearchReducer', () => {
     ...initialSearchState,
     pendingSearch: true,
   };
-  const stateAfterSuggest: SearchState = {
-    ...initialSearchState,
-    pendingSuggest: true,
-  };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
     suggestions: testBaseSuggestResultDto1.suggestions,
@@ -29,14 +25,6 @@ describe('SearchReducer', () => {
         SearchActions.search
       );
       expect(updatedState).toEqual(stateAfterSearch);
-    });
-
-    it('should update state for suggest', () => {
-      const updatedState = searchFeature.reducer(
-        initialSearchState,
-        SearchActions.suggest
-      );
-      expect(updatedState).toEqual(stateAfterSuggest);
     });
   });
 
@@ -73,12 +61,6 @@ describe('SearchReducer', () => {
   it('should udpate state for routerRequest', () => {
     let updatedState = searchFeature.reducer(
       stateAfterSearch,
-      RouterActions.routerRequest
-    );
-    expect(updatedState).toEqual(initialSearchState);
-
-    updatedState = searchFeature.reducer(
-      stateAfterSuggest,
       RouterActions.routerRequest
     );
     expect(updatedState).toEqual(initialSearchState);

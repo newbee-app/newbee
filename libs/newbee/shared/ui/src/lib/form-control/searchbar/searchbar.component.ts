@@ -17,6 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ignoreMouseEvent } from '@newbee/newbee/shared/util';
+import { stripHtmlTags } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 import { DropdownComponent } from '../../dropdown';
 
@@ -61,11 +62,6 @@ export class SearchbarComponent
   @Input() suggestions: string[] = [];
 
   /**
-   * Whether to display a loader to indicate suggestions are pending.
-   */
-  @Input() suggestPending = false;
-
-  /**
    * Emits if the user clicks on a suggestion.
    */
   @Output() selectSuggestion = new EventEmitter<string>();
@@ -81,9 +77,19 @@ export class SearchbarComponent
   searchbar = new FormControl('');
 
   /**
+   * Whether the searchbar is expanded to display suggestions.
+   */
+  suggestionsExpanded = false;
+
+  /**
    * Call the method to ignore a fed-in mouse event.
    */
-  ignoreMouseEvent = ignoreMouseEvent;
+  readonly ignoreMouseEvent = ignoreMouseEvent;
+
+  /**
+   * Call to strip HTML tags from a string.
+   */
+  readonly stripHtmlTags = stripHtmlTags;
 
   /**
    * Used to unsubscribe from infinite observables.
@@ -124,9 +130,18 @@ export class SearchbarComponent
   /**
    * When `esc` is pressed, blur the input.
    */
-  @HostListener('keydown.escape')
+  @HostListener('keyup.escape')
   escapeEvent(): void {
     this.searchbarInput.nativeElement.blur();
+  }
+
+  /**
+   * When `enter` is pressed, blur the input and minimize the suggestions.
+   */
+  @HostListener('keyup.enter')
+  enterEvent(): void {
+    this.searchbarInput.nativeElement.blur();
+    this.suggestionsExpanded = false;
   }
 
   /**

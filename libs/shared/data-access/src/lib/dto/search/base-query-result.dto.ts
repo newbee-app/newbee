@@ -7,20 +7,17 @@ export class BaseQueryResultDto implements QueryResult {
   /**
    * @inheritdoc
    */
-  total!: number;
+  total = 0;
 
   /**
    * @inheritdoc
    */
-  offset!: number;
+  results: QueryResultType[] = [];
 
   /**
    * @inheritdoc
    */
-  results!: QueryResultType[];
+  suggestion: string | null = null;
 
-  /**
-   * @inheritdoc
-   */
-  suggestion?: string;
+  constructor(public offset: number) {}
 }

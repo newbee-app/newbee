@@ -4,9 +4,10 @@ import {
   organizationFeature,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
+import { BaseQueryResultDto } from '@newbee/shared/data-access';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, switchMap } from 'rxjs';
+import { catchError, filter, map, of, switchMap } from 'rxjs';
 import { SearchService } from '../search.service';
 
 /**
@@ -22,6 +23,12 @@ export class SearchEffects {
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ query }, selectedOrganization]) => {
+        if (!query.query) {
+          return of(
+            SearchActions.searchSuccess({ result: new BaseQueryResultDto(0) })
+          );
+        }
+
         return this.searchService
           .search(query, selectedOrganization?.slug as string)
           .pipe(
@@ -42,6 +49,12 @@ export class SearchEffects {
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ query }, selectedOrganization]) => {
+        if (!query.query) {
+          return of(
+            SearchActions.suggestSuccess({ result: { suggestions: [] } })
+          );
+        }
+
         return this.searchService
           .suggest(query, selectedOrganization?.slug as string)
           .pipe(

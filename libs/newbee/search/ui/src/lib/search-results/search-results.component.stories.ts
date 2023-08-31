@@ -43,7 +43,6 @@ export default {
       ],
     },
     searchPending: false,
-    suggestPending: false,
   },
   argTypes: {
     tabChange: { action: 'tabChange' },
@@ -57,6 +56,10 @@ export default {
 type Story = StoryObj<SearchResultsComponent>;
 
 export const Primary: Story = {};
+
+export const SpellcheckSuggestion: Story = {
+  args: { searchResults: { ...testQueryResult1, suggestion: 'this thing' } },
+};
 
 export const InitialSearchTerm: Story = {
   args: { initialSearchTerm: 'searching' },
@@ -72,5 +75,3 @@ export const Suggestions: Story = {
 export const SearchPending: Story = {
   args: { searchResults: null, searchPending: true },
 };
-
-export const SuggestPending: Story = { args: { suggestPending: true } };

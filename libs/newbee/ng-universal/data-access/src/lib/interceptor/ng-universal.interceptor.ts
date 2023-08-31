@@ -27,7 +27,7 @@ export class NgUniversalInterceptor implements HttpInterceptor {
   ) {}
 
   /**
-   * The method that intercepts the outgoing HTTP request to prepend the base API URL to the request's URL.
+   * The method that intercepts the outgoing SSR HTTP request to properly format it for SSR.
    *
    * @param req The request in its unaltered form.
    * @param next The object containing the `handle()` method to call once the base API URL has been prepended.
@@ -38,16 +38,24 @@ export class NgUniversalInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
+    // If not SSR and the request doesn't start with `/api`, skip
     const isServer = isPlatformServer(this.platformId);
     if (!isServer || !req.url.startsWith(`/${Keyword.Api}`)) {
       return next.handle(req);
     }
 
-    const requestCookie = this.request?.headers.cookie;
+    // Get the request's cookies but exclude the CSRF token, which will be inaccurate and irrelevant
+    const requestCookies = this.request?.headers.cookie
+      ?.split('; ')
+      .filter((cookieStr) => !cookieStr.startsWith('CSRF-TOKEN='))
+      .join('; ');
+
+    // Create a new request with the full API URL and browser's cookies
+    // Mainly needed to carry over the newbee_bearer token, so the user doesn't see a flicker for an unauthenticated screen
     const newReq = req.clone({
       url: `${this.baseApiUrl}${req.url}`,
-      ...(requestCookie && {
-        setHeaders: { Cookie: requestCookie },
+      ...(requestCookies && {
+        setHeaders: { cookie: requestCookies },
       }),
     });
     return next.handle(newReq);

@@ -303,7 +303,6 @@ export const testBaseSuggestDto1: BaseSuggestDto = {
 export const testBaseQueryDto1: BaseQueryDto = {
   ...testBaseSuggestDto1,
   offset: 0,
-  type: null,
 };
 
 /**
@@ -311,7 +310,7 @@ export const testBaseQueryDto1: BaseQueryDto = {
  * Strictly for use in testing.
  */
 export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
-  suggestions: [`<b>${testTeamQueryResult1.name}</b>`],
+  suggestions: [`<strong>${testTeamQueryResult1.name}</strong>`],
 };
 
 /**

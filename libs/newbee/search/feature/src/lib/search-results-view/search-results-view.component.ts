@@ -5,7 +5,7 @@ import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword, QueryResult } from '@newbee/shared/util';
+import { Keyword, QueryResult, SolrEntryEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -31,11 +31,6 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
    * Whether the search action is currently pending.
    */
   searchPending$ = this.store.select(searchFeature.selectPendingSearch);
-
-  /**
-   * Whether the suggest action is currently pending.
-   */
-  suggestPending$ = this.store.select(searchFeature.selectPendingSuggest);
 
   /**
    * The search tab the user has selected.
@@ -87,6 +82,13 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get the component's `tab` as a `SolrEntryEnum`, or `null` if `tab` is on `All`.
+   */
+  get tabAsSolrEntry(): SolrEntryEnum | null {
+    return serachTabToSolrEntry(this.tab);
+  }
+
+  /**
    * When the user changes the search tab, dispatch a new search request.
    *
    * @param tab The new value for the search tab.
@@ -97,8 +99,8 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
       SearchActions.search({
         query: {
           offset: 0,
-          type: serachTabToSolrEntry(tab),
           query: this.searchTerm,
+          ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },
       })
     );
@@ -128,7 +130,7 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
    * @param path The path to navigate to, relative to the current org.
    */
   async onOrgNavigate(path: string): Promise<void> {
-    await this.router.navigate(['../..', path], { relativeTo: this.route });
+    await this.router.navigate([`../../${path}`], { relativeTo: this.route });
   }
 
   /**
@@ -148,8 +150,8 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
       SearchActions.search({
         query: {
           offset: this.searchResults.offset + 1,
-          type: serachTabToSolrEntry(this.tab),
           query: this.searchTerm,
+          ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },
       })
     );
