@@ -21,7 +21,13 @@ export class OrgInviteDeclineComponent implements OnInit {
    * Make a request to decline the invite.
    */
   ngOnInit(): void {
-    const token = this.route.snapshot.paramMap.get(Keyword.Invite) as string;
+    const token = this.route.snapshot.paramMap.get(Keyword.Invite);
+
+    // this shouldn't happen, but keep it for safety
+    if (!token) {
+      return;
+    }
+
     this.store.dispatch(InviteActions.declineInvite({ tokenDto: { token } }));
   }
 }

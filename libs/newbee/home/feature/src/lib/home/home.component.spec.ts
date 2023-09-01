@@ -6,11 +6,7 @@ import { NoOrgComponent, NoOrgSelectedComponent } from '@newbee/newbee/home/ui';
 import { initialOrganizationState } from '@newbee/newbee/shared/data-access';
 import { NavbarComponent } from '@newbee/newbee/shared/feature';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import {
-  Keyword,
-  testOrganization1,
-  testOrganization2,
-} from '@newbee/shared/util';
+import { Keyword } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { HomeComponent } from './home.component';
 
@@ -55,14 +51,6 @@ describe('HomeComponent', () => {
     expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-  });
-
-  describe('noOrg', () => {
-    it('should return true if orgs is empty, false otherwise', () => {
-      expect(component.noOrg).toBeTruthy();
-      component.organizations = [testOrganization1, testOrganization2];
-      expect(component.noOrg).toBeFalsy();
-    });
   });
 
   describe('navigateToLink', () => {
