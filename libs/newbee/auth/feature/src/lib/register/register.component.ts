@@ -26,7 +26,7 @@ export class RegisterComponent {
   constructor(
     private readonly store: Store,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**
@@ -36,9 +36,9 @@ export class RegisterComponent {
    */
   onRegister(registerForm: Partial<RegisterForm>): void {
     this.store.dispatch(
-      AuthActions.registerWithWebauthn({
+      AuthActions.registerWithWebAuthn({
         createUserDto: registerFormToDto(registerForm),
-      })
+      }),
     );
   }
 

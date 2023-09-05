@@ -106,19 +106,19 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('registerWithWebauthn$', () => {
-    it('should fire registerWithWebauthnSuccess if successful', () => {
+  describe('registerWithWebAuthn$', () => {
+    it('should fire registerWithWebAuthnSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.registerWithWebauthn({
+        a: AuthActions.registerWithWebAuthn({
           createUserDto: testBaseCreateUserDto1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.registerWithWebauthnSuccess({
+        a: AuthActions.registerWithWebAuthnSuccess({
           userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
         }),
       });
-      expect(effects.registerWithWebauthn$).toBeObservable(expected$);
+      expect(effects.registerWithWebAuthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toBeCalledTimes(1);
         expect(service.webAuthnRegister).toBeCalledWith(testBaseCreateUserDto1);
@@ -126,10 +126,10 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('registerWithWebauthnSuccess$', () => {
+  describe('registerWithWebAuthnSuccess$', () => {
     it('should fire verifyRegisterChallenge if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.registerWithWebauthnSuccess({
+        a: AuthActions.registerWithWebAuthnSuccess({
           userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
         }),
       });
@@ -139,7 +139,7 @@ describe('AuthEffects', () => {
           caller: Keyword.Auth,
         }),
       });
-      expect(effects.registerWithWebauthnSuccess$).toBeObservable(expected$);
+      expect(effects.registerWithWebAuthnSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toBeCalledTimes(1);
         expect(router.navigate).toBeCalledWith(['/']);
@@ -148,24 +148,24 @@ describe('AuthEffects', () => {
 
     it('should not fire when unrelated actions are dispatched', () => {
       actions$ = hot('a', { a: { type: 'Unknown' } });
-      expect(effects.registerWithWebauthnSuccess$).toBeMarble('-');
+      expect(effects.registerWithWebAuthnSuccess$).toBeMarble('-');
     });
   });
 
-  describe('createWebauthnLoginOptions$', () => {
-    it('should fire loginWithWebauthn if successful', () => {
+  describe('createWebAuthnLoginOptions$', () => {
+    it('should fire loginWithWebAuthn if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.createWebauthnLoginOptions({
+        a: AuthActions.createWebAuthnLoginOptions({
           emailDto: testBaseEmailDto1,
         }),
       });
       const expected$ = hot('a', {
-        a: AuthActions.loginWithWebauthn({
+        a: AuthActions.loginWithWebAuthn({
           emailDto: testBaseEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
-      expect(effects.createWebauthnLoginOptions$).toBeObservable(expected$);
+      expect(effects.createWebAuthnLoginOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
         expect(service.webAuthnLoginOptions).toBeCalledWith(testBaseEmailDto1);
@@ -173,10 +173,10 @@ describe('AuthEffects', () => {
     });
   });
 
-  describe('loginWithWebauthn$', () => {
+  describe('loginWithWebAuthn$', () => {
     it('should fire loginSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.loginWithWebauthn({
+        a: AuthActions.loginWithWebAuthn({
           emailDto: testBaseEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
@@ -186,12 +186,12 @@ describe('AuthEffects', () => {
           userRelation: testUserRelation1,
         }),
       });
-      expect(effects.loginWithWebauthn$).toBeObservable(expected$);
+      expect(effects.loginWithWebAuthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLogin).toBeCalledTimes(1);
         expect(service.webAuthnLogin).toBeCalledWith(
           testBaseEmailDto1,
-          testPublicKeyCredentialRequestOptions1
+          testPublicKeyCredentialRequestOptions1,
         );
       });
     });

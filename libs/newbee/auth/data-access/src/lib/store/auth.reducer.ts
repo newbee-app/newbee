@@ -53,7 +53,7 @@ export const authFeature = createFeature({
       (state): AuthState => ({
         ...state,
         pendingMagicLink: true,
-      })
+      }),
     ),
     on(
       AuthActions.sendLoginMagicLinkSuccess,
@@ -62,27 +62,27 @@ export const authFeature = createFeature({
         jwtId,
         email,
         pendingMagicLink: false,
-      })
+      }),
     ),
     on(
-      AuthActions.registerWithWebauthn,
+      AuthActions.registerWithWebAuthn,
       (state): AuthState => ({
         ...state,
         pendingWebAuthn: true,
-      })
+      }),
     ),
     on(
-      AuthActions.createWebauthnLoginOptions,
+      AuthActions.createWebAuthnLoginOptions,
       (state): AuthState => ({
         ...state,
         pendingWebAuthn: true,
-      })
+      }),
     ),
     on(
       AuthActions.loginSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
-      (): AuthState => initialAuthState
-    )
+      (): AuthState => initialAuthState,
+    ),
   ),
 });

@@ -26,12 +26,12 @@ describe('AuthReducer', () => {
       expect(udpatedState).toEqual(initialAuthState);
     });
 
-    it('should update state for registerWithWebauthnSuccess', () => {
+    it('should update state for registerWithWebAuthnSuccess', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.registerWithWebauthnSuccess({
+        AuthActions.registerWithWebAuthnSuccess({
           userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -39,7 +39,7 @@ describe('AuthReducer', () => {
     it('should update state for loginSuccess', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -49,7 +49,7 @@ describe('AuthReducer', () => {
         initialAuthState,
         CookieActions.initCookiesSuccess({
           csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -59,7 +59,7 @@ describe('AuthReducer', () => {
     it('should update state for editUserSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginSuccess,
-        UserActions.editUserSuccess({ user: testUser2 })
+        UserActions.editUserSuccess({ user: testUser2 }),
       );
       expect(updatedState).toEqual({
         ...stateAfterLoginSuccess,
@@ -70,7 +70,7 @@ describe('AuthReducer', () => {
     it('should update state for logoutSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginSuccess,
-        AuthActions.logoutSuccess()
+        AuthActions.logoutSuccess(),
       );
       expect(updatedState).toEqual(initialAuthState);
     });
@@ -78,7 +78,7 @@ describe('AuthReducer', () => {
     it('should update state for deleteUSerSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginSuccess,
-        UserActions.deleteUserSuccess
+        UserActions.deleteUserSuccess,
       );
       expect(updatedState).toEqual(initialAuthState);
     });

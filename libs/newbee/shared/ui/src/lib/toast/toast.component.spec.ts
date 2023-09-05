@@ -17,10 +17,10 @@ describe('ToastComponent', () => {
 
     component.duration = 1000;
 
-    jest.resetAllMocks();
-    jest.spyOn(component.dismissed, 'emit');
+    jest.useFakeTimers();
     jest.spyOn(global, 'setTimeout');
     jest.spyOn(global, 'clearTimeout');
+    jest.spyOn(component.dismissed, 'emit');
 
     fixture.detectChanges();
   });

@@ -31,7 +31,7 @@ export class LoginComponent {
   constructor(
     private readonly store: Store,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**
@@ -41,9 +41,9 @@ export class LoginComponent {
    */
   onWebAuthn(loginForm: Partial<LoginForm>): void {
     this.store.dispatch(
-      AuthActions.createWebauthnLoginOptions({
+      AuthActions.createWebAuthnLoginOptions({
         emailDto: loginFormToDto(loginForm),
-      })
+      }),
     );
   }
 
@@ -54,7 +54,7 @@ export class LoginComponent {
    */
   onMagicLinkLogin(loginForm: Partial<LoginForm>): void {
     this.store.dispatch(
-      AuthActions.sendLoginMagicLink({ emailDto: loginFormToDto(loginForm) })
+      AuthActions.sendLoginMagicLink({ emailDto: loginFormToDto(loginForm) }),
     );
   }
 

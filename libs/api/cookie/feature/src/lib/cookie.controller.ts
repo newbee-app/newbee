@@ -2,10 +2,10 @@ import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@newbee/api/auth/data-access';
 import { EntityService } from '@newbee/api/shared/data-access';
-import { AppConfig, authJwtCookie, Public } from '@newbee/api/shared/util';
+import { AppConfig, Public, authJwtCookie } from '@newbee/api/shared/util';
 import {
-  apiVersion,
   BaseCsrfTokenAndDataDto,
+  apiVersion,
 } from '@newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
 import type { CsrfTokenCreator } from 'csrf-csrf';
@@ -29,7 +29,7 @@ export class CookieController {
   constructor(
     configService: ConfigService<AppConfig, true>,
     private readonly entityService: EntityService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {
     this.generateToken = configService.get('csrf.generateToken', {
       infer: true,
@@ -48,10 +48,10 @@ export class CookieController {
   @Get()
   async initCookies(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ): Promise<BaseCsrfTokenAndDataDto> {
     this.logger.log('Init cookies request received');
-    const csrfToken = this.generateToken(res, req);
+    const csrfToken = this.generateToken(req, res, true);
     this.logger.log(`CSRF token generated: ${csrfToken}`);
 
     const authToken: string | undefined = req.signedCookies[authJwtCookie];

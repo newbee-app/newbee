@@ -43,9 +43,11 @@ export class AuthEffects {
               `/${Keyword.Auth}/${Keyword.Login}/${Keyword.ConfirmEmail}`,
             ]);
           }),
-          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
+          catchError((err) =>
+            catchHttpClientError(err, AuthEffects.sortErrMsg),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -57,31 +59,33 @@ export class AuthEffects {
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          catchError(catchHttpScreenError)
+          catchError(catchHttpScreenError),
         );
-      })
+      }),
     );
   });
 
-  registerWithWebauthn$ = createEffect(() => {
+  registerWithWebAuthn$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.registerWithWebauthn),
+      ofType(AuthActions.registerWithWebAuthn),
       switchMap(({ createUserDto }) => {
         return this.authService.webAuthnRegister(createUserDto).pipe(
           map((userAndOptionsDto) => {
-            return AuthActions.registerWithWebauthnSuccess({
+            return AuthActions.registerWithWebAuthnSuccess({
               userRelationAndOptionsDto: userAndOptionsDto,
             });
           }),
-          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
+          catchError((err) =>
+            catchHttpClientError(err, AuthEffects.sortErrMsg),
+          ),
         );
-      })
+      }),
     );
   });
 
-  registerWithWebauthnSuccess$ = createEffect(() => {
+  registerWithWebAuthnSuccess$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.registerWithWebauthnSuccess),
+      ofType(AuthActions.registerWithWebAuthnSuccess),
       map(({ userRelationAndOptionsDto: userCreatedDto }) => {
         return AuthenticatorActions.createAuthenticator({
           options: userCreatedDto.options,
@@ -90,38 +94,42 @@ export class AuthEffects {
       }),
       tap(async () => {
         await this.router.navigate(['/']);
-      })
+      }),
     );
   });
 
-  createWebauthnLoginOptions$ = createEffect(() => {
+  createWebAuthnLoginOptions$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.createWebauthnLoginOptions),
+      ofType(AuthActions.createWebAuthnLoginOptions),
       switchMap(({ emailDto }) => {
         return this.authService.webAuthnLoginOptions(emailDto).pipe(
           map((options) => {
-            return AuthActions.loginWithWebauthn({
+            return AuthActions.loginWithWebAuthn({
               emailDto,
               options,
             });
           }),
-          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
+          catchError((err) =>
+            catchHttpClientError(err, AuthEffects.sortErrMsg),
+          ),
         );
-      })
+      }),
     );
   });
 
-  loginWithWebauthn$ = createEffect(() => {
+  loginWithWebAuthn$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.loginWithWebauthn),
+      ofType(AuthActions.loginWithWebAuthn),
       switchMap(({ emailDto, options }) => {
         return this.authService.webAuthnLogin(emailDto, options).pipe(
           map((userRelation) => {
             return AuthActions.loginSuccess({ userRelation });
           }),
-          catchError((err) => catchHttpClientError(err, AuthEffects.sortErrMsg))
+          catchError((err) =>
+            catchHttpClientError(err, AuthEffects.sortErrMsg),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -131,10 +139,10 @@ export class AuthEffects {
         ofType(AuthActions.loginSuccess),
         tap(async () => {
           await this.router.navigate(['/']);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   logout$ = createEffect(() => {
@@ -147,11 +155,11 @@ export class AuthEffects {
             of(
               ToastActions.addToast({
                 toast: httpClientErrorToToast(errToHttpClientError(err)),
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -161,16 +169,16 @@ export class AuthEffects {
         ofType(AuthActions.logoutSuccess),
         tap(async () => {
           await this.router.navigate([`/${Keyword.Auth}/${Keyword.Login}`]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   constructor(
     private readonly actions$: Actions,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   /**

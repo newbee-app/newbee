@@ -5,25 +5,26 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/api/auth/util",
         "tsConfig": "libs/api/auth/util/tsconfig.lib.json",
         "packageJson": "libs/api/auth/util/package.json",
         "main": "libs/api/auth/util/src/index.ts",
-        "assets": ["libs/api/auth/util/*.md"]
+        "assets": ["libs/api/auth/util/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/api/auth/util/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/api/auth/util"],
       "options": {
         "jestConfig": "libs/api/auth/util/jest.config.ts",

@@ -54,10 +54,10 @@ describe('LoginComponent', () => {
   });
 
   describe('onWebAuthn', () => {
-    it('should dispatch createWebauthnLoginOptions', () => {
+    it('should dispatch createWebAuthnLoginOptions', () => {
       component.onWebAuthn(testLoginForm1);
       expect(store.dispatch).toBeCalledWith(
-        AuthActions.createWebauthnLoginOptions({ emailDto: testBaseEmailDto1 })
+        AuthActions.createWebAuthnLoginOptions({ emailDto: testBaseEmailDto1 }),
       );
     });
   });
@@ -66,7 +66,7 @@ describe('LoginComponent', () => {
     it('should dispatch sendLoginMagicLink action', () => {
       component.onMagicLinkLogin(testLoginForm1);
       expect(store.dispatch).toBeCalledWith(
-        AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
+        AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
       );
     });
   });

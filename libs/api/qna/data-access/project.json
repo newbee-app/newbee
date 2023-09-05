@@ -5,25 +5,26 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/api/qna/data-access",
         "tsConfig": "libs/api/qna/data-access/tsconfig.lib.json",
         "packageJson": "libs/api/qna/data-access/package.json",
         "main": "libs/api/qna/data-access/src/index.ts",
-        "assets": ["libs/api/qna/data-access/*.md"]
+        "assets": ["libs/api/qna/data-access/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/api/qna/data-access/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "libs/api/qna/data-access/jest.config.ts",

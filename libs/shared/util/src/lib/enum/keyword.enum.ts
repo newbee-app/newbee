@@ -6,7 +6,7 @@
 export enum Keyword {
   // auth keywords
   Auth = 'auth',
-  Webauthn = 'webauthn',
+  WebAuthn = 'webauthn',
   Login = 'login',
   Register = 'register',
   Logout = 'logout',

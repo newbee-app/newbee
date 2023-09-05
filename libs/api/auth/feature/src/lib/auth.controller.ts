@@ -54,7 +54,7 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy,
-    configService: ConfigService<AppAuthConfig, true>
+    configService: ConfigService<AppAuthConfig, true>,
   ) {
     this.cookieOptions = configService.get('csrf.cookieOptions', {
       infer: true,
@@ -71,14 +71,14 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${Keyword.Webauthn}/${Keyword.Register}`)
+  @Post(`${Keyword.WebAuthn}/${Keyword.Register}`)
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
-    @Body() createUserDto: CreateUserDto
+    @Body() createUserDto: CreateUserDto,
   ): Promise<BaseUserRelationAndOptionsDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
-      `WebAuthn register request received for: ${createUserDtoString}`
+      `WebAuthn register request received for: ${createUserDtoString}`,
     );
 
     const userAndOptions = await this.userService.create(createUserDto);
@@ -105,18 +105,18 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Public()
-  @Post(`${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`)
+  @Post(`${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`)
   async webAuthnLoginOptions(
-    @Body() emailDto: EmailDto
+    @Body() emailDto: EmailDto,
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const { email } = emailDto;
     this.logger.log(
-      `WebAuthn login option request received for email: ${email}`
+      `WebAuthn login option request received for email: ${email}`,
     );
 
     const options = await this.authService.generateLoginChallenge(email);
     this.logger.log(
-      `WebAuthn login options generated: ${JSON.stringify(options)}`
+      `WebAuthn login options generated: ${JSON.stringify(options)}`,
     );
     return options;
   }
@@ -134,20 +134,20 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Public()
-  @Post(`${Keyword.Webauthn}/${Keyword.Login}`)
+  @Post(`${Keyword.WebAuthn}/${Keyword.Login}`)
   async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
-    @Body() webAuthnLoginDto: WebAuthnLoginDto
+    @Body() webAuthnLoginDto: WebAuthnLoginDto,
   ): Promise<UserRelation> {
     const { email, response } = webAuthnLoginDto;
     this.logger.log(
-      `WebAuthn login verify request received for email: ${email}`
+      `WebAuthn login verify request received for email: ${email}`,
     );
 
     const user = await this.authService.verifyLoginChallenge(email, response);
     const accessToken = this.authService.login(user);
     this.logger.log(
-      `Credentials verified and access token created: ${accessToken}`
+      `Credentials verified and access token created: ${accessToken}`,
     );
 
     res.cookie(authJwtCookie, accessToken, this.cookieOptions);
@@ -165,7 +165,7 @@ export class AuthController {
   @Public()
   @Post(`${Keyword.MagicLinkLogin}/${Keyword.Login}`)
   async magicLinkLoginLogin(
-    @Body() emailDto: EmailDto
+    @Body() emailDto: EmailDto,
   ): Promise<BaseMagicLinkLoginDto> {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
@@ -194,7 +194,7 @@ export class AuthController {
   @Post(Keyword.MagicLinkLogin)
   async magicLinkLogin(
     @Res({ passthrough: true }) res: Response,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<UserRelation> {
     const accessToken = this.authService.login(user);
     this.logger.log(`Access token generated: ${accessToken}`);
@@ -211,7 +211,7 @@ export class AuthController {
   @Post(Keyword.Logout)
   logout(
     @Res({ passthrough: true }) res: Response,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): void {
     this.logger.log(`Logout request received from user ID: ${user.id}`);
     res.clearCookie(authJwtCookie, this.cookieOptions);

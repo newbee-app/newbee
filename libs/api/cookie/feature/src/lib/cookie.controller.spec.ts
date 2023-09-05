@@ -62,12 +62,12 @@ describe('CookieController', () => {
   describe('initCookies', () => {
     afterEach(() => {
       expect(generateToken).toBeCalledTimes(1);
-      expect(generateToken).toBeCalledWith(response, request);
+      expect(generateToken).toBeCalledWith(request, response);
     });
 
     it('should return a CSRF token and initial data as a DTO', async () => {
       await expect(controller.initCookies(request, response)).resolves.toEqual(
-        testBaseCsrfTokenAndDataDto1
+        testBaseCsrfTokenAndDataDto1,
       );
       expect(authService.verifyAuthToken).toBeCalledTimes(1);
       expect(authService.verifyAuthToken).toBeCalledWith(testToken);
@@ -93,7 +93,7 @@ describe('CookieController', () => {
       });
       expect(authService.verifyAuthToken).toBeCalledTimes(1);
       expect(authService.verifyAuthToken).toBeCalledWith(
-        request.signedCookies[authJwtCookie]
+        request.signedCookies[authJwtCookie],
       );
       expect(entityService.createUserRelation).not.toBeCalled();
     });

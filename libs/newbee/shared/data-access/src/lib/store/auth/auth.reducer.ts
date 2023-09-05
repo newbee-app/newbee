@@ -36,19 +36,19 @@ export const authFeature = createFeature({
   reducer: createReducer(
     initialAuthState,
     on(
-      AuthActions.registerWithWebauthnSuccess,
+      AuthActions.registerWithWebAuthnSuccess,
       (
         state,
         {
           userRelationAndOptionsDto: {
             userRelation: { user, invites },
           },
-        }
+        },
       ): AuthState => ({
         ...state,
         user,
         invites,
-      })
+      }),
     ),
     on(
       AuthActions.loginSuccess,
@@ -56,7 +56,7 @@ export const authFeature = createFeature({
         ...state,
         user,
         invites,
-      })
+      }),
     ),
     on(
       CookieActions.initCookiesSuccess,
@@ -67,19 +67,19 @@ export const authFeature = createFeature({
 
         const { user, invites } = userRelation;
         return { ...state, user, invites };
-      }
+      },
     ),
     on(
       UserActions.editUserSuccess,
       (state, { user }): AuthState => ({
         ...state,
         user,
-      })
+      }),
     ),
     on(
       AuthActions.logoutSuccess,
       UserActions.deleteUserSuccess,
-      (): AuthState => initialAuthState
-    )
+      (): AuthState => initialAuthState,
+    ),
   ),
 });
