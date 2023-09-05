@@ -8,6 +8,7 @@ import {
 import { ViewOrgMemberComponent } from '@newbee/newbee/org-member/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { OrgMemberRootComponent } from './org-member-root';
 import { OrgMemberViewComponent } from './org-member-view';
 import { OrgMemberRoutingModule } from './routing';
 
@@ -20,6 +21,10 @@ import { OrgMemberRoutingModule } from './routing';
     OrgMemberRoutingModule,
   ],
   providers: [OrgMemberService],
-  declarations: [OrgMemberViewComponent],
+  declarations: [
+    OrgMemberRootComponent,
+    OrgMemberViewComponent,
+    OrgMemberRootComponent,
+  ],
 })
 export class OrgMemberModule {}

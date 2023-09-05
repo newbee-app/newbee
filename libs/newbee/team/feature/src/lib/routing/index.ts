@@ -4,13 +4,13 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   createTeamTitleResolver,
   isTeamAdminGuard,
-  resetSelectedTeamGuard,
   teamGuard,
   teamTitleResolver,
 } from '@newbee/newbee/team/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { TeamCreateComponent } from '../team-create';
 import { TeamEditComponent } from '../team-edit';
+import { TeamRootComponent } from '../team-root';
 import { TeamViewComponent } from '../team-view';
 
 const routes: Routes = [
@@ -21,9 +21,9 @@ const routes: Routes = [
   },
   {
     path: `:${ShortUrl.Team}`,
+    component: TeamRootComponent,
     title: teamTitleResolver,
     canActivate: [teamGuard],
-    canDeactivate: [resetSelectedTeamGuard],
     children: [
       {
         path: Keyword.Edit,

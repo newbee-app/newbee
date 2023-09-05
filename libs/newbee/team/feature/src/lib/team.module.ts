@@ -15,6 +15,7 @@ import { StoreModule } from '@ngrx/store';
 import { TeamRoutingModule } from './routing';
 import { TeamCreateComponent } from './team-create';
 import { TeamEditComponent } from './team-edit';
+import { TeamRootComponent } from './team-root';
 import { TeamViewComponent } from './team-view';
 
 @NgModule({
@@ -28,6 +29,12 @@ import { TeamViewComponent } from './team-view';
     TeamRoutingModule,
   ],
   providers: [TeamService],
-  declarations: [TeamCreateComponent, TeamViewComponent, TeamEditComponent],
+  declarations: [
+    TeamRootComponent,
+    TeamCreateComponent,
+    TeamViewComponent,
+    TeamEditComponent,
+    TeamRootComponent,
+  ],
 })
 export class TeamModule {}

@@ -17,6 +17,7 @@ import { OrgCreateComponent } from './org-create';
 import { OrgEditComponent } from './org-edit';
 import { OrgHomeComponent } from './org-home/org-home.component';
 import { OrgInviteComponent } from './org-invite';
+import { OrgRootComponent } from './org-root';
 import { OrganizationRoutingModule } from './routing';
 
 @NgModule({
@@ -32,6 +33,7 @@ import { OrganizationRoutingModule } from './routing';
   ],
   providers: [OrganizationService],
   declarations: [
+    OrgRootComponent,
     OrgCreateComponent,
     OrgHomeComponent,
     OrgEditComponent,
