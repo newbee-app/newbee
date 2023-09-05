@@ -61,12 +61,12 @@ describe('RegisterComponent', () => {
   });
 
   describe('onRegister', () => {
-    it('should dispatch registerWithWebauthn action', () => {
+    it('should dispatch registerWithWebAuthn action', () => {
       component.onRegister(testRegisterForm1);
       expect(store.dispatch).toBeCalledWith(
-        AuthActions.registerWithWebauthn({
+        AuthActions.registerWithWebAuthn({
           createUserDto: testBaseCreateUserDto1,
-        })
+        }),
       );
     });
   });

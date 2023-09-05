@@ -34,11 +34,11 @@ export class AuthService {
    * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
    */
   magicLinkLoginLogin(
-    emailDto: BaseEmailDto
+    emailDto: BaseEmailDto,
   ): Observable<BaseMagicLinkLoginDto> {
     return this.http.post<BaseMagicLinkLoginDto>(
       `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
-      emailDto
+      emailDto,
     );
   }
 
@@ -51,7 +51,7 @@ export class AuthService {
   magicLinkLogin(token: string): Observable<UserRelation> {
     return this.http.post<UserRelation>(
       `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}`,
-      { token }
+      { token },
     );
   }
 
@@ -63,11 +63,11 @@ export class AuthService {
    * @returns An observable containing the newly created user, their access token, and the options needed to register an authenticator.
    */
   webAuthnRegister(
-    createUserDto: BaseCreateUserDto
+    createUserDto: BaseCreateUserDto,
   ): Observable<BaseUserRelationAndOptionsDto> {
     return this.http.post<BaseUserRelationAndOptionsDto>(
-      `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Register}`,
-      createUserDto
+      `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Register}`,
+      createUserDto,
     );
   }
 
@@ -79,11 +79,11 @@ export class AuthService {
    * @returns An observable of the options needed to log in with a registered authenticator.
    */
   webAuthnLoginOptions(
-    emailDto: BaseEmailDto
+    emailDto: BaseEmailDto,
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
-      `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`,
-      emailDto
+      `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`,
+      emailDto,
     );
   }
 
@@ -97,7 +97,7 @@ export class AuthService {
    */
   webAuthnLogin(
     emailDto: BaseEmailDto,
-    options: PublicKeyCredentialRequestOptionsJSON
+    options: PublicKeyCredentialRequestOptionsJSON,
   ): Observable<UserRelation> {
     return from(startAuthentication(options)).pipe(
       switchMap((response) => {
@@ -106,10 +106,10 @@ export class AuthService {
           response,
         };
         return this.http.post<UserRelation>(
-          `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}`,
-          webAuthnLoginDto
+          `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}`,
+          webAuthnLoginDto,
         );
-      })
+      }),
     );
   }
 
@@ -119,7 +119,7 @@ export class AuthService {
   logout(): Observable<void> {
     return this.http.post<void>(
       `${AuthService.baseApiUrl}/${Keyword.Logout}`,
-      {}
+      {},
     );
   }
 }

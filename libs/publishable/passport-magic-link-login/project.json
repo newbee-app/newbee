@@ -5,13 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/publishable/passport-magic-link-login",
         "main": "libs/publishable/passport-magic-link-login/src/index.ts",
         "tsConfig": "libs/publishable/passport-magic-link-login/tsconfig.lib.json",
-        "assets": ["libs/publishable/passport-magic-link-login/*.md"]
+        "assets": ["libs/publishable/passport-magic-link-login/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {
@@ -21,13 +22,12 @@
       },
       "dependsOn": [
         {
-          "projects": "self",
           "target": "build"
         }
       ]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
@@ -36,7 +36,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/libs/publishable/passport-magic-link-login"
       ],

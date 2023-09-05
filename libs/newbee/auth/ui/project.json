@@ -6,11 +6,12 @@
   "prefix": "newbee",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
+      "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/libs/newbee/auth/ui"],
       "options": {
         "project": "libs/newbee/auth/ui/ng-package.json",
-        "tailwindConfig": "libs/newbee/auth/ui/tailwind.config.js"
+        "tailwindConfig": "libs/newbee/auth/ui/tailwind.config.js",
+        "updateBuildableProjectDepsInPackageJson": true
       },
       "configurations": {
         "production": {
@@ -23,7 +24,7 @@
       "defaultConfiguration": "production"
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/newbee/auth/ui"],
       "options": {
         "jestConfig": "libs/newbee/auth/ui/jest.config.ts",
@@ -31,7 +32,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/newbee/auth/ui/**/*.ts",
@@ -83,7 +84,7 @@
       }
     },
     "static-storybook": {
-      "executor": "@nrwl/web:file-server",
+      "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "newbee-auth-ui:build-storybook",
         "staticFilePath": "dist/storybook/newbee-auth-ui"

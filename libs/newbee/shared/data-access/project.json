@@ -1,14 +1,16 @@
 {
   "name": "newbee-shared-data-access",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/newbee/shared/data-access/src",
   "prefix": "newbee",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
+      "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/libs/newbee/shared/data-access"],
       "options": {
-        "project": "libs/newbee/shared/data-access/ng-package.json"
+        "project": "libs/newbee/shared/data-access/ng-package.json",
+        "updateBuildableProjectDepsInPackageJson": true
       },
       "configurations": {
         "production": {
@@ -21,7 +23,7 @@
       "defaultConfiguration": "production"
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/newbee/shared/data-access"],
       "options": {
         "jestConfig": "libs/newbee/shared/data-access/jest.config.ts",
@@ -29,7 +31,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/newbee/shared/data-access/**/*.ts",

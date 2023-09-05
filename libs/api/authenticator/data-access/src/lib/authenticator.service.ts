@@ -52,7 +52,7 @@ export class AuthenticatorService {
     private readonly authenticatorRepository: EntityRepository<AuthenticatorEntity>,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly entityService: EntityService,
-    private readonly userChallengeService: UserChallengeService
+    private readonly userChallengeService: UserChallengeService,
   ) {}
 
   /**
@@ -63,7 +63,7 @@ export class AuthenticatorService {
    * @returns The options to register the frontend's authenticator.
    */
   async generateOptions(
-    user: UserEntity
+    user: UserEntity,
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     const authenticators: PublicKeyCredentialDescriptorFuture[] = (
       await this.findAllByEmail(user.email)
@@ -74,7 +74,7 @@ export class AuthenticatorService {
     }));
 
     const rpInfo = this.configService.get('rpInfo', { infer: true });
-    const options = generateRegistrationOptions({
+    const options = await generateRegistrationOptions({
       rpName: rpInfo.name,
       rpID: rpInfo.id,
       userID: user.id,
@@ -99,7 +99,7 @@ export class AuthenticatorService {
    */
   async create(
     response: RegistrationResponseJSON,
-    user: UserEntity
+    user: UserEntity,
   ): Promise<AuthenticatorEntity> {
     const userChallenge = await this.userChallengeService.findOneById(user.id);
     const { challenge } = userChallenge;
@@ -143,7 +143,7 @@ export class AuthenticatorService {
       credentialDeviceType,
       credentialBackedUp,
       response.response.transports ?? null,
-      user
+      user,
     );
     try {
       await this.authenticatorRepository.persistAndFlush(authenticator);
@@ -226,7 +226,7 @@ export class AuthenticatorService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByCredentialId(
-    credentialId: string
+    credentialId: string,
   ): Promise<AuthenticatorEntity> {
     try {
       return await this.authenticatorRepository.findOneOrFail({ credentialId });
@@ -256,7 +256,7 @@ export class AuthenticatorService {
   async updateCounterById(
     id: string,
     counter: number,
-    userId: string
+    userId: string,
   ): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
     if (authenticator.user.id !== userId) {
@@ -290,7 +290,7 @@ export class AuthenticatorService {
   async updateNameById(
     id: string,
     name: string | null,
-    userId: string
+    userId: string,
   ): Promise<AuthenticatorEntity> {
     let authenticator = await this.findOneById(id);
     if (authenticator.user.id !== userId) {

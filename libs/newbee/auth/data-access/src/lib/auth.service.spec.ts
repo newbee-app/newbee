@@ -51,7 +51,7 @@ describe('AuthService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(AuthService.baseApiUrl).toEqual(
-        `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}`
+        `/${Keyword.Api}/v${apiVersion.auth}/${Keyword.Auth}`,
       );
     });
   });
@@ -71,7 +71,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`
+        `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseEmailDto1);
@@ -95,7 +95,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}`
+        `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({ token: '1234' });
@@ -110,7 +110,7 @@ describe('AuthService', () => {
         next: (userRelationAndOptionsDto) => {
           try {
             expect(userRelationAndOptionsDto).toEqual(
-              testBaseUserRelationAndOptionsDto1
+              testBaseUserRelationAndOptionsDto1,
             );
             done();
           } catch (err) {
@@ -121,7 +121,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Register}`
+        `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Register}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateUserDto1);
@@ -145,7 +145,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}/${Keyword.Options}`
+        `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseEmailDto1);
@@ -159,7 +159,7 @@ describe('AuthService', () => {
       service
         .webAuthnLogin(
           testBaseEmailDto1,
-          testPublicKeyCredentialRequestOptions1
+          testPublicKeyCredentialRequestOptions1,
         )
         .subscribe({
           next: (userRelation) => {
@@ -175,11 +175,11 @@ describe('AuthService', () => {
 
       expect(mockStartAuthentication).toBeCalledTimes(1);
       expect(mockStartAuthentication).toBeCalledWith(
-        testPublicKeyCredentialRequestOptions1
+        testPublicKeyCredentialRequestOptions1,
       );
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.Webauthn}/${Keyword.Login}`
+        `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);
@@ -203,7 +203,7 @@ describe('AuthService', () => {
       });
 
       const req = httpController.expectOne(
-        `${AuthService.baseApiUrl}/${Keyword.Logout}`
+        `${AuthService.baseApiUrl}/${Keyword.Logout}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({});

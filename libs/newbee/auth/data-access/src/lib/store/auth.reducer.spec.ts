@@ -19,11 +19,11 @@ describe('AuthReducer', () => {
     email: testBaseMagicLinkLoginDto1.email,
     pendingMagicLink: false,
   };
-  const stateAfterWebauthnRegisterChallenge: AuthState = {
+  const stateAfterWebAuthnRegisterChallenge: AuthState = {
     ...initialAuthState,
     pendingWebAuthn: true,
   };
-  const stateAfterWebauthnLoginChallenge: AuthState = {
+  const stateAfterWebAuthnLoginChallenge: AuthState = {
     ...initialAuthState,
     pendingWebAuthn: true,
   };
@@ -38,25 +38,25 @@ describe('AuthReducer', () => {
     it('should update state for sendLoginMagicLink', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.sendLoginMagicLink
+        AuthActions.sendLoginMagicLink,
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLink);
     });
 
-    it('should update state for registerWithWebauthn', () => {
+    it('should update state for registerWithWebAuthn', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.registerWithWebauthn
+        AuthActions.registerWithWebAuthn,
       );
-      expect(updatedState).toEqual(stateAfterWebauthnRegisterChallenge);
+      expect(updatedState).toEqual(stateAfterWebAuthnRegisterChallenge);
     });
 
-    it('should update state for createWebauthnLoginOptions', () => {
+    it('should update state for createWebAuthnLoginOptions', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
-        AuthActions.createWebauthnLoginOptions
+        AuthActions.createWebAuthnLoginOptions,
       );
-      expect(updatedState).toEqual(stateAfterWebauthnLoginChallenge);
+      expect(updatedState).toEqual(stateAfterWebAuthnLoginChallenge);
     });
   });
 
@@ -66,7 +66,7 @@ describe('AuthReducer', () => {
         stateAfterLoginMagicLink,
         AuthActions.sendLoginMagicLinkSuccess({
           magicLinkLoginDto: testBaseMagicLinkLoginDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLinkSuccess);
     });
@@ -74,19 +74,19 @@ describe('AuthReducer', () => {
     it('should update state for loginSuccess', () => {
       let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnLoginChallenge,
-        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
+        stateAfterWebAuthnLoginChallenge,
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnRegisterChallenge,
-        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
+        stateAfterWebAuthnRegisterChallenge,
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
     });
@@ -94,19 +94,19 @@ describe('AuthReducer', () => {
     it('should update state for clientError', () => {
       let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        HttpActions.clientError({ httpClientError: testHttpClientError1 })
+        HttpActions.clientError({ httpClientError: testHttpClientError1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnLoginChallenge,
-        HttpActions.clientError({ httpClientError: testHttpClientError1 })
+        stateAfterWebAuthnLoginChallenge,
+        HttpActions.clientError({ httpClientError: testHttpClientError1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnRegisterChallenge,
-        HttpActions.clientError({ httpClientError: testHttpClientError1 })
+        stateAfterWebAuthnRegisterChallenge,
+        HttpActions.clientError({ httpClientError: testHttpClientError1 }),
       );
       expect(updatedState).toEqual(initialAuthState);
     });
@@ -114,19 +114,19 @@ describe('AuthReducer', () => {
     it('should update state for routerRequest', () => {
       let updatedState = authFeature.reducer(
         stateAfterLoginMagicLinkSuccess,
-        RouterActions.routerRequest()
+        RouterActions.routerRequest(),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnLoginChallenge,
-        RouterActions.routerRequest()
+        stateAfterWebAuthnLoginChallenge,
+        RouterActions.routerRequest(),
       );
       expect(updatedState).toEqual(initialAuthState);
 
       updatedState = authFeature.reducer(
-        stateAfterWebauthnRegisterChallenge,
-        RouterActions.routerRequest()
+        stateAfterWebAuthnRegisterChallenge,
+        RouterActions.routerRequest(),
       );
       expect(updatedState).toEqual(initialAuthState);
     });

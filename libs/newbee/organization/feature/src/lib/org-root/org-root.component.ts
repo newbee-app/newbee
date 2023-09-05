@@ -10,7 +10,10 @@ import { Store } from '@ngrx/store';
   templateUrl: './org-root.component.html',
 })
 export class OrgRootComponent implements OnDestroy {
-  constructor(private readonly store: Store, private readonly ngZone: NgZone) {}
+  constructor(
+    private readonly store: Store,
+    private readonly ngZone: NgZone,
+  ) {}
 
   /**
    * Reset the selected org when the component is destroyed.

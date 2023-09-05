@@ -42,7 +42,7 @@ export class AuthService {
     private readonly em: EntityManager,
     private readonly userService: UserService,
     private readonly authenticatorService: AuthenticatorService,
-    private readonly userChallengeService: UserChallengeService
+    private readonly userChallengeService: UserChallengeService,
   ) {}
 
   /**
@@ -87,7 +87,7 @@ export class AuthService {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async generateLoginChallenge(
-    email: string
+    email: string,
   ): Promise<PublicKeyCredentialRequestOptionsJSON> {
     const allowCredentials: PublicKeyCredentialDescriptorFuture[] = (
       await this.authenticatorService.findAllByEmail(email)
@@ -97,10 +97,11 @@ export class AuthService {
       ...(transports && { transports }),
     }));
 
-    const options = generateAuthenticationOptions({
+    const rpID = this.configService.get('rpInfo.id', { infer: true });
+    const options = await generateAuthenticationOptions({
       allowCredentials,
+      rpID,
       userVerification: 'required',
-      rpID: this.configService.get('rpInfo.id', { infer: true }),
     });
     await this.userChallengeService.updateByEmail(email, options.challenge);
     return options;
@@ -121,7 +122,7 @@ export class AuthService {
    */
   async verifyLoginChallenge(
     email: string,
-    response: AuthenticationResponseJSON
+    response: AuthenticationResponseJSON,
   ): Promise<UserEntity> {
     const userChallenge = await this.userChallengeService.findOneByEmail(email);
     try {
@@ -138,9 +139,8 @@ export class AuthService {
     }
 
     const { id } = response;
-    const authenticator = await this.authenticatorService.findOneByCredentialId(
-      id
-    );
+    const authenticator =
+      await this.authenticatorService.findOneByCredentialId(id);
     const { credentialPublicKey, credentialId, counter, transports } =
       authenticator;
     const authenticatorDevice: AuthenticatorDevice = {
@@ -174,7 +174,7 @@ export class AuthService {
     await this.authenticatorService.updateCounterById(
       authenticator.id,
       authenticationInfo.newCounter,
-      user.id
+      user.id,
     );
     return user;
   }

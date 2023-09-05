@@ -6,7 +6,7 @@
   "prefix": "newbee",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:webpack-browser",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/newbee/browser",
@@ -80,13 +80,13 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": ["apps/newbee/**/*.ts", "apps/newbee/**/*.html"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/newbee"],
       "options": {
         "jestConfig": "apps/newbee/jest.config.ts",
@@ -114,7 +114,8 @@
         "development": {
           "optimization": false,
           "sourceMap": true,
-          "extractLicenses": false
+          "extractLicenses": false,
+          "buildOptimizer": false
         }
       },
       "defaultConfiguration": "production",
@@ -210,7 +211,7 @@
       }
     },
     "static-storybook": {
-      "executor": "@nrwl/web:file-server",
+      "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "newbee:build-storybook",
         "staticFilePath": "dist/storybook/newbee"

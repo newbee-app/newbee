@@ -41,12 +41,12 @@ describe('OrganizationReducer', () => {
   };
 
   describe('from initial state', () => {
-    it('should update state for registerWithWebauthnSuccess', () => {
+    it('should update state for registerWithWebAuthnSuccess', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        AuthActions.registerWithWebauthnSuccess({
+        AuthActions.registerWithWebAuthnSuccess({
           userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -54,7 +54,7 @@ describe('OrganizationReducer', () => {
     it('should update state for loginSuccess', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        AuthActions.loginSuccess({ userRelation: testUserRelation1 })
+        AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -64,7 +64,7 @@ describe('OrganizationReducer', () => {
         initialOrganizationState,
         CookieActions.initCookiesSuccess({
           csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -74,7 +74,7 @@ describe('OrganizationReducer', () => {
         initialOrganizationState,
         OrganizationActions.createOrgSuccess({
           organization: testOrganization1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -82,7 +82,9 @@ describe('OrganizationReducer', () => {
     it('should update state for acceptInviteSuccess', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        InviteActions.acceptInviteSuccess({ orgMember: testOrgMemberRelation1 })
+        InviteActions.acceptInviteSuccess({
+          orgMember: testOrgMemberRelation1,
+        }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
@@ -94,7 +96,7 @@ describe('OrganizationReducer', () => {
         stateAfterLoginSuccess,
         OrganizationActions.getOrgSuccess({
           orgAndMemberDto: testBaseOrgAndMemberDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGetOrgSuccess);
     });
@@ -104,7 +106,7 @@ describe('OrganizationReducer', () => {
         stateAfterGetOrgSuccess,
         OrganizationActions.editOrgSuccess({
           newOrg: testOrganization2,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterEditOrgSuccess);
     });
@@ -114,7 +116,7 @@ describe('OrganizationReducer', () => {
         stateAfterGetOrgSuccess,
         OrganizationActions.editOrgSlugSuccess({
           newOrg: testOrganization2,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterEditOrgSuccess);
     });
@@ -122,7 +124,7 @@ describe('OrganizationReducer', () => {
     it('should update state for deleteOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterGetOrgSuccess,
-        OrganizationActions.deleteOrgSuccess()
+        OrganizationActions.deleteOrgSuccess(),
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -130,7 +132,7 @@ describe('OrganizationReducer', () => {
     it('should update state for resetSelectedOrg', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterGetOrgSuccess,
-        OrganizationActions.resetSelectedOrg()
+        OrganizationActions.resetSelectedOrg(),
       );
       expect(updatedState).toEqual(stateAfterResetSelectedOrg);
     });

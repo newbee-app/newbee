@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "newbee",
   "affected": {
     "defaultBase": "main"
   },
@@ -9,7 +8,7 @@
   },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nrwl/nx-cloud",
+      "runner": "nx-cloud",
       "options": {
         "cacheableOperations": [
           "build",
@@ -23,46 +22,46 @@
     }
   },
   "generators": {
-    "@nrwl/angular:application": {
+    "@nx/angular:application": {
       "style": "css",
       "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
-    "@nrwl/angular:library": {
+    "@nx/angular:library": {
       "linter": "eslint",
       "unitTestRunner": "jest",
       "buildable": true
     },
-    "@nrwl/angular:component": {
+    "@nx/angular:component": {
       "style": "css",
       "standalone": true,
       "inlineStyle": true
     },
-    "@nrwl/angular:storybook-configuration": {
+    "@nx/angular:storybook-configuration": {
       "configureCypress": false,
       "generateCypressSpecs": false,
       "tsConfiguration": true
     },
-    "@nrwl/nest:library": {
+    "@nx/nest:library": {
       "buildable": true
     },
-    "@nrwl/nest:module": {
+    "@nx/nest:module": {
       "flat": true,
       "directory": "lib"
     },
-    "@nrwl/nest:controller": {
+    "@nx/nest:controller": {
       "flat": true,
       "directory": "lib"
     },
-    "@nrwl/nest:service": {
+    "@nx/nest:service": {
       "flat": true,
       "directory": "lib"
     },
-    "@nrwl/js:library": {
+    "@nx/js:library": {
       "unitTestRunner": "jest"
     },
-    "@nrwl/node:library": {
+    "@nx/node:library": {
       "buildable": true,
       "testEnvironment": "node"
     }
@@ -101,7 +100,8 @@
         "default",
         "^production",
         "{workspaceRoot}/.storybook/**/*",
-        "!{projectRoot}/.storybook/**/*"
+        "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/tsconfig.storybook.json"
       ]
     }
   },
@@ -115,7 +115,9 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/.storybook/**/*",
-      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+      "!{projectRoot}/tsconfig.storybook.json",
+      "!{projectRoot}/src/test-setup.[jt]s"
     ]
   }
 }

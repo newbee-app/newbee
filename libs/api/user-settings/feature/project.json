@@ -5,25 +5,26 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/api/user-settings/feature",
         "tsConfig": "libs/api/user-settings/feature/tsconfig.lib.json",
         "packageJson": "libs/api/user-settings/feature/package.json",
         "main": "libs/api/user-settings/feature/src/index.ts",
-        "assets": ["libs/api/user-settings/feature/*.md"]
+        "assets": ["libs/api/user-settings/feature/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/api/user-settings/feature/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/api/user-settings/feature"],
       "options": {
         "jestConfig": "libs/api/user-settings/feature/jest.config.ts",

@@ -44,7 +44,7 @@ export class UserService {
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -57,12 +57,11 @@ export class UserService {
    */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
     const { email, displayName, name, phoneNumber } = createUserDto;
-    const userInvites = await this.userInvitesService.findOrCreateOneByEmail(
-      email
-    );
+    const userInvites =
+      await this.userInvitesService.findOrCreateOneByEmail(email);
     const id = v4();
     const rpInfo = this.configService.get('rpInfo', { infer: true });
-    const options = generateRegistrationOptions({
+    const options = await generateRegistrationOptions({
       rpName: rpInfo.name,
       rpID: rpInfo.id,
       userID: id,
@@ -76,7 +75,7 @@ export class UserService {
       displayName,
       phoneNumber,
       options.challenge,
-      userInvites
+      userInvites,
     );
     try {
       await this.userRepository.persistAndFlush(user);
@@ -167,7 +166,7 @@ export class UserService {
    */
   async update(
     user: UserEntity,
-    data: EntityData<UserEntity>
+    data: EntityData<UserEntity>,
   ): Promise<UserEntity> {
     const updatedUser = this.userRepository.assign(user, data);
 
@@ -196,7 +195,7 @@ export class UserService {
       try {
         await this.solrCli.getVersionAndReplaceDocs(
           organization.id,
-          await this.entityService.createOrgMemberDocParams(orgMember)
+          await this.entityService.createOrgMemberDocParams(orgMember),
         );
       } catch (err) {
         this.logger.error(err);

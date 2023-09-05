@@ -43,25 +43,25 @@ export const organizationFeature = createFeature({
   reducer: createReducer(
     initialOrganizationState,
     on(
-      AuthActions.registerWithWebauthnSuccess,
+      AuthActions.registerWithWebAuthnSuccess,
       (
         state,
         {
           userRelationAndOptionsDto: {
             userRelation: { organizations },
           },
-        }
+        },
       ): OrganizationState => ({
         ...state,
         organizations,
-      })
+      }),
     ),
     on(
       AuthActions.loginSuccess,
       (state, { userRelation: { organizations } }): OrganizationState => ({
         ...state,
         organizations,
-      })
+      }),
     ),
     on(
       CookieActions.initCookiesSuccess,
@@ -72,25 +72,25 @@ export const organizationFeature = createFeature({
 
         const { organizations } = userRelation;
         return { ...state, organizations };
-      }
+      },
     ),
     on(
       OrganizationActions.getOrgSuccess,
       (
         state,
-        { orgAndMemberDto: { organization, orgMember } }
+        { orgAndMemberDto: { organization, orgMember } },
       ): OrganizationState => ({
         ...state,
         selectedOrganization: organization,
         orgMember,
-      })
+      }),
     ),
     on(
       OrganizationActions.createOrgSuccess,
       (state, { organization }): OrganizationState => {
         const organizations = [...state.organizations, organization];
         return { ...state, organizations };
-      }
+      },
     ),
     on(
       OrganizationActions.editOrgSuccess,
@@ -105,7 +105,7 @@ export const organizationFeature = createFeature({
 
         const organizations = [
           ...state.organizations.filter(
-            (org) => !isEqual(org, selectedOrganization)
+            (org) => !isEqual(org, selectedOrganization),
           ),
           newOrg,
         ];
@@ -115,7 +115,7 @@ export const organizationFeature = createFeature({
           organizations,
           selectedOrganization: newOrg,
         };
-      }
+      },
     ),
     on(OrganizationActions.deleteOrgSuccess, (state): OrganizationState => {
       const { selectedOrganization } = state;
@@ -126,7 +126,7 @@ export const organizationFeature = createFeature({
       }
 
       const organizations = state.organizations.filter(
-        (org) => !isEqual(org, selectedOrganization)
+        (org) => !isEqual(org, selectedOrganization),
       );
 
       return {
@@ -142,14 +142,14 @@ export const organizationFeature = createFeature({
         ...state,
         selectedOrganization: null,
         orgMember: null,
-      })
+      }),
     ),
     on(
       InviteActions.acceptInviteSuccess,
       (state, { orgMember: { organization } }): OrganizationState => ({
         ...state,
         organizations: [...state.organizations, organization],
-      })
-    )
+      }),
+    ),
   ),
 });
