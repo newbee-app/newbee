@@ -4,8 +4,8 @@ import {
   httpFeature,
   OrgMemberActions,
   orgMemberFeature,
-  ShortUrl,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 

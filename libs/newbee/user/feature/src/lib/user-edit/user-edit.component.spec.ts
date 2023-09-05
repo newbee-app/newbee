@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
 import {
   AuthenticatorActions,
   UserActions,
 } from '@newbee/newbee/shared/data-access';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
 import { testEditUserForm1 } from '@newbee/newbee/user/util';
 import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
@@ -27,12 +25,7 @@ describe('UserEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        NavbarComponent,
-        ErrorScreenComponent,
-        EditUserComponent,
-      ],
+      imports: [CommonModule, EditUserComponent],
       declarations: [UserEditComponent],
       providers: [
         provideMockStore({

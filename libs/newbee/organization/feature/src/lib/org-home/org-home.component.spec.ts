@@ -5,14 +5,18 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { NavbarComponent } from '@newbee/newbee/navbar/feature';
+import { ActivatedRoute, Router } from '@angular/router';
+import { createMock } from '@golevelup/ts-jest';
 import { OrgSearchbarComponent } from '@newbee/newbee/organization/ui';
-import { SearchActions } from '@newbee/newbee/shared/data-access';
-import { ErrorScreenComponent } from '@newbee/newbee/shared/feature';
+import {
+  initialSearchState,
+  SearchActions,
+} from '@newbee/newbee/shared/data-access';
 import {
   testBaseQueryDto1,
   testBaseSuggestDto1,
 } from '@newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgHomeComponent } from './org-home.component';
 
@@ -27,24 +31,37 @@ describe('OrgHomeComponent', () => {
   let component: OrgHomeComponent;
   let fixture: ComponentFixture<OrgHomeComponent>;
   let store: MockStore;
+  let router: Router;
+  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        NavbarComponent,
-        OrgSearchbarComponent,
-        ErrorScreenComponent,
-      ],
+      imports: [CommonModule, OrgSearchbarComponent],
       declarations: [OrgHomeComponent],
       providers: [
-        provideMockStore({ initialState: { search: { suggestions: [] } } }),
+        provideMockStore({
+          initialState: {
+            [Keyword.Search]: { ...initialSearchState, suggestions: [] },
+          },
+        }),
+        {
+          provide: Router,
+          useValue: createMock<Router>({
+            navigate: jest.fn().mockResolvedValue(true),
+          }),
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: createMock<ActivatedRoute>(),
+        },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OrgHomeComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    router = TestBed.inject(Router);
+    route = TestBed.inject(ActivatedRoute);
 
     jest.spyOn(store, 'dispatch');
 
@@ -55,21 +72,24 @@ describe('OrgHomeComponent', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
     expect(store).toBeDefined();
+    expect(router).toBeDefined();
+    expect(route).toBeDefined();
   });
 
-  describe('search', () => {
-    it('should dispatch search', () => {
-      component.search(testBaseQueryDto1.query);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
-        SearchActions.search({ query: testBaseQueryDto1 })
+  describe('onSearch', () => {
+    it('should navigate to search', async () => {
+      await component.onSearch(testBaseQueryDto1.query);
+      expect(router.navigate).toBeCalledTimes(1);
+      expect(router.navigate).toBeCalledWith(
+        [`${Keyword.Search}/${testBaseQueryDto1.query}`],
+        { relativeTo: route }
       );
     });
   });
 
-  describe('searchbar', () => {
+  describe('onSearchbar', () => {
     it('should dispatch suggest', fakeAsync(() => {
-      component.searchbar(testBaseSuggestDto1.query);
+      component.onSearchbar(testBaseSuggestDto1.query);
       tick(300);
       expect(store.dispatch).toBeCalledTimes(1);
       expect(store.dispatch).toBeCalledWith(

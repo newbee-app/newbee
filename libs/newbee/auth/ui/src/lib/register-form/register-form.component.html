@@ -58,11 +58,6 @@
         ></newbee-alert>
 
         <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
-        <newbee-alert
-          [show]="inputDisplayError('phoneNumber')"
-          [text]="inputErrorMessage('phoneNumber')"
-          [type]="alertType.Error"
-        ></newbee-alert>
       </div>
 
       <div id="buttons" class="flex flex-col flex-nowrap gap-y-2">
@@ -87,11 +82,7 @@
 
   <div>
     <p>Already using NewBee?</p>
-    <a
-      id="login-link"
-      (click)="emitNavigateToLogin()"
-      class="link link-primary"
-    >
+    <a id="login-link" (click)="emitNavigateToLogin()" class="link link-info">
       Log in to an existing account
     </a>
   </div>

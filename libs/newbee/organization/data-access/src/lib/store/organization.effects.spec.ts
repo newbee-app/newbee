@@ -1,10 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import {
-  OrganizationActions,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,

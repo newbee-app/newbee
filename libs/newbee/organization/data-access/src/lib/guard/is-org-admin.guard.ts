@@ -1,9 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import {
-  organizationFeature,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { organizationFeature } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map, Observable, take } from 'rxjs';

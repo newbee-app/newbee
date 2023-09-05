@@ -171,8 +171,11 @@ export const testQnaEntity1 = {
 export const testOrgMemberDocParams1 = new OrgMemberDocParams(
   testOrgMemberEntity1.id,
   testOrgMemberEntity1.slug,
+  testUserEntity1.email,
   testUserEntity1.name,
-  testUserEntity1.displayName
+  testUserEntity1.displayName,
+  testUserEntity1.phoneNumber,
+  testOrgMemberEntity1.role
 );
 
 /**
@@ -197,9 +200,9 @@ export const testDocDocParams1 = new DocDocParams(
   testDocEntity1.updatedAt,
   testDocEntity1.markedUpToDateAt,
   testDocEntity1.upToDate,
+  testDocEntity1.title,
   testDocEntity1.creator?.id ?? null,
   testDocEntity1.maintainer?.id ?? null,
-  testDocEntity1.title,
   testDocEntity1.docTxt
 );
 
@@ -215,9 +218,9 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.updatedAt,
   testQnaEntity1.markedUpToDateAt,
   testQnaEntity1.upToDate,
+  testQnaEntity1.title,
   testQnaEntity1.creator?.id ?? null,
   testQnaEntity1.maintainer?.id ?? null,
-  testQnaEntity1.title,
   testQnaEntity1.questionTxt,
   testQnaEntity1.answerTxt
 );

@@ -32,6 +32,6 @@ export interface DocRelation {
 }
 
 /**
- * DocRelation with only member-related information.
+ * DocRelation with org information removed.
  */
-export type DocMembers = Pick<DocRelation, 'doc' | 'creator' | 'maintainer'>;
+export type DocNoOrg = Omit<DocRelation, 'organization'>;

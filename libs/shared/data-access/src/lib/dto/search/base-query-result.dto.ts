@@ -1,41 +1,23 @@
-import type {
-  DocQueryResult,
-  OrgMemberQueryResult,
-  QnaQueryResult,
-  TeamQueryResult,
-} from '@newbee/shared/util';
+import type { QueryResult, QueryResultType } from '@newbee/shared/util';
 
 /**
  * The DTO sent from the backend to the frontend as a result of a query request.
  */
-export class BaseQueryResultDto {
+export class BaseQueryResultDto implements QueryResult {
   /**
-   * The page set from which to start listing results.
+   * @inheritdoc
    */
-  offset!: number;
+  total = 0;
 
   /**
-   * Org members that match the query.
+   * @inheritdoc
    */
-  orgMember?: OrgMemberQueryResult[];
+  results: QueryResultType[] = [];
 
   /**
-   * Teams that match the query.
+   * @inheritdoc
    */
-  team?: TeamQueryResult[];
+  suggestion: string | null = null;
 
-  /**
-   * Docs that match the query.
-   */
-  doc?: DocQueryResult[];
-
-  /**
-   * Qnas that match the query.
-   */
-  qna?: QnaQueryResult[];
-
-  /**
-   * An alternative query the user might have meant, if the original query found little to no results.
-   */
-  suggestion?: string;
+  constructor(public offset: number) {}
 }

@@ -1,7 +1,6 @@
-<newbee-no-org
-  *ngIf="noOrg; else noOrgSelected"
-  (navigateToLink)="navigateToLink($event)"
-></newbee-no-org>
-<ng-template #noOrgSelected
-  ><newbee-no-org-selected></newbee-no-org-selected
+<newbee-no-org-selected
+  *ngIf="(organizations$ | async)?.length; else noOrg"
+></newbee-no-org-selected>
+<ng-template #noOrg
+  ><newbee-no-org (navigateToLink)="navigateToLink($event)"></newbee-no-org
 ></ng-template>

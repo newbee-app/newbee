@@ -1,0 +1,181 @@
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SearchTab } from '@newbee/newbee/search/util';
+import {
+  SearchbarComponent,
+  SearchResultComponent,
+} from '@newbee/newbee/shared/ui';
+import { SearchResultFormat } from '@newbee/newbee/shared/util';
+import type { QueryResult } from '@newbee/shared/util';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { Subject, takeUntil } from 'rxjs';
+
+/**
+ * The dumb UI for displaying search results.
+ */
+@Component({
+  selector: 'newbee-search-results',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InfiniteScrollModule,
+    SearchbarComponent,
+    SearchResultComponent,
+  ],
+  templateUrl: './search-results.component.html',
+})
+export class SearchResultsComponent implements OnInit, OnDestroy {
+  /**
+   * The initial value for the searchbar.
+   */
+  @Input() initialSearchTerm = '';
+
+  /**
+   * The currently selected search tab value.
+   */
+  @Input() tab = SearchTab.All;
+
+  /**
+   * The event emitter that tells the parent component when the user has changed search tabs, so the results can be filtered.
+   */
+  @Output() tabChange = new EventEmitter<SearchTab>();
+
+  /**
+   * Suggestions for the searchbar based on its current value.
+   */
+  @Input() searchSuggestions: string[] = [];
+
+  /**
+   * The search results themselves.
+   */
+  @Input() searchResults: QueryResult | null = null;
+
+  /**
+   * Whether to display a loader to indicate a search is occurring.
+   */
+  @Input() searchPending = false;
+
+  /**
+   * The event emitter that tells the parent component when a search has been fired off.
+   */
+  @Output() search = new EventEmitter<string>();
+
+  /**
+   * The event emitter that tells the parent component when the user has typed into the searchbar, so suggestions can be fetched.
+   */
+  @Output() searchbar = new EventEmitter<string>();
+
+  /**
+   * Where to navigate to, relative to the current org.
+   */
+  @Output() orgNavigate = new EventEmitter<string>();
+
+  /**
+   * Indicates that the user has scrolled to the bottom of the search results.
+   */
+  @Output() scrolled = new EventEmitter<void>();
+
+  /**
+   * Emits to unsubscribe from all infinite observables.
+   */
+  private readonly unsubscribe$ = new Subject<void>();
+
+  /**
+   * All of the possible values for a search tab.
+   */
+  readonly searchTab = SearchTab;
+
+  /**
+   * All search result display formats.
+   */
+  readonly searchResultFormat = SearchResultFormat;
+
+  /**
+   * The search term coming from the searchbar.
+   */
+  searchTerm = this.fb.group({ searchbar: ['', [Validators.required]] });
+
+  constructor(private readonly fb: FormBuilder) {}
+
+  /**
+   * Sets the value of the searchbar to the initial search term.
+   * Also emits the suggest event with the current searchbar value.
+   */
+  ngOnInit(): void {
+    this.searchTerm.setValue({ searchbar: this.initialSearchTerm });
+
+    this.searchTerm.controls.searchbar.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (value) => {
+          this.searchbar.emit(value ?? '');
+        },
+      });
+  }
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  /**
+   * The number of results that were found, expressed as a string.
+   */
+  get resultsFound(): string {
+    if (!this.searchResults) {
+      return '';
+    }
+
+    return `${this.searchResults.total} ${
+      this.searchResults.total === 1 ? 'result' : 'results'
+    } found`;
+  }
+
+  /**
+   * Change the current search tab to filter results.
+   *
+   * @param tab The new value for the search tab.
+   */
+  changeTab(tab: SearchTab): void {
+    if (this.tab === tab) {
+      return;
+    }
+
+    this.tab = tab;
+    this.tabChange.emit(tab);
+  }
+
+  /**
+   * Takes in a suggestion and uses it to fire a search request.
+   *
+   * @param suggestion The suggestion to use.
+   */
+  selectSuggestion(suggestion: string): void {
+    this.searchTerm.setValue({ searchbar: suggestion });
+    this.emitSearch();
+  }
+
+  /**
+   * Emits the search event with the current search value.
+   */
+  emitSearch(): void {
+    const searchVal = this.searchTerm.controls.searchbar.value;
+    if (!searchVal) {
+      return;
+    }
+
+    return this.search.emit(searchVal);
+  }
+}

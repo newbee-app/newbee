@@ -8,7 +8,7 @@ import { ClickWrapperComponent } from '../../testing';
 import { PhoneInputComponent } from './phone-input.component';
 
 export default {
-  title: 'PhoneInputComponent',
+  title: 'Form Control/PhoneInputComponent',
   component: PhoneInputComponent,
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),

@@ -2,9 +2,9 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import {
   organizationFeature,
-  ShortUrl,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   compareOrgRoles,
   compareTeamRoles,

@@ -14,5 +14,5 @@
 </ng-container>
 
 <ng-template #noError>
-  <ng-content></ng-content>
+  <ng-container [ngTemplateOutlet]="content.templateRef"></ng-container>
 </ng-template>

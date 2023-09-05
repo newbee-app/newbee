@@ -1,8 +1,10 @@
-import { SolrEntryEnum } from '@newbee/shared/util';
+import { OrgRoleEnum, SolrEntryEnum } from '@newbee/shared/util';
 import type { DocResponse, HighlightedFields } from '@newbee/solr-cli';
 
 /**
  * All of the fields of a Solr doc that we care about, minus what is included in the cli itself (`id` and `_version_`).
+ * Made so that we can add new docs to Solr with type safety.
+ * The property types represent the possible types that Solr will accept as defined in our schema, not necessarily what we'll actually use in the backend to convert an entity to a Solr doc.
  */
 export interface SolrDocFields {
   /**
@@ -16,6 +18,11 @@ export interface SolrDocFields {
   slug: string;
 
   /**
+   * The email of the org member the doc represents, if the doc is an org member.
+   */
+  user_email?: string;
+
+  /**
    * The name of the org member the doc represents, if the doc is an org member.
    */
   user_name?: string;
@@ -24,6 +31,16 @@ export interface SolrDocFields {
    * The display name of the org member the doc represents, if the doc is an org member.
    */
   user_display_name?: string | null;
+
+  /**
+   * The phone number of the org member the doc represents, if the doc is an org member.
+   */
+  user_phone_number?: string | null;
+
+  /**
+   * The org role of the org member the doc represents, if the doc is an org member.
+   */
+  org_role?: OrgRoleEnum;
 
   /**
    * The name of the team the doc represents, if the doc is a team.
@@ -56,6 +73,11 @@ export interface SolrDocFields {
   up_to_date?: boolean;
 
   /**
+   * The title of the post, if the doc is a doc or a qna.
+   */
+  title?: string;
+
+  /**
    * The user that created the post, if the doc is a doc or a qna.
    */
   creator?: string | null;
@@ -66,19 +88,9 @@ export interface SolrDocFields {
   maintainer?: string | null;
 
   /**
-   * The title of the doc, if the doc is a doc.
-   */
-  doc_title?: string;
-
-  /**
    * The body of the doc, if the doc is a doc.
    */
   doc_txt?: string | string[];
-
-  /**
-   * The title of the qna, if the doc is a qna.
-   */
-  qna_title?: string;
 
   /**
    * The details of the question, if the doc is a qna.
@@ -93,13 +105,11 @@ export interface SolrDocFields {
 
 /**
  * All of the parts of a Solr doc response that we care about.
+ * Made so that we can interpret Solr search responses with safety.
+ * Fields in `SolrDocFields` are only redefined if the retrieved type differs from its definition in `SolrDocFields`.
+ *
  */
 export interface SolrDoc extends SolrDocFields, DocResponse {
-  /**
-   * @inheritdoc
-   */
-  user_name?: string;
-
   /**
    * @inheritdoc
    */
@@ -108,7 +118,7 @@ export interface SolrDoc extends SolrDocFields, DocResponse {
   /**
    * @inheritdoc
    */
-  team_name?: string;
+  user_phone_number?: string;
 
   /**
    * @inheritdoc
@@ -143,17 +153,7 @@ export interface SolrDoc extends SolrDocFields, DocResponse {
   /**
    * @inheritdoc
    */
-  doc_title?: string;
-
-  /**
-   * @inheritdoc
-   */
   doc_txt?: string;
-
-  /**
-   * @inheritdoc
-   */
-  qna_title?: string;
 
   /**
    * @inheritdoc
@@ -165,6 +165,86 @@ export interface SolrDoc extends SolrDocFields, DocResponse {
    */
   answer_txt?: string;
 }
+
+/**
+ * A Solr doc response that represents an org member.
+ * Fields are only redefined if they are guaranteed to exist for this type of Solr doc.
+ */
+export interface OrgMemberSolrDoc extends SolrDoc {
+  /**
+   * @inheritdoc
+   */
+  user_email: string;
+
+  /**
+   * @inheritdoc
+   */
+  user_name: string;
+
+  /**
+   * @inheritdoc
+   */
+  org_role: OrgRoleEnum;
+}
+
+/**
+ * A Solr doc response that represents a team.
+ * Fields are only redefined if they are guaranteed to exist for this type of Solr doc.
+ */
+export interface TeamSolrDoc extends SolrDoc {
+  /**
+   * @inheritdoc
+   */
+  team_name: string;
+}
+
+/**
+ * A Solr doc response that represents a post.
+ * Fields are only redefined if they are guaranteed to exist for this type of Solr doc.
+ */
+export interface PostSolrDoc extends SolrDoc {
+  /**
+   * @inheritdoc
+   */
+  created_at: string;
+
+  /**
+   * @inheritdoc
+   */
+  updated_at: string;
+
+  /**
+   * @inheritdoc
+   */
+  marked_up_to_date_at: string;
+
+  /**
+   * @inheritdoc
+   */
+  up_to_date: boolean;
+
+  /**
+   * @inheritdoc
+   */
+  title: string;
+}
+
+/**
+ * A Solr doc response that represents a doc.
+ * Fields are only redefined if they are guaranteed to exist for this type of Solr doc.
+ */
+export interface DocSolrDoc extends PostSolrDoc {
+  /**
+   * @inheritdoc
+   */
+  doc_txt: string;
+}
+
+/**
+ * A Solr doc response that represents a qna.
+ * Fields are only redefined if they are guaranteed to exist for this type of Solr doc.
+ */
+export type QnaSolrDoc = PostSolrDoc;
 
 /**
  * All of the properties that can appear in highlighted fields.

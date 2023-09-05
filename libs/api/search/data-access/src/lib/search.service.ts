@@ -4,7 +4,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
-import type { SolrDoc, SolrHighlightedFields } from '@newbee/api/shared/util';
+import type {
+  DocSolrDoc,
+  OrgMemberSolrDoc,
+  QnaSolrDoc,
+  SolrDoc,
+  SolrHighlightedFields,
+  TeamSolrDoc,
+} from '@newbee/api/shared/util';
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
@@ -18,7 +25,7 @@ import {
   surroundSubstringsWith,
   TeamQueryResult,
 } from '@newbee/shared/util';
-import { SolrCli, Spellcheck } from '@newbee/solr-cli';
+import { QueryResponse, SolrCli, Spellcheck } from '@newbee/solr-cli';
 import { QueryDto, SuggestDto } from './dto';
 
 @Injectable()
@@ -31,12 +38,12 @@ export class SearchService {
   /**
    * The left portion of what to surround query matches with.
    */
-  private readonly leftSurround = '<b>';
+  private readonly leftSurround = '<strong>';
 
   /**
    * The right portion of what to surround query matches with.
    */
-  private readonly rightSurround = '</b>';
+  private readonly rightSurround = '</strong>';
 
   constructor(private readonly solrCli: SolrCli) {}
 
@@ -80,19 +87,21 @@ export class SearchService {
       const suggestions = docs
         .map((doc) => {
           const {
-            user_display_name,
             user_name,
+            user_display_name,
+            user_email,
+            user_phone_number,
             team_name,
-            doc_title,
-            qna_title,
+            title,
           } = doc;
 
           for (const field of [
-            user_display_name,
             user_name,
+            user_display_name,
+            user_email,
+            user_phone_number,
             team_name,
-            doc_title,
-            qna_title,
+            title,
           ]) {
             if (queryRegexes.some((regex) => regex.test(field ?? ''))) {
               return surroundSubstringsWith(
@@ -128,15 +137,138 @@ export class SearchService {
     organization: OrganizationEntity,
     queryDto: QueryDto
   ): Promise<BaseQueryResultDto> {
-    const { query, offset, type } = queryDto;
-    const result: BaseQueryResultDto = { offset };
+    const { query, offset } = queryDto;
+    const result = new BaseQueryResultDto(offset);
+
+    // this should never happen, but leave it for safety
     if (!query) {
       return result;
     }
 
+    // Execute the query
+    const solrRes = await this.makeQuery(organization, queryDto);
+
+    // Record how many results were found
+    const numFound = solrRes.response.numFound;
+    result.total = numFound;
+
+    // No results found, suggest an alternative spelling
+    if (!numFound) {
+      const suggestion = solrRes.spellcheck
+        ? SearchService.getSpellcheckSuggestion(solrRes.spellcheck)
+        : null;
+      if (suggestion) {
+        result.suggestion = suggestion;
+      }
+      return result;
+    }
+
+    // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
+    const docs = solrRes.response.docs as SolrDoc[];
+    const queryIds = Array.from(
+      new Set(
+        docs
+          .filter((doc) =>
+            [SolrEntryEnum.Doc, SolrEntryEnum.Qna].includes(doc.entry_type)
+          )
+          .flatMap(
+            (doc) =>
+              [doc.team, doc.creator, doc.maintainer].filter(
+                Boolean
+              ) as string[]
+          )
+      )
+    );
+
+    // Execute the additional query
+    const idsRes = queryIds.length
+      ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
+      : null;
+    const idsResDocs = idsRes ? (idsRes.response.docs as SolrDoc[]) : [];
+
+    // Take the org members resulting from the additional query and map them from their IDs to the information we care about
+    const orgMemberMap = new Map(
+      idsResDocs
+        .filter((doc) => doc.entry_type === SolrEntryEnum.User)
+        .map((doc) => [
+          doc.id,
+          SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
+        ])
+    );
+
+    // Take the teams resulting from the additional query and map them from their IDs to the information we care about
+    const teamMap = new Map(
+      idsResDocs
+        .filter((doc) => doc.entry_type === SolrEntryEnum.Team)
+        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)])
+    );
+
+    // Construct a map from the highlighting portion of the original response
+    const highlightMap = new Map<string, SolrHighlightedFields>(
+      Object.entries(solrRes.highlighting ?? {}).filter(
+        ([, highlightedFields]) => Object.keys(highlightedFields).length
+      )
+    );
+
+    // Iterate through the responses to construct the result
+    docs.forEach((doc) => {
+      const { id, entry_type: entryType } = doc;
+      const highlightedFields = highlightMap.get(id) ?? {};
+      switch (entryType) {
+        case SolrEntryEnum.User: {
+          result.results.push(
+            SearchService.handleOrgMember(doc as OrgMemberSolrDoc)
+          );
+          break;
+        }
+        case SolrEntryEnum.Team: {
+          result.results.push(SearchService.handleTeam(doc as TeamSolrDoc));
+          break;
+        }
+        case SolrEntryEnum.Doc: {
+          result.results.push(
+            SearchService.handleDoc(
+              doc as DocSolrDoc,
+              orgMemberMap,
+              teamMap,
+              highlightedFields
+            )
+          );
+          break;
+        }
+        case SolrEntryEnum.Qna: {
+          result.results.push(
+            SearchService.handleQna(
+              doc as QnaSolrDoc,
+              orgMemberMap,
+              teamMap,
+              highlightedFields
+            )
+          );
+          break;
+        }
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * A helper function for making a Solr query.
+   *
+   * @param organization The organization to query.
+   * @param queryDto The parameters for the query itself.
+   *
+   * @returns The query response from Solr.
+   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
+   */
+  private async makeQuery(
+    organization: OrganizationEntity,
+    queryDto: QueryDto
+  ): Promise<QueryResponse> {
+    const { query, offset, type } = queryDto;
     try {
-      // Execute the query
-      const solrRes = await this.solrCli.query(organization.id, {
+      return await this.solrCli.query(organization.id, {
         query,
         offset,
         ...(type && { filter: `entry_type:${type}` }),
@@ -145,111 +277,10 @@ export class SearchService {
           'spellcheck.q': query,
         },
       });
-
-      // No responses found, suggest an alternative spelling
-      if (!solrRes.response.numFound) {
-        const suggestion = solrRes.spellcheck
-          ? SearchService.getSpellcheckSuggestion(solrRes.spellcheck)
-          : null;
-        if (suggestion) {
-          result.suggestion = suggestion;
-        }
-        return result;
-      }
-
-      // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
-      const docs = solrRes.response.docs as SolrDoc[];
-      const queryIds = Array.from(
-        new Set(
-          docs
-            .filter(
-              (doc) =>
-                doc.entry_type === SolrEntryEnum.Doc ||
-                doc.entry_type === SolrEntryEnum.Qna
-            )
-            .flatMap(
-              (doc) =>
-                [doc.team, doc.creator, doc.maintainer].filter(
-                  Boolean
-                ) as string[]
-            )
-        )
-      );
-
-      // Execute the additional query
-      const idsRes = queryIds.length
-        ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
-        : null;
-      const idsResDocs = idsRes ? (idsRes.response.docs as SolrDoc[]) : [];
-
-      // Take the org members resulting from the additional query and map them from their IDs to the information we care about
-      const orgMemberMap = new Map(
-        idsResDocs
-          .filter((doc) => doc.entry_type === SolrEntryEnum.User)
-          .map((doc) => [doc.id, SearchService.handleOrgMember(doc)])
-      );
-
-      // Take the teams resulting from the additional query and map them from their IDs to the information we care about
-      const teamMap = new Map(
-        idsResDocs
-          .filter((doc) => doc.entry_type === SolrEntryEnum.Team)
-          .map((doc) => [doc.id, SearchService.handleTeam(doc)])
-      );
-
-      // Construct a map from the highlighting portion of the original response
-      const highlightMap = new Map<string, SolrHighlightedFields>(
-        Object.entries(solrRes.highlighting ?? {}).filter(
-          ([, highlightedFields]) => Object.keys(highlightedFields).length
-        )
-      );
-
-      // Iterate through the responses to construct the result
-      docs.forEach((doc) => {
-        const { id, entry_type: entryType } = doc;
-        const highlightedFields = highlightMap.get(id) ?? {};
-        switch (entryType) {
-          case SolrEntryEnum.User: {
-            result.orgMember = result.orgMember ?? [];
-            result.orgMember.push(SearchService.handleOrgMember(doc));
-            break;
-          }
-          case SolrEntryEnum.Team: {
-            result.team = result.team ?? [];
-            result.team.push(SearchService.handleTeam(doc));
-            break;
-          }
-          case SolrEntryEnum.Doc: {
-            result.doc = result.doc ?? [];
-            result.doc.push(
-              SearchService.handleDoc(
-                doc,
-                orgMemberMap,
-                teamMap,
-                highlightedFields
-              )
-            );
-            break;
-          }
-          case SolrEntryEnum.Qna: {
-            result.qna = result.qna ?? [];
-            result.qna.push(
-              SearchService.handleQna(
-                doc,
-                orgMemberMap,
-                teamMap,
-                highlightedFields
-              )
-            );
-            break;
-          }
-        }
-      });
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
-
-    return result;
   }
 
   /**
@@ -267,39 +298,46 @@ export class SearchService {
   }
 
   /**
-   * A helper function that takes in a doc response and converts it to an `OrgMemberQueryResult`.
-   * Does not check if the doc is of the right type, that responsibility falls on the caller.
+   * A helper function that takes in an org member doc response and converts it to an `OrgMemberQueryResult`.
    *
    * @param doc The doc response to convert.
    *
    * @returns The `OrgMemberQueryResult` resulting from the doc.
    */
-  private static handleOrgMember(doc: SolrDoc): OrgMemberQueryResult {
-    const { slug, user_name, user_display_name } = doc;
-    return {
+  private static handleOrgMember(doc: OrgMemberSolrDoc): OrgMemberQueryResult {
+    const {
       slug,
-      name: user_name ?? '',
-      displayName: user_display_name ?? null,
+      org_role,
+      user_email,
+      user_name,
+      user_display_name,
+      user_phone_number,
+    } = doc;
+    return {
+      orgMember: { slug, role: org_role },
+      user: {
+        email: user_email,
+        name: user_name,
+        displayName: user_display_name ?? null,
+        phoneNumber: user_phone_number ?? null,
+      },
     };
   }
 
   /**
-   * A helper function that takes in a doc response and converts it to a `TeamQueryResult`.
-   * Does not check if the doc is of the right type, that responsibility falls on the caller.
+   * A helper function that takes in a team doc response and converts it to a `TeamQueryResult`.
    *
    * @param doc The doc response to convert.
    *
    * @returns The `TeamQueryResult` resulting from the doc.
    */
-  private static handleTeam(doc: SolrDoc): TeamQueryResult {
+  private static handleTeam(doc: TeamSolrDoc): TeamQueryResult {
     const { slug, team_name } = doc;
-
-    return { slug, name: team_name ?? '' };
+    return { slug, name: team_name };
   }
 
   /**
-   * A helper function that takes in a doc response and converts it to a `DocQueryResult`.
-   * Does not check if the doc is of the right type, that responsibility falls on the caller.
+   * A helper function that takes in a doc doc response and converts it to a `DocQueryResult`.
    *
    * @param doc The doc response to convert.
    * @param orgMemberMap A map mapping an org member's ID to the org member.
@@ -309,15 +347,17 @@ export class SearchService {
    * @returns The `DocQueryResult` resulting from the doc.
    */
   private static handleDoc(
-    doc: SolrDoc,
+    doc: DocSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
     highlightedFields: SolrHighlightedFields = {}
   ): DocQueryResult {
     const {
+      created_at,
+      updated_at,
       marked_up_to_date_at,
       up_to_date,
-      doc_title,
+      title,
       slug,
       team,
       creator,
@@ -325,14 +365,18 @@ export class SearchService {
       doc_txt,
     } = doc;
     return {
-      markedUpToDateAt: new Date(marked_up_to_date_at ?? ''),
-      upToDate: up_to_date ?? false,
-      title: doc_title ?? '',
-      slug: slug ?? '',
-      team: teamMap.get(team ?? '') ?? null,
-      creator: orgMemberMap.get(creator ?? '') as OrgMemberQueryResult,
+      doc: {
+        createdAt: new Date(created_at),
+        updatedAt: new Date(updated_at),
+        markedUpToDateAt: new Date(marked_up_to_date_at),
+        upToDate: up_to_date,
+        title,
+        slug,
+        docSnippet: highlightedFields.doc_txt?.[0] ?? doc_txt.slice(0, 100),
+      },
+      creator: orgMemberMap.get(creator ?? '') ?? null,
       maintainer: orgMemberMap.get(maintainer ?? '') ?? null,
-      docSnippet: highlightedFields.doc_txt?.[0] ?? doc_txt ?? '',
+      team: teamMap.get(team ?? '') ?? null,
     };
   }
 
@@ -349,15 +393,17 @@ export class SearchService {
    * @returns The `QnaQueryResult` resulting from the doc.
    */
   private static handleQna(
-    doc: SolrDoc,
+    doc: QnaSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
     highlightedFields: SolrHighlightedFields = {}
   ): QnaQueryResult {
     const {
+      created_at,
+      updated_at,
       marked_up_to_date_at,
       up_to_date,
-      qna_title,
+      title,
       slug,
       team,
       creator,
@@ -366,16 +412,25 @@ export class SearchService {
       answer_txt,
     } = doc;
     return {
-      markedUpToDateAt: new Date(marked_up_to_date_at ?? ''),
-      upToDate: up_to_date ?? false,
-      title: qna_title ?? '',
-      slug: slug ?? '',
+      qna: {
+        createdAt: new Date(created_at),
+        updatedAt: new Date(updated_at),
+        markedUpToDateAt: new Date(marked_up_to_date_at),
+        upToDate: up_to_date,
+        title,
+        slug,
+        questionSnippet:
+          highlightedFields.question_txt?.[0] ??
+          question_txt?.slice(0, 100) ??
+          null,
+        answerSnippet:
+          highlightedFields.answer_txt?.[0] ??
+          answer_txt?.slice(0, 100) ??
+          null,
+      },
       team: teamMap.get(team ?? '') ?? null,
-      creator: orgMemberMap.get(creator ?? '') as OrgMemberQueryResult,
+      creator: orgMemberMap.get(creator ?? '') ?? null,
       maintainer: orgMemberMap.get(maintainer ?? '') ?? null,
-      questionSnippet:
-        highlightedFields.question_txt?.[0] ?? question_txt ?? '',
-      answerSnippet: highlightedFields.answer_txt?.[0] ?? answer_txt ?? '',
     };
   }
 }

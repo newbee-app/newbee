@@ -4,17 +4,15 @@ import {
   isOrgAdminGuard,
   orgGuard,
   orgTitleResolver,
-  resetSelectedOrgGuard,
 } from '@newbee/newbee/organization/data-access';
-import {
-  authenticatedGuard,
-  ShortUrl,
-} from '@newbee/newbee/shared/data-access';
+import { authenticatedGuard } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { OrgCreateComponent } from '../org-create';
 import { OrgEditComponent } from '../org-edit';
 import { OrgHomeComponent } from '../org-home';
 import { OrgInviteComponent } from '../org-invite';
+import { OrgRootComponent } from '../org-root';
 
 const routes: Routes = [
   {
@@ -24,9 +22,9 @@ const routes: Routes = [
   },
   {
     path: `:${ShortUrl.Organization}`,
+    component: OrgRootComponent,
     title: orgTitleResolver,
     canActivate: [authenticatedGuard, orgGuard],
-    canDeactivate: [resetSelectedOrgGuard],
     children: [
       {
         path: ShortUrl.Team,
@@ -40,6 +38,13 @@ const routes: Routes = [
         loadChildren: async () => {
           const m = await import('@newbee/newbee/org-member/feature');
           return m.OrgMemberModule;
+        },
+      },
+      {
+        path: Keyword.Search,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/search/feature');
+          return m.SearchModule;
         },
       },
       {

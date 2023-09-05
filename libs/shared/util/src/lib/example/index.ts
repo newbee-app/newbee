@@ -20,6 +20,7 @@ import type {
   Post,
   Qna,
   QnaRelation,
+  QueryResult,
   Team,
   TeamMember,
   TeamMemberRelation,
@@ -30,7 +31,12 @@ import type {
   UserRelation,
   UserSettings,
 } from '../interface';
-import type { TeamQueryResult } from '../type';
+import type {
+  DocQueryResult,
+  OrgMemberQueryResult,
+  QnaQueryResult,
+  TeamQueryResult,
+} from '../type';
 
 /**
  * For internal use in creating a user challenge.
@@ -160,8 +166,6 @@ export const testDoc1: Doc = {
   slug: 'test-doc-1-slug',
   docMarkdoc:
     'All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.',
-  docTxt:
-    'All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedHtml: 'renderedhtml',
 };
@@ -175,11 +179,9 @@ export const testQna1: Qna = {
   title: 'What is our PTO policy?',
   slug: 'test-qna-1-slug',
   questionMarkdoc: 'More specifically days I can use to go on vacations.',
-  questionTxt: 'More specifically days I can use to go on vacations.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedQuestion: 'renderedquestion',
   answerMarkdoc: 'All employees are entitled to 20 days of PTO per year.',
-  answerTxt: 'All employees are entitled to 20 days of PTO per year.',
   // TODO: add this in later once we figure out what we wanna do with markdoc
   // renderedAnswer: 'renderedanswer',
 };
@@ -261,10 +263,63 @@ export const testAuthenticationCredential1: AuthenticationResponseJSON = {
 };
 
 /**
+ * An example instance of `OrgMemberUser`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberUser1: OrgMemberUser = {
+  orgMember: testOrgMember1,
+  user: testUser1,
+};
+
+/**
+ * An example instance of `OrgMemberQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberQueryResult1: OrgMemberQueryResult =
+  testOrgMemberUser1;
+
+/**
  * An example instance of `TeamQueryResult`.
  * Strictly for use in testing.
  */
 export const testTeamQueryResult1: TeamQueryResult = testTeam1;
+
+/**
+ * An example instance of `DocQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testDocQueryResult1: DocQueryResult = {
+  doc: { ...testPost1, docSnippet: testDoc1.docMarkdoc },
+  creator: testOrgMemberUser1,
+  maintainer: testOrgMemberUser1,
+  team: testTeamQueryResult1,
+};
+
+/**
+ * An example instance of `QnaQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testQnaQueryResult1: QnaQueryResult = {
+  qna: {
+    ...testPost1,
+    questionSnippet: testQna1.questionMarkdoc,
+    answerSnippet: testQna1.answerMarkdoc,
+  },
+  creator: testOrgMemberUser1,
+  maintainer: testOrgMemberUser1,
+  team: testTeam1,
+};
+
+/**
+ * An example instance of QueryResult.
+ * Strictly for use in testing.
+ */
+export const testQueryResult1: QueryResult = {
+  total: 1,
+  offset: 0,
+  results: [testTeamQueryResult1],
+  suggestion: null,
+};
 
 /**
  * An example instance of `TeamMemberRelation`.
@@ -275,15 +330,6 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
   team: testTeam1,
   orgMember: testOrgMember1,
   organization: testOrganization1,
-  user: testUser1,
-};
-
-/**
- * An example instance of `OrgMemberUser`.
- * Strictly for use in testing.
- */
-export const testOrgMemberUser1: OrgMemberUser = {
-  orgMember: testOrgMember1,
   user: testUser1,
 };
 
@@ -320,10 +366,10 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   organization: testOrganization1,
   user: testUser1,
   teams: { sample: [testTeamMemberRelation1], total: 1 },
-  createdDocs: { sample: [testDocRelation1], total: 1 },
-  maintainedDocs: { sample: [testDocRelation1], total: 1 },
-  createdQnas: { sample: [testQnaRelation1], total: 1 },
-  maintainedQnas: { sample: [testQnaRelation1], total: 1 },
+  createdDocs: { sample: [testDocQueryResult1], total: 1 },
+  maintainedDocs: { sample: [testDocQueryResult1], total: 1 },
+  createdQnas: { sample: [testQnaQueryResult1], total: 1 },
+  maintainedQnas: { sample: [testQnaQueryResult1], total: 1 },
 };
 
 /**
@@ -333,8 +379,8 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
 export const testTeamRelation1: TeamRelation = {
   team: testTeam1,
   organization: testOrganization1,
-  docs: { sample: [testDocRelation1], total: 1 },
-  qnas: { sample: [testQnaRelation1], total: 1 },
+  docs: { sample: [testDocQueryResult1], total: 1 },
+  qnas: { sample: [testQnaQueryResult1], total: 1 },
   teamMembers: { sample: [testTeamMemberRelation1], total: 1 },
 };
 

@@ -32,6 +32,6 @@ export interface QnaRelation {
 }
 
 /**
- * QnaRelation with only member-related information.
+ * QnaRelation with org information removed.
  */
-export type QnaMembers = Pick<QnaRelation, 'qna' | 'creator' | 'maintainer'>;
+export type QnaNoOrg = Omit<QnaRelation, 'organization'>;

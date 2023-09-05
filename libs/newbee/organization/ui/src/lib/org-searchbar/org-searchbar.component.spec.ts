@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMock } from '@golevelup/ts-jest';
 import { OrgSearchbarComponent } from './org-searchbar.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -34,37 +33,29 @@ describe('OrgSearchbarComponent', () => {
 
   describe('init', () => {
     it('should have initialized properly', () => {
-      expect(component.searchTerm.value).toEqual('');
+      expect(component.searchTerm.value).toEqual({ searchbar: '' });
     });
 
     it('should emit suggest when the searchbar changes', () => {
-      component.searchTerm.setValue('hello');
+      component.searchTerm.setValue({ searchbar: 'hello' });
       expect(component.searchbar.emit).toBeCalledTimes(1);
       expect(component.searchbar.emit).toBeCalledWith('hello');
     });
   });
 
   describe('emitSearch', () => {
-    let submitEvent: SubmitEvent;
-
-    beforeEach(() => {
-      submitEvent = createMock<SubmitEvent>();
-    });
-
-    afterEach(() => {
-      expect(submitEvent.preventDefault).toBeCalledTimes(1);
-    });
-
-    it('should preventDefault but not emit', () => {
-      component.emitSearch(submitEvent);
+    it('should not emit when search term is empty', () => {
+      component.emitSearch();
       expect(component.search.emit).toBeCalledTimes(0);
     });
 
-    it('should preventDefault and emit', () => {
-      component.searchTerm.setValue('search');
-      component.emitSearch(submitEvent);
+    it('should emit when search term is not empty', () => {
+      component.searchTerm.setValue({ searchbar: 'search' });
+      component.emitSearch();
       expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith(component.searchTerm.value);
+      expect(component.search.emit).toBeCalledWith(
+        component.searchTerm.controls.searchbar.value
+      );
     });
   });
 });

@@ -1,9 +1,9 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
-  testDocRelation1,
+  testDocQueryResult1,
   testOrgMember1,
   testOrgMemberRelation1,
-  testQnaRelation1,
+  testQnaQueryResult1,
   testTeamMemberRelation1,
   testUser1,
 } from '@newbee/shared/util';
@@ -38,19 +38,19 @@ export default {
         total: 100,
       },
       createdQnas: {
-        sample: [testQnaRelation1, testQnaRelation1, testQnaRelation1],
+        sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
         total: 100,
       },
       maintainedQnas: {
-        sample: [testQnaRelation1, testQnaRelation1, testQnaRelation1],
+        sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
         total: 100,
       },
       createdDocs: {
-        sample: [testDocRelation1, testDocRelation1, testDocRelation1],
+        sample: [testDocQueryResult1, testDocQueryResult1, testDocQueryResult1],
         total: 100,
       },
       maintainedDocs: {
-        sample: [testDocRelation1, testDocRelation1, testDocRelation1],
+        sample: [testDocQueryResult1, testDocQueryResult1, testDocQueryResult1],
         total: 100,
       },
     },

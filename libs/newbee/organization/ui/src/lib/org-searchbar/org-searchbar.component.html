@@ -1,23 +1,24 @@
 <div
   id="logo-and-searchbar"
-  class="flex flex-col justify-center items-center gap-y-10 mt-16"
+  class="flex flex-col justify-center items-center gap-y-10 mt-far"
 >
   <div>
     <h1 class="text-6xl md:text-7xl">New<span class="text-logo">Bee</span></h1>
   </div>
 
   <form
-    (submit)="emitSearch($event)"
+    [formGroup]="searchTerm"
+    (ngSubmit)="emitSearch()"
     class="flex flex-col gap-2 justify-center items-center w-[30rem] max-w-full"
   >
     <div class="w-full">
       <newbee-searchbar
-        [formControl]="searchTerm"
+        formControlName="searchbar"
         [suggestions]="suggestions"
-        (selectSuggestion)="this.search.emit($event)"
-        autofocus
+        (selectSuggestion)="selectSuggestion($event)"
       ></newbee-searchbar>
     </div>
+
     <button
       type="submit"
       [disabled]="searchTerm.invalid"

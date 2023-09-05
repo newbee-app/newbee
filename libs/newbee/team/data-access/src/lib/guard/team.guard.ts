@@ -2,10 +2,10 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import {
   httpFeature,
-  ShortUrl,
   TeamActions,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
 

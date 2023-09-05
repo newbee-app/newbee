@@ -1,0 +1,27 @@
+<newbee-member-search-result
+  *ngIf="searchResultAsOrgMember; let orgMember"
+  [format]="format"
+  [orgMember]="orgMember"
+  [teamRole]="teamRole"
+  (orgNavigate)="orgNavigate.emit($event)"
+></newbee-member-search-result>
+
+<newbee-team-search-result
+  *ngIf="searchResultAsTeam; let team"
+  [format]="format"
+  [team]="team"
+  [teamRole]="teamRole"
+  (orgNavigate)="orgNavigate.emit($event)"
+></newbee-team-search-result>
+
+<newbee-doc-search-result
+  *ngIf="searchResultAsDoc; let doc"
+  [doc]="doc"
+  (orgNavigate)="orgNavigate.emit($event)"
+></newbee-doc-search-result>
+
+<newbee-qna-search-result
+  *ngIf="searchResultAsQna; let qna"
+  [qna]="qna"
+  (orgNavigate)="orgNavigate.emit($event)"
+></newbee-qna-search-result>

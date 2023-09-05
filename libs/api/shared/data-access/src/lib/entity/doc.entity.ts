@@ -43,7 +43,7 @@ export class DocEntity extends PostEntity implements Doc {
   docMarkdoc: string;
 
   /**
-   * @inheritdoc
+   * The raw markdoc converted into plain text.
    */
   @Property({ type: 'text' })
   docTxt: string;

@@ -1,10 +1,10 @@
 <div class="flex flex-col flex-nowrap gap-y-2">
-  <newbee-search-result-header
-    [post]="qna.qna"
-    [maintainer]="qna.maintainer"
-    [creator]="qna.creator"
+  <newbee-post-search-result-header
+    [searchResult]="qna"
     (orgNavigate)="orgNavigate.emit($event)"
-  ></newbee-search-result-header>
+  ></newbee-post-search-result-header>
+
+  <p *ngIf="qna.qna.questionSnippet">{{ qna.qna.questionSnippet }}</p>
 
   <div class="flex flex-row flex-nowrap gap-x-2">
     <!-- arrow-right svg -->
@@ -23,6 +23,15 @@
       />
     </svg>
 
-    <p>{{ qna.qna.answerTxt }}</p>
+    <p *ngIf="qna.qna.answerSnippet; else noAnswer">
+      {{ qna.qna.answerSnippet }}
+    </p>
+
+    <ng-template #noAnswer
+      ><p>
+        This question does not have an answer. Would you like to
+        <a (click)="editQna()" class="link">provide one?</a>
+      </p></ng-template
+    >
   </div>
 </div>

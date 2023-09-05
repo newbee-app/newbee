@@ -3,6 +3,7 @@ export * from './lib/btn';
 export * from './lib/dropdown';
 export * from './lib/error';
 export * from './lib/form-control';
+export * from './lib/navbar';
 export * from './lib/search-result';
 export * from './lib/testing';
 export * from './lib/toast';

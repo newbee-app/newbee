@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ContentChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { httpFeature } from '@newbee/newbee/shared/data-access';
 import {
@@ -7,6 +7,7 @@ import {
   InternalServerErrorComponent,
   NotFoundErrorComponent,
 } from '@newbee/newbee/shared/ui';
+import { TemplateMarkerDirective } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -24,6 +25,11 @@ import { Store } from '@ngrx/store';
   templateUrl: './error-screen.component.html',
 })
 export class ErrorScreenComponent {
+  /**
+   * The conditionally projected content to display when there's no error.
+   */
+  @ContentChild(TemplateMarkerDirective) content!: TemplateMarkerDirective;
+
   /**
    * HTTP screen error, if any exist.
    */

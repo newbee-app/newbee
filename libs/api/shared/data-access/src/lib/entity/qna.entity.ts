@@ -45,7 +45,7 @@ export class QnaEntity extends PostEntity implements Qna {
   questionMarkdoc: string | null;
 
   /**
-   * @inheritdoc
+   * The question markdoc converted into plain text.
    */
   @Property({ type: 'text', nullable: true })
   questionTxt: string | null;
@@ -64,7 +64,7 @@ export class QnaEntity extends PostEntity implements Qna {
   answerMarkdoc: string | null;
 
   /**
-   * @inheritdoc
+   * The answer markdoc converted into plain text.
    */
   @Property({ type: 'text', nullable: true })
   answerTxt: string | null;

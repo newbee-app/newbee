@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/data-access';
 import {
-  DocSearchResultComponent,
   DropdownComponent,
-  QnaSearchResultComponent,
+  SearchResultComponent,
   ViewAllBtnComponent,
+  ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
+import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   compareTeamRoles,
   Keyword,
@@ -25,8 +25,8 @@ import {
     CommonModule,
     DropdownComponent,
     ViewAllBtnComponent,
-    DocSearchResultComponent,
-    QnaSearchResultComponent,
+    ViewAllCardBtnComponent,
+    SearchResultComponent,
   ],
   templateUrl: './view-team.component.html',
 })
@@ -40,6 +40,11 @@ export class ViewTeamComponent {
    * All NewBee short URLs.
    */
   readonly shortUrl = ShortUrl;
+
+  /**
+   * All search result display formats.
+   */
+  readonly searchResultFormat = SearchResultFormat;
 
   /**
    * Information about the team we're looking at.

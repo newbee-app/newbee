@@ -1,0 +1,41 @@
+<newbee-search-result-header
+  [searchResult]="searchResult"
+  (orgNavigate)="orgNavigate.emit($event)"
+></newbee-search-result-header>
+
+<p class="opacity-50">
+  <span *ngIf="searchResult.team">
+    <a
+      (click)="emitOrgNavigate(shortUrl.Team, searchResult.team.slug)"
+      class="link"
+      >{{ searchResult.team.name }}</a
+    >
+    |
+  </span>
+
+  <span *ngIf="searchResult.maintainer; else noMaintainer">
+    Maintained
+    <span *ngIf="maintainerIsCreator"> & Created </span>
+    by
+    <a
+      (click)="
+        emitOrgNavigate(shortUrl.Member, searchResult.maintainer.orgMember.slug)
+      "
+      class="link"
+      >{{ userDisplayName(searchResult.maintainer.user) }}</a
+    >
+  </span>
+  <ng-template #noMaintainer>Not actively maintained</ng-template>
+
+  <span *ngIf="searchResult.creator && !maintainerIsCreator">
+    | Created by
+    <a
+      (click)="
+        emitOrgNavigate(shortUrl.Member, searchResult.creator.orgMember.slug)
+      "
+      class="link"
+    >
+      {{ userDisplayName(searchResult.creator.user) }}
+    </a>
+  </span>
+</p>

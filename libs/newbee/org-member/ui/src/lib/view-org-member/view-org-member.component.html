@@ -3,12 +3,12 @@
 </ng-template>
 
 <ng-template #isDeletePending>
-  <div class="flex justify-center items-center">
+  <div class="flex justify-center items-center mt-10">
     <span class="loading loading-lg loading-spinner"></span>
   </div>
 </ng-template>
 
-<ng-container *ngIf="!deletePending; else isDeletePending">
+<div *ngIf="!deletePending; else isDeletePending" class="mt-close">
   <div class="flex flex-col flex-nowrap gap-y-2">
     <div *ngIf="canEdit; else displayName" class="w-fit">
       <newbee-dropdown placement="bottom-start">
@@ -144,6 +144,13 @@
       <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
         orgMember.user.email
       }}</a>
+      <a
+        *ngIf="orgMember.user.phoneNumber"
+        [href]="'tel:' + orgMember.user.phoneNumber"
+        class="link link-info block"
+      >
+        {{ orgMember.user.phoneNumber | phoneNumber }}
+      </a>
       <p *ngIf="!editPending; else pendingDots" class="opacity-50">
         {{ orgMember.orgMember.role }}
       </p>
@@ -158,40 +165,18 @@
       totalTeams
     }}</a>
 
-    <div class="flex flex-row flex-nowrap gap-x-4 mt-6 pb-6 overflow-x-auto">
-      <button
-        type="button"
+    <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
+      <newbee-search-result
         *ngFor="let team of orgMember.teams.sample"
-        (click)="orgNavigate.emit(team.team.slug)"
-        class="flex-none card shadow-xl p-4 bg-base-200 w-52 truncate"
-      >
-        <h5 class="underline">{{ team.team.name }}</h5>
-        <p class="link link-info">{{ team.team.slug }}</p>
-        <p class="opacity-50">{{ team.teamMember.role }}</p>
-      </button>
+        [format]="searchResultFormat.Card"
+        [searchResult]="team.team"
+        [teamRole]="team.teamMember.role"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-search-result>
 
-      <button
-        type="button"
-        (click)="memberNavigate.emit(shortUrl.Team)"
-        class="flex-none card shadow-xl p-4 bg-base-200 w-52 flex justify-center items-center"
-      >
-        <!-- arrow-right svg -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-          />
-        </svg>
-        View all
-      </button>
+      <newbee-view-all-card-btn
+        (clicked)="memberNavigate.emit(shortUrl.Team)"
+      ></newbee-view-all-card-btn>
     </div>
 
     <div class="divider">
@@ -207,11 +192,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-qna-search-result
+        <newbee-search-result
           *ngFor="let qna of orgMember.createdQnas.sample"
-          [qna]="qna"
+          [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-qna-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -236,11 +221,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-qna-search-result
+        <newbee-search-result
           *ngFor="let qna of orgMember.maintainedQnas.sample"
-          [qna]="qna"
+          [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-qna-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -265,11 +250,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-doc-search-result
+        <newbee-search-result
           *ngFor="let doc of orgMember.createdDocs.sample"
-          [doc]="doc"
+          [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-doc-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -294,11 +279,11 @@
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
-        <newbee-doc-search-result
+        <newbee-search-result
           *ngFor="let doc of orgMember.maintainedDocs.sample"
-          [doc]="doc"
+          [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-doc-search-result>
+        ></newbee-search-result>
       </div>
 
       <div
@@ -314,4 +299,4 @@
       <a (click)="memberNavigate.emit(shortUrl.Doc)" class="link">View all</a>
     </div>
   </div>
-</ng-container>
+</div>

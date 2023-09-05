@@ -1,7 +1,5 @@
-import type { Sample } from '../../type';
+import type { DocQueryResult, QnaQueryResult, Sample } from '../../type';
 import type { Organization, Team } from '../entity';
-import { DocMembers } from './doc-relation.interface';
-import { QnaMembers } from './qna-relation.interface';
 import type { TeamMemberUserOrgMember } from './team-member-relation.interface';
 
 /**
@@ -21,12 +19,12 @@ export interface TeamRelation {
   /**
    * A selection of docs that belong to the team, as well as a count of the total number of docs in the team.
    */
-  docs: Sample<DocMembers>;
+  docs: Sample<DocQueryResult>;
 
   /**
    * A selection of qnas that belong to the team, as well as a count of the total number of qnas in the team.
    */
-  qnas: Sample<QnaMembers>;
+  qnas: Sample<QnaQueryResult>;
 
   /**
    * A selection of team members that belong to the team, as well as a count of the total number of people in the team.

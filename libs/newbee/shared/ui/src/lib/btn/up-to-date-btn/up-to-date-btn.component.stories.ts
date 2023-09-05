@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { UpToDateBtnComponent } from './up-to-date-btn.component';
 
 export default {
-  title: 'UpToDateBtnComponent',
+  title: 'Btn/UpToDateBtnComponent',
   component: UpToDateBtnComponent,
   parameters: { layout: 'centered' },
   args: { post: testPost1 },
@@ -11,4 +11,8 @@ export default {
 
 type Story = StoryObj<UpToDateBtnComponent>;
 
-export const Primary: Story = {};
+export const UpToDate: Story = {};
+
+export const OutOfDate: Story = {
+  args: { post: { ...testPost1, upToDate: false } },
+};

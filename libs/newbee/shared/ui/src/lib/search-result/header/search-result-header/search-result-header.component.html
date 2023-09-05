@@ -1,0 +1,12 @@
+<div class="flex flex-row flex-nowrap gap-x-2 items-center">
+  <newbee-search-result-type-btn
+    [searchResult]="searchResult"
+  ></newbee-search-result-type-btn>
+  <a (click)="headerClick()" class="link link-info"
+    ><h5>{{ searchResultHeader }}</h5></a
+  >
+  <newbee-up-to-date-btn
+    *ngIf="searchResultAsPost"
+    [post]="searchResultAsPost"
+  ></newbee-up-to-date-btn>
+</div>

@@ -7,7 +7,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchbarComponent } from '@newbee/newbee/shared/ui';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -44,26 +44,26 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
   /**
    * The search term coming from the searchbar.
    */
-  searchTerm = new FormControl('', [Validators.required]);
+  searchTerm = this.fb.group({ searchbar: ['', [Validators.required]] });
 
   /**
    * Emits to unsubscribe from all infinite observables.
    */
   private readonly unsubscribe$ = new Subject<void>();
 
+  constructor(private readonly fb: FormBuilder) {}
+
   /**
    * Emit the suggest event with the current searchbar value.
    */
   ngOnInit(): void {
-    this.searchTerm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (value) => {
-        if (!value) {
-          return;
-        }
-
-        this.searchbar.emit(value);
-      },
-    });
+    this.searchTerm.controls.searchbar.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (value) => {
+          this.searchbar.emit(value ?? '');
+        },
+      });
   }
 
   /**
@@ -75,14 +75,24 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Takes in a suggestion and uses it to fire a search request.
+   *
+   * @param suggestion The suggestion to use.
+   */
+  selectSuggestion(suggestion: string): void {
+    this.searchTerm.controls.searchbar.setValue(suggestion);
+    this.emitSearch();
+  }
+
+  /**
    * Emit the search event with the current search value.
    */
-  emitSearch(event: SubmitEvent): void {
-    event.preventDefault();
-    if (!this.searchTerm.value) {
+  emitSearch(): void {
+    const searchVal = this.searchTerm.controls.searchbar.value;
+    if (!searchVal) {
       return;
     }
 
-    this.search.emit(this.searchTerm.value);
+    this.search.emit(searchVal);
   }
 }
