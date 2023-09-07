@@ -1,0 +1,100 @@
+{
+  "name": "newbee-qna-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/newbee/qna/ui/src",
+  "prefix": "newbee",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/newbee/qna/ui/ng-package.json",
+        "tailwindConfig": "libs/newbee/qna/ui/tailwind.config.js"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/newbee/qna/ui/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/newbee/qna/ui/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/newbee/qna/ui/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/newbee/qna/ui/**/*.ts",
+          "libs/newbee/qna/ui/**/*.html",
+          "libs/newbee/qna/ui/package.json"
+        ]
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/newbee/qna/ui/.storybook",
+        "browserTarget": "newbee-qna-ui:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/newbee-qna-ui",
+        "configDir": "libs/newbee/qna/ui/.storybook",
+        "browserTarget": "newbee-qna-ui:build-storybook",
+        "compodoc": false,
+        "styles": ["apps/newbee/src/styles.css"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c libs/newbee/qna/ui/.storybook --url=http://localhost:4400"
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "newbee-qna-ui:build-storybook",
+        "staticFilePath": "dist/storybook/newbee-qna-ui"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "newbee-qna-ui:build-storybook:ci"
+        }
+      }
+    }
+  }
+}

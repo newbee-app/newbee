@@ -1,5 +1,5 @@
 {
-  "name": "newbee",
+  "name": "@newbee/root",
   "version": "0.0.1",
   "engines": {
     "npm": ">=8.19.2",
@@ -82,8 +82,7 @@
     "tslib": "^2.3.0",
     "uuid": "^9.0.0",
     "winston": "~3.10.0",
-    "zone.js": "~0.13.1",
-    "@nx/angular": "16.7.4"
+    "zone.js": "~0.13.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "16.2.1",
@@ -104,22 +103,32 @@
     "@nestjs/testing": "10.2.4",
     "@ngrx/eslint-plugin": "16.0.1",
     "@nguniversal/builders": "16.2.0",
+    "@nx/angular": "16.7.4",
     "@nx/cypress": "16.7.4",
     "@nx/esbuild": "16.7.4",
+    "@nx/eslint-plugin": "16.7.4",
+    "@nx/jest": "16.7.4",
     "@nx/js": "16.7.4",
     "@nx/linter": "16.7.4",
+    "@nx/nest": "16.7.4",
+    "@nx/node": "16.7.4",
     "@nx/storybook": "16.7.4",
+    "@nx/web": "16.7.4",
     "@nx/workspace": "16.7.4",
     "@schematics/angular": "16.2.1",
     "@simplewebauthn/typescript-types": "~8.0.0",
     "@storybook/addon-a11y": "7.4.0",
     "@storybook/addon-essentials": "7.4.0",
+    "@storybook/addon-interactions": "^7.2.1",
     "@storybook/addons": "7.4.0",
     "@storybook/angular": "7.4.0",
     "@storybook/api": "7.4.0",
     "@storybook/components": "7.4.0",
     "@storybook/core-common": "7.4.0",
     "@storybook/core-server": "7.4.0",
+    "@storybook/jest": "~0.1.0",
+    "@storybook/test-runner": "^0.13.0",
+    "@storybook/testing-library": "~0.2.0",
     "@tailwindcss/forms": "~0.5.3",
     "@tailwindcss/typography": "~0.5.9",
     "@twittwer/compodoc": "^1.10.0",
@@ -173,11 +182,6 @@
     "ts-jest": "29.1.1",
     "ts-node": "10.9.1",
     "typescript": "5.1.6",
-    "webpack": "5.75.0",
-    "@nx/web": "16.7.4",
-    "@nx/eslint-plugin": "16.7.4",
-    "@nx/jest": "16.7.4",
-    "@nx/node": "16.7.4",
-    "@nx/nest": "16.7.4"
+    "webpack": "5.75.0"
   }
 }
