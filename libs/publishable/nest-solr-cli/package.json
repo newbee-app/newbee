@@ -1,5 +1,10 @@
 {
   "name": "@newbee/nest-solr-cli",
   "version": "0.0.1",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "@nestjs/common": "10.2.4",
+    "@newbee/solr-cli": "file:../solr-cli",
+    "tslib": "^2.3.0"
+  }
 }

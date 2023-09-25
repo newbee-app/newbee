@@ -1,0 +1,51 @@
+{
+  "name": "publishable-ngx-codemirror",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publishable/ngx-codemirror/src",
+  "prefix": "newbee",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/publishable/ngx-codemirror/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/publishable/ngx-codemirror/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/publishable/ngx-codemirror/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/publishable/ngx-codemirror/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/publishable/ngx-codemirror/**/*.ts",
+          "libs/publishable/ngx-codemirror/**/*.html",
+          "libs/publishable/ngx-codemirror/package.json"
+        ]
+      }
+    }
+  }
+}

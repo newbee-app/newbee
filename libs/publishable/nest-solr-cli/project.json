@@ -27,7 +27,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/publishable/nest-solr-cli/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/publishable/nest-solr-cli/**/*.ts",
+          "libs/publishable/nest-solr-cli/package.json"
+        ]
       }
     },
     "test": {

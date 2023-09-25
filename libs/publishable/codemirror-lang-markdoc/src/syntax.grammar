@@ -1,0 +1,157 @@
+// Designed according to Markdoc spec
+// https://markdoc.dev/spec
+
+// Automatically detect delimiters
+@detectDelim
+
+// All of the ways in which a document can start
+@top Document {
+  (
+    Tag |
+    Interpolation |
+    Annotation |
+    ValueString |
+    Text
+  )*
+}
+
+// Section 1
+Tag { TagStart space* TagInterior TagEnd }
+TagInterior {
+  TagOpen |
+  TagSelfClosing |
+  TagClose
+}
+
+// Section 1.1
+TagOpen { identifier primaryAttribute? attributeItem* space* }
+primaryAttribute { space+ Value }
+attributeItem { space+ Attribute }
+
+// Section 1.2
+TagSelfClosing { TagOpen "/" }
+
+// Section 1.5
+// Changed from the spec
+Annotation { TagStart space* (Attribute space+)* (Attribute)? TagEnd }
+
+// Section 1.6
+Attribute {
+  AttributeFull |
+  AttributeShorthand
+}
+AttributeFull { identifier "=" Value }
+
+// Section 2
+Interpolation { TagStart space* InterpolationValue space* TagEnd }
+InterpolationValue { Function | Variable }
+
+// Section 3
+Value {
+  PrimitiveValue |
+  CompoundValue |
+  Variable |
+  Function
+}
+
+// Section 3.1
+PrimitiveValue {
+  ValueNull |
+  ValueBoolean |
+  ValueNumber |
+  ValueString
+}
+
+// Section 3.2
+CompoundValue {
+  ValueArray |
+  ValueHash
+}
+
+// Section 3.2.1
+ValueArray { "[" space* ArrayItem* ArrayItemWithoutComma? "]" }
+ArrayItem { Value space* "," space* }
+
+// Not in the spec
+ArrayItemWithoutComma { Value space* }
+
+// Section 3.2.2
+// Changed from spec
+ValueHash { "{" space* HashItem* HashKeyValue? "}" }
+HashKeyValue { HashKey ":" space* Value space* }
+HashItem { HashKeyValue "," space* }
+
+// Section 3.4
+Function { identifier "(" space* FunctionParameters* ")" }
+FunctionParameters { Value FunctionParameterTail* space* }
+FunctionParameterTail { space* "," space* FunctionParameter }
+FunctionParameter {
+  FunctionParameterNamed |
+  Value
+}
+FunctionParameterNamed {
+  identifier "=" Value
+}
+
+@tokens {
+  // Section 1
+  TagStart { "{%" }
+  TagEnd { "%}" }
+
+  // Section 1.3
+  TagClose { "/" identifier space* }
+
+  // Section 1.6.1
+  AttributeShorthand { shorthandSigil identifier }
+  shorthandSigil { "#" | "." }
+
+  // Section 3.1.1
+  ValueNull { "null" }
+
+  // Section 3.1.2
+  ValueBoolean { "true" | "false" }
+
+  // Section 3.1.3
+  ValueNumber { "-"? digit+ fraction? }
+  digit { $[0-9] }
+  fraction { "." digit+ }
+
+  // Section 3.1.4
+  ValueString { '"' stringElement* '"' }
+  stringElement {
+    stringCharacter |
+    StringEscapeSequence
+  }
+  StringEscapeSequence { "\\" stringEscapeCharacter }
+  stringEscapeCharacter { '"' | "\\" | "n" | "r" | "t" }
+  stringCharacter { !["\\] }
+
+  // Section 3.2.2
+  HashKey { identifier | ValueString }
+
+  // Section 3.3
+  Variable { variableSigil identifier VariableTail* }
+  VariableTail {
+    "." identifier |
+    "[" VariableSegmentValue "]"
+  }
+  VariableSegmentValue {
+    ValueNumber |
+    ValueString
+  }
+  variableSigil { "$" | "@" }
+
+
+  // Section 4
+  space { " " | "\t" | "\n" }
+
+  // Section 5
+  identifier { $[a-zA-Z] identifierTail* }
+  identifierTail { $[-_a-zA-Z0-9] }
+
+  // Custom
+  // Not in the spec
+  Text { stringElement+ }
+  @precedence { TagStart, Text }
+  @precedence { ValueNull, ValueBoolean, identifier }
+}

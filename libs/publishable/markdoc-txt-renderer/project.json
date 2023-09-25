@@ -26,7 +26,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/publishable/markdoc-txt-renderer/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/publishable/markdoc-txt-renderer/**/*.ts",
+          "libs/publishable/markdoc-txt-renderer/package.json"
+        ]
       }
     },
     "test": {
