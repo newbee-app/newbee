@@ -7,8 +7,7 @@ import { Compartment, EditorState, EditorStateConfig } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { markdoc } from '@newbee/codemirror-lang-markdoc';
 import { CodemirrorComponent } from '@newbee/ngx-codemirror';
-import { basicDark } from 'cm6-theme-basic-dark';
-import { basicLight } from 'cm6-theme-basic-light';
+import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
 import { EditorView, basicSetup } from 'codemirror';
 
 /**
@@ -64,9 +63,9 @@ export class MarkdocEditorComponent implements OnInit {
         // adds theming
         ...(window.matchMedia
           ? window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? [basicDark]
-            : [basicLight]
-          : [basicDark]),
+            ? [githubDark]
+            : [githubLight]
+          : [githubDark]),
       ],
     };
   }
