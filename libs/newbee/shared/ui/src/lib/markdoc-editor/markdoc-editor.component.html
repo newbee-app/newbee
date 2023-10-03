@@ -1,1 +1,19 @@
-<newbee-codemirror [editorStateConfig]="editorStateConfig"></newbee-codemirror>
+<ng-template #codemirror>
+  <div class="max-h-[40vh] md:max-h-[80vh] overflow-y-auto w-full">
+    <newbee-codemirror
+      [editorStateConfig]="editorStateConfig"
+    ></newbee-codemirror>
+  </div>
+</ng-template>
+
+<div
+  *ngIf="preview; else codemirror"
+  class="flex flex-col md:flex-row flex-nowrap justify-stretch gap-2"
+>
+  <ng-container *ngTemplateOutlet="codemirror"></ng-container>
+  <div class="divider md:divider-horizontal"></div>
+  <div
+    [innerHTML]="renderedEditorContent"
+    class="max-h-[40vh] md:max-h-[80vh] overflow-y-auto w-full"
+  ></div>
+</div>
