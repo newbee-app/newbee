@@ -11,6 +11,8 @@ import { styleTags, tags as t } from '@lezer/highlight';
 import { MarkdownExtension, Table } from '@lezer/markdown';
 import { parser } from './markdoc.grammar';
 
+export * from './lint';
+
 /**
  * LRParser generated from the Markdoc grammar with style tags added.
  */

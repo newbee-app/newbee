@@ -1,5 +1,5 @@
 <ng-template #codemirror>
-  <div class="max-h-[40vh] md:max-h-[80vh] overflow-y-auto w-full">
+  <div class="max-h-[35vh] md:max-h-[70vh] overflow-auto w-full">
     <newbee-codemirror
       [editorStateConfig]="editorStateConfig"
     ></newbee-codemirror>
@@ -14,6 +14,6 @@
   <div class="divider md:divider-horizontal"></div>
   <div
     [innerHTML]="renderedEditorContent"
-    class="max-h-[40vh] md:max-h-[80vh] overflow-y-auto w-full"
+    class="max-h-[35vh] md:max-h-[70vh] overflow-auto w-full prose"
   ></div>
 </div>

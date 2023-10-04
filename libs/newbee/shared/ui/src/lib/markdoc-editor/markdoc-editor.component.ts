@@ -4,14 +4,15 @@ import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { LanguageDescription } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
+import { linter } from '@codemirror/lint';
+import { search } from '@codemirror/search';
 import { Compartment, EditorState, EditorStateConfig } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
-import Markdoc, { ConfigType } from '@markdoc/markdoc';
-import { markdoc } from '@newbee/codemirror-lang-markdoc';
+import Markdoc from '@markdoc/markdoc';
+import { generateConfig, lint, markdoc } from '@newbee/codemirror-lang-markdoc';
 import { CodemirrorComponent } from '@newbee/ngx-codemirror';
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
 import { basicSetup } from 'codemirror';
-import yaml from 'js-yaml';
 
 /**
  * A Markdoc editor component built with CodeMirror.
@@ -56,6 +57,18 @@ export class MarkdocEditorComponent implements OnInit {
         // basic foundations
         basicSetup,
 
+        // set up in basicSetup, but change to appear on the top
+        search({ top: true }),
+
+        // add key-binding support for tabs
+        keymap.of([indentWithTab]),
+
+        // makes 1 tab equal 2 spaces
+        tabSize.of(EditorState.tabSize.of(2)),
+
+        // allow lines to wrap to avoid horizontal scrolling
+        EditorView.lineWrapping,
+
         // adds language support for markdoc specifically
         language.of(
           markdoc({
@@ -74,14 +87,8 @@ export class MarkdocEditorComponent implements OnInit {
           }),
         ),
 
-        // add key-binding support for tabs
-        keymap.of([indentWithTab]),
-
-        // makes 1 tab equal 2 spaces
-        tabSize.of(EditorState.tabSize.of(2)),
-
-        // allow lines to wrap to avoid horizontal scrolling
-        EditorView.lineWrapping,
+        // sets up markdoc linting
+        linter(lint),
 
         // set up rendering if preview is enabled
         ...(this.preview
@@ -93,20 +100,7 @@ export class MarkdocEditorComponent implements OnInit {
                 }
 
                 const ast = Markdoc.parse(update.state.doc.toString());
-
-                // Load frontmatter using yaml, making it compatible with yaml and json
-                let frontmatter: unknown = {};
-                if (ast.attributes['frontmatter']) {
-                  try {
-                    frontmatter = yaml.load(ast.attributes['frontmatter']);
-                  } catch (err) {
-                    // pass
-                  }
-                }
-
-                // Set up the config to feed into `transform`
-                const config: ConfigType = { variables: { frontmatter } };
-
+                const config = generateConfig(ast);
                 const content = Markdoc.transform(ast, config);
                 this.renderedEditorContent = Markdoc.renderers.html(content);
               }),

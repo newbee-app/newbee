@@ -12,7 +12,7 @@ export default {
 
 type Story = StoryObj<MarkdocEditorComponent>;
 
-export const EmptyText: Story = {};
+export const WithPreview: Story = {};
 
 export const Tag: Story = {
   args: {
