@@ -3,8 +3,6 @@ import {
   Language,
   LanguageDescription,
   LanguageSupport,
-  foldNodeProp,
-  indentNodeProp,
 } from '@codemirror/language';
 import { parseMixed } from '@lezer/common';
 import { styleTags, tags as t } from '@lezer/highlight';
@@ -14,11 +12,9 @@ import { parser } from './markdoc.grammar';
 export * from './lint';
 
 /**
- * LRParser generated from the Markdoc grammar with style tags added.
+ * LRParser generated from the Markdoc grammar.
  */
-const baseParser = parser.configure({
-  props: [indentNodeProp.add({}), foldNodeProp.add({})],
-});
+const baseParser = parser.configure({});
 
 /**
  * The Markdoc language, with default settings.

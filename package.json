@@ -35,6 +35,8 @@
     "@angular/platform-server": "16.2.3",
     "@angular/router": "16.2.3",
     "@angular/service-worker": "16.2.3",
+    "@codemirror/autocomplete": "^6.9.1",
+    "@codemirror/collab": "^6.1.1",
     "@codemirror/commands": "^6.2.5",
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-markdown": "^6.2.1",

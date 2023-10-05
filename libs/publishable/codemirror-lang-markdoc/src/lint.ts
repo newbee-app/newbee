@@ -87,5 +87,5 @@ export function generateConfig(ast: Node): ConfigType {
     }
   }
 
-  return { variables: { frontmatter } };
+  return { variables: { frontmatter, fm: frontmatter } };
 }
