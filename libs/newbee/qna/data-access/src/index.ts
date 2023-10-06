@@ -1,1 +1,1 @@
-export * from './lib/newbee-qna-data-access.module';
+export * from './lib/qna.service';
