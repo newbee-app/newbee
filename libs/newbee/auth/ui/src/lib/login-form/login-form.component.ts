@@ -5,8 +5,8 @@ import { LoginForm } from '@newbee/newbee/auth/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
@@ -85,7 +85,8 @@ export class LoginFormComponent {
   }
 
   /**
-   * The email control's error message, if it has one. Will be an empty string if it doesn't.
+   * The email control's error message, if it has one.
+   * Will be an empty string if it doesn't.
    */
   get emailErrorMessage(): string {
     return (

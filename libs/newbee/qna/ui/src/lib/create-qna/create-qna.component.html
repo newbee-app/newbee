@@ -1,1 +1,45 @@
-<p>create-qna works!</p>
+<div class="flex flex-col flex-nowrap gap-y-6 mt-mid">
+  <h3>Ask a question</h3>
+
+  <form [formGroup]="qnaTitle" class="flex flex-col flex-nowrap gap-y-2">
+    <label for="title-input">What is your question in one line?</label>
+    <input
+      type="text"
+      id="title-input"
+      formControlName="title"
+      placeholder="How do I connect to the office printers?"
+      required
+      class="input input-bordered"
+      [ngClass]="{ 'input-error': showTitleError }"
+    />
+    <newbee-alert
+      [show]="showTitleError"
+      [type]="alertType.Error"
+      [text]="titleErrorMessage"
+    ></newbee-alert>
+  </form>
+
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <p>Add more details about your question below!</p>
+    <newbee-markdoc-editor
+      (content)="onContent($event)"
+    ></newbee-markdoc-editor>
+  </div>
+
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <button
+      type="button"
+      (click)="emitCreate()"
+      [disabled]="createPending || qnaTitle.invalid"
+      class="btn btn-primary w-fit"
+    >
+      <span *ngIf="createPending" class="loading loading-spinner"></span>
+      Ask Question
+    </button>
+    <newbee-alert
+      [show]="!!miscError"
+      [type]="alertType.Error"
+      [text]="miscError"
+    ></newbee-alert>
+  </div>
+</div>

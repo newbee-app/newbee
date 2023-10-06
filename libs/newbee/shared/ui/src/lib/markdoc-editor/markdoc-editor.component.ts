@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { LanguageDescription } from '@codemirror/language';
@@ -33,6 +33,11 @@ export class MarkdocEditorComponent implements OnInit {
    * Whether to generate a preview for the Markdoc next to the editor.
    */
   @Input() preview = true;
+
+  /**
+   * Emits the editor's content whenever it's changed.
+   */
+  @Output() content = new EventEmitter<string>();
 
   /**
    * The config we will feed into the editor state.
@@ -99,7 +104,10 @@ export class MarkdocEditorComponent implements OnInit {
                   return;
                 }
 
-                const ast = Markdoc.parse(update.state.doc.toString());
+                const docString = update.state.doc.toString();
+                this.content.emit(docString);
+
+                const ast = Markdoc.parse(docString);
                 const config = generateConfig(ast);
                 const content = Markdoc.transform(ast, config);
                 this.renderedEditorContent = Markdoc.renderers.html(content);

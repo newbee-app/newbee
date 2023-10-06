@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "type": "commonjs",
   "dependencies": {
-    "@markdoc/markdoc": "^0.2.2",
+    "@markdoc/markdoc": "^0.3.2",
     "tslib": "^2.3.0"
   }
 }
