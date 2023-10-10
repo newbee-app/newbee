@@ -13,7 +13,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import type { Organization } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for the navbar.
@@ -50,7 +50,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   includeCenter = false;
 
-  constructor(private readonly store: Store, private readonly router: Router) {}
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+  ) {}
 
   /**
    * Look at the current URL, selected organization, and adjust `includeCenter` to `true` if it's past the org's home page.
@@ -72,7 +75,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
             return;
           } else if (
             event.routerEvent.url ===
-            `/${ShortUrl.Organization}/${selectedOrganization.slug}`
+            `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`
           ) {
             this.includeCenter = false;
             return;

@@ -116,7 +116,7 @@ export class MarkdocEditorComponent implements OnInit {
           : []),
 
         // adds general theming
-        ...(window.matchMedia
+        ...(window && window.matchMedia
           ? window.matchMedia('(prefers-color-scheme: dark)').matches
             ? [githubDark]
             : [githubLight]

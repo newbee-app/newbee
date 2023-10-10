@@ -25,19 +25,19 @@ export class TeamEffects {
     return this.actions$.pipe(
       ofType(TeamActions.getTeam),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ slug }, selectedOrganization]) => {
         return this.teamService
-          .get(slug, selectedOrganization?.slug as string)
+          .get(slug, selectedOrganization?.organization.slug as string)
           .pipe(
             map((teamAndMemberDto) => {
               return TeamActions.getTeamSuccess({ teamAndMemberDto });
             }),
-            catchError(catchHttpScreenError)
+            catchError(catchHttpScreenError),
           );
-      })
+      }),
     );
   });
 
@@ -45,12 +45,15 @@ export class TeamEffects {
     return this.actions$.pipe(
       ofType(TeamActions.createTeam),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ createTeamDto }, selectedOrganization]) => {
         return this.teamService
-          .create(createTeamDto, selectedOrganization?.slug as string)
+          .create(
+            createTeamDto,
+            selectedOrganization?.organization.slug as string,
+          )
           .pipe(
             map((team) => {
               return TeamActions.createTeamSuccess({ team });
@@ -66,10 +69,10 @@ export class TeamEffects {
                   default:
                     return Keyword.Misc;
                 }
-              })
-            )
+              }),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -78,19 +81,19 @@ export class TeamEffects {
       return this.actions$.pipe(
         ofType(TeamActions.createTeamSuccess),
         concatLatestFrom(() =>
-          this.store.select(organizationFeature.selectSelectedOrganization)
+          this.store.select(organizationFeature.selectSelectedOrganization),
         ),
         filter(([, selectedOrganization]) => !!selectedOrganization),
         tap(async ([{ team }, selectedOrganization]) => {
           await this.router.navigate([
             `/${ShortUrl.Organization}/${
-              selectedOrganization?.slug as string
+              selectedOrganization?.organization.slug as string
             }/${ShortUrl.Team}/${team.slug}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   editTeam$ = createEffect(() => {
@@ -102,15 +105,15 @@ export class TeamEffects {
       ]),
       filter(
         ([, selectedOrganization, selectedTeam]) =>
-          !!selectedOrganization && !!selectedTeam
+          !!selectedOrganization && !!selectedTeam,
       ),
       switchMap(
         ([{ type, updateTeamDto }, selectedOrganization, selectedTeam]) => {
           return this.teamService
             .edit(
-              selectedOrganization?.slug as string,
+              selectedOrganization?.organization.slug as string,
               selectedTeam?.team.slug as string,
-              updateTeamDto
+              updateTeamDto,
             )
             .pipe(
               map((team) => {
@@ -124,12 +127,12 @@ export class TeamEffects {
               catchError((err) =>
                 catchHttpClientError(
                   err,
-                  () => `${Keyword.Team}-${Keyword.Edit}`
-                )
-              )
+                  () => `${Keyword.Team}-${Keyword.Edit}`,
+                ),
+              ),
             );
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -138,19 +141,19 @@ export class TeamEffects {
       return this.actions$.pipe(
         ofType(TeamActions.editTeamSlugSuccess),
         concatLatestFrom(() =>
-          this.store.select(organizationFeature.selectSelectedOrganization)
+          this.store.select(organizationFeature.selectSelectedOrganization),
         ),
         filter(([, selectedOrganization]) => !!selectedOrganization),
         tap(async ([{ newTeam }, selectedOrganization]) => {
           await this.router.navigate([
             `/${ShortUrl.Organization}/${
-              selectedOrganization?.slug as string
+              selectedOrganization?.organization.slug as string
             }/${ShortUrl.Team}/${newTeam.slug}/${Keyword.Edit}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   deleteTeam$ = createEffect(() => {
@@ -162,13 +165,13 @@ export class TeamEffects {
       ]),
       filter(
         ([, selectedOrganization, selectedTeam]) =>
-          !!selectedOrganization && !!selectedTeam
+          !!selectedOrganization && !!selectedTeam,
       ),
       switchMap(([, selectedOrganization, selectedTeam]) => {
         return this.teamService
           .delete(
-            selectedOrganization?.slug as string,
-            selectedTeam?.team.slug as string
+            selectedOrganization?.organization.slug as string,
+            selectedTeam?.team.slug as string,
           )
           .pipe(
             map(() => {
@@ -177,11 +180,11 @@ export class TeamEffects {
             catchError((err) =>
               catchHttpClientError(
                 err,
-                () => `${Keyword.Team}-${Keyword.Delete}`
-              )
-            )
+                () => `${Keyword.Team}-${Keyword.Delete}`,
+              ),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -190,7 +193,7 @@ export class TeamEffects {
       return this.actions$.pipe(
         ofType(TeamActions.deleteTeamSuccess),
         concatLatestFrom(() =>
-          this.store.select(organizationFeature.selectSelectedOrganization)
+          this.store.select(organizationFeature.selectSelectedOrganization),
         ),
         tap(async ([, selectedOrganization]) => {
           if (!selectedOrganization) {
@@ -199,12 +202,12 @@ export class TeamEffects {
           }
 
           await this.router.navigate([
-            `/${ShortUrl.Organization}/${selectedOrganization.slug}`,
+            `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   checkSlug$ = createEffect(() => {
@@ -222,13 +225,13 @@ export class TeamEffects {
         }
 
         return this.teamService
-          .checkSlug(slug, selectedOrganization?.slug as string)
+          .checkSlug(slug, selectedOrganization?.organization.slug as string)
           .pipe(
             map(({ slugTaken }) => {
               return TeamActions.checkSlugSuccess({ slugTaken });
-            })
+            }),
           );
-      })
+      }),
     );
   });
 
@@ -237,19 +240,19 @@ export class TeamEffects {
       ofType(TeamActions.generateSlug),
       filter(({ name }) => !!name),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ name }, selectedOrganization]) => {
         return this.teamService
-          .generateSlug(name, selectedOrganization?.slug as string)
+          .generateSlug(name, selectedOrganization?.organization.slug as string)
           .pipe(
             map((generatedSlugDto) => {
               const { generatedSlug } = generatedSlugDto;
               return TeamActions.generateSlugSuccess({ slug: generatedSlug });
-            })
+            }),
           );
-      })
+      }),
     );
   });
 
@@ -257,6 +260,6 @@ export class TeamEffects {
     private readonly actions$: Actions,
     private readonly teamService: TeamService,
     private readonly store: Store,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 }

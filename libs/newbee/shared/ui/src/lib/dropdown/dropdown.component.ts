@@ -8,6 +8,7 @@ import {
   HostListener,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   Output,
   PLATFORM_ID,
@@ -113,7 +114,8 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   constructor(
     clickService: ClickService,
     elementRef: ElementRef<HTMLElement>,
-    @Inject(PLATFORM_ID) private readonly platformId: object
+    @Inject(PLATFORM_ID) private readonly platformId: object,
+    private readonly ngZone: NgZone,
   ) {
     clickService.documentClickTarget
       .pipe(takeUntil(this.unsubscribe$))
@@ -133,29 +135,31 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * Compute the absolute position for the dropdown.
    */
-  private async recompute(): Promise<void> {
-    const { x, y } = await computePosition(
-      this.label.nativeElement,
-      this.dropdown.nativeElement,
-      {
-        placement: this.placement,
-        middleware: [
-          offset(this.offset),
-          flip(),
-          shift({ padding: 6 }),
-          size({
-            apply: ({ rects, elements }) => {
-              Object.assign(elements.floating.style, {
-                minWidth: `${rects.reference.width}px`,
-              });
-            },
-          }),
-        ],
-      }
-    );
-    Object.assign(this.dropdown.nativeElement.style, {
-      left: `${x}px`,
-      top: `${y}px`,
+  private recompute(): void {
+    this.ngZone.runOutsideAngular(async () => {
+      const { x, y } = await computePosition(
+        this.label.nativeElement,
+        this.dropdown.nativeElement,
+        {
+          placement: this.placement,
+          middleware: [
+            offset(this.offset),
+            flip(),
+            shift({ padding: 6 }),
+            size({
+              apply: ({ rects, elements }) => {
+                Object.assign(elements.floating.style, {
+                  minWidth: `${rects.reference.width}px`,
+                });
+              },
+            }),
+          ],
+        },
+      );
+      Object.assign(this.dropdown.nativeElement.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
     });
   }
 
@@ -172,7 +176,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       this.dropdown.nativeElement,
       () => {
         this.recompute();
-      }
+      },
     );
   }
 

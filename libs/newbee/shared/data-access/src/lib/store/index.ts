@@ -6,6 +6,7 @@ export * from './http';
 export * from './invite';
 export * from './org-member';
 export * from './organization';
+export * from './qna';
 export * from './router';
 export * from './search';
 export * from './team';

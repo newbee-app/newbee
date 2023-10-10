@@ -1,22 +1,37 @@
 <div class="flex flex-col flex-nowrap gap-y-6 mt-mid">
   <h3>Ask a question</h3>
 
-  <form [formGroup]="qnaTitle" class="flex flex-col flex-nowrap gap-y-2">
-    <label for="title-input">What is your question in one line?</label>
-    <input
-      type="text"
-      id="title-input"
-      formControlName="title"
-      placeholder="How do I connect to the office printers?"
-      required
-      class="input input-bordered"
-      [ngClass]="{ 'input-error': showTitleError }"
-    />
-    <newbee-alert
-      [show]="showTitleError"
-      [type]="alertType.Error"
-      [text]="titleErrorMessage"
-    ></newbee-alert>
+  <form [formGroup]="qnaForm" class="flex flex-col flex-nowrap gap-y-6">
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="team-input">Where would you like to ask the question?</label>
+
+      <div class="w-fit max-w-full">
+        <newbee-searchable-select
+          [showSearchbar]="false"
+          [options]="teamOptions"
+          optionName="team"
+          formControlName="team"
+        ></newbee-searchable-select>
+      </div>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="title-input">What is your question in one line?</label>
+      <input
+        type="text"
+        id="title-input"
+        formControlName="title"
+        placeholder="How do I connect to the office printers?"
+        required
+        class="input input-bordered"
+        [ngClass]="{ 'input-error': showTitleError }"
+      />
+      <newbee-alert
+        [show]="showTitleError"
+        [type]="alertType.Error"
+        [text]="titleErrorMessage"
+      ></newbee-alert>
+    </div>
   </form>
 
   <div class="flex flex-col flex-nowrap gap-y-2">
@@ -30,7 +45,7 @@
     <button
       type="button"
       (click)="emitCreate()"
-      [disabled]="createPending || qnaTitle.invalid"
+      [disabled]="createPending || qnaForm.invalid"
       class="btn btn-primary w-fit"
     >
       <span *ngIf="createPending" class="loading loading-spinner"></span>

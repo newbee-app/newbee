@@ -3,7 +3,11 @@ import { Event, NavigationEnd, Router, Scroll } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword, testOrganization1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { Subject } from 'rxjs';
 import { NavbarComponent } from './navbar.component';
@@ -63,8 +67,8 @@ describe('NavbarComponent', () => {
         new NavigationEnd(
           0,
           `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
-          `/${ShortUrl.Organization}/${testOrganization1.slug}/past`
-        )
+          `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
+        ),
       );
       expect(component.includeCenter).toBeFalsy();
 
@@ -73,13 +77,15 @@ describe('NavbarComponent', () => {
           url: `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
         }),
         null,
-        null
+        null,
       );
       events.next(validScroll);
       expect(component.includeCenter).toBeFalsy();
 
       store.setState({
-        [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+        [Keyword.Organization]: {
+          selectedOrganization: testOrganizationRelation1,
+        },
       });
       events.next(validScroll);
       expect(component.includeCenter).toBeTruthy();

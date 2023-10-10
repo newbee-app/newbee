@@ -1,5 +1,5 @@
 <newbee-edit-org
-  [organization]="(selectedOrganization$ | async)!"
+  [organization]="(selectedOrganization$ | async)!.organization"
   [orgMember]="orgMember$ | async"
   [slugTaken]="(slugTaken$ | async)!"
   [editPending]="(editPending$ | async)!"

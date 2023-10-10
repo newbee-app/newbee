@@ -2,9 +2,9 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { organizationFeature } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { compareOrgRoles, OrgRoleEnum } from '@newbee/shared/util';
+import { OrgRoleEnum, compareOrgRoles } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { map, Observable, take } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 
 /**
  * A route guard preventing users from accessing the link unless the user is an org member with admin-level privileges.
@@ -29,11 +29,11 @@ export const isOrgAdminGuard: CanActivateFn = (): Observable<
 
       if (selectedOrganization) {
         return router.createUrlTree([
-          `/${ShortUrl.Organization}/${selectedOrganization.slug}`,
+          `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`,
         ]);
       }
 
       return router.createUrlTree(['/']);
-    })
+    }),
   );
 };

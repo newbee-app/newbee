@@ -5,6 +5,7 @@ import {
   ElementRef,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   PLATFORM_ID,
   ViewChild,
@@ -63,44 +64,49 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
     return;
   };
 
-  constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private readonly platformId: object,
+    private readonly ngZone: NgZone,
+  ) {}
 
   /**
    * Compute the absolute position for the tooltip and its arrow.
    */
-  private async recompute(): Promise<void> {
-    // Compute position of the tooltip text
-    const { x, y, placement, middlewareData } = await computePosition(
-      this.content.nativeElement,
-      this.tooltip.nativeElement,
-      {
-        placement: this.placement,
-        middleware: [
-          offset(10),
-          flip(),
-          shift({ padding: 6 }),
-          arrow({ element: this.arrow.nativeElement }),
-        ],
-      }
-    );
-    Object.assign(this.tooltip.nativeElement.style, {
-      left: `${x}px`,
-      top: `${y}px`,
-    });
+  private recompute(): void {
+    this.ngZone.runOutsideAngular(async () => {
+      // Compute position of the tooltip text
+      const { x, y, placement, middlewareData } = await computePosition(
+        this.content.nativeElement,
+        this.tooltip.nativeElement,
+        {
+          placement: this.placement,
+          middleware: [
+            offset(10),
+            flip(),
+            shift({ padding: 6 }),
+            arrow({ element: this.arrow.nativeElement }),
+          ],
+        },
+      );
+      Object.assign(this.tooltip.nativeElement.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
 
-    // Compute position of the arrow
-    const staticSide = {
-      top: 'bottom',
-      right: 'left',
-      bottom: 'top',
-      left: 'right',
-    }[placement.split('-')[0] as string] as string;
-    const arrowX = middlewareData.arrow?.x;
-    const arrowY = middlewareData.arrow?.y;
-    Object.assign(this.arrow.nativeElement.style, {
-      left: arrowX ? `${arrowX}px` : '',
-      top: arrowY ? `${arrowY}px` : '',
-      [staticSide]: '-4px',
+      // Compute position of the arrow
+      const staticSide = {
+        top: 'bottom',
+        right: 'left',
+        bottom: 'top',
+        left: 'right',
+      }[placement.split('-')[0] as string] as string;
+      const arrowX = middlewareData.arrow?.x;
+      const arrowY = middlewareData.arrow?.y;
+      Object.assign(this.arrow.nativeElement.style, {
+        left: arrowX ? `${arrowX}px` : '',
+        top: arrowY ? `${arrowY}px` : '',
+        [staticSide]: '-4px',
+      });
     });
   }
 
@@ -117,7 +123,7 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
       this.tooltip.nativeElement,
       () => {
         this.recompute();
-      }
+      },
     );
   }
 

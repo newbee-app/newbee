@@ -6,7 +6,9 @@
   *ngIf="user$ | async; else unauthenticated; let user"
   [user]="user"
   [organizations]="(orgState$ | async)!.organizations"
-  [selectedOrganization]="(orgState$ | async)?.selectedOrganization ?? null"
+  [selectedOrganization]="
+    (orgState$ | async)!.selectedOrganization?.organization ?? null
+  "
   (selectedOrganizationChange)="selectOrganization($event)"
   [orgMember]="(orgState$ | async)?.orgMember ?? null"
   [includeCenter]="includeCenter"

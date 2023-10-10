@@ -6,11 +6,11 @@ import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   CountryService,
-  getHttpClientErrorMsg,
   HttpClientError,
+  PhoneInput,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  PhoneInput,
 } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
@@ -70,7 +70,7 @@ export class RegisterFormComponent {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly countryService: CountryService
+    private readonly countryService: CountryService,
   ) {}
 
   /**

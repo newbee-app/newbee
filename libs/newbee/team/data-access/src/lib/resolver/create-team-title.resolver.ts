@@ -1,4 +1,5 @@
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { prependParentTitle } from '@newbee/newbee/shared/util';
 
 /**
  * A resolver to get the title for the create team page.
@@ -7,12 +8,7 @@ import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
  * @returns A title prepending the parent's title with `Create team`, unless the parent title shows an error.
  */
 export const createTeamTitleResolver: ResolveFn<string> = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): string => {
-  const parentTitle = route.parent?.title ?? '';
-  if (parentTitle.includes('Error')) {
-    return parentTitle;
-  }
-
-  return `Create team - ${parentTitle}`;
+  return prependParentTitle(route, 'Create team');
 };

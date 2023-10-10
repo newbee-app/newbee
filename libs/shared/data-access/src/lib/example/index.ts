@@ -4,6 +4,7 @@ import {
   testAuthenticationCredential1,
   testDoc1,
   testOrganization1,
+  testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
   testPublicKeyCredentialCreationOptions1,
@@ -135,7 +136,7 @@ export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
  * Strictly for use in testing.
  */
 export const testBaseOrgAndMemberDto1: BaseOrgAndMemberDto = {
-  organization: testOrganization1,
+  organization: testOrganizationRelation1,
   orgMember: testOrgMemberRelation1,
 };
 

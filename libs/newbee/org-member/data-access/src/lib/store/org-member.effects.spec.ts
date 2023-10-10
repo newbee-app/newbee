@@ -10,6 +10,7 @@ import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,
   testOrganization1,
+  testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
@@ -34,7 +35,9 @@ describe('OrgMemberEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
             [Keyword.Member]: {
               selectedOrgMember: testOrgMemberRelation1,
             },
@@ -87,7 +90,7 @@ describe('OrgMemberEffects', () => {
         expect(service.get).toBeCalledTimes(1);
         expect(service.get).toBeCalledWith(
           testOrganization1.slug,
-          testOrgMember1.slug
+          testOrgMember1.slug,
         );
       });
     });
@@ -109,7 +112,7 @@ describe('OrgMemberEffects', () => {
         expect(service.edit).toBeCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseUpdateOrgMemberDto1
+          testBaseUpdateOrgMemberDto1,
         );
       });
     });
@@ -126,7 +129,7 @@ describe('OrgMemberEffects', () => {
         expect(service.delete).toBeCalledTimes(1);
         expect(service.delete).toBeCalledWith(
           testOrganization1.slug,
-          testOrgMember1.slug
+          testOrgMember1.slug,
         );
       });
     });
@@ -136,7 +139,10 @@ describe('OrgMemberEffects', () => {
     it('should navigate to org', () => {
       actions$ = hot('a', { a: OrgMemberActions.deleteOrgMemberSuccess() });
       const expected$ = hot('a', {
-        a: [OrgMemberActions.deleteOrgMemberSuccess(), testOrganization1],
+        a: [
+          OrgMemberActions.deleteOrgMemberSuccess(),
+          testOrganizationRelation1,
+        ],
       });
       expect(effects.deleteOrgMemberSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

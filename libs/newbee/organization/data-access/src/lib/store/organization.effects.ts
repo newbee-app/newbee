@@ -33,9 +33,9 @@ export class OrganizationEffects {
           map((orgAndMemberDto) => {
             return OrganizationActions.getOrgSuccess({ orgAndMemberDto });
           }),
-          catchError(catchHttpScreenError)
+          catchError(catchHttpScreenError),
         );
-      })
+      }),
     );
   });
 
@@ -58,10 +58,10 @@ export class OrganizationEffects {
                 default:
                   return Keyword.Misc;
               }
-            })
-          )
+            }),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -73,22 +73,25 @@ export class OrganizationEffects {
           await this.router.navigate([
             `/${ShortUrl.Organization}/${organization.slug}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   editOrg$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrganizationActions.editOrg, OrganizationActions.editOrgSlug),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ type, updateOrganizationDto }, selectedOrganization]) => {
         return this.organizationService
-          .edit(selectedOrganization?.slug as string, updateOrganizationDto)
+          .edit(
+            selectedOrganization?.organization.slug as string,
+            updateOrganizationDto,
+          )
           .pipe(
             map((organization) => {
               switch (type) {
@@ -105,11 +108,11 @@ export class OrganizationEffects {
             catchError((err) =>
               catchHttpClientError(
                 err,
-                () => `${Keyword.Organization}-${Keyword.Edit}`
-              )
-            )
+                () => `${Keyword.Organization}-${Keyword.Edit}`,
+              ),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -121,22 +124,22 @@ export class OrganizationEffects {
           await this.router.navigate([
             `/${ShortUrl.Organization}/${newOrg.slug}/${Keyword.Edit}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   deleteOrg$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrganizationActions.deleteOrg),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([, selectedOrganization]) => {
         return this.organizationService
-          .delete(selectedOrganization?.slug as string)
+          .delete(selectedOrganization?.organization.slug as string)
           .pipe(
             map(() => {
               return OrganizationActions.deleteOrgSuccess();
@@ -144,11 +147,11 @@ export class OrganizationEffects {
             catchError((err) =>
               catchHttpClientError(
                 err,
-                () => `${Keyword.Organization}-${Keyword.Delete}`
-              )
-            )
+                () => `${Keyword.Organization}-${Keyword.Delete}`,
+              ),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -158,10 +161,10 @@ export class OrganizationEffects {
         ofType(OrganizationActions.deleteOrgSuccess),
         tap(async () => {
           await this.router.navigate(['/']);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   checkSlug$ = createEffect(() => {
@@ -169,19 +172,19 @@ export class OrganizationEffects {
       ofType(OrganizationActions.checkSlug),
       filter(({ slug }) => !!slug),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       switchMap(([{ slug }, selectedOrganization]) => {
-        if (selectedOrganization?.slug === slug) {
+        if (selectedOrganization?.organization.slug === slug) {
           return of(OrganizationActions.checkSlugSuccess({ slugTaken: false }));
         }
 
         return this.organizationService.checkSlug(slug).pipe(
           map(({ slugTaken }) => {
             return OrganizationActions.checkSlugSuccess({ slugTaken });
-          })
+          }),
         );
-      })
+      }),
     );
   });
 
@@ -195,9 +198,9 @@ export class OrganizationEffects {
             return OrganizationActions.generateSlugSuccess({
               slug: generatedSlug,
             });
-          })
+          }),
         );
-      })
+      }),
     );
   });
 
@@ -205,7 +208,7 @@ export class OrganizationEffects {
     return this.actions$.pipe(
       ofType(OrganizationActions.inviteUser),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
@@ -213,8 +216,8 @@ export class OrganizationEffects {
 
         return this.organizationService
           .inviteUser(
-            selectedOrganization?.slug as string,
-            createOrgMemberInviteDto
+            selectedOrganization?.organization.slug as string,
+            createOrgMemberInviteDto,
           )
           .pipe(
             map(() => {
@@ -230,10 +233,10 @@ export class OrganizationEffects {
                   default:
                     return Keyword.Misc;
                 }
-              })
-            )
+              }),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -241,6 +244,6 @@ export class OrganizationEffects {
     private readonly actions$: Actions,
     private readonly organizationService: OrganizationService,
     private readonly store: Store,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 }

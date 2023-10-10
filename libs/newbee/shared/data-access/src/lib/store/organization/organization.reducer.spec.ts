@@ -4,9 +4,11 @@ import {
   testBaseUserRelationAndOptionsDto1,
 } from '@newbee/shared/data-access';
 import {
+  testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
-  testOrgMemberRelation1,
+  testOrganizationRelation1,
+  testOrganizationRelation2,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { AuthActions } from '../auth';
@@ -14,9 +16,9 @@ import { CookieActions } from '../cookie';
 import { InviteActions } from '../invite';
 import { OrganizationActions } from './organization.actions';
 import {
+  OrganizationState,
   initialOrganizationState,
   organizationFeature,
-  OrganizationState,
 } from './organization.reducer';
 
 describe('OrganizationReducer', () => {
@@ -26,13 +28,13 @@ describe('OrganizationReducer', () => {
   };
   const stateAfterGetOrgSuccess: OrganizationState = {
     ...stateAfterLoginSuccess,
-    selectedOrganization: testOrganization1,
+    selectedOrganization: testOrganizationRelation1,
     orgMember: testOrgMemberRelation1,
   };
   const stateAfterEditOrgSuccess: OrganizationState = {
     ...stateAfterGetOrgSuccess,
     organizations: [testOrganization2],
-    selectedOrganization: testOrganization2,
+    selectedOrganization: testOrganizationRelation2,
   };
   const stateAfterResetSelectedOrg: OrganizationState = {
     ...stateAfterGetOrgSuccess,

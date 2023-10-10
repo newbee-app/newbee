@@ -8,9 +8,9 @@ import {
 } from '@newbee/newbee/shared/ui';
 import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  compareTeamRoles,
   Keyword,
   TeamRoleEnum,
+  compareTeamRoles,
   type TeamMember,
   type TeamNoOrg,
 } from '@newbee/shared/util';

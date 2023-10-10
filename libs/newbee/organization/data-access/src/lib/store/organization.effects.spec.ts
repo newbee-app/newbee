@@ -14,6 +14,7 @@ import {
   Keyword,
   testOrganization1,
   testOrganization2,
+  testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -36,7 +37,9 @@ describe('OrganizationEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
           },
         }),
         OrganizationEffects,
@@ -345,7 +348,7 @@ describe('OrganizationEffects', () => {
         expect(service.inviteUser).toBeCalledTimes(1);
         expect(service.inviteUser).toBeCalledWith(
           testOrganization1.slug,
-          testBaseCreateOrgMemberInviteDto1
+          testBaseCreateOrgMemberInviteDto1,
         );
       });
     });

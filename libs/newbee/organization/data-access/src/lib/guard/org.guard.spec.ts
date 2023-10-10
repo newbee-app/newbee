@@ -5,7 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword, testOrganization1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgGuard } from './org.guard';
 
@@ -34,7 +38,7 @@ describe('orgGuard', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
-              selectedOrganization: testOrganization1,
+              selectedOrganization: testOrganizationRelation1,
             },
           },
         }),
@@ -58,11 +62,11 @@ describe('orgGuard', () => {
 
   it('should dispatch store and navigate', async () => {
     await expect(
-      router.navigate([`/${testOrganization1.slug}`])
+      router.navigate([`/${testOrganization1.slug}`]),
     ).resolves.toBeTruthy();
     expect(store.dispatch).toBeCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
-      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug })
+      OrganizationActions.getOrg({ orgSlug: testOrganization1.slug }),
     );
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);
   });

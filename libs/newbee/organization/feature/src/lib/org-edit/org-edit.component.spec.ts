@@ -6,7 +6,11 @@ import {
   testEditOrgSlugForm1,
 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { Keyword, testOrganization1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgEditComponent } from './org-edit.component';
 
@@ -29,7 +33,9 @@ describe('OrgEditComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
           },
         }),
       ],
@@ -54,7 +60,7 @@ describe('OrgEditComponent', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
     });
   });
@@ -63,7 +69,7 @@ describe('OrgEditComponent', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.checkSlug({ slug: testOrganization1.slug })
+        OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
     });
   });
@@ -74,7 +80,7 @@ describe('OrgEditComponent', () => {
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.editOrg({
           updateOrganizationDto: { name: testEditOrgForm1.name ?? '' },
-        })
+        }),
       );
     });
   });
@@ -85,7 +91,7 @@ describe('OrgEditComponent', () => {
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testEditOrgSlugForm1.slug ?? '' },
-        })
+        }),
       );
     });
   });

@@ -19,25 +19,26 @@ import type {
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
   OrgMemberRelation,
+  OrgTeams,
   QnaNoOrg,
   QnaQueryResult,
   TeamNoOrg,
   UserRelation,
 } from '@newbee/shared/util';
 import {
+  OrgRoleEnum,
+  TeamRoleEnum,
   cannotDeleteMaintainerBadReqest,
   cannotDeleteOnlyOrgOwnerBadRequest,
   cannotDeleteOnlyTeamOwnerBadRequest,
   internalServerError,
-  OrgRoleEnum,
-  TeamRoleEnum,
 } from '@newbee/shared/util';
 import {
   AuthenticatorEntity,
   DocEntity,
-  OrganizationEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
+  OrganizationEntity,
   PostEntity,
   QnaEntity,
   TeamEntity,
@@ -62,7 +63,7 @@ export class EntityService {
   constructor(private readonly em: EntityManager) {}
 
   /**
-   * A helper function to opulate the relations related to a post's members and team.
+   * A helper function to populate the relations related to a post's members and team.
    *
    * @param posts The posts to populate.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
@@ -88,7 +89,7 @@ export class EntityService {
    * @returns The popualted collections of the org member.
    */
   private async populateOrgMemberCollections(
-    orgMember: OrgMemberEntity
+    orgMember: OrgMemberEntity,
   ): Promise<
     Pick<
       OrgMemberRelation,
@@ -103,7 +104,7 @@ export class EntityService {
       const [teams, teamsCount] = await this.em.findAndCount(
         TeamMemberEntity,
         { orgMember },
-        { limit: 5, offset: 0, populate: ['team'] }
+        { limit: 5, offset: 0, populate: ['team'] },
       );
 
       const postFindAndCountOptions = {
@@ -114,22 +115,22 @@ export class EntityService {
       const [createdDocs, createdDocsCount] = await this.em.findAndCount(
         DocEntity,
         { creator: orgMember },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
       const [maintainedDocs, maintainedDocsCount] = await this.em.findAndCount(
         DocEntity,
         { maintainer: orgMember },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
       const [createdQnas, createdQnasCount] = await this.em.findAndCount(
         QnaEntity,
         { creator: orgMember },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
       const [maintainedQnas, maintainedQnasCount] = await this.em.findAndCount(
         QnaEntity,
         { maintainer: orgMember },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
 
       return {
@@ -192,7 +193,7 @@ export class EntityService {
       title,
       creator?.id ?? null,
       maintainer?.id ?? null,
-      docTxt
+      docTxt,
     );
   }
 
@@ -230,7 +231,7 @@ export class EntityService {
       creator?.id ?? null,
       maintainer?.id ?? null,
       questionTxt,
-      answerTxt
+      answerTxt,
     );
   }
 
@@ -255,7 +256,7 @@ export class EntityService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberDocParams(
-    orgMember: OrgMemberEntity
+    orgMember: OrgMemberEntity,
   ): Promise<OrgMemberDocParams> {
     try {
       await this.em.populate(orgMember, ['user']);
@@ -273,7 +274,7 @@ export class EntityService {
       name,
       displayName,
       phoneNumber,
-      role
+      role,
     );
   }
 
@@ -371,6 +372,16 @@ export class EntityService {
     });
   }
 
+  async createOrgTeams(organization: OrganizationEntity): Promise<OrgTeams> {
+    try {
+      await this.em.populate(organization, ['teams']);
+      return { organization, teams: organization.teams.toArray() };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
   /**
    * Takes in an org member and converts it to an `OrgMemberNoOrg`.
    *
@@ -380,11 +391,10 @@ export class EntityService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoOrg(
-    orgMember: OrgMemberEntity
+    orgMember: OrgMemberEntity,
   ): Promise<OrgMemberNoOrg> {
-    const orgMemberCollections = await this.populateOrgMemberCollections(
-      orgMember
-    );
+    const orgMemberCollections =
+      await this.populateOrgMemberCollections(orgMember);
 
     try {
       await this.em.populate(orgMember, ['user']);
@@ -406,11 +416,10 @@ export class EntityService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoUser(
-    orgMember: OrgMemberEntity
+    orgMember: OrgMemberEntity,
   ): Promise<OrgMemberNoUser> {
-    const orgMemberCollections = await this.populateOrgMemberCollections(
-      orgMember
-    );
+    const orgMemberCollections =
+      await this.populateOrgMemberCollections(orgMember);
 
     try {
       await this.em.populate(orgMember, ['organization']);
@@ -432,11 +441,10 @@ export class EntityService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoUserOrg(
-    orgMember: OrgMemberEntity
+    orgMember: OrgMemberEntity,
   ): Promise<OrgMemberNoUserOrg> {
-    const orgMemberCollections = await this.populateOrgMemberCollections(
-      orgMember
-    );
+    const orgMemberCollections =
+      await this.populateOrgMemberCollections(orgMember);
     return { orgMember, ...orgMemberCollections };
   }
 
@@ -457,12 +465,12 @@ export class EntityService {
       const [docs, docsCount] = await this.em.findAndCount(
         DocEntity,
         { team },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
       const [qnas, qnasCount] = await this.em.findAndCount(
         QnaEntity,
         { team },
-        postFindAndCountOptions
+        postFindAndCountOptions,
       );
       const [teamMembers, teamMembersCount] = await this.em.findAndCount(
         TeamMemberEntity,
@@ -472,7 +480,7 @@ export class EntityService {
           limit: 5,
           offset: 0,
           populate: ['orgMember.user'],
-        }
+        },
       );
 
       return {
@@ -601,7 +609,7 @@ export class EntityService {
       | UserChallengeEntity
       | UserInvitesEntity
       | UserSettingsEntity
-      | UserEntity
+      | UserEntity,
   ): Promise<void> {
     try {
       await this.em.populate(entity, true);

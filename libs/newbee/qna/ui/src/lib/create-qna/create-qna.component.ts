@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   HttpClientError,
+  SelectOption,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
 import { BaseCreateQnaDto } from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, Team } from '@newbee/shared/util';
 
 /**
  * A dumb UI for creating a new doc.
@@ -24,12 +26,13 @@ import { Keyword } from '@newbee/shared/util';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    SearchableSelectComponent,
     AlertComponent,
     MarkdocEditorComponent,
   ],
   templateUrl: './create-qna.component.html',
 })
-export class CreateQnaComponent {
+export class CreateQnaComponent implements OnInit {
   /**
    * All valid alert types.
    */
@@ -46,15 +49,29 @@ export class CreateQnaComponent {
   @Input() createPending = false;
 
   /**
-   * Tells the smart UI parent when the QnA is ready to be created.
+   * All of the teams of the org the question can be asked to.
    */
-  @Output() create = new EventEmitter<BaseCreateQnaDto>();
+  @Input() teams: Team[] = [];
 
   /**
-   * The form containing the QnA's title.
+   * The query param representing a team slug, if one is specified.
    */
-  qnaTitle = this.fb.group({
+  @Input() teamSlugParam: string | null = null;
+
+  /**
+   * Tells the smart UI parent when the QnA is ready to be created.
+   */
+  @Output() create = new EventEmitter<{
+    createQnaDto: BaseCreateQnaDto;
+    team: Team | null;
+  }>();
+
+  /**
+   * The form containing the QnA's title and team.
+   */
+  qnaForm = this.fb.group({
     title: ['', [Validators.required]],
+    team: [null as null | Team],
   });
 
   /**
@@ -65,11 +82,27 @@ export class CreateQnaComponent {
   constructor(private readonly fb: FormBuilder) {}
 
   /**
+   * Initialize the team value with a value from the team slug param, if specified.
+   */
+  ngOnInit(): void {
+    if (!this.teamSlugParam) {
+      return;
+    }
+
+    const team = this.teams.find((team) => team.slug === this.teamSlugParam);
+    if (!team) {
+      return;
+    }
+
+    this.qnaForm.controls.team.setValue(team);
+  }
+
+  /**
    * Whether to show the title control's error message.
    */
   get showTitleError(): boolean {
     return (
-      inputDisplayError(this.qnaTitle.controls.title) ||
+      inputDisplayError(this.qnaForm.controls.title) ||
       !!getHttpClientErrorMsg(this.httpClientError, 'title')
     );
   }
@@ -80,7 +113,7 @@ export class CreateQnaComponent {
    */
   get titleErrorMessage(): string {
     return (
-      inputErrorMessage(this.qnaTitle.controls.title) ||
+      inputErrorMessage(this.qnaForm.controls.title) ||
       getHttpClientErrorMsg(this.httpClientError, 'title')
     );
   }
@@ -93,6 +126,16 @@ export class CreateQnaComponent {
   }
 
   /**
+   * All of the input teams as select options.
+   */
+  get teamOptions(): SelectOption<Team | null>[] {
+    return [
+      new SelectOption(null, 'Entire org'),
+      ...this.teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+
+  /**
    * Update the internal question markdoc value whenever the content changes.
    *
    * @param content The new value for question markdoc.
@@ -102,14 +145,14 @@ export class CreateQnaComponent {
   }
 
   /**
-   * Called to emit a `BaseCreateQnaDto` based off of the UI's values.
+   * Called to emit the create output based off of the UI's values.
    */
   emitCreate(): void {
     const createQnaDto: BaseCreateQnaDto = {
-      title: this.qnaTitle.controls.title.value ?? '',
+      title: this.qnaForm.controls.title.value ?? '',
       questionMarkdoc: this.questionMarkdoc || null,
       answerMarkdoc: null,
     };
-    this.create.emit(createQnaDto);
+    this.create.emit({ createQnaDto, team: this.qnaForm.controls.team.value });
   }
 }

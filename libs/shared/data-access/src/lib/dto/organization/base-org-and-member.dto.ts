@@ -1,4 +1,4 @@
-import type { Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
+import type { OrgMemberNoUserOrg, OrgTeams } from '@newbee/shared/util';
 
 /**
  * The DTO sent from the backend to the frontend for getting an org.
@@ -8,7 +8,7 @@ export class BaseOrgAndMemberDto {
   /**
    * The organization the user wants to view.
    */
-  organization!: Organization;
+  organization!: OrgTeams;
 
   /**
    * The user's relation to the org.

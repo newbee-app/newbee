@@ -1,4 +1,9 @@
-import { Keyword, Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
+import {
+  Keyword,
+  Organization,
+  OrgMemberNoUserOrg,
+  OrgTeams,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
@@ -18,7 +23,7 @@ export interface OrganizationState {
   /**
    * The organization the user is looking at right now.
    */
-  selectedOrganization: Organization | null;
+  selectedOrganization: OrgTeams | null;
 
   /**
    * The user's relation to the selected organization, if they have any.
@@ -105,7 +110,7 @@ export const organizationFeature = createFeature({
 
         const organizations = [
           ...state.organizations.filter(
-            (org) => !isEqual(org, selectedOrganization),
+            (org) => !isEqual(org, selectedOrganization.organization),
           ),
           newOrg,
         ];
@@ -113,7 +118,10 @@ export const organizationFeature = createFeature({
         return {
           ...state,
           organizations,
-          selectedOrganization: newOrg,
+          selectedOrganization: {
+            ...selectedOrganization,
+            organization: newOrg,
+          },
         };
       },
     ),
@@ -126,7 +134,7 @@ export const organizationFeature = createFeature({
       }
 
       const organizations = state.organizations.filter(
-        (org) => !isEqual(org, selectedOrganization),
+        (org) => !isEqual(org, selectedOrganization.organization),
       );
 
       return {

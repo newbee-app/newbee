@@ -11,12 +11,13 @@ import type {
   Authenticator,
   Doc,
   DocRelation,
-  Organization,
   OrgMember,
   OrgMemberInvite,
   OrgMemberInviteRelation,
   OrgMemberRelation,
   OrgMemberUser,
+  Organization,
+  OrganizationRelation,
   Post,
   Qna,
   QnaRelation,
@@ -319,6 +320,30 @@ export const testQueryResult1: QueryResult = {
   offset: 0,
   results: [testTeamQueryResult1],
   suggestion: null,
+};
+
+/**
+ * An example instance of `OrganizationRelation`.
+ * Strictly for use in testing.
+ */
+export const testOrganizationRelation1: OrganizationRelation = {
+  organization: testOrganization1,
+  teams: [testTeam1],
+  docs: { sample: [testDocQueryResult1], total: 1 },
+  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
+};
+
+/**
+ * An example instance of `OrganizationRelation`.
+ * Strictly for use in testing.
+ */
+export const testOrganizationRelation2: OrganizationRelation = {
+  organization: testOrganization2,
+  teams: [testTeam1],
+  docs: { sample: [testDocQueryResult1], total: 1 },
+  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
 };
 
 /**

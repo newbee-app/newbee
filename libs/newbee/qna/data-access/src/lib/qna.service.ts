@@ -31,7 +31,7 @@ export class QnaService {
   create(
     createQnaDto: BaseCreateQnaDto,
     orgSlug: string,
-    teamSlug?: string,
+    teamSlug: string | null,
   ): Observable<Qna> {
     const params = teamSlug
       ? new HttpParams({ fromObject: { [Keyword.Team]: teamSlug } })
