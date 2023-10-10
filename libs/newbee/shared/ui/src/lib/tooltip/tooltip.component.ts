@@ -118,13 +118,15 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.cleanup = autoUpdate(
-      this.content.nativeElement,
-      this.tooltip.nativeElement,
-      () => {
-        this.recompute();
-      },
-    );
+    this.ngZone.runOutsideAngular(() => {
+      this.cleanup = autoUpdate(
+        this.content.nativeElement,
+        this.tooltip.nativeElement,
+        () => {
+          this.recompute();
+        },
+      );
+    });
   }
 
   /**

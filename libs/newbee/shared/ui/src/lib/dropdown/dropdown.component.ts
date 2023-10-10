@@ -171,13 +171,15 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       return;
     }
 
-    this.cleanup = autoUpdate(
-      this.label.nativeElement,
-      this.dropdown.nativeElement,
-      () => {
-        this.recompute();
-      },
-    );
+    this.ngZone.runOutsideAngular(() => {
+      this.cleanup = autoUpdate(
+        this.label.nativeElement,
+        this.dropdown.nativeElement,
+        () => {
+          this.recompute();
+        },
+      );
+    });
   }
 
   /**
