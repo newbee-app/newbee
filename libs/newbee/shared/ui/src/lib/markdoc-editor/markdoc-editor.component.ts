@@ -1,5 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CommonModule, isPlatformServer } from '@angular/common';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  PLATFORM_ID,
+} from '@angular/core';
 import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { LanguageDescription } from '@codemirror/language';
@@ -48,6 +56,8 @@ export class MarkdocEditorComponent implements OnInit {
    * The content of the editor, as rendered markdoc.
    */
   renderedEditorContent = '';
+
+  constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {}
 
   /**
    * Sets up the editor state config using the component's inputs.
@@ -116,12 +126,23 @@ export class MarkdocEditorComponent implements OnInit {
           : []),
 
         // adds general theming
-        ...(window && window.matchMedia
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? [githubDark]
-            : [githubLight]
-          : [githubDark]),
+        ...(this.useDarkTheme ? [githubDark] : [githubLight]),
       ],
     };
+  }
+
+  /**
+   * A helper function to determine whether we should use a dark theme for the code editor.
+   */
+  get useDarkTheme(): boolean {
+    if (
+      isPlatformServer(this.platformId) ||
+      !window.matchMedia ||
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,4 @@
-import { isPlatformServer } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   HttpEvent,
   HttpHandler,
@@ -23,7 +23,7 @@ export class NgUniversalInterceptor implements HttpInterceptor {
   constructor(
     @Inject(PLATFORM_ID) private readonly platformId: object,
     @Inject(BASE_API_URL) private readonly baseApiUrl: string,
-    @Optional() @Inject(REQUEST) private readonly request: Request | null
+    @Optional() @Inject(REQUEST) private readonly request: Request | null,
   ) {}
 
   /**
@@ -36,11 +36,13 @@ export class NgUniversalInterceptor implements HttpInterceptor {
    */
   intercept(
     req: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     // If not SSR and the request doesn't start with `/api`, skip
-    const isServer = isPlatformServer(this.platformId);
-    if (!isServer || !req.url.startsWith(`/${Keyword.Api}`)) {
+    if (
+      isPlatformBrowser(this.platformId) ||
+      !req.url.startsWith(`/${Keyword.Api}`)
+    ) {
       return next.handle(req);
     }
 

@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -101,9 +101,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * A cleanup function for the floating UI autoUpdate function we set up for the dropdown.
    */
-  private cleanup: () => void = () => {
-    return;
-  };
+  private cleanup: (() => void) | null = null;
 
   /**
    * Subscribe to the user's clicks and shrink the dropdown if the user clicks outside of the dropdown.
@@ -167,7 +165,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * Assign cleanup and set up floating UI's autoUpdate with the dropdown.
    */
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (isPlatformServer(this.platformId)) {
       return;
     }
 
@@ -189,7 +187,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
 
-    this.cleanup();
+    this.cleanup?.();
   }
 
   /**

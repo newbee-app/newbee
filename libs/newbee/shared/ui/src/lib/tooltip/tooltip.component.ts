@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -58,11 +58,9 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   @ViewChild('arrow') arrow!: ElementRef<HTMLDivElement>;
 
   /**
-   * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip.
+   * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip, which can be null on the server-side.
    */
-  private cleanup: () => void = () => {
-    return;
-  };
+  private cleanup: (() => void) | null = null;
 
   constructor(
     @Inject(PLATFORM_ID) private readonly platformId: object,
@@ -114,7 +112,7 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
    * Assign cleanup and set up floating UI's autoUpdate with the tooltip.
    */
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (isPlatformServer(this.platformId)) {
       return;
     }
 
@@ -133,6 +131,6 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
    * Call cleanup to clean up the floating UI tooltip.
    */
   ngOnDestroy(): void {
-    this.cleanup();
+    this.cleanup?.();
   }
 }

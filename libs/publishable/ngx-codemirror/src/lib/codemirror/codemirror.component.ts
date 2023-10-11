@@ -1,11 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import { EditorState, EditorStateConfig } from '@codemirror/state';
@@ -35,14 +37,16 @@ export class CodemirrorComponent implements OnInit, AfterViewInit, OnDestroy {
   state!: EditorState;
 
   /**
-   * The view to use for the editor.
+   * The view to use for the editor, which can be null if it's not initialized on the server-side.
    */
-  view!: EditorView;
+  view: EditorView | null = null;
 
   /**
    * The div element to serve as the wrapper for the editor's view.
    */
   @ViewChild('wrapper') wrapper!: ElementRef<HTMLDivElement>;
+
+  constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {}
 
   /**
    * Sets up the editor state after the component receives inputs.
@@ -54,9 +58,13 @@ export class CodemirrorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Set up the editor view after the component view has been initialized.
+   * Set up the editor view after the component view has been initialized, if not on the server-side.
    */
   ngAfterViewInit(): void {
+    if (isPlatformServer(this.platformId)) {
+      return;
+    }
+
     this.view = new EditorView({
       state: this.state,
       parent: this.wrapper.nativeElement,
@@ -67,6 +75,6 @@ export class CodemirrorComponent implements OnInit, AfterViewInit, OnDestroy {
    * Destroy the editor view when this component is destroyed.
    */
   ngOnDestroy(): void {
-    this.view.destroy();
+    this.view?.destroy();
   }
 }
