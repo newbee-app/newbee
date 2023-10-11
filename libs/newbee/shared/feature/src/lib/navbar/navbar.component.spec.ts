@@ -59,7 +59,7 @@ describe('NavbarComponent', () => {
     expect(router).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
+  describe('constructor', () => {
     it('should set includeCenter to true if route is past org home', () => {
       expect(component.includeCenter).toBeFalsy();
 

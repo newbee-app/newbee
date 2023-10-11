@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -20,7 +19,7 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [CommonModule, ReactiveFormsModule, SearchbarComponent],
   templateUrl: './org-searchbar.component.html',
 })
-export class OrgSearchbarComponent implements OnInit, OnDestroy {
+export class OrgSearchbarComponent implements OnDestroy {
   /**
    * Whether to display the spinner on the search button.
    */
@@ -51,12 +50,10 @@ export class OrgSearchbarComponent implements OnInit, OnDestroy {
    */
   private readonly unsubscribe$ = new Subject<void>();
 
-  constructor(private readonly fb: FormBuilder) {}
-
   /**
    * Emit the suggest event with the current searchbar value.
    */
-  ngOnInit(): void {
+  constructor(private readonly fb: FormBuilder) {
     this.searchTerm.controls.searchbar.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({

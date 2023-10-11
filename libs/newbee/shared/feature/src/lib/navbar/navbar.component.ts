@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router, Scroll } from '@angular/router';
 import {
   AuthActions,
@@ -29,7 +29,7 @@ import { Subject, combineLatest, takeUntil } from 'rxjs';
   ],
   templateUrl: './navbar.component.html',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent implements OnDestroy {
   /**
    * Emit to unsubscribe from all infinite observables.
    */
@@ -50,18 +50,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   includeCenter = false;
 
-  constructor(
-    private readonly store: Store,
-    private readonly router: Router,
-  ) {}
-
   /**
    * Look at the current URL, selected organization, and adjust `includeCenter` to `true` if it's past the org's home page.
    */
-  ngOnInit(): void {
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+  ) {
     combineLatest([
-      this.router.events,
-      this.store.select(organizationFeature.selectSelectedOrganization),
+      router.events,
+      store.select(organizationFeature.selectSelectedOrganization),
     ])
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({

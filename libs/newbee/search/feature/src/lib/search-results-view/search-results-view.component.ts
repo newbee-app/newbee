@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchTab, serachTabToSolrEntry } from '@newbee/newbee/search/util';
 import {
@@ -16,7 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'newbee-search-results-view',
   templateUrl: './search-results-view.component.html',
 })
-export class SearchResultsViewComponent implements OnInit, OnDestroy {
+export class SearchResultsViewComponent implements OnDestroy {
   /**
    * Emit to unsubscribe from all infinite observables.
    */
@@ -47,23 +47,21 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
    */
   searchResults: QueryResult | null = null;
 
-  constructor(
-    private readonly store: Store,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router
-  ) {}
-
   /**
    * Subscribe to the route's search param and the store's value for the search results.
    */
-  ngOnInit(): void {
-    this.route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
+  constructor(
+    private readonly store: Store,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+  ) {
+    route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (paramMap) => {
         this.searchTerm = paramMap.get(Keyword.Search) ?? '';
       },
     });
 
-    this.store
+    store
       .select(searchFeature.selectSearchResult)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -102,7 +100,7 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
           query: this.searchTerm,
           ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },
-      })
+      }),
     );
   }
 
@@ -153,7 +151,7 @@ export class SearchResultsViewComponent implements OnInit, OnDestroy {
           query: this.searchTerm,
           ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },
-      })
+      }),
     );
   }
 }

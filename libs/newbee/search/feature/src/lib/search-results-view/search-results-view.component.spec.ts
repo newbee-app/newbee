@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { SearchResultsComponent } from '@newbee/newbee/search/ui';
 import { SearchTab } from '@newbee/newbee/search/util';
 import {
-  initialSearchState,
   SearchActions,
+  initialSearchState,
 } from '@newbee/newbee/shared/data-access';
 import { Keyword, SolrEntryEnum, testQueryResult1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -51,7 +51,7 @@ describe('SearchResultsViewComponent', () => {
           provide: ActivatedRoute,
           useValue: createMock<ActivatedRoute>({
             paramMap: of(
-              convertToParamMap({ [Keyword.Search]: testSearchTerm })
+              convertToParamMap({ [Keyword.Search]: testSearchTerm }),
             ),
           }),
         },
@@ -77,7 +77,7 @@ describe('SearchResultsViewComponent', () => {
     expect(router).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
+  describe('constructor', () => {
     it('should initialize search term and search results', () => {
       expect(component.searchTerm).toEqual(testSearchTerm);
       expect(component.searchResults).toEqual(testQueryResult1);
@@ -91,7 +91,7 @@ describe('SearchResultsViewComponent', () => {
       expect(store.dispatch).toBeCalledWith(
         SearchActions.search({
           query: { offset: 0, type: SolrEntryEnum.Doc, query: testSearchTerm },
-        })
+        }),
       );
     });
   });
@@ -111,7 +111,7 @@ describe('SearchResultsViewComponent', () => {
     it('should dispatch suggest', () => {
       component.onSearchbar(testSearchTerm);
       expect(store.dispatch).toBeCalledWith(
-        SearchActions.suggest({ query: { query: testSearchTerm } })
+        SearchActions.suggest({ query: { query: testSearchTerm } }),
       );
     });
   });
@@ -144,7 +144,7 @@ describe('SearchResultsViewComponent', () => {
       expect(store.dispatch).toBeCalledWith(
         SearchActions.search({
           query: { offset: 9, query: testSearchTerm },
-        })
+        }),
       );
     });
   });

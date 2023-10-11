@@ -1,15 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
 import {
   CreateOrgForm,
   createOrgFormToDto,
 } from '@newbee/newbee/organization/util';
 import {
-  httpFeature,
   OrganizationActions,
+  httpFeature,
 } from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 /**
  * The smart UI for the create organization screen.
@@ -18,7 +18,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'newbee-org-create',
   templateUrl: './org-create.component.html',
 })
-export class OrgCreateComponent implements OnInit, OnDestroy {
+export class OrgCreateComponent implements OnDestroy {
   /**
    * Represents the form's current name value, for use in generating slugs.
    */
@@ -49,15 +49,13 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    */
   httpClientError$ = this.store.select(httpFeature.selectError);
 
-  constructor(private readonly store: Store) {}
-
   /**
    * Set up the `name$` subject to generate slug.
    */
-  ngOnInit(): void {
+  constructor(private readonly store: Store) {
     this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
       next: (name) => {
-        this.store.dispatch(OrganizationActions.generateSlug({ name }));
+        store.dispatch(OrganizationActions.generateSlug({ name }));
       },
     });
   }
@@ -105,7 +103,7 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       OrganizationActions.createOrg({
         createOrganizationDto: createOrgFormToDto(createOrgForm),
-      })
+      }),
     );
   }
 }

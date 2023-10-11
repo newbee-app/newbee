@@ -16,17 +16,17 @@ import {
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  SlugInputDirectiveModule,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SlugInputDirectiveModule,
 } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
   Keyword,
   OrgRoleEnum,
   TeamRoleEnum,
+  compareOrgRoles,
   type OrgMember,
   type Team,
   type TeamMember,
@@ -154,7 +154,18 @@ export class EditTeamComponent implements OnInit, OnDestroy {
     slug: ['', Validators.required],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
+  /**
+   * Emit the team slug whenever the value changes.
+   */
+  constructor(private readonly fb: FormBuilder) {
+    this.editTeamSlugForm.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (editTeamSlugForm) => {
+          this.slug.emit(editTeamSlugForm.slug ?? '');
+        },
+      });
+  }
 
   /**
    * Whether the edit team form has a value distinct from the current team's values.
@@ -199,16 +210,11 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Initialize the edit team form with the values of the current team.
    */
   ngOnInit(): void {
-    this.editTeamForm.setValue({ name: this.team.name });
-    this.editTeamSlugForm.setValue({ slug: this.team.slug });
-
-    this.editTeamSlugForm.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (editTeamSlugForm) => {
-          this.slug.emit(editTeamSlugForm.slug ?? '');
-        },
-      });
+    this.editTeamForm.setValue({ name: this.team.name }, { emitEvent: false });
+    this.editTeamSlugForm.setValue(
+      { slug: this.team.slug },
+      { emitEvent: false },
+    );
   }
 
   /**

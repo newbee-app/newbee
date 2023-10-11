@@ -47,13 +47,13 @@ export class PhoneNumberInputDirective
   blurEvent(value: string) {
     this.inputElement.value = this.phoneNumberPipe.transform(
       value,
-      this.country
+      this.country,
     );
   }
 
   constructor(
     private readonly phoneNumberPipe: PhoneNumberPipe,
-    elementRef: ElementRef<HTMLInputElement>
+    elementRef: ElementRef<HTMLInputElement>,
   ) {
     super(elementRef);
   }
@@ -61,7 +61,7 @@ export class PhoneNumberInputDirective
   ngOnInit(): void {
     this.inputElement.value = this.phoneNumberPipe.transform(
       this.inputElement.value,
-      this.country
+      this.country,
     );
   }
 }

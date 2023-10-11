@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { NgControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { SlugPipe, SlugPipeModule } from '../pipe';
 
 /**
@@ -29,7 +29,7 @@ export class SlugInputDirective implements OnInit, OnDestroy {
 
   constructor(
     private readonly control: NgControl,
-    private readonly slugPipe: SlugPipe
+    private readonly slugPipe: SlugPipe,
   ) {}
 
   /**

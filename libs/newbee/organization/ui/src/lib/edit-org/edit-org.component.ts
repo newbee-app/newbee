@@ -17,11 +17,11 @@ import { EditOrgForm, EditOrgSlugForm } from '@newbee/newbee/organization/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  SlugInputDirectiveModule,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SlugInputDirectiveModule,
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
@@ -147,7 +147,18 @@ export class EditOrgComponent implements OnInit, OnDestroy {
     slug: ['', Validators.required],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
+  /**
+   * Set up `slug` to emit whenever the `editOrgSlugForm` changes.
+   */
+  constructor(private readonly fb: FormBuilder) {
+    this.editOrgSlugForm.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (editOrgSlugForm) => {
+          this.slug.emit(editOrgSlugForm.slug ?? '');
+        },
+      });
+  }
 
   /**
    * Whether the edit org form has a value distinct from the current org's values.
@@ -186,20 +197,13 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.editOrgForm.setValue(
       { name: this.organization.name },
-      { emitEvent: false }
-    );
-    this.editOrgSlugForm.setValue(
-      { slug: this.organization.slug },
-      { emitEvent: false }
+      { emitEvent: false },
     );
 
-    this.editOrgSlugForm.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (editOrgSlugForm) => {
-          this.slug.emit(editOrgSlugForm.slug ?? '');
-        },
-      });
+    this.editOrgSlugForm.setValue(
+      { slug: this.organization.slug },
+      { emitEvent: false },
+    );
   }
 
   /**

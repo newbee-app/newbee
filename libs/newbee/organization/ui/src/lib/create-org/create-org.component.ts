@@ -5,7 +5,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -14,11 +13,11 @@ import type { CreateOrgForm } from '@newbee/newbee/organization/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  SlugInputDirectiveModule,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SlugInputDirectiveModule,
 } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
@@ -37,7 +36,7 @@ import { Subject, takeUntil } from 'rxjs';
   ],
   templateUrl: './create-org.component.html',
 })
-export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
+export class CreateOrgComponent implements OnChanges, OnDestroy {
   /**
    * Emit to unsubscribe from all infinite observables.
    */
@@ -101,13 +100,11 @@ export class CreateOrgComponent implements OnInit, OnChanges, OnDestroy {
     slug: ['', [Validators.required]],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
-
   /**
    * Emit the org name and slug whenever the value changes.
    * Changes from updates to generatedSlug should not be emitted.
    */
-  ngOnInit(): void {
+  constructor(private readonly fb: FormBuilder) {
     this.createOrgForm.controls.name.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({

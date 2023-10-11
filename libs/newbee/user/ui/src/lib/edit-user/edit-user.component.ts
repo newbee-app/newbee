@@ -18,11 +18,11 @@ import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   CountryService,
-  getHttpClientErrorMsg,
   HttpClientError,
+  PhoneInput,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  PhoneInput,
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
 import type { EditUserForm } from '@newbee/newbee/user/util';
@@ -155,7 +155,7 @@ export class EditUserComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly countryService: CountryService
+    private readonly countryService: CountryService,
   ) {}
 
   /**
@@ -183,7 +183,7 @@ export class EditUserComponent implements OnInit, OnChanges {
     const phoneNumber: PhoneInput | null = parsedPhoneNumber
       ? {
           country: this.countryService.getCountry(
-            parsedPhoneNumber.country as string
+            parsedPhoneNumber.country as string,
           ),
           number: parsedPhoneNumber.nationalNumber,
         }
@@ -212,7 +212,7 @@ export class EditUserComponent implements OnInit, OnChanges {
     (authenticators.currentValue as Authenticator[]).forEach(
       (authenticator) => {
         authenticatorNames.push(this.fb.control(authenticator.name));
-      }
+      },
     );
   }
 
@@ -288,7 +288,7 @@ export class EditUserComponent implements OnInit, OnChanges {
    */
   inputDisplayError(
     formName: 'editUser' | 'deleteUser',
-    inputName: string
+    inputName: string,
   ): boolean {
     const form = this.getFormGroup(formName);
     return (
@@ -307,7 +307,7 @@ export class EditUserComponent implements OnInit, OnChanges {
    */
   inputErrorMessage(
     formName: 'editUser' | 'deleteUser',
-    inputName: string
+    inputName: string,
   ): string {
     const form = this.getFormGroup(formName);
     return (

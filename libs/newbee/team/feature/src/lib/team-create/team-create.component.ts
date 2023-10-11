@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { httpFeature, TeamActions } from '@newbee/newbee/shared/data-access';
+import { Component, OnDestroy } from '@angular/core';
+import { TeamActions, httpFeature } from '@newbee/newbee/shared/data-access';
 import { teamFeature } from '@newbee/newbee/team/data-access';
 import {
   createTeamFormToDto,
   type CreateTeamForm,
 } from '@newbee/newbee/team/util';
 import { Store } from '@ngrx/store';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 /**
  * The smart UI for the create team screen.
@@ -15,7 +15,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'newbee-team-create',
   templateUrl: './team-create.component.html',
 })
-export class TeamCreateComponent implements OnInit, OnDestroy {
+export class TeamCreateComponent implements OnDestroy {
   /**
    * Represents the form's current name value, for use in generating slugs.
    */
@@ -46,12 +46,10 @@ export class TeamCreateComponent implements OnInit, OnDestroy {
    */
   httpClientError$ = this.store.select(httpFeature.selectError);
 
-  constructor(private readonly store: Store) {}
-
   /**
    * Set up the `name$` slug to generate slug.
    */
-  ngOnInit(): void {
+  constructor(private readonly store: Store) {
     this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
       next: (name) => {
         this.store.dispatch(TeamActions.generateSlug({ name }));
@@ -102,7 +100,7 @@ export class TeamCreateComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       TeamActions.createTeam({
         createTeamDto: createTeamFormToDto(createTeamForm),
-      })
+      }),
     );
   }
 }

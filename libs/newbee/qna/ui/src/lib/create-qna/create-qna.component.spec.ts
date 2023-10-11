@@ -38,7 +38,6 @@ describe('CreateQnaComponent', () => {
       component.teams = [testTeam1];
       component.teamSlugParam = testTeam1.slug;
       component.ngOnInit();
-
       expect(component.qnaForm.controls.team.value).toEqual(testTeam1);
     });
   });

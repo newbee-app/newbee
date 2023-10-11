@@ -5,7 +5,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -13,10 +12,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
+  SlugInputDirectiveModule,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SlugInputDirectiveModule,
   type HttpClientError,
 } from '@newbee/newbee/shared/util';
 import type { CreateTeamForm } from '@newbee/newbee/team/util';
@@ -37,7 +36,7 @@ import { Subject, takeUntil } from 'rxjs';
   ],
   templateUrl: './create-team.component.html',
 })
-export class CreateTeamComponent implements OnInit, OnChanges, OnDestroy {
+export class CreateTeamComponent implements OnChanges, OnDestroy {
   /**
    * Emit to unsubscribe from all infinite observables.
    */
@@ -101,13 +100,11 @@ export class CreateTeamComponent implements OnInit, OnChanges, OnDestroy {
     slug: ['', [Validators.required]],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
-
   /**
    * Emits the team name and slug whenever the value changes.
    * Changes from updates to generatedSlug should not be emitted.
    */
-  ngOnInit(): void {
+  constructor(private readonly fb: FormBuilder) {
     this.createTeamForm.controls.name.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
