@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
-import { Router, Scroll } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AuthActions,
   authFeature,
@@ -56,23 +56,26 @@ export class NavbarComponent implements OnDestroy {
   constructor(
     private readonly store: Store,
     private readonly router: Router,
+    route: ActivatedRoute,
   ) {
     combineLatest([
-      router.events,
+      route.url,
       store.select(organizationFeature.selectSelectedOrganization),
     ])
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
-        next: ([event, selectedOrganization]) => {
-          if (!(event instanceof Scroll)) {
-            return;
-          }
-
+        next: ([urlSegments, selectedOrganization]) => {
           if (!selectedOrganization) {
             this.includeCenter = false;
             return;
-          } else if (
-            event.routerEvent.url ===
+          }
+
+          const url = urlSegments.reduce(
+            (prev, curr) => `${prev}/${curr.toString()}`,
+            '',
+          );
+          if (
+            url ===
             `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`
           ) {
             this.includeCenter = false;

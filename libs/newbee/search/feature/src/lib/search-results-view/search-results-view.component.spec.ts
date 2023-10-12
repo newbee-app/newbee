@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { SearchResultsComponent } from '@newbee/newbee/search/ui';
 import { SearchTab } from '@newbee/newbee/search/util';
 import {
   SearchActions,
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { Keyword, SolrEntryEnum, testQueryResult1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { of } from 'rxjs';
 import { SearchResultsViewComponent } from './search-results-view.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -21,7 +21,6 @@ jest.mock('@floating-ui/dom', () => ({
 
 describe('SearchResultsViewComponent', () => {
   let component: SearchResultsViewComponent;
-  let fixture: ComponentFixture<SearchResultsViewComponent>;
   let store: MockStore;
   let route: ActivatedRoute;
   let router: Router;
@@ -41,37 +40,34 @@ describe('SearchResultsViewComponent', () => {
             },
           },
         }),
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: createMock<ActivatedRoute>({
-            paramMap: of(
-              convertToParamMap({ [Keyword.Search]: testSearchTerm }),
-            ),
-          }),
-        },
+        provideRouter([
+          {
+            path: `${Keyword.Search}/:${Keyword.Search}`,
+            component: SearchResultsViewComponent,
+          },
+          {
+            path: '**',
+            component: EmptyComponent,
+          },
+        ]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchResultsViewComponent);
-    component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     route = TestBed.inject(ActivatedRoute);
     router = TestBed.inject(Router);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl(
+      `${Keyword.Search}/${testSearchTerm}`,
+      SearchResultsViewComponent,
+    );
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(route).toBeDefined();
     expect(router).toBeDefined();
@@ -100,10 +96,9 @@ describe('SearchResultsViewComponent', () => {
     it('should navigate to new search term', async () => {
       const newSearchTerm = 'new search term';
       await component.onSearch(newSearchTerm);
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith([`../${newSearchTerm}`], {
-        relativeTo: route,
-      });
+      expect(router.url).toEqual(
+        `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}`,
+      );
     });
   });
 
@@ -119,10 +114,7 @@ describe('SearchResultsViewComponent', () => {
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
       await component.onOrgNavigate('test');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../../test'], {
-        relativeTo: route,
-      });
+      expect(router.url).toEqual('/test');
     });
   });
 

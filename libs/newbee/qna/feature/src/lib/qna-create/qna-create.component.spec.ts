@@ -27,7 +27,7 @@ describe('QnaCreateComponent', () => {
       declarations: [QnaCreateComponent],
       providers: [
         provideMockStore(),
-        provideRouter([{ path: '', component: EmptyComponent }]),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
       ],
     }).compileComponents();
 

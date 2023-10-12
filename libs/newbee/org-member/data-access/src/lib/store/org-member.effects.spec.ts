@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
   OrgMemberActions,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import {
@@ -43,6 +44,7 @@ describe('OrgMemberEffects', () => {
             },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         OrgMemberEffects,
         {
           provide: OrgMemberService,
@@ -52,12 +54,6 @@ describe('OrgMemberEffects', () => {
             delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -65,6 +61,8 @@ describe('OrgMemberEffects', () => {
     service = TestBed.inject(OrgMemberService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

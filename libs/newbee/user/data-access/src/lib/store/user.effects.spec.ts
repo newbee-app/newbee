@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { UserActions } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
 import { testUser1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -24,18 +25,13 @@ describe('UserEffects', () => {
       providers: [
         provideMockActions(() => actions$),
         provideMockStore(),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         UserEffects,
         {
           provide: UserService,
           useValue: createMock<UserService>({
             edit: jest.fn().mockReturnValue(of(testUser1)),
             delete: jest.fn().mockReturnValue(of(null)),
-          }),
-        },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
           }),
         },
       ],
@@ -45,6 +41,8 @@ describe('UserEffects', () => {
     service = TestBed.inject(UserService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

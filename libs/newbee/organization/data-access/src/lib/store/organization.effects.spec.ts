@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   testBaseCreateOrganizationDto1,
@@ -42,6 +43,7 @@ describe('OrganizationEffects', () => {
             },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         OrganizationEffects,
         {
           provide: OrganizationService,
@@ -57,12 +59,6 @@ describe('OrganizationEffects', () => {
             inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -70,6 +66,8 @@ describe('OrganizationEffects', () => {
     service = TestBed.inject(OrganizationService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

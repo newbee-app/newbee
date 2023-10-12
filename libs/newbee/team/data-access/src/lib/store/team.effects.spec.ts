@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   testBaseCreateTeamDto1,
@@ -49,6 +50,7 @@ describe('TeamEffects', () => {
             },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         TeamEffects,
         {
           provide: TeamService,
@@ -63,12 +65,6 @@ describe('TeamEffects', () => {
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -76,6 +72,8 @@ describe('TeamEffects', () => {
     service = TestBed.inject(TeamService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

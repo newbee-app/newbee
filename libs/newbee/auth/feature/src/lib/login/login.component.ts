@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { LoginForm, loginFormToDto } from '@newbee/newbee/auth/util';
 import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
+import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -62,6 +63,8 @@ export class LoginComponent {
    * When the dumb UI emits `navigateToRegister`, navigate to the register page.
    */
   async onNavigateToRegister(): Promise<void> {
-    await this.router.navigate(['../register'], { relativeTo: this.route });
+    await this.router.navigate([`../${Keyword.Register}`], {
+      relativeTo: this.route,
+    });
   }
 }

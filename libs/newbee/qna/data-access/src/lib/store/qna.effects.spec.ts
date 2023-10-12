@@ -40,13 +40,7 @@ describe('QnaEffects', () => {
             [Keyword.Team]: { selectedTeam: testTeamRelation1 },
           },
         }),
-        provideRouter([
-          { path: '', component: EmptyComponent },
-          {
-            path: `${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Qna}/${testQna1.slug}`,
-            component: EmptyComponent,
-          },
-        ]),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         QnaEffects,
         {
           provide: QnaService,
@@ -61,6 +55,8 @@ describe('QnaEffects', () => {
     service = TestBed.inject(QnaService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {
@@ -105,6 +101,39 @@ describe('QnaEffects', () => {
       expect(effects.createQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('createQnaSuccess$', () => {
+    it('should navigate to qna', () => {
+      actions$ = hot('a', {
+        a: QnaActions.createQnaSuccess({ qna: testQna1 }),
+      });
+      const expected$ = hot('a', {
+        a: [
+          QnaActions.createQnaSuccess({ qna: testQna1 }),
+          testOrganizationRelation1,
+        ],
+      });
+      expect(effects.createQnaSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith([
+          `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Qna}/${testQna1.slug}`,
+        ]);
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: QnaActions.createQnaSuccess({ qna: testQna1 }),
+      });
+      const expected$ = hot('-');
+      expect(effects.createQnaSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).not.toBeCalled();
       });
     });
   });

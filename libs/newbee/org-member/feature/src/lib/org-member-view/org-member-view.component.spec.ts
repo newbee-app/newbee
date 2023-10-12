@@ -1,12 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { ViewOrgMemberComponent } from '@newbee/newbee/org-member/ui';
 import { OrgMemberActions } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgRoleEnum,
+  testOrgMember1,
   testOrgMemberRelation1,
+  testOrganization1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgMemberViewComponent } from './org-member-view.component';
@@ -20,10 +23,8 @@ jest.mock('@floating-ui/dom', () => ({
 
 describe('OrgMemberViewComponent', () => {
   let component: OrgMemberViewComponent;
-  let fixture: ComponentFixture<OrgMemberViewComponent>;
   let store: MockStore;
   let router: Router;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -40,54 +41,43 @@ describe('OrgMemberViewComponent', () => {
             },
           },
         }),
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: createMock<ActivatedRoute>(),
-        },
+        provideRouter([{ path: '**', component: OrgMemberViewComponent }]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrgMemberViewComponent);
-    component = fixture.componentInstance;
-
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    route = TestBed.inject(ActivatedRoute);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl(
+      `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Member}/${testOrgMember1.slug}`,
+      OrgMemberViewComponent,
+    );
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(route).toBeDefined();
   });
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
       await component.onOrgNavigate('test');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../../test'], {
-        relativeTo: route,
-      });
+      expect(router.url).toEqual(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/test`,
+      );
     });
   });
 
   describe('onMemberNavigate', () => {
     it('should navigate relative to org member', async () => {
       await component.onMemberNavigate('test');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['./test'], { relativeTo: route });
+      expect(router.url).toEqual(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Member}/${testOrgMember1.slug}/test`,
+      );
     });
   });
 
@@ -98,7 +88,7 @@ describe('OrgMemberViewComponent', () => {
       expect(store.dispatch).toBeCalledWith(
         OrgMemberActions.editOrgMember({
           updateOrgMemberDto: { role: OrgRoleEnum.Member },
-        })
+        }),
       );
     });
   });
