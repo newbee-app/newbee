@@ -18,12 +18,12 @@ import {
 } from '@newbee/shared/data-access';
 import {
   DocQueryResult,
-  internalServerError,
   OrgMemberQueryResult,
   QnaQueryResult,
   SolrEntryEnum,
-  surroundSubstringsWith,
   TeamQueryResult,
+  internalServerError,
+  surroundSubstringsWith,
 } from '@newbee/shared/util';
 import { QueryResponse, SolrCli, Spellcheck } from '@newbee/solr-cli';
 import { QueryDto, SuggestDto } from './dto';
@@ -58,7 +58,7 @@ export class SearchService {
    */
   async suggest(
     organization: OrganizationEntity,
-    suggestDto: SuggestDto
+    suggestDto: SuggestDto,
   ): Promise<BaseSuggestResultDto> {
     let { query } = suggestDto;
     try {
@@ -108,7 +108,7 @@ export class SearchService {
                 field ?? '',
                 queries,
                 this.leftSurround,
-                this.rightSurround
+                this.rightSurround,
               );
             }
           }
@@ -135,7 +135,7 @@ export class SearchService {
    */
   async query(
     organization: OrganizationEntity,
-    queryDto: QueryDto
+    queryDto: QueryDto,
   ): Promise<BaseQueryResultDto> {
     const { query, offset } = queryDto;
     const result = new BaseQueryResultDto(offset);
@@ -169,15 +169,15 @@ export class SearchService {
       new Set(
         docs
           .filter((doc) =>
-            [SolrEntryEnum.Doc, SolrEntryEnum.Qna].includes(doc.entry_type)
+            [SolrEntryEnum.Doc, SolrEntryEnum.Qna].includes(doc.entry_type),
           )
           .flatMap(
             (doc) =>
               [doc.team, doc.creator, doc.maintainer].filter(
-                Boolean
-              ) as string[]
-          )
-      )
+                Boolean,
+              ) as string[],
+          ),
+      ),
     );
 
     // Execute the additional query
@@ -193,21 +193,21 @@ export class SearchService {
         .map((doc) => [
           doc.id,
           SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
-        ])
+        ]),
     );
 
     // Take the teams resulting from the additional query and map them from their IDs to the information we care about
     const teamMap = new Map(
       idsResDocs
         .filter((doc) => doc.entry_type === SolrEntryEnum.Team)
-        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)])
+        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)]),
     );
 
     // Construct a map from the highlighting portion of the original response
     const highlightMap = new Map<string, SolrHighlightedFields>(
       Object.entries(solrRes.highlighting ?? {}).filter(
-        ([, highlightedFields]) => Object.keys(highlightedFields).length
-      )
+        ([, highlightedFields]) => Object.keys(highlightedFields).length,
+      ),
     );
 
     // Iterate through the responses to construct the result
@@ -217,7 +217,7 @@ export class SearchService {
       switch (entryType) {
         case SolrEntryEnum.User: {
           result.results.push(
-            SearchService.handleOrgMember(doc as OrgMemberSolrDoc)
+            SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
           );
           break;
         }
@@ -231,8 +231,8 @@ export class SearchService {
               doc as DocSolrDoc,
               orgMemberMap,
               teamMap,
-              highlightedFields
-            )
+              highlightedFields,
+            ),
           );
           break;
         }
@@ -242,8 +242,8 @@ export class SearchService {
               doc as QnaSolrDoc,
               orgMemberMap,
               teamMap,
-              highlightedFields
-            )
+              highlightedFields,
+            ),
           );
           break;
         }
@@ -264,7 +264,7 @@ export class SearchService {
    */
   private async makeQuery(
     organization: OrganizationEntity,
-    queryDto: QueryDto
+    queryDto: QueryDto,
   ): Promise<QueryResponse> {
     const { query, offset, type } = queryDto;
     try {
@@ -291,7 +291,7 @@ export class SearchService {
    * @returns The suggestion as a string if it exists, null otherwise.
    */
   private static getSpellcheckSuggestion(
-    spellcheck: Spellcheck
+    spellcheck: Spellcheck,
   ): string | null {
     const spellcheckSuggestion = spellcheck.collations[1] ?? null;
     return spellcheckSuggestion ? spellcheckSuggestion.collationQuery : null;
@@ -350,13 +350,12 @@ export class SearchService {
     doc: DocSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {}
+    highlightedFields: SolrHighlightedFields = {},
   ): DocQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
-      up_to_date,
       title,
       slug,
       team,
@@ -369,7 +368,6 @@ export class SearchService {
         createdAt: new Date(created_at),
         updatedAt: new Date(updated_at),
         markedUpToDateAt: new Date(marked_up_to_date_at),
-        upToDate: up_to_date,
         title,
         slug,
         docSnippet: highlightedFields.doc_txt?.[0] ?? doc_txt.slice(0, 100),
@@ -396,13 +394,12 @@ export class SearchService {
     doc: QnaSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {}
+    highlightedFields: SolrHighlightedFields = {},
   ): QnaQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
-      up_to_date,
       title,
       slug,
       team,
@@ -416,7 +413,6 @@ export class SearchService {
         createdAt: new Date(created_at),
         updatedAt: new Date(updated_at),
         markedUpToDateAt: new Date(marked_up_to_date_at),
-        upToDate: up_to_date,
         title,
         slug,
         questionSnippet:

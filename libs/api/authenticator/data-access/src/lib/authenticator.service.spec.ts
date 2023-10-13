@@ -1,10 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
-  EntityRepository,
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { getRepositoryToken } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -16,10 +15,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   AuthenticatorEntity,
   EntityService,
+  UserChallengeEntity,
   testAuthenticatorEntity1,
   testUserChallengeEntity1,
   testUserEntity1,
-  UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
 import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
 import {
@@ -56,7 +55,7 @@ const mockAuthenticatorEntity = AuthenticatorEntity as jest.Mock;
 
 describe('AuthenticatorService', () => {
   let service: AuthenticatorService;
-  let repository: EntityRepository<AuthenticatorEntity>;
+  let em: EntityManager;
   let entityService: EntityService;
   let userChallengeService: UserChallengeService;
 
@@ -66,11 +65,11 @@ describe('AuthenticatorService', () => {
   const testRegistrationInfo = {
     credentialID: Buffer.from(
       testAuthenticatorEntity1.credentialId,
-      'base64url'
+      'base64url',
     ),
     credentialPublicKey: Buffer.from(
       testAuthenticatorEntity1.credentialPublicKey,
-      'base64url'
+      'base64url',
     ),
     counter: testAuthenticatorEntity1.counter,
     credentialDeviceType: testAuthenticatorEntity1.credentialDeviceType,
@@ -82,8 +81,8 @@ describe('AuthenticatorService', () => {
       providers: [
         AuthenticatorService,
         {
-          provide: getRepositoryToken(AuthenticatorEntity),
-          useValue: createMock<EntityRepository<AuthenticatorEntity>>({
+          provide: EntityManager,
+          useValue: createMock<EntityManager>({
             create: jest.fn().mockResolvedValue(testAuthenticatorEntity1),
             find: jest.fn().mockResolvedValue([testAuthenticatorEntity1]),
             findOneOrFail: jest
@@ -114,16 +113,14 @@ describe('AuthenticatorService', () => {
     }).compile();
 
     service = module.get<AuthenticatorService>(AuthenticatorService);
-    repository = module.get<EntityRepository<AuthenticatorEntity>>(
-      getRepositoryToken(AuthenticatorEntity)
-    );
+    em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     userChallengeService =
       module.get<UserChallengeService>(UserChallengeService);
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
-      testPublicKeyCredentialCreationOptions1
+      testPublicKeyCredentialCreationOptions1,
     );
     mockVerifyRegistrationResponse.mockResolvedValue({
       verified: true,
@@ -134,7 +131,7 @@ describe('AuthenticatorService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(repository).toBeDefined();
+    expect(em).toBeDefined();
     expect(entityService).toBeDefined();
     expect(userChallengeService).toBeDefined();
   });
@@ -142,17 +139,17 @@ describe('AuthenticatorService', () => {
   describe('generateOptions', () => {
     it('should generate registraiont options', async () => {
       await expect(service.generateOptions(testUserEntity1)).resolves.toEqual(
-        testPublicKeyCredentialCreationOptions1
+        testPublicKeyCredentialCreationOptions1,
       );
-      expect(repository.find).toBeCalledTimes(1);
-      expect(repository.find).toBeCalledWith({
+      expect(em.find).toBeCalledTimes(1);
+      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
         user: { email: testUserEntity1.email },
       });
       expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
       expect(userChallengeService.updateById).toBeCalledTimes(1);
       expect(userChallengeService.updateById).toBeCalledWith(
         testUserEntity1.id,
-        testPublicKeyCredentialCreationOptions1.challenge
+        testPublicKeyCredentialCreationOptions1.challenge,
       );
     });
   });
@@ -161,13 +158,13 @@ describe('AuthenticatorService', () => {
     afterEach(() => {
       expect(userChallengeService.findOneById).toBeCalledTimes(1);
       expect(userChallengeService.findOneById).toBeCalledWith(
-        testUserEntity1.id
+        testUserEntity1.id,
       );
     });
 
     it('should create an authenticator', async () => {
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
       expect(mockAuthenticatorEntity).toBeCalledTimes(1);
@@ -178,12 +175,10 @@ describe('AuthenticatorService', () => {
         testRegistrationInfo.credentialDeviceType,
         testRegistrationInfo.credentialBackedUp,
         null,
-        testUserEntity1
+        testUserEntity1,
       );
-      expect(repository.persistAndFlush).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledWith(
-        testAuthenticatorEntity1
-      );
+      expect(em.persistAndFlush).toBeCalledTimes(1);
+      expect(em.persistAndFlush).toBeCalledWith(testAuthenticatorEntity1);
     });
 
     it('should throw a BadRequestException if challenge is not defined', async () => {
@@ -191,14 +186,14 @@ describe('AuthenticatorService', () => {
         .spyOn(userChallengeService, 'findOneById')
         .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
     it('should throw a BadRequestException if challenge cannot be verified', async () => {
       mockVerifyRegistrationResponse.mockResolvedValue({ verified: false });
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
     });
@@ -206,41 +201,41 @@ describe('AuthenticatorService', () => {
     it('should throw a BadRequestException if challenge is verified without registrationInfo', async () => {
       mockVerifyRegistrationResponse.mockResolvedValue({ verified: true });
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
     it('should throw a BadRequestException if persistAndFlush throws a UniqueConstraintViolationException', async () => {
       jest
-        .spyOn(repository, 'persistAndFlush')
+        .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('persistAndFlush'))
+          new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorTakenBadRequest));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
       expect(mockAuthenticatorEntity).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledTimes(1);
+      expect(em.persistAndFlush).toBeCalledTimes(1);
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
       jest
-        .spyOn(repository, 'persistAndFlush')
+        .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1)
+        service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
       expect(mockAuthenticatorEntity).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledTimes(1);
+      expect(em.persistAndFlush).toBeCalledTimes(1);
     });
   });
 
   describe('findAllByUser', () => {
     afterEach(() => {
-      expect(repository.find).toBeCalledTimes(1);
-      expect(repository.find).toBeCalledWith({
+      expect(em.find).toBeCalledTimes(1);
+      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
         user: testUserEntity1,
       });
     });
@@ -252,108 +247,110 @@ describe('AuthenticatorService', () => {
     });
 
     it('should throw an InternalServerErrorException if find throws an error', async () => {
-      jest.spyOn(repository, 'find').mockRejectedValue(new Error('find'));
+      jest.spyOn(em, 'find').mockRejectedValue(new Error('find'));
       await expect(service.findAllByUser(testUserEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
+        new InternalServerErrorException(internalServerError),
       );
     });
   });
 
   describe('findAllByEmail', () => {
     afterEach(() => {
-      expect(repository.find).toBeCalledTimes(1);
-      expect(repository.find).toBeCalledWith({
+      expect(em.find).toBeCalledTimes(1);
+      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
         user: { email: testUserEntity1.email },
       });
     });
 
     it('should get an array of authenticators by user email', async () => {
       await expect(
-        service.findAllByEmail(testUserEntity1.email)
+        service.findAllByEmail(testUserEntity1.email),
       ).resolves.toEqual([testAuthenticatorEntity1]);
     });
 
     it('should throw an InternalServerErrorException if find throws an error', async () => {
-      jest.spyOn(repository, 'find').mockRejectedValue(new Error('find'));
+      jest.spyOn(em, 'find').mockRejectedValue(new Error('find'));
       await expect(
-        service.findAllByEmail(testUserEntity1.email)
+        service.findAllByEmail(testUserEntity1.email),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('findOneById', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith(
-        testAuthenticatorEntity1.id
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(
+        AuthenticatorEntity,
+        testAuthenticatorEntity1.id,
       );
     });
 
     it('should get a single authenticator by ID', async () => {
       await expect(
-        service.findOneById(testAuthenticatorEntity1.id)
+        service.findOneById(testAuthenticatorEntity1.id),
       ).resolves.toEqual(testAuthenticatorEntity1);
     });
 
     it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneById(testAuthenticatorEntity1.id)
+        service.findOneById(testAuthenticatorEntity1.id),
       ).rejects.toThrow(new NotFoundException(authenticatorIdNotFound));
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneById(testAuthenticatorEntity1.id)
+        service.findOneById(testAuthenticatorEntity1.id),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('findOneByCredentialId', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith({
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(AuthenticatorEntity, {
         credentialId: testAuthenticatorEntity1.credentialId,
       });
     });
 
     it('should get a single authenticator by credential ID', async () => {
       await expect(
-        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId)
+        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId),
       ).resolves.toEqual(testAuthenticatorEntity1);
     });
 
     it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId)
+        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId),
       ).rejects.toThrow(
-        new NotFoundException(authenticatorCredentialIdNotFound)
+        new NotFoundException(authenticatorCredentialIdNotFound),
       );
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId)
+        service.findOneByCredentialId(testAuthenticatorEntity1.credentialId),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('updateCounterById', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith(
-        testAuthenticatorEntity1.id
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(
+        AuthenticatorEntity,
+        testAuthenticatorEntity1.id,
       );
     });
 
@@ -362,14 +359,14 @@ describe('AuthenticatorService', () => {
         service.updateCounterById(
           testAuthenticatorEntity1.id,
           testCounter,
-          testUserEntity1.id
-        )
+          testUserEntity1.id,
+        ),
       ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
-      expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(testAuthenticatorEntity1, {
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(testAuthenticatorEntity1, {
         counter: testCounter,
       });
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
@@ -377,101 +374,101 @@ describe('AuthenticatorService', () => {
         service.updateCounterById(
           testAuthenticatorEntity1.id,
           testCounter,
-          'badVal'
-        )
+          'badVal',
+        ),
       ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
         service.updateCounterById(
           testAuthenticatorEntity1.id,
           testCounter,
-          testUserEntity1.id
-        )
+          testUserEntity1.id,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('updateNameById', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith(
-        testAuthenticatorEntity1.id
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(
+        AuthenticatorEntity,
+        testAuthenticatorEntity1.id,
       );
     });
 
     it('should update an authenticator by ID', async () => {
       jest
-        .spyOn(repository, 'assign')
+        .spyOn(em, 'assign')
         .mockReturnValue({ ...testAuthenticatorEntity1, name: testName });
       await expect(
         service.updateNameById(
           testAuthenticatorEntity1.id,
           testName,
-          testUserEntity1.id
-        )
+          testUserEntity1.id,
+        ),
       ).resolves.toEqual({ ...testAuthenticatorEntity1, name: testName });
-      expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(testAuthenticatorEntity1, {
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(testAuthenticatorEntity1, {
         name: testName,
       });
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
       await expect(
-        service.updateNameById(testAuthenticatorEntity1.id, testName, 'badVal')
+        service.updateNameById(testAuthenticatorEntity1.id, testName, 'badVal'),
       ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
         service.updateNameById(
           testAuthenticatorEntity1.id,
           testName,
-          testUserEntity1.id
-        )
+          testUserEntity1.id,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
   describe('deleteOneById', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith(
-        testAuthenticatorEntity1.id
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(
+        AuthenticatorEntity,
+        testAuthenticatorEntity1.id,
       );
     });
 
     it('should delete a single authenticator by ID', async () => {
       await expect(
-        service.deleteOneById(testAuthenticatorEntity1.id, testUserEntity1.id)
+        service.deleteOneById(testAuthenticatorEntity1.id, testUserEntity1.id),
       ).resolves.toBeUndefined();
       expect(entityService.safeToDelete).toBeCalledTimes(1);
       expect(entityService.safeToDelete).toBeCalledWith(
-        testAuthenticatorEntity1
+        testAuthenticatorEntity1,
       );
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(
-        testAuthenticatorEntity1
-      );
+      expect(em.removeAndFlush).toBeCalledTimes(1);
+      expect(em.removeAndFlush).toBeCalledWith(testAuthenticatorEntity1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
       await expect(
-        service.deleteOneById(testAuthenticatorEntity1.id, 'badVal')
+        service.deleteOneById(testAuthenticatorEntity1.id, 'badVal'),
       ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
       jest
-        .spyOn(repository, 'removeAndFlush')
+        .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
       await expect(
-        service.deleteOneById(testAuthenticatorEntity1.id, testUserEntity1.id)
+        service.deleteOneById(testAuthenticatorEntity1.id, testUserEntity1.id),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });

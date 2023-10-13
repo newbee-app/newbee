@@ -20,11 +20,6 @@ export interface Post {
   markedUpToDateAt: Date;
 
   /**
-   * Whether the post is up-to-date.
-   */
-  upToDate: boolean;
-
-  /**
    * The title of the post.
    * For a doc, it's the doc's actual title.
    * The a qna, it's the headline of the question.

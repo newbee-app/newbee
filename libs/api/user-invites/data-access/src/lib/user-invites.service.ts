@@ -1,5 +1,4 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
   InternalServerErrorException,
@@ -23,9 +22,8 @@ export class UserInvitesService {
   private readonly logger = new Logger(UserInvitesService.name);
 
   constructor(
-    @InjectRepository(UserInvitesEntity)
-    private readonly userInvitesRepository: EntityRepository<UserInvitesEntity>,
-    private readonly entityService: EntityService
+    private readonly em: EntityManager,
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -38,13 +36,13 @@ export class UserInvitesService {
    */
   async findOrCreateOneByEmail(email: string): Promise<UserInvitesEntity> {
     try {
-      const userInvites = await this.userInvitesRepository.findOne({ email });
+      const userInvites = await this.em.findOne(UserInvitesEntity, { email });
       if (userInvites) {
         return userInvites;
       }
 
       const newUserInvites = new UserInvitesEntity(v4(), email);
-      await this.userInvitesRepository.persistAndFlush(newUserInvites);
+      await this.em.persistAndFlush(newUserInvites);
       return newUserInvites;
     } catch (err) {
       this.logger.error(err);
@@ -61,7 +59,7 @@ export class UserInvitesService {
   async delete(userInvites: UserInvitesEntity): Promise<void> {
     await this.entityService.safeToDelete(userInvites);
     try {
-      await this.userInvitesRepository.removeAndFlush(userInvites);
+      await this.em.removeAndFlush(userInvites);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

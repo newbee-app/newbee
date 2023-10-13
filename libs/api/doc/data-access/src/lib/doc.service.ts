@@ -1,6 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
   InternalServerErrorException,
@@ -30,10 +29,9 @@ export class DocService {
   private readonly logger = new Logger(DocService.name);
 
   constructor(
-    @InjectRepository(DocEntity)
-    private readonly docRepository: EntityRepository<DocEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -49,14 +47,14 @@ export class DocService {
   async create(
     createDocDto: CreateDocDto,
     team: TeamEntity | null,
-    creator: OrgMemberEntity
+    creator: OrgMemberEntity,
   ): Promise<DocEntity> {
     const { title, docMarkdoc } = createDocDto;
     const id = v4();
     const doc = new DocEntity(id, title, creator, team, docMarkdoc);
 
     try {
-      await this.docRepository.persistAndFlush(doc);
+      await this.em.persistAndFlush(doc);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -66,11 +64,11 @@ export class DocService {
     try {
       await this.solrCli.addDocs(
         collectionName,
-        this.entityService.createDocDocParams(doc)
+        this.entityService.createDocDocParams(doc),
       );
     } catch (err) {
       this.logger.error(err);
-      await this.docRepository.removeAndFlush(doc);
+      await this.em.removeAndFlush(doc);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -89,7 +87,7 @@ export class DocService {
   async findOneBySlug(slug: string): Promise<DocEntity> {
     const id = elongateUuid(slug);
     try {
-      return await this.docRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(DocEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -120,9 +118,9 @@ export class DocService {
       markedUpToDateAt: now,
       upToDate: true,
     };
-    const updatedDoc = this.docRepository.assign(doc, newDocDetails);
+    const updatedDoc = this.em.assign(doc, newDocDetails);
     try {
-      await this.docRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -132,7 +130,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createDocDocParams(updatedDoc)
+        this.entityService.createDocDocParams(updatedDoc),
       );
     } catch (err) {
       this.logger.error(err);
@@ -152,9 +150,9 @@ export class DocService {
   async markUpToDate(doc: DocEntity): Promise<DocEntity> {
     const now = new Date();
     const newDocDetails = { markedUpToDateAt: now, upToDate: true };
-    const updatedDoc = this.docRepository.assign(doc, newDocDetails);
+    const updatedDoc = this.em.assign(doc, newDocDetails);
     try {
-      await this.docRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -164,7 +162,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createDocDocParams(updatedDoc)
+        this.entityService.createDocDocParams(updatedDoc),
       );
     } catch (err) {
       this.logger.error(err);
@@ -186,7 +184,7 @@ export class DocService {
     await this.entityService.safeToDelete(doc);
 
     try {
-      await this.docRepository.removeAndFlush(doc);
+      await this.em.removeAndFlush(doc);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

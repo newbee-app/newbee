@@ -9,9 +9,9 @@ import {
   TeamRoleEnum,
   testAuthenticator1,
   testDoc1,
-  testOrganization1,
   testOrgMember1,
   testOrgMemberInvite1,
+  testOrganization1,
   testQna1,
   testTeam1,
   testUser1,
@@ -28,9 +28,9 @@ import type {
 import {
   AuthenticatorEntity,
   DocEntity,
-  OrganizationEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
+  OrganizationEntity,
   QnaEntity,
   TeamEntity,
   UserChallengeEntity,
@@ -175,7 +175,7 @@ export const testOrgMemberDocParams1 = new OrgMemberDocParams(
   testUserEntity1.name,
   testUserEntity1.displayName,
   testUserEntity1.phoneNumber,
-  testOrgMemberEntity1.role
+  testOrgMemberEntity1.role,
 );
 
 /**
@@ -185,7 +185,7 @@ export const testOrgMemberDocParams1 = new OrgMemberDocParams(
 export const testTeamDocParams1 = new TeamDocParams(
   testTeamEntity1.id,
   testTeamEntity1.slug,
-  testTeamEntity1.name
+  testTeamEntity1.name,
 );
 
 /**
@@ -199,11 +199,10 @@ export const testDocDocParams1 = new DocDocParams(
   testDocEntity1.createdAt,
   testDocEntity1.updatedAt,
   testDocEntity1.markedUpToDateAt,
-  testDocEntity1.upToDate,
   testDocEntity1.title,
   testDocEntity1.creator?.id ?? null,
   testDocEntity1.maintainer?.id ?? null,
-  testDocEntity1.docTxt
+  testDocEntity1.docTxt,
 );
 
 /**
@@ -217,12 +216,11 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.createdAt,
   testQnaEntity1.updatedAt,
   testQnaEntity1.markedUpToDateAt,
-  testQnaEntity1.upToDate,
   testQnaEntity1.title,
   testQnaEntity1.creator?.id ?? null,
   testQnaEntity1.maintainer?.id ?? null,
   testQnaEntity1.questionTxt,
-  testQnaEntity1.answerTxt
+  testQnaEntity1.answerTxt,
 );
 
 /**

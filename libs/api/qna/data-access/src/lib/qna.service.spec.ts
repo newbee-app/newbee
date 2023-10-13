@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
-import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -10,16 +9,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   EntityService,
   QnaEntity,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testQnaDocParams1,
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import {
+  QnaDocParams,
   elongateUuid,
   markdocToTxt,
-  QnaDocParams,
 } from '@newbee/api/shared/util';
 import {
   testBaseCreateQnaDto1,
@@ -56,7 +55,7 @@ const mockElongateUuid = elongateUuid as jest.Mock;
 
 describe('QnaService', () => {
   let service: QnaService;
-  let repository: EntityRepository<QnaEntity>;
+  let em: EntityManager;
   let entityService: EntityService;
   let solrCli: SolrCli;
 
@@ -88,8 +87,8 @@ describe('QnaService', () => {
       providers: [
         QnaService,
         {
-          provide: getRepositoryToken(QnaEntity),
-          useValue: createMock<EntityRepository<QnaEntity>>({
+          provide: EntityManager,
+          useValue: createMock<EntityManager>({
             findOneOrFail: jest.fn().mockResolvedValue(testQnaEntity1),
             find: jest.fn().mockResolvedValue([testQnaEntity1]),
             assign: jest.fn().mockReturnValue(testUpdatedQna),
@@ -109,9 +108,7 @@ describe('QnaService', () => {
     }).compile();
 
     service = module.get<QnaService>(QnaService);
-    repository = module.get<EntityRepository<QnaEntity>>(
-      getRepositoryToken(QnaEntity)
-    );
+    em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
 
@@ -125,7 +122,7 @@ describe('QnaService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(repository).toBeDefined();
+    expect(em).toBeDefined();
     expect(entityService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
@@ -139,10 +136,10 @@ describe('QnaService', () => {
         testOrgMemberEntity1,
         testTeamEntity1,
         testQnaEntity1.questionMarkdoc,
-        testQnaEntity1.answerMarkdoc
+        testQnaEntity1.answerMarkdoc,
       );
-      expect(repository.persistAndFlush).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledWith(testQnaEntity1);
+      expect(em.persistAndFlush).toBeCalledTimes(1);
+      expect(em.persistAndFlush).toBeCalledWith(testQnaEntity1);
     });
 
     it('should create a qna', async () => {
@@ -150,26 +147,26 @@ describe('QnaService', () => {
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testOrgMemberEntity1
-        )
+          testOrgMemberEntity1,
+        ),
       ).resolves.toEqual(testQnaEntity1);
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testQnaDocParams1
+        testQnaDocParams1,
       );
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
       jest
-        .spyOn(repository, 'persistAndFlush')
+        .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testOrgMemberEntity1
-        )
+          testOrgMemberEntity1,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -179,42 +176,42 @@ describe('QnaService', () => {
         service.create(
           testBaseCreateQnaDto1,
           testTeamEntity1,
-          testOrgMemberEntity1
-        )
+          testOrgMemberEntity1,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testQnaEntity1);
+      expect(em.removeAndFlush).toBeCalledTimes(1);
+      expect(em.removeAndFlush).toBeCalledWith(testQnaEntity1);
     });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith(testQnaEntity1.slug);
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(QnaEntity, testQnaEntity1.slug);
     });
 
     it('should find a qna using the slug', async () => {
       await expect(service.findOneBySlug(testQnaEntity1.slug)).resolves.toEqual(
-        testQnaEntity1
+        testQnaEntity1,
       );
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(service.findOneBySlug(testQnaEntity1.slug)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
+        new InternalServerErrorException(internalServerError),
       );
     });
 
     it('should throw a BadRequestException if slug does not exist', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(service.findOneBySlug(testQnaEntity1.slug)).rejects.toThrow(
-        new BadRequestException(qnaSlugNotFound)
+        new BadRequestException(qnaSlugNotFound),
       );
     });
   });
@@ -227,22 +224,19 @@ describe('QnaService', () => {
     });
 
     afterEach(() => {
-      expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it('should update a qna', async () => {
       await expect(
-        service.update(testQnaEntity1, testBaseUpdateQnaDto1)
+        service.update(testQnaEntity1, testBaseUpdateQnaDto1),
       ).resolves.toEqual(testUpdatedQna);
-      expect(repository.assign).toBeCalledWith(
-        testQnaEntity1,
-        testAssignParams
-      );
+      expect(em.assign).toBeCalledWith(testQnaEntity1, testAssignParams);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedQnaDocParams
+        testUpdatedQnaDocParams,
       );
     });
 
@@ -251,24 +245,24 @@ describe('QnaService', () => {
         service.update(
           testQnaEntity1,
           testBaseUpdateQnaDto1,
-          testOrgMemberEntity1
-        )
+          testOrgMemberEntity1,
+        ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toBeCalledWith(testQnaEntity1, {
         ...testAssignParams,
         maintainer: testOrgMemberEntity1,
       });
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedQnaDocParams
+        testUpdatedQnaDocParams,
       );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testQnaEntity1, testBaseUpdateQnaDto1)
+        service.update(testQnaEntity1, testBaseUpdateQnaDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -277,12 +271,12 @@ describe('QnaService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(
-        service.update(testQnaEntity1, testBaseUpdateQnaDto1)
+        service.update(testQnaEntity1, testBaseUpdateQnaDto1),
       ).resolves.toEqual(testUpdatedQna);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedQnaDocParams
+        testUpdatedQnaDocParams,
       );
     });
   });
@@ -295,29 +289,29 @@ describe('QnaService', () => {
     });
 
     afterEach(() => {
-      expect(repository.assign).toBeCalledTimes(1);
-      expect(repository.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(testQnaEntity1, {
         markedUpToDateAt: testNow1,
         upToDate: true,
       });
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it('should mark the qna as up to date', async () => {
       await expect(service.markUpToDate(testQnaEntity1)).resolves.toEqual(
-        testUpdatedQna
+        testUpdatedQna,
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedQnaDocParams
+        testUpdatedQnaDocParams,
       );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(service.markUpToDate(testQnaEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
+        new InternalServerErrorException(internalServerError),
       );
     });
 
@@ -326,12 +320,12 @@ describe('QnaService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(service.markUpToDate(testQnaEntity1)).resolves.toEqual(
-        testUpdatedQna
+        testUpdatedQna,
       );
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedQnaDocParams
+        testUpdatedQnaDocParams,
       );
     });
   });
@@ -344,8 +338,8 @@ describe('QnaService', () => {
 
     it('should delete a qna', async () => {
       await expect(service.delete(testQnaEntity1)).resolves.toBeUndefined();
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testQnaEntity1);
+      expect(em.removeAndFlush).toBeCalledTimes(1);
+      expect(em.removeAndFlush).toBeCalledWith(testQnaEntity1);
       expect(solrCli.deleteDocs).toBeCalledTimes(1);
       expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, {
         id: testQnaEntity1.id,
@@ -354,10 +348,10 @@ describe('QnaService', () => {
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
       jest
-        .spyOn(repository, 'removeAndFlush')
+        .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
       await expect(service.delete(testQnaEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
+        new InternalServerErrorException(internalServerError),
       );
     });
 

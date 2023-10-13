@@ -1,9 +1,8 @@
 import {
-  EntityRepository,
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -48,8 +47,7 @@ export class AuthenticatorService {
   private readonly logger = new Logger(AuthenticatorService.name);
 
   constructor(
-    @InjectRepository(AuthenticatorEntity)
-    private readonly authenticatorRepository: EntityRepository<AuthenticatorEntity>,
+    private readonly em: EntityManager,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly entityService: EntityService,
     private readonly userChallengeService: UserChallengeService,
@@ -146,7 +144,7 @@ export class AuthenticatorService {
       user,
     );
     try {
-      await this.authenticatorRepository.persistAndFlush(authenticator);
+      await this.em.persistAndFlush(authenticator);
       return authenticator;
     } catch (err) {
       this.logger.error(err);
@@ -169,7 +167,7 @@ export class AuthenticatorService {
    */
   async findAllByUser(user: UserEntity): Promise<AuthenticatorEntity[]> {
     try {
-      return await this.authenticatorRepository.find({ user });
+      return await this.em.find(AuthenticatorEntity, { user });
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -186,7 +184,7 @@ export class AuthenticatorService {
    */
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
     try {
-      return await this.authenticatorRepository.find({ user: { email } });
+      return await this.em.find(AuthenticatorEntity, { user: { email } });
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -204,7 +202,7 @@ export class AuthenticatorService {
    */
   async findOneById(id: string): Promise<AuthenticatorEntity> {
     try {
-      return await this.authenticatorRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(AuthenticatorEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -229,7 +227,7 @@ export class AuthenticatorService {
     credentialId: string,
   ): Promise<AuthenticatorEntity> {
     try {
-      return await this.authenticatorRepository.findOneOrFail({ credentialId });
+      return await this.em.findOneOrFail(AuthenticatorEntity, { credentialId });
     } catch (err) {
       this.logger.error(err);
 
@@ -263,11 +261,11 @@ export class AuthenticatorService {
       throw new ForbiddenException(forbiddenError);
     }
 
-    authenticator = this.authenticatorRepository.assign(authenticator, {
+    authenticator = this.em.assign(authenticator, {
       counter,
     });
     try {
-      await this.authenticatorRepository.flush();
+      await this.em.flush();
       return authenticator;
     } catch (err) {
       this.logger.error(err);
@@ -297,11 +295,11 @@ export class AuthenticatorService {
       throw new ForbiddenException(forbiddenError);
     }
 
-    authenticator = this.authenticatorRepository.assign(authenticator, {
+    authenticator = this.em.assign(authenticator, {
       name,
     });
     try {
-      await this.authenticatorRepository.flush();
+      await this.em.flush();
       return authenticator;
     } catch (err) {
       this.logger.error(err);
@@ -326,7 +324,7 @@ export class AuthenticatorService {
 
     await this.entityService.safeToDelete(authenticator);
     try {
-      await this.authenticatorRepository.removeAndFlush(authenticator);
+      await this.em.removeAndFlush(authenticator);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

@@ -51,12 +51,6 @@ export abstract class PostEntity implements Post {
   /**
    * @inheritdoc
    */
-  @Property({ type: 'boolean' })
-  upToDate = true;
-
-  /**
-   * @inheritdoc
-   */
   @Property()
   title: string;
 

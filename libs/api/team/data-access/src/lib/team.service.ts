@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -13,8 +12,8 @@ import {
 } from '@nestjs/common';
 import {
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -37,10 +36,9 @@ export class TeamService {
   private readonly logger = new Logger(TeamService.name);
 
   constructor(
-    @InjectRepository(TeamEntity)
-    private readonly teamRepository: EntityRepository<TeamEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -55,7 +53,7 @@ export class TeamService {
    */
   async create(
     createTeamDto: CreateTeamDto,
-    creator: OrgMemberEntity
+    creator: OrgMemberEntity,
   ): Promise<TeamEntity> {
     const { name, slug } = createTeamDto;
     const { organization } = creator;
@@ -63,7 +61,7 @@ export class TeamService {
     const team = new TeamEntity(id, name, slug, creator);
 
     try {
-      await this.teamRepository.persistAndFlush(team);
+      await this.em.persistAndFlush(team);
     } catch (err) {
       this.logger.error(err);
 
@@ -77,11 +75,11 @@ export class TeamService {
     try {
       await this.solrCli.addDocs(
         organization.id,
-        this.entityService.createTeamDocParams(team)
+        this.entityService.createTeamDocParams(team),
       );
     } catch (err) {
       this.logger.error(err);
-      await this.teamRepository.removeAndFlush(team);
+      await this.em.removeAndFlush(team);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -99,10 +97,10 @@ export class TeamService {
    */
   async hasOneBySlug(
     organization: OrganizationEntity,
-    slug: string
+    slug: string,
   ): Promise<boolean> {
     try {
-      return !!(await this.teamRepository.findOne({ organization, slug }));
+      return !!(await this.em.findOne(TeamEntity, { organization, slug }));
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -121,10 +119,10 @@ export class TeamService {
    */
   async findOneBySlug(
     organization: OrganizationEntity,
-    slug: string
+    slug: string,
   ): Promise<TeamEntity> {
     try {
-      return await this.teamRepository.findOneOrFail({
+      return await this.em.findOneOrFail(TeamEntity, {
         organization,
         slug,
       });
@@ -151,12 +149,12 @@ export class TeamService {
    */
   async update(
     team: TeamEntity,
-    updateTeamDto: UpdateTeamDto
+    updateTeamDto: UpdateTeamDto,
   ): Promise<TeamEntity> {
-    const updatedTeam = this.teamRepository.assign(team, updateTeamDto);
+    const updatedTeam = this.em.assign(team, updateTeamDto);
 
     try {
-      await this.teamRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
 
@@ -176,7 +174,7 @@ export class TeamService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createTeamDocParams(updatedTeam)
+        this.entityService.createTeamDocParams(updatedTeam),
       );
     } catch (err) {
       this.logger.error(err);
@@ -198,7 +196,7 @@ export class TeamService {
     await this.entityService.safeToDelete(team);
 
     try {
-      await this.teamRepository.removeAndFlush(team);
+      await this.em.removeAndFlush(team);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

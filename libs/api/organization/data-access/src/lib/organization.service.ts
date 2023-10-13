@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -39,10 +38,9 @@ export class OrganizationService {
   private readonly logger = new Logger(OrganizationService.name);
 
   constructor(
-    @InjectRepository(OrganizationEntity)
-    private readonly organizationRepository: EntityRepository<OrganizationEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -57,14 +55,14 @@ export class OrganizationService {
    */
   async create(
     createOrganizationDto: CreateOrganizationDto,
-    creator: UserEntity
+    creator: UserEntity,
   ): Promise<OrganizationEntity> {
     const { name, slug } = createOrganizationDto;
     const id = v4();
     const organization = new OrganizationEntity(id, name, slug, creator);
 
     try {
-      await this.organizationRepository.persistAndFlush(organization);
+      await this.em.persistAndFlush(organization);
     } catch (err) {
       this.logger.error(err);
 
@@ -90,12 +88,12 @@ export class OrganizationService {
       for (const orgMember of organization.members) {
         await this.solrCli.addDocs(
           id,
-          await this.entityService.createOrgMemberDocParams(orgMember)
+          await this.entityService.createOrgMemberDocParams(orgMember),
         );
       }
     } catch (err) {
       this.logger.error(err);
-      await this.organizationRepository.removeAndFlush(organization);
+      await this.em.removeAndFlush(organization);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -112,7 +110,7 @@ export class OrganizationService {
    */
   async hasOneBySlug(slug: string): Promise<boolean> {
     try {
-      return !!(await this.organizationRepository.findOne({ slug }));
+      return !!(await this.em.findOne(OrganizationEntity, { slug }));
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -130,7 +128,7 @@ export class OrganizationService {
    */
   async findOneBySlug(slug: string): Promise<OrganizationEntity> {
     try {
-      return await this.organizationRepository.findOneOrFail({ slug });
+      return await this.em.findOneOrFail(OrganizationEntity, { slug });
     } catch (err) {
       this.logger.error(err);
 
@@ -154,19 +152,19 @@ export class OrganizationService {
    */
   async update(
     organization: OrganizationEntity,
-    updateOrganizationDto: UpdateOrganizationDto
+    updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<OrganizationEntity> {
     const { slug } = updateOrganizationDto;
     if (slug) {
       updateOrganizationDto.slug = slugify(slug);
     }
 
-    const updatedOrganization = this.organizationRepository.assign(
+    const updatedOrganization = this.em.assign(
       organization,
-      updateOrganizationDto
+      updateOrganizationDto,
     );
     try {
-      await this.organizationRepository.flush();
+      await this.em.flush();
       return updatedOrganization;
     } catch (err) {
       this.logger.error(err);
@@ -190,7 +188,7 @@ export class OrganizationService {
     const { id } = organization;
     await this.entityService.safeToDelete(organization);
     try {
-      await this.organizationRepository.removeAndFlush(organization);
+      await this.em.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

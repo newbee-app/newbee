@@ -1,5 +1,5 @@
-import { EntityRepository, NotFoundError } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
+import { NotFoundError } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
   InternalServerErrorException,
@@ -20,10 +20,7 @@ import {
 export class UserChallengeService {
   private readonly logger = new Logger(UserChallengeService.name);
 
-  constructor(
-    @InjectRepository(UserChallengeEntity)
-    private readonly userChallengeRepository: EntityRepository<UserChallengeEntity>
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   /**
    * Finds the `UserChallengeEntity` in the database associated with the given ID.
@@ -36,7 +33,7 @@ export class UserChallengeService {
    */
   async findOneById(id: string): Promise<UserChallengeEntity> {
     try {
-      return await this.userChallengeRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(UserChallengeEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -59,7 +56,7 @@ export class UserChallengeService {
    */
   async findOneByEmail(email: string): Promise<UserChallengeEntity> {
     try {
-      return await this.userChallengeRepository.findOneOrFail({
+      return await this.em.findOneOrFail(UserChallengeEntity, {
         user: { email },
       });
     } catch (err) {
@@ -84,15 +81,12 @@ export class UserChallengeService {
    */
   async update(
     userChallenge: UserChallengeEntity,
-    challenge: string | null
+    challenge: string | null,
   ): Promise<UserChallengeEntity> {
-    const updatedUserChallenge = this.userChallengeRepository.assign(
-      userChallenge,
-      { challenge }
-    );
+    const updatedUserChallenge = this.em.assign(userChallenge, { challenge });
 
     try {
-      await this.userChallengeRepository.flush();
+      await this.em.flush();
       return updatedUserChallenge;
     } catch (err) {
       this.logger.error(err);
@@ -112,7 +106,7 @@ export class UserChallengeService {
    */
   async updateById(
     id: string,
-    challenge: string | null
+    challenge: string | null,
   ): Promise<UserChallengeEntity> {
     let userChallenge = await this.findOneById(id);
     userChallenge = await this.update(userChallenge, challenge);
@@ -131,7 +125,7 @@ export class UserChallengeService {
    */
   async updateByEmail(
     email: string,
-    challenge: string | null
+    challenge: string | null,
   ): Promise<UserChallengeEntity> {
     let userChallenge = await this.findOneByEmail(email);
     userChallenge = await this.update(userChallenge, challenge);

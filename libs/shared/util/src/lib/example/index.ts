@@ -152,7 +152,6 @@ export const testPost1: Post = {
   createdAt: testNow1,
   updatedAt: testNow1,
   markedUpToDateAt: testNow1,
-  upToDate: true,
   title: 'This is the title of a post',
   slug: 'test-post-1-slug',
 };

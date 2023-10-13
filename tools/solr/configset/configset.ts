@@ -19,23 +19,23 @@ async function main(): Promise<void> {
   program
     .name('configset')
     .description(
-      'A utility script for working with configsets and setting them up for use by NewBee.'
+      'A utility script for working with configsets and setting them up for use by NewBee.',
     )
     .version('1.0.0');
 
   program
     .command('create')
     .description(
-      'Creates the new configset from scratch, without using uploads'
+      'Creates the new configset from scratch, without using uploads',
     )
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(create);
 
@@ -45,11 +45,11 @@ async function main(): Promise<void> {
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(deleteConfigset);
 
@@ -59,7 +59,7 @@ async function main(): Promise<void> {
     .option(
       '-z, --zookeeper <zookeeper>',
       `The location of Solr's Zookeeper instance`,
-      'localhost:2181'
+      'localhost:2181',
     )
     .action(download);
 
@@ -69,18 +69,18 @@ async function main(): Promise<void> {
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(upload);
 
   program
     .command('zip <path> <destination>')
     .description(
-      'Zip a configset located on the local filepath to get it ready to be uploaded'
+      'Zip a configset located on the local filepath to get it ready to be uploaded',
     )
     .action(zip);
 
@@ -111,7 +111,6 @@ async function create(options: OptionValues): Promise<void> {
   const edgeNGramText = 'edge_n_gram_text';
   const stringFieldType = 'string';
   const pdate = 'pdate';
-  const booleanFieldType = 'boolean';
   const textGeneral = 'text_general';
 
   // Related to fields
@@ -130,12 +129,10 @@ async function create(options: OptionValues): Promise<void> {
   const createdAt = 'created_at';
   const updatedAt = 'updated_at';
   const markedUpToDateAt = 'marked_up_to_date_at';
-  const upToDate = 'up_to_date';
+  const title = 'title';
   const creator = 'creator';
   const maintainer = 'maintainer';
-  const docTitle = 'doc_title';
   const docTxt = 'doc_txt';
-  const qnaTitle = 'qna_title';
   const questionTxt = 'question_txt';
   const answerTxt = 'answer_txt';
   const commonCopyFields = [textField, spellcheckText];
@@ -176,7 +173,7 @@ async function create(options: OptionValues): Promise<void> {
   if (configsets.includes(newbeeOrg)) {
     let res = await solrCli.deleteConfigset(newbeeOrg);
     console.log(
-      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`
+      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`,
     );
   }
 
@@ -188,10 +185,10 @@ async function create(options: OptionValues): Promise<void> {
   res = await solrCli.uploadConfigset(
     newbeeOrg,
     enumsConfigXml,
-    enumsConfigXml
+    enumsConfigXml,
   );
   console.log(
-    `Uploading '${enumsConfigXml}' to configset: ${prettyJson(res)}\n`
+    `Uploading '${enumsConfigXml}' to configset: ${prettyJson(res)}\n`,
   );
 
   // Create a temporary collection that uses the configset to allow us to make changes to it
@@ -201,7 +198,7 @@ async function create(options: OptionValues): Promise<void> {
     config: newbeeOrg,
   });
   console.log(
-    `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
+    `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
   );
 
   // Make a bulk request to set up the schema
@@ -308,16 +305,14 @@ async function create(options: OptionValues): Promise<void> {
       { name: createdAt, type: pdate },
       { name: updatedAt, type: pdate },
       { name: markedUpToDateAt, type: pdate },
-      { name: upToDate, type: booleanFieldType, docValues: true },
+      { name: title, type: stringFieldType },
       { name: creator, type: stringFieldType },
       { name: maintainer, type: stringFieldType },
 
       // Applicable for doc
-      { name: docTitle, type: textGeneral, multiValued: false },
       { name: docTxt, type: textGeneral, multiValued: false },
 
       // Applicable for qna
-      { name: qnaTitle, type: textGeneral, multiValued: false },
       { name: questionTxt, type: textGeneral, multiValued: false },
       { name: answerTxt, type: textGeneral, multiValued: false },
     ],
@@ -329,9 +324,8 @@ async function create(options: OptionValues): Promise<void> {
       { source: userDisplayName, dest: suggestCopyFields },
       { source: userPhoneNumber, dest: suggestCopyFields },
       { source: teamName, dest: suggestCopyFields },
-      { source: docTitle, dest: suggestCopyFields },
+      { source: title, dest: suggestCopyFields },
       { source: docTxt, dest: commonCopyFields },
-      { source: qnaTitle, dest: suggestCopyFields },
       { source: questionTxt, dest: commonCopyFields },
       { source: answerTxt, dest: commonCopyFields },
     ],
@@ -398,13 +392,13 @@ async function create(options: OptionValues): Promise<void> {
     },
   });
   console.log(
-    `Creating config overlay with bulk request: ${prettyJson(res)}\n`
+    `Creating config overlay with bulk request: ${prettyJson(res)}\n`,
   );
 
   // Delete the temporary collection
   res = await solrCli.deleteCollection(newbeeOrg);
   console.log(
-    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
+    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
   );
 }
 
@@ -416,7 +410,7 @@ async function create(options: OptionValues): Promise<void> {
  */
 async function deleteConfigset(
   configset: string,
-  options: OptionValues
+  options: OptionValues,
 ): Promise<void> {
   const solrCli = createSolrCli(options);
   const res = await solrCli.deleteConfigset(configset);
@@ -433,12 +427,12 @@ async function deleteConfigset(
 async function download(
   configset: string,
   destination: string,
-  options: OptionValues
+  options: OptionValues,
 ): Promise<void> {
   const zookeeper: string = options['zookeeper'];
 
   await execute(
-    `solr zk downconfig -n ${configset} -d ${destination} -z ${zookeeper}`
+    `solr zk downconfig -n ${configset} -d ${destination} -z ${zookeeper}`,
   );
 }
 

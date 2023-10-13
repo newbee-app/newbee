@@ -1,5 +1,5 @@
-import { EntityRepository, NotFoundError } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
+import { NotFoundError } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
   InternalServerErrorException,
@@ -19,10 +19,7 @@ import {
 export class UserSettingsService {
   private readonly logger = new Logger(UserSettingsService.name);
 
-  constructor(
-    @InjectRepository(UserSettingsEntity)
-    private readonly userSettingsRepository: EntityRepository<UserSettingsEntity>
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   /**
    * Finds the `UserSettingsEntity` in the database associated with the given ID.
@@ -35,7 +32,7 @@ export class UserSettingsService {
    */
   async findOneById(id: string): Promise<UserSettingsEntity> {
     try {
-      return await this.userSettingsRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(UserSettingsEntity, id);
     } catch (err) {
       this.logger.error(err);
 
