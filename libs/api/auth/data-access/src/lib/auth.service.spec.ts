@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -8,11 +7,8 @@ import { testUserJwtPayload1 } from '@newbee/api/auth/util';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import {
   testAuthenticatorEntity1,
-  testUserChallengeEntity1,
   testUserEntity1,
-  UserChallengeEntity,
 } from '@newbee/api/shared/data-access';
-import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorVerifyBadRequest,
@@ -40,14 +36,13 @@ describe('AuthService', () => {
   let jwtService: JwtService;
   let userService: UserService;
   let authenticatorService: AuthenticatorService;
-  let userChallengeService: UserChallengeService;
 
   const testAccessToken = 'access';
   const testCounter = 100;
   const testAuthenticationInfo = {
     credentialID: Buffer.from(
       testAuthenticatorEntity1.credentialId,
-      'base64url'
+      'base64url',
     ),
     newCounter: testCounter,
     userVerified: true,
@@ -71,13 +66,11 @@ describe('AuthService', () => {
           useValue: createMock<ConfigService>(),
         },
         {
-          provide: EntityManager,
-          useValue: createMock<EntityManager>(),
-        },
-        {
           provide: UserService,
           useValue: createMock<UserService>({
             findOneById: jest.fn().mockResolvedValue(testUserEntity1),
+            findOneByEmail: jest.fn().mockResolvedValue(testUserEntity1),
+            update: jest.fn().mockResolvedValue(testUserEntity1),
           }),
         },
         {
@@ -95,18 +88,6 @@ describe('AuthService', () => {
             }),
           }),
         },
-        {
-          provide: UserChallengeService,
-          useValue: createMock<UserChallengeService>({
-            updateByEmail: jest.fn().mockResolvedValue({
-              ...testUserChallengeEntity1,
-              challenge: 'challenge2',
-            }),
-            findOneByEmail: jest
-              .fn()
-              .mockResolvedValue(testUserChallengeEntity1),
-          }),
-        },
       ],
     }).compile();
 
@@ -115,12 +96,10 @@ describe('AuthService', () => {
     userService = module.get<UserService>(UserService);
     authenticatorService =
       module.get<AuthenticatorService>(AuthenticatorService);
-    userChallengeService =
-      module.get<UserChallengeService>(UserChallengeService);
 
     jest.clearAllMocks();
     mockGenerateAuthenticationOptions.mockReturnValue(
-      testPublicKeyCredentialRequestOptions1
+      testPublicKeyCredentialRequestOptions1,
     );
     mockVerifyAuthenticationResponse.mockResolvedValue({
       verified: true,
@@ -133,7 +112,6 @@ describe('AuthService', () => {
     expect(jwtService).toBeDefined();
     expect(userService).toBeDefined();
     expect(authenticatorService).toBeDefined();
-    expect(userChallengeService).toBeDefined();
   });
 
   describe('login', () => {
@@ -147,7 +125,7 @@ describe('AuthService', () => {
   describe('verifyAuthToken', () => {
     it('should verify an auth token', async () => {
       await expect(service.verifyAuthToken(testAccessToken)).resolves.toEqual(
-        testUserEntity1
+        testUserEntity1,
       );
       expect(userService.findOneById).toBeCalledTimes(1);
       expect(userService.findOneById).toBeCalledWith(testUserEntity1.id);
@@ -158,7 +136,7 @@ describe('AuthService', () => {
         throw new Error('verify');
       });
       await expect(
-        service.verifyAuthToken(testAccessToken)
+        service.verifyAuthToken(testAccessToken),
       ).resolves.toBeNull();
       expect(userService.findOneById).not.toBeCalled();
     });
@@ -167,58 +145,57 @@ describe('AuthService', () => {
   describe('generateLoginChallenge', () => {
     it('should generate a login challenge', async () => {
       await expect(
-        service.generateLoginChallenge(testUserEntity1.email)
+        service.generateLoginChallenge(testUserEntity1.email),
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
       expect(authenticatorService.findAllByEmail).toBeCalledTimes(1);
       expect(authenticatorService.findAllByEmail).toBeCalledWith(
-        testUserEntity1.email
+        testUserEntity1.email,
       );
       expect(mockGenerateAuthenticationOptions).toBeCalledTimes(1);
-      expect(userChallengeService.updateByEmail).toBeCalledTimes(1);
-      expect(userChallengeService.updateByEmail).toBeCalledWith(
-        testUserEntity1.email,
-        testPublicKeyCredentialRequestOptions1.challenge
-      );
+      expect(userService.findOneByEmail).toBeCalledTimes(1);
+      expect(userService.findOneByEmail).toBeCalledWith(testUserEntity1.email);
+      expect(userService.update).toBeCalledTimes(1);
+      expect(userService.update).toBeCalledWith(testUserEntity1, {
+        challenge: testPublicKeyCredentialRequestOptions1.challenge,
+      });
     });
   });
 
   describe('verifyLoginChallenge', () => {
     afterEach(() => {
-      expect(userChallengeService.findOneByEmail).toBeCalledTimes(1);
-      expect(userChallengeService.findOneByEmail).toBeCalledWith(
-        testUserEntity1.email
-      );
+      expect(userService.findOneByEmail).toBeCalledTimes(1);
+      expect(userService.findOneByEmail).toBeCalledWith(testUserEntity1.email);
     });
 
     it('should verify a login challenge and return the user', async () => {
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,
-          testAuthenticationCredential1
-        )
+          testAuthenticationCredential1,
+        ),
       ).resolves.toEqual(testUserEntity1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
-        testAuthenticationCredential1.id
+        testAuthenticationCredential1.id,
       );
       expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
       expect(authenticatorService.updateCounterById).toBeCalledTimes(1);
       expect(authenticatorService.updateCounterById).toBeCalledWith(
         testAuthenticatorEntity1.id,
         testCounter,
-        testUserEntity1.id
+        testUserEntity1.id,
       );
     });
 
     it('should throw a BadRequestException if challenge is falsy', async () => {
       jest
-        .spyOn(userChallengeService, 'findOneByEmail')
-        .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
+        .spyOn(userService, 'findOneByEmail')
+        .mockResolvedValue({ ...testUserEntity1, challenge: null });
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,
-          testAuthenticationCredential1
-        )
+          testAuthenticationCredential1,
+        ),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 
@@ -227,12 +204,12 @@ describe('AuthService', () => {
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,
-          testAuthenticationCredential1
-        )
+          testAuthenticationCredential1,
+        ),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
-        testAuthenticationCredential1.id
+        testAuthenticationCredential1.id,
       );
       expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
     });
@@ -245,12 +222,12 @@ describe('AuthService', () => {
       await expect(
         service.verifyLoginChallenge(
           testUserEntity1.email,
-          testAuthenticationCredential1
-        )
+          testAuthenticationCredential1,
+        ),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
       expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
       expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
-        testAuthenticationCredential1.id
+        testAuthenticationCredential1.id,
       );
       expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
     });

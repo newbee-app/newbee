@@ -41,11 +41,11 @@ export class AuthenticatorController {
   @Get()
   async getAll(@User() user: UserEntity): Promise<Authenticator[]> {
     this.logger.log(
-      `Get all authenticators request received for user ID: ${user.id}`
+      `Get all authenticators request received for user ID: ${user.id}`,
     );
     const authenticators = await this.authenticatorService.findAllByUser(user);
     this.logger.log(
-      `${authenticators.length} authenticators found for user ID: ${user.id}`
+      `${authenticators.length} authenticators found for user ID: ${user.id}`,
     );
     return authenticators;
   }
@@ -58,15 +58,15 @@ export class AuthenticatorController {
    */
   @Post(Keyword.Options)
   async createOptions(
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     this.logger.log(
-      `Create authenticator registration options request received for user ID: ${user.id}`
+      `Create authenticator registration options request received for user ID: ${user.id}`,
     );
 
     const options = await this.authenticatorService.generateOptions(user);
     this.logger.log(
-      `Authenticator registration options created: ${JSON.stringify(options)}`
+      `Authenticator registration options created: ${JSON.stringify(options)}`,
     );
 
     return options;
@@ -79,27 +79,26 @@ export class AuthenticatorController {
    * @param user The user to associate with the authenticator.
    *
    * @returns The newly created authenticator.
-   * @throws {NotFoundException} `userChallengeIdNotFound`. If the user's challenge cannot be found.
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`, `authenticatorTakenBadRequest`. If the authenticator cannot be verified or is already in use.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
   async create(
     @Body() registrationResponseDto: RegistrationResponseDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<AuthenticatorEntity> {
     const { response } = registrationResponseDto;
     const responseString = JSON.stringify(response);
     this.logger.log(
-      `Create authenticator verify request received for user ID: ${user.id}, response: ${responseString}`
+      `Create authenticator verify request received for user ID: ${user.id}, response: ${responseString}`,
     );
 
     const authenticator = await this.authenticatorService.create(
       response,
-      user
+      user,
     );
     this.logger.log(
-      `Authenticator created for user ID: ${user.id}, ID: ${authenticator.id}, credential ID: ${authenticator.credentialId}`
+      `Authenticator created for user ID: ${user.id}, ID: ${authenticator.id}, credential ID: ${authenticator.credentialId}`,
     );
 
     return authenticator;
@@ -121,16 +120,16 @@ export class AuthenticatorController {
   async updateName(
     @Param(Keyword.Authenticator) id: string,
     @Body() nameDto: NameDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<AuthenticatorEntity> {
     const { name } = nameDto;
     this.logger.log(
-      `Update authenticator name request received for authenticator ID: ${id}, from user ID: ${user.id}, with new name: ${name}`
+      `Update authenticator name request received for authenticator ID: ${id}, from user ID: ${user.id}, with new name: ${name}`,
     );
     const authenticator = await this.authenticatorService.updateNameById(
       id,
       name,
-      user.id
+      user.id,
     );
     this.logger.log(`Authenticator updated for authenticator ID: ${id}`);
     return authenticator;
@@ -148,10 +147,10 @@ export class AuthenticatorController {
   @Delete(`:${Keyword.Authenticator}`)
   async delete(
     @Param(Keyword.Authenticator) id: string,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<void> {
     this.logger.log(
-      `Delete authenticator request received for authenticator ID: ${id}, from user ID: ${user.id}`
+      `Delete authenticator request received for authenticator ID: ${id}, from user ID: ${user.id}`,
     );
     await this.authenticatorService.deleteOneById(id, user.id);
     this.logger.log(`Successfully deleted authenticator ID: ${id}`);

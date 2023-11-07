@@ -28,7 +28,6 @@ import type {
   TeamMemberRelation,
   TeamRelation,
   User,
-  UserChallenge,
   UserInvites,
   UserRelation,
 } from '../interface';
@@ -42,7 +41,7 @@ import type {
 /**
  * For internal use in creating a user challenge.
  */
-const testChallenge1 = 'challenge1';
+export const testChallenge1 = 'challenge1';
 
 /**
  * For internal use whenever we're working with datetimes.
@@ -67,14 +66,6 @@ export const testAuthenticator1: Authenticator = {
   credentialDeviceType: 'singleDevice',
   credentialBackedUp: true,
   transports: null,
-};
-
-/**
- * An example instance of UserChallenge.
- * Strictly for use in testing.
- */
-export const testUserChallenge1: UserChallenge = {
-  challenge: testChallenge1,
 };
 
 /**

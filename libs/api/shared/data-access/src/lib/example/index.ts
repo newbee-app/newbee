@@ -9,6 +9,7 @@ import {
   TeamRoleEnum,
   nbDayjs,
   testAuthenticator1,
+  testChallenge1,
   testDoc1,
   testOrgMember1,
   testOrgMemberInvite1,
@@ -16,7 +17,6 @@ import {
   testQna1,
   testTeam1,
   testUser1,
-  testUserChallenge1,
   testUserInvites1,
 } from '@newbee/shared/util';
 import type {
@@ -33,7 +33,6 @@ import {
   OrganizationEntity,
   QnaEntity,
   TeamEntity,
-  UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
 } from '../entity';
@@ -43,7 +42,11 @@ import { TeamMemberEntity } from '../entity/team-member.entity';
  * An example instance of `UserEntity`.
  * Strictly for use in testing.
  */
-export const testUserEntity1 = { ...testUser1, id: '1' } as UserEntity;
+export const testUserEntity1 = {
+  ...testUser1,
+  id: '1',
+  challenge: testChallenge1,
+} as UserEntity;
 
 /**
  * An example instance of `AuthenticatorEntity`.
@@ -53,15 +56,6 @@ export const testAuthenticatorEntity1 = {
   ...testAuthenticator1,
   user: testUserEntity1,
 } as AuthenticatorEntity;
-
-/**
- * An example instance of `UserChallengeEntity`.
- * Strictly for use in testing.
- */
-export const testUserChallengeEntity1 = {
-  ...testUserChallenge1,
-  user: testUserEntity1,
-} as UserChallengeEntity;
 
 /**
  * An example instance of `UserInvitesEntity`.

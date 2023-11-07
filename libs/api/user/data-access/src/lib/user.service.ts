@@ -46,7 +46,7 @@ export class UserService {
   ) {}
 
   /**
-   * Creates a new `UserEntity`, `UserChallengeEntity`, and `UserSettingsEntity` with the given information.
+   * Creates a new `UserEntity` with the given information.
    *
    * @param createUserDto The information needed to create a new user.
    * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.

@@ -26,7 +26,6 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberModule } from '@newbee/api/team-member/feature';
 import { TeamModule } from '@newbee/api/team/feature';
-import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserInvitesModule } from '@newbee/api/user-invites/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { SolrModule } from '@newbee/nest-solr-cli';
@@ -87,7 +86,6 @@ import { default as appConfig } from '../environments/environment';
     TeamModule,
     TeamMemberModule,
     UserModule,
-    UserChallengeModule,
     UserInvitesModule,
   ],
   providers: [

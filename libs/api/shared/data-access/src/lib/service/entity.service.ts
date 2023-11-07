@@ -43,7 +43,6 @@ import {
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
-  UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
 } from '../entity';
@@ -510,7 +509,6 @@ export class EntityService {
       | QnaEntity
       | TeamMemberEntity
       | TeamEntity
-      | UserChallengeEntity
       | UserInvitesEntity
       | UserEntity,
   ): Promise<void> {
@@ -528,7 +526,6 @@ export class EntityService {
       entity instanceof OrganizationEntity ||
       entity instanceof QnaEntity ||
       entity instanceof TeamEntity ||
-      entity instanceof UserChallengeEntity ||
       entity instanceof UserInvitesEntity
     ) {
       return;

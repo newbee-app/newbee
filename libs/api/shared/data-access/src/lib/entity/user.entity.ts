@@ -10,7 +10,6 @@ import {
 import type { User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
 import { OrgMemberEntity } from './org-member.entity';
-import { UserChallengeEntity } from './user-challenge.entity';
 import { UserInvitesEntity } from './user-invites.entity';
 
 /**
@@ -41,25 +40,21 @@ export class UserEntity implements User {
   /**
    * @inheritdoc
    */
-  @Property({ type: 'string', nullable: true })
+  @Property({ nullable: true })
   displayName: string | null;
 
   /**
    * @inheritdoc
    */
-  @Property({ type: 'string', nullable: true })
+  @Property({ nullable: true })
   phoneNumber: string | null;
 
   /**
-   * The `UserChallengeEntity` associated with the given user.
+   * The challenge associated with the given user.
    * Acts as a hidden property, meaning it will never be serialized.
-   * All actions are cascaded, so if the user is deleted, so is its assocaited challenge.
    */
-  @OneToOne(() => UserChallengeEntity, (challenge) => challenge.user, {
-    cascade: [Cascade.ALL],
-    hidden: true,
-  })
-  challenge: UserChallengeEntity;
+  @Property({ nullable: true })
+  challenge: string | null;
 
   /**
    * The `UserInvitesEntity` associated with the given user.
@@ -110,7 +105,7 @@ export class UserEntity implements User {
     this.name = name;
     this.displayName = displayName;
     this.phoneNumber = phoneNumber;
-    this.challenge = new UserChallengeEntity(this, challenge);
+    this.challenge = challenge;
     this.invites = invites;
   }
 }

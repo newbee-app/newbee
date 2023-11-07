@@ -15,12 +15,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   AuthenticatorEntity,
   EntityService,
-  UserChallengeEntity,
   testAuthenticatorEntity1,
-  testUserChallengeEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { UserChallengeService } from '@newbee/api/user-challenge/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorCredentialIdNotFound,
   authenticatorIdNotFound,
@@ -57,7 +55,7 @@ describe('AuthenticatorService', () => {
   let service: AuthenticatorService;
   let em: EntityManager;
   let entityService: EntityService;
-  let userChallengeService: UserChallengeService;
+  let userService: UserService;
 
   const testCounter = 100;
   const testName = 'MacBook';
@@ -100,9 +98,9 @@ describe('AuthenticatorService', () => {
           useValue: createMock<EntityService>(),
         },
         {
-          provide: UserChallengeService,
-          useValue: createMock<UserChallengeService>({
-            findOneById: jest.fn().mockResolvedValue(testUserChallengeEntity1),
+          provide: UserService,
+          useValue: createMock<UserService>({
+            update: jest.fn().mockResolvedValue(testUserEntity1),
           }),
         },
         {
@@ -115,8 +113,7 @@ describe('AuthenticatorService', () => {
     service = module.get<AuthenticatorService>(AuthenticatorService);
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
-    userChallengeService =
-      module.get<UserChallengeService>(UserChallengeService);
+    userService = module.get<UserService>(UserService);
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(
@@ -133,7 +130,7 @@ describe('AuthenticatorService', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
     expect(entityService).toBeDefined();
-    expect(userChallengeService).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
   describe('generateOptions', () => {
@@ -146,22 +143,14 @@ describe('AuthenticatorService', () => {
         user: { email: testUserEntity1.email },
       });
       expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
-      expect(userChallengeService.updateById).toBeCalledTimes(1);
-      expect(userChallengeService.updateById).toBeCalledWith(
-        testUserEntity1.id,
-        testPublicKeyCredentialCreationOptions1.challenge,
-      );
+      expect(userService.update).toBeCalledTimes(1);
+      expect(userService.update).toBeCalledWith(testUserEntity1, {
+        challenge: testPublicKeyCredentialCreationOptions1.challenge,
+      });
     });
   });
 
   describe('create', () => {
-    afterEach(() => {
-      expect(userChallengeService.findOneById).toBeCalledTimes(1);
-      expect(userChallengeService.findOneById).toBeCalledWith(
-        testUserEntity1.id,
-      );
-    });
-
     it('should create an authenticator', async () => {
       await expect(
         service.create(testRegistrationResponse1, testUserEntity1),
@@ -182,11 +171,11 @@ describe('AuthenticatorService', () => {
     });
 
     it('should throw a BadRequestException if challenge is not defined', async () => {
-      jest
-        .spyOn(userChallengeService, 'findOneById')
-        .mockResolvedValue(new UserChallengeEntity(testUserEntity1, null));
       await expect(
-        service.create(testRegistrationResponse1, testUserEntity1),
+        service.create(testRegistrationResponse1, {
+          ...testUserEntity1,
+          challenge: null,
+        }),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
     });
 

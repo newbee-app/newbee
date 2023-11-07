@@ -9,7 +9,6 @@ import {
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, authConfig } from '@newbee/api/auth/util';
 import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
-import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { AuthController } from './auth.controller';
 
@@ -24,7 +23,6 @@ import { AuthController } from './auth.controller';
     }),
     UserModule,
     AuthenticatorModule,
-    UserChallengeModule,
   ],
   controllers: [AuthController],
   providers: [MagicLinkLoginStrategy, AuthService, JwtStrategy],
