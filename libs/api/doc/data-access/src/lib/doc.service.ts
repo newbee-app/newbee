@@ -12,8 +12,12 @@ import {
   OrgMemberEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
-import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
+import {
+  docSlugNotFound,
+  internalServerError,
+  nbDayjs,
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
@@ -49,9 +53,16 @@ export class DocService {
     team: TeamEntity | null,
     creator: OrgMemberEntity,
   ): Promise<DocEntity> {
-    const { title, docMarkdoc } = createDocDto;
+    const { title, upToDateDuration, docMarkdoc } = createDocDto;
     const id = v4();
-    const doc = new DocEntity(id, title, creator, team, docMarkdoc);
+    const doc = new DocEntity(
+      id,
+      title,
+      upToDateDuration,
+      team,
+      creator,
+      docMarkdoc,
+    );
 
     try {
       await this.em.persistAndFlush(doc);
@@ -109,16 +120,29 @@ export class DocService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
-    const { docMarkdoc } = updateDocDto;
-    const now = new Date();
-    const newDocDetails = {
+    const { title, docMarkdoc, upToDateDuration } = updateDocDto;
+
+    const { txt: docTxt, html: docHtml } = renderMarkdoc(docMarkdoc);
+
+    const updateTime =
+      title !== undefined || docMarkdoc !== undefined
+        ? new Date()
+        : doc.markedUpToDateAt;
+    const updatedDoc = this.em.assign(doc, {
       ...updateDocDto,
-      ...(docMarkdoc && { docTxt: markdocToTxt(docMarkdoc) }),
-      updatedAt: now,
-      markedUpToDateAt: now,
-      upToDate: true,
-    };
-    const updatedDoc = this.em.assign(doc, newDocDetails);
+      ...(docTxt !== undefined && { docTxt }),
+      ...(docHtml !== undefined && { docHtml }),
+      updatedAt: updateTime,
+      markedUpToDateAt: updateTime,
+      outOfDateAt: nbDayjs(updateTime)
+        .add(
+          upToDateDuration
+            ? nbDayjs.duration(upToDateDuration)
+            : await doc.trueUpToDateDuration(),
+        )
+        .toDate(),
+    });
+
     try {
       await this.em.flush();
     } catch (err) {
@@ -149,8 +173,13 @@ export class DocService {
    */
   async markUpToDate(doc: DocEntity): Promise<DocEntity> {
     const now = new Date();
-    const newDocDetails = { markedUpToDateAt: now, upToDate: true };
-    const updatedDoc = this.em.assign(doc, newDocDetails);
+    const updatedDoc = this.em.assign(doc, {
+      markedUpToDateAt: now,
+      outOfDateAt: nbDayjs(now)
+        .add(await doc.trueUpToDateDuration())
+        .toDate(),
+    });
+
     try {
       await this.em.flush();
     } catch (err) {

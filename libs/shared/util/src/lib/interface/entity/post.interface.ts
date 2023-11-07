@@ -31,4 +31,15 @@ export interface Post {
    * The slug should be globally unique, as it's a shortened version of the UUID.
    */
   slug: string;
+
+  /**
+   * The amount of time to wait before marking a post as out-of-date, represented as an ISO 8601 duration string.
+   * If null, inherits from the post's parent team or organization.
+   */
+  upToDateDuration: string | null;
+
+  /**
+   * The DateTime when the post is out-of-date, based on its `upToDateDuration` and `markedUpToDateAt` values.
+   */
+  outOfDateAt: Date;
 }

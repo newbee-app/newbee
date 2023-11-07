@@ -6,6 +6,7 @@ import { ViewTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
   testOrganization1,
+  testOrganizationRelation1,
   testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -31,6 +32,9 @@ describe('TeamViewComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
             [Keyword.Team]: {
               selectedTeam: testTeamRelation1,
             },

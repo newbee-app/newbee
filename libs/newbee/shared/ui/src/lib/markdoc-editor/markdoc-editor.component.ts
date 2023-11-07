@@ -17,8 +17,9 @@ import { search } from '@codemirror/search';
 import { Compartment, EditorState, EditorStateConfig } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import Markdoc from '@markdoc/markdoc';
-import { generateConfig, lint, markdoc } from '@newbee/codemirror-lang-markdoc';
+import { lint, markdoc } from '@newbee/codemirror-lang-markdoc';
 import { CodemirrorComponent } from '@newbee/ngx-codemirror';
+import { strToContent } from '@newbee/shared/util';
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
 import { basicSetup } from 'codemirror';
 
@@ -38,14 +39,14 @@ export class MarkdocEditorComponent implements OnInit {
   @Input() text = '';
 
   /**
+   * Emits the editor's new text value whenever it's changed.
+   */
+  @Output() textChange = new EventEmitter<string>();
+
+  /**
    * Whether to generate a preview for the Markdoc next to the editor.
    */
   @Input() preview = true;
-
-  /**
-   * Emits the editor's content whenever it's changed.
-   */
-  @Output() content = new EventEmitter<string>();
 
   /**
    * The config we will feed into the editor state.
@@ -115,11 +116,8 @@ export class MarkdocEditorComponent implements OnInit {
                 }
 
                 const docString = update.state.doc.toString();
-                this.content.emit(docString);
-
-                const ast = Markdoc.parse(docString);
-                const config = generateConfig(ast);
-                const content = Markdoc.transform(ast, config);
+                this.textChange.emit(docString);
+                const content = strToContent(docString);
                 this.renderedEditorContent = Markdoc.renderers.html(content);
               }),
             ]

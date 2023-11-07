@@ -1,16 +1,11 @@
 import { Component } from '@angular/core';
 import { organizationFeature as orgModuleFeature } from '@newbee/newbee/organization/data-access';
 import {
-  EditOrgForm,
-  editOrgFormToDto,
-  EditOrgSlugForm,
-  editOrgSlugFormToDto,
-} from '@newbee/newbee/organization/util';
-import {
   httpFeature,
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
+import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
 /**
@@ -25,7 +20,7 @@ export class OrgEditComponent {
    * The currently selected organization.
    */
   selectedOrganization$ = this.store.select(
-    organizationFeature.selectSelectedOrganization
+    organizationFeature.selectSelectedOrganization,
   );
 
   /**
@@ -86,26 +81,20 @@ export class OrgEditComponent {
   /**
    * When the dumb UI emits an edit event, send an edit action with the value of the org form.
    *
-   * @param editOrgForm The values to send to the backend.
+   * @param updateOrganizationDto The values to send to the backend.
    */
-  onEdit(editOrgForm: Partial<EditOrgForm>): void {
-    this.store.dispatch(
-      OrganizationActions.editOrg({
-        updateOrganizationDto: editOrgFormToDto(editOrgForm),
-      })
-    );
+  onEdit(updateOrganizationDto: BaseUpdateOrganizationDto): void {
+    this.store.dispatch(OrganizationActions.editOrg({ updateOrganizationDto }));
   }
 
   /**
    * When the dumb UI emits an edit slug event, send an edit slug action with the value of the org form.
    *
-   * @param editOrgSlugForm The values to send to the backend.
+   * @param updateOrganizationDto The values to send to the backend.
    */
-  onEditSlug(editOrgSlugForm: Partial<EditOrgSlugForm>): void {
+  onEditSlug(updateOrganizationDto: BaseUpdateOrganizationDto): void {
     this.store.dispatch(
-      OrganizationActions.editOrgSlug({
-        updateOrganizationDto: editOrgSlugFormToDto(editOrgSlugForm),
-      })
+      OrganizationActions.editOrgSlug({ updateOrganizationDto }),
     );
   }
 

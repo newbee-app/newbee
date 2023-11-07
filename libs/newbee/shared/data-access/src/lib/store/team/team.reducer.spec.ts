@@ -1,7 +1,7 @@
 import { testBaseTeamAndMemberDto1 } from '@newbee/shared/data-access';
 import { testTeamMember1, testTeamRelation1 } from '@newbee/shared/util';
 import { TeamActions } from './team.actions';
-import { initialTeamState, teamFeature, TeamState } from './team.reducer';
+import { TeamState, initialTeamState, teamFeature } from './team.reducer';
 
 describe('TeamReducer', () => {
   const stateAfterGetTeamSuccess: TeamState = {
@@ -13,7 +13,7 @@ describe('TeamReducer', () => {
     ...stateAfterGetTeamSuccess,
     selectedTeam: {
       ...testTeamRelation1,
-      team: { name: 'New name', slug: 'new-slug' },
+      team: { name: 'New name', slug: 'new-slug', upToDateDuration: 'P1Y' },
     },
   };
 
@@ -23,7 +23,7 @@ describe('TeamReducer', () => {
         initialTeamState,
         TeamActions.getTeamSuccess({
           teamAndMemberDto: testBaseTeamAndMemberDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGetTeamSuccess);
     });
@@ -34,8 +34,12 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSuccess({
-          newTeam: { name: 'New name', slug: 'new-slug' },
-        })
+          newTeam: {
+            name: 'New name',
+            slug: 'new-slug',
+            upToDateDuration: 'P1Y',
+          },
+        }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamSuccess);
     });
@@ -44,8 +48,12 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSlugSuccess({
-          newTeam: { name: 'New name', slug: 'new-slug' },
-        })
+          newTeam: {
+            name: 'New name',
+            slug: 'new-slug',
+            upToDateDuration: 'P1Y',
+          },
+        }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamSuccess);
     });
@@ -53,7 +61,7 @@ describe('TeamReducer', () => {
     it('should update state for deleteTeamSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
-        TeamActions.deleteTeamSuccess
+        TeamActions.deleteTeamSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -61,7 +69,7 @@ describe('TeamReducer', () => {
     it('should update state for resetSelectedTeam', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
-        TeamActions.resetSelectedTeam
+        TeamActions.resetSelectedTeam,
       );
       expect(updatedState).toEqual(initialTeamState);
     });

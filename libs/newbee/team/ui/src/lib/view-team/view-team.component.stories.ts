@@ -1,6 +1,7 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   testDocQueryResult1,
+  testOrganization1,
   testQnaQueryResult1,
   testTeam1,
   testTeamMember1,
@@ -8,10 +9,10 @@ import {
   testTeamRelation1,
 } from '@newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
 import { ViewTeamComponent } from './view-team.component';
 
@@ -21,10 +22,11 @@ export default {
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {
+    organization: testOrganization1,
     team: {
       ...testTeamRelation1,
       teamMembers: {

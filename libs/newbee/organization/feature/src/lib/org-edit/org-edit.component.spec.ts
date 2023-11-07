@@ -1,14 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditOrgComponent } from '@newbee/newbee/organization/ui';
-import {
-  testEditOrgForm1,
-  testEditOrgSlugForm1,
-} from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
   testOrganization1,
+  testOrganization2,
   testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -76,10 +73,10 @@ describe('OrgEditComponent', () => {
 
   describe('onEdit', () => {
     it('should dispatch editOrg', () => {
-      component.onEdit(testEditOrgForm1);
+      component.onEdit({ name: testOrganization2.name });
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.editOrg({
-          updateOrganizationDto: { name: testEditOrgForm1.name ?? '' },
+          updateOrganizationDto: { name: testOrganization2.name },
         }),
       );
     });
@@ -87,10 +84,10 @@ describe('OrgEditComponent', () => {
 
   describe('onEditSlug', () => {
     it('should dispatch editOrgSlug', () => {
-      component.onEditSlug(testEditOrgSlugForm1);
+      component.onEditSlug({ slug: testOrganization2.slug });
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.editOrgSlug({
-          updateOrganizationDto: { slug: testEditOrgSlugForm1.slug ?? '' },
+          updateOrganizationDto: { slug: testOrganization2.slug },
         }),
       );
     });

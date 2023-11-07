@@ -1,7 +1,7 @@
 import Markdoc from '@markdoc/markdoc';
 import markdocTxtRenderer from './markdoc-txt-renderer';
 
-describe('render', () => {
+describe('markdocTxtRenderer', () => {
   it('should render markdoc to plain text', () => {
     const markdoc = `# {% $title %} {% #overview %}
 
@@ -28,7 +28,7 @@ Markdoc uses a fully declarative approach to composition and flow control, where
     // const plainTxt = Markdoc.renderers.html(content);
 
     expect(plainTxt).toEqual(
-      `What is Markdoc? Markdoc is a Markdown-based syntax and toolchain for creating custom documentation sites. Stripe created Markdoc to power our public docs. Markdoc is open-source—check out its source to see how it works. How is Markdoc different? Markdoc uses a fully declarative approach to composition and flow control, where other solutions… Read more. Next steps Install Markdoc Explore the syntax`
+      `What is Markdoc? Markdoc is a Markdown-based syntax and toolchain for creating custom documentation sites. Stripe created Markdoc to power our public docs. Markdoc is open-source—check out its source to see how it works. How is Markdoc different? Markdoc uses a fully declarative approach to composition and flow control, where other solutions… Read more. Next steps Install Markdoc Explore the syntax`,
     );
   });
 });

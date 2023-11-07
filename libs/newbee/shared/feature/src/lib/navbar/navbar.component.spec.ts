@@ -53,18 +53,18 @@ describe('NavbarComponent', () => {
     it('should set includeCenter to true if route is past org home', async () => {
       expect(component.includeCenter).toBeFalsy();
 
-      component = await harness.navigateByUrl(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
-        NavbarComponent,
-      );
-      expect(component.includeCenter).toBeFalsy();
-
       store.setState({
         [Keyword.Organization]: {
           selectedOrganization: testOrganizationRelation1,
         },
       });
       expect(component.includeCenter).toBeTruthy();
+
+      component = await harness.navigateByUrl(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}`,
+        NavbarComponent,
+      );
+      expect(component.includeCenter).toBeFalsy();
     });
   });
 

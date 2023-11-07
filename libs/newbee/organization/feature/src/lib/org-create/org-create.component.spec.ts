@@ -6,7 +6,6 @@ import {
   tick,
 } from '@angular/core/testing';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
-import { testCreateOrgForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { testBaseCreateOrganizationDto1 } from '@newbee/shared/data-access';
 import { testOrganization1 } from '@newbee/shared/util';
@@ -52,7 +51,7 @@ describe('OrgCreateComponent', () => {
       component.onName(testOrganization1.name);
       tick(600);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.generateSlug({ name: testOrganization1.name })
+        OrganizationActions.generateSlug({ name: testOrganization1.name }),
       );
     }));
   });
@@ -61,7 +60,7 @@ describe('OrgCreateComponent', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
     });
   });
@@ -70,18 +69,18 @@ describe('OrgCreateComponent', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
       expect(store.dispatch).toBeCalledWith(
-        OrganizationActions.checkSlug({ slug: testOrganization1.slug })
+        OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
     });
   });
 
   describe('onCreate', () => {
     it('should dispatch createOrg', () => {
-      component.onCreate(testCreateOrgForm1);
+      component.onCreate(testBaseCreateOrganizationDto1);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.createOrg({
           createOrganizationDto: testBaseCreateOrganizationDto1,
-        })
+        }),
       );
     });
   });

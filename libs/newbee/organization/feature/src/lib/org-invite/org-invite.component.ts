@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
 import {
-  InviteMemberForm,
-  inviteMemberFormToDto,
-} from '@newbee/newbee/organization/util';
-import {
-  httpFeature,
   OrganizationActions,
+  httpFeature,
 } from '@newbee/newbee/shared/data-access';
+import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
 /**
@@ -38,13 +35,11 @@ export class OrgInviteComponent {
   /**
    * When the dumb UI emits an invite event, dispatch it to the store.
    *
-   * @param inviteMemberForm The values to send to the backend.
+   * @param createOrgMemberInviteDto The values to send to the backend.
    */
-  onInvite(inviteMemberForm: Partial<InviteMemberForm>): void {
+  onInvite(createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto): void {
     this.store.dispatch(
-      OrganizationActions.inviteUser({
-        createOrgMemberInviteDto: inviteMemberFormToDto(inviteMemberForm),
-      })
+      OrganizationActions.inviteUser({ createOrgMemberInviteDto }),
     );
   }
 }

@@ -14,6 +14,7 @@ import {
   organizationSlugTakenBadRequest,
   orgRoleIsEnum,
   slugIsNotEmpty,
+  upToDateDurationMatches,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -55,6 +56,8 @@ export class OrganizationEffects {
                   return 'slug';
                 case nameIsNotEmpty:
                   return 'name';
+                case upToDateDurationMatches:
+                  return Keyword.Duration;
                 default:
                   return Keyword.Misc;
               }

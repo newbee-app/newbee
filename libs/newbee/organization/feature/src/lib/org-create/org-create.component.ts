@@ -1,13 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
 import {
-  CreateOrgForm,
-  createOrgFormToDto,
-} from '@newbee/newbee/organization/util';
-import {
   OrganizationActions,
   httpFeature,
 } from '@newbee/newbee/shared/data-access';
+import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
@@ -97,13 +94,11 @@ export class OrgCreateComponent implements OnDestroy {
   /**
    * When the dumb UI emits a create event, send a create action with the value of the org form.
    *
-   * @param createOrgForm The values to send to the backend.
+   * @param createOrganizationDto The values to send to the backend.
    */
-  onCreate(createOrgForm: Partial<CreateOrgForm>): void {
+  onCreate(createOrganizationDto: BaseCreateOrganizationDto): void {
     this.store.dispatch(
-      OrganizationActions.createOrg({
-        createOrganizationDto: createOrgFormToDto(createOrgForm),
-      }),
+      OrganizationActions.createOrg({ createOrganizationDto }),
     );
   }
 }

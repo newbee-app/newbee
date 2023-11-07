@@ -2,8 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
@@ -54,55 +54,59 @@ describe('QnaController', () => {
         testOrgMemberEntity1,
         testOrganizationEntity1,
         testTeamEntity1,
-        testBaseTeamSlugDto1
-      )
+        testBaseTeamSlugDto1,
+      ),
     ).resolves.toEqual(testQnaEntity1);
     expect(service.create).toBeCalledTimes(1);
     expect(service.create).toBeCalledWith(
       testBaseCreateQnaDto1,
       testTeamEntity1,
-      testOrgMemberEntity1
+      testOrgMemberEntity1,
     );
   });
 
   it('get should get a qna', async () => {
     await expect(controller.get(testQnaEntity1)).resolves.toEqual(
-      testQnaEntity1
+      testQnaEntity1,
     );
   });
 
   it('updateQuestion should update the question', async () => {
     await expect(
-      controller.updateQuestion(testBaseUpdateQuestionDto1, testQnaEntity1)
+      controller.updateQuestion(testBaseUpdateQuestionDto1, testQnaEntity1),
     ).resolves.toEqual(testUpdatedQnaEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testQnaEntity1,
-      testBaseUpdateQuestionDto1
+      testBaseUpdateQuestionDto1,
     );
   });
 
   it('updateAnswer should update the answer', async () => {
-    const testQnaEntity2 = { ...testQnaEntity1, maintainer: null };
+    const testQnaEntity2 = {
+      ...testQnaEntity1,
+      maintainer: null,
+      trueUpToDateDuration: testQnaEntity1.trueUpToDateDuration,
+    };
     jest.spyOn(service, 'findOneBySlug').mockResolvedValue(testQnaEntity2);
     await expect(
       controller.updateAnswer(
         testBaseUpdateAnswerDto1,
         testQnaEntity2,
-        testOrgMemberEntity1
-      )
+        testOrgMemberEntity1,
+      ),
     ).resolves.toEqual(testUpdatedQnaEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testQnaEntity2,
       testBaseUpdateAnswerDto1,
-      testOrgMemberEntity1
+      testOrgMemberEntity1,
     );
   });
 
   it('markUpToDate should mark a qna as up-to-date', async () => {
     await expect(controller.markUpToDate(testQnaEntity1)).resolves.toEqual(
-      testUpdatedQnaEntity
+      testUpdatedQnaEntity,
     );
     expect(service.markUpToDate).toBeCalledTimes(1);
     expect(service.markUpToDate).toBeCalledWith(testQnaEntity1);

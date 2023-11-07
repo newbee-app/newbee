@@ -44,7 +44,7 @@ describe('FormFunction', () => {
       it('should work for invalid', () => {
         control.setErrors({ phoneNumber: { invalid: true } });
         expect(inputErrorMessage(control)).toEqual(
-          'Not a valid phone number or country'
+          'Not a valid phone number or country',
         );
       });
     });
@@ -84,6 +84,7 @@ describe('FormFunction', () => {
     });
 
     it('should only display error if input is not clean and not valid', () => {
+      expect(inputDisplayError(null)).toBeFalsy();
       expect(inputDisplayError(control)).toBeFalsy();
       control.markAsTouched();
       expect(inputDisplayError(control)).toBeFalsy();

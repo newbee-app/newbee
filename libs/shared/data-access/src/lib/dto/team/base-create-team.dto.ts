@@ -14,4 +14,9 @@ export class BaseCreateTeamDto implements Team {
    * @inheritdoc
    */
   slug!: string;
+
+  /**
+   * @inheritdoc
+   */
+  upToDateDuration: string | null = null;
 }

@@ -14,4 +14,9 @@ export class BaseCreateOrganizationDto implements Organization {
    * @inheritdoc
    */
   slug!: string;
+
+  /**
+   * @inheritdoc
+   */
+  upToDateDuration!: string;
 }

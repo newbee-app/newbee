@@ -41,6 +41,12 @@ export class OrganizationEntity implements Organization {
   slug: string;
 
   /**
+   * @inheritdoc
+   */
+  @Property()
+  upToDateDuration: string;
+
+  /**
    * All of the teams that belong to the organization.
    * `orphanRemoval` is on, so if the organization is deleted, so is its teams.
    * Additionally, if a team is removed from the collection, it is also deleted.
@@ -97,10 +103,17 @@ export class OrganizationEntity implements Organization {
   })
   invites = new Collection<OrgMemberInviteEntity>(this);
 
-  constructor(id: string, name: string, slug: string, creator: UserEntity) {
+  constructor(
+    id: string,
+    name: string,
+    slug: string,
+    upToDateDuration: string,
+    creator: UserEntity,
+  ) {
     this.id = id;
     this.name = name;
     this.slug = slugify(slug);
+    this.upToDateDuration = upToDateDuration;
     new OrgMemberEntity(creator, this, OrgRoleEnum.Owner);
   }
 }

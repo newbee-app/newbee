@@ -1,11 +1,11 @@
-import { Qna } from '@newbee/shared/util';
+import { BaseUpdateQnaDto } from './base-update-qna.dto';
 
 /**
  * The DTO sent from the frontend to the backend to update the question in a QnA.
  * Suitable for use in PATCH requests.
  */
 export class BaseUpdateQuestionDto
-  implements Partial<Pick<Qna, 'title' | 'questionMarkdoc'>>
+  implements Pick<BaseUpdateQnaDto, 'title' | 'questionMarkdoc'>
 {
   /**
    * @inheritdoc

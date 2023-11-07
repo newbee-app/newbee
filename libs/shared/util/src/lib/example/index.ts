@@ -6,6 +6,7 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
+import { nbDayjs } from '../dayjs';
 import { OrgRoleEnum, TeamRoleEnum } from '../enum';
 import type {
   Authenticator,
@@ -30,7 +31,6 @@ import type {
   UserChallenge,
   UserInvites,
   UserRelation,
-  UserSettings,
 } from '../interface';
 import type {
   DocQueryResult,
@@ -48,6 +48,11 @@ const testChallenge1 = 'challenge1';
  * For internal use whenever we're working with datetimes.
  */
 export const testNow1 = new Date();
+
+/**
+ * For internal use whenever we're working with dayjs.
+ */
+export const testNowDayjs1 = nbDayjs(testNow1);
 
 /**
  * An example instance of Authenticator.
@@ -71,12 +76,6 @@ export const testAuthenticator1: Authenticator = {
 export const testUserChallenge1: UserChallenge = {
   challenge: testChallenge1,
 };
-
-/**
- * An example instance of UserSettings.
- * Strictly for use in testing.
- */
-export const testUserSettings1: UserSettings = {};
 
 /**
  * An example instance of User.
@@ -107,6 +106,7 @@ export const testUser2: User = {
 export const testOrganization1: Organization = {
   name: 'NewBee',
   slug: 'newbee',
+  upToDateDuration: 'P6M',
 };
 
 /**
@@ -116,6 +116,7 @@ export const testOrganization1: Organization = {
 export const testOrganization2: Organization = {
   name: 'Example Org',
   slug: 'example-org',
+  upToDateDuration: 'P6M',
 };
 
 /**
@@ -125,6 +126,7 @@ export const testOrganization2: Organization = {
 export const testTeam1: Team = {
   name: 'Development',
   slug: 'development',
+  upToDateDuration: null,
 };
 
 /**
@@ -154,6 +156,8 @@ export const testPost1: Post = {
   markedUpToDateAt: testNow1,
   title: 'This is the title of a post',
   slug: 'test-post-1-slug',
+  upToDateDuration: null,
+  outOfDateAt: nbDayjs(testNow1).add(nbDayjs.duration('P6M')).toDate(),
 };
 
 /**
@@ -166,8 +170,8 @@ export const testDoc1: Doc = {
   slug: 'test-doc-1-slug',
   docMarkdoc:
     'All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.',
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // renderedHtml: 'renderedhtml',
+  docHtml:
+    '<article><p>All employees are entitled to 20 days of PTO and 5 paid sick days per year. PTO can be used for any purpose such as vacations and family emergencies. However, sick days should be reserved for illness.</p></article>',
 };
 
 /**
@@ -179,11 +183,11 @@ export const testQna1: Qna = {
   title: 'What is our PTO policy?',
   slug: 'test-qna-1-slug',
   questionMarkdoc: 'More specifically days I can use to go on vacations.',
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // renderedQuestion: 'renderedquestion',
+  questionHtml:
+    '<article><p>More specifically days I can use to go on vacations.</p></article>',
   answerMarkdoc: 'All employees are entitled to 20 days of PTO per year.',
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // renderedAnswer: 'renderedanswer',
+  answerHtml:
+    '<article><p>All employees are entitled to 20 days of PTO per year.</p></article>',
 };
 
 /**
@@ -282,7 +286,10 @@ export const testOrgMemberQueryResult1: OrgMemberQueryResult =
  * An example instance of `TeamQueryResult`.
  * Strictly for use in testing.
  */
-export const testTeamQueryResult1: TeamQueryResult = testTeam1;
+export const testTeamQueryResult1: TeamQueryResult = {
+  name: testTeam1.name,
+  slug: testTeam1.slug,
+};
 
 /**
  * An example instance of `DocQueryResult`.

@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import Markdoc from '@markdoc/markdoc';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
@@ -15,11 +16,8 @@ import {
   testOrganizationEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import {
-  DocDocParams,
-  elongateUuid,
-  markdocToTxt,
-} from '@newbee/api/shared/util';
+import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
+import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
@@ -27,7 +25,10 @@ import {
 import {
   docSlugNotFound,
   internalServerError,
+  nbDayjs,
+  strToContent,
   testNow1,
+  testNowDayjs1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
@@ -40,18 +41,18 @@ jest.mock('@newbee/api/shared/data-access', () => ({
 }));
 const mockDocEntity = DocEntity as jest.Mock;
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn(),
-}));
-const mockV4 = v4 as jest.Mock;
-
 jest.mock('@newbee/api/shared/util', () => ({
   __esModule: true,
   ...jest.requireActual('@newbee/api/shared/util'),
   elongateUuid: jest.fn(),
 }));
 const mockElongateUuid = elongateUuid as jest.Mock;
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('DocService', () => {
   let service: DocService;
@@ -119,8 +120,9 @@ describe('DocService', () => {
       expect(mockDocEntity).toBeCalledWith(
         testDocEntity1.id,
         testDocEntity1.title,
-        testOrgMemberEntity1,
+        testDocEntity1.upToDateDuration,
         testTeamEntity1,
+        testOrgMemberEntity1,
         testDocEntity1.docMarkdoc,
       );
       expect(em.persistAndFlush).toBeCalledTimes(1);
@@ -209,15 +211,24 @@ describe('DocService', () => {
     });
 
     afterEach(() => {
+      const docContent = strToContent(
+        testBaseUpdateDocDto1.docMarkdoc as string,
+      );
+      const docTxt = markdocTxtRenderer(docContent);
+      const docHtml = Markdoc.renderers.html(docContent);
+
       expect(em.assign).toBeCalledTimes(1);
       expect(em.assign).toBeCalledWith(testDocEntity1, {
         ...testBaseUpdateDocDto1,
-        ...(testBaseUpdateDocDto1.docMarkdoc && {
-          docTxt: markdocToTxt(testBaseUpdateDocDto1.docMarkdoc),
-        }),
+        docTxt,
+        docHtml,
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
-        upToDate: true,
+        outOfDateAt: testNowDayjs1
+          .add(
+            nbDayjs.duration(testBaseUpdateDocDto1.upToDateDuration as string),
+          )
+          .toDate(),
       });
       expect(em.flush).toBeCalledTimes(1);
     });
@@ -262,11 +273,13 @@ describe('DocService', () => {
         .mockReturnValue(testUpdatedDocDocParams);
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       expect(em.assign).toBeCalledTimes(1);
       expect(em.assign).toBeCalledWith(testDocEntity1, {
         markedUpToDateAt: testNow1,
-        upToDate: true,
+        outOfDateAt: testNowDayjs1
+          .add(await testDocEntity1.trueUpToDateDuration())
+          .toDate(),
       });
       expect(em.flush).toBeCalledTimes(1);
     });

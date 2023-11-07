@@ -18,9 +18,9 @@
         class="input border-neutral w-full"
       />
       <newbee-alert
-        [show]="inputDisplayError('name')"
+        [show]="inputDisplayError(createTeamForm, 'name')"
         [type]="alertType.Error"
-        [text]="inputErrorMessage('name')"
+        [text]="inputErrorMessage(createTeamForm, 'name')"
       ></newbee-alert>
     </div>
 
@@ -41,11 +41,90 @@
         <span class="loading loading-dots"></span>
       </div>
       <newbee-alert
-        [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
+        [show]="
+          (!checkPending && slugTaken) ||
+          inputDisplayError(createTeamForm, 'slug')
+        "
         [type]="alertType.Error"
         [text]="
-          inputErrorMessage('slug') ||
+          inputErrorMessage(createTeamForm, 'slug') ||
           'This slug is already taken, please choose another'
+        "
+      ></newbee-alert>
+    </div>
+
+    <div
+      formGroupName="upToDateDuration"
+      class="flex flex-col flex-nowrap gap-y-2 w-full"
+    >
+      <div>
+        <p>How long should posts stay relevant?</p>
+        <p class="opacity-75">
+          Leave blank to default to the organization's value of
+          {{ orgDurationStr }}.
+        </p>
+      </div>
+
+      <div class="flex flex-row flex-wrap gap-2 items-baseline">
+        For
+
+        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+          <input
+            type="number"
+            step="1"
+            formControlName="num"
+            newbeeDigitOnly
+            [min]="1"
+            class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                createTeamForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
+          />
+
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="
+              inputDisplayError(createTeamForm.controls.upToDateDuration, 'num')
+            "
+            [text]="
+              inputErrorMessage(createTeamForm.controls.upToDateDuration, 'num')
+            "
+          ></newbee-alert>
+        </div>
+
+        <div class="w-44 flex-auto">
+          <newbee-searchable-select
+            [showSearchbar]="false"
+            [options]="frequencyOptions"
+            optionName="frequency"
+            [valid]="
+              !inputDisplayError(
+                createTeamForm.controls.upToDateDuration,
+                'frequency'
+              )
+            "
+            [errorText]="inputErrorMessage(createTeamForm, 'frequency')"
+            formControlName="frequency"
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="
+          inputDisplayError(
+            createTeamForm.controls.upToDateDuration,
+            keyword.Duration
+          )
+        "
+        [text]="
+          inputErrorMessage(
+            createTeamForm.controls.upToDateDuration,
+            keyword.Duration
+          )
         "
       ></newbee-alert>
     </div>

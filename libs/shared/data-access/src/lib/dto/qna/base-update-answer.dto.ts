@@ -1,12 +1,19 @@
-import { Qna } from '@newbee/shared/util';
+import { BaseUpdateQnaDto } from './base-update-qna.dto';
 
 /**
  * The DTO sent from the frontend to the backend to update the answer in a QnA.
  * Suitable for use in PATCH requests.
  */
-export class BaseUpdateAnswerDto implements Pick<Qna, 'answerMarkdoc'> {
+export class BaseUpdateAnswerDto
+  implements Pick<BaseUpdateQnaDto, 'answerMarkdoc' | 'upToDateDuration'>
+{
   /**
    * @inheritdoc
    */
-  answerMarkdoc!: string;
+  answerMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  upToDateDuration?: string | null = null;
 }

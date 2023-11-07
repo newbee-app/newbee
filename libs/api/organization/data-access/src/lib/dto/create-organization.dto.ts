@@ -1,6 +1,11 @@
 import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
-import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty } from 'class-validator';
+import {
+  iso8601DurationRegex,
+  nameIsNotEmpty,
+  slugIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
+import { IsNotEmpty, Matches } from 'class-validator';
 
 /**
  * A verifiable DTO sent from the frontend to the backend to create a new organization.
@@ -18,4 +23,10 @@ export class CreateOrganizationDto implements BaseCreateOrganizationDto {
    */
   @IsNotEmpty({ message: slugIsNotEmpty })
   slug!: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration!: string;
 }

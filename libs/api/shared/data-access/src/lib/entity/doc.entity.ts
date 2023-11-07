@@ -1,6 +1,8 @@
+import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { markdocToTxt } from '@newbee/api/shared/util';
+import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import type { Doc } from '@newbee/shared/util';
+import { strToContent } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -48,28 +50,30 @@ export class DocEntity extends PostEntity implements Doc {
   @Property({ type: 'text' })
   docTxt: string;
 
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // /**
-  //  * @inheritdoc
-  //  */
-  // @Property({ type: 'text' })
-  // docHtml: string;
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'text' })
+  docHtml: string;
 
   constructor(
     id: string,
     title: string,
-    creator: OrgMemberEntity,
+    upToDateDuration: string | null,
     team: TeamEntity | null,
-    docMarkdoc: string
-    // docHtml: string,
+    creator: OrgMemberEntity,
+    docMarkdoc: string,
   ) {
-    super(id, title);
+    super(id, title, upToDateDuration, team, creator);
+
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
     this.maintainer = creator;
+
     this.docMarkdoc = docMarkdoc;
-    this.docTxt = markdocToTxt(docMarkdoc);
-    // this.docHtml = docHtml;
+    const content = strToContent(docMarkdoc);
+    this.docTxt = markdocTxtRenderer(content);
+    this.docHtml = Markdoc.renderers.html(content);
   }
 }

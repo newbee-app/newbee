@@ -1,4 +1,5 @@
 <newbee-create-team
+  [organization]="(selectedOrganization$ | async)!.organization"
   [generatedSlug]="(generatedSlug$ | async)!"
   [slugTaken]="(slugTaken$ | async)!"
   [createPending]="(pendingCreate$ | async)!"

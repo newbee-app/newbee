@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import Markdoc from '@markdoc/markdoc';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
@@ -15,19 +16,19 @@ import {
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import {
-  QnaDocParams,
-  elongateUuid,
-  markdocToTxt,
-} from '@newbee/api/shared/util';
+import { QnaDocParams, elongateUuid } from '@newbee/api/shared/util';
+import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateQnaDto1,
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
+  nbDayjs,
   qnaSlugNotFound,
+  strToContent,
   testNow1,
+  testNowDayjs1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
@@ -40,12 +41,6 @@ jest.mock('@newbee/api/shared/data-access', () => ({
 }));
 const mockQnaEntity = QnaEntity as jest.Mock;
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn(),
-}));
-const mockV4 = v4 as jest.Mock;
-
 jest.mock('@newbee/api/shared/util', () => ({
   __esModule: true,
   ...jest.requireActual('@newbee/api/shared/util'),
@@ -53,24 +48,18 @@ jest.mock('@newbee/api/shared/util', () => ({
 }));
 const mockElongateUuid = elongateUuid as jest.Mock;
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
+
 describe('QnaService', () => {
   let service: QnaService;
   let em: EntityManager;
   let entityService: EntityService;
   let solrCli: SolrCli;
 
-  const testAssignParams = {
-    ...testBaseUpdateQnaDto1,
-    ...(testBaseUpdateQnaDto1.questionMarkdoc && {
-      questionTxt: markdocToTxt(testBaseUpdateQnaDto1.questionMarkdoc),
-    }),
-    ...(testBaseUpdateQnaDto1.answerMarkdoc && {
-      answerTxt: markdocToTxt(testBaseUpdateQnaDto1.answerMarkdoc),
-    }),
-    updatedAt: testNow1,
-    markedUpToDateAt: testNow1,
-    upToDate: true,
-  };
   const testUpdatedQna = {
     ...testQnaEntity1,
     ...testBaseUpdateQnaDto1,
@@ -133,8 +122,8 @@ describe('QnaService', () => {
       expect(mockQnaEntity).toBeCalledWith(
         testQnaEntity1.id,
         testQnaEntity1.title,
-        testOrgMemberEntity1,
         testTeamEntity1,
+        testOrgMemberEntity1,
         testQnaEntity1.questionMarkdoc,
         testQnaEntity1.answerMarkdoc,
       );
@@ -155,6 +144,7 @@ describe('QnaService', () => {
         testOrganizationEntity1.id,
         testQnaDocParams1,
       );
+      expect(markdocTxtRenderer(null)).toEqual('');
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -217,6 +207,31 @@ describe('QnaService', () => {
   });
 
   describe('update', () => {
+    const questionContent = strToContent(
+      testBaseUpdateQnaDto1.questionMarkdoc as string,
+    );
+    const questionTxt = markdocTxtRenderer(questionContent);
+    const questionHtml = Markdoc.renderers.html(questionContent);
+
+    const answerContent = strToContent(
+      testBaseUpdateQnaDto1.answerMarkdoc as string,
+    );
+    const answerTxt = markdocTxtRenderer(answerContent);
+    const answerHtml = Markdoc.renderers.html(answerContent);
+
+    const testAssignParams = {
+      ...testBaseUpdateQnaDto1,
+      questionTxt,
+      questionHtml,
+      answerTxt,
+      answerHtml,
+      updatedAt: testNow1,
+      markedUpToDateAt: testNow1,
+      outOfDateAt: testNowDayjs1
+        .add(nbDayjs.duration(testBaseUpdateQnaDto1.upToDateDuration as string))
+        .toDate(),
+    };
+
     beforeEach(() => {
       jest
         .spyOn(entityService, 'createQnaDocParams')
@@ -288,11 +303,13 @@ describe('QnaService', () => {
         .mockReturnValue(testUpdatedQnaDocParams);
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       expect(em.assign).toBeCalledTimes(1);
       expect(em.assign).toBeCalledWith(testQnaEntity1, {
         markedUpToDateAt: testNow1,
-        upToDate: true,
+        outOfDateAt: testNowDayjs1
+          .add(await testQnaEntity1.trueUpToDateDuration())
+          .toDate(),
       });
       expect(em.flush).toBeCalledTimes(1);
     });

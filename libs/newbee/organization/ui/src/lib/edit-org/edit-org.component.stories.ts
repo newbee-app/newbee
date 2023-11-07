@@ -1,3 +1,4 @@
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   OrgRoleEnum,
@@ -5,12 +6,23 @@ import {
   testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
-import { Meta, StoryObj } from '@storybook/angular';
+import {
+  componentWrapperDecorator,
+  Meta,
+  moduleMetadata,
+  StoryObj,
+} from '@storybook/angular';
 import { EditOrgComponent } from './edit-org.component';
 
 export default {
   title: 'EditOrgComponent',
   component: EditOrgComponent,
+  decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    componentWrapperDecorator(
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+    ),
+  ],
   args: {
     organization: testOrganization1,
     orgMember: testOrgMemberRelation1,

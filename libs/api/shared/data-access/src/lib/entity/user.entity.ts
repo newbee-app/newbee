@@ -12,7 +12,6 @@ import { AuthenticatorEntity } from './authenticator.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { UserChallengeEntity } from './user-challenge.entity';
 import { UserInvitesEntity } from './user-invites.entity';
-import { UserSettingsEntity } from './user-settings.entity';
 
 /**
  * The MikroORM entity representing a `User`.
@@ -50,17 +49,6 @@ export class UserEntity implements User {
    */
   @Property({ type: 'string', nullable: true })
   phoneNumber: string | null;
-
-  /**
-   * The `UserSettingsEntity` associated with the given user.
-   * Acts as a hidden property, meaning it will never be serialized.
-   * All actions are cascaded, so if the user is deleted, so is its assocaited settings.
-   */
-  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user, {
-    cascade: [Cascade.ALL],
-    hidden: true,
-  })
-  settings = new UserSettingsEntity(this);
 
   /**
    * The `UserChallengeEntity` associated with the given user.
@@ -115,7 +103,7 @@ export class UserEntity implements User {
     displayName: string | null,
     phoneNumber: string | null,
     challenge: string | null,
-    invites: UserInvitesEntity
+    invites: UserInvitesEntity,
   ) {
     this.id = id;
     this.email = email.toLowerCase();

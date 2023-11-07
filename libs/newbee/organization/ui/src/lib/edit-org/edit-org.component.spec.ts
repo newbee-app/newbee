@@ -5,6 +5,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {
+  Frequency,
   OrgRoleEnum,
   testOrganization1,
   testOrganization2,
@@ -55,13 +56,13 @@ describe('EditOrgComponent', () => {
       it('should emit whenever the slug input is formatted', fakeAsync(() => {
         expect(component.formattedSlug.emit).toBeCalledTimes(1);
         expect(component.formattedSlug.emit).toBeCalledWith(
-          testOrganization1.slug
+          testOrganization1.slug,
         );
         component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
         tick(600);
         expect(component.formattedSlug.emit).toBeCalledTimes(2);
         expect(component.formattedSlug.emit).toBeCalledWith(
-          testOrganization2.slug
+          testOrganization2.slug,
         );
       }));
     });
@@ -72,7 +73,16 @@ describe('EditOrgComponent', () => {
         expect(component.edit.emit).toBeCalledTimes(1);
         expect(component.edit.emit).toBeCalledWith({
           name: testOrganization1.name,
+          upToDateDuration: 'P6M',
         });
+
+        component.editOrgForm.setValue({
+          name: null,
+          upToDateDuration: { num: 1, frequency: Frequency.Year },
+        });
+        component.emitEdit();
+        expect(component.edit.emit).toBeCalledTimes(2);
+        expect(component.edit.emit).toBeCalledWith({ upToDateDuration: 'P1Y' });
       });
     });
 
@@ -99,7 +109,13 @@ describe('EditOrgComponent', () => {
     describe('editDistinct', () => {
       it('should be true when edit org form is distinct from org, false otherwise', () => {
         expect(component.editDistinct).toBeFalsy();
-        component.editOrgForm.setValue({ name: testOrganization2.name });
+        component.editOrgForm.patchValue({ name: testOrganization2.name });
+        expect(component.editDistinct).toBeTruthy();
+        component.editOrgForm.patchValue({ name: testOrganization1.name });
+        expect(component.editDistinct).toBeFalsy();
+        component.editOrgForm.patchValue({
+          upToDateDuration: { num: 1, frequency: Frequency.Year },
+        });
         expect(component.editDistinct).toBeTruthy();
       });
     });

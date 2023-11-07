@@ -13,6 +13,7 @@ import {
   nameIsNotEmpty,
   slugIsNotEmpty,
   teamSlugTakenBadRequest,
+  upToDateDurationMatches,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -66,6 +67,8 @@ export class TeamEffects {
                   case slugIsNotEmpty:
                   case teamSlugTakenBadRequest:
                     return 'slug';
+                  case upToDateDurationMatches:
+                    return Keyword.Duration;
                   default:
                     return Keyword.Misc;
                 }

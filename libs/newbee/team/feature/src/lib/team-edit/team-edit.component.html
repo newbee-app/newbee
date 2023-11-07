@@ -1,4 +1,5 @@
 <newbee-edit-team
+  [organization]="(selectedOrganization$ | async)!.organization"
   [team]="(selectedTeam$ | async)!.team"
   [orgMember]="(orgMember$ | async)!.orgMember"
   [teamMember]="teamMember$ | async"

@@ -13,5 +13,10 @@ export class BaseUpdateDocDto implements Partial<BaseCreateDocDto> {
   /**
    * @inheritdoc
    */
+  upToDateDuration?: string | null;
+
+  /**
+   * @inheritdoc
+   */
   docMarkdoc?: string;
 }

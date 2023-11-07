@@ -12,8 +12,12 @@ import {
   QnaEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
-import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
+import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
+import {
+  internalServerError,
+  nbDayjs,
+  qnaSlugNotFound,
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
@@ -54,8 +58,8 @@ export class QnaService {
     const qna = new QnaEntity(
       id,
       title,
-      creator,
       team,
+      creator,
       questionMarkdoc,
       answerMarkdoc,
     );
@@ -121,18 +125,35 @@ export class QnaService {
     updateQnaDto: UpdateQnaDto,
     newMaintainer?: OrgMemberEntity,
   ): Promise<QnaEntity> {
-    const { questionMarkdoc, answerMarkdoc } = updateQnaDto;
-    const now = new Date();
-    const newQnaDetails = {
+    const { title, questionMarkdoc, answerMarkdoc, upToDateDuration } =
+      updateQnaDto;
+
+    const { txt: questionTxt, html: questionHtml } =
+      renderMarkdoc(questionMarkdoc);
+    const { txt: answerTxt, html: answerHtml } = renderMarkdoc(answerMarkdoc);
+
+    const meaningfulUpdates = [title, questionMarkdoc, answerMarkdoc];
+    const updateTime = meaningfulUpdates.some((update) => update !== undefined)
+      ? new Date()
+      : qna.markedUpToDateAt;
+    const updatedQna = this.em.assign(qna, {
       ...updateQnaDto,
-      ...(questionMarkdoc && { questionTxt: markdocToTxt(questionMarkdoc) }),
-      ...(answerMarkdoc && { answerTxt: markdocToTxt(answerMarkdoc) }),
+      ...(questionTxt !== undefined && { questionTxt }),
+      ...(questionHtml !== undefined && { questionHtml }),
+      ...(answerTxt !== undefined && { answerTxt }),
+      ...(answerHtml !== undefined && { answerHtml }),
       ...(newMaintainer && { maintainer: newMaintainer }),
-      updatedAt: now,
-      markedUpToDateAt: now,
-      upToDate: true,
-    };
-    const updatedQna = this.em.assign(qna, newQnaDetails);
+      updatedAt: updateTime,
+      markedUpToDateAt: updateTime,
+      outOfDateAt: nbDayjs(updateTime)
+        .add(
+          upToDateDuration
+            ? nbDayjs.duration(upToDateDuration)
+            : await qna.trueUpToDateDuration(),
+        )
+        .toDate(),
+    });
+
     try {
       await this.em.flush();
     } catch (err) {
@@ -163,8 +184,13 @@ export class QnaService {
    */
   async markUpToDate(qna: QnaEntity): Promise<QnaEntity> {
     const now = new Date();
-    const newQnaDetails = { markedUpToDateAt: now, upToDate: true };
-    const updatedQna = this.em.assign(qna, newQnaDetails);
+    const updatedQna = this.em.assign(qna, {
+      markedUpToDateAt: now,
+      outOfDateAt: nbDayjs(now)
+        .add(await qna.trueUpToDateDuration())
+        .toDate(),
+    });
+
     try {
       await this.em.flush();
     } catch (err) {

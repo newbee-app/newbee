@@ -1,4 +1,4 @@
-<div class="mt-close">
+<div class="flex flex-col flex-nowrap gap-y-2 mt-close">
   <div *ngIf="isAdmin; else teamName" class="w-fit">
     <newbee-dropdown placement="bottom-start">
       <h2
@@ -43,7 +43,14 @@
     <h2>{{ team.team.name }}</h2>
   </ng-template>
 
-  <div class="divider"></div>
+  <div>
+    <p class="opacity-75">
+      Posts will automatically be marked out-of-date after
+      {{ teamDurationStr }} of inactivity
+    </p>
+
+    <div class="divider"></div>
+  </div>
 </div>
 
 <div>

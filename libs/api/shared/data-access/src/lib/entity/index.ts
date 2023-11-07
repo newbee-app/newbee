@@ -9,5 +9,4 @@ export * from './team-member.entity';
 export * from './team.entity';
 export * from './user-challenge.entity';
 export * from './user-invites.entity';
-export * from './user-settings.entity';
 export * from './user.entity';

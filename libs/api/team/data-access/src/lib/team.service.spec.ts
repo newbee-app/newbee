@@ -11,10 +11,16 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  DocEntity,
   EntityService,
+  QnaEntity,
   TeamEntity,
+  testDocDocParams1,
+  testDocEntity1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
+  testQnaDocParams1,
+  testQnaEntity1,
   testTeamDocParams1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
@@ -25,6 +31,7 @@ import {
 } from '@newbee/shared/data-access';
 import {
   internalServerError,
+  nbDayjs,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
@@ -75,6 +82,8 @@ describe('TeamService', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createTeamDocParams: jest.fn().mockReturnValue(testTeamDocParams1),
+            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
+            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
           }),
         },
         {
@@ -107,6 +116,7 @@ describe('TeamService', () => {
         testTeamEntity1.id,
         testBaseCreateTeamDto1.name,
         testBaseCreateTeamDto1.slug,
+        testBaseCreateTeamDto1.upToDateDuration,
         testOrgMemberEntity1,
       );
       expect(em.persistAndFlush).toBeCalledTimes(1);
@@ -224,11 +234,20 @@ describe('TeamService', () => {
       jest
         .spyOn(entityService, 'createTeamDocParams')
         .mockReturnValue(testUpdatedTeamDocParams);
+      jest.spyOn(service, 'changeUpToDateDuration').mockResolvedValueOnce({
+        docs: [testDocEntity1],
+        qnas: [testQnaEntity1],
+      });
     });
 
     afterEach(() => {
       expect(em.assign).toBeCalledTimes(1);
       expect(em.assign).toBeCalledWith(testTeamEntity1, testBaseUpdateTeamDto1);
+      expect(service.changeUpToDateDuration).toBeCalledTimes(1);
+      expect(service.changeUpToDateDuration).toBeCalledWith(
+        testTeamEntity1,
+        testBaseUpdateTeamDto1.upToDateDuration,
+      );
       expect(em.flush).toBeCalledTimes(1);
     });
 
@@ -239,7 +258,7 @@ describe('TeamService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedTeamDocParams,
+        [testUpdatedTeamDocParams, testDocDocParams1, testQnaDocParams1],
       );
     });
 
@@ -271,7 +290,7 @@ describe('TeamService', () => {
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
         testOrganizationEntity1.id,
-        testUpdatedTeamDocParams,
+        [testUpdatedTeamDocParams, testDocDocParams1, testQnaDocParams1],
       );
     });
   });
@@ -308,6 +327,56 @@ describe('TeamService', () => {
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
       expect(solrCli.deleteDocs).toBeCalledTimes(1);
+    });
+  });
+
+  describe('changeUpToDateDuration', () => {
+    const newDurationStr = 'P1Y';
+    const newDuration = nbDayjs.duration(newDurationStr);
+
+    beforeEach(() => {
+      jest
+        .spyOn(em, 'find')
+        .mockResolvedValueOnce([testDocEntity1])
+        .mockResolvedValueOnce([testQnaEntity1]);
+    });
+
+    afterEach(() => {
+      expect(em.find).toBeCalledWith(DocEntity, {
+        team: testTeamEntity1,
+        upToDateDuration: null,
+      });
+    });
+
+    it('should find all child posts and update their expirations', async () => {
+      await expect(
+        service.changeUpToDateDuration(testTeamEntity1, newDurationStr),
+      ).resolves.toEqual({ docs: [testDocEntity1], qnas: [testQnaEntity1] });
+
+      expect(em.find).toBeCalledTimes(2);
+      expect(em.find).toBeCalledWith(QnaEntity, {
+        team: testTeamEntity1,
+        upToDateDuration: null,
+      });
+      expect(em.assign).toBeCalledTimes(2);
+      expect(em.assign).toBeCalledWith(testDocEntity1, {
+        outOfDateAt: nbDayjs(testDocEntity1.markedUpToDateAt)
+          .add(newDuration)
+          .toDate(),
+      });
+      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+        outOfDateAt: nbDayjs(testQnaEntity1.markedUpToDateAt)
+          .add(newDuration)
+          .toDate(),
+      });
+    });
+
+    it('should throw an InternalServerErrorException if find throws an error', async () => {
+      jest.spyOn(em, 'find').mockReset().mockRejectedValue(new Error('find'));
+      await expect(
+        service.changeUpToDateDuration(testTeamEntity1, newDurationStr),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(em.find).toBeCalledTimes(1);
     });
   });
 });

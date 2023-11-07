@@ -7,6 +7,7 @@ import {
 import {
   SolrEntryEnum,
   TeamRoleEnum,
+  nbDayjs,
   testAuthenticator1,
   testDoc1,
   testOrgMember1,
@@ -17,7 +18,6 @@ import {
   testUser1,
   testUserChallenge1,
   testUserInvites1,
-  testUserSettings1,
 } from '@newbee/shared/util';
 import type {
   DocResponse,
@@ -36,7 +36,6 @@ import {
   UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
-  UserSettingsEntity,
 } from '../entity';
 import { TeamMemberEntity } from '../entity/team-member.entity';
 
@@ -63,15 +62,6 @@ export const testUserChallengeEntity1 = {
   ...testUserChallenge1,
   user: testUserEntity1,
 } as UserChallengeEntity;
-
-/**
- * An example instance of `UserSettingsEntity`.
- * Strictly for use in testing.
- */
-export const testUserSettingsEntity1 = {
-  ...testUserSettings1,
-  user: testUserEntity1,
-} as UserSettingsEntity;
 
 /**
  * An example instance of `UserInvitesEntity`.
@@ -147,6 +137,8 @@ export const testDocEntity1 = {
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  trueUpToDateDuration: async () =>
+    nbDayjs.duration(testOrganization1.upToDateDuration),
 } as DocEntity;
 
 /**
@@ -162,6 +154,8 @@ export const testQnaEntity1 = {
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  trueUpToDateDuration: async () =>
+    nbDayjs.duration(testOrganization1.upToDateDuration),
 } as QnaEntity;
 
 /**
@@ -199,6 +193,7 @@ export const testDocDocParams1 = new DocDocParams(
   testDocEntity1.createdAt,
   testDocEntity1.updatedAt,
   testDocEntity1.markedUpToDateAt,
+  testDocEntity1.outOfDateAt,
   testDocEntity1.title,
   testDocEntity1.creator?.id ?? null,
   testDocEntity1.maintainer?.id ?? null,
@@ -216,6 +211,7 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.createdAt,
   testQnaEntity1.updatedAt,
   testQnaEntity1.markedUpToDateAt,
+  testQnaEntity1.outOfDateAt,
   testQnaEntity1.title,
   testQnaEntity1.creator?.id ?? null,
   testQnaEntity1.maintainer?.id ?? null,

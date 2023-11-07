@@ -12,7 +12,6 @@ import {
   UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
-  UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 
 export default defineConfig({
@@ -40,7 +39,6 @@ export default defineConfig({
     TeamEntity,
     UserChallengeEntity,
     UserInvitesEntity,
-    UserSettingsEntity,
     UserEntity,
   ],
 });

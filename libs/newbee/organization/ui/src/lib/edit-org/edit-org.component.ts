@@ -9,27 +9,40 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
+  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { EditOrgForm, EditOrgSlugForm } from '@newbee/newbee/organization/util';
-import { AlertComponent } from '@newbee/newbee/shared/ui';
+import {
+  AlertComponent,
+  SearchableSelectComponent,
+} from '@newbee/newbee/shared/ui';
 import {
   AlertType,
+  DigitOnlyDirectiveModule,
   HttpClientError,
   SlugInputDirectiveModule,
+  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
+import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
 import {
+  Frequency,
   Keyword,
   OrgMemberNoUserOrg,
   OrgRoleEnum,
+  durationToNumAndFreq,
+  nbDayjs,
   type Organization,
 } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
+
+/**
+ * A helper type detailing of the possible input names in the edit org component.
+ */
+type PossbileInputNames = 'name' | 'num' | 'frequency' | 'slug';
 
 /**
  * The dumb UI for editing an existing org.
@@ -41,7 +54,9 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
+    SearchableSelectComponent,
     SlugInputDirectiveModule,
+    DigitOnlyDirectiveModule,
   ],
   templateUrl: './edit-org.component.html',
 })
@@ -114,12 +129,12 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * The emitted edit organization form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<Partial<EditOrgForm>>();
+  @Output() edit = new EventEmitter<BaseUpdateOrganizationDto>();
 
   /**
    * The emitted edit org slug form, for use in the smart UI parent.
    */
-  @Output() editSlug = new EventEmitter<Partial<EditOrgSlugForm>>();
+  @Output() editSlug = new EventEmitter<BaseUpdateOrganizationDto>();
 
   /**
    * Emit to tell the smart UI parent to send a delete request.
@@ -130,22 +145,33 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    * The internal form to edit an existing organization.
    */
   editOrgForm = this.fb.group({
-    name: ['', Validators.required],
+    name: ['', [Validators.required]],
+    upToDateDuration: this.fb.group({
+      num: [0, [Validators.required, Validators.min(1)]],
+      frequency: [Frequency.Month, [Validators.required]],
+    }),
   });
 
   /**
    * The internal form to edit the org's slug.
    */
   editOrgSlugForm = this.fb.group({
-    slug: ['', Validators.required],
+    slug: ['', [Validators.required]],
   });
 
   /**
    * The internal form to delete an organization.
    */
   deleteOrgForm = this.fb.group({
-    slug: ['', Validators.required],
+    slug: ['', [Validators.required]],
   });
+
+  /**
+   * The possible frequency values as select options.
+   */
+  readonly frequencyOptions = frequencySelectOptions(
+    this.editOrgForm.controls.upToDateDuration.controls.num,
+  );
 
   /**
    * Set up `slug` to emit whenever the `editOrgSlugForm` changes.
@@ -161,11 +187,24 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * The num and frequency of the input org's duration.
+   */
+  private get orgNumAndFreq(): { num: number; frequency: Frequency } {
+    return durationToNumAndFreq(
+      nbDayjs.duration(this.organization.upToDateDuration),
+    );
+  }
+
+  /**
    * Whether the edit org form has a value distinct from the current org's values.
    */
   get editDistinct(): boolean {
-    const { name } = this.editOrgForm.value;
-    return name !== this.organization.name;
+    const { name, upToDateDuration } = this.editOrgForm.value;
+    return (
+      name !== this.organization.name ||
+      this.orgNumAndFreq.num !== upToDateDuration?.num ||
+      this.orgNumAndFreq.frequency !== upToDateDuration.frequency
+    );
   }
 
   /**
@@ -196,7 +235,10 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.editOrgForm.setValue(
-      { name: this.organization.name },
+      {
+        name: this.organization.name,
+        upToDateDuration: { ...this.orgNumAndFreq },
+      },
       { emitEvent: false },
     );
 
@@ -218,14 +260,24 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    this.edit.emit(this.editOrgForm.value);
+    const { name, upToDateDuration } = this.editOrgForm.value;
+    this.edit.emit({
+      ...(name && { name }),
+      ...(upToDateDuration?.num &&
+        upToDateDuration.frequency && {
+          upToDateDuration: nbDayjs
+            .duration(upToDateDuration.num, upToDateDuration.frequency)
+            .toISOString(),
+        }),
+    });
   }
 
   /**
    * Emit the `editSlug` output.
    */
   emitEditSlug(): void {
-    this.editSlug.emit(this.editOrgSlugForm.value);
+    const { slug } = this.editOrgSlugForm.value;
+    this.editSlug.emit({ slug: slug ?? '' });
   }
 
   /**
@@ -249,40 +301,30 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * Whether to display a form input as having an error.
    *
+   * @param inputGroup The input group to look at.
    * @param inputName The name of the input to look at.
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  inputDisplayError(inputName: 'name' | 'slug' | 'delete'): boolean {
-    return inputDisplayError(this.getFormControl(inputName));
+  inputDisplayError(
+    inputGroup: FormGroup,
+    inputName: PossbileInputNames,
+  ): boolean {
+    return inputDisplayError(inputGroup.get(inputName));
   }
 
   /**
    * The input error message for the given form input.
    *
+   * @param inputGroup The input group to look at.
    * @param inputName The name of the input to look at.
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(inputName: 'name' | 'slug' | 'delete'): string {
-    return inputErrorMessage(this.getFormControl(inputName));
-  }
-
-  /**
-   * Get the form control associated with the given name.
-   *
-   * @param inputName The name of the form control to get.
-   *
-   * @returns The form control associated with the given name.
-   */
-  private getFormControl(inputName: 'name' | 'slug' | 'delete'): FormControl {
-    switch (inputName) {
-      case 'name':
-        return this.editOrgForm.controls.name;
-      case 'slug':
-        return this.editOrgSlugForm.controls.slug;
-      case 'delete':
-        return this.deleteOrgForm.controls.slug;
-    }
+  inputErrorMessage(
+    inputGroup: FormGroup,
+    inputName: PossbileInputNames,
+  ): string {
+    return inputErrorMessage(inputGroup.get(inputName));
   }
 }

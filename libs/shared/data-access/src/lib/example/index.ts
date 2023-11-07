@@ -147,6 +147,7 @@ export const testBaseOrgAndMemberDto1: BaseOrgAndMemberDto = {
 export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
   name: 'NewWasp',
   slug: 'new-wasp',
+  upToDateDuration: 'P1Y',
 };
 
 /**
@@ -156,6 +157,7 @@ export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
 export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
   name: testTeam1.name,
   slug: testTeam1.slug,
+  upToDateDuration: null,
 };
 
 /**
@@ -174,6 +176,7 @@ export const testBaseTeamAndMemberDto1: BaseTeamAndMemberDto = {
 export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
   name: 'Human Resources',
   slug: 'human-resources',
+  upToDateDuration: 'P1Y',
 };
 
 /**
@@ -183,6 +186,7 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
   title: testDoc1.title,
   docMarkdoc: testDoc1.docMarkdoc,
+  upToDateDuration: null,
 };
 
 /**
@@ -192,6 +196,7 @@ export const testBaseCreateDocDto1: BaseCreateDocDto = {
 export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   title: 'New title',
   docMarkdoc: 'new raw markdoc',
+  upToDateDuration: 'P1Y',
 };
 
 /**
@@ -210,6 +215,7 @@ export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
  */
 export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   title: 'New title',
+  upToDateDuration: 'P1Y',
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
 };
@@ -229,6 +235,7 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
  */
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
   answerMarkdoc: 'new answer',
+  upToDateDuration: 'P1Y',
 };
 
 /**

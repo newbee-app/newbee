@@ -6,10 +6,10 @@ import {
   testUser2,
 } from '@newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
 import { EditUserComponent } from './edit-user.component';
 
@@ -19,7 +19,7 @@ export default {
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {
@@ -60,7 +60,7 @@ export const AddAuthenticatorError: Story = {
     httpClientError: {
       status: 400,
       messages: {
-        'new-authenticator': 'Some error',
+        [`${Keyword.Authenticator}-${Keyword.New}`]: 'Some error',
       },
     },
   },
@@ -70,7 +70,7 @@ export const EditAuthenticatorPending: Story = {
   args: { editAuthenticatorPending: new Map([[testAuthenticator1.id, true]]) },
 };
 
-export const deleteAuthenticatorPending: Story = {
+export const DeleteAuthenticatorPending: Story = {
   args: {
     deleteAuthenticatorPending: new Map([[testAuthenticator1.id, true]]),
   },

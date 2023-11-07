@@ -102,12 +102,6 @@
       "@newbee/api/user-invites/feature": [
         "libs/api/user-invites/feature/src/index.ts"
       ],
-      "@newbee/api/user-settings/data-access": [
-        "libs/api/user-settings/data-access/src/index.ts"
-      ],
-      "@newbee/api/user-settings/feature": [
-        "libs/api/user-settings/feature/src/index.ts"
-      ],
       "@newbee/api/user/data-access": [
         "libs/api/user/data-access/src/index.ts"
       ],
@@ -154,9 +148,6 @@
       "@newbee/newbee/organization/ui": [
         "libs/newbee/organization/ui/src/index.ts"
       ],
-      "@newbee/newbee/organization/util": [
-        "libs/newbee/organization/util/src/index.ts"
-      ],
       "@newbee/newbee/qna/data-access": [
         "libs/newbee/qna/data-access/src/index.ts"
       ],
@@ -183,7 +174,6 @@
       ],
       "@newbee/newbee/team/feature": ["libs/newbee/team/feature/src/index.ts"],
       "@newbee/newbee/team/ui": ["libs/newbee/team/ui/src/index.ts"],
-      "@newbee/newbee/team/util": ["libs/newbee/team/util/src/index.ts"],
       "@newbee/newbee/user/data-access": [
         "libs/newbee/user/data-access/src/index.ts"
       ],

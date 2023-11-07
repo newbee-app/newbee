@@ -136,20 +136,21 @@ export class CreateQnaComponent implements OnInit {
   }
 
   /**
-   * Update the internal question markdoc value whenever the content changes.
+   * Update the internal question markdoc value whenever the text changes.
    *
-   * @param content The new value for question markdoc.
+   * @param textMarkdoc The new value for question markdoc.
    */
-  onContent(content: string): void {
-    this.questionMarkdoc = content;
+  onTextChange(textMarkdoc: string): void {
+    this.questionMarkdoc = textMarkdoc;
   }
 
   /**
    * Called to emit the create output based off of the UI's values.
    */
   emitCreate(): void {
+    const { title } = this.qnaForm.value;
     const createQnaDto: BaseCreateQnaDto = {
-      title: this.qnaForm.controls.title.value ?? '',
+      title: title ?? '',
       questionMarkdoc: this.questionMarkdoc || null,
       answerMarkdoc: null,
     };

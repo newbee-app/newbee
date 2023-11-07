@@ -129,6 +129,7 @@ async function create(options: OptionValues): Promise<void> {
   const createdAt = 'created_at';
   const updatedAt = 'updated_at';
   const markedUpToDateAt = 'marked_up_to_date_at';
+  const outOfDateAt = 'out_of_date_at';
   const title = 'title';
   const creator = 'creator';
   const maintainer = 'maintainer';
@@ -305,6 +306,7 @@ async function create(options: OptionValues): Promise<void> {
       { name: createdAt, type: pdate },
       { name: updatedAt, type: pdate },
       { name: markedUpToDateAt, type: pdate },
+      { name: outOfDateAt, type: pdate },
       { name: title, type: stringFieldType },
       { name: creator, type: stringFieldType },
       { name: maintainer, type: stringFieldType },

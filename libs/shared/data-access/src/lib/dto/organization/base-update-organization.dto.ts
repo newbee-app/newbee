@@ -14,4 +14,9 @@ export class BaseUpdateOrganizationDto implements Partial<Organization> {
    * @inheritdoc
    */
   slug?: string;
+
+  /**
+   * @inheritdoc
+   */
+  upToDateDuration?: string;
 }

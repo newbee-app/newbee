@@ -7,9 +7,12 @@ import {
 } from '@angular/core/testing';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
-import { testCreateTeamForm1 } from '@newbee/newbee/team/util';
 import { testBaseCreateTeamDto1 } from '@newbee/shared/data-access';
-import { testTeam1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganizationRelation1,
+  testTeam1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamCreateComponent } from './team-create.component';
 
@@ -29,7 +32,15 @@ describe('TeamCreateComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CommonModule, CreateTeamComponent],
       declarations: [TeamCreateComponent],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
+          },
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TeamCreateComponent);
@@ -52,7 +63,7 @@ describe('TeamCreateComponent', () => {
       component.onName(testTeam1.name);
       tick(600);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.generateSlug({ name: testTeam1.name })
+        TeamActions.generateSlug({ name: testTeam1.name }),
       );
     }));
   });
@@ -61,7 +72,7 @@ describe('TeamCreateComponent', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testTeam1.slug);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.typingSlug({ slug: testTeam1.slug })
+        TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
     });
   });
@@ -70,16 +81,16 @@ describe('TeamCreateComponent', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testTeam1.slug);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.checkSlug({ slug: testTeam1.slug })
+        TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
     });
   });
 
   describe('onCreate', () => {
     it('should dispatch createTeam', () => {
-      component.onCreate(testCreateTeamForm1);
+      component.onCreate(testBaseCreateTeamDto1);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 })
+        TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       );
     });
   });

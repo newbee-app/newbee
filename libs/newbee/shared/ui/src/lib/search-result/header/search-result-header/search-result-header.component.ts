@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  Post,
+  PostQueryResult,
   resultIsDocQueryResult,
   resultIsOrgMemberQueryResult,
   resultIsQnaQueryResult,
@@ -37,9 +37,9 @@ export class SearchResultHeaderComponent {
   @Output() orgNavigate = new EventEmitter<string>();
 
   /**
-   * The search result as a `Post` if possible, `null` otherwise.
+   * The search result as a `PostQueryResult` if possible, `null` otherwise.
    */
-  get searchResultAsPost(): Post | null {
+  get searchResultAsPost(): PostQueryResult | null {
     if (resultIsDocQueryResult(this.searchResult)) {
       return this.searchResult.doc;
     } else if (resultIsQnaQueryResult(this.searchResult)) {
@@ -73,7 +73,7 @@ export class SearchResultHeaderComponent {
   headerClick(): void {
     if (resultIsOrgMemberQueryResult(this.searchResult)) {
       this.orgNavigate.emit(
-        `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`
+        `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
       );
     } else if (resultIsTeamQueryResult(this.searchResult)) {
       this.orgNavigate.emit(`${ShortUrl.Team}/${this.searchResult.slug}`);

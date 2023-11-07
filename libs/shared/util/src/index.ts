@@ -1,4 +1,5 @@
 export * from './lib/constant';
+export * from './lib/dayjs';
 export * from './lib/enum';
 export * from './lib/example';
 export * from './lib/function';

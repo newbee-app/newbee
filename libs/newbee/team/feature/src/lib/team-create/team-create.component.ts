@@ -1,10 +1,11 @@
 import { Component, OnDestroy } from '@angular/core';
-import { TeamActions, httpFeature } from '@newbee/newbee/shared/data-access';
-import { teamFeature } from '@newbee/newbee/team/data-access';
 import {
-  createTeamFormToDto,
-  type CreateTeamForm,
-} from '@newbee/newbee/team/util';
+  TeamActions,
+  httpFeature,
+  organizationFeature,
+} from '@newbee/newbee/shared/data-access';
+import { teamFeature } from '@newbee/newbee/team/data-access';
+import { BaseCreateTeamDto } from '@newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
@@ -20,6 +21,13 @@ export class TeamCreateComponent implements OnDestroy {
    * Represents the form's current name value, for use in generating slugs.
    */
   readonly name$ = new Subject<string>();
+
+  /**
+   * The organization the team is being created in.
+   */
+  selectedOrganization$ = this.store.select(
+    organizationFeature.selectSelectedOrganization,
+  );
 
   /**
    * The auto-generated slug based on the team's name.
@@ -94,13 +102,9 @@ export class TeamCreateComponent implements OnDestroy {
   /**
    * When the dumb UI emits a create event, send a create action with the value of the team form.
    *
-   * @param createTeamForm The values to send to the backend.
+   * @param createTeamDto The values to send to the backend.
    */
-  onCreate(createTeamForm: Partial<CreateTeamForm>): void {
-    this.store.dispatch(
-      TeamActions.createTeam({
-        createTeamDto: createTeamFormToDto(createTeamForm),
-      }),
-    );
+  onCreate(createTeamDto: BaseCreateTeamDto): void {
+    this.store.dispatch(TeamActions.createTeam({ createTeamDto }));
   }
 }

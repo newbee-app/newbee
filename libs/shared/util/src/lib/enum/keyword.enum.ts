@@ -65,4 +65,5 @@ export enum Keyword {
   Misc = 'misc',
   Router = 'router',
   Slug = 'slug',
+  Duration = 'duration',
 }

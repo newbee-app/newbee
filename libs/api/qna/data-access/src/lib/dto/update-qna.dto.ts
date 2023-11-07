@@ -1,10 +1,12 @@
 import { BaseUpdateQnaDto } from '@newbee/shared/data-access';
 import {
   answerIsNotEmpty,
+  iso8601DurationRegex,
   questionIsNotEmpty,
   titleIsNotEmpty,
+  upToDateDurationMatches,
 } from '@newbee/shared/util';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 /**
  * The verifiable DTO sent from the frontend to the backend to update a QnA.
@@ -17,6 +19,13 @@ export class UpdateQnaDto implements BaseUpdateQnaDto {
   @IsOptional()
   @IsNotEmpty({ message: titleIsNotEmpty })
   title?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration?: string | null;
 
   /**
    * @inheritdoc

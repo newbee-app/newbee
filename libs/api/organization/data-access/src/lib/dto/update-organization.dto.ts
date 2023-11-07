@@ -1,6 +1,11 @@
 import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
-import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  iso8601DurationRegex,
+  nameIsNotEmpty,
+  slugIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 /**
  * The DTO sent from the frontend to the backend for updating an organization.
@@ -20,4 +25,11 @@ export class UpdateOrganizationDto implements BaseUpdateOrganizationDto {
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
   slug?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration?: string;
 }

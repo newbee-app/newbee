@@ -9,5 +9,4 @@ export * from './team-member.interface';
 export * from './team.interface';
 export * from './user-challenge.interface';
 export * from './user-invites.interface';
-export * from './user-settings.interface';
 export * from './user.interface';

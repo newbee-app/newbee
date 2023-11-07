@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, Input, LOCALE_ID } from '@angular/core';
-import { createTimeAgo, type Post } from '@newbee/shared/util';
+import { createTimeAgo, type PostQueryResult } from '@newbee/shared/util';
 import TimeAgo from 'javascript-time-ago';
 import { TooltipComponent } from '../../tooltip';
 
@@ -22,20 +22,27 @@ export class UpToDateBtnComponent {
   /**
    * The post in question.
    */
-  @Input() post!: Post;
+  @Input() post!: PostQueryResult;
 
   constructor(@Inject(LOCALE_ID) localeId: string) {
     this.timeAgo = createTimeAgo(localeId);
   }
 
   /**
+   * Whether the input post is up-to-date.
+   */
+  get upToDate(): boolean {
+    return new Date() < this.post.outOfDateAt;
+  }
+
+  /**
    * Converts the post's `markedUpToDateAt` Date into a time ago string.
    * @returns The time ago string for when the post was last marked up-to-date.
    */
-  lastMarkedUpToDate(): string {
+  get lastMarkedUpToDate(): string {
     return `Last marked up-to-date ${this.timeAgo.format(
       this.post.markedUpToDateAt,
-      'twitter-minute-now'
+      'twitter-minute-now',
     )}`;
   }
 }

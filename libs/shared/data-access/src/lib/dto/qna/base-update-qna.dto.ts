@@ -13,6 +13,11 @@ export class BaseUpdateQnaDto implements Partial<BaseCreateQnaDto> {
   /**
    * @inheritdoc
    */
+  upToDateDuration?: string | null;
+
+  /**
+   * @inheritdoc
+   */
   questionMarkdoc?: string | null;
 
   /**
