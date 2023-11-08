@@ -1,4 +1,4 @@
-import { UserRelation } from '@newbee/shared/util';
+import { UserRelation } from '../../interface';
 
 /**
  * A DTO for sending a CSRF token from the backend to the frontend.

@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { EditTeamComponent } from '@newbee/newbee/team/ui';
-import { testBaseUpdateTeamDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseUpdateTeamDto1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
   testTeam1,

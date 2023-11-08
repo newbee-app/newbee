@@ -1,5 +1,5 @@
-import { BaseUpdateQnaDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateQnaDto,
   answerIsNotEmpty,
   iso8601DurationRegex,
   questionIsNotEmpty,

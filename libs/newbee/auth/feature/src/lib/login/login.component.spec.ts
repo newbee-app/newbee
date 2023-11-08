@@ -4,8 +4,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { LoginFormComponent } from '@newbee/newbee/auth/ui';
 import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
-import { testBaseEmailDto1 } from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, testBaseEmailDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 

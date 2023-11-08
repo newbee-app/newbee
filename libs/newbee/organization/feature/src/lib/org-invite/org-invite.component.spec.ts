@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InviteMemberComponent } from '@newbee/newbee/organization/ui';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/data-access';
+import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteComponent } from './org-invite.component';
 

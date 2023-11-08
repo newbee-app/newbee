@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
 } from '@newbee/api/shared/data-access';
-import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
-import { testOrgMemberRelation1 } from '@newbee/shared/util';
+import {
+  testBaseUpdateOrgMemberDto1,
+  testOrgMemberRelation1,
+} from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
 
 describe('OrgMemberController', () => {
@@ -55,11 +57,11 @@ describe('OrgMemberController', () => {
   describe('getBySlug', () => {
     it('should return an org member and its relations', async () => {
       await expect(
-        controller.getBySlug(testOrgMemberEntity1, testOrganizationEntity1)
+        controller.getBySlug(testOrgMemberEntity1, testOrganizationEntity1),
       ).resolves.toEqual(testOrgMemberRelation1);
       expect(entityService.createOrgMemberNoOrg).toBeCalledTimes(1);
       expect(entityService.createOrgMemberNoOrg).toBeCalledWith(
-        testOrgMemberEntity1
+        testOrgMemberEntity1,
       );
     });
   });
@@ -71,14 +73,14 @@ describe('OrgMemberController', () => {
           testBaseUpdateOrgMemberDto1,
           testOrgMemberEntity1,
           testOrgMemberEntity1,
-          testOrganizationEntity1
-        )
+          testOrganizationEntity1,
+        ),
       ).resolves.toEqual(testUpdatedOrgMember);
       expect(service.updateRole).toBeCalledTimes(1);
       expect(service.updateRole).toBeCalledWith(
         testOrgMemberEntity1,
         testBaseUpdateOrgMemberDto1.role,
-        testOrgMemberEntity1.role
+        testOrgMemberEntity1.role,
       );
     });
   });
@@ -89,13 +91,13 @@ describe('OrgMemberController', () => {
         controller.delete(
           testOrgMemberEntity1,
           testOrgMemberEntity1,
-          testOrganizationEntity1
-        )
+          testOrganizationEntity1,
+        ),
       ).resolves.toBeUndefined();
       expect(service.delete).toBeCalledTimes(1);
       expect(service.delete).toBeCalledWith(
         testOrgMemberEntity1,
-        testOrgMemberEntity1.role
+        testOrgMemberEntity1.role,
       );
     });
   });

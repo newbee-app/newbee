@@ -1,17 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseCreateUserDto,
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
-} from '@newbee/shared/data-access';
-import { Keyword, UserRelation } from '@newbee/shared/util';
+  Keyword,
+  UserRelation,
+} from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
-import { from, Observable, switchMap } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 
 /**
  * The service tied to the API's auth endpoints.

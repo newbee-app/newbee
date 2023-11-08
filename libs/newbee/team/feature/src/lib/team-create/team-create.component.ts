@@ -5,7 +5,7 @@ import {
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { teamFeature } from '@newbee/newbee/team/data-access';
-import { BaseCreateTeamDto } from '@newbee/shared/data-access';
+import { BaseCreateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 

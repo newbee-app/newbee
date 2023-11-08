@@ -2,8 +2,9 @@ import {
   BaseCreateTeamDto,
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
-} from '@newbee/shared/data-access';
-import { Keyword, Team } from '@newbee/shared/util';
+  Keyword,
+  Team,
+} from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**

@@ -4,7 +4,7 @@ import {
   organizationFeature,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
-import { BaseQueryResultDto } from '@newbee/shared/data-access';
+import { BaseQueryResultDto } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap } from 'rxjs';

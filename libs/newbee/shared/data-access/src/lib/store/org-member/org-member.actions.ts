@@ -1,5 +1,9 @@
-import { BaseUpdateOrgMemberDto } from '@newbee/shared/data-access';
-import { Keyword, OrgMember, type OrgMemberNoOrg } from '@newbee/shared/util';
+import {
+  BaseUpdateOrgMemberDto,
+  Keyword,
+  OrgMember,
+  type OrgMemberNoOrg,
+} from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**

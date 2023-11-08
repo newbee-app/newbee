@@ -1,5 +1,8 @@
-import { testBaseTeamAndMemberDto1 } from '@newbee/shared/data-access';
-import { testTeamMember1, testTeamRelation1 } from '@newbee/shared/util';
+import {
+  testBaseTeamAndMemberDto1,
+  testTeamMember1,
+  testTeamRelation1,
+} from '@newbee/shared/util';
 import { TeamActions } from './team.actions';
 import { TeamState, initialTeamState, teamFeature } from './team.reducer';
 

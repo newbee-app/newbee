@@ -1,5 +1,8 @@
-import { BaseUpdateQuestionDto } from '@newbee/shared/data-access';
-import { questionIsNotEmpty, titleIsNotEmpty } from '@newbee/shared/util';
+import {
+  BaseUpdateQuestionDto,
+  questionIsNotEmpty,
+  titleIsNotEmpty,
+} from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**

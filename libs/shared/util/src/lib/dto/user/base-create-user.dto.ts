@@ -1,4 +1,4 @@
-import type { User } from '@newbee/shared/util';
+import type { User } from '../../interface';
 
 /**
  * A DTO for sending the necessary information to register a new user from the frontend to the backend.

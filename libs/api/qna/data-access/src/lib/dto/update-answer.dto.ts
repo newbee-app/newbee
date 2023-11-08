@@ -1,5 +1,5 @@
-import { BaseUpdateAnswerDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateAnswerDto,
   answerIsNotEmpty,
   iso8601DurationRegex,
   upToDateDurationMatches,

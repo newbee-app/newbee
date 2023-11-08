@@ -1,4 +1,4 @@
-import { Qna } from '@newbee/shared/util';
+import { Qna } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new QnA.

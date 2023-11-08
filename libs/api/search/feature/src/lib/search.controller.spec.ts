@@ -7,7 +7,7 @@ import {
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
-} from '@newbee/shared/data-access';
+} from '@newbee/shared/util';
 import { SearchController } from './search.controller';
 
 describe('SearchController', () => {
@@ -40,12 +40,12 @@ describe('SearchController', () => {
   describe('search', () => {
     it('should generate search results', async () => {
       await expect(
-        controller.search(testBaseQueryDto1, testOrganizationEntity1)
+        controller.search(testBaseQueryDto1, testOrganizationEntity1),
       ).resolves.toEqual(testBaseQueryResultDto1);
       expect(service.query).toBeCalledTimes(1);
       expect(service.query).toBeCalledWith(
         testOrganizationEntity1,
-        testBaseQueryDto1
+        testBaseQueryDto1,
       );
     });
   });
@@ -53,12 +53,12 @@ describe('SearchController', () => {
   describe('suggest', () => {
     it('should generate search suggestions', async () => {
       await expect(
-        controller.suggest(testBaseSuggestDto1, testOrganizationEntity1)
+        controller.suggest(testBaseSuggestDto1, testOrganizationEntity1),
       ).resolves.toEqual(testBaseSuggestResultDto1);
       expect(service.suggest).toBeCalledTimes(1);
       expect(service.suggest).toBeCalledWith(
         testOrganizationEntity1,
-        testBaseSuggestDto1
+        testBaseSuggestDto1,
       );
     });
   });

@@ -15,8 +15,6 @@ import type {
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
-} from '@newbee/shared/data-access';
-import {
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,

@@ -1,4 +1,4 @@
-import type { TeamMember, TeamNoOrg } from '@newbee/shared/util';
+import type { TeamMember, TeamNoOrg } from '../../interface';
 
 /**
  * The DTO sent from the backend to the frontend for getting a team.

@@ -28,13 +28,14 @@ import {
   User,
   generateUniqueSlug,
 } from '@newbee/api/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseGeneratedSlugDto,
   BaseOrgAndMemberDto,
   BaseSlugTakenDto,
-  apiVersion,
-} from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
+  Keyword,
+  OrgRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.

@@ -5,14 +5,12 @@ import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  Keyword,
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseOrgAndMemberDto1,
   testBaseSlugTakenDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testOrganization1,
   testOrganization2,
   testOrganizationRelation1,

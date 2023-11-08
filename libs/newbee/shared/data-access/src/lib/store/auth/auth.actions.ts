@@ -3,8 +3,9 @@ import {
   BaseEmailDto,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
-} from '@newbee/shared/data-access';
-import { Keyword, UserRelation } from '@newbee/shared/util';
+  Keyword,
+  UserRelation,
+} from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 

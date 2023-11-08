@@ -4,7 +4,7 @@ import {
   OrganizationActions,
   httpFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
+import { BaseCreateOrganizationDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 

@@ -1,5 +1,4 @@
-import { BaseSuggestDto } from '@newbee/shared/data-access';
-import { queryIsNotEmpty } from '@newbee/shared/util';
+import { BaseSuggestDto, queryIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty } from 'class-validator';
 
 /**

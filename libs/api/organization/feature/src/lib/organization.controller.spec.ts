@@ -14,8 +14,6 @@ import {
   testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateOrganizationDto1,
-} from '@newbee/shared/data-access';
-import {
   testOrgMemberRelation1,
   testOrganizationRelation1,
 } from '@newbee/shared/util';

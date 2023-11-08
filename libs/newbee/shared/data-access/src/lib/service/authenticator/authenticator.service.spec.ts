@@ -3,14 +3,12 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  apiVersion,
-  testBaseNameDto1,
-  testBaseRegistrationResponseDto1,
-} from '@newbee/shared/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testAuthenticator1,
+  testBaseNameDto1,
+  testBaseRegistrationResponseDto1,
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
 } from '@newbee/shared/util';
@@ -48,7 +46,7 @@ describe('AuthenticatorService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(AuthenticatorService.baseApiUrl).toEqual(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
       );
     });
   });
@@ -68,7 +66,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
       );
       expect(req.request.method).toEqual('GET');
 
@@ -91,7 +89,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${Keyword.Options}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${Keyword.Options}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({});
@@ -115,7 +113,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);
@@ -139,7 +137,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`,
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseNameDto1);
@@ -163,7 +161,7 @@ describe('AuthenticatorService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`
+        `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`,
       );
       expect(req.request.method).toEqual('DELETE');
 

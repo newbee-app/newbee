@@ -1,5 +1,8 @@
-import { BaseUpdateTeamMemberDto } from '@newbee/shared/data-access';
-import { TeamRoleEnum, teamRoleIsEnum } from '@newbee/shared/util';
+import {
+  BaseUpdateTeamMemberDto,
+  TeamRoleEnum,
+  teamRoleIsEnum,
+} from '@newbee/shared/util';
 import { IsEnum } from 'class-validator';
 
 /**

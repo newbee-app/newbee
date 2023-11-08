@@ -6,7 +6,7 @@ import {
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { teamFeature as teamModuleFeature } from '@newbee/newbee/team/data-access';
-import { BaseUpdateTeamDto } from '@newbee/shared/data-access';
+import { BaseUpdateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**

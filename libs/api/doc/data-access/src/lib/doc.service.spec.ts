@@ -19,14 +19,12 @@ import {
 import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
-  testBaseCreateDocDto1,
-  testBaseUpdateDocDto1,
-} from '@newbee/shared/data-access';
-import {
   docSlugNotFound,
   internalServerError,
   nbDayjs,
   strToContent,
+  testBaseCreateDocDto1,
+  testBaseUpdateDocDto1,
   testNow1,
   testNowDayjs1,
 } from '@newbee/shared/util';

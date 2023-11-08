@@ -4,7 +4,7 @@ import {
   OrganizationActions,
   httpFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/data-access';
+import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**

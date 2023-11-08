@@ -2,8 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testTeamEntity1,
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
@@ -11,7 +11,7 @@ import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateTeamMemberDto1,
   testBaseUpdateTeamMemberDto1,
-} from '@newbee/shared/data-access';
+} from '@newbee/shared/util';
 import { TeamMemberController } from './team-member.controller';
 
 describe('TeamMemberController', () => {
@@ -65,13 +65,13 @@ describe('TeamMemberController', () => {
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
-          testTeamEntity1
-        )
+          testTeamEntity1,
+        ),
       ).resolves.toEqual(testTeamMemberEntity1);
       expect(orgMemberService.findOneByOrgAndSlug).toBeCalledTimes(1);
       expect(orgMemberService.findOneByOrgAndSlug).toBeCalledWith(
         testOrganizationEntity1,
-        testBaseCreateTeamMemberDto1.orgMemberSlug
+        testBaseCreateTeamMemberDto1.orgMemberSlug,
       );
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
@@ -79,7 +79,7 @@ describe('TeamMemberController', () => {
         testTeamEntity1,
         testBaseCreateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
-        testTeamMemberEntity1.role
+        testTeamMemberEntity1.role,
       );
     });
   });
@@ -94,15 +94,15 @@ describe('TeamMemberController', () => {
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
-          testTeamEntity1
-        )
+          testTeamEntity1,
+        ),
       ).resolves.toEqual(testUpdatedTeamMember);
       expect(service.updateRole).toBeCalledTimes(1);
       expect(service.updateRole).toBeCalledWith(
         testTeamMemberEntity1,
         testBaseUpdateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
-        testTeamMemberEntity1.role
+        testTeamMemberEntity1.role,
       );
     });
   });
@@ -116,14 +116,14 @@ describe('TeamMemberController', () => {
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
-          testTeamEntity1
-        )
+          testTeamEntity1,
+        ),
       ).resolves.toBeUndefined();
       expect(service.delete).toBeCalledTimes(1);
       expect(service.delete).toBeCalledWith(
         testTeamMemberEntity1,
         testOrgMemberEntity1.role,
-        testTeamMemberEntity1.role
+        testTeamMemberEntity1.role,
       );
     });
   });

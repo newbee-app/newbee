@@ -1,5 +1,5 @@
-import { BaseCreateDocDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateDocDto,
   docIsNotEmpty,
   iso8601DurationRegex,
   titleIsNotEmpty,

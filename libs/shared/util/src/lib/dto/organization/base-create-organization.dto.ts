@@ -1,4 +1,4 @@
-import type { Organization } from '@newbee/shared/util';
+import type { Organization } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new organization.

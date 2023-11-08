@@ -1,4 +1,4 @@
-import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
+import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { JwtIdComponent } from './jwt-id.component';
 

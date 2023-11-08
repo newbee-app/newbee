@@ -19,14 +19,12 @@ import {
 import { QnaDocParams, elongateUuid } from '@newbee/api/shared/util';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
-  testBaseCreateQnaDto1,
-  testBaseUpdateQnaDto1,
-} from '@newbee/shared/data-access';
-import {
   internalServerError,
   nbDayjs,
   qnaSlugNotFound,
   strToContent,
+  testBaseCreateQnaDto1,
+  testBaseUpdateQnaDto1,
   testNow1,
   testNowDayjs1,
 } from '@newbee/shared/util';

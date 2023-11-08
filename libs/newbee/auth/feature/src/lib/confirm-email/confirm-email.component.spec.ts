@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JwtIdComponent } from '@newbee/newbee/auth/ui';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
-import { testBaseEmailDto1 } from '@newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import { testBaseEmailDto1, testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import { ConfirmEmailComponent } from './confirm-email.component';
@@ -55,7 +54,7 @@ describe('ConfirmEmailComponent', () => {
         next: (scannedAction) => {
           try {
             expect(scannedAction).toEqual(
-              AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 })
+              AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
             );
             done();
           } catch (err) {

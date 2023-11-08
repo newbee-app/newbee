@@ -5,7 +5,7 @@ import {
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
+import { BaseUpdateOrganizationDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**

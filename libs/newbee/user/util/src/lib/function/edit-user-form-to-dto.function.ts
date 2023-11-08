@@ -1,5 +1,5 @@
 import { phoneInputToString } from '@newbee/newbee/shared/util';
-import { BaseUpdateUserDto } from '@newbee/shared/data-access';
+import { BaseUpdateUserDto } from '@newbee/shared/util';
 import type { EditUserForm } from '../interface';
 
 /**
@@ -10,7 +10,7 @@ import type { EditUserForm } from '../interface';
  * @returns The form as a DTO.
  */
 export function editUserFormToDto(
-  editUserForm: EditUserForm | Partial<EditUserForm>
+  editUserForm: EditUserForm | Partial<EditUserForm>,
 ): BaseUpdateUserDto {
   const { name, displayName, phoneNumber } = editUserForm;
   const phoneNumberString = phoneNumber

@@ -4,9 +4,10 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { apiVersion, testBaseCreateQnaDto1 } from '@newbee/shared/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseCreateQnaDto1,
   testOrganization1,
   testQna1,
   testTeam1,

@@ -2,8 +2,6 @@ import {
   testBaseCsrfTokenAndDataDto1,
   testBaseOrgAndMemberDto1,
   testBaseUserRelationAndOptionsDto1,
-} from '@newbee/shared/data-access';
-import {
   testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,

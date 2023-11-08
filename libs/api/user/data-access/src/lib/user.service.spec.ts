@@ -21,11 +21,9 @@ import {
 } from '@newbee/api/shared/data-access';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
+  internalServerError,
   testBaseCreateUserDto1,
   testBaseUpdateUserDto1,
-} from '@newbee/shared/data-access';
-import {
-  internalServerError,
   testPublicKeyCredentialCreationOptions1,
   userEmailNotFound,
   userEmailTakenBadRequest,

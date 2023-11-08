@@ -3,17 +3,15 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
+  Keyword,
+  testAuthenticationCredential1,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
   testBaseWebAuthnLoginDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
-  testAuthenticationCredential1,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
 } from '@newbee/shared/util';

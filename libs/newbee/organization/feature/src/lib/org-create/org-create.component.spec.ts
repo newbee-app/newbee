@@ -7,8 +7,10 @@ import {
 } from '@angular/core/testing';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { testBaseCreateOrganizationDto1 } from '@newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+import {
+  testBaseCreateOrganizationDto1,
+  testOrganization1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgCreateComponent } from './org-create.component';
 

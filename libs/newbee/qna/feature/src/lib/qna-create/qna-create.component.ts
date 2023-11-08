@@ -6,8 +6,7 @@ import {
   httpFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateQnaDto } from '@newbee/shared/data-access';
-import { Keyword, Team } from '@newbee/shared/util';
+import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 

@@ -1,14 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseCreateTeamDto,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
-} from '@newbee/shared/data-access';
-import { Keyword, Team } from '@newbee/shared/util';
+  Keyword,
+  Team,
+} from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -40,7 +41,7 @@ export class TeamService {
    */
   get(slug: string, orgSlug: string): Observable<BaseTeamAndMemberDto> {
     return this.http.get<BaseTeamAndMemberDto>(
-      `${TeamService.baseApiUrl(orgSlug)}/${slug}`
+      `${TeamService.baseApiUrl(orgSlug)}/${slug}`,
     );
   }
 
@@ -68,11 +69,11 @@ export class TeamService {
   edit(
     orgSlug: string,
     teamSlug: string,
-    updateTeamDto: BaseUpdateTeamDto
+    updateTeamDto: BaseUpdateTeamDto,
   ): Observable<Team> {
     return this.http.patch<Team>(
       `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}`,
-      updateTeamDto
+      updateTeamDto,
     );
   }
 
@@ -86,7 +87,7 @@ export class TeamService {
    */
   delete(orgSlug: string, teamSlug: string): Observable<null> {
     return this.http.delete<null>(
-      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}`
+      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}`,
     );
   }
 
@@ -102,7 +103,7 @@ export class TeamService {
     const params = new HttpParams({ fromObject: { slug } });
     return this.http.get<BaseSlugTakenDto>(
       `${TeamService.baseApiUrl(orgSlug)}/${Keyword.CheckSlug}`,
-      { params }
+      { params },
     );
   }
 
@@ -116,12 +117,12 @@ export class TeamService {
    */
   generateSlug(
     name: string,
-    orgSlug: string
+    orgSlug: string,
   ): Observable<BaseGeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
       `${TeamService.baseApiUrl(orgSlug)}/${Keyword.GenerateSlug}`,
-      { params }
+      { params },
     );
   }
 }

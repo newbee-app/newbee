@@ -4,9 +4,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { QnaActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { testBaseCreateQnaDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseCreateQnaDto1,
   testOrganization1,
   testOrganizationRelation1,
   testQna1,

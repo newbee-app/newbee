@@ -1,5 +1,5 @@
-import { BaseCreateQnaDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateQnaDto,
   answerIsNotEmpty,
   questionIsNotEmpty,
   titleIsNotEmpty,

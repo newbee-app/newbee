@@ -1,5 +1,5 @@
-import type { UserRelation } from '@newbee/shared/util';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
+import type { UserRelation } from '../../interface';
 
 /**
  * The DTO sent from the backend to the frontend after registering a user with WebAuthn.

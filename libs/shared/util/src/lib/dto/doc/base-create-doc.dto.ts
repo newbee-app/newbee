@@ -1,4 +1,4 @@
-import { Doc } from '@newbee/shared/util';
+import { Doc } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new Doc.

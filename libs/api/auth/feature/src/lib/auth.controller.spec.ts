@@ -11,14 +11,12 @@ import { authJwtCookie } from '@newbee/api/shared/util';
 import type { UserAndOptions } from '@newbee/api/user/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
+  internalServerError,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
   testBaseWebAuthnLoginDto1,
-} from '@newbee/shared/data-access';
-import {
-  internalServerError,
   testPublicKeyCredentialCreationOptions1,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
@@ -101,7 +99,7 @@ describe('AuthController', () => {
   describe('webAuthnRegister', () => {
     it('should create a new user and options', async () => {
       await expect(
-        controller.webAuthnRegister(response, testBaseCreateUserDto1)
+        controller.webAuthnRegister(response, testBaseCreateUserDto1),
       ).resolves.toEqual(testBaseUserRelationAndOptionsDto1);
       expect(userService.create).toBeCalledTimes(1);
       expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
@@ -115,11 +113,11 @@ describe('AuthController', () => {
   describe('webAuthnLoginOptions', () => {
     it('should create login challenge options', async () => {
       await expect(
-        controller.webAuthnLoginOptions(testBaseEmailDto1)
+        controller.webAuthnLoginOptions(testBaseEmailDto1),
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
       expect(service.generateLoginChallenge).toBeCalledTimes(1);
       expect(service.generateLoginChallenge).toBeCalledWith(
-        testBaseEmailDto1.email
+        testBaseEmailDto1.email,
       );
     });
   });
@@ -127,12 +125,12 @@ describe('AuthController', () => {
   describe('webAuthnLogin', () => {
     it('should return a LoginDto', async () => {
       await expect(
-        controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1)
+        controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1),
       ).resolves.toEqual(testUserRelation1);
       expect(service.verifyLoginChallenge).toBeCalledTimes(1);
       expect(service.verifyLoginChallenge).toBeCalledWith(
         testBaseWebAuthnLoginDto1.email,
-        testBaseWebAuthnLoginDto1.response
+        testBaseWebAuthnLoginDto1.response,
       );
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);
@@ -151,14 +149,14 @@ describe('AuthController', () => {
 
     it('should send a link to the user', async () => {
       await expect(
-        controller.magicLinkLoginLogin(testBaseEmailDto1)
+        controller.magicLinkLoginLogin(testBaseEmailDto1),
       ).resolves.toEqual(testBaseMagicLinkLoginDto1);
     });
 
     it('should throw an InternalServerErrorException if send throws an error', async () => {
       jest.spyOn(strategy, 'send').mockRejectedValue(new Error('send'));
       await expect(
-        controller.magicLinkLoginLogin(testBaseEmailDto1)
+        controller.magicLinkLoginLogin(testBaseEmailDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
@@ -166,7 +164,7 @@ describe('AuthController', () => {
   describe('magicLinkLogin', () => {
     it('should return an access token', async () => {
       await expect(
-        controller.magicLinkLogin(response, testUserEntity1)
+        controller.magicLinkLogin(response, testUserEntity1),
       ).resolves.toEqual(testUserRelation1);
       expect(service.login).toBeCalledTimes(1);
       expect(service.login).toBeCalledWith(testUserEntity1);

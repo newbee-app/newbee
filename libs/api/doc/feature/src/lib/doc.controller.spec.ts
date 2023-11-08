@@ -3,15 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DocService } from '@newbee/api/doc/data-access';
 import {
   testDocEntity1,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateDocDto1,
   testBaseTeamSlugDto1,
   testBaseUpdateDocDto1,
-} from '@newbee/shared/data-access';
+} from '@newbee/shared/util';
 import { DocController } from './doc.controller';
 
 describe('DocController', () => {
@@ -51,37 +51,37 @@ describe('DocController', () => {
         testOrgMemberEntity1,
         testOrganizationEntity1,
         testTeamEntity1,
-        testBaseTeamSlugDto1
-      )
+        testBaseTeamSlugDto1,
+      ),
     ).resolves.toEqual(testDocEntity1);
     expect(service.create).toBeCalledTimes(1);
     expect(service.create).toBeCalledWith(
       testBaseCreateDocDto1,
       testTeamEntity1,
-      testOrgMemberEntity1
+      testOrgMemberEntity1,
     );
   });
 
   it('get should get a doc', async () => {
     await expect(controller.get(testDocEntity1)).resolves.toEqual(
-      testDocEntity1
+      testDocEntity1,
     );
   });
 
   it('update should update a doc', async () => {
     await expect(
-      controller.update(testBaseUpdateDocDto1, testDocEntity1)
+      controller.update(testBaseUpdateDocDto1, testDocEntity1),
     ).resolves.toEqual(testUpdatedDocEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testDocEntity1,
-      testBaseUpdateDocDto1
+      testBaseUpdateDocDto1,
     );
   });
 
   it('markUpToDate should mark a doc as up-to-date', async () => {
     await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
-      testUpdatedDocEntity
+      testUpdatedDocEntity,
     );
     expect(service.markUpToDate).toBeCalledTimes(1);
     expect(service.markUpToDate).toBeCalledWith(testDocEntity1);

@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
+  Authenticator,
   BaseNameDto,
   BaseRegistrationResponseDto,
-} from '@newbee/shared/data-access';
-import { Authenticator, Keyword } from '@newbee/shared/util';
+  Keyword,
+} from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
-import { from, Observable, switchMap } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 
 /**
  * The service tied to the API's authenticator endpoints.
@@ -38,7 +39,7 @@ export class AuthenticatorService {
   createOptions(): Observable<PublicKeyCredentialCreationOptionsJSON> {
     return this.http.post<PublicKeyCredentialCreationOptionsJSON>(
       `${AuthenticatorService.baseApiUrl}/${Keyword.Options}`,
-      {}
+      {},
     );
   }
 
@@ -49,7 +50,7 @@ export class AuthenticatorService {
    * @returns An observable of the newly created authenticator.
    */
   create(
-    options: PublicKeyCredentialCreationOptionsJSON
+    options: PublicKeyCredentialCreationOptionsJSON,
   ): Observable<Authenticator> {
     return from(startRegistration(options)).pipe(
       switchMap((response) => {
@@ -58,9 +59,9 @@ export class AuthenticatorService {
         };
         return this.http.post<Authenticator>(
           AuthenticatorService.baseApiUrl,
-          registrationResponseDto
+          registrationResponseDto,
         );
-      })
+      }),
     );
   }
 
@@ -76,7 +77,7 @@ export class AuthenticatorService {
     const nameDto: BaseNameDto = { name };
     return this.http.patch<Authenticator>(
       `${AuthenticatorService.baseApiUrl}/${id}`,
-      nameDto
+      nameDto,
     );
   }
 

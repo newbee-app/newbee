@@ -1,5 +1,5 @@
-import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateOrganizationDto,
   iso8601DurationRegex,
   nameIsNotEmpty,
   slugIsNotEmpty,

@@ -27,12 +27,12 @@ export class UserController {
   @Patch()
   async update(
     @Body() updateUserDto: UpdateUserDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<UserEntity> {
     this.logger.log(
       `Update user request received for user ID: ${user.id}: ${JSON.stringify(
-        updateUserDto
-      )}`
+        updateUserDto,
+      )}`,
     );
     const updatedUser = await this.userService.update(user, updateUserDto);
     this.logger.log(`Updated user: ${user.id}`);

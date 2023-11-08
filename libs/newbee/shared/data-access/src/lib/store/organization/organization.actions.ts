@@ -3,8 +3,9 @@ import {
   BaseCreateOrgMemberInviteDto,
   BaseOrgAndMemberDto,
   BaseUpdateOrganizationDto,
-} from '@newbee/shared/data-access';
-import { Keyword, Organization } from '@newbee/shared/util';
+  Keyword,
+  Organization,
+} from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**

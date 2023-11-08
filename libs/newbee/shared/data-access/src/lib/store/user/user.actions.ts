@@ -1,5 +1,4 @@
-import { BaseUpdateUserDto } from '@newbee/shared/data-access';
-import { Keyword, User } from '@newbee/shared/util';
+import { BaseUpdateUserDto, Keyword, User } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**

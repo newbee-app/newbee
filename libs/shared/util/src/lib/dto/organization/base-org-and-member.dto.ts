@@ -1,4 +1,4 @@
-import type { OrgMemberNoUserOrg, OrgTeams } from '@newbee/shared/util';
+import type { OrgMemberNoUserOrg, OrgTeams } from '../../interface';
 
 /**
  * The DTO sent from the backend to the frontend for getting an org.

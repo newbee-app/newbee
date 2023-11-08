@@ -13,7 +13,7 @@ import {
   testBaseUpdateAnswerDto1,
   testBaseUpdateQnaDto1,
   testBaseUpdateQuestionDto1,
-} from '@newbee/shared/data-access';
+} from '@newbee/shared/util';
 import { QnaController } from './qna.controller';
 
 describe('QnaController', () => {

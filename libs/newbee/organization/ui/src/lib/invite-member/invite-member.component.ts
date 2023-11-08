@@ -20,8 +20,11 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
+import {
+  BaseCreateOrgMemberInviteDto,
+  Keyword,
+  OrgRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The dumb UI for inviting a user to an org.

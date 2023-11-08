@@ -1,4 +1,4 @@
-import { testBaseEmailDto1 } from '@newbee/shared/data-access';
+import { testBaseEmailDto1 } from '@newbee/shared/util';
 import { testLoginForm1 } from '../example';
 import { loginFormToDto } from './login-form-to-dto.function';
 

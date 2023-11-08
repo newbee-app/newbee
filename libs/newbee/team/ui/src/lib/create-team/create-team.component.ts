@@ -28,8 +28,8 @@ import {
   inputErrorMessage,
   type HttpClientError,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateTeamDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateTeamDto,
   Frequency,
   Keyword,
   nbDayjs,

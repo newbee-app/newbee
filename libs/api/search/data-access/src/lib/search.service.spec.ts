@@ -7,12 +7,12 @@ import {
   testQueryResponse2,
 } from '@newbee/api/shared/data-access';
 import {
+  internalServerError,
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
-} from '@newbee/shared/data-access';
-import { internalServerError } from '@newbee/shared/util';
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { SearchService } from './search.service';
 
@@ -55,16 +55,16 @@ describe('SearchService', () => {
 
       it('should generate suggestions', async () => {
         await expect(
-          service.suggest(testOrganizationEntity1, testBaseSuggestDto1)
+          service.suggest(testOrganizationEntity1, testBaseSuggestDto1),
         ).resolves.toEqual(testBaseSuggestResultDto1);
       });
 
       it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
         jest.spyOn(solrCli, 'suggest').mockRejectedValue(new Error('suggest'));
         await expect(
-          service.suggest(testOrganizationEntity1, testBaseSuggestDto1)
+          service.suggest(testOrganizationEntity1, testBaseSuggestDto1),
         ).rejects.toThrow(
-          new InternalServerErrorException(internalServerError)
+          new InternalServerErrorException(internalServerError),
         );
       });
     });
@@ -72,7 +72,7 @@ describe('SearchService', () => {
     it('should auto-correct if no results were found and a spellchecking suggestion was made', async () => {
       jest.spyOn(solrCli, 'suggest').mockResolvedValue(testQueryResponse2);
       await expect(
-        service.suggest(testOrganizationEntity1, testBaseSuggestDto1)
+        service.suggest(testOrganizationEntity1, testBaseSuggestDto1),
       ).resolves.toEqual({ suggestions: [] });
       expect(solrCli.suggest).toBeCalledTimes(2);
     });
@@ -91,14 +91,14 @@ describe('SearchService', () => {
 
     it('should generate results', async () => {
       await expect(
-        service.query(testOrganizationEntity1, testBaseQueryDto1)
+        service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).resolves.toEqual(testBaseQueryResultDto1);
     });
 
     it('should offer spellcheck suggestions if no results', async () => {
       jest.spyOn(solrCli, 'query').mockResolvedValue(testQueryResponse2);
       await expect(
-        service.query(testOrganizationEntity1, testBaseQueryDto1)
+        service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).resolves.toEqual({
         total: testQueryResponse2.response.numFound,
         offset: testBaseQueryDto1.offset,
@@ -111,7 +111,7 @@ describe('SearchService', () => {
     it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
       jest.spyOn(solrCli, 'query').mockRejectedValue(new Error('query'));
       await expect(
-        service.query(testOrganizationEntity1, testBaseQueryDto1)
+        service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });

@@ -1,5 +1,4 @@
-import { BaseCreateQnaDto } from '@newbee/shared/data-access';
-import { Keyword, Qna, Team } from '@newbee/shared/util';
+import { BaseCreateQnaDto, Keyword, Qna, Team } from '@newbee/shared/util';
 import { createActionGroup, props } from '@ngrx/store';
 
 /**

@@ -29,14 +29,12 @@ import {
 import { newOrgConfigset } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
-  testBaseCreateOrganizationDto1,
-  testBaseUpdateOrganizationDto1,
-} from '@newbee/shared/data-access';
-import {
   internalServerError,
   nbDayjs,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
+  testBaseCreateOrganizationDto1,
+  testBaseUpdateOrganizationDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';

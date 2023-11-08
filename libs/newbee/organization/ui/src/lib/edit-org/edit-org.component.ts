@@ -27,8 +27,8 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseUpdateOrganizationDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateOrganizationDto,
   Frequency,
   Keyword,
   OrgMemberNoUserOrg,

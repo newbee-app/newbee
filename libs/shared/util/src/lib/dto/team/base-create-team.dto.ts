@@ -1,4 +1,4 @@
-import type { Team } from '@newbee/shared/util';
+import type { Team } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new team.

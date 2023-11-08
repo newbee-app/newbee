@@ -28,8 +28,12 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateOrganizationDto } from '@newbee/shared/data-access';
-import { Frequency, Keyword, nbDayjs } from '@newbee/shared/util';
+import {
+  BaseCreateOrganizationDto,
+  Frequency,
+  Keyword,
+  nbDayjs,
+} from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**

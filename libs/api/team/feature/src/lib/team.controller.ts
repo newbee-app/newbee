@@ -11,34 +11,36 @@ import {
 import {
   EntityService,
   GenerateSlugDto,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   SlugDto,
   TeamEntity,
   TeamMemberEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  generateUniqueSlug,
-  Organization,
   OrgMember,
+  Organization,
   Role,
   Team,
   TeamMember,
   User,
+  generateUniqueSlug,
 } from '@newbee/api/shared/util';
 import {
   CreateTeamDto,
   TeamService,
   UpdateTeamDto,
 } from '@newbee/api/team/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
-} from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+  Keyword,
+  OrgRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamEntity`.
@@ -55,7 +57,7 @@ export class TeamController {
 
   constructor(
     private readonly teamService: TeamService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -75,18 +77,18 @@ export class TeamController {
   async create(
     @Body() createTeamDto: CreateTeamDto,
     @OrgMember() orgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<TeamEntity> {
     this.logger.log(
       `Create team request received from org member slug: ${
         orgMember.slug
       }, in organization ID: ${organization.id}, with values: ${JSON.stringify(
-        createTeamDto
-      )}`
+        createTeamDto,
+      )}`,
     );
     const team = await this.teamService.create(createTeamDto, orgMember);
     this.logger.log(
-      `Team created with ID: ${team.id}, ${JSON.stringify(team)}`
+      `Team created with ID: ${team.id}, ${JSON.stringify(team)}`,
     );
     return team;
   }
@@ -106,11 +108,11 @@ export class TeamController {
   async checkSlug(
     @Query() checkSlugDto: SlugDto,
     @Organization() organization: OrganizationEntity,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<BaseSlugTakenDto> {
     const { slug } = checkSlugDto;
     this.logger.log(
-      `Check team slug request received for slug: ${slug}, in org ID: ${organization.id}, by user ID: ${user.id}`
+      `Check team slug request received for slug: ${slug}, in org ID: ${organization.id}, by user ID: ${user.id}`,
     );
     const hasSlug = await this.teamService.hasOneBySlug(organization, slug);
     this.logger.log(`Team slug ${slug} taken: ${hasSlug}`);
@@ -132,19 +134,19 @@ export class TeamController {
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto,
     @Organization() organization: OrganizationEntity,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<BaseGeneratedSlugDto> {
     const { base } = generateSlugDto;
     this.logger.log(
-      `Genereate team slug request received for base: ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`
+      `Genereate team slug request received for base: ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`,
     );
     const slug = await generateUniqueSlug(
       async (slugToTry) =>
         !(await this.teamService.hasOneBySlug(organization, slugToTry)),
-      base
+      base,
     );
     this.logger.log(
-      `Team slug ${slug} generated for base ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`
+      `Team slug ${slug} generated for base ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`,
     );
 
     return { generatedSlug: slug };
@@ -166,10 +168,10 @@ export class TeamController {
   async get(
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
-    @TeamMember() teamMember: TeamMemberEntity | undefined
+    @TeamMember() teamMember: TeamMemberEntity | undefined,
   ): Promise<BaseTeamAndMemberDto> {
     this.logger.log(
-      `Get team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`
+      `Get team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`,
     );
     this.logger.log(`Found team, slug: ${team.slug}, ID: ${team.id}`);
     return {
@@ -195,23 +197,23 @@ export class TeamController {
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner
+    TeamRoleEnum.Owner,
   )
   async update(
     @Body() updateTeamDto: UpdateTeamDto,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
+    @Team() team: TeamEntity,
   ): Promise<TeamEntity> {
     this.logger.log(
       `Update team request received for team slug: ${
         team.slug
       }, for organization ID: ${organization.id}, with values: ${JSON.stringify(
-        updateTeamDto
-      )}`
+        updateTeamDto,
+      )}`,
     );
     const updatedTeam = await this.teamService.update(team, updateTeamDto);
     this.logger.log(
-      `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`
+      `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`,
     );
 
     return updatedTeam;
@@ -230,10 +232,10 @@ export class TeamController {
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
   async delete(
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
+    @Team() team: TeamEntity,
   ): Promise<void> {
     this.logger.log(
-      `Delete team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`
+      `Delete team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`,
     );
     await this.teamService.delete(team);
     this.logger.log(`Deleted team, slug: ${team.slug}, ID: ${team.id}`);

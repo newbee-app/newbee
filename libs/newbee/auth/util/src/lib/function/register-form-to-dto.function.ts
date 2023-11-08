@@ -1,5 +1,5 @@
 import { phoneInputToString } from '@newbee/newbee/shared/util';
-import { BaseCreateUserDto } from '@newbee/shared/data-access';
+import { BaseCreateUserDto } from '@newbee/shared/util';
 import type { RegisterForm } from '../interface';
 
 /**
@@ -10,7 +10,7 @@ import type { RegisterForm } from '../interface';
  * @returns The form as a DTO.
  */
 export function registerFormToDto(
-  registerForm: RegisterForm | Partial<RegisterForm>
+  registerForm: RegisterForm | Partial<RegisterForm>,
 ): BaseCreateUserDto {
   const { email, name, displayName, phoneNumber } = registerForm;
   const phoneNumberString = phoneNumber

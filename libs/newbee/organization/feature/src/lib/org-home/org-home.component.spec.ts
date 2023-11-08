@@ -8,10 +8,10 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
+  Keyword,
   testBaseQueryDto1,
   testBaseSuggestDto1,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgHomeComponent } from './org-home.component';
 

@@ -1,5 +1,5 @@
-import { BaseUpdateTeamDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateTeamDto,
   nameIsNotEmpty,
   slugIsNotEmpty,
   upToDateDurationMatches,

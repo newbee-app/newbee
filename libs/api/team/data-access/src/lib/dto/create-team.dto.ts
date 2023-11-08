@@ -1,5 +1,5 @@
-import { BaseCreateTeamDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateTeamDto,
   iso8601DurationRegex,
   nameIsNotEmpty,
   slugIsNotEmpty,

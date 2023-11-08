@@ -8,8 +8,6 @@ import {
 import {
   testBaseNameDto1,
   testBaseRegistrationResponseDto1,
-} from '@newbee/shared/data-access';
-import {
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
 } from '@newbee/shared/util';
@@ -63,7 +61,7 @@ describe('AuthenticatorController', () => {
   describe('createOptions', () => {
     it('should create registration options', async () => {
       await expect(controller.createOptions(testUserEntity1)).resolves.toEqual(
-        testPublicKeyCredentialCreationOptions1
+        testPublicKeyCredentialCreationOptions1,
       );
       expect(service.generateOptions).toBeCalledTimes(1);
       expect(service.generateOptions).toBeCalledWith(testUserEntity1);
@@ -73,12 +71,12 @@ describe('AuthenticatorController', () => {
   describe('createPost', () => {
     it('should create an authenticator', async () => {
       await expect(
-        controller.create(testBaseRegistrationResponseDto1, testUserEntity1)
+        controller.create(testBaseRegistrationResponseDto1, testUserEntity1),
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
         testRegistrationResponse1,
-        testUserEntity1
+        testUserEntity1,
       );
     });
   });
@@ -89,14 +87,14 @@ describe('AuthenticatorController', () => {
         controller.updateName(
           testAuthenticatorEntity1.id,
           testBaseNameDto1,
-          testUserEntity1
-        )
+          testUserEntity1,
+        ),
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.updateNameById).toBeCalledTimes(1);
       expect(service.updateNameById).toBeCalledWith(
         testAuthenticatorEntity1.id,
         testBaseNameDto1.name,
-        testUserEntity1.id
+        testUserEntity1.id,
       );
     });
   });
@@ -104,12 +102,12 @@ describe('AuthenticatorController', () => {
   describe('delete', () => {
     it('should delete an authenticator', async () => {
       await expect(
-        controller.delete(testAuthenticatorEntity1.id, testUserEntity1)
+        controller.delete(testAuthenticatorEntity1.id, testUserEntity1),
       ).resolves.toBeUndefined();
       expect(service.deleteOneById).toBeCalledTimes(1);
       expect(service.deleteOneById).toBeCalledWith(
         testAuthenticatorEntity1.id,
-        testUserEntity1.id
+        testUserEntity1.id,
       );
     });
   });

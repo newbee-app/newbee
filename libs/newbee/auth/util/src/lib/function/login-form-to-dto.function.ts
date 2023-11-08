@@ -1,4 +1,4 @@
-import { BaseEmailDto } from '@newbee/shared/data-access';
+import { BaseEmailDto } from '@newbee/shared/util';
 import type { LoginForm } from '../interface';
 
 /**
@@ -9,7 +9,7 @@ import type { LoginForm } from '../interface';
  * @returns The form as a DTO.
  */
 export function loginFormToDto(
-  loginForm: LoginForm | Partial<LoginForm>
+  loginForm: LoginForm | Partial<LoginForm>,
 ): BaseEmailDto {
   const { email } = loginForm;
   return { email: email ?? '' };

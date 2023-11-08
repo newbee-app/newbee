@@ -1,5 +1,4 @@
-import { BaseNameDto } from '@newbee/shared/data-access';
-import { nameIsNotEmpty } from '@newbee/shared/util';
+import { BaseNameDto, nameIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**

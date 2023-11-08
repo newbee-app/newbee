@@ -7,13 +7,11 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
+  Keyword,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
 } from '@newbee/shared/util';

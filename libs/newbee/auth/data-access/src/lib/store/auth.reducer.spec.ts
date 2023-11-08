@@ -4,9 +4,11 @@ import {
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
-import { testBaseMagicLinkLoginDto1 } from '@newbee/shared/data-access';
-import { testUserRelation1 } from '@newbee/shared/util';
-import { authFeature, AuthState, initialAuthState } from './auth.reducer';
+import {
+  testBaseMagicLinkLoginDto1,
+  testUserRelation1,
+} from '@newbee/shared/util';
+import { AuthState, authFeature, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
   const stateAfterLoginMagicLink: AuthState = {

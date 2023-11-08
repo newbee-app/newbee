@@ -1,4 +1,5 @@
-import type { TeamMember, TeamRoleEnum } from '@newbee/shared/util';
+import type { TeamRoleEnum } from '../../enum';
+import type { TeamMember } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new team member.

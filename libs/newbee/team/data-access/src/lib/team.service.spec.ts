@@ -4,15 +4,17 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
+  Keyword,
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
-} from '@newbee/shared/data-access';
-import { Keyword, testOrganization1, testTeam1 } from '@newbee/shared/util';
+  testOrganization1,
+  testTeam1,
+} from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -36,7 +38,7 @@ describe('TeamService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(TeamService.baseApiUrl(testOrganization1.slug)).toEqual(
-        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}`
+        `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Team}`,
       );
     });
   });
@@ -56,7 +58,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`,
       );
       expect(req.request.method).toEqual('GET');
 
@@ -79,7 +81,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        TeamService.baseApiUrl(testOrganization1.slug)
+        TeamService.baseApiUrl(testOrganization1.slug),
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateTeamDto1);
@@ -105,7 +107,7 @@ describe('TeamService', () => {
         });
 
       const req = httpController.expectOne(
-        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`,
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateTeamDto1);
@@ -129,7 +131,7 @@ describe('TeamService', () => {
       });
 
       const req = httpController.expectOne(
-        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`,
       );
       expect(req.request.method).toEqual('DELETE');
 
@@ -155,7 +157,7 @@ describe('TeamService', () => {
       const req = httpController.expectOne(
         `${TeamService.baseApiUrl(testOrganization1.slug)}/${
           Keyword.CheckSlug
-        }?${params.toString()}`
+        }?${params.toString()}`,
       );
       expect(req.request.method).toEqual('GET');
 
@@ -181,7 +183,7 @@ describe('TeamService', () => {
       const req = httpController.expectOne(
         `${TeamService.baseApiUrl(testOrganization1.slug)}/${
           Keyword.GenerateSlug
-        }?${params.toString()}`
+        }?${params.toString()}`,
       );
       expect(req.request.method).toEqual('GET');
 

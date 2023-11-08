@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BaseCreateQnaDto, apiVersion } from '@newbee/shared/data-access';
-import { Keyword, Qna } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { BaseCreateQnaDto, Keyword, Qna } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 @Injectable()

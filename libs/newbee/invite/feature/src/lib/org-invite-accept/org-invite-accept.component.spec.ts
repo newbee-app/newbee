@@ -3,8 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseTokenDto1 } from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, testBaseTokenDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteAcceptComponent } from './org-invite-accept.component';
 

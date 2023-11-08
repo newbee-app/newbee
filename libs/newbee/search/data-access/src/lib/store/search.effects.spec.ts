@@ -10,8 +10,6 @@ import {
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
-} from '@newbee/shared/data-access';
-import {
   testOrganization1,
   testOrganizationRelation1,
 } from '@newbee/shared/util';

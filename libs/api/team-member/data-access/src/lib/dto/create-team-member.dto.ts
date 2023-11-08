@@ -1,5 +1,5 @@
-import { BaseCreateTeamMemberDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateTeamMemberDto,
   slugIsNotEmpty,
   TeamRoleEnum,
   teamRoleIsEnum,

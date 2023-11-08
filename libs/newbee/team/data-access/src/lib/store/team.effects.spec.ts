@@ -8,14 +8,12 @@ import {
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  Keyword,
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testOrganization1,
   testOrganizationRelation1,
   testTeam1,

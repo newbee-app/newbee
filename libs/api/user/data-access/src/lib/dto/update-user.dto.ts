@@ -1,5 +1,5 @@
-import { BaseUpdateUserDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateUserDto,
   displayNameIsNotEmpty,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,

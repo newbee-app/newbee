@@ -6,8 +6,11 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
 import { testEditUserForm1 } from '@newbee/newbee/user/util';
-import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
-import { testAuthenticator1, testUser1 } from '@newbee/shared/util';
+import {
+  testAuthenticator1,
+  testBaseUpdateUserDto1,
+  testUser1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { UserEditComponent } from './user-edit.component';
 
@@ -64,7 +67,7 @@ describe('UserEditComponent', () => {
     it('should dispatch editUser', () => {
       component.onEdit(testEditUserForm1);
       expect(store.dispatch).toBeCalledWith(
-        UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 })
+        UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
       );
     });
   });
@@ -73,7 +76,7 @@ describe('UserEditComponent', () => {
     it('should dispatch createRegistrationOptions', () => {
       component.onAddAuthenticator();
       expect(store.dispatch).toBeCalledWith(
-        AuthenticatorActions.createRegistrationOptions()
+        AuthenticatorActions.createRegistrationOptions(),
       );
     });
   });
@@ -88,7 +91,7 @@ describe('UserEditComponent', () => {
         AuthenticatorActions.editAuthenticatorName({
           id: testAuthenticator1.id,
           name: testAuthenticator1.name,
-        })
+        }),
       );
     });
   });
@@ -97,7 +100,7 @@ describe('UserEditComponent', () => {
     it('should dispatch deleteAuthenticator', () => {
       component.onDeleteAuthenticator(testAuthenticator1.id);
       expect(store.dispatch).toBeCalledWith(
-        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id })
+        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id }),
       );
     });
   });

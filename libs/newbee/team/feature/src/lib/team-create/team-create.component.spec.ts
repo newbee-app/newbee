@@ -7,9 +7,9 @@ import {
 } from '@angular/core/testing';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
-import { testBaseCreateTeamDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseCreateTeamDto1,
   testOrganizationRelation1,
   testTeam1,
 } from '@newbee/shared/util';

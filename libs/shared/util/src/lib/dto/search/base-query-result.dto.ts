@@ -1,4 +1,5 @@
-import type { QueryResult, QueryResultType } from '@newbee/shared/util';
+import type { QueryResult } from '../../interface';
+import type { QueryResultType } from '../../type';
 
 /**
  * The DTO sent from the backend to the frontend as a result of a query request.

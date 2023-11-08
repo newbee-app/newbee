@@ -5,8 +5,12 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { testBaseCreateTeamDto1 } from '@newbee/shared/data-access';
-import { Frequency, testOrganization1, testTeam1 } from '@newbee/shared/util';
+import {
+  Frequency,
+  testBaseCreateTeamDto1,
+  testOrganization1,
+  testTeam1,
+} from '@newbee/shared/util';
 import { CreateTeamComponent } from './create-team.component';
 
 describe('CreateTeamComponent', () => {

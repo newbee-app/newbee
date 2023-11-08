@@ -1,10 +1,10 @@
-import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
+import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialCookieState } from '../store';
 import { HeaderInterceptor } from './header.interceptor';
@@ -62,10 +62,10 @@ describe('HeaderInterceptor', () => {
       const headers = req.request.headers;
       expect(headers.get('Content-Type')).toEqual('application/json');
       expect(headers.get('Session-Secret')).toEqual(
-        initialCookieState.sessionSecret
+        initialCookieState.sessionSecret,
       );
       expect(headers.get('X-CSRF-TOKEN')).toEqual(
-        testBaseCsrfTokenAndDataDto1.csrfToken
+        testBaseCsrfTokenAndDataDto1.csrfToken,
       );
 
       req.flush(testVal);

@@ -21,12 +21,10 @@ import {
 } from '@newbee/api/shared/data-access';
 import { Public, User, authJwtCookie } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
-  apiVersion,
-} from '@newbee/shared/data-access';
-import {
   Keyword,
   UserRelation,
   internalServerError,

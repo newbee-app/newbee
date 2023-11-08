@@ -1,4 +1,4 @@
-import { OrgRoleEnum } from '@newbee/shared/util';
+import type { OrgRoleEnum } from '../../enum';
 
 /**
  * The DTO sent from the frontend to the backend to create a new OrgMemberInviteEntity.

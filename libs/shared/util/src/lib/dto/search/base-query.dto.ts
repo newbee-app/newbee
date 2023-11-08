@@ -1,4 +1,4 @@
-import { SolrEntryEnum } from '@newbee/shared/util';
+import type { SolrEntryEnum } from '../../enum';
 import { BaseSuggestDto } from './base-suggest.dto';
 
 /**

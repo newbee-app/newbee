@@ -14,8 +14,7 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateQnaDto } from '@newbee/shared/data-access';
-import { Keyword, Team } from '@newbee/shared/util';
+import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
 
 /**
  * A dumb UI for creating a new doc.

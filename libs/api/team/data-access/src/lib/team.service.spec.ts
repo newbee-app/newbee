@@ -26,14 +26,12 @@ import {
 } from '@newbee/api/shared/data-access';
 import { TeamDocParams } from '@newbee/api/shared/util';
 import {
-  testBaseCreateTeamDto1,
-  testBaseUpdateTeamDto1,
-} from '@newbee/shared/data-access';
-import {
   internalServerError,
   nbDayjs,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
+  testBaseCreateTeamDto1,
+  testBaseUpdateTeamDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { v4 } from 'uuid';

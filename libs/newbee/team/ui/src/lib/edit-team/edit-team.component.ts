@@ -27,8 +27,8 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseUpdateTeamDto } from '@newbee/shared/data-access';
 import {
+  BaseUpdateTeamDto,
   Frequency,
   Keyword,
   OrgRoleEnum,

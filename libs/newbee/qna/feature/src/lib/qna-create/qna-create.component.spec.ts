@@ -3,8 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { CreateQnaComponent } from '@newbee/newbee/qna/ui';
 import { QnaActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseCreateQnaDto1 } from '@newbee/shared/data-access';
-import { testTeam1 } from '@newbee/shared/util';
+import { testBaseCreateQnaDto1, testTeam1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaCreateComponent } from './qna-create.component';
 
