@@ -34,9 +34,9 @@ import {
   OrgMemberNoUserOrg,
   OrgRoleEnum,
   durationToNumAndFreq,
-  nbDayjs,
   type Organization,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -191,7 +191,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   private get orgNumAndFreq(): { num: number; frequency: Frequency } {
     return durationToNumAndFreq(
-      nbDayjs.duration(this.organization.upToDateDuration),
+      dayjs.duration(this.organization.upToDateDuration),
     );
   }
 
@@ -265,7 +265,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
       ...(name && { name }),
       ...(upToDateDuration?.num &&
         upToDateDuration.frequency && {
-          upToDateDuration: nbDayjs
+          upToDateDuration: dayjs
             .duration(upToDateDuration.num, upToDateDuration.frequency)
             .toISOString(),
         }),

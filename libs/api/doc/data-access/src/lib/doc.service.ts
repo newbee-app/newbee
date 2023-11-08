@@ -13,12 +13,9 @@ import {
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
-import {
-  docSlugNotFound,
-  internalServerError,
-  nbDayjs,
-} from '@newbee/shared/util';
+import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { CreateDocDto, UpdateDocDto } from './dto';
 
@@ -134,10 +131,10 @@ export class DocService {
       ...(docHtml !== undefined && { docHtml }),
       updatedAt: updateTime,
       markedUpToDateAt: updateTime,
-      outOfDateAt: nbDayjs(updateTime)
+      outOfDateAt: dayjs(updateTime)
         .add(
           upToDateDuration
-            ? nbDayjs.duration(upToDateDuration)
+            ? dayjs.duration(upToDateDuration)
             : await doc.trueUpToDateDuration(),
         )
         .toDate(),
@@ -175,7 +172,7 @@ export class DocService {
     const now = new Date();
     const updatedDoc = this.em.assign(doc, {
       markedUpToDateAt: now,
-      outOfDateAt: nbDayjs(now)
+      outOfDateAt: dayjs(now)
         .add(await doc.trueUpToDateDuration())
         .toDate(),
     });

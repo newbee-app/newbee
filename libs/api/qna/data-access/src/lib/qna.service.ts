@@ -13,12 +13,9 @@ import {
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
-import {
-  internalServerError,
-  nbDayjs,
-  qnaSlugNotFound,
-} from '@newbee/shared/util';
+import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
 
@@ -145,10 +142,10 @@ export class QnaService {
       ...(newMaintainer && { maintainer: newMaintainer }),
       updatedAt: updateTime,
       markedUpToDateAt: updateTime,
-      outOfDateAt: nbDayjs(updateTime)
+      outOfDateAt: dayjs(updateTime)
         .add(
           upToDateDuration
-            ? nbDayjs.duration(upToDateDuration)
+            ? dayjs.duration(upToDateDuration)
             : await qna.trueUpToDateDuration(),
         )
         .toDate(),
@@ -186,7 +183,7 @@ export class QnaService {
     const now = new Date();
     const updatedQna = this.em.assign(qna, {
       markedUpToDateAt: now,
-      outOfDateAt: nbDayjs(now)
+      outOfDateAt: dayjs(now)
         .add(await qna.trueUpToDateDuration())
         .toDate(),
     });

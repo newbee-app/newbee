@@ -23,11 +23,11 @@ import { newOrgConfigset } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
-  nbDayjs,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import slugify from 'slug';
 import { v4 } from 'uuid';
 import { CreateOrganizationDto } from './dto';
@@ -278,10 +278,10 @@ export class OrganizationService {
         upToDateDuration: null,
       });
 
-      const newDuration = nbDayjs.duration(upToDateDuration);
+      const newDuration = dayjs.duration(upToDateDuration);
       [...docs, ...qnas].forEach((post) => {
         this.em.assign(post, {
-          outOfDateAt: nbDayjs(post.markedUpToDateAt).add(newDuration).toDate(),
+          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
         });
       });
       allDocs = allDocs.concat(docs);

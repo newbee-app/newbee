@@ -6,7 +6,8 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types';
-import { nbDayjs } from '../dayjs';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import {
   BaseCreateDocDto,
   BaseCreateOrgMemberInviteDto,
@@ -75,6 +76,8 @@ import type {
   TeamQueryResult,
 } from '../type';
 
+dayjs.extend(duration);
+
 /**
  * For internal use in creating a user challenge.
  */
@@ -88,7 +91,7 @@ export const testNow1 = new Date();
 /**
  * For internal use whenever we're working with dayjs.
  */
-export const testNowDayjs1 = nbDayjs(testNow1);
+export const testNowDayjs1 = dayjs(testNow1);
 
 /**
  * An example instance of Authenticator.
@@ -185,7 +188,7 @@ export const testPost1: Post = {
   title: 'This is the title of a post',
   slug: 'test-post-1-slug',
   upToDateDuration: null,
-  outOfDateAt: nbDayjs(testNow1).add(nbDayjs.duration('P6M')).toDate(),
+  outOfDateAt: dayjs(testNow1).add(dayjs.duration('P6M')).toDate(),
 };
 
 /**

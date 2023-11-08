@@ -35,12 +35,12 @@ import {
   TeamRoleEnum,
   compareOrgRoles,
   durationToNumAndFreq,
-  nbDayjs,
   type OrgMember,
   type Organization,
   type Team,
   type TeamMember,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -245,7 +245,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * The org's duration represented as a human-readable string.
    */
   get orgDurationStr(): string {
-    return nbDayjs.duration(this.organization.upToDateDuration).humanize();
+    return dayjs.duration(this.organization.upToDateDuration).humanize();
   }
 
   /**
@@ -254,7 +254,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   private get teamNumAndFreq(): { num: number; frequency: Frequency } | null {
     return !this.team.upToDateDuration
       ? null
-      : durationToNumAndFreq(nbDayjs.duration(this.team.upToDateDuration));
+      : durationToNumAndFreq(dayjs.duration(this.team.upToDateDuration));
   }
 
   /**
@@ -293,7 +293,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
       ...(name && { name }),
       upToDateDuration:
         upToDateDuration?.num && upToDateDuration.frequency
-          ? nbDayjs
+          ? dayjs
               .duration(upToDateDuration.num, upToDateDuration.frequency)
               .toISOString()
           : null,

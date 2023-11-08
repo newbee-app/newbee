@@ -20,11 +20,11 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   internalServerError,
-  nbDayjs,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { CreateTeamDto, UpdateTeamDto } from './dto';
 
@@ -247,12 +247,12 @@ export class TeamService {
         upToDateDuration: null,
       });
 
-      const newDuration = nbDayjs.duration(
+      const newDuration = dayjs.duration(
         upToDateDuration ?? team.organization.upToDateDuration,
       );
       [...docs, ...qnas].forEach((post) => {
         this.em.assign(post, {
-          outOfDateAt: nbDayjs(post.markedUpToDateAt).add(newDuration).toDate(),
+          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
         });
       });
 

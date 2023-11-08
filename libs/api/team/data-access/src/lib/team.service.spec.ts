@@ -27,13 +27,13 @@ import {
 import { TeamDocParams } from '@newbee/api/shared/util';
 import {
   internalServerError,
-  nbDayjs,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
   testBaseCreateTeamDto1,
   testBaseUpdateTeamDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { TeamService } from './team.service';
 
@@ -330,7 +330,7 @@ describe('TeamService', () => {
 
   describe('changeUpToDateDuration', () => {
     const newDurationStr = 'P1Y';
-    const newDuration = nbDayjs.duration(newDurationStr);
+    const newDuration = dayjs.duration(newDurationStr);
 
     beforeEach(() => {
       jest
@@ -358,12 +358,12 @@ describe('TeamService', () => {
       });
       expect(em.assign).toBeCalledTimes(2);
       expect(em.assign).toBeCalledWith(testDocEntity1, {
-        outOfDateAt: nbDayjs(testDocEntity1.markedUpToDateAt)
+        outOfDateAt: dayjs(testDocEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
       });
       expect(em.assign).toBeCalledWith(testQnaEntity1, {
-        outOfDateAt: nbDayjs(testQnaEntity1.markedUpToDateAt)
+        outOfDateAt: dayjs(testQnaEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
       });

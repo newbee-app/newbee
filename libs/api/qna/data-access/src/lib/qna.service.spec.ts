@@ -20,7 +20,6 @@ import { QnaDocParams, elongateUuid } from '@newbee/api/shared/util';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   internalServerError,
-  nbDayjs,
   qnaSlugNotFound,
   strToContent,
   testBaseCreateQnaDto1,
@@ -29,6 +28,7 @@ import {
   testNowDayjs1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { QnaService } from './qna.service';
 
@@ -226,7 +226,7 @@ describe('QnaService', () => {
       updatedAt: testNow1,
       markedUpToDateAt: testNow1,
       outOfDateAt: testNowDayjs1
-        .add(nbDayjs.duration(testBaseUpdateQnaDto1.upToDateDuration as string))
+        .add(dayjs.duration(testBaseUpdateQnaDto1.upToDateDuration as string))
         .toDate(),
     };
 

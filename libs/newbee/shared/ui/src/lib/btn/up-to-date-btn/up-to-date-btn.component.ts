@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { nbDayjs, type PostQueryResult } from '@newbee/shared/util';
+import { type PostQueryResult } from '@newbee/shared/util';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { TooltipComponent } from '../../tooltip';
+
+dayjs.extend(relativeTime);
 
 /**
  * A dumb UI that displays a green check mark if a post is up-to-date and a red x if it's not.
@@ -30,7 +34,7 @@ export class UpToDateBtnComponent {
    * @returns The time ago string for when the post was last marked up-to-date.
    */
   get lastMarkedUpToDate(): string {
-    return `Last marked up-to-date ${nbDayjs(
+    return `Last marked up-to-date ${dayjs(
       this.post.markedUpToDateAt,
     ).fromNow()}`;
   }

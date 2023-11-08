@@ -21,7 +21,6 @@ import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   docSlugNotFound,
   internalServerError,
-  nbDayjs,
   strToContent,
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
@@ -29,6 +28,7 @@ import {
   testNowDayjs1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { DocService } from './doc.service';
 
@@ -223,9 +223,7 @@ describe('DocService', () => {
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
-          .add(
-            nbDayjs.duration(testBaseUpdateDocDto1.upToDateDuration as string),
-          )
+          .add(dayjs.duration(testBaseUpdateDocDto1.upToDateDuration as string))
           .toDate(),
       });
       expect(em.flush).toBeCalledTimes(1);

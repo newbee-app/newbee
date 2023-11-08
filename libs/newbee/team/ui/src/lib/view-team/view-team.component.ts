@@ -11,11 +11,11 @@ import {
   Keyword,
   TeamRoleEnum,
   compareTeamRoles,
-  nbDayjs,
   type Organization,
   type TeamMember,
   type TeamNoOrg,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 
 /**
  * The dumb UI for viewing the details of a team.
@@ -77,7 +77,7 @@ export class ViewTeamComponent {
    * The team's up-to-date duration as a string.
    */
   get teamDurationStr(): string {
-    return nbDayjs
+    return dayjs
       .duration(
         this.team.team.upToDateDuration ?? this.organization.upToDateDuration,
       )

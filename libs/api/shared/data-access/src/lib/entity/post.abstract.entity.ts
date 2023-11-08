@@ -7,7 +7,8 @@ import {
   wrap,
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
-import { nbDayjs, type Post } from '@newbee/shared/util';
+import { type Post } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -110,9 +111,9 @@ export abstract class PostEntity implements Post {
     this.title = title;
     this.slug = shortenUuid(id);
     this.upToDateDuration = upToDateDuration;
-    this.outOfDateAt = nbDayjs(new Date())
+    this.outOfDateAt = dayjs(new Date())
       .add(
-        nbDayjs.duration(
+        dayjs.duration(
           upToDateDuration ??
             team?.upToDateDuration ??
             creator.organization.upToDateDuration,
@@ -126,7 +127,7 @@ export abstract class PostEntity implements Post {
    */
   async trueUpToDateDuration(): Promise<Duration> {
     if (this.upToDateDuration) {
-      return nbDayjs.duration(this.upToDateDuration);
+      return dayjs.duration(this.upToDateDuration);
     } else if (this.team) {
       const wrappedTeam = wrap(this.team);
       if (!wrappedTeam.isInitialized()) {
@@ -134,7 +135,7 @@ export abstract class PostEntity implements Post {
       }
 
       if (this.team.upToDateDuration) {
-        return nbDayjs.duration(this.team.upToDateDuration);
+        return dayjs.duration(this.team.upToDateDuration);
       }
     }
 
@@ -143,6 +144,6 @@ export abstract class PostEntity implements Post {
       await wrappedOrg.init();
     }
 
-    return nbDayjs.duration(this.organization.upToDateDuration);
+    return dayjs.duration(this.organization.upToDateDuration);
   }
 }

@@ -32,9 +32,9 @@ import {
   BaseCreateTeamDto,
   Frequency,
   Keyword,
-  nbDayjs,
   type Organization,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -123,7 +123,7 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
    * The org's duration represented as a human-readable string.
    */
   get orgDurationStr(): string {
-    return nbDayjs.duration(this.organization.upToDateDuration).humanize();
+    return dayjs.duration(this.organization.upToDateDuration).humanize();
   }
 
   /**
@@ -203,9 +203,7 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
       name: name as string,
       slug: slug as string,
       upToDateDuration:
-        num && frequency
-          ? nbDayjs.duration(num, frequency).toISOString()
-          : null,
+        num && frequency ? dayjs.duration(num, frequency).toISOString() : null,
     };
     this.create.emit(createTeamDto);
   }

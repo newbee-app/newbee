@@ -32,8 +32,8 @@ import {
   BaseCreateOrganizationDto,
   Frequency,
   Keyword,
-  nbDayjs,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -205,7 +205,7 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
     const createOrganizationDto: BaseCreateOrganizationDto = {
       name: name ?? '',
       slug: slug ?? '',
-      upToDateDuration: nbDayjs.duration(num, frequency).toISOString(),
+      upToDateDuration: dayjs.duration(num, frequency).toISOString(),
     };
     this.create.emit(createOrganizationDto);
   }

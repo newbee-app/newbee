@@ -1,6 +1,5 @@
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
 import { EditUserComponent } from './edit-user.component';
 
@@ -62,7 +61,7 @@ describe('EditUserComponent', () => {
         expect(component.edit.emit).toBeCalledWith({
           name: testUser1.name,
           displayName: testUser1.displayName,
-          phoneNumber: testPhoneInput1,
+          phoneNumber: testUser1.phoneNumber,
         });
       });
     });
@@ -88,14 +87,14 @@ describe('EditUserComponent', () => {
     it('startEditAuthenticator should add authenticator ID to editingAuthenticators', () => {
       component.startEditAuthenticator(testAuthenticator1.id);
       expect(
-        component.editingAuthenticators.has(testAuthenticator1.id)
+        component.editingAuthenticators.has(testAuthenticator1.id),
       ).toBeTruthy();
     });
 
     it('cancelEditAuthenticator should delete authenticator ID from editingAuthenticators', () => {
       component.cancelEditAuthenticator(testAuthenticator1.id);
       expect(
-        component.editingAuthenticators.has(testAuthenticator1.id)
+        component.editingAuthenticators.has(testAuthenticator1.id),
       ).toBeFalsy();
     });
   });

@@ -7,7 +7,6 @@ import {
 import {
   SolrEntryEnum,
   TeamRoleEnum,
-  nbDayjs,
   testAuthenticator1,
   testChallenge1,
   testDoc1,
@@ -25,6 +24,7 @@ import type {
   QueryResponse,
   ResponseHeader,
 } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -132,7 +132,7 @@ export const testDocEntity1 = {
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
   trueUpToDateDuration: async () =>
-    nbDayjs.duration(testOrganization1.upToDateDuration),
+    dayjs.duration(testOrganization1.upToDateDuration),
 } as DocEntity;
 
 /**
@@ -149,7 +149,7 @@ export const testQnaEntity1 = {
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
   trueUpToDateDuration: async () =>
-    nbDayjs.duration(testOrganization1.upToDateDuration),
+    dayjs.duration(testOrganization1.upToDateDuration),
 } as QnaEntity;
 
 /**
