@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { RegisterFormComponent } from '@newbee/newbee/auth/ui';
-import { testRegisterForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Keyword, testBaseCreateUserDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -49,7 +48,7 @@ describe('RegisterComponent', () => {
 
   describe('onRegister', () => {
     it('should dispatch registerWithWebAuthn action', () => {
-      component.onRegister(testRegisterForm1);
+      component.onRegister(testBaseCreateUserDto1);
       expect(store.dispatch).toBeCalledWith(
         AuthActions.registerWithWebAuthn({
           createUserDto: testBaseCreateUserDto1,

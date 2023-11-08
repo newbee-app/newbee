@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
-import { LoginForm, loginFormToDto } from '@newbee/newbee/auth/util';
 import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { BaseEmailDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -38,25 +37,19 @@ export class LoginComponent {
   /**
    * When the dumb UI emits `webauthn`, send a `[Auth] Get WebAuthn Login Challenge` action with the value of the login form.
    *
-   * @param loginForm The login form to feed into the login request.
+   * @param emailDto The email to feed into the login request.
    */
-  onWebAuthn(loginForm: Partial<LoginForm>): void {
-    this.store.dispatch(
-      AuthActions.createWebAuthnLoginOptions({
-        emailDto: loginFormToDto(loginForm),
-      }),
-    );
+  onWebAuthn(emailDto: BaseEmailDto): void {
+    this.store.dispatch(AuthActions.createWebAuthnLoginOptions({ emailDto }));
   }
 
   /**
    * When the dumb UI emits `magicLinkLogin`, send a `[Auth] Send Login Magic Link` action with the value of the login form.
    *
-   * @param loginForm The login form to feed into the login request.
+   * @param emailDto The email to feed into the login request.
    */
-  onMagicLinkLogin(loginForm: Partial<LoginForm>): void {
-    this.store.dispatch(
-      AuthActions.sendLoginMagicLink({ emailDto: loginFormToDto(loginForm) }),
-    );
+  onMagicLinkLogin(emailDto: BaseEmailDto): void {
+    this.store.dispatch(AuthActions.sendLoginMagicLink({ emailDto }));
   }
 
   /**

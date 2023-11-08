@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RegisterForm } from '@newbee/newbee/auth/util';
 import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
@@ -11,8 +10,9 @@ import {
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  phoneInputToString,
 } from '@newbee/newbee/shared/util';
-import { Keyword } from '@newbee/shared/util';
+import { BaseCreateUserDto, Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -44,7 +44,7 @@ export class RegisterFormComponent {
   /**
    * The emitted register form, for use in the smart UI parent.
    */
-  @Output() register = new EventEmitter<Partial<RegisterForm>>();
+  @Output() register = new EventEmitter<BaseCreateUserDto>();
 
   /**
    * An HTTP error for the component, if one exists.
@@ -112,7 +112,16 @@ export class RegisterFormComponent {
    * Emit the `register` output.
    */
   emitRegister(): void {
-    this.register.emit(this.registerForm.value);
+    const { email, name, displayName, phoneNumber } = this.registerForm.value;
+    const phoneNumberString = phoneNumber
+      ? phoneInputToString(phoneNumber)
+      : null;
+    this.register.emit({
+      email: email ?? '',
+      name: name ?? '',
+      displayName: displayName || null,
+      phoneNumber: phoneNumberString,
+    });
   }
 
   /**

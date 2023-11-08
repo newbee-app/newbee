@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { testUser1 } from '@newbee/shared/util';
-
 import { LoginFormComponent } from './login-form.component';
 
 describe('LoginFormComponent', () => {
@@ -88,7 +87,7 @@ describe('LoginFormComponent', () => {
       beforeEach(() => {
         navigateToRegisterEmitSpy = jest.spyOn(
           component.navigateToRegister,
-          'emit'
+          'emit',
         );
       });
 

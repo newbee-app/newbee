@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { LoginFormComponent } from '@newbee/newbee/auth/ui';
-import { testLoginForm1 } from '@newbee/newbee/auth/util';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Keyword, testBaseEmailDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -43,7 +42,7 @@ describe('LoginComponent', () => {
 
   describe('onWebAuthn', () => {
     it('should dispatch createWebAuthnLoginOptions', () => {
-      component.onWebAuthn(testLoginForm1);
+      component.onWebAuthn(testBaseEmailDto1);
       expect(store.dispatch).toBeCalledWith(
         AuthActions.createWebAuthnLoginOptions({ emailDto: testBaseEmailDto1 }),
       );
@@ -52,7 +51,7 @@ describe('LoginComponent', () => {
 
   describe('onMagicLinkLogin', () => {
     it('should dispatch sendLoginMagicLink action', () => {
-      component.onMagicLinkLogin(testLoginForm1);
+      component.onMagicLinkLogin(testBaseEmailDto1);
       expect(store.dispatch).toBeCalledWith(
         AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
       );

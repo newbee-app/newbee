@@ -6,7 +6,7 @@ import {
   UserActions,
 } from '@newbee/newbee/shared/data-access';
 import { userFeature } from '@newbee/newbee/user/data-access';
-import { EditUserForm, editUserFormToDto } from '@newbee/newbee/user/util';
+import { BaseUpdateUserDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -36,21 +36,21 @@ export class UserEditComponent {
    * Whether the add authenticator action is pending.
    */
   addAuthenticatorsPending$ = this.store.select(
-    userFeature.selectPendingAddAuthenticator
+    userFeature.selectPendingAddAuthenticator,
   );
 
   /**
    * Whether the edit authenticator action is pending.
    */
   editAuthenticatorPending$ = this.store.select(
-    userFeature.selectPendingEditAuthenticator
+    userFeature.selectPendingEditAuthenticator,
   );
 
   /**
    * Whether the delete authenticator action is pending.
    */
   deleteAuthenticatorPending$ = this.store.select(
-    userFeature.selectPendingDeleteAuthenticator
+    userFeature.selectPendingDeleteAuthenticator,
   );
 
   /**
@@ -68,12 +68,10 @@ export class UserEditComponent {
   /**
    * When the dumb UI emits an edit event, send an edit action with the value of the edit form.
    *
-   * @param editUserForm The values to send to the backend.
+   * @param updateUserDto The values to send to the backend.
    */
-  onEdit(editUserForm: Partial<EditUserForm>): void {
-    this.store.dispatch(
-      UserActions.editUser({ updateUserDto: editUserFormToDto(editUserForm) })
-    );
+  onEdit(updateUserDto: BaseUpdateUserDto): void {
+    this.store.dispatch(UserActions.editUser({ updateUserDto }));
   }
 
   /**

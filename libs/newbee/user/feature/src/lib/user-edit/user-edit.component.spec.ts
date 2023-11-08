@@ -5,7 +5,6 @@ import {
   UserActions,
 } from '@newbee/newbee/shared/data-access';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
-import { testEditUserForm1 } from '@newbee/newbee/user/util';
 import {
   testAuthenticator1,
   testBaseUpdateUserDto1,
@@ -65,7 +64,7 @@ describe('UserEditComponent', () => {
 
   describe('onEdit', () => {
     it('should dispatch editUser', () => {
-      component.onEdit(testEditUserForm1);
+      component.onEdit(testBaseUpdateUserDto1);
       expect(store.dispatch).toBeCalledWith(
         UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
       );

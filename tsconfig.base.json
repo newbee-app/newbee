@@ -112,7 +112,6 @@
       ],
       "@newbee/newbee/auth/feature": ["libs/newbee/auth/feature/src/index.ts"],
       "@newbee/newbee/auth/ui": ["libs/newbee/auth/ui/src/index.ts"],
-      "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
       "@newbee/newbee/home/feature": ["libs/newbee/home/feature/src/index.ts"],
       "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
       "@newbee/newbee/invite/data-access": [
@@ -173,7 +172,6 @@
       ],
       "@newbee/newbee/user/feature": ["libs/newbee/user/feature/src/index.ts"],
       "@newbee/newbee/user/ui": ["libs/newbee/user/ui/src/index.ts"],
-      "@newbee/newbee/user/util": ["libs/newbee/user/util/src/index.ts"],
       "@newbee/ngx-codemirror": [
         "libs/publishable/ngx-codemirror/src/index.ts"
       ],
