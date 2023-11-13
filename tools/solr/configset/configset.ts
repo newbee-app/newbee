@@ -117,7 +117,6 @@ async function create(options: OptionValues): Promise<void> {
   const textField = '_text_';
   const spellcheckText = '_spellcheck_text_';
   const suggestText = '_suggest_text_';
-  const suggestNGramText = '_suggest_n_gram_text_';
   const slug = 'slug';
   const userName = 'user_name';
   const userDisplayName = 'user_display_name';
@@ -137,35 +136,14 @@ async function create(options: OptionValues): Promise<void> {
   const questionTxt = 'question_txt';
   const answerTxt = 'answer_txt';
   const commonCopyFields = [textField, spellcheckText];
-  const suggestCopyFields = [
-    ...commonCopyFields,
-    suggestText,
-    suggestNGramText,
-  ];
+  const suggestCopyFields = [...commonCopyFields, suggestText];
 
   // Related to request handlers
   const defaultName = 'default';
+  const suggest = 'suggest';
   const spellcheck = 'spellcheck';
   const solrSpellCheckComponent = 'solr.SpellCheckComponent';
   const solrSearchHandler = 'solr.SearchHandler';
-  const highlightFields = [docTxt, questionTxt, answerTxt];
-  const searchDefaults = {
-    wt: 'json',
-    indent: 'true',
-    defType: 'edismax',
-  };
-  const spellcheckDefaults = {
-    spellcheck: 'true',
-    'spellcheck.count': '1',
-    'spellcheck.alternativeTermCount': '5',
-    'spellcheck.extendedResults': 'true',
-    'spellcheck.collate': 'true',
-    'spellcheck.maxCollations': '1',
-    'spellcheck.maxCollationTries': '10',
-    'spellcheck.collateExtendedResults': 'true',
-    'spellcheck.maxResultsForSuggest': '3',
-    'spellcheck.dictionary': defaultName,
-  };
 
   const solrCli = createSolrCli(options);
 
@@ -275,14 +253,7 @@ async function create(options: OptionValues): Promise<void> {
         name: suggestText,
         type: basicText,
         multiValued: true,
-        stored: false,
-      },
-      // Only includes titles and such, no body text
-      {
-        name: suggestNGramText,
-        type: edgeNGramText,
-        multiValued: true,
-        stored: false,
+        stored: true,
       },
 
       // Required on all entries to distinguish them
@@ -343,7 +314,22 @@ async function create(options: OptionValues): Promise<void> {
 
     // Turn on auto soft commits
     'set-property': {
-      'updateHandler.autoSoftCommit.maxTime': 60000,
+      'updateHandler.autoSoftCommit.maxTime': 60000, // 1 min
+      'updateHandler.autoCommit.maxTime': 300000, // 5 mins
+    },
+
+    // Add a suggester search component
+    'add-searchcomponent': {
+      name: suggest,
+      class: 'solr.SuggestComponent',
+      suggester: {
+        name: defaultName,
+        lookupImpl: 'BlendedInfixLookupFactory',
+        dictionaryImpl: 'DocumentDictionaryFactory',
+        field: suggestText,
+        suggestAnalyzerFieldType: basicText,
+        contextField: outOfDateAt,
+      },
     },
 
     // Modify spellcheck to use _basic_text_ and basic_text instead of _text_ and text_general
@@ -370,27 +356,38 @@ async function create(options: OptionValues): Promise<void> {
       name: '/query',
       class: solrSearchHandler,
       defaults: {
-        ...searchDefaults,
-        ...spellcheckDefaults,
+        wt: 'json',
+        indent: 'true',
+        defType: 'edismax',
+        spellcheck: 'true',
+        'spellcheck.count': '1',
+        'spellcheck.alternativeTermCount': '5',
+        'spellcheck.extendedResults': 'true',
+        'spellcheck.collate': 'true',
+        'spellcheck.maxCollations': '1',
+        'spellcheck.maxCollationTries': '10',
+        'spellcheck.collateExtendedResults': 'true',
+        'spellcheck.maxResultsForSuggest': '3',
+        'spellcheck.dictionary': defaultName,
         hl: 'true',
+        'hl.fl': [docTxt, questionTxt, answerTxt],
         'hl.tag.pre': '<strong>',
         'hl.tag.post': '</strong>',
         'hl.defaultSummary': 'true',
-        'hl.fl': highlightFields,
       },
       'last-components': [spellcheck],
     },
 
-    // Add a request handler to generate suggestions based on titles
+    // Add a request handler to generate suggestions based on the suggest copy fields
     'add-requesthandler': {
       name: '/suggest',
       class: solrSearchHandler,
       defaults: {
-        ...searchDefaults,
-        ...spellcheckDefaults,
-        qf: `${suggestText}^10 ${suggestNGramText}`,
+        suggest: 'true',
+        'suggest.count': '10',
+        'suggest.dictionary': defaultName,
       },
-      'last-components': [spellcheck],
+      components: [suggest],
     },
   });
   console.log(

@@ -47,6 +47,14 @@ export class OrganizationEntity implements Organization {
   upToDateDuration: string;
 
   /**
+   * When the Solr suggester for the org was last built.
+   * Used to help determine whether the org's suggester should be built, which should only happen once per day.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ hidden: true })
+  suggesterBuiltAt: Date = new Date();
+
+  /**
    * All of the teams that belong to the organization.
    * `orphanRemoval` is on, so if the organization is deleted, so is its teams.
    * Additionally, if a team is removed from the collection, it is also deleted.

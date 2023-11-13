@@ -11,6 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
   DocEntity,
   EntityService,
@@ -34,6 +35,7 @@ import {
   organizationSlugTakenBadRequest,
   testBaseCreateOrganizationDto1,
   testBaseUpdateOrganizationDto1,
+  testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -58,6 +60,7 @@ describe('OrganizationService', () => {
   let em: EntityManager;
   let entityService: EntityService;
   let teamService: TeamService;
+  let searchService: SearchService;
   let solrCli: SolrCli;
 
   const testOrganizationEntity = createMock<OrganizationEntity>({
@@ -98,6 +101,10 @@ describe('OrganizationService', () => {
           }),
         },
         {
+          provide: SearchService,
+          useValue: createMock<SearchService>(),
+        },
+        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -108,11 +115,14 @@ describe('OrganizationService', () => {
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     teamService = module.get<TeamService>(TeamService);
+    searchService = module.get<SearchService>(SearchService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrganizationEntity.mockReturnValue(testOrganizationEntity);
     mockV4.mockReturnValue(testOrganizationEntity.id);
+
+    jest.useFakeTimers().setSystemTime(testNow1);
   });
 
   it('should be defined', () => {
@@ -120,6 +130,7 @@ describe('OrganizationService', () => {
     expect(em).toBeDefined();
     expect(entityService).toBeDefined();
     expect(teamService).toBeDefined();
+    expect(searchService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -218,6 +229,31 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
+      expect(searchService.buildSuggester).not.toBeCalled();
+    });
+
+    it(`should build the suggester if it's been at least a day since last build`, async () => {
+      const testOrganizationEntity2: OrganizationEntity = {
+        ...testOrganizationEntity,
+        suggesterBuiltAt: dayjs().subtract(1, 'day').toDate(),
+      };
+      jest
+        .spyOn(em, 'findOneOrFail')
+        .mockResolvedValue(testOrganizationEntity2);
+      jest.spyOn(em, 'assign').mockReturnValue(testOrganizationEntity);
+
+      await expect(
+        service.findOneBySlug(testOrganizationEntity.slug),
+      ).resolves.toEqual(testOrganizationEntity);
+      expect(searchService.buildSuggester).toBeCalledTimes(1);
+      expect(searchService.buildSuggester).toBeCalledWith(
+        testOrganizationEntity,
+      );
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(testOrganizationEntity, {
+        suggesterBuiltAt: testNow1,
+      });
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {

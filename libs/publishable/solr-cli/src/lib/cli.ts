@@ -117,14 +117,14 @@ export class SolrCli {
    */
   async query(
     collectionName: string,
-    params: QueryParams
+    params: QueryParams,
   ): Promise<QueryResponse> {
     try {
       return (
         await axios.post(
           queryUrl(this.solrUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -142,14 +142,14 @@ export class SolrCli {
    */
   async suggest(
     collectionName: string,
-    params: QueryParams
+    params: QueryParams,
   ): Promise<QueryResponse> {
     try {
       return (
         await axios.post(
           suggestUrl(this.solrUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -182,14 +182,14 @@ export class SolrCli {
    * @returns The status of the request and the new core names. If the status is anything other than "success", an error message will explain why the request failed.
    */
   async createCollection(
-    params: CreateCollectionParams
+    params: CreateCollectionParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           this.collectionsApiUrl,
           { create: params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -210,7 +210,7 @@ export class SolrCli {
       return (
         await axios.delete(
           `${this.collectionsApiUrl}/${name}${async ? `?async=${async}` : ''}`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -228,13 +228,13 @@ export class SolrCli {
    */
   async realTimeGetById(
     collectionName: string,
-    id: string
+    id: string,
   ): Promise<RealTimeGetByIdResponse> {
     try {
       return (
         await axios.get(
           `${realTimeGetUrl(this.collectionsApiUrl, collectionName)}?id=${id}`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -254,16 +254,16 @@ export class SolrCli {
   async realTimeGetByIds(
     collectionName: string,
     ids: string[],
-    fq?: string
+    fq?: string,
   ): Promise<QueryResponse> {
     try {
       return (
         await axios.get(
           `${realTimeGetUrl(
             this.collectionsApiUrl,
-            collectionName
+            collectionName,
           )}?ids=${ids.join(',')}${fq ? `&fq=${fq}` : ''}`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -286,14 +286,14 @@ export class SolrCli {
    */
   async addDocs(
     collectionName: string,
-    params: AddDocParams | AddDocParams[]
+    params: AddDocParams | AddDocParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           updateJsonDocsUrl(this.solrUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -311,14 +311,14 @@ export class SolrCli {
    */
   async deleteDocs(
     collectionName: string,
-    params: DeleteDocParams | DeleteDocParams[]
+    params: DeleteDocParams | DeleteDocParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           updateJsonUrl(this.solrUrl, collectionName),
           { delete: params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -336,14 +336,14 @@ export class SolrCli {
    */
   async updateDocs(
     collectionName: string,
-    params: UpdateDocParams | UpdateDocParams[]
+    params: UpdateDocParams | UpdateDocParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           updateJsonUrl(this.solrUrl, collectionName),
           Array.isArray(params) ? params : [params],
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -361,13 +361,13 @@ export class SolrCli {
    */
   async getVersionAndReplaceDocs(
     collectionName: string,
-    params: AddDocParams | AddDocParams[]
+    params: AddDocParams | AddDocParams[],
   ): Promise<SolrResponse> {
     const paramsArray = Array.isArray(params) ? params : [params];
     const ids = paramsArray.map((param) => param.id);
     const res = await this.realTimeGetByIds(collectionName, ids);
     paramsArray.forEach((param, index) => {
-      const version = res.response.docs[index]?._version_ ?? null;
+      const version = res.response?.docs[index]?._version_ ?? null;
       if (version) {
         param._version_ = version;
       }
@@ -385,13 +385,13 @@ export class SolrCli {
    */
   async getVersionAndUpdateDocs(
     collectionName: string,
-    params: UpdateDocParams | UpdateDocParams[]
+    params: UpdateDocParams | UpdateDocParams[],
   ): Promise<SolrResponse> {
     const paramsArray = Array.isArray(params) ? params : [params];
     const ids = paramsArray.map((param) => param.id);
     const res = await this.realTimeGetByIds(collectionName, ids);
     paramsArray.forEach((param, index) => {
-      const version = res.response.docs[index]?._version_ ?? null;
+      const version = res.response?.docs[index]?._version_ ?? null;
       if (version) {
         param._version_ = version;
       }
@@ -409,14 +409,14 @@ export class SolrCli {
    */
   async bulkDocRequest(
     collectionName: string,
-    params: BulkDocRequestParams
+    params: BulkDocRequestParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           updateJsonUrl(this.solrUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -455,7 +455,7 @@ export class SolrCli {
     name: string,
     path: string,
     filePath?: string,
-    params?: UploadConfigsetParams
+    params?: UploadConfigsetParams,
   ): Promise<SolrResponse> {
     let stringParams: { [params: string]: string } | null = null;
     if (params) {
@@ -480,7 +480,7 @@ export class SolrCli {
           {
             ...this.defaultHeader,
             ...octetStreamHeader,
-          }
+          },
         )
       ).data;
     } catch (err) {
@@ -501,7 +501,7 @@ export class SolrCli {
         await axios.post(
           this.configsetApiUrl,
           { create: params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -521,7 +521,7 @@ export class SolrCli {
       return (
         await axios.delete(
           `${this.configsetApiUrl}/${name}`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -541,13 +541,13 @@ export class SolrCli {
    * @returns The status of the request and the config.
    */
   async retrieveConfig(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveConfigResponse> {
     try {
       return (
         await axios.get(
           configUrl(this.collectionsApiUrl, collectionName),
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -563,13 +563,13 @@ export class SolrCli {
    * @returns The status of the request and the config overlay.
    */
   async retrieveConfigOverlay(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveConfigOverlayResponse> {
     try {
       return (
         await axios.get(
           configOverlayUrl(this.collectionsApiUrl, collectionName),
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -587,14 +587,14 @@ export class SolrCli {
    */
   async setProperty(
     collectionName: string,
-    params: ConfigProperty
+    params: ConfigProperty,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'set-property': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -612,14 +612,14 @@ export class SolrCli {
    */
   async unsetProperty(
     collectionName: string,
-    properties: string | string[]
+    properties: string | string[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'unset-property': properties },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -637,14 +637,14 @@ export class SolrCli {
    */
   async setUserProperty(
     collectionName: string,
-    params: ConfigProperty
+    params: ConfigProperty,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'set-user-property': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -662,14 +662,14 @@ export class SolrCli {
    */
   async unsetUserProperty(
     collectionName: string,
-    properties: string | string[]
+    properties: string | string[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'unset-user-property': properties },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -687,14 +687,14 @@ export class SolrCli {
    */
   async addRequestHandler(
     collectionName: string,
-    params: AddRequestHandlerParams | AddRequestHandlerParams[]
+    params: AddRequestHandlerParams | AddRequestHandlerParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'add-requesthandler': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -712,14 +712,14 @@ export class SolrCli {
    */
   async updateRequestHandler(
     collectionName: string,
-    params: AddRequestHandlerParams | AddRequestHandlerParams[]
+    params: AddRequestHandlerParams | AddRequestHandlerParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'update-requesthandler': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -737,14 +737,14 @@ export class SolrCli {
    */
   async deleteRequestHandler(
     collectionName: string,
-    handlers: string | string[]
+    handlers: string | string[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'delete-requesthandler': handlers },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -762,14 +762,14 @@ export class SolrCli {
    */
   async addSearchComponent(
     collectionName: string,
-    params: AddSearchComponentParams | AddSearchComponentParams[]
+    params: AddSearchComponentParams | AddSearchComponentParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'add-searchcomponent': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -787,14 +787,14 @@ export class SolrCli {
    */
   async updateSearchComponent(
     collectionName: string,
-    params: AddSearchComponentParams | AddSearchComponentParams[]
+    params: AddSearchComponentParams | AddSearchComponentParams[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'update-searchcomponent': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -812,14 +812,14 @@ export class SolrCli {
    */
   async deleteSearchComponent(
     collectionName: string,
-    components: string | string[]
+    components: string | string[],
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           { 'delete-searchcomponent': components },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -837,14 +837,14 @@ export class SolrCli {
    */
   async bulkConfigRequest(
     collectionName: string,
-    params: BulkConfigRequestParams
+    params: BulkConfigRequestParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           configUrl(this.collectionsApiUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -864,13 +864,13 @@ export class SolrCli {
    * @returns The status of the request and the collection's schema.
    */
   async retrieveSchema(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveSchemaResponse> {
     try {
       return (
         await axios.get(
           schemaUrl(this.collectionsApiUrl, collectionName),
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -886,13 +886,13 @@ export class SolrCli {
    * @returns The status of the request and the collection's field types.
    */
   async retrieveFieldTypes(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveFieldTypesResponse> {
     try {
       return (
         await axios.get(
           `${schemaUrl(this.collectionsApiUrl, collectionName)}/fieldtypes`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -908,13 +908,13 @@ export class SolrCli {
    * @returns The status of the request and the collection's fields.
    */
   async retrieveFields(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveFieldsResponse> {
     try {
       return (
         await axios.get(
           `${schemaUrl(this.collectionsApiUrl, collectionName)}/fields`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -930,13 +930,13 @@ export class SolrCli {
    * @returns The status of the request and the collection's dynamic fields.
    */
   async retrieveDynamicFields(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveDynamicFieldsResponse> {
     try {
       return (
         await axios.get(
           `${schemaUrl(this.collectionsApiUrl, collectionName)}/dynamicfields`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -952,13 +952,13 @@ export class SolrCli {
    * @returns The status of the request and the collection's copy fields.
    */
   async retrieveCopyFields(
-    collectionName: string
+    collectionName: string,
   ): Promise<RetrieveCopyFieldsResponse> {
     try {
       return (
         await axios.get(
           `${schemaUrl(this.collectionsApiUrl, collectionName)}/copyfields`,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -976,14 +976,14 @@ export class SolrCli {
    */
   async addFieldType(
     collectionName: string,
-    params: AddFieldTypeParams
+    params: AddFieldTypeParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'add-field-type': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1001,14 +1001,14 @@ export class SolrCli {
    */
   async deleteFieldType(
     collectionName: string,
-    params: DeleteFieldParams
+    params: DeleteFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'delete-field-type': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1026,14 +1026,14 @@ export class SolrCli {
    */
   async replaceFieldType(
     collectionName: string,
-    params: AddFieldTypeParams
+    params: AddFieldTypeParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'replace-field-type': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1051,14 +1051,14 @@ export class SolrCli {
    */
   async addField(
     collectionName: string,
-    params: AddFieldParams
+    params: AddFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'add-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1076,14 +1076,14 @@ export class SolrCli {
    */
   async deleteField(
     collectionName: string,
-    params: DeleteFieldParams
+    params: DeleteFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'delete-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1101,14 +1101,14 @@ export class SolrCli {
    */
   async replaceField(
     collectionName: string,
-    params: AddFieldParams
+    params: AddFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'replace-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1126,14 +1126,14 @@ export class SolrCli {
    */
   async addDynamicField(
     collectionName: string,
-    params: AddDynamicFieldParams
+    params: AddDynamicFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'add-dynamic-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1151,14 +1151,14 @@ export class SolrCli {
    */
   async deleteDynamicField(
     collectionName: string,
-    params: DeleteFieldParams
+    params: DeleteFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'delete-dynamic-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1176,14 +1176,14 @@ export class SolrCli {
    */
   async replaceDynamicField(
     collectionName: string,
-    params: AddDynamicFieldParams
+    params: AddDynamicFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'replace-dynamic-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1201,14 +1201,14 @@ export class SolrCli {
    */
   async addCopyField(
     collectionName: string,
-    params: AddCopyFieldParams
+    params: AddCopyFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'add-copy-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1226,14 +1226,14 @@ export class SolrCli {
    */
   async deleteCopyField(
     collectionName: string,
-    params: CopyFieldParams
+    params: CopyFieldParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           { 'delete-copy-field': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1251,14 +1251,14 @@ export class SolrCli {
    */
   async bulkSchemaRequest(
     collectionName: string,
-    params: BulkSchemaRequestParams
+    params: BulkSchemaRequestParams,
   ): Promise<SolrResponse> {
     try {
       return (
         await axios.post(
           schemaUrl(this.collectionsApiUrl, collectionName),
           params,
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1283,7 +1283,7 @@ export class SolrCli {
         await axios.post(
           this.authApiUrl,
           { 'set-user': params },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {
@@ -1304,7 +1304,7 @@ export class SolrCli {
         await axios.post(
           this.authApiUrl,
           { 'delete-user': usernames },
-          this.defaultHeader
+          this.defaultHeader,
         )
       ).data;
     } catch (err) {

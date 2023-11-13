@@ -33,19 +33,19 @@ export abstract class PostEntity implements Post {
    * @inheritdoc
    */
   @Property()
-  createdAt = new Date();
+  createdAt: Date = new Date();
 
   /**
    * @inheritdoc
    */
   @Property()
-  updatedAt = this.createdAt;
+  updatedAt: Date = this.createdAt;
 
   /**
    * @inheritdoc
    */
   @Property()
-  markedUpToDateAt = this.createdAt;
+  markedUpToDateAt: Date = this.createdAt;
 
   /**
    * @inheritdoc

@@ -327,7 +327,7 @@ export const testTeamQueryResult1: TeamQueryResult = {
  * Strictly for use in testing.
  */
 export const testDocQueryResult1: DocQueryResult = {
-  doc: { ...testPost1, docSnippet: testDoc1.docMarkdoc },
+  doc: { ...testPost1, docSnippet: `<p>A <b>bolded</b> doc snippet</p>` },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser1,
   team: testTeamQueryResult1,
@@ -340,8 +340,8 @@ export const testDocQueryResult1: DocQueryResult = {
 export const testQnaQueryResult1: QnaQueryResult = {
   qna: {
     ...testPost1,
-    questionSnippet: testQna1.questionMarkdoc,
-    answerSnippet: testQna1.answerMarkdoc,
+    questionSnippet: `<p>A <b>bolded</b> question snippet</p>`,
+    answerSnippet: `<p>A <b>bolded</b> answer snippet</p>`,
   },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser1,
@@ -727,7 +727,7 @@ export const testBaseQueryDto1: BaseQueryDto = {
  * Strictly for use in testing.
  */
 export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
-  suggestions: [`<strong>${testTeamQueryResult1.name}</strong>`],
+  suggestions: [testTeamQueryResult1.name],
 };
 
 /**

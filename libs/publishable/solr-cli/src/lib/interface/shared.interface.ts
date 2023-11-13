@@ -269,7 +269,7 @@ export interface Spellcheck {
           collationQuery: string;
           hits: number;
           misspellingsAndCorrections: string[];
-        }
+        },
       ]
     | [];
 }
@@ -286,7 +286,7 @@ export interface QueryResponse {
   /**
    * The response object.
    */
-  response: DocsResponse;
+  response?: DocsResponse;
 
   /**
    * Highlighted fields, if highlighting was requested.

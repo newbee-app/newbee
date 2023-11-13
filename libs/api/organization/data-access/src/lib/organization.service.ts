@@ -11,6 +11,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
   DocEntity,
   EntityService,
@@ -47,6 +48,7 @@ export class OrganizationService {
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly teamService: TeamService,
+    private readonly searchService: SearchService,
     private readonly solrCli: SolrCli,
   ) {}
 
@@ -132,6 +134,7 @@ export class OrganizationService {
 
   /**
    * Finds the `OrganizationEntity` in the database associated with the given slug.
+   * Also builds the suggester for the org, if it's been at least a day since it was last built.
    *
    * @param slug The slug to look for.
    *
@@ -141,8 +144,27 @@ export class OrganizationService {
    */
   async findOneBySlug(slug: string): Promise<OrganizationEntity> {
     try {
-      return await this.em.findOneOrFail(OrganizationEntity, { slug });
+      let organization = await this.em.findOneOrFail(OrganizationEntity, {
+        slug,
+      });
+
+      // If it's been a day or more since the suggester was last built, build the suggester for the org
+      const now = new Date();
+      if (
+        now.getTime() - organization.suggesterBuiltAt.getTime() >=
+        86400000 /* 1 day in ms */
+      ) {
+        await this.searchService.buildSuggester(organization);
+        organization = this.em.assign(organization, { suggesterBuiltAt: now });
+        await this.em.flush();
+      }
+
+      return organization;
     } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {

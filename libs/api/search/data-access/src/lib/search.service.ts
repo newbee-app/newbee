@@ -21,7 +21,6 @@ import {
   SolrEntryEnum,
   TeamQueryResult,
   internalServerError,
-  surroundSubstringsWith,
 } from '@newbee/shared/util';
 import { QueryResponse, SolrCli, Spellcheck } from '@newbee/solr-cli';
 import { QueryDto, SuggestDto } from './dto';
@@ -32,16 +31,6 @@ export class SearchService {
    * The logger to use when logging anything in the service.
    */
   private readonly logger = new Logger(SearchService.name);
-
-  /**
-   * The left portion of what to surround query matches with.
-   */
-  private readonly leftSurround = '<strong>';
-
-  /**
-   * The right portion of what to surround query matches with.
-   */
-  private readonly rightSurround = '</strong>';
 
   constructor(private readonly solrCli: SolrCli) {}
 
@@ -58,62 +47,19 @@ export class SearchService {
     organization: OrganizationEntity,
     suggestDto: SuggestDto,
   ): Promise<BaseSuggestResultDto> {
-    let { query } = suggestDto;
+    const { query } = suggestDto;
     try {
       // Execute the query
-      let solrRes = await this.solrCli.suggest(organization.id, { query });
-
-      // No responses found, execute again with the spellchecked alternative
-      if (!solrRes.response.numFound) {
-        const suggestion = solrRes.spellcheck
-          ? SearchService.getSpellcheckSuggestion(solrRes.spellcheck)
-          : null;
-        if (!suggestion) {
-          return { suggestions: [] };
-        }
-
-        query = suggestion;
-        solrRes = await this.solrCli.suggest(organization.id, { query });
-      }
-
-      // Tokenize the query and turn the token into regexes
-      const queries = Array.from(new Set(query.toLowerCase().split(/\s+/)));
-      const queryRegexes = queries.map((query) => new RegExp(query, 'i'));
+      const solrRes = await this.solrCli.suggest(organization.id, {
+        params: { 'suggest.q': query },
+      });
 
       // Go through all of the result docs and generate suggestions based on the parts of the doc that matched
-      const docs = solrRes.response.docs as SolrDoc[];
-      const suggestions = docs
-        .map((doc) => {
-          const {
-            user_name,
-            user_display_name,
-            user_email,
-            user_phone_number,
-            team_name,
-            title,
-          } = doc;
-
-          for (const field of [
-            user_name,
-            user_display_name,
-            user_email,
-            user_phone_number,
-            team_name,
-            title,
-          ]) {
-            if (queryRegexes.some((regex) => regex.test(field ?? ''))) {
-              return surroundSubstringsWith(
-                field ?? '',
-                queries,
-                this.leftSurround,
-                this.rightSurround,
-              );
-            }
-          }
-
-          return '';
-        })
-        .filter(Boolean);
+      const suggestionObjects =
+        solrRes.suggest?.['default']?.[query]?.suggestions ?? [];
+      const suggestions = suggestionObjects.map(
+        (suggestion) => suggestion.term,
+      );
 
       return { suggestions };
     } catch (err) {
@@ -138,7 +84,7 @@ export class SearchService {
     const { query, offset } = queryDto;
     const result = new BaseQueryResultDto(offset);
 
-    // this should never happen, but leave it for safety
+    // This should never happen, but leave it for safety
     if (!query) {
       return result;
     }
@@ -146,8 +92,14 @@ export class SearchService {
     // Execute the query
     const solrRes = await this.makeQuery(organization, queryDto);
 
+    // This shouldn't happen, but needed for type safety
+    const { response } = solrRes;
+    if (!response) {
+      return result;
+    }
+
     // Record how many results were found
-    const numFound = solrRes.response.numFound;
+    const numFound = response.numFound;
     result.total = numFound;
 
     // No results found, suggest an alternative spelling
@@ -162,7 +114,7 @@ export class SearchService {
     }
 
     // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
-    const docs = solrRes.response.docs as SolrDoc[];
+    const docs = response.docs as SolrDoc[];
     const queryIds = Array.from(
       new Set(
         docs
@@ -182,7 +134,8 @@ export class SearchService {
     const idsRes = queryIds.length
       ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
       : null;
-    const idsResDocs = idsRes ? (idsRes.response.docs as SolrDoc[]) : [];
+    const idsResDocs =
+      idsRes && idsRes.response ? (idsRes.response.docs as SolrDoc[]) : [];
 
     // Take the org members resulting from the additional query and map them from their IDs to the information we care about
     const orgMemberMap = new Map(
@@ -252,6 +205,23 @@ export class SearchService {
   }
 
   /**
+   * Send a request to build an organization's suggester.
+   *
+   * @param organization The organization to build.
+   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
+   */
+  async buildSuggester(organization: OrganizationEntity): Promise<void> {
+    try {
+      await this.solrCli.suggest(organization.id, {
+        params: { 'suggest.build': true },
+      });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * A helper function for making a Solr query.
    *
    * @param organization The organization to query.
@@ -292,7 +262,7 @@ export class SearchService {
     spellcheck: Spellcheck,
   ): string | null {
     const spellcheckSuggestion = spellcheck.collations[1] ?? null;
-    return spellcheckSuggestion ? spellcheckSuggestion.collationQuery : null;
+    return spellcheckSuggestion?.collationQuery ?? null;
   }
 
   /**

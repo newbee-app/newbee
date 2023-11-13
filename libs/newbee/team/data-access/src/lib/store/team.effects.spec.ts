@@ -117,7 +117,10 @@ describe('TeamEffects', () => {
         a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+        a: TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
       });
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -145,11 +148,17 @@ describe('TeamEffects', () => {
   describe('createTeamSuccess$', () => {
     it('should navigate to team', () => {
       actions$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+        a: TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
       });
       const expected$ = hot('a', {
         a: [
-          TeamActions.createTeamSuccess({ team: testTeam1 }),
+          TeamActions.createTeamSuccess({
+            organization: testOrganization1,
+            team: testTeam1,
+          }),
           testOrganizationRelation1,
         ],
       });
@@ -169,7 +178,10 @@ describe('TeamEffects', () => {
         a: TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.editTeamSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -187,7 +199,10 @@ describe('TeamEffects', () => {
         a: TeamActions.editTeamSlug({ updateTeamDto: testBaseUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -215,11 +230,17 @@ describe('TeamEffects', () => {
   describe('editTeamSlugSuccess$', () => {
     it('should navigate to team edit', () => {
       actions$ = hot('a', {
-        a: TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       const expected$ = hot('a', {
         a: [
-          TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
+          TeamActions.editTeamSlugSuccess({
+            oldSlug: testTeam1.slug,
+            newTeam: testTeam1,
+          }),
           testOrganizationRelation1,
         ],
       });
@@ -236,7 +257,9 @@ describe('TeamEffects', () => {
   describe('deleteTeam$', () => {
     it('should fire deleteTeamSuccess if successful', () => {
       actions$ = hot('a', { a: TeamActions.deleteTeam() });
-      const expected$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      const expected$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       expect(effects.deleteTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.delete).toBeCalledTimes(1);
@@ -260,9 +283,14 @@ describe('TeamEffects', () => {
 
   describe('deleteTeamSuccess$', () => {
     it('should navigate to org', () => {
-      actions$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       const expected$ = hot('a', {
-        a: [TeamActions.deleteTeamSuccess(), testOrganizationRelation1],
+        a: [
+          TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+          testOrganizationRelation1,
+        ],
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -275,9 +303,11 @@ describe('TeamEffects', () => {
 
     it('should navigate home if selected org is not set', () => {
       store.setState({ [Keyword.Organization]: initialOrganizationState });
-      actions$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       const expected$ = hot('a', {
-        a: [TeamActions.deleteTeamSuccess(), null],
+        a: [TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }), null],
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

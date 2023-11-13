@@ -4,5 +4,5 @@
     (orgNavigate)="orgNavigate.emit($event)"
   ></newbee-post-search-result-header>
 
-  <p>{{ doc.doc.docSnippet }}</p>
+  <p [innerHtml]="doc.doc.docSnippet"></p>
 </div>

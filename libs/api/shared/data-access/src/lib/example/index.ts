@@ -8,8 +8,11 @@ import {
   SolrEntryEnum,
   TeamRoleEnum,
   testAuthenticator1,
+  testBaseSuggestDto1,
+  testBaseSuggestResultDto1,
   testChallenge1,
   testDoc1,
+  testNow1,
   testOrgMember1,
   testOrgMemberInvite1,
   testOrganization1,
@@ -74,6 +77,7 @@ export const testUserInvitesEntity1 = {
 export const testOrganizationEntity1 = {
   ...testOrganization1,
   id: 'org1',
+  suggesterBuiltAt: testNow1,
 } as OrganizationEntity;
 
 /**
@@ -278,6 +282,7 @@ export const testQueryResponse1: QueryResponse = {
 /**
  * An example instance of `QueryResponse`.
  * Strictly for use in testing.
+ * Simulates spellcheck suggestions.
  */
 export const testQueryResponse2: QueryResponse = {
   responseHeader: testResponseHeader1,
@@ -293,5 +298,28 @@ export const testQueryResponse2: QueryResponse = {
         misspellingsAndCorrections: [],
       },
     ],
+  },
+};
+
+/**
+ * An example instance of `QueryResponse`.
+ * Strictly for use in testing.
+ * Simulates suggester suggestions.
+ */
+export const testQueryResponse3: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  suggest: {
+    default: {
+      [testBaseSuggestDto1.query]: {
+        numFound: 1,
+        suggestions: [
+          {
+            term: testBaseSuggestResultDto1.suggestions[0] as string,
+            weight: 5,
+            payload: '',
+          },
+        ],
+      },
+    },
   },
 };

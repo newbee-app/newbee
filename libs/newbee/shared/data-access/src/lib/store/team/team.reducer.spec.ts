@@ -1,5 +1,6 @@
 import {
   testBaseTeamAndMemberDto1,
+  testTeam1,
   testTeamMember1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -37,6 +38,7 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSuccess({
+          oldSlug: testTeam1.slug,
           newTeam: {
             name: 'New name',
             slug: 'new-slug',
@@ -51,6 +53,7 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
           newTeam: {
             name: 'New name',
             slug: 'new-slug',

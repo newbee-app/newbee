@@ -11,6 +11,7 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   nameIsNotEmpty,
+  Organization,
   slugIsNotEmpty,
   teamSlugTakenBadRequest,
   upToDateDurationMatches,
@@ -50,31 +51,27 @@ export class TeamEffects {
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ createTeamDto }, selectedOrganization]) => {
-        return this.teamService
-          .create(
-            createTeamDto,
-            selectedOrganization?.organization.slug as string,
-          )
-          .pipe(
-            map((team) => {
-              return TeamActions.createTeamSuccess({ team });
+        const organization = selectedOrganization?.organization as Organization;
+        return this.teamService.create(createTeamDto, organization.slug).pipe(
+          map((team) => {
+            return TeamActions.createTeamSuccess({ organization, team });
+          }),
+          catchError((err) =>
+            catchHttpClientError(err, (msg) => {
+              switch (msg) {
+                case nameIsNotEmpty:
+                  return 'name';
+                case slugIsNotEmpty:
+                case teamSlugTakenBadRequest:
+                  return 'slug';
+                case upToDateDurationMatches:
+                  return Keyword.Duration;
+                default:
+                  return Keyword.Misc;
+              }
             }),
-            catchError((err) =>
-              catchHttpClientError(err, (msg) => {
-                switch (msg) {
-                  case nameIsNotEmpty:
-                    return 'name';
-                  case slugIsNotEmpty:
-                  case teamSlugTakenBadRequest:
-                    return 'slug';
-                  case upToDateDurationMatches:
-                    return Keyword.Duration;
-                  default:
-                    return Keyword.Misc;
-                }
-              }),
-            ),
-          );
+          ),
+        );
       }),
     );
   });
@@ -112,19 +109,26 @@ export class TeamEffects {
       ),
       switchMap(
         ([{ type, updateTeamDto }, selectedOrganization, selectedTeam]) => {
+          const oldTeamSlug = selectedTeam?.team.slug as string;
           return this.teamService
             .edit(
               selectedOrganization?.organization.slug as string,
-              selectedTeam?.team.slug as string,
+              oldTeamSlug,
               updateTeamDto,
             )
             .pipe(
               map((team) => {
                 switch (type) {
                   case TeamActions.editTeam.type:
-                    return TeamActions.editTeamSuccess({ newTeam: team });
+                    return TeamActions.editTeamSuccess({
+                      oldSlug: oldTeamSlug,
+                      newTeam: team,
+                    });
                   case TeamActions.editTeamSlug.type:
-                    return TeamActions.editTeamSlugSuccess({ newTeam: team });
+                    return TeamActions.editTeamSlugSuccess({
+                      oldSlug: oldTeamSlug,
+                      newTeam: team,
+                    });
                 }
               }),
               catchError((err) =>
@@ -171,14 +175,12 @@ export class TeamEffects {
           !!selectedOrganization && !!selectedTeam,
       ),
       switchMap(([, selectedOrganization, selectedTeam]) => {
+        const teamSlug = selectedTeam?.team.slug as string;
         return this.teamService
-          .delete(
-            selectedOrganization?.organization.slug as string,
-            selectedTeam?.team.slug as string,
-          )
+          .delete(selectedOrganization?.organization.slug as string, teamSlug)
           .pipe(
             map(() => {
-              return TeamActions.deleteTeamSuccess();
+              return TeamActions.deleteTeamSuccess({ slug: teamSlug });
             }),
             catchError((err) =>
               catchHttpClientError(

@@ -5,6 +5,7 @@ import {
   testOrganizationEntity1,
   testQueryResponse1,
   testQueryResponse2,
+  testQueryResponse3,
 } from '@newbee/api/shared/data-access';
 import {
   internalServerError,
@@ -28,7 +29,7 @@ describe('SearchService', () => {
           provide: SolrCli,
           useValue: createMock<SolrCli>({
             query: jest.fn().mockResolvedValue(testQueryResponse1),
-            suggest: jest.fn().mockResolvedValue(testQueryResponse1),
+            suggest: jest.fn().mockResolvedValue(testQueryResponse3),
           }),
         },
       ],
@@ -46,10 +47,9 @@ describe('SearchService', () => {
   describe('suggest', () => {
     describe('calls suggest once', () => {
       afterEach(() => {
-        const { query } = testBaseSuggestDto1;
         expect(solrCli.suggest).toBeCalledTimes(1);
         expect(solrCli.suggest).toBeCalledWith(testOrganizationEntity1.id, {
-          query,
+          params: { 'suggest.q': testBaseSuggestDto1.query },
         });
       });
 
@@ -67,14 +67,6 @@ describe('SearchService', () => {
           new InternalServerErrorException(internalServerError),
         );
       });
-    });
-
-    it('should auto-correct if no results were found and a spellchecking suggestion was made', async () => {
-      jest.spyOn(solrCli, 'suggest').mockResolvedValue(testQueryResponse2);
-      await expect(
-        service.suggest(testOrganizationEntity1, testBaseSuggestDto1),
-      ).resolves.toEqual({ suggestions: [] });
-      expect(solrCli.suggest).toBeCalledTimes(2);
     });
   });
 
@@ -100,7 +92,7 @@ describe('SearchService', () => {
       await expect(
         service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).resolves.toEqual({
-        total: testQueryResponse2.response.numFound,
+        total: testQueryResponse2.response?.numFound,
         offset: testBaseQueryDto1.offset,
         results: [],
         suggestion:
@@ -113,6 +105,18 @@ describe('SearchService', () => {
       await expect(
         service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('buildSuggester', () => {
+    it('should call suggest with build parameter', async () => {
+      await expect(
+        service.buildSuggester(testOrganizationEntity1),
+      ).resolves.toBeUndefined();
+      expect(solrCli.suggest).toBeCalledTimes(1);
+      expect(solrCli.suggest).toBeCalledWith(testOrganizationEntity1.id, {
+        params: { 'suggest.build': true },
+      });
     });
   });
 });
