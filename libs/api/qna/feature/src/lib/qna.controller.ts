@@ -15,10 +15,12 @@ import {
   UpdateQuestionDto,
 } from '@newbee/api/qna/data-access';
 import {
+  EntityService,
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
   TeamEntity,
+  TeamMemberEntity,
   TeamSlugDto,
 } from '@newbee/api/shared/data-access';
 import {
@@ -29,9 +31,15 @@ import {
   Qna,
   Role,
   Team,
+  TeamMember,
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  BaseQnaAndMemberDto,
+  Keyword,
+  OrgRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `QnaEntity`.
@@ -46,7 +54,10 @@ export class QnaController {
    */
   private readonly logger = new Logger(QnaController.name);
 
-  constructor(private readonly qnaService: QnaService) {}
+  constructor(
+    private readonly qnaService: QnaService,
+    private readonly entityService: EntityService,
+  ) {}
 
   /**
    * The API route for creating a qna.
@@ -100,10 +111,16 @@ export class QnaController {
    */
   @Get(`:${Keyword.Qna}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Qna() qna: QnaEntity): Promise<QnaEntity> {
+  async get(
+    @Qna() qna: QnaEntity,
+    @TeamMember() teamMember: TeamMemberEntity | undefined,
+  ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
-    return qna;
+    return {
+      qna: await this.entityService.createQnaNoOrg(qna),
+      teamMember: teamMember ?? null,
+    };
   }
 
   /**

@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { OrgMemberActions } from '@newbee/newbee/shared/data-access';
+import { QnaActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { OrgMemberRootComponent } from './org-member-root.component';
+import { QnaRootComponent } from './qna-root.component';
 
-describe('OrgMemberRootComponent', () => {
-  let component: OrgMemberRootComponent;
-  let fixture: ComponentFixture<OrgMemberRootComponent>;
+describe('QnaRootComponent', () => {
+  let component: QnaRootComponent;
+  let fixture: ComponentFixture<QnaRootComponent>;
   let store: MockStore;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RouterModule],
-      declarations: [OrgMemberRootComponent],
+      declarations: [QnaRootComponent],
       providers: [provideMockStore()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrgMemberRootComponent);
+    fixture = TestBed.createComponent(QnaRootComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
 
@@ -32,11 +32,9 @@ describe('OrgMemberRootComponent', () => {
   });
 
   describe('ngOnDestroy', () => {
-    it('should dispatch resetSelectedOrgMember', () => {
+    it('should dispatch resetSelectedQna', () => {
       component.ngOnDestroy();
-      expect(store.dispatch).toBeCalledWith(
-        OrgMemberActions.resetSelectedOrgMember(),
-      );
+      expect(store.dispatch).toBeCalledWith(QnaActions.resetSelectedQna());
     });
   });
 });

@@ -10,6 +10,10 @@ describe('QnaReducer', () => {
     ...initialQnaState,
     pendingCreate: true,
   };
+  const stateAfterMarkQnaAsUpToDate: QnaState = {
+    ...initialQnaState,
+    pendingUpToDate: true,
+  };
 
   describe('from initial state', () => {
     it('should update state for createQna', () => {
@@ -19,6 +23,14 @@ describe('QnaReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterCreateQna);
     });
+
+    it('should update state for markQnaAsUpToDate', () => {
+      const updatedState = qnaFeature.reducer(
+        initialQnaState,
+        QnaActions.markQnaAsUpToDate,
+      );
+      expect(updatedState).toEqual(stateAfterMarkQnaAsUpToDate);
+    });
   });
 
   describe('from altered state', () => {
@@ -26,6 +38,14 @@ describe('QnaReducer', () => {
       const updatedState = qnaFeature.reducer(
         stateAfterCreateQna,
         QnaActions.createQnaSuccess,
+      );
+      expect(updatedState).toEqual(initialQnaState);
+    });
+
+    it('should update state for markQnaAsUpToDateSuccess', () => {
+      const updatedState = qnaFeature.reducer(
+        stateAfterMarkQnaAsUpToDate,
+        QnaActions.markQnaAsUpToDateSuccess,
       );
       expect(updatedState).toEqual(initialQnaState);
     });

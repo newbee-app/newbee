@@ -26,7 +26,7 @@ export class UpToDateBtnComponent {
    * Whether the input post is up-to-date.
    */
   get upToDate(): boolean {
-    return new Date() < this.post.outOfDateAt;
+    return new Date() < new Date(this.post.outOfDateAt);
   }
 
   /**

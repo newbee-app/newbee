@@ -412,16 +412,16 @@ export class EntityService {
   }
 
   /**
-   * Takes in an array of `DocEntity` and converts it into an array of `DocMembersTeam`.
+   * Takes in a `DocEntity` and converts it to a `DocNoOrg`.
    *
-   * @param docs The docs to convert.
+   * @param doc The doc to convert.
    *
-   * @returns The entities as `DocMembersTeam`.
+   * @returns The entities as `DocNoOrg`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createDocMembersTeam(docs: DocEntity[]): Promise<DocNoOrg[]> {
-    await this.populatePostMembersTeam(docs);
-    return docs.map((doc) => ({
+  async createDocNoOrg(doc: DocEntity): Promise<DocNoOrg> {
+    await this.populatePostMembersTeam(doc);
+    return {
       doc,
       creator: doc.creator && {
         orgMember: doc.creator,
@@ -432,20 +432,20 @@ export class EntityService {
         user: doc.maintainer.user,
       },
       team: doc.team,
-    }));
+    };
   }
 
   /**
-   * Takes in an array of `QnaEntity` and converts it into an array of `QnaMembersTeam`.
+   * Takes in a `QnaEntity` and converts it to a `QnaNoOrg`.
    *
-   * @param qnas The qnas to convert.
+   * @param qna The qna to convert.
    *
-   * @returns The entities as `QnaMembersTeam`.
+   * @returns The entities as `QnaNoOrg`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createQnaMembersTeam(qnas: QnaEntity[]): Promise<QnaNoOrg[]> {
-    await this.populatePostMembersTeam(qnas);
-    return qnas.map((qna) => ({
+  async createQnaNoOrg(qna: QnaEntity): Promise<QnaNoOrg> {
+    await this.populatePostMembersTeam(qna);
+    return {
       qna,
       creator: qna.creator && {
         orgMember: qna.creator,
@@ -456,7 +456,7 @@ export class EntityService {
         user: qna.maintainer.user,
       },
       team: qna.team,
-    }));
+    };
   }
 
   /**
@@ -574,7 +574,9 @@ export class EntityService {
    * @param posts The posts to populate.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  private async populatePostMembersTeam(posts: PostEntity[]): Promise<void> {
+  private async populatePostMembersTeam(
+    posts: PostEntity | PostEntity[],
+  ): Promise<void> {
     try {
       await this.em.populate(posts, [
         'creator.user',

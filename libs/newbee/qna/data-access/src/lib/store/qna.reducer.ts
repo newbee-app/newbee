@@ -14,6 +14,11 @@ export interface QnaState {
    * Whether the user is waiting for a response for creating a QnA.
    */
   pendingCreate: boolean;
+
+  /**
+   * Whether the user is waiting for a response for marking a qna up-to-date.
+   */
+  pendingUpToDate: boolean;
 }
 
 /**
@@ -21,6 +26,7 @@ export interface QnaState {
  */
 export const initialQnaState: QnaState = {
   pendingCreate: false,
+  pendingUpToDate: false,
 };
 
 /**
@@ -38,7 +44,12 @@ export const qnaFeature = createFeature({
       }),
     ),
     on(
+      QnaActions.markQnaAsUpToDate,
+      (state): QnaState => ({ ...state, pendingUpToDate: true }),
+    ),
+    on(
       QnaActions.createQnaSuccess,
+      QnaActions.markQnaAsUpToDateSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
       (): QnaState => initialQnaState,

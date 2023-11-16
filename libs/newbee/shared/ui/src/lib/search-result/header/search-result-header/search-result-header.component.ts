@@ -73,14 +73,14 @@ export class SearchResultHeaderComponent {
   headerClick(): void {
     if (resultIsOrgMemberQueryResult(this.searchResult)) {
       this.orgNavigate.emit(
-        `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
+        `/${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
       );
     } else if (resultIsTeamQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`${ShortUrl.Team}/${this.searchResult.slug}`);
+      this.orgNavigate.emit(`/${ShortUrl.Team}/${this.searchResult.slug}`);
     } else if (resultIsDocQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`${ShortUrl.Doc}/${this.searchResult.doc.slug}`);
+      this.orgNavigate.emit(`/${ShortUrl.Doc}/${this.searchResult.doc.slug}`);
     } else if (resultIsQnaQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`${ShortUrl.Qna}/${this.searchResult.qna.slug}`);
+      this.orgNavigate.emit(`/${ShortUrl.Qna}/${this.searchResult.qna.slug}`);
     }
   }
 }

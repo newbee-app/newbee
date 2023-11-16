@@ -2,10 +2,12 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
+  EntityService,
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testQnaEntity1,
   testTeamEntity1,
+  testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateQnaDto1,
@@ -13,12 +15,14 @@ import {
   testBaseUpdateAnswerDto1,
   testBaseUpdateQnaDto1,
   testBaseUpdateQuestionDto1,
+  testQnaRelation1,
 } from '@newbee/shared/util';
 import { QnaController } from './qna.controller';
 
 describe('QnaController', () => {
   let controller: QnaController;
   let service: QnaService;
+  let entityService: EntityService;
 
   const testUpdatedQnaEntity = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
 
@@ -35,16 +39,24 @@ describe('QnaController', () => {
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createQnaNoOrg: jest.fn().mockResolvedValue(testQnaRelation1),
+          }),
+        },
       ],
     }).compile();
 
     controller = module.get<QnaController>(QnaController);
     service = module.get<QnaService>(QnaService);
+    entityService = module.get<EntityService>(EntityService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   it('create should create a qna', async () => {
@@ -66,9 +78,14 @@ describe('QnaController', () => {
   });
 
   it('get should get a qna', async () => {
-    await expect(controller.get(testQnaEntity1)).resolves.toEqual(
-      testQnaEntity1,
-    );
+    await expect(
+      controller.get(testQnaEntity1, testTeamMemberEntity1),
+    ).resolves.toEqual({
+      qna: testQnaRelation1,
+      teamMember: testTeamMemberEntity1,
+    });
+    expect(entityService.createQnaNoOrg).toBeCalledTimes(1);
+    expect(entityService.createQnaNoOrg).toBeCalledWith(testQnaEntity1);
   });
 
   it('updateQuestion should update the question', async () => {

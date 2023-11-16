@@ -23,6 +23,7 @@ import {
   BaseMagicLinkLoginDto,
   BaseNameDto,
   BaseOrgAndMemberDto,
+  BaseQnaAndMemberDto,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseRegistrationResponseDto,
@@ -645,6 +646,15 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
   answerMarkdoc: 'new answer',
   upToDateDuration: 'P1Y',
+};
+
+/**
+ * An example instance of `BaseQnaAndMemberDto`.
+ * Strictly for use in testing.
+ */
+export const testBaseQnaAndMemberDto1: BaseQnaAndMemberDto = {
+  qna: testQnaRelation1,
+  teamMember: testTeamMember1,
 };
 
 /**

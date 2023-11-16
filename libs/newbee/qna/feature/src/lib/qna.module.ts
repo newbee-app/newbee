@@ -5,10 +5,12 @@ import {
   QnaService,
   qnaFeature,
 } from '@newbee/newbee/qna/data-access';
-import { CreateQnaComponent } from '@newbee/newbee/qna/ui';
+import { CreateQnaComponent, ViewQnaComponent } from '@newbee/newbee/qna/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { QnaCreateComponent } from './qna-create';
+import { QnaRootComponent } from './qna-root';
+import { QnaViewComponent } from './qna-view';
 import { QnaRoutingModule } from './routing';
 
 @NgModule({
@@ -17,9 +19,10 @@ import { QnaRoutingModule } from './routing';
     StoreModule.forFeature(qnaFeature),
     EffectsModule.forFeature([QnaEffects]),
     CreateQnaComponent,
+    ViewQnaComponent,
     QnaRoutingModule,
   ],
   providers: [QnaService],
-  declarations: [QnaCreateComponent],
+  declarations: [QnaRootComponent, QnaCreateComponent, QnaViewComponent],
 })
 export class QnaModule {}

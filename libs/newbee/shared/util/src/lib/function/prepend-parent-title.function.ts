@@ -12,10 +12,15 @@ export function prependParentTitle(
   route: ActivatedRouteSnapshot,
   title: string,
 ): string {
-  const parentTitle = route.parent?.title ?? '';
+  let parent = route.parent;
+  while (parent && !parent.title) {
+    parent = parent.parent;
+  }
+
+  const parentTitle = parent?.title ?? '';
   if (parentTitle.includes('Error')) {
     return parentTitle;
   }
 
-  return `${title} - ${parentTitle}`;
+  return [title, parentTitle].filter(Boolean).join(' - ');
 }

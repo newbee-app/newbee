@@ -5,19 +5,19 @@
  */
 export interface Post {
   /**
-   * The DateTime when the post was created.
+   * The DateTime or datetime string when the post was created.
    */
-  createdAt: Date;
+  createdAt: Date | string;
 
   /**
-   * The DateTime when the post was last updated.
+   * The DateTime or datetime string when the post was last updated.
    */
-  updatedAt: Date;
+  updatedAt: Date | string;
 
   /**
-   * The DateTime when the post was last marked up-to-date.
+   * The DateTime or datetime string when the post was last marked up-to-date.
    */
-  markedUpToDateAt: Date;
+  markedUpToDateAt: Date | string;
 
   /**
    * The title of the post.
@@ -39,7 +39,7 @@ export interface Post {
   upToDateDuration: string | null;
 
   /**
-   * The DateTime when the post is out-of-date, based on its `upToDateDuration` and `markedUpToDateAt` values.
+   * The DateTime or datetime string when the post is out-of-date, based on its `upToDateDuration` and `markedUpToDateAt` values.
    */
-  outOfDateAt: Date;
+  outOfDateAt: Date | string;
 }

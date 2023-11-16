@@ -20,4 +20,25 @@ describe('prependParentTitle', () => {
     });
     expect(prependParentTitle(route, 'Child')).toEqual('Error');
   });
+
+  it(`should handle gracefully if parent's title is falsy`, () => {
+    const route = createMock<ActivatedRouteSnapshot>({
+      parent: createMock<ActivatedRouteSnapshot>({
+        title: '',
+      }),
+    });
+    expect(prependParentTitle(route, 'Child')).toEqual('Child');
+  });
+
+  it(`should keep searching for parents if direct parent's title is falsy`, () => {
+    const route = createMock<ActivatedRouteSnapshot>({
+      parent: createMock<ActivatedRouteSnapshot>({
+        title: undefined,
+        parent: createMock<ActivatedRouteSnapshot>({
+          title: 'Parent',
+        }),
+      }),
+    });
+    expect(prependParentTitle(route, 'Child')).toEqual('Child - Parent');
+  });
 });

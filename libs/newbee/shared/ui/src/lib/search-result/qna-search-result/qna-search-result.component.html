@@ -4,7 +4,7 @@
     (orgNavigate)="orgNavigate.emit($event)"
   ></newbee-post-search-result-header>
 
-  <p *ngIf="qna.qna.questionSnippet" [innerHtml]="qna.qna.questionSnippet"></p>
+  <p *ngIf="qna.qna.questionSnippet" [innerHTML]="qna.qna.questionSnippet"></p>
 
   <div class="flex flex-row flex-nowrap gap-x-2">
     <!-- arrow-right svg -->
@@ -25,7 +25,7 @@
 
     <p
       *ngIf="qna.qna.answerSnippet; else noAnswer"
-      [innerHtml]="qna.qna.answerSnippet"
+      [innerHTML]="qna.qna.answerSnippet"
     ></p>
 
     <ng-template #noAnswer

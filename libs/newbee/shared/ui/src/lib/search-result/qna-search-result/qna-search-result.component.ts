@@ -29,7 +29,7 @@ export class QnaSearchResultComponent {
    */
   editQna(): void {
     this.orgNavigate.emit(
-      `${ShortUrl.Qna}/${this.qna.qna.slug}/${Keyword.Edit}`
+      `/${ShortUrl.Qna}/${this.qna.qna.slug}/${Keyword.Edit}`,
     );
   }
 }

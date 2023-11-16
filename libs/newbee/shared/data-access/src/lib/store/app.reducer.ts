@@ -4,6 +4,7 @@ import type { CookieState } from './cookie';
 import type { HttpState } from './http';
 import type { OrgMemberState } from './org-member';
 import type { OrganizationState } from './organization';
+import { QnaState } from './qna';
 import type { SearchState } from './search';
 import type { TeamState } from './team';
 import type { ToastState } from './toast';
@@ -18,6 +19,7 @@ export interface AppState {
   [Keyword.Http]: HttpState;
   [Keyword.Member]: OrgMemberState;
   [Keyword.Organization]: OrganizationState;
+  [Keyword.Qna]: QnaState;
   [Keyword.Search]: SearchState;
   [Keyword.Team]: TeamState;
   [Keyword.Toast]: ToastState;

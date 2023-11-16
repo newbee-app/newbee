@@ -1,15 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { QnaActions } from '@newbee/newbee/shared/data-access';
+import {
+  QnaActions,
+  initialOrganizationState,
+  initialQnaState,
+} from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateQnaDto1,
+  testBaseQnaAndMemberDto1,
   testOrganization1,
   testOrganizationRelation1,
   testQna1,
+  testQnaRelation1,
   testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -35,9 +41,17 @@ describe('QnaEffects', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
-            [Keyword.Team]: { selectedTeam: testTeamRelation1 },
+            [Keyword.Team]: {
+              ...initialQnaState,
+              selectedTeam: testTeamRelation1,
+            },
+            [Keyword.Qna]: {
+              ...initialQnaState,
+              selectedQna: testQnaRelation1,
+            },
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -46,6 +60,8 @@ describe('QnaEffects', () => {
           provide: QnaService,
           useValue: createMock<QnaService>({
             create: jest.fn().mockReturnValue(of(testQna1)),
+            get: jest.fn().mockReturnValue(of(testBaseQnaAndMemberDto1)),
+            markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
           }),
         },
       ],
@@ -134,6 +150,67 @@ describe('QnaEffects', () => {
       expect(effects.createQnaSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('getQna$', () => {
+    it('should fire getQnaSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: QnaActions.getQna({ slug: testQna1.slug }),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.getQnaSuccess({
+          qnaAndMemberDto: testBaseQnaAndMemberDto1,
+        }),
+      });
+      expect(effects.getQna$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).toBeCalledTimes(1);
+        expect(service.get).toBeCalledWith(
+          testQna1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', { a: QnaActions.getQna({ slug: testQna1.slug }) });
+      const expected$ = hot('-');
+      expect(effects.getQna$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.create).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('markQnaAsUpToDate$', () => {
+    it('should fire markQnaAsUpToDateSuccess if successful', () => {
+      actions$ = hot('a', { a: QnaActions.markQnaAsUpToDate() });
+      const expected$ = hot('a', {
+        a: QnaActions.markQnaAsUpToDateSuccess({
+          oldSlug: testQna1.slug,
+          newQna: testQna1,
+        }),
+      });
+      expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.markUpToDate).toBeCalledTimes(1);
+        expect(service.markUpToDate).toBeCalledWith(
+          testQna1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
+      store.setState({});
+      actions$ = hot('a', { a: QnaActions.markQnaAsUpToDate() });
+      const expected$ = hot('-');
+      expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.markUpToDate).not.toBeCalled();
       });
     });
   });

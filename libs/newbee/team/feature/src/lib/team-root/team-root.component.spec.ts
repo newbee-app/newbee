@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterModule } from '@angular/router';
 import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamRootComponent } from './team-root.component';
@@ -10,6 +11,7 @@ describe('TeamRootComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [RouterModule],
       declarations: [TeamRootComponent],
       providers: [provideMockStore()],
     }).compileComponents();

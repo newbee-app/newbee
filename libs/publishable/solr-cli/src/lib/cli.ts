@@ -259,10 +259,9 @@ export class SolrCli {
     try {
       return (
         await axios.get(
-          `${realTimeGetUrl(
-            this.collectionsApiUrl,
-            collectionName,
-          )}?ids=${ids.join(',')}${fq ? `&fq=${fq}` : ''}`,
+          `${realTimeGetUrl(this.collectionsApiUrl, collectionName)}?${ids
+            .map((id) => `id=${id}`)
+            .join('&')}${fq ? `&fq=${fq}` : ''}`,
           this.defaultHeader,
         )
       ).data;

@@ -34,7 +34,6 @@ import { TeamViewComponent } from './team-view';
     TeamCreateComponent,
     TeamViewComponent,
     TeamEditComponent,
-    TeamRootComponent,
   ],
 })
 export class TeamModule {}
