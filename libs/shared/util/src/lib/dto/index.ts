@@ -5,7 +5,6 @@ export * from './doc';
 export * from './org-member';
 export * from './org-member-invite';
 export * from './organization';
-export * from './post';
 export * from './qna';
 export * from './search';
 export * from './shared';

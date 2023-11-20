@@ -26,11 +26,13 @@ import {
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateTeamDto,
   Frequency,
   Keyword,
+  NumAndFreq,
   OrgRoleEnum,
   TeamRoleEnum,
   compareOrgRoles,
@@ -199,14 +201,13 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Whether the edit team form has a value distinct from the current team's values.
    */
   get editDistinct(): boolean {
-    const { name, upToDateDuration } = this.editTeamForm.value;
+    const { name } = this.editTeamForm.value;
     return (
       name !== this.team.name ||
-      (!this.teamNumAndFreq &&
-        (!!upToDateDuration?.num || !!upToDateDuration?.frequency)) ||
-      (!!this.teamNumAndFreq &&
-        (this.teamNumAndFreq.num !== upToDateDuration?.num ||
-          this.teamNumAndFreq.frequency !== upToDateDuration.frequency))
+      numAndFreqIsDistinct(
+        this.teamNumAndFreq,
+        this.editTeamForm.controls.upToDateDuration.value,
+      )
     );
   }
 
@@ -249,9 +250,9 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * The team's initial up-to-date duration, represented as a num and frequency.
+   * The team's up-to-date duration, represented as a num and frequency.
    */
-  private get teamNumAndFreq(): { num: number; frequency: Frequency } | null {
+  private get teamNumAndFreq(): NumAndFreq | null {
     return !this.team.upToDateDuration
       ? null
       : durationToNumAndFreq(dayjs.duration(this.team.upToDateDuration));
@@ -264,9 +265,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
     this.editTeamForm.setValue(
       {
         name: this.team.name,
-        upToDateDuration: this.teamNumAndFreq
-          ? { ...this.teamNumAndFreq }
-          : { num: null, frequency: null },
+        upToDateDuration: this.teamNumAndFreq ?? { num: null, frequency: null },
       },
       { emitEvent: false },
     );

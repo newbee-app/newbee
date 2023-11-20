@@ -1,4 +1,3 @@
-import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -11,7 +10,6 @@ import {
   testBaseQnaAndMemberDto1,
   testOrganization1,
   testQna1,
-  testTeam1,
 } from '@newbee/shared/util';
 import { QnaService } from './qna.service';
 
@@ -43,25 +41,20 @@ describe('QnaService', () => {
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service
-        .create(testBaseCreateQnaDto1, testOrganization1.slug, testTeam1.slug)
-        .subscribe({
-          next: (qna) => {
-            try {
-              expect(qna).toEqual(testQna1);
-              done();
-            } catch (err) {
-              done(err);
-            }
-          },
-          error: done.fail,
-        });
-
-      const params = new HttpParams({
-        fromObject: { [Keyword.Team]: testTeam1.slug },
+      service.create(testBaseCreateQnaDto1, testOrganization1.slug).subscribe({
+        next: (qna) => {
+          try {
+            expect(qna).toEqual(testQna1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
       });
+
       const req = httpController.expectOne(
-        `${QnaService.baseApiUrl(testOrganization1.slug)}?${params.toString()}`,
+        QnaService.baseApiUrl(testOrganization1.slug),
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateQnaDto1);

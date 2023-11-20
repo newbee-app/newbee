@@ -26,11 +26,13 @@ import {
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateOrganizationDto,
   Frequency,
   Keyword,
+  NumAndFreq,
   OrgMemberNoUserOrg,
   OrgRoleEnum,
   durationToNumAndFreq,
@@ -189,7 +191,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * The num and frequency of the input org's duration.
    */
-  private get orgNumAndFreq(): { num: number; frequency: Frequency } {
+  private get orgNumAndFreq(): NumAndFreq {
     return durationToNumAndFreq(
       dayjs.duration(this.organization.upToDateDuration),
     );
@@ -199,11 +201,13 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    * Whether the edit org form has a value distinct from the current org's values.
    */
   get editDistinct(): boolean {
-    const { name, upToDateDuration } = this.editOrgForm.value;
+    const { name } = this.editOrgForm.value;
     return (
       name !== this.organization.name ||
-      this.orgNumAndFreq.num !== upToDateDuration?.num ||
-      this.orgNumAndFreq.frequency !== upToDateDuration.frequency
+      numAndFreqIsDistinct(
+        this.orgNumAndFreq,
+        this.editOrgForm.controls.upToDateDuration.value,
+      )
     );
   }
 

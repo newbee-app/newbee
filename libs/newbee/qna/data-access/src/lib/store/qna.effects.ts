@@ -23,12 +23,11 @@ export class QnaEffects {
         this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ createQnaDto, team }, selectedOrganization]) => {
+      switchMap(([{ createQnaDto }, selectedOrganization]) => {
         return this.qnaService
           .create(
             createQnaDto,
             selectedOrganization?.organization.slug as string,
-            team?.slug ?? null,
           )
           .pipe(
             map((qna) => {

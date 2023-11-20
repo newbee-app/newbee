@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
@@ -33,17 +33,8 @@ export class QnaService {
    *
    * @returns An observable containing the created QnA.
    */
-  create(
-    createQnaDto: BaseCreateQnaDto,
-    orgSlug: string,
-    teamSlug: string | null,
-  ): Observable<Qna> {
-    const params = teamSlug
-      ? new HttpParams({ fromObject: { [Keyword.Team]: teamSlug } })
-      : null;
-    return this.http.post<Qna>(QnaService.baseApiUrl(orgSlug), createQnaDto, {
-      ...(params && { params }),
-    });
+  create(createQnaDto: BaseCreateQnaDto, orgSlug: string): Observable<Qna> {
+    return this.http.post<Qna>(QnaService.baseApiUrl(orgSlug), createQnaDto);
   }
 
   /**

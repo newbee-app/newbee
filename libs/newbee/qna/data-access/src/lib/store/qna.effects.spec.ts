@@ -16,7 +16,6 @@ import {
   testOrganizationRelation1,
   testQna1,
   testQnaRelation1,
-  testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -86,10 +85,7 @@ describe('QnaEffects', () => {
   describe('createQna$', () => {
     it('should fire createQnaSuccess if successful', () => {
       actions$ = hot('a', {
-        a: QnaActions.createQna({
-          createQnaDto: testBaseCreateQnaDto1,
-          team: testTeam1,
-        }),
+        a: QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
       });
       const expected$ = hot('a', {
         a: QnaActions.createQnaSuccess({ qna: testQna1 }),
@@ -100,7 +96,6 @@ describe('QnaEffects', () => {
         expect(service.create).toBeCalledWith(
           testBaseCreateQnaDto1,
           testOrganization1.slug,
-          testTeam1.slug,
         );
       });
     });
@@ -108,10 +103,7 @@ describe('QnaEffects', () => {
     it(`should do nothing if selectedOrganization isn't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: QnaActions.createQna({
-          createQnaDto: testBaseCreateQnaDto1,
-          team: testTeam1,
-        }),
+        a: QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.createQna$).toBeObservable(expected$);

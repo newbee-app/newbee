@@ -15,13 +15,13 @@ export class UpdateAnswerDto implements BaseUpdateAnswerDto {
    * @inheritdoc
    */
   @IsOptional()
-  @IsNotEmpty({ message: answerIsNotEmpty })
-  answerMarkdoc?: string;
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration?: string | null;
 
   /**
    * @inheritdoc
    */
   @IsOptional()
-  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
-  upToDateDuration?: string | null;
+  @IsNotEmpty({ message: answerIsNotEmpty })
+  answerMarkdoc?: string;
 }

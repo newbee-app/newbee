@@ -10,10 +10,10 @@ export class BaseUpdateAnswerDto
   /**
    * @inheritdoc
    */
-  answerMarkdoc?: string;
+  upToDateDuration?: string | null;
 
   /**
    * @inheritdoc
    */
-  upToDateDuration?: string | null = null;
+  answerMarkdoc?: string;
 }

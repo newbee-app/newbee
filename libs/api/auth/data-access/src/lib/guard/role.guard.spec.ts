@@ -31,7 +31,7 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {
@@ -87,15 +87,14 @@ describe('RoleGuard', () => {
         createMock<HttpArgumentsHost>({
           getRequest: jest.fn().mockReturnValue({
             params: {
-              org: testOrganizationEntity1.slug,
-              team: testTeamEntity1.slug,
-              doc: testDocEntity1.slug,
-              qna: testQnaEntity1.slug,
-              member: testOrgMemberEntity1.slug,
+              [Keyword.Organization]: testOrganizationEntity1.slug,
+              [Keyword.Team]: testTeamEntity1.slug,
+              [Keyword.Doc]: testDocEntity1.slug,
+              [Keyword.Qna]: testQnaEntity1.slug,
+              [Keyword.Member]: testOrgMemberEntity1.slug,
             },
-            query: {
-              team: testTeamEntity1.slug,
-            },
+            query: { [Keyword.Team]: testTeamEntity1.slug },
+            body: { [Keyword.Team]: testTeamEntity1.slug },
             user: testUserEntity1,
           }),
         }),
@@ -201,6 +200,7 @@ describe('RoleGuard', () => {
             member: testOrgMemberEntity1.slug,
           },
           query: {},
+          body: {},
           user: testUserEntity1,
         });
         await expect(guard.canActivate(context)).resolves.toBeTruthy();

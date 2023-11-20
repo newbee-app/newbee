@@ -146,6 +146,7 @@
       ],
       "@newbee/newbee/qna/feature": ["libs/newbee/qna/feature/src/index.ts"],
       "@newbee/newbee/qna/ui": ["libs/newbee/qna/ui/src/index.ts"],
+      "@newbee/newbee/qna/util": ["libs/newbee/qna/util/src/index.ts"],
       "@newbee/newbee/search/data-access": [
         "libs/newbee/search/data-access/src/index.ts"
       ],

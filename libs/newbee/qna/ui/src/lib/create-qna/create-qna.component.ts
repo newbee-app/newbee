@@ -17,7 +17,7 @@ import {
 import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
 
 /**
- * A dumb UI for creating a new doc.
+ * A dumb UI for creating a new qna.
  */
 @Component({
   selector: 'newbee-create-qna',
@@ -60,10 +60,7 @@ export class CreateQnaComponent implements OnInit {
   /**
    * Tells the smart UI parent when the QnA is ready to be created.
    */
-  @Output() create = new EventEmitter<{
-    createQnaDto: BaseCreateQnaDto;
-    team: Team | null;
-  }>();
+  @Output() create = new EventEmitter<BaseCreateQnaDto>();
 
   /**
    * The form containing the QnA's title and team.
@@ -78,12 +75,22 @@ export class CreateQnaComponent implements OnInit {
    */
   private questionMarkdoc = '';
 
+  /**
+   * All of the input teams as select options.
+   */
+  teamOptions: SelectOption<Team | null>[] = [];
+
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * Initialize the team value with a value from the team slug param, if specified.
+   * Initialize the team options and the team value with a value from the team slug param, if specified.
    */
   ngOnInit(): void {
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...this.teams.map((team) => new SelectOption(team, team.name)),
+    ];
+
     if (!this.teamSlugParam) {
       return;
     }
@@ -125,16 +132,6 @@ export class CreateQnaComponent implements OnInit {
   }
 
   /**
-   * All of the input teams as select options.
-   */
-  get teamOptions(): SelectOption<Team | null>[] {
-    return [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-  }
-
-  /**
    * Update the internal question markdoc value whenever the text changes.
    *
    * @param textMarkdoc The new value for question markdoc.
@@ -147,12 +144,12 @@ export class CreateQnaComponent implements OnInit {
    * Called to emit the create output based off of the UI's values.
    */
   emitCreate(): void {
-    const { title } = this.qnaForm.value;
-    const createQnaDto: BaseCreateQnaDto = {
+    const { title, team } = this.qnaForm.value;
+    this.create.emit({
       title: title ?? '',
       questionMarkdoc: this.questionMarkdoc || null,
       answerMarkdoc: null,
-    };
-    this.create.emit({ createQnaDto, team: this.qnaForm.controls.team.value });
+      team: team?.slug ?? null,
+    });
   }
 }

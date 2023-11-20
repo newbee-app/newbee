@@ -6,7 +6,6 @@ import {
   Logger,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   CreateDocDto,
@@ -18,7 +17,6 @@ import {
   OrgMemberEntity,
   OrganizationEntity,
   TeamEntity,
-  TeamSlugDto,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
@@ -74,15 +72,9 @@ export class DocController {
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity | undefined,
-    @Query() teamSlugDto: TeamSlugDto,
   ): Promise<DocEntity> {
-    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create doc request received from org member slug: ${
-        orgMember.slug
-      }, in organization ID: ${organization.id}${
-        teamSlug ? `, in team: ${teamSlug}` : ''
-      }, with title: ${createDocDto.title}`,
+      `Create doc request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createDocDto.title}`,
     );
     const doc = await this.docService.create(
       createDocDto,

@@ -6,7 +6,6 @@ import {
   Logger,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   CreateQnaDto,
@@ -21,7 +20,6 @@ import {
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
-  TeamSlugDto,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
@@ -78,15 +76,9 @@ export class QnaController {
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity | undefined,
-    @Query() teamSlugDto: TeamSlugDto,
   ): Promise<QnaEntity> {
-    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create qna request received from org member slug: ${
-        orgMember.slug
-      }, in organization ID: ${organization.id}${
-        teamSlug ? `, in team: ${teamSlug}` : ''
-      }, with title: ${createQnaDto.title}`,
+      `Create qna request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createQnaDto.title}`,
     );
     const qna = await this.qnaService.create(
       createQnaDto,

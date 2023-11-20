@@ -3,7 +3,6 @@ import {
   BaseQnaAndMemberDto,
   Keyword,
   Qna,
-  Team,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -16,10 +15,7 @@ export const QnaActions = createActionGroup({
     /**
      * Creates a QnA using the given information.
      */
-    'Create Qna': props<{
-      createQnaDto: BaseCreateQnaDto;
-      team: Team | null;
-    }>(),
+    'Create Qna': props<{ createQnaDto: BaseCreateQnaDto }>(),
 
     /**
      * Indicates that a QnA was successfully created.

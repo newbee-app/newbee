@@ -9,7 +9,6 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateDocDto1,
-  testBaseTeamSlugDto1,
   testBaseUpdateDocDto1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
@@ -51,7 +50,6 @@ describe('DocController', () => {
         testOrgMemberEntity1,
         testOrganizationEntity1,
         testTeamEntity1,
-        testBaseTeamSlugDto1,
       ),
     ).resolves.toEqual(testDocEntity1);
     expect(service.create).toBeCalledTimes(1);

@@ -11,7 +11,6 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateQnaDto1,
-  testBaseTeamSlugDto1,
   testBaseUpdateAnswerDto1,
   testBaseUpdateQnaDto1,
   testBaseUpdateQuestionDto1,
@@ -66,7 +65,6 @@ describe('QnaController', () => {
         testOrgMemberEntity1,
         testOrganizationEntity1,
         testTeamEntity1,
-        testBaseTeamSlugDto1,
       ),
     ).resolves.toEqual(testQnaEntity1);
     expect(service.create).toBeCalledTimes(1);

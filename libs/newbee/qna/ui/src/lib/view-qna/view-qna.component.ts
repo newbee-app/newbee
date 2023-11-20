@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  userHasAnswerPermissions,
+  userHasQuestionPermissions,
+  userHasUpToDatePermissions,
+} from '@newbee/newbee/qna/util';
 import { UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgMember,
-  OrgRoleEnum,
   TeamMember,
-  TeamRoleEnum,
-  compareOrgRoles,
-  compareTeamRoles,
   userDisplayName,
   type QnaNoOrg,
 } from '@newbee/shared/util';
@@ -93,53 +94,29 @@ export class ViewQnaComponent {
   /**
    * Whether the user has the permissions to edit the question in some capacity.
    */
-  get hasEditQuestionPermissions(): boolean {
-    return !!(
-      (this.orgMember &&
-        (compareOrgRoles(this.orgMember.role, OrgRoleEnum.Moderator) >= 0 ||
-          [
-            this.qna.creator?.orgMember.slug,
-            this.qna.maintainer?.orgMember.slug,
-          ].includes(this.orgMember.slug))) ||
-      (this.qna.team &&
-        this.teamMember &&
-        compareTeamRoles(this.teamMember.role, TeamRoleEnum.Moderator) >= 0)
+  get hasQuestionPermissions(): boolean {
+    return userHasQuestionPermissions(
+      this.qna,
+      this.orgMember,
+      this.teamMember,
     );
   }
 
   /**
    * Whether the user has the permissions to edit the answer in some capacity.
    */
-  get hasEditAnswerPermissions(): boolean {
-    return !!(
-      (this.orgMember &&
-        (compareOrgRoles(
-          this.orgMember.role,
-          this.qna.team || this.qna.maintainer
-            ? OrgRoleEnum.Moderator
-            : OrgRoleEnum.Member,
-        ) >= 0 ||
-          this.qna.maintainer?.orgMember.slug === this.orgMember.slug)) ||
-      (this.qna.team &&
-        this.teamMember &&
-        compareTeamRoles(
-          this.teamMember.role,
-          this.qna.maintainer ? TeamRoleEnum.Moderator : TeamRoleEnum.Member,
-        ) >= 0)
-    );
+  get hasAnswerPermissions(): boolean {
+    return userHasAnswerPermissions(this.qna, this.orgMember, this.teamMember);
   }
 
   /**
    * Whether the user has the permissions to mark the qna as up-to-date.
    */
   get hasUpToDatePermissions(): boolean {
-    return !!(
-      (this.orgMember &&
-        (compareOrgRoles(this.orgMember.role, OrgRoleEnum.Moderator) >= 0 ||
-          this.orgMember.slug === this.qna.maintainer?.orgMember.slug)) ||
-      (this.qna.team &&
-        this.teamMember &&
-        compareTeamRoles(this.teamMember.role, TeamRoleEnum.Moderator) >= 0)
+    return userHasUpToDatePermissions(
+      this.qna,
+      this.orgMember,
+      this.teamMember,
     );
   }
 

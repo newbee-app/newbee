@@ -1,0 +1,293 @@
+<div class="flex flex-col flex-nowrap gap-y-6">
+  <div
+    *ngIf="showQuickActions"
+    id="quick-actions"
+    class="collapse collapse-arrow z-0 border border-info rounded-box p-4"
+  >
+    <input type="checkbox" id="quick-actions-collapse" checked />
+    <label for="quick-actions-collapse" class="collapse-title">
+      <h3>Quick actions</h3>
+    </label>
+
+    <div class="collapse-content flex flex-col flex-nowrap gap-y-2">
+      <div class="flex flex-row flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="markAsUpToDate.emit()"
+          [disabled]="upToDatePending"
+          class="btn btn-sm btn-success w-fit"
+        >
+          <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
+          Mark as up-to-date
+        </button>
+
+        <button
+          type="button"
+          (click)="delete.emit()"
+          [disabled]="deletePending"
+          class="btn btn-sm btn-error w-fit"
+        >
+          <span *ngIf="deletePending" class="loading loading-spinner"></span>
+          Delete
+        </button>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="
+          !!httpClientErrorMsg('up-to-date') || !!httpClientErrorMsg('delete')
+        "
+        [text]="
+          httpClientErrorMsg('up-to-date') || httpClientErrorMsg('delete')
+        "
+      ></newbee-alert>
+    </div>
+  </div>
+
+  <div
+    id="question"
+    class="collapse collapse-arrow z-0 border border-neutral-content p-4 rounded-box"
+  >
+    <input type="checkbox" id="question-collapse" checked />
+    <label for="question-collapse" class="collapse-title">
+      <h3>{{ hasQuestionPermissions ? 'Edit' : 'View' }} question</h3>
+    </label>
+
+    <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
+      <ng-container *ngIf="hasQuestionPermissions; else noQuestionPermissions">
+        <form
+          [formGroup]="editQuestionForm"
+          class="flex flex-col flex-nowrap gap-y-4"
+        >
+          <div class="flex flex-col flex-nowrap gap-y-2">
+            <label for="team-input">Team to ask</label>
+
+            <div class="w-fit max-w-full">
+              <newbee-searchable-select
+                id="team-input"
+                formControlName="team"
+                [showSearchbar]="true"
+                [options]="teamOptions"
+                optionName="team"
+                [valid]="!inputDisplayError(editQuestionForm, 'team')"
+                [errorText]="inputErrorMessage(editQuestionForm, 'team')"
+              ></newbee-searchable-select>
+            </div>
+          </div>
+
+          <div class="flex flex-col flex-nowrap gap-y-2">
+            <label for="title-input">Question title</label>
+            <input
+              type="text"
+              id="title-input"
+              formControlName="title"
+              class="input input-bordered w-full"
+            />
+
+            <newbee-alert
+              [type]="alertType.Error"
+              [show]="inputDisplayError(editQuestionForm, 'title')"
+              [text]="inputErrorMessage(editQuestionForm, 'title')"
+            ></newbee-alert>
+          </div>
+        </form>
+
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <p>Question details</p>
+          <newbee-markdoc-editor
+            [(text)]="questionMarkdoc"
+          ></newbee-markdoc-editor>
+
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="!!httpClientErrorMsg('question')"
+            [text]="httpClientErrorMsg('question')"
+          ></newbee-alert>
+        </div>
+
+        <div class="flex flex-col flex-nowrap gap-y-2">
+          <button
+            type="button"
+            (click)="emitEditQuestion()"
+            [disabled]="
+              editQuestionPending ||
+              editQuestionForm.invalid ||
+              !editQuestionDistinct
+            "
+            class="btn btn-primary w-fit"
+          >
+            <span
+              *ngIf="editQuestionPending"
+              class="loading loading-spinner"
+            ></span>
+            Edit question
+          </button>
+
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="!!httpClientErrorMsg('question', keyword.Edit)"
+            [text]="httpClientErrorMsg('question', keyword.Edit)"
+          ></newbee-alert>
+        </div>
+      </ng-container>
+      <ng-template #noQuestionPermissions>
+        <div>
+          <h4>{{ qna.qna.title }}</h4>
+
+          <p class="opacity-50">
+            Asked
+            <ng-container *ngIf="qna.team; else noTeam"
+              >in {{ qna.team.name }}</ng-container
+            >
+            <ng-template #noTeam>to the whole org</ng-template>
+          </p>
+        </div>
+
+        <div
+          *ngIf="qna.qna.questionHtml"
+          [innerHTML]="qna.qna.questionHtml"
+          class="mt-4"
+        ></div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div id="answer" class="flex flex-row flex-nowrap gap-x-2 items-center">
+    <!-- arrow-right svg -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-10 h-10"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+      />
+    </svg>
+
+    <div
+      class="collapse collapse-arrow z-0 border border-warning p-4 rounded-box w-full"
+    >
+      <input type="checkbox" id="answer-collapse" checked />
+      <label for="answer-collapse" class="collapse-title">
+        <h3>{{ hasAnswerPermissions ? 'Edit' : 'View' }} answer</h3>
+      </label>
+
+      <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
+        <ng-container *ngIf="hasAnswerPermissions; else noAnswerPermissions">
+          <form [formGroup]="editAnswerForm">
+            <div
+              formGroupName="upToDateDuration"
+              class="flex flex-col flex-nowrap gap-y-2"
+            >
+              <div>
+                <p>How long should this post stay relevant?</p>
+                <p class="opacity-75">{{ upToDateDurationTagline }}</p>
+              </div>
+
+              <div class="flex flex-row flex-wrap gap-2 items-center">
+                For
+
+                <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+                  <input
+                    type="number"
+                    step="1"
+                    formControlName="num"
+                    newbeeDigitOnly
+                    [min]="1"
+                    class="input input-bordered"
+                  />
+
+                  <newbee-alert
+                    [type]="alertType.Error"
+                    [show]="
+                      inputDisplayError(
+                        editAnswerForm.controls.upToDateDuration,
+                        'num'
+                      )
+                    "
+                    [text]="
+                      inputErrorMessage(
+                        editAnswerForm.controls.upToDateDuration,
+                        'num'
+                      )
+                    "
+                  ></newbee-alert>
+                </div>
+
+                <div class="w-44 flex-auto">
+                  <newbee-searchable-select
+                    formControlName="frequency"
+                    [showSearchbar]="false"
+                    [options]="frequencyOptions"
+                    optionName="frequency"
+                    [valid]="
+                      !inputDisplayError(
+                        editAnswerForm.controls.upToDateDuration,
+                        'frequency'
+                      )
+                    "
+                    [errorText]="
+                      inputErrorMessage(
+                        editAnswerForm.controls.upToDateDuration,
+                        'frequency'
+                      )
+                    "
+                  ></newbee-searchable-select>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="flex flex-col flex-nowrap gap-y-2">
+            <p>Answer details</p>
+            <newbee-markdoc-editor
+              [(text)]="answerMarkdoc"
+            ></newbee-markdoc-editor>
+
+            <newbee-alert
+              [type]="alertType.Error"
+              [show]="!!httpClientErrorMsg('answer')"
+              [text]="httpClientErrorMsg('answer')"
+            ></newbee-alert>
+          </div>
+
+          <div class="flex flex-col flex-nowrap gap-y-2">
+            <button
+              type="button"
+              (click)="emitEditAnswer()"
+              [disabled]="
+                editAnswerPending ||
+                editAnswerForm.invalid ||
+                !editAnswerDistinct
+              "
+              class="btn btn-primary w-fit"
+            >
+              <span
+                *ngIf="editAnswerPending"
+                class="loading loading-spinner"
+              ></span>
+              Edit answer
+            </button>
+
+            <newbee-alert
+              [type]="alertType.Error"
+              [show]="!!httpClientErrorMsg('answer', keyword.Edit)"
+              [text]="httpClientErrorMsg('answer', keyword.Edit)"
+            ></newbee-alert>
+          </div>
+        </ng-container>
+        <ng-template #noAnswerPermissions>
+          <div
+            *ngIf="qna.qna.answerHtml"
+            [innerHTML]="qna.qna.answerHtml"
+          ></div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

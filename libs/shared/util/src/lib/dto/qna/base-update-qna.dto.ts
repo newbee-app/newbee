@@ -24,4 +24,9 @@ export class BaseUpdateQnaDto implements Partial<BaseCreateQnaDto> {
    * @inheritdoc
    */
   answerMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  team?: string | null;
 }

@@ -127,6 +127,11 @@ export class MarkdocEditorComponent implements OnInit {
         ...(this.useDarkTheme ? [githubDark] : [githubLight]),
       ],
     };
+
+    if (this.preview && this.text) {
+      const content = strToContent(this.text);
+      this.renderedEditorContent = Markdoc.renderers.html(content);
+    }
   }
 
   /**

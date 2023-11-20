@@ -3,6 +3,7 @@ import {
   answerIsNotEmpty,
   iso8601DurationRegex,
   questionIsNotEmpty,
+  teamIsNotEmpty,
   titleIsNotEmpty,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
@@ -40,4 +41,11 @@ export class UpdateQnaDto implements BaseUpdateQnaDto {
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
   answerMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team?: string | null;
 }

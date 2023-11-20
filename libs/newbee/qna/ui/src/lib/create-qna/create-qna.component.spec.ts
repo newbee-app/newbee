@@ -47,11 +47,9 @@ describe('CreateQnaComponent', () => {
       component.emitCreate();
       expect(component.create.emit).toBeCalledTimes(1);
       expect(component.create.emit).toBeCalledWith({
-        createQnaDto: {
-          title: '',
-          questionMarkdoc: null,
-          answerMarkdoc: null,
-        },
+        title: '',
+        questionMarkdoc: null,
+        answerMarkdoc: null,
         team: null,
       });
 
@@ -60,12 +58,10 @@ describe('CreateQnaComponent', () => {
       component.emitCreate();
       expect(component.create.emit).toBeCalledTimes(2);
       expect(component.create.emit).toBeCalledWith({
-        createQnaDto: {
-          title: 'Question?',
-          questionMarkdoc: null,
-          answerMarkdoc: null,
-        },
-        team: testTeam1,
+        title: 'Question?',
+        questionMarkdoc: null,
+        answerMarkdoc: null,
+        team: testTeam1.slug,
       });
     });
   });

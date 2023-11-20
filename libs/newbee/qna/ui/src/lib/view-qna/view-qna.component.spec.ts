@@ -1,10 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  testNowDayjs1,
-  testOrgMember1,
-  testQna1,
-  testQnaRelation1,
-} from '@newbee/shared/util';
+import { testNowDayjs1, testQna1, testQnaRelation1 } from '@newbee/shared/util';
 import { ViewQnaComponent } from './view-qna.component';
 
 describe('ViewQnaComponent', () => {
@@ -43,33 +38,6 @@ describe('ViewQnaComponent', () => {
         },
       };
       expect(component.upToDate).toBeFalsy();
-    });
-  });
-
-  describe('hasEditQuestionPermissions', () => {
-    it('should be true if the user has adequate permissions to edit the question', () => {
-      expect(component.hasEditQuestionPermissions).toBeFalsy();
-
-      component.orgMember = testOrgMember1;
-      expect(component.hasEditQuestionPermissions).toBeTruthy();
-    });
-  });
-
-  describe('hasEditAnswerPermissions', () => {
-    it('should be true if the user has adequate permissions to edit the answer', () => {
-      expect(component.hasEditAnswerPermissions).toBeFalsy();
-
-      component.orgMember = testOrgMember1;
-      expect(component.hasEditAnswerPermissions).toBeTruthy();
-    });
-  });
-
-  describe('hasUpToDatePermissions', () => {
-    it('should be true if the user has adequate permissions to mark the qna up-to-date', () => {
-      expect(component.hasUpToDatePermissions).toBeFalsy();
-
-      component.orgMember = testOrgMember1;
-      expect(component.hasUpToDatePermissions).toBeTruthy();
     });
   });
 

@@ -21,4 +21,9 @@ export class BaseCreateQnaDto
    * @inheritdoc
    */
   answerMarkdoc: string | null = null;
+
+  /**
+   * The slug of the team to ask the question to, if any.
+   */
+  team: string | null = null;
 }

@@ -32,7 +32,6 @@ import {
   BaseSuggestDto,
   BaseSuggestResultDto,
   BaseTeamAndMemberDto,
-  BaseTeamSlugDto,
   BaseTokenDto,
   BaseUpdateAnswerDto,
   BaseUpdateDocDto,
@@ -617,6 +616,7 @@ export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
   title: testQna1.title,
   questionMarkdoc: testQna1.questionMarkdoc as string,
   answerMarkdoc: testQna1.answerMarkdoc,
+  team: testTeam1.slug,
 };
 
 /**
@@ -628,6 +628,7 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   upToDateDuration: 'P1Y',
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
+  team: null,
 };
 
 /**
@@ -637,6 +638,7 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
 export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
   title: 'New title',
   questionMarkdoc: 'new question',
+  team: null,
 };
 
 /**
@@ -644,8 +646,8 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
  * Strictly for use in testing.
  */
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
-  answerMarkdoc: 'new answer',
   upToDateDuration: 'P1Y',
+  answerMarkdoc: 'new answer',
 };
 
 /**
@@ -655,14 +657,6 @@ export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
 export const testBaseQnaAndMemberDto1: BaseQnaAndMemberDto = {
   qna: testQnaRelation1,
   teamMember: testTeamMember1,
-};
-
-/**
- * An example instance of BaseTeamSlugDto.
- * Strictly for use in testing.
- */
-export const testBaseTeamSlugDto1: BaseTeamSlugDto = {
-  team: testTeam1.slug,
 };
 
 /**

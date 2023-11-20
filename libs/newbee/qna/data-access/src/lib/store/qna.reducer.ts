@@ -11,14 +11,29 @@ import { createFeature, createReducer, on } from '@ngrx/store';
  */
 export interface QnaState {
   /**
-   * Whether the user is waiting for a response for creating a QnA.
+   * Whether the user is waiting for a response for creating a qna.
    */
   pendingCreate: boolean;
+
+  /**
+   * Whether the user is waiting for a response for editing a question.
+   */
+  pendingEditQuestion: boolean;
+
+  /**
+   * Whether the user is waiting for a response for editing an answer.
+   */
+  pendingEditAnswer: boolean;
 
   /**
    * Whether the user is waiting for a response for marking a qna up-to-date.
    */
   pendingUpToDate: boolean;
+
+  /**
+   * Whether the user is waiting for a response for deleting a qna.
+   */
+  pendingDelete: boolean;
 }
 
 /**
@@ -26,7 +41,10 @@ export interface QnaState {
  */
 export const initialQnaState: QnaState = {
   pendingCreate: false,
+  pendingEditQuestion: false,
+  pendingEditAnswer: false,
   pendingUpToDate: false,
+  pendingDelete: false,
 };
 
 /**

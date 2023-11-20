@@ -43,12 +43,12 @@
     </p>
 
     <div
-      *ngIf="hasEditQuestionPermissions || hasUpToDatePermissions"
+      *ngIf="hasQuestionPermissions || hasUpToDatePermissions"
       class="flex flex-row flex-wrap gap-2 mt-1"
     >
       <button
         type="button"
-        *ngIf="hasEditQuestionPermissions"
+        *ngIf="hasQuestionPermissions"
         (click)="emitQnaNavigate(keyword.Edit)"
         class="btn btn-sm btn-info"
       >
@@ -121,7 +121,7 @@
 
         <button
           type="button"
-          *ngIf="hasEditAnswerPermissions"
+          *ngIf="hasAnswerPermissions"
           (click)="emitQnaNavigate(keyword.Edit)"
           class="btn btn-sm btn-info mt-1"
         >
@@ -136,7 +136,7 @@
       <ng-template #noAnswer>
         <h4>This question has not been answered</h4>
 
-        <ng-container *ngIf="hasEditAnswerPermissions">
+        <ng-container *ngIf="hasAnswerPermissions">
           <div class="divider mt-2 mb-0"></div>
 
           <p class="prose">

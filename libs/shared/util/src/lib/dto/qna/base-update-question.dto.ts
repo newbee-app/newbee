@@ -5,7 +5,7 @@ import { BaseUpdateQnaDto } from './base-update-qna.dto';
  * Suitable for use in PATCH requests.
  */
 export class BaseUpdateQuestionDto
-  implements Pick<BaseUpdateQnaDto, 'title' | 'questionMarkdoc'>
+  implements Pick<BaseUpdateQnaDto, 'title' | 'questionMarkdoc' | 'team'>
 {
   /**
    * @inheritdoc
@@ -16,4 +16,9 @@ export class BaseUpdateQuestionDto
    * @inheritdoc
    */
   questionMarkdoc?: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  team?: string | null;
 }

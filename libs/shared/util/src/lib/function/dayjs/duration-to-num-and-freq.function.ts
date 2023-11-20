@@ -1,5 +1,6 @@
 import type { Duration } from 'dayjs/plugin/duration';
 import { Frequency } from '../../enum';
+import { NumAndFreq } from '../../interface';
 
 /**
  * Converts a dayjs duration into an object separating its number and frequency.
@@ -9,10 +10,7 @@ import { Frequency } from '../../enum';
  *
  * @returns An object containing the duration's number and frequency.
  */
-export function durationToNumAndFreq(duration: Duration): {
-  num: number;
-  frequency: Frequency;
-} {
+export function durationToNumAndFreq(duration: Duration): NumAndFreq {
   const result = { num: 0, frequency: Frequency.Day };
   Object.values(Frequency)
     .reverse()
