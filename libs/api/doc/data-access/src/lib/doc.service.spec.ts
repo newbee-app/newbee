@@ -117,11 +117,11 @@ describe('DocService', () => {
       expect(mockDocEntity).toBeCalledTimes(1);
       expect(mockDocEntity).toBeCalledWith(
         testDocEntity1.id,
-        testDocEntity1.title,
-        testDocEntity1.upToDateDuration,
+        testBaseCreateDocDto1.title,
+        testBaseCreateDocDto1.upToDateDuration,
         testTeamEntity1,
         testOrgMemberEntity1,
-        testDocEntity1.docMarkdoc,
+        testBaseCreateDocDto1.docMarkdoc,
       );
       expect(em.persistAndFlush).toBeCalledTimes(1);
       expect(em.persistAndFlush).toBeCalledWith(testDocEntity1);
