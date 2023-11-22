@@ -1,7 +1,7 @@
 import { AbstractControl } from '@angular/forms';
-import { Frequency } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
-import { SelectOption } from '../class';
+import { SelectOption } from '../../class';
+import { Frequency } from '../../enum';
 
 /**
  * Generates the Frequency enum as select options, varying the displayed string to be plural based on the provided `num`.

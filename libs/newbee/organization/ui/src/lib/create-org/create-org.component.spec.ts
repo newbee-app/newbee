@@ -6,7 +6,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { Frequency, testOrganization1 } from '@newbee/shared/util';
+import { Frequency } from '@newbee/newbee/shared/util';
+import { testOrganization1 } from '@newbee/shared/util';
 import { CreateOrgComponent } from './create-org.component';
 
 describe('CreateOrgComponent', () => {

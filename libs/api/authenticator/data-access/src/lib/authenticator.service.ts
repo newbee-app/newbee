@@ -17,14 +17,13 @@ import {
   EntityService,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import type { AppConfig } from '@newbee/api/shared/util';
+import { challengeFalsy, type AppConfig } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   authenticatorCredentialIdNotFound,
   authenticatorIdNotFound,
   authenticatorTakenBadRequest,
   authenticatorVerifyBadRequest,
-  challengeFalsy,
   forbiddenError,
   internalServerError,
 } from '@newbee/shared/util';

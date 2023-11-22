@@ -1,7 +1,8 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseCreateDocDto,
   docIsNotEmpty,
-  iso8601DurationRegex,
+  teamIsNotEmpty,
   titleIsNotEmpty,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
@@ -30,4 +31,11 @@ export class CreateDocDto implements BaseCreateDocDto {
    */
   @IsNotEmpty({ message: docIsNotEmpty })
   docMarkdoc!: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team: string | null = null;
 }

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { arrayToBullets, internalServerError } from '@newbee/shared/util';
-import type { HttpScreenError } from '../interface';
+import type { HttpScreenError } from '../../interface';
 
 /**
  * Takes in an unknown error object and converts it into an HttpScreenError.

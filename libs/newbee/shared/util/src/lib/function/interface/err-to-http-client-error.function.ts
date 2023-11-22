@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { internalServerError, valueOrArray } from '@newbee/shared/util';
-import type { HttpClientError } from '../interface';
+import type { HttpClientError } from '../../interface';
 
 /**
  * Takes in an unknown error object and converts it into an HttpClientError.

@@ -5,9 +5,9 @@ import {
   inputErrorMessage,
   inputIsClean,
   inputIsValid,
-} from './form.function';
+} from './input.function';
 
-describe('FormFunction', () => {
+describe('input functions', () => {
   describe('inputErrorMessage', () => {
     let control: FormControl<string | null>;
 

@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
-import { AlertType, ToastXPosition, ToastYPosition } from '../enum';
-import type { HttpClientError, Toast } from '../interface';
+import { AlertType, ToastXPosition, ToastYPosition } from '../../enum';
+import type { HttpClientError, Toast } from '../../interface';
 
 /**
  * Converts an `HttpClientError` to a toast object or an array of toasts, depending on the contents of the error.

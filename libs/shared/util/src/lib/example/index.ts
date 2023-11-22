@@ -594,8 +594,9 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
  */
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
   title: testDoc1.title,
+  upToDateDuration: 'P1Y',
   docMarkdoc: testDoc1.docMarkdoc,
-  upToDateDuration: null,
+  team: testTeam1.slug,
 };
 
 /**

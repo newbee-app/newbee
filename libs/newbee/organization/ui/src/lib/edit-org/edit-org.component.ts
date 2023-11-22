@@ -20,8 +20,11 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
+  NumAndFreq,
   SlugInputDirectiveModule,
+  durationToNumAndFreq,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -30,12 +33,9 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateOrganizationDto,
-  Frequency,
   Keyword,
-  NumAndFreq,
   OrgMemberNoUserOrg,
   OrgRoleEnum,
-  durationToNumAndFreq,
   type Organization,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';

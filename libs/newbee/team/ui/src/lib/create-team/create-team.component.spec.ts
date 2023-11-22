@@ -5,8 +5,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
   testBaseCreateTeamDto1,
   testOrganization1,
   testTeam1,

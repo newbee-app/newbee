@@ -13,19 +13,29 @@ import {
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
+  DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
   SelectOption,
+  defaultUpToDateDuration,
+  formNumAndFreqToDuration,
+  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
+import {
+  BaseCreateDocDto,
+  Keyword,
+  Team,
+  type Organization,
+} from '@newbee/shared/util';
 
 /**
- * A dumb UI for creating a new qna.
+ * The dumb UI for creating a doc.
  */
 @Component({
-  selector: 'newbee-create-qna',
+  selector: 'newbee-create-doc',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,15 +43,16 @@ import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
     SearchableSelectComponent,
     AlertComponent,
     MarkdocEditorComponent,
+    DigitOnlyDirectiveModule,
   ],
-  templateUrl: './create-qna.component.html',
+  templateUrl: './create-doc.component.html',
 })
-export class CreateQnaComponent implements OnInit {
+export class CreateDocComponent implements OnInit {
   readonly alertType = AlertType;
   readonly keyword = Keyword;
 
   /**
-   * An HTTP error for the component, if one exists.
+   * An HTTP error, if one exists.
    */
   @Input() httpClientError: HttpClientError | null = null;
 
@@ -51,7 +62,12 @@ export class CreateQnaComponent implements OnInit {
   @Input() createPending = false;
 
   /**
-   * All of the teams of the org the question can be asked to.
+   * The org we're creating the doc in.
+   */
+  @Input() organization!: Organization;
+
+  /**
+   * All of the teams of the org the doc can be put in.
    */
   @Input() teams: Team[] = [];
 
@@ -61,32 +77,48 @@ export class CreateQnaComponent implements OnInit {
   @Input() teamSlugParam: string | null = null;
 
   /**
-   * Tells the smart UI parent when the QnA is ready to be created.
+   * Tells the smart UI parent when the doc is ready to be created.
    */
-  @Output() create = new EventEmitter<BaseCreateQnaDto>();
+  @Output() create = new EventEmitter<BaseCreateDocDto>();
 
   /**
-   * The form containing the QnA's title and team.
+   * The doc markdoc as a string, for internal tracking.
    */
-  qnaForm = this.fb.group({
-    title: ['', [Validators.required]],
-    team: [null as null | Team],
-  });
-
-  /**
-   * The question markdoc as a string, for internal tracking.
-   */
-  questionMarkdoc = '';
+  docMarkdoc = '';
 
   /**
    * All of the input teams as select options.
    */
   teamOptions: SelectOption<Team | null>[] = [];
 
+  /**
+   * The form containing the doc's title and team.
+   */
+  docForm = this.fb.group({
+    title: ['', [Validators.required]],
+    team: [null as null | Team],
+    upToDateDuration: this.fb.group({
+      num: [null as number | null, [Validators.min(1)]],
+      frequency: [null as Frequency | null],
+    }),
+  });
+
+  readonly frequencyOptions = frequencySelectOptions(
+    this.docForm.controls.upToDateDuration.controls.num,
+  );
+
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * Initialize the team options and the team value with a value from the team slug param, if specified.
+   * What to display for the up-to-date duration tagline.
+   */
+  get defaultUpToDateDuration(): string {
+    const { team } = this.docForm.value;
+    return defaultUpToDateDuration(this.organization, team);
+  }
+
+  /**
+   * Initialize the team options and the team values with a value from the team slug param, if specified.
    */
   ngOnInit(): void {
     this.teamOptions = [
@@ -103,7 +135,23 @@ export class CreateQnaComponent implements OnInit {
       return;
     }
 
-    this.qnaForm.controls.team.setValue(team);
+    this.docForm.controls.team.setValue(team);
+  }
+
+  /**
+   * Called to emit the create output based off of the UI's values.
+   */
+  emitCreate(): void {
+    const { title, team } = this.docForm.value;
+    this.create.emit({
+      title: title ?? '',
+      team: team?.slug ?? null,
+      docMarkdoc: this.docMarkdoc,
+      upToDateDuration:
+        formNumAndFreqToDuration(
+          this.docForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
+    });
   }
 
   /**
@@ -121,9 +169,8 @@ export class CreateQnaComponent implements OnInit {
    * Whether to display a form input as having an error.
    *
    * @param inputGroup The form group to look in.
-   * @param inputName The name of the input to look at.
-   *
-   * @returns `true` if the input should display an error, `false`otherwise.
+   * @param inputName
+   * @returns
    */
   inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
     return (
@@ -145,18 +192,5 @@ export class CreateQnaComponent implements OnInit {
       inputErrorMessage(inputGroup.get(inputName)) ||
       getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  }
-
-  /**
-   * Called to emit the create output based off of the UI's values.
-   */
-  emitCreate(): void {
-    const { title, team } = this.qnaForm.value;
-    this.create.emit({
-      title: title ?? '',
-      questionMarkdoc: this.questionMarkdoc || null,
-      answerMarkdoc: null,
-      team: team?.slug ?? null,
-    });
   }
 }

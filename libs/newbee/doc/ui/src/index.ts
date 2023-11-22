@@ -1,1 +1,1 @@
-export * from './lib/newbee-doc-ui.module';
+export * from './lib/create-doc';

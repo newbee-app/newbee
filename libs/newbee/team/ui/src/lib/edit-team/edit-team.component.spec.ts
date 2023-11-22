@@ -4,8 +4,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
   OrgRoleEnum,
   testOrganization1,
   testOrgMember1,

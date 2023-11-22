@@ -21,7 +21,9 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   SlugInputDirectiveModule,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -30,7 +32,6 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseCreateTeamDto,
-  Frequency,
   Keyword,
   type Organization,
 } from '@newbee/shared/util';
@@ -195,15 +196,15 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
    * Emit the `create` output.
    */
   emitCreate(): void {
-    const { name, slug, upToDateDuration } = this.createTeamForm.value;
-    const num = upToDateDuration?.num ?? null;
-    const frequency = upToDateDuration?.frequency ?? null;
+    const { name, slug } = this.createTeamForm.value;
 
     const createTeamDto: BaseCreateTeamDto = {
       name: name as string,
       slug: slug as string,
       upToDateDuration:
-        num && frequency ? dayjs.duration(num, frequency).toISOString() : null,
+        formNumAndFreqToDuration(
+          this.createTeamForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
     };
     this.create.emit(createTeamDto);
   }

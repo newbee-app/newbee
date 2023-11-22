@@ -20,8 +20,12 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
+  NumAndFreq,
   SlugInputDirectiveModule,
+  durationToNumAndFreq,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -30,13 +34,10 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateTeamDto,
-  Frequency,
   Keyword,
-  NumAndFreq,
   OrgRoleEnum,
   TeamRoleEnum,
   compareOrgRoles,
-  durationToNumAndFreq,
   type OrgMember,
   type Organization,
   type Team,
@@ -287,15 +288,13 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    const { name, upToDateDuration } = this.editTeamForm.value;
+    const { name } = this.editTeamForm.value;
     const updateTeamDto: BaseUpdateTeamDto = {
       ...(name && { name }),
       upToDateDuration:
-        upToDateDuration?.num && upToDateDuration.frequency
-          ? dayjs
-              .duration(upToDateDuration.num, upToDateDuration.frequency)
-              .toISOString()
-          : null,
+        formNumAndFreqToDuration(
+          this.editTeamForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
     };
     this.edit.emit(updateTeamDto);
   }

@@ -1,7 +1,7 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseUpdateDocDto,
   docIsNotEmpty,
-  iso8601DurationRegex,
   titleIsNotEmpty,
   upToDateDurationMatches,
 } from '@newbee/shared/util';

@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
-import { Frequency } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
+import { Frequency } from '../../enum';
 import { frequencySelectOptions } from './frequency-select-options.function';
 
 describe('frequencySelectOptions', () => {

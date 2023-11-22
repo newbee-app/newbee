@@ -20,8 +20,13 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
+  NumAndFreq,
   SelectOption,
+  defaultUpToDateDuration,
+  durationToNumAndFreq,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -31,12 +36,9 @@ import {
 import {
   BaseUpdateAnswerDto,
   BaseUpdateQuestionDto,
-  Frequency,
   Keyword,
-  NumAndFreq,
   Team,
   TeamMember,
-  durationToNumAndFreq,
   type OrgMember,
   type Organization,
   type QnaNoOrg,
@@ -247,14 +249,8 @@ export class EditQnaComponent implements OnInit {
   /**
    * What to display for the up-to-date duration tagline.
    */
-  get upToDateDurationTagline(): string {
-    return `Mark blank to default to the ${
-      this.qna.team?.upToDateDuration ? 'team' : 'organization'
-    }'s value of ${dayjs
-      .duration(
-        this.qna.team?.upToDateDuration ?? this.organization.upToDateDuration,
-      )
-      .humanize()}`;
+  get defaultUpToDateDuration(): string {
+    return defaultUpToDateDuration(this.organization, this.qna.team);
   }
 
   /**
@@ -307,12 +303,12 @@ export class EditQnaComponent implements OnInit {
    * Emit a request to edit the qna's answer.
    */
   emitEditAnswer(): void {
-    const { num, frequency } =
-      this.editAnswerForm.controls.upToDateDuration.value;
     this.editAnswer.emit({
       answerMarkdoc: this.answerMarkdoc,
       upToDateDuration:
-        num && frequency ? dayjs.duration(num, frequency).toISOString() : null,
+        formNumAndFreqToDuration(
+          this.editAnswerForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
     });
   }
 

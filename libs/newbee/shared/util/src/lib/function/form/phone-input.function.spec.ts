@@ -1,5 +1,5 @@
-import { testCountry1 } from '../example';
-import type { PhoneInput } from '../interface';
+import { testCountry1 } from '../../example';
+import type { PhoneInput } from '../../interface';
 import { phoneInputToString } from './phone-input.function';
 
 describe('PhoneInput functions', () => {

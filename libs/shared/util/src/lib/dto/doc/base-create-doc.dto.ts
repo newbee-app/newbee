@@ -21,4 +21,9 @@ export class BaseCreateDocDto
    * @inheritdoc
    */
   docMarkdoc!: string;
+
+  /**
+   * The slug of the team to put the doc in, if any.
+   */
+  team: string | null = null;
 }

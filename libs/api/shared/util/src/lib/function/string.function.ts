@@ -19,6 +19,17 @@ export function isNotNull(column: string): string {
 }
 
 /**
+ * The message to send to the logger when a user challenge is `null`, even though we expect it to have a truthy value.
+ */
+export function challengeFalsy(
+  operation: 'login' | 'registration',
+  challenge: string | undefined | null,
+  userId: string,
+): string {
+  return `Attempted to verify a ${operation} response even though user's challenge string is ${challenge} for user: ${userId}`;
+}
+
+/**
  * Generates a unique slug for a given string, using the provided `isUnique` callback to check that the slug is unique.
  * The function first tries to turn the string into a slug.
  * If the string as a slug is already taken, it adds a dash (`-`) and 6 random characters to the slugified string, until a unique slug is created.

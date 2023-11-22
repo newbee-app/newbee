@@ -1,7 +1,7 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseUpdateAnswerDto,
   answerIsNotEmpty,
-  iso8601DurationRegex,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional, Matches } from 'class-validator';

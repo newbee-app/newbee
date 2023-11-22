@@ -1,7 +1,7 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseUpdateQnaDto,
   answerIsNotEmpty,
-  iso8601DurationRegex,
   questionIsNotEmpty,
   teamIsNotEmpty,
   titleIsNotEmpty,

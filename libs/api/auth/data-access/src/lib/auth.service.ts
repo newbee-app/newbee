@@ -4,11 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 import { AppAuthConfig, UserJwtPayload } from '@newbee/api/auth/util';
 import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import { UserEntity } from '@newbee/api/shared/data-access';
+import { challengeFalsy } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
-import {
-  authenticatorVerifyBadRequest,
-  challengeFalsy,
-} from '@newbee/shared/util';
+import { authenticatorVerifyBadRequest } from '@newbee/shared/util';
 import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server';
 import {
   generateAuthenticationOptions,

@@ -1,4 +1,4 @@
-import { AlertType, ToastXPosition, ToastYPosition } from '../enum';
+import { AlertType, ToastXPosition, ToastYPosition } from '../../enum';
 import { httpClientErrorToToast } from './http-client-error-to-toast.function';
 
 jest.mock('uuid', () => ({
@@ -20,7 +20,7 @@ describe('httpClientErrorToToast', () => {
 
   it('should return an array of toasts if messages is an array', () => {
     expect(
-      httpClientErrorToToast({ status: 500, messages: ['error'] })
+      httpClientErrorToToast({ status: 500, messages: ['error'] }),
     ).toEqual([
       {
         id: '1',
@@ -35,7 +35,7 @@ describe('httpClientErrorToToast', () => {
 
   it('should return an array of toasts if messages is an object', () => {
     expect(
-      httpClientErrorToToast({ status: 500, messages: { a: 'error' } })
+      httpClientErrorToToast({ status: 500, messages: { a: 'error' } }),
     ).toEqual([
       {
         id: '1',
@@ -47,7 +47,7 @@ describe('httpClientErrorToToast', () => {
       },
     ]);
     expect(
-      httpClientErrorToToast({ status: 500, messages: { a: ['error'] } })
+      httpClientErrorToToast({ status: 500, messages: { a: ['error'] } }),
     ).toEqual([
       {
         id: '1',

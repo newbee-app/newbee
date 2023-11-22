@@ -21,6 +21,7 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
   SlugInputDirectiveModule,
   frequencySelectOptions,
@@ -28,11 +29,7 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import {
-  BaseCreateOrganizationDto,
-  Frequency,
-  Keyword,
-} from '@newbee/shared/util';
+import { BaseCreateOrganizationDto, Keyword } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 

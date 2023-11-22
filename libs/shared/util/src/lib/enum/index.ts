@@ -1,4 +1,3 @@
-export * from './frequency.enum';
 export * from './keyword.enum';
 export * from './org-role.enum';
 export * from './solr-entry.enum';

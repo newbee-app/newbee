@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SelectOption } from '@newbee/newbee/shared/util';
+import { Frequency, SelectOption } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
   testOrgMember1,
   testOrganization1,
   testQna1,
   testQnaRelation1,
   testTeam1,
 } from '@newbee/shared/util';
-import dayjs from 'dayjs';
 import { EditQnaComponent } from './edit-qna.component';
 
 describe('EditQnaComponent', () => {
@@ -56,25 +54,6 @@ describe('EditQnaComponent', () => {
         upToDateDuration: { num: null, frequency: null },
       });
       expect(component.answerMarkdoc).toEqual(testQna1.answerMarkdoc);
-    });
-  });
-
-  describe('upToDateDurationTagline', () => {
-    it(`should vary based on the qna's team and up-to-date duration`, () => {
-      expect(component.upToDateDurationTagline).toEqual(
-        `Mark blank to default to the organization's value of ${dayjs
-          .duration(testOrganization1.upToDateDuration)
-          .humanize()}`,
-      );
-
-      const newDuration = dayjs.duration(2, 'months');
-      component.qna = {
-        ...testQnaRelation1,
-        team: { ...testTeam1, upToDateDuration: newDuration.toISOString() },
-      };
-      expect(component.upToDateDurationTagline).toEqual(
-        `Mark blank to default to the team's value of ${newDuration.humanize()}`,
-      );
     });
   });
 

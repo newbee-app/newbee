@@ -1,5 +1,5 @@
 import { arrayToBullets } from '@newbee/shared/util';
-import { HttpClientError } from '../interface';
+import { HttpClientError } from '../../interface';
 
 /**
  * Takes in an `HttpClientError` and converts it into a single string.
