@@ -2,6 +2,7 @@ export * from './app.reducer';
 export * from './auth';
 export * from './authenticator';
 export * from './cookie';
+export * from './doc';
 export * from './http';
 export * from './invite';
 export * from './org-member';

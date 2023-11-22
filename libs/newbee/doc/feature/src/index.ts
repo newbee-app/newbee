@@ -1,1 +1,1 @@
-export * from './lib/newbee-doc-feature.module';
+export * from './lib/doc.module';

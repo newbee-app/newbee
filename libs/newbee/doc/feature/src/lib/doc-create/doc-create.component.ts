@@ -1,32 +1,32 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { qnaFeature } from '@newbee/newbee/qna/data-access';
+import { docFeature } from '@newbee/newbee/doc/data-access';
 import {
-  QnaActions,
+  DocActions,
   httpFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateQnaDto, Keyword } from '@newbee/shared/util';
+import { BaseCreateDocDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 
 /**
- * The smart UI for creating a qna.
+ * The smart UI for creating a doc.
  */
 @Component({
-  selector: 'newbee-qna-create',
-  templateUrl: './qna-create.component.html',
+  selector: 'newbee-doc-create',
+  templateUrl: './doc-create.component.html',
 })
-export class QnaCreateComponent {
+export class DocCreateComponent {
+  /**
+   * HTTP client error, if any.
+   */
+  httpClientError$ = this.store.select(httpFeature.selectError);
+
   /**
    * Whether the create action is pending.
    */
-  pendingCreate$ = this.store.select(qnaFeature.selectPendingCreate);
-
-  /**
-   * Request HTTP error, if any exist.
-   */
-  httpClientError$ = this.store.select(httpFeature.selectError);
+  pendingCreate$ = this.store.select(docFeature.selectPendingCreate);
 
   /**
    * The currently selected organization.
@@ -50,9 +50,9 @@ export class QnaCreateComponent {
   /**
    * When the dumb UI emits a create event, send a create action with the value.
    *
-   * @param createQnaDto The value to use to create a QnA.
+   * @param createDocDto The value to use to create a doc.
    */
-  onCreate(createQnaDto: BaseCreateQnaDto): void {
-    this.store.dispatch(QnaActions.createQna({ createQnaDto }));
+  onCreate(createDocDto: BaseCreateDocDto): void {
+    this.store.dispatch(DocActions.createDoc({ createDocDto }));
   }
 }

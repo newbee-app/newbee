@@ -1,0 +1,64 @@
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { apiVersion } from '@newbee/shared/data-access';
+import {
+  Keyword,
+  testBaseCreateDocDto1,
+  testDoc1,
+  testOrganization1,
+} from '@newbee/shared/util';
+import { DocService } from './doc.service';
+
+describe('DocService', () => {
+  let service: DocService;
+  let httpController: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [DocService],
+    });
+
+    service = TestBed.inject(DocService);
+    httpController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpController.verify();
+  });
+
+  describe('baseApiUrl', () => {
+    it('should match the expected API route', () => {
+      expect(DocService.baseApiUrl(testOrganization1.slug)).toEqual(
+        `/${Keyword.Api}/v${apiVersion.doc}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Doc}`,
+      );
+    });
+  });
+
+  describe('create', () => {
+    it('should send out a post request', (done) => {
+      service.create(testOrganization1.slug, testBaseCreateDocDto1).subscribe({
+        next: (doc) => {
+          try {
+            expect(doc).toEqual(testDoc1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        DocService.baseApiUrl(testOrganization1.slug),
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseCreateDocDto1);
+
+      req.flush(testDoc1);
+    });
+  });
+});

@@ -57,6 +57,7 @@ export abstract class PostEntity implements Post {
    * @inheritdoc
    */
   @Property()
+  @Index()
   slug: string;
 
   /**

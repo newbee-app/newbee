@@ -42,6 +42,7 @@ export class TeamEntity implements Team {
    * @inheritdoc
    */
   @Property()
+  @Index()
   slug: string;
 
   /**

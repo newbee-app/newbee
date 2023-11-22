@@ -1,0 +1,8 @@
+<newbee-create-doc
+  [httpClientError]="httpClientError$ | async"
+  [createPending]="(pendingCreate$ | async)!"
+  [organization]="(selectedOrganization$ | async)!.organization"
+  [teams]="(selectedOrganization$ | async)!.teams"
+  [teamSlugParam]="teamSlugParam$ | async"
+  (create)="onCreate($event)"
+></newbee-create-doc>

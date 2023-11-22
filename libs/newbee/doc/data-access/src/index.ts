@@ -1,1 +1,3 @@
-export * from './lib/newbee-doc-data-access.module';
+export * from './lib/doc.service';
+export * from './lib/resolver';
+export * from './lib/store';

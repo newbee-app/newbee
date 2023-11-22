@@ -11,6 +11,9 @@ import {
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
+/**
+ * Service for interacting with the qna portion of the API.
+ */
 @Injectable()
 export class QnaService {
   constructor(private readonly http: HttpClient) {}

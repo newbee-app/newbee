@@ -48,6 +48,13 @@ const routes: Routes = [
         },
       },
       {
+        path: ShortUrl.Doc,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/doc/feature');
+          return m.DocModule;
+        },
+      },
+      {
         path: Keyword.Search,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/search/feature');
