@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
+  canEditQnaGuard,
   createQnaTitleResolver,
   qnaGuard,
   qnaTitleResolver,
@@ -8,6 +9,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { QnaCreateComponent } from '../qna-create';
+import { QnaEditComponent } from '../qna-edit';
 import { QnaRootComponent } from '../qna-root';
 import { QnaViewComponent } from '../qna-view';
 
@@ -23,6 +25,11 @@ const routes: Routes = [
     title: qnaTitleResolver,
     canActivate: [qnaGuard],
     children: [
+      {
+        path: Keyword.Edit,
+        component: QnaEditComponent,
+        canActivate: [canEditQnaGuard],
+      },
       {
         path: '',
         component: QnaViewComponent,

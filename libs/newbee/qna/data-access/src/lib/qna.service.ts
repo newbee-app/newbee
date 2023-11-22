@@ -4,6 +4,8 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseCreateQnaDto,
   BaseQnaAndMemberDto,
+  BaseUpdateAnswerDto,
+  BaseUpdateQuestionDto,
   Keyword,
   Qna,
 } from '@newbee/shared/util';
@@ -63,6 +65,60 @@ export class QnaService {
     return this.http.post<Qna>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}`,
       {},
+    );
+  }
+
+  /**
+   * Sends a request to the API to edit the question portion of a qna.
+   *
+   * @param qnaSlug The slug of the qna to update.
+   * @param orgSlug The org to look in.
+   * @param updateQuestionDto The new details for the question.
+   *
+   * @returns An observable containing the updated qna.
+   */
+  editQuestion(
+    qnaSlug: string,
+    orgSlug: string,
+    updateQuestionDto: BaseUpdateQuestionDto,
+  ): Observable<Qna> {
+    return this.http.patch<Qna>(
+      `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Question}`,
+      updateQuestionDto,
+    );
+  }
+
+  /**
+   * Sends a request to the API to edit the answer portion of a qna.
+   *
+   * @param qnaSlug The slug of the qna to update.
+   * @param orgSlug The org to look in.
+   * @param updateAnswerDto The new details for the answer.
+   *
+   * @returns An observable containing the udpated qna.
+   */
+  editAnswer(
+    qnaSlug: string,
+    orgSlug: string,
+    updateAnswerDto: BaseUpdateAnswerDto,
+  ): Observable<Qna> {
+    return this.http.patch<Qna>(
+      `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Answer}`,
+      updateAnswerDto,
+    );
+  }
+
+  /**
+   * Sends a request to the API to delete a qna.
+   *
+   * @param qnaSlug The slug of the qna to delete.
+   * @param orgSlug The org to look in.
+   *
+   * @returns A null observable.
+   */
+  delete(qnaSlug: string, orgSlug: string): Observable<null> {
+    return this.http.delete<null>(
+      `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}`,
     );
   }
 }

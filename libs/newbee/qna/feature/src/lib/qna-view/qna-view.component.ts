@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { qnaFeature as qnaModuleFeature } from '@newbee/newbee/qna/data-access';
 import {
   QnaActions,
+  httpFeature,
   organizationFeature,
   qnaFeature,
 } from '@newbee/newbee/shared/data-access';
@@ -16,6 +17,11 @@ import { Store } from '@ngrx/store';
   templateUrl: './qna-view.component.html',
 })
 export class QnaViewComponent {
+  /**
+   * The HTTP client error.
+   */
+  httpClientError$ = this.store.select(httpFeature.selectError);
+
   /**
    * The currently selected qna.
    */

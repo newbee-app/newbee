@@ -8,7 +8,14 @@ import {
   qnaFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword, titleIsNotEmpty } from '@newbee/shared/util';
+import {
+  Keyword,
+  answerIsNotEmpty,
+  questionIsNotEmpty,
+  teamIsNotEmpty,
+  titleIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
@@ -38,6 +45,12 @@ export class QnaEffects {
                 switch (msg) {
                   case titleIsNotEmpty:
                     return 'title';
+                  case questionIsNotEmpty:
+                    return Keyword.Question;
+                  case answerIsNotEmpty:
+                    return Keyword.Answer;
+                  case teamIsNotEmpty:
+                    return Keyword.Team;
                   default:
                     return Keyword.Misc;
                 }
@@ -100,24 +113,149 @@ export class QnaEffects {
           !!(selectedQna && selectedOrganization),
       ),
       switchMap(([, selectedQna, selectedOrganization]) => {
-        const oldQnaSlug = selectedQna?.qna.slug as string;
         return this.qnaService
           .markUpToDate(
-            oldQnaSlug,
+            selectedQna?.qna.slug as string,
             selectedOrganization?.organization.slug as string,
           )
           .pipe(
             map((qna) => {
-              return QnaActions.markQnaAsUpToDateSuccess({
-                oldSlug: oldQnaSlug,
-                newQna: qna,
-              });
+              return QnaActions.editQnaSuccess({ qna });
             }),
             catchError((err) => catchHttpClientError(err, () => 'up-to-date')),
           );
       }),
     );
   });
+
+  editQuestion$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.editQuestion),
+      concatLatestFrom(() => [
+        this.store.select(qnaFeature.selectSelectedQna),
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ]),
+      filter(
+        ([, selectedQna, selectedOrganization]) =>
+          !!(selectedQna && selectedOrganization),
+      ),
+      switchMap(
+        ([{ updateQuestionDto }, selectedQna, selectedOrganization]) => {
+          return this.qnaService
+            .editQuestion(
+              selectedQna?.qna.slug as string,
+              selectedOrganization?.organization.slug as string,
+              updateQuestionDto,
+            )
+            .pipe(
+              map((qna) => {
+                return QnaActions.editQnaSuccess({ qna });
+              }),
+              catchError((err) =>
+                catchHttpClientError(err, (msg) => {
+                  switch (msg) {
+                    case titleIsNotEmpty:
+                      return 'title';
+                    case questionIsNotEmpty:
+                      return Keyword.Question;
+                    case teamIsNotEmpty:
+                      return Keyword.Team;
+                    default:
+                      return `${Keyword.Question}-${Keyword.Edit}`;
+                  }
+                }),
+              ),
+            );
+        },
+      ),
+    );
+  });
+
+  editAnswer$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.editAnswer),
+      concatLatestFrom(() => [
+        this.store.select(qnaFeature.selectSelectedQna),
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ]),
+      filter(
+        ([, selectedQna, selectedOrganization]) =>
+          !!(selectedQna && selectedOrganization),
+      ),
+      switchMap(([{ updateAnswerDto }, selectedQna, selectedOrganization]) => {
+        return this.qnaService
+          .editAnswer(
+            selectedQna?.qna.slug as string,
+            selectedOrganization?.organization.slug as string,
+            updateAnswerDto,
+          )
+          .pipe(
+            map((qna) => {
+              return QnaActions.editQnaSuccess({ qna });
+            }),
+            catchError((err) =>
+              catchHttpClientError(err, (msg) => {
+                switch (msg) {
+                  case upToDateDurationMatches:
+                    return 'duration';
+                  case answerIsNotEmpty:
+                    return Keyword.Answer;
+                  default:
+                    return `${Keyword.Answer}-${Keyword.Edit}`;
+                }
+              }),
+            ),
+          );
+      }),
+    );
+  });
+
+  deleteQna$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.deleteQna),
+      concatLatestFrom(() => [
+        this.store.select(qnaFeature.selectSelectedQna),
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ]),
+      filter(
+        ([, selectedQna, selectedOrganization]) =>
+          !!(selectedQna && selectedOrganization),
+      ),
+      switchMap(([, selectedQna, selectedOrganization]) => {
+        const qnaSlug = selectedQna?.qna.slug as string;
+        return this.qnaService
+          .delete(qnaSlug, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map(() => {
+              return QnaActions.deleteQnaSuccess();
+            }),
+            catchError((err) =>
+              catchHttpClientError(err, () => Keyword.Delete),
+            ),
+          );
+      }),
+    );
+  });
+
+  deleteQnaSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(QnaActions.deleteQnaSuccess),
+        concatLatestFrom(() =>
+          this.store.select(organizationFeature.selectSelectedOrganization),
+        ),
+        filter(([, selectedOrganization]) => !!selectedOrganization),
+        tap(async ([, selectedOrganization]) => {
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${
+              selectedOrganization?.organization.slug as string
+            }`,
+          ]);
+        }),
+      );
+    },
+    { dispatch: false },
+  );
 
   constructor(
     private readonly actions$: Actions,

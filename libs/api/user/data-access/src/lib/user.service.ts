@@ -65,6 +65,10 @@ export class UserService {
       userID: id,
       userName: email,
       userDisplayName: displayName ?? name,
+      authenticatorSelection: {
+        residentKey: 'required',
+        userVerification: 'required',
+      },
     });
     const user = new UserEntity(
       id,

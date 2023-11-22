@@ -42,6 +42,9 @@ export const WithErrors: Story = {
       status: 400,
       messages: {
         title: 'Title error',
+        [Keyword.Question]: 'Question error',
+        [Keyword.Answer]: 'Answer error',
+        [Keyword.Team]: 'Team error',
         [Keyword.Misc]: 'Misc error',
       },
     },

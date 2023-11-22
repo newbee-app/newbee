@@ -15,6 +15,7 @@ export default {
   title: 'ViewQnaComponent',
   component: ViewQnaComponent,
   args: {
+    httpClientError: null,
     qna: testQnaRelation1,
     orgMember: testOrgMember1,
     teamMember: testTeamMember1,
@@ -90,6 +91,17 @@ export const NoMaintainerTeamMember: Story = {
       ...testQnaRelation1,
       creator: null,
       maintainer: null,
+    },
+  },
+};
+
+export const Errors: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        'up-to-date': 'Up-to-date error',
+      },
     },
   },
 };

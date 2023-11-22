@@ -12,6 +12,8 @@ import {
   Keyword,
   testBaseCreateQnaDto1,
   testBaseQnaAndMemberDto1,
+  testBaseUpdateAnswerDto1,
+  testBaseUpdateQuestionDto1,
   testOrganization1,
   testOrganizationRelation1,
   testQna1,
@@ -61,6 +63,9 @@ describe('QnaEffects', () => {
             create: jest.fn().mockReturnValue(of(testQna1)),
             get: jest.fn().mockReturnValue(of(testBaseQnaAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
+            editQuestion: jest.fn().mockReturnValue(of(testQna1)),
+            editAnswer: jest.fn().mockReturnValue(of(testQna1)),
+            delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -178,13 +183,10 @@ describe('QnaEffects', () => {
   });
 
   describe('markQnaAsUpToDate$', () => {
-    it('should fire markQnaAsUpToDateSuccess if successful', () => {
+    it('should fire editQnaSuccess if successful', () => {
       actions$ = hot('a', { a: QnaActions.markQnaAsUpToDate() });
       const expected$ = hot('a', {
-        a: QnaActions.markQnaAsUpToDateSuccess({
-          oldSlug: testQna1.slug,
-          newQna: testQna1,
-        }),
+        a: QnaActions.editQnaSuccess({ qna: testQna1 }),
       });
       expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -203,6 +205,131 @@ describe('QnaEffects', () => {
       expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.markUpToDate).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('editQuestion$', () => {
+    it('should fire editQnaSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: QnaActions.editQuestion({
+          updateQuestionDto: testBaseUpdateQuestionDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.editQnaSuccess({ qna: testQna1 }),
+      });
+      expect(effects.editQuestion$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editQuestion).toBeCalledTimes(1);
+        expect(service.editQuestion).toBeCalledWith(
+          testQna1.slug,
+          testOrganization1.slug,
+          testBaseUpdateQuestionDto1,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: QnaActions.editQuestion({
+          updateQuestionDto: testBaseUpdateQuestionDto1,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.editQuestion$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editQuestion).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('editAnswer$', () => {
+    it('should fire editQnaSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.editQnaSuccess({ qna: testQna1 }),
+      });
+      expect(effects.editAnswer$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editAnswer).toBeCalledTimes(1);
+        expect(service.editAnswer).toBeCalledWith(
+          testQna1.slug,
+          testOrganization1.slug,
+          testBaseUpdateAnswerDto1,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
+      });
+      const expected$ = hot('-');
+      expect(effects.editAnswer$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editAnswer).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('deleteQna$', () => {
+    it('should fire deleteQnaSuccess if successful', () => {
+      actions$ = hot('a', { a: QnaActions.deleteQna() });
+      const expected$ = hot('a', {
+        a: QnaActions.deleteQnaSuccess(),
+      });
+      expect(effects.deleteQna$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.delete).toBeCalledTimes(1);
+        expect(service.delete).toBeCalledWith(
+          testQna1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
+      store.setState({});
+      actions$ = hot('a', { a: QnaActions.deleteQna() });
+      const expected$ = hot('-');
+      expect(effects.deleteQna$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.delete).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('deleteQnaSuccess$', () => {
+    it('should navigate to org', () => {
+      actions$ = hot('a', {
+        a: QnaActions.deleteQnaSuccess(),
+      });
+      const expected$ = hot('a', {
+        a: [QnaActions.deleteQnaSuccess(), testOrganizationRelation1],
+      });
+      expect(effects.deleteQnaSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith([
+          `/${ShortUrl.Organization}/${testOrganization1.slug}`,
+        ]);
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: QnaActions.deleteQnaSuccess(),
+      });
+      const expected$ = hot('-');
+      expect(effects.deleteQnaSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).not.toBeCalled();
       });
     });
   });

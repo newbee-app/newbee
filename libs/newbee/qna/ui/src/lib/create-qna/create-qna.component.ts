@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   AlertComponent,
   MarkdocEditorComponent,
@@ -32,10 +37,8 @@ import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
   templateUrl: './create-qna.component.html',
 })
 export class CreateQnaComponent implements OnInit {
-  /**
-   * All valid alert types.
-   */
   readonly alertType = AlertType;
+  readonly keyword = Keyword;
 
   /**
    * An HTTP error for the component, if one exists.
@@ -104,31 +107,44 @@ export class CreateQnaComponent implements OnInit {
   }
 
   /**
-   * Whether to show the title control's error message.
+   * Gets the HTTP client error message for the key.
+   *
+   * @param keys The keys to look for.
+   *
+   * @returns The error message associated with the key.
    */
-  get showTitleError(): boolean {
+  httpClientErrorMsg(...keys: string[]): string {
+    return getHttpClientErrorMsg(this.httpClientError, keys.join('-'));
+  }
+
+  /**
+   * Whether to display a form input as having an error.
+   *
+   * @param inputGroup The form group to look in.
+   * @param inputName The name of the input to look at.
+   *
+   * @returns `true` if the input should display an error, `false`otherwise.
+   */
+  inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
     return (
-      inputDisplayError(this.qnaForm.controls.title) ||
-      !!getHttpClientErrorMsg(this.httpClientError, 'title')
+      inputDisplayError(inputGroup.get(inputName)) ||
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }
 
   /**
-   * The title control's error message, if it has one.
-   * Will be an empty string if it doesn't.
+   * The input error message for the given form input.
+   *
+   * @param inputGroup The form group to look in.
+   * @param inputName The name of the input to look at.
+   *
+   * @returns The input's error message if it has one, an empty string otherwise.
    */
-  get titleErrorMessage(): string {
+  inputErrorMessage(inputGroup: FormGroup, inputName: string): string {
     return (
-      inputErrorMessage(this.qnaForm.controls.title) ||
-      getHttpClientErrorMsg(this.httpClientError, 'title')
+      inputErrorMessage(inputGroup.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  }
-
-  /**
-   * The misc errors, will be an empty string if there aren't any.
-   */
-  get miscError(): string {
-    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 
   /**

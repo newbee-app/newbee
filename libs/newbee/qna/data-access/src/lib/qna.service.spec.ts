@@ -8,6 +8,8 @@ import {
   Keyword,
   testBaseCreateQnaDto1,
   testBaseQnaAndMemberDto1,
+  testBaseUpdateAnswerDto1,
+  testBaseUpdateQuestionDto1,
   testOrganization1,
   testQna1,
 } from '@newbee/shared/util';
@@ -107,6 +109,93 @@ describe('QnaService', () => {
       expect(req.request.body).toEqual({});
 
       req.flush(testQna1);
+    });
+  });
+
+  describe('editQuestion', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .editQuestion(
+          testQna1.slug,
+          testOrganization1.slug,
+          testBaseUpdateQuestionDto1,
+        )
+        .subscribe({
+          next: (qna) => {
+            try {
+              expect(qna).toEqual(testQna1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${QnaService.baseApiUrl(testOrganization1.slug)}/${testQna1.slug}/${
+          Keyword.Question
+        }`,
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateQuestionDto1);
+
+      req.flush(testQna1);
+    });
+  });
+
+  describe('editAnswer', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .editAnswer(
+          testQna1.slug,
+          testOrganization1.slug,
+          testBaseUpdateAnswerDto1,
+        )
+        .subscribe({
+          next: (qna) => {
+            try {
+              expect(qna).toEqual(testQna1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${QnaService.baseApiUrl(testOrganization1.slug)}/${testQna1.slug}/${
+          Keyword.Answer
+        }`,
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateAnswerDto1);
+
+      req.flush(testQna1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should send out a delete request', (done) => {
+      service.delete(testQna1.slug, testOrganization1.slug).subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `${QnaService.baseApiUrl(testOrganization1.slug)}/${testQna1.slug}`,
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
     });
   });
 });

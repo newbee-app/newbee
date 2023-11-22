@@ -1,4 +1,5 @@
 <newbee-view-qna
+  [httpClientError]="httpClientError$ | async"
   [qna]="(selectedQna$ | async)!"
   [orgMember]="(orgMember$ | async)?.orgMember ?? null"
   [teamMember]="teamMember$ | async"

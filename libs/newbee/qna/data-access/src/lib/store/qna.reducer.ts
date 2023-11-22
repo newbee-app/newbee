@@ -66,8 +66,22 @@ export const qnaFeature = createFeature({
       (state): QnaState => ({ ...state, pendingUpToDate: true }),
     ),
     on(
+      QnaActions.editQuestion,
+      (state): QnaState => ({ ...state, pendingEditQuestion: true }),
+    ),
+    on(
+      QnaActions.editAnswer,
+      (state): QnaState => ({ ...state, pendingEditAnswer: true }),
+    ),
+    on(
+      QnaActions.deleteQna,
+      (state): QnaState => ({ ...state, pendingDelete: true }),
+    ),
+    on(
       QnaActions.createQnaSuccess,
-      QnaActions.markQnaAsUpToDateSuccess,
+      QnaActions.editQnaSuccess,
+      QnaActions.deleteQnaSuccess,
+      QnaActions.resetSelectedQna,
       HttpActions.clientError,
       RouterActions.routerRequest,
       (): QnaState => initialQnaState,

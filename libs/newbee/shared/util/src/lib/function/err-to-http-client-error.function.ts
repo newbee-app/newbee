@@ -12,29 +12,22 @@ import type { HttpClientError } from '../interface';
  */
 export function errToHttpClientError(
   err: unknown,
-  sortMessage?: (message: string) => string
+  sortMessage?: (message: string) => string,
 ): HttpClientError {
-  if (!(err instanceof HttpErrorResponse)) {
-    return { status: 500, messages: internalServerError };
+  let status = 500;
+  let message: string | string[] = internalServerError;
+
+  if (err instanceof HttpErrorResponse) {
+    status = err.status;
+    message = unknownErrToMsg(err.error);
+  } else {
+    message = unknownErrToMsg(err);
   }
 
-  const { status, error } = err;
-  if (typeof error === 'string') {
-    return {
-      status,
-      messages: sortMessage ? { [sortMessage(error)]: error } : error,
-    };
-  }
-
-  if (!('message' in error)) {
-    return { status, messages: internalServerError };
-  }
-
-  const message: string | string[] = error.message;
   if (typeof message === 'string') {
     return {
       status,
-      messages: sortMessage ? { [sortMessage(error)]: message } : message,
+      messages: sortMessage ? { [sortMessage(message)]: message } : message,
     };
   }
 
@@ -42,11 +35,34 @@ export function errToHttpClientError(
   return {
     status,
     messages: sortMessage
-      ? message.reduce((msgs, msg) => {
-          const prev = msgs[sortMessage(msg)];
-          msgs[sortMessage(msg)] = valueOrArray(msg, prev);
-          return msgs;
-        }, {} as { [key: string]: string | string[] })
+      ? message.reduce(
+          (msgs, msg) => {
+            const prev = msgs[sortMessage(msg)];
+            msgs[sortMessage(msg)] = valueOrArray(msg, prev);
+            return msgs;
+          },
+          {} as { [key: string]: string | string[] },
+        )
       : message,
   };
+}
+
+/**
+ * Helper function that takes in an unknown error and converts it to an error message.
+ *
+ * @param err The unknown error to convert.
+ *
+ * @returns The error message associated with the unknown error.
+ */
+function unknownErrToMsg(err: unknown): string | string[] {
+  if (
+    typeof err === 'string' ||
+    (Array.isArray(err) && err.every((item) => typeof item === 'string'))
+  ) {
+    return err as string | string[];
+  } else if (typeof err === 'object' && err && 'message' in err) {
+    return unknownErrToMsg(err.message);
+  }
+
+  return internalServerError;
 }

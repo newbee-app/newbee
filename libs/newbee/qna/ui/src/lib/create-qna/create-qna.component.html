@@ -12,6 +12,8 @@
           [options]="teamOptions"
           optionName="team"
           formControlName="team"
+          [valid]="!inputDisplayError(qnaForm, keyword.Team)"
+          [errorText]="inputErrorMessage(qnaForm, keyword.Team)"
         ></newbee-searchable-select>
       </div>
     </div>
@@ -25,12 +27,12 @@
         placeholder="How do I connect to the office printers?"
         required
         class="input input-bordered"
-        [ngClass]="{ 'input-error': showTitleError }"
+        [ngClass]="{ 'input-error': inputDisplayError(qnaForm, 'title') }"
       />
       <newbee-alert
-        [show]="showTitleError"
+        [show]="inputDisplayError(qnaForm, 'title')"
         [type]="alertType.Error"
-        [text]="titleErrorMessage"
+        [text]="inputErrorMessage(qnaForm, 'title')"
       ></newbee-alert>
     </div>
   </form>
@@ -40,6 +42,11 @@
     <newbee-markdoc-editor
       (textChange)="onTextChange($event)"
     ></newbee-markdoc-editor>
+    <newbee-alert
+      [type]="alertType.Error"
+      [show]="!!httpClientErrorMsg(keyword.Question)"
+      [text]="httpClientErrorMsg(keyword.Question)"
+    ></newbee-alert>
   </div>
 
   <div class="flex flex-col flex-nowrap gap-y-2">
@@ -52,10 +59,11 @@
       <span *ngIf="createPending" class="loading loading-spinner"></span>
       Ask Question
     </button>
+
     <newbee-alert
-      [show]="!!miscError"
+      [show]="!!httpClientErrorMsg(keyword.Misc)"
       [type]="alertType.Error"
-      [text]="miscError"
+      [text]="httpClientErrorMsg(keyword.Misc)"
     ></newbee-alert>
   </div>
 </div>

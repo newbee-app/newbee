@@ -69,8 +69,8 @@
                 [showSearchbar]="true"
                 [options]="teamOptions"
                 optionName="team"
-                [valid]="!inputDisplayError(editQuestionForm, 'team')"
-                [errorText]="inputErrorMessage(editQuestionForm, 'team')"
+                [valid]="!inputDisplayError(editQuestionForm, keyword.Team)"
+                [errorText]="inputErrorMessage(editQuestionForm, keyword.Team)"
               ></newbee-searchable-select>
             </div>
           </div>
@@ -100,8 +100,8 @@
 
           <newbee-alert
             [type]="alertType.Error"
-            [show]="!!httpClientErrorMsg('question')"
-            [text]="httpClientErrorMsg('question')"
+            [show]="!!httpClientErrorMsg(keyword.Question)"
+            [text]="httpClientErrorMsg(keyword.Question)"
           ></newbee-alert>
         </div>
 
@@ -125,8 +125,8 @@
 
           <newbee-alert
             [type]="alertType.Error"
-            [show]="!!httpClientErrorMsg('question', keyword.Edit)"
-            [text]="httpClientErrorMsg('question', keyword.Edit)"
+            [show]="!!httpClientErrorMsg(keyword.Question, keyword.Edit)"
+            [text]="httpClientErrorMsg(keyword.Question, keyword.Edit)"
           ></newbee-alert>
         </div>
       </ng-container>
@@ -240,6 +240,12 @@
                   ></newbee-searchable-select>
                 </div>
               </div>
+
+              <newbee-alert
+                [type]="alertType.Error"
+                [show]="!!httpClientErrorMsg('duration')"
+                [text]="httpClientErrorMsg('duration')"
+              ></newbee-alert>
             </div>
           </form>
 
@@ -251,8 +257,8 @@
 
             <newbee-alert
               [type]="alertType.Error"
-              [show]="!!httpClientErrorMsg('answer')"
-              [text]="httpClientErrorMsg('answer')"
+              [show]="!!httpClientErrorMsg(keyword.Answer)"
+              [text]="httpClientErrorMsg(keyword.Answer)"
             ></newbee-alert>
           </div>
 
@@ -276,8 +282,8 @@
 
             <newbee-alert
               [type]="alertType.Error"
-              [show]="!!httpClientErrorMsg('answer', keyword.Edit)"
-              [text]="httpClientErrorMsg('answer', keyword.Edit)"
+              [show]="!!httpClientErrorMsg(keyword.Answer, keyword.Edit)"
+              [text]="httpClientErrorMsg(keyword.Answer, keyword.Edit)"
             ></newbee-alert>
           </div>
         </ng-container>

@@ -22,9 +22,9 @@ export class AuthenticatorEffects {
               authenticators,
             });
           }),
-          catchError(catchHttpScreenError)
+          catchError(catchHttpScreenError),
         );
-      })
+      }),
     );
   });
 
@@ -42,11 +42,11 @@ export class AuthenticatorEffects {
           catchError((err) =>
             catchHttpClientError(
               err,
-              () => `${Keyword.Authenticator}-${Keyword.New}`
-            )
-          )
+              () => `${Keyword.Authenticator}-${Keyword.New}`,
+            ),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -68,10 +68,10 @@ export class AuthenticatorEffects {
                 case Keyword.Authenticator:
                   return `${Keyword.Authenticator}-${Keyword.New}`;
               }
-            })
-          )
+            }),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -88,11 +88,11 @@ export class AuthenticatorEffects {
           catchError((err) =>
             catchHttpClientError(
               err,
-              () => `${Keyword.Authenticator}-${Keyword.Edit}-${id}`
-            )
-          )
+              () => `${Keyword.Authenticator}-${Keyword.Edit}-${id}`,
+            ),
+          ),
         );
-      })
+      }),
     );
   });
 
@@ -107,16 +107,16 @@ export class AuthenticatorEffects {
           catchError((err) =>
             catchHttpClientError(
               err,
-              () => `${Keyword.Authenticator}-${Keyword.Delete}-${id}`
-            )
-          )
+              () => `${Keyword.Authenticator}-${Keyword.Delete}-${id}`,
+            ),
+          ),
         );
-      })
+      }),
     );
   });
 
   constructor(
     private readonly actions$: Actions,
-    private readonly authenticatorService: AuthenticatorService
+    private readonly authenticatorService: AuthenticatorService,
   ) {}
 }

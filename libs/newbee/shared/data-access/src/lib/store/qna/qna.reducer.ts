@@ -40,17 +40,18 @@ export const qnaFeature = createFeature({
         teamMember: qnaAndMemberDto.teamMember,
       }),
     ),
-    on(
-      QnaActions.markQnaAsUpToDateSuccess,
-      (state, { newQna, oldSlug }): QnaState => {
-        const { selectedQna } = state;
-        if (!selectedQna || selectedQna.qna.slug !== oldSlug) {
-          return state;
-        }
+    on(QnaActions.editQnaSuccess, (state, { qna }): QnaState => {
+      const { selectedQna } = state;
+      if (!selectedQna || selectedQna.qna.slug !== qna.slug) {
+        return state;
+      }
 
-        return { ...state, selectedQna: { ...selectedQna, qna: newQna } };
-      },
+      return { ...state, selectedQna: { ...selectedQna, qna } };
+    }),
+    on(
+      QnaActions.resetSelectedQna,
+      QnaActions.deleteQnaSuccess,
+      (): QnaState => initialQnaState,
     ),
-    on(QnaActions.resetSelectedQna, (): QnaState => initialQnaState),
   ),
 });

@@ -14,6 +14,18 @@ describe('QnaReducer', () => {
     ...initialQnaState,
     pendingUpToDate: true,
   };
+  const stateAfterEditQuestion: QnaState = {
+    ...initialQnaState,
+    pendingEditQuestion: true,
+  };
+  const stateAfterEditAnswer: QnaState = {
+    ...initialQnaState,
+    pendingEditAnswer: true,
+  };
+  const stateAfterDeleteQna: QnaState = {
+    ...initialQnaState,
+    pendingDelete: true,
+  };
 
   describe('from initial state', () => {
     it('should update state for createQna', () => {
@@ -31,6 +43,30 @@ describe('QnaReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterMarkQnaAsUpToDate);
     });
+
+    it('should update state for editQuestion', () => {
+      const updatedState = qnaFeature.reducer(
+        initialQnaState,
+        QnaActions.editQuestion,
+      );
+      expect(updatedState).toEqual(stateAfterEditQuestion);
+    });
+
+    it('should update state for editAnswer', () => {
+      const updatedState = qnaFeature.reducer(
+        initialQnaState,
+        QnaActions.editAnswer,
+      );
+      expect(updatedState).toEqual(stateAfterEditAnswer);
+    });
+
+    it('should update state for deleteQna', () => {
+      const updatedState = qnaFeature.reducer(
+        initialQnaState,
+        QnaActions.deleteQna,
+      );
+      expect(updatedState).toEqual(stateAfterDeleteQna);
+    });
   });
 
   describe('from altered state', () => {
@@ -42,10 +78,30 @@ describe('QnaReducer', () => {
       expect(updatedState).toEqual(initialQnaState);
     });
 
-    it('should update state for markQnaAsUpToDateSuccess', () => {
-      const updatedState = qnaFeature.reducer(
+    it('should update state for editQnaSuccess', () => {
+      let updatedState = qnaFeature.reducer(
         stateAfterMarkQnaAsUpToDate,
-        QnaActions.markQnaAsUpToDateSuccess,
+        QnaActions.editQnaSuccess,
+      );
+      expect(updatedState).toEqual(initialQnaState);
+
+      updatedState = qnaFeature.reducer(
+        stateAfterEditQuestion,
+        QnaActions.editQnaSuccess,
+      );
+      expect(updatedState).toEqual(initialQnaState);
+
+      updatedState = qnaFeature.reducer(
+        stateAfterEditAnswer,
+        QnaActions.editQnaSuccess,
+      );
+      expect(updatedState).toEqual(initialQnaState);
+    });
+
+    it('should update state for deleteQnaSuccess', () => {
+      const updatedState = qnaFeature.reducer(
+        stateAfterDeleteQna,
+        QnaActions.deleteQnaSuccess,
       );
       expect(updatedState).toEqual(initialQnaState);
     });

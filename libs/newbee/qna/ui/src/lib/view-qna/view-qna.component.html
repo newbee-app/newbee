@@ -42,28 +42,36 @@
       }}</span>
     </p>
 
-    <div
-      *ngIf="hasQuestionPermissions || hasUpToDatePermissions"
-      class="flex flex-row flex-wrap gap-2 mt-1"
-    >
-      <button
-        type="button"
-        *ngIf="hasQuestionPermissions"
-        (click)="emitQnaNavigate(keyword.Edit)"
-        class="btn btn-sm btn-info"
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <div
+        *ngIf="hasQuestionPermissions || hasUpToDatePermissions"
+        class="flex flex-row flex-wrap gap-2 mt-1"
       >
-        Edit
-      </button>
-      <button
-        type="button"
-        *ngIf="hasUpToDatePermissions"
-        (click)="markAsUpToDate.emit()"
-        [disabled]="upToDatePending"
-        class="btn btn-sm btn-success"
-      >
-        <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
-        Mark as up-to-date
-      </button>
+        <button
+          type="button"
+          *ngIf="hasQuestionPermissions"
+          (click)="emitQnaNavigate(keyword.Edit)"
+          class="btn btn-sm btn-info"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          *ngIf="hasUpToDatePermissions"
+          (click)="markAsUpToDate.emit()"
+          [disabled]="upToDatePending"
+          class="btn btn-sm btn-success"
+        >
+          <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
+          Mark as up-to-date
+        </button>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg('up-to-date')"
+        [text]="httpClientErrorMsg('up-to-date')"
+      ></newbee-alert>
     </div>
 
     <ng-container *ngIf="qna.qna.questionHtml">

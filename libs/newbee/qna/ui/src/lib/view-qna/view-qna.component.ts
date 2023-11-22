@@ -5,8 +5,13 @@ import {
   userHasQuestionPermissions,
   userHasUpToDatePermissions,
 } from '@newbee/newbee/qna/util';
-import { UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { AlertComponent, UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
+import {
+  AlertType,
+  HttpClientError,
+  ShortUrl,
+  getHttpClientErrorMsg,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgMember,
@@ -25,29 +30,20 @@ dayjs.extend(relativeTime);
 @Component({
   selector: 'newbee-view-qna',
   standalone: true,
-  imports: [CommonModule, UpToDateBtnComponent],
+  imports: [CommonModule, UpToDateBtnComponent, AlertComponent],
   templateUrl: './view-qna.component.html',
 })
 export class ViewQnaComponent {
-  /**
-   * NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * NewBee short URLs.
-   */
   readonly shortUrl = ShortUrl;
-
-  /**
-   * Helper function for displaying user names.
-   */
   readonly userDisplayName = userDisplayName;
+  readonly dayjs = dayjs;
+  readonly alertType = AlertType;
 
   /**
-   * Dayjs.
+   * HTTP client error.
    */
-  readonly dayjs = dayjs;
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
    * The qna to view.
@@ -125,6 +121,17 @@ export class ViewQnaComponent {
    */
   get borderSuccess(): boolean {
     return this.upToDate && !!this.qna.qna.answerHtml;
+  }
+
+  /**
+   * Gets the HTTP client error message for the key.
+   *
+   * @param keys The key to look for.
+   *
+   * @returns The error message associated with the key.
+   */
+  httpClientErrorMsg(...keys: string[]): string {
+    return getHttpClientErrorMsg(this.httpClientError, keys.join('-'));
   }
 
   /**

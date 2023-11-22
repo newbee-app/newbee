@@ -1,6 +1,8 @@
 import {
   BaseCreateQnaDto,
   BaseQnaAndMemberDto,
+  BaseUpdateAnswerDto,
+  BaseUpdateQuestionDto,
   Keyword,
   Qna,
 } from '@newbee/shared/util';
@@ -38,9 +40,29 @@ export const QnaActions = createActionGroup({
     'Mark Qna As Up To Date': emptyProps(),
 
     /**
-     * Indicates that a qna was successfully marked as up-to-date.
+     * Edit the question portion of the currently selected qna.
      */
-    'Mark Qna As Up To Date Success': props<{ oldSlug: string; newQna: Qna }>(),
+    'Edit Question': props<{ updateQuestionDto: BaseUpdateQuestionDto }>(),
+
+    /**
+     * Edit the answer portion of the currently selected qna.
+     */
+    'Edit Answer': props<{ updateAnswerDto: BaseUpdateAnswerDto }>(),
+
+    /**
+     * Indicates that the qna was successfully edited.
+     */
+    'Edit Qna Success': props<{ qna: Qna }>(),
+
+    /**
+     * Delete the currently selected qna.
+     */
+    'Delete Qna': emptyProps(),
+
+    /**
+     * Indicates that a qna was successfully deleted.
+     */
+    'Delete Qna Success': emptyProps(),
 
     /**
      * Reset the selected qna.

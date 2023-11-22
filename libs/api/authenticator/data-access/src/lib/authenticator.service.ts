@@ -79,6 +79,10 @@ export class AuthenticatorService {
       userName: user.email,
       userDisplayName: user.displayName ?? user.name,
       excludeCredentials: authenticators,
+      authenticatorSelection: {
+        residentKey: 'required',
+        userVerification: 'required',
+      },
     });
     await this.userService.update(user, { challenge: options.challenge });
     return options;
@@ -115,7 +119,6 @@ export class AuthenticatorService {
       });
     } catch (err) {
       this.logger.error(err);
-
       throw new BadRequestException(authenticatorVerifyBadRequest);
     }
 
