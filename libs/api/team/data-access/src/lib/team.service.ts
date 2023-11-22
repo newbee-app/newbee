@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -12,9 +11,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  DocEntity,
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
+  QnaEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -23,6 +24,7 @@ import {
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { CreateTeamDto, UpdateTeamDto } from './dto';
 
@@ -37,10 +39,9 @@ export class TeamService {
   private readonly logger = new Logger(TeamService.name);
 
   constructor(
-    @InjectRepository(TeamEntity)
-    private readonly teamRepository: EntityRepository<TeamEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -55,15 +56,15 @@ export class TeamService {
    */
   async create(
     createTeamDto: CreateTeamDto,
-    creator: OrgMemberEntity
+    creator: OrgMemberEntity,
   ): Promise<TeamEntity> {
-    const { name, slug } = createTeamDto;
+    const { name, slug, upToDateDuration } = createTeamDto;
     const { organization } = creator;
     const id = v4();
-    const team = new TeamEntity(id, name, slug, creator);
+    const team = new TeamEntity(id, name, slug, upToDateDuration, creator);
 
     try {
-      await this.teamRepository.persistAndFlush(team);
+      await this.em.persistAndFlush(team);
     } catch (err) {
       this.logger.error(err);
 
@@ -77,11 +78,11 @@ export class TeamService {
     try {
       await this.solrCli.addDocs(
         organization.id,
-        this.entityService.createTeamDocParams(team)
+        this.entityService.createTeamDocParams(team),
       );
     } catch (err) {
       this.logger.error(err);
-      await this.teamRepository.removeAndFlush(team);
+      await this.em.removeAndFlush(team);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -99,10 +100,10 @@ export class TeamService {
    */
   async hasOneBySlug(
     organization: OrganizationEntity,
-    slug: string
+    slug: string,
   ): Promise<boolean> {
     try {
-      return !!(await this.teamRepository.findOne({ organization, slug }));
+      return !!(await this.em.findOne(TeamEntity, { organization, slug }));
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -121,10 +122,10 @@ export class TeamService {
    */
   async findOneBySlug(
     organization: OrganizationEntity,
-    slug: string
+    slug: string,
   ): Promise<TeamEntity> {
     try {
-      return await this.teamRepository.findOneOrFail({
+      return await this.em.findOneOrFail(TeamEntity, {
         organization,
         slug,
       });
@@ -151,12 +152,18 @@ export class TeamService {
    */
   async update(
     team: TeamEntity,
-    updateTeamDto: UpdateTeamDto
+    updateTeamDto: UpdateTeamDto,
   ): Promise<TeamEntity> {
-    const updatedTeam = this.teamRepository.assign(team, updateTeamDto);
+    const updatedTeam = this.em.assign(team, updateTeamDto);
+
+    const { upToDateDuration } = updateTeamDto;
+    const { docs, qnas } = await this.changeUpToDateDuration(
+      team,
+      upToDateDuration,
+    );
 
     try {
-      await this.teamRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
 
@@ -167,17 +174,13 @@ export class TeamService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    const { name } = updateTeamDto;
-    if (!name) {
-      return updatedTeam;
-    }
-
     const collectionName = team.organization.id;
     try {
-      await this.solrCli.getVersionAndReplaceDocs(
-        collectionName,
-        this.entityService.createTeamDocParams(updatedTeam)
-      );
+      await this.solrCli.getVersionAndReplaceDocs(collectionName, [
+        this.entityService.createTeamDocParams(updatedTeam),
+        ...docs.map((doc) => this.entityService.createDocDocParams(doc)),
+        ...qnas.map((qna) => this.entityService.createQnaDocParams(qna)),
+      ]);
     } catch (err) {
       this.logger.error(err);
     }
@@ -198,7 +201,7 @@ export class TeamService {
     await this.entityService.safeToDelete(team);
 
     try {
-      await this.teamRepository.removeAndFlush(team);
+      await this.em.removeAndFlush(team);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -211,6 +214,52 @@ export class TeamService {
       ]);
     } catch (err) {
       this.logger.error(err);
+    }
+  }
+
+  /**
+   * Helper function for changing the out-of-date datetimes for all child posts that use the team's duration value.
+   *
+   * @param team The team whose duration changed.
+   * @param upToDateDuration The new value for the up-to-date duration as an ISO 8601 duration string.
+   *
+   * @returns All of the posts that were updated.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error.
+   */
+  async changeUpToDateDuration(
+    team: TeamEntity,
+    upToDateDuration: string | null | undefined,
+  ): Promise<{ docs: DocEntity[]; qnas: QnaEntity[] }> {
+    if (
+      upToDateDuration === undefined ||
+      upToDateDuration === team.upToDateDuration
+    ) {
+      return { docs: [], qnas: [] };
+    }
+
+    try {
+      const docs = await this.em.find(DocEntity, {
+        team,
+        upToDateDuration: null,
+      });
+      const qnas = await this.em.find(QnaEntity, {
+        team,
+        upToDateDuration: null,
+      });
+
+      const newDuration = dayjs.duration(
+        upToDateDuration ?? team.organization.upToDateDuration,
+      );
+      [...docs, ...qnas].forEach((post) => {
+        this.em.assign(post, {
+          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
+        });
+      });
+
+      return { docs, qnas };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 }

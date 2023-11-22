@@ -6,7 +6,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { testOrganization1 } from '@newbee/shared/util';
+import { Frequency, testOrganization1 } from '@newbee/shared/util';
 import { CreateOrgComponent } from './create-org.component';
 
 describe('CreateOrgComponent', () => {
@@ -53,7 +53,7 @@ describe('CreateOrgComponent', () => {
         expect(component.slug.emit).toBeCalledWith(testOrganization1.slug);
         expect(component.formattedSlug.emit).toBeCalledTimes(1);
         expect(component.formattedSlug.emit).toBeCalledWith(
-          testOrganization1.slug
+          testOrganization1.slug,
         );
         expect(component.name.emit).not.toBeCalled();
         expect(component.slug.emit).toBeCalledTimes(1);
@@ -65,14 +65,26 @@ describe('CreateOrgComponent', () => {
       it('should emit create', () => {
         component.emitCreate();
         expect(component.create.emit).toBeCalledTimes(1);
-        expect(component.create.emit).toBeCalledWith({ name: '', slug: '' });
+        expect(component.create.emit).toBeCalledWith({
+          name: '',
+          slug: '',
+          upToDateDuration: 'P6M',
+        });
 
-        component.createOrgForm.setValue({ name: 'NewBee', slug: '' });
+        component.createOrgForm.setValue({
+          name: 'NewBee',
+          slug: '',
+          upToDateDuration: {
+            num: 1,
+            frequency: Frequency.Year,
+          },
+        });
         component.emitCreate();
         expect(component.create.emit).toBeCalledTimes(2);
         expect(component.create.emit).toBeCalledWith({
           name: 'NewBee',
           slug: '',
+          upToDateDuration: 'P1Y',
         });
       });
     });
@@ -84,7 +96,7 @@ describe('CreateOrgComponent', () => {
         generatedSlug: new SimpleChange('', testOrganization1.slug, true),
       });
       expect(component.createOrgForm.controls.slug.value).toEqual(
-        testOrganization1.slug
+        testOrganization1.slug,
       );
       tick(600);
       expect(component.slug.emit).not.toBeCalled();

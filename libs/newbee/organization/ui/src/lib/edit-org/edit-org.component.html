@@ -17,16 +17,73 @@
           formControlName="name"
           class="input border-neutral w-full"
           [ngClass]="{
-            'input-error':
-              inputDisplayError('name') ||
-              !!httpClientErrorMsg(keyword.Organization, keyword.Edit)
+            'input-error': inputDisplayError(editOrgForm, 'name')
           }"
         />
         <newbee-alert
-          [show]="inputDisplayError('name')"
+          [show]="inputDisplayError(editOrgForm, 'name')"
           [type]="alertType.Error"
-          [text]="inputErrorMessage('name')"
+          [text]="inputErrorMessage(editOrgForm, 'name')"
         ></newbee-alert>
+      </div>
+
+      <div
+        formGroupName="upToDateDuration"
+        class="flex flex-col flex-nowrap gap-y-2 w-full"
+      >
+        <p>How long should posts stay relevant?</p>
+
+        <div class="flex flex-row flex-wrap gap-2 items-baseline">
+          For
+
+          <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+            <input
+              type="number"
+              step="1"
+              formControlName="num"
+              newbeeDigitOnly
+              [min]="1"
+              class="input input-bordered"
+              [ngClass]="{
+                'input-error': inputDisplayError(
+                  editOrgForm.controls.upToDateDuration,
+                  'num'
+                )
+              }"
+            />
+
+            <newbee-alert
+              [type]="alertType.Error"
+              [show]="
+                inputDisplayError(editOrgForm.controls.upToDateDuration, 'num')
+              "
+              [text]="
+                inputErrorMessage(editOrgForm.controls.upToDateDuration, 'num')
+              "
+            ></newbee-alert>
+          </div>
+
+          <div class="w-32 flex-auto">
+            <newbee-searchable-select
+              [showSearchbar]="false"
+              [options]="frequencyOptions"
+              optionName="frequency"
+              formControlName="frequency"
+              [valid]="
+                !inputDisplayError(
+                  editOrgForm.controls.upToDateDuration,
+                  'frequency'
+                )
+              "
+              [errorText]="
+                inputErrorMessage(
+                  editOrgForm.controls.upToDateDuration,
+                  'frequency'
+                )
+              "
+            ></newbee-searchable-select>
+          </div>
+        </div>
       </div>
 
       <div class="flex flex-col flex-nowrap gap-y-2">
@@ -88,7 +145,7 @@
             [ngClass]="{
               'input-error':
                 (!checkPending && slugTaken) ||
-                inputDisplayError('slug') ||
+                inputDisplayError(editOrgSlugForm, 'slug') ||
                 !!httpClientErrorMsg(
                   keyword.Organization,
                   keyword.Slug,
@@ -102,10 +159,13 @@
           </div>
 
           <newbee-alert
-            [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
+            [show]="
+              (!checkPending && slugTaken) ||
+              inputDisplayError(editOrgSlugForm, 'slug')
+            "
             [type]="alertType.Error"
             [text]="
-              inputErrorMessage('slug') ||
+              inputErrorMessage(editOrgSlugForm, 'slug') ||
               'This slug is already taken, please choose another'
             "
           ></newbee-alert>
@@ -176,12 +236,14 @@
             formControlName="slug"
             [placeholder]="organization.slug"
             class="input border-neutral"
-            [ngClass]="{ 'input-error': inputDisplayError('delete') }"
+            [ngClass]="{
+              'input-error': inputDisplayError(deleteOrgForm, 'slug')
+            }"
           />
 
           <newbee-alert
-            [show]="inputDisplayError('delete')"
-            [text]="inputErrorMessage('delete')"
+            [show]="inputDisplayError(deleteOrgForm, 'slug')"
+            [text]="inputErrorMessage(deleteOrgForm, 'slug')"
             [type]="alertType.Error"
           ></newbee-alert>
         </div>

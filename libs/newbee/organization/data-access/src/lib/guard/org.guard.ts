@@ -1,13 +1,13 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import {
-  httpFeature,
   OrganizationActions,
+  httpFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
+import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
 
 /**
  * A guard that fires the request to get an org and only proceeds if it completes.
@@ -17,7 +17,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  * @returns `true` after the org is retrieved.
  */
 export const orgGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): Observable<boolean> => {
   const store = inject(Store);
 
@@ -30,9 +30,9 @@ export const orgGuard: CanActivateFn = (
   ]).pipe(
     skipWhile(
       ([selectedOrganization, screenError]) =>
-        selectedOrganization?.slug !== orgSlug && !screenError
+        selectedOrganization?.organization.slug !== orgSlug && !screenError,
     ),
     take(1),
-    map(() => true)
+    map(() => true),
   );
 };

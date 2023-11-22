@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LoginForm } from '@newbee/newbee/auth/util';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { Keyword } from '@newbee/shared/util';
+import { BaseEmailDto, Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -51,12 +50,12 @@ export class LoginFormComponent {
   /**
    * The emitted login form, for use in magic link login.
    */
-  @Output() magicLinkLogin = new EventEmitter<Partial<LoginForm>>();
+  @Output() magicLinkLogin = new EventEmitter<BaseEmailDto>();
 
   /**
    * The emitted login form, for use in WebAuthn login.
    */
-  @Output() webauthn = new EventEmitter<Partial<LoginForm>>();
+  @Output() webauthn = new EventEmitter<BaseEmailDto>();
 
   /**
    * The emitted request to navigate to the register page, for use in the smart UI parent.
@@ -85,7 +84,8 @@ export class LoginFormComponent {
   }
 
   /**
-   * The email control's error message, if it has one. Will be an empty string if it doesn't.
+   * The email control's error message, if it has one.
+   * Will be an empty string if it doesn't.
    */
   get emailErrorMessage(): string {
     return (
@@ -102,17 +102,25 @@ export class LoginFormComponent {
   }
 
   /**
+   * The login form as a DTO.
+   */
+  get loginFormDto(): BaseEmailDto {
+    const { email } = this.loginForm.value;
+    return { email: email ?? '' };
+  }
+
+  /**
    * Emit the `magicLinkLogin` output.
    */
   emitMagicLinkLogin(): void {
-    this.magicLinkLogin.emit(this.loginForm.value);
+    this.magicLinkLogin.emit(this.loginFormDto);
   }
 
   /**
    * Emit the `webauthn` output.
    */
   emitWebAuthn(): void {
-    this.webauthn.emit(this.loginForm.value);
+    this.webauthn.emit(this.loginFormDto);
   }
 
   /**

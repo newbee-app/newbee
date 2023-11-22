@@ -18,17 +18,15 @@ import { SearchModule } from '@newbee/api/search/feature';
 import { UtilModule } from '@newbee/api/shared/feature';
 import {
   AppConfig,
-  appEnvironmentVariablesSchema,
   ForbiddenExceptionFilter,
   GlobalExceptionFilter,
   ProxyThrottlerGuard,
   UnauthorizedExceptionFilter,
+  appEnvironmentVariablesSchema,
 } from '@newbee/api/shared/util';
 import { TeamMemberModule } from '@newbee/api/team-member/feature';
 import { TeamModule } from '@newbee/api/team/feature';
-import { UserChallengeModule } from '@newbee/api/user-challenge/feature';
 import { UserInvitesModule } from '@newbee/api/user-invites/feature';
-import { UserSettingsModule } from '@newbee/api/user-settings/feature';
 import { UserModule } from '@newbee/api/user/feature';
 import { SolrModule } from '@newbee/nest-solr-cli';
 import { WinstonModule } from 'nest-winston';
@@ -88,9 +86,7 @@ import { default as appConfig } from '../environments/environment';
     TeamModule,
     TeamMemberModule,
     UserModule,
-    UserChallengeModule,
     UserInvitesModule,
-    UserSettingsModule,
   ],
   providers: [
     // App-level pipes

@@ -1,23 +1,32 @@
 import {
+  Team,
   testBaseCsrfTokenAndDataDto1,
   testBaseOrgAndMemberDto1,
   testBaseUserRelationAndOptionsDto1,
-} from '@newbee/shared/data-access';
-import {
+  testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
-  testOrgMemberRelation1,
+  testOrganizationRelation1,
+  testOrganizationRelation2,
+  testTeam1,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
 import { InviteActions } from '../invite';
+import { TeamActions } from '../team';
 import { OrganizationActions } from './organization.actions';
 import {
+  OrganizationState,
   initialOrganizationState,
   organizationFeature,
-  OrganizationState,
 } from './organization.reducer';
+
+const testNewTeam: Team = {
+  name: 'NewWasp',
+  slug: 'new-wasp',
+  upToDateDuration: null,
+};
 
 describe('OrganizationReducer', () => {
   const stateAfterLoginSuccess: OrganizationState = {
@@ -26,13 +35,13 @@ describe('OrganizationReducer', () => {
   };
   const stateAfterGetOrgSuccess: OrganizationState = {
     ...stateAfterLoginSuccess,
-    selectedOrganization: testOrganization1,
+    selectedOrganization: testOrganizationRelation1,
     orgMember: testOrgMemberRelation1,
   };
   const stateAfterEditOrgSuccess: OrganizationState = {
     ...stateAfterGetOrgSuccess,
     organizations: [testOrganization2],
-    selectedOrganization: testOrganization2,
+    selectedOrganization: testOrganizationRelation2,
   };
   const stateAfterResetSelectedOrg: OrganizationState = {
     ...stateAfterGetOrgSuccess,
@@ -88,6 +97,41 @@ describe('OrganizationReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
     });
+
+    it('should do nothing for team actions', () => {
+      let updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+
+      updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        TeamActions.editTeamSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+
+      updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+
+      updatedState = organizationFeature.reducer(
+        initialOrganizationState,
+        TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      );
+      expect(updatedState).toEqual(initialOrganizationState);
+    });
   });
 
   describe('from altered state', () => {
@@ -135,6 +179,62 @@ describe('OrganizationReducer', () => {
         OrganizationActions.resetSelectedOrg(),
       );
       expect(updatedState).toEqual(stateAfterResetSelectedOrg);
+    });
+
+    it('should update state for team actions', () => {
+      let updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetOrgSuccess,
+        selectedOrganization: {
+          ...testOrganizationRelation1,
+          teams: [testTeam1, testTeam1],
+        },
+      });
+
+      updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        TeamActions.editTeamSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testNewTeam,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetOrgSuccess,
+        selectedOrganization: {
+          ...testOrganizationRelation1,
+          teams: [testNewTeam],
+        },
+      });
+
+      updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testNewTeam,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetOrgSuccess,
+        selectedOrganization: {
+          ...testOrganizationRelation1,
+          teams: [testNewTeam],
+        },
+      });
+
+      updatedState = organizationFeature.reducer(
+        stateAfterGetOrgSuccess,
+        TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetOrgSuccess,
+        selectedOrganization: { ...testOrganizationRelation1, teams: [] },
+      });
     });
   });
 });

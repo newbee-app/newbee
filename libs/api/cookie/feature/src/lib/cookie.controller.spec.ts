@@ -4,8 +4,10 @@ import { Test } from '@nestjs/testing';
 import { AuthService } from '@newbee/api/auth/data-access';
 import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
-import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
-import { testUserRelation1 } from '@newbee/shared/util';
+import {
+  testBaseCsrfTokenAndDataDto1,
+  testUserRelation1,
+} from '@newbee/shared/util';
 import { request, response } from 'express';
 import { CookieController } from './cookie.controller';
 
@@ -62,7 +64,7 @@ describe('CookieController', () => {
   describe('initCookies', () => {
     afterEach(() => {
       expect(generateToken).toBeCalledTimes(1);
-      expect(generateToken).toBeCalledWith(request, response);
+      expect(generateToken).toBeCalledWith(request, response, true);
     });
 
     it('should return a CSRF token and initial data as a DTO', async () => {

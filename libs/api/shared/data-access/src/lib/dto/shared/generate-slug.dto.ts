@@ -1,5 +1,4 @@
-import { BaseGenerateSlugDto } from '@newbee/shared/data-access';
-import { baseIsNotEmpty } from '@newbee/shared/util';
+import { BaseGenerateSlugDto, baseIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty } from 'class-validator';
 
 /**

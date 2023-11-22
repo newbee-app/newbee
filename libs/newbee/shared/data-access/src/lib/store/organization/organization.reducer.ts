@@ -1,9 +1,15 @@
-import { Keyword, Organization, OrgMemberNoUserOrg } from '@newbee/shared/util';
+import {
+  Keyword,
+  Organization,
+  OrgMemberNoUserOrg,
+  OrgTeams,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
 import { InviteActions } from '../invite';
+import { TeamActions } from '../team';
 import { OrganizationActions } from './organization.actions';
 
 /**
@@ -18,7 +24,7 @@ export interface OrganizationState {
   /**
    * The organization the user is looking at right now.
    */
-  selectedOrganization: Organization | null;
+  selectedOrganization: OrgTeams | null;
 
   /**
    * The user's relation to the selected organization, if they have any.
@@ -105,7 +111,7 @@ export const organizationFeature = createFeature({
 
         const organizations = [
           ...state.organizations.filter(
-            (org) => !isEqual(org, selectedOrganization),
+            (org) => !isEqual(org, selectedOrganization.organization),
           ),
           newOrg,
         ];
@@ -113,7 +119,10 @@ export const organizationFeature = createFeature({
         return {
           ...state,
           organizations,
-          selectedOrganization: newOrg,
+          selectedOrganization: {
+            ...selectedOrganization,
+            organization: newOrg,
+          },
         };
       },
     ),
@@ -126,7 +135,7 @@ export const organizationFeature = createFeature({
       }
 
       const organizations = state.organizations.filter(
-        (org) => !isEqual(org, selectedOrganization),
+        (org) => !isEqual(org, selectedOrganization.organization),
       );
 
       return {
@@ -151,5 +160,62 @@ export const organizationFeature = createFeature({
         organizations: [...state.organizations, organization],
       }),
     ),
+    on(
+      TeamActions.createTeamSuccess,
+      (state, { organization, team }): OrganizationState => {
+        const { selectedOrganization } = state;
+        if (selectedOrganization?.organization.slug !== organization.slug) {
+          return state;
+        }
+
+        return {
+          ...state,
+          selectedOrganization: {
+            ...selectedOrganization,
+            teams: [...selectedOrganization.teams, team],
+          },
+        };
+      },
+    ),
+    on(
+      TeamActions.editTeamSuccess,
+      TeamActions.editTeamSlugSuccess,
+      (state, { oldSlug, newTeam }): OrganizationState => {
+        const { selectedOrganization } = state;
+        if (!selectedOrganization) {
+          return state;
+        }
+
+        return {
+          ...state,
+          selectedOrganization: {
+            ...selectedOrganization,
+            teams: selectedOrganization.teams.map((team) => {
+              if (oldSlug === team.slug) {
+                return newTeam;
+              }
+
+              return team;
+            }),
+          },
+        };
+      },
+    ),
+    on(TeamActions.deleteTeamSuccess, (state, { slug }): OrganizationState => {
+      const { selectedOrganization } = state;
+      if (!selectedOrganization) {
+        return state;
+      }
+
+      return {
+        ...state,
+        selectedOrganization: {
+          ...selectedOrganization,
+          teams: selectedOrganization.teams.filter(
+            (team) => team.slug !== slug,
+          ),
+        },
+      };
+    }),
   ),
 });

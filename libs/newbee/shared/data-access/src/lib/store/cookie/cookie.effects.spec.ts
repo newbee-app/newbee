@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
+import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';

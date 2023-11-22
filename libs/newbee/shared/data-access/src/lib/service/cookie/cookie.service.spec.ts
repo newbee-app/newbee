@@ -3,11 +3,8 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  apiVersion,
-  testBaseCsrfTokenAndDataDto1,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { Keyword, testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { CookieService } from './cookie.service';
 
 describe('CsrfService', () => {
@@ -31,7 +28,7 @@ describe('CsrfService', () => {
   describe('baseApiUrl', () => {
     it('should match expected API URL', () => {
       expect(CookieService.baseApiUrl).toEqual(
-        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`
+        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`,
       );
     });
   });
@@ -51,7 +48,7 @@ describe('CsrfService', () => {
       });
 
       const req = httpController.expectOne(
-        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`
+        `/${Keyword.Api}/v${apiVersion.cookie}/${Keyword.Cookie}`,
       );
       expect(req.request.method).toEqual('GET');
 

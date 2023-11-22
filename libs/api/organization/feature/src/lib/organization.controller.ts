@@ -16,25 +16,26 @@ import {
 import {
   EntityService,
   GenerateSlugDto,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   SlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  generateUniqueSlug,
-  Organization,
   OrgMember,
+  Organization,
   Role,
   User,
+  generateUniqueSlug,
 } from '@newbee/api/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseGeneratedSlugDto,
   BaseOrgAndMemberDto,
   BaseSlugTakenDto,
-} from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
+  Keyword,
+  OrgRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
@@ -48,7 +49,7 @@ export class OrganizationController {
 
   constructor(
     private readonly organizationService: OrganizationService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -64,21 +65,21 @@ export class OrganizationController {
   @Post()
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<OrganizationEntity> {
     this.logger.log(
       `Create organization request received from user ID: ${
         user.id
-      }, with values: ${JSON.stringify(createOrganizationDto)}`
+      }, with values: ${JSON.stringify(createOrganizationDto)}`,
     );
     const organization = await this.organizationService.create(
       createOrganizationDto,
-      user
+      user,
     );
     this.logger.log(
       `Organization created with ID: ${organization.id}, ${JSON.stringify(
-        organization
-      )}`
+        organization,
+      )}`,
     );
     return organization;
   }
@@ -95,7 +96,7 @@ export class OrganizationController {
   async checkSlug(@Query() checkSlugDto: SlugDto): Promise<BaseSlugTakenDto> {
     const { slug } = checkSlugDto;
     this.logger.log(
-      `Check organization slug request received for slug: ${slug}`
+      `Check organization slug request received for slug: ${slug}`,
     );
     const hasSlug = await this.organizationService.hasOneBySlug(slug);
     this.logger.log(`Organization slug ${slug} taken: ${hasSlug}`);
@@ -113,14 +114,14 @@ export class OrganizationController {
    */
   @Get(Keyword.GenerateSlug)
   async generateSlug(
-    @Query() generateSlugDto: GenerateSlugDto
+    @Query() generateSlugDto: GenerateSlugDto,
   ): Promise<BaseGeneratedSlugDto> {
     const { base } = generateSlugDto;
     this.logger.log(`New organization slug request received for base: ${base}`);
     const slug = await generateUniqueSlug(
       async (slugToTry) =>
         !(await this.organizationService.hasOneBySlug(slugToTry)),
-      base
+      base,
     );
     this.logger.log(`Organization slug ${slug} generated for base ${base}`);
 
@@ -139,15 +140,15 @@ export class OrganizationController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Organization() organization: OrganizationEntity,
-    @OrgMember() orgMember: OrgMemberEntity
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<BaseOrgAndMemberDto> {
     const { id, slug } = organization;
     this.logger.log(
-      `Get organization request received for organization slug: ${slug}`
+      `Get organization request received for organization slug: ${slug}`,
     );
     this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
     return {
-      organization,
+      organization: await this.entityService.createOrgTeams(organization),
       orgMember: await this.entityService.createOrgMemberNoUserOrg(orgMember),
     };
   }
@@ -167,18 +168,18 @@ export class OrganizationController {
   @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async update(
     @Organization() organization: OrganizationEntity,
-    @Body() updateOrganizationDto: UpdateOrganizationDto
+    @Body() updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<OrganizationEntity> {
     const { id, slug } = organization;
     this.logger.log(
       `Update organization request received for organization slug: ${slug}, with values: ${JSON.stringify(
-        updateOrganizationDto
-      )}`
+        updateOrganizationDto,
+      )}`,
     );
 
     const updatedOrganization = await this.organizationService.update(
       organization,
-      updateOrganizationDto
+      updateOrganizationDto,
     );
     this.logger.log(`Updated organization, slug: ${slug}, ID: ${id}`);
 
@@ -194,7 +195,7 @@ export class OrganizationController {
   @Delete(`:${Keyword.Organization}`)
   @Role(OrgRoleEnum.Owner)
   async delete(
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<void> {
     const { id, slug } = organization;
     this.logger.log(`Delete organization request received for slug: ${slug}`);

@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InviteMemberComponent } from '@newbee/newbee/organization/ui';
-import { testInviteMemberForm1 } from '@newbee/newbee/organization/util';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/data-access';
+import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteComponent } from './org-invite.component';
 
@@ -43,11 +42,11 @@ describe('OrgInviteComponent', () => {
 
   describe('onInvite', () => {
     it('should dispatch inviteUser', () => {
-      component.onInvite(testInviteMemberForm1);
+      component.onInvite(testBaseCreateOrgMemberInviteDto1);
       expect(store.dispatch).toBeCalledWith(
         OrganizationActions.inviteUser({
           createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
-        })
+        }),
       );
     });
   });

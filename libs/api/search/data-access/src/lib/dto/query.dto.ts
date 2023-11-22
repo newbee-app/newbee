@@ -1,5 +1,5 @@
-import { BaseQueryDto } from '@newbee/shared/data-access';
 import {
+  BaseQueryDto,
   offsetIsInt,
   offsetMin0,
   SolrEntryEnum,

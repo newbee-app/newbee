@@ -1,0 +1,69 @@
+<div class="flex flex-col flex-nowrap gap-y-6 mt-mid">
+  <h3>Ask a question</h3>
+
+  <form [formGroup]="qnaForm" class="flex flex-col flex-nowrap gap-y-6">
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="team-input">Where would you like to ask the question?</label>
+
+      <div class="w-fit max-w-full">
+        <newbee-searchable-select
+          id="team-input"
+          [showSearchbar]="true"
+          [options]="teamOptions"
+          optionName="team"
+          formControlName="team"
+          [valid]="!inputDisplayError(qnaForm, keyword.Team)"
+          [errorText]="inputErrorMessage(qnaForm, keyword.Team)"
+        ></newbee-searchable-select>
+      </div>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="title-input">What is your question in one line?</label>
+      <input
+        type="text"
+        id="title-input"
+        formControlName="title"
+        placeholder="How do I connect to the office printers?"
+        required
+        class="input input-bordered"
+        [ngClass]="{ 'input-error': inputDisplayError(qnaForm, 'title') }"
+      />
+      <newbee-alert
+        [show]="inputDisplayError(qnaForm, 'title')"
+        [type]="alertType.Error"
+        [text]="inputErrorMessage(qnaForm, 'title')"
+      ></newbee-alert>
+    </div>
+  </form>
+
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <p>Add more details about your question below!</p>
+    <newbee-markdoc-editor
+      (textChange)="onTextChange($event)"
+    ></newbee-markdoc-editor>
+    <newbee-alert
+      [type]="alertType.Error"
+      [show]="!!httpClientErrorMsg(keyword.Question)"
+      [text]="httpClientErrorMsg(keyword.Question)"
+    ></newbee-alert>
+  </div>
+
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <button
+      type="button"
+      (click)="emitCreate()"
+      [disabled]="createPending || qnaForm.invalid"
+      class="btn btn-primary w-fit"
+    >
+      <span *ngIf="createPending" class="loading loading-spinner"></span>
+      Ask Question
+    </button>
+
+    <newbee-alert
+      [show]="!!httpClientErrorMsg(keyword.Misc)"
+      [type]="alertType.Error"
+      [text]="httpClientErrorMsg(keyword.Misc)"
+    ></newbee-alert>
+  </div>
+</div>

@@ -4,14 +4,15 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
+  Keyword,
   testBaseQueryDto1,
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
-} from '@newbee/shared/data-access';
-import { Keyword, testOrganization1 } from '@newbee/shared/util';
+  testOrganization1,
+} from '@newbee/shared/util';
 import { SearchService } from './search.service';
 
 describe('SearchService', () => {
@@ -35,7 +36,7 @@ describe('SearchService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(SearchService.baseApiUrl(testOrganization1.slug)).toEqual(
-        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`
+        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`,
       );
     });
   });
@@ -57,8 +58,8 @@ describe('SearchService', () => {
       const params = new HttpParams({ fromObject: { ...testBaseQueryDto1 } });
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(
-          testOrganization1.slug
-        )}?${params.toString()}`
+          testOrganization1.slug,
+        )}?${params.toString()}`,
       );
       expect(req.request.method).toEqual('GET');
 
@@ -84,7 +85,7 @@ describe('SearchService', () => {
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(testOrganization1.slug)}/${
           Keyword.Suggest
-        }?${params.toString()}`
+        }?${params.toString()}`,
       );
       expect(req.request.method).toEqual('GET');
 

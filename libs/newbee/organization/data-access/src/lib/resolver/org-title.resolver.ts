@@ -6,7 +6,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
+import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
 
 /**
  * A resolver to get the title for org pages.
@@ -16,7 +16,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  * @returns The name of the selected organization if one has been selected, 'Error' if for some reason one hasn't been.
  */
 export const orgTitleResolver: ResolveFn<string> = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): Observable<string> => {
   const store = inject(Store);
 
@@ -28,15 +28,15 @@ export const orgTitleResolver: ResolveFn<string> = (
   ]).pipe(
     skipWhile(
       ([selectedOrganization, screenError]) =>
-        selectedOrganization?.slug !== orgSlug && !screenError
+        selectedOrganization?.organization.slug !== orgSlug && !screenError,
     ),
     take(1),
     map(([selectedOrganization]) => {
       if (selectedOrganization) {
-        return selectedOrganization.name;
+        return selectedOrganization.organization.name;
       }
 
       return 'Error';
-    })
+    }),
   );
 };

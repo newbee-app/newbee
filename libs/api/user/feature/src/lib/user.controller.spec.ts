@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
-import { testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
+import { testBaseUpdateUserDto1 } from '@newbee/shared/util';
 import { UserController } from './user.controller';
 
 describe('UserController', () => {
@@ -41,12 +41,12 @@ describe('UserController', () => {
   describe('update', () => {
     it('should find and update a user', async () => {
       await expect(
-        controller.update(testBaseUpdateUserDto1, testUserEntity1)
+        controller.update(testBaseUpdateUserDto1, testUserEntity1),
       ).resolves.toEqual(testUpdatedUserEntity);
       expect(service.update).toBeCalledTimes(1);
       expect(service.update).toBeCalledWith(
         testUserEntity1,
-        testBaseUpdateUserDto1
+        testBaseUpdateUserDto1,
       );
     });
   });

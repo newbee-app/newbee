@@ -9,10 +9,8 @@ import {
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
-  UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
-  UserSettingsEntity,
 } from '@newbee/api/shared/data-access';
 
 export default defineConfig({
@@ -38,9 +36,7 @@ export default defineConfig({
     QnaEntity,
     TeamMemberEntity,
     TeamEntity,
-    UserChallengeEntity,
     UserInvitesEntity,
-    UserSettingsEntity,
     UserEntity,
   ],
 });

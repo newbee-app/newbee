@@ -17,7 +17,6 @@ import {
   Keyword,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,
-  userChallengeEmailNotFound,
   userEmailNotFound,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
@@ -191,7 +190,6 @@ export class AuthEffects {
   private static sortErrMsg(msg: string): string {
     switch (msg) {
       case userEmailTakenBadRequest:
-      case userChallengeEmailNotFound:
       case emailIsEmail:
       case userEmailNotFound:
         return 'email';

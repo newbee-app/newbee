@@ -1,13 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseQueryDto,
   BaseQueryResultDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+  Keyword,
+} from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -41,7 +41,7 @@ export class SearchService {
     const params = new HttpParams({ fromObject: { ...query } });
     return this.http.get<BaseQueryResultDto>(
       SearchService.baseApiUrl(orgSlug),
-      { params }
+      { params },
     );
   }
 
@@ -55,12 +55,12 @@ export class SearchService {
    */
   suggest(
     query: BaseSuggestDto,
-    orgSlug: string
+    orgSlug: string,
   ): Observable<BaseSuggestResultDto> {
     const params = new HttpParams({ fromObject: { ...query } });
     return this.http.get<BaseSuggestResultDto>(
       `${SearchService.baseApiUrl(orgSlug)}/${Keyword.Suggest}`,
-      { params }
+      { params },
     );
   }
 }

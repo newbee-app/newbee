@@ -1,6 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
   InternalServerErrorException,
@@ -13,9 +12,10 @@ import {
   QnaEntity,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, markdocToTxt } from '@newbee/api/shared/util';
+import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
 import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { CreateQnaDto, UpdateQnaDto } from './dto';
 
@@ -30,10 +30,9 @@ export class QnaService {
   private readonly logger = new Logger(QnaService.name);
 
   constructor(
-    @InjectRepository(QnaEntity)
-    private readonly qnaRepository: EntityRepository<QnaEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -49,21 +48,21 @@ export class QnaService {
   async create(
     createQnaDto: CreateQnaDto,
     team: TeamEntity | null,
-    creator: OrgMemberEntity
+    creator: OrgMemberEntity,
   ): Promise<QnaEntity> {
     const { title, questionMarkdoc, answerMarkdoc } = createQnaDto;
     const id = v4();
     const qna = new QnaEntity(
       id,
       title,
-      creator,
       team,
+      creator,
       questionMarkdoc,
-      answerMarkdoc
+      answerMarkdoc,
     );
 
     try {
-      await this.qnaRepository.persistAndFlush(qna);
+      await this.em.persistAndFlush(qna);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -73,11 +72,11 @@ export class QnaService {
     try {
       await this.solrCli.addDocs(
         collectionName,
-        this.entityService.createQnaDocParams(qna)
+        this.entityService.createQnaDocParams(qna),
       );
     } catch (err) {
       this.logger.error(err);
-      await this.qnaRepository.removeAndFlush(qna);
+      await this.em.removeAndFlush(qna);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -96,7 +95,7 @@ export class QnaService {
   async findOneBySlug(slug: string): Promise<QnaEntity> {
     const id = elongateUuid(slug);
     try {
-      return await this.qnaRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(QnaEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -121,22 +120,39 @@ export class QnaService {
   async update(
     qna: QnaEntity,
     updateQnaDto: UpdateQnaDto,
-    newMaintainer?: OrgMemberEntity
+    newMaintainer?: OrgMemberEntity,
   ): Promise<QnaEntity> {
-    const { questionMarkdoc, answerMarkdoc } = updateQnaDto;
-    const now = new Date();
-    const newQnaDetails = {
+    const { title, questionMarkdoc, answerMarkdoc, upToDateDuration } =
+      updateQnaDto;
+
+    const { txt: questionTxt, html: questionHtml } =
+      renderMarkdoc(questionMarkdoc);
+    const { txt: answerTxt, html: answerHtml } = renderMarkdoc(answerMarkdoc);
+
+    const meaningfulUpdates = [title, questionMarkdoc, answerMarkdoc];
+    const updateTime = meaningfulUpdates.some((update) => update !== undefined)
+      ? new Date()
+      : qna.markedUpToDateAt;
+    const updatedQna = this.em.assign(qna, {
       ...updateQnaDto,
-      ...(questionMarkdoc && { questionTxt: markdocToTxt(questionMarkdoc) }),
-      ...(answerMarkdoc && { answerTxt: markdocToTxt(answerMarkdoc) }),
+      ...(questionTxt !== undefined && { questionTxt }),
+      ...(questionHtml !== undefined && { questionHtml }),
+      ...(answerTxt !== undefined && { answerTxt }),
+      ...(answerHtml !== undefined && { answerHtml }),
       ...(newMaintainer && { maintainer: newMaintainer }),
-      updatedAt: now,
-      markedUpToDateAt: now,
-      upToDate: true,
-    };
-    const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
+      updatedAt: updateTime,
+      markedUpToDateAt: updateTime,
+      outOfDateAt: dayjs(updateTime)
+        .add(
+          upToDateDuration
+            ? dayjs.duration(upToDateDuration)
+            : await qna.trueUpToDateDuration(),
+        )
+        .toDate(),
+    });
+
     try {
-      await this.qnaRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -146,7 +162,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createQnaDocParams(updatedQna)
+        this.entityService.createQnaDocParams(updatedQna),
       );
     } catch (err) {
       this.logger.error(err);
@@ -165,10 +181,15 @@ export class QnaService {
    */
   async markUpToDate(qna: QnaEntity): Promise<QnaEntity> {
     const now = new Date();
-    const newQnaDetails = { markedUpToDateAt: now, upToDate: true };
-    const updatedQna = this.qnaRepository.assign(qna, newQnaDetails);
+    const updatedQna = this.em.assign(qna, {
+      markedUpToDateAt: now,
+      outOfDateAt: dayjs(now)
+        .add(await qna.trueUpToDateDuration())
+        .toDate(),
+    });
+
     try {
-      await this.qnaRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -178,7 +199,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createQnaDocParams(updatedQna)
+        this.entityService.createQnaDocParams(updatedQna),
       );
     } catch (err) {
       this.logger.error(err);
@@ -200,7 +221,7 @@ export class QnaService {
     await this.entityService.safeToDelete(qna);
 
     try {
-      await this.qnaRepository.removeAndFlush(qna);
+      await this.em.removeAndFlush(qna);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

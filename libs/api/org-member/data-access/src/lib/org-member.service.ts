@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -14,16 +13,16 @@ import {
 } from '@nestjs/common';
 import {
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  OrgRoleEnum,
   compareOrgRoles,
   forbiddenError,
   internalServerError,
   orgMemberNotFound,
-  OrgRoleEnum,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -39,10 +38,9 @@ export class OrgMemberService {
   private readonly logger = new Logger(OrgMemberService.name);
 
   constructor(
-    @InjectRepository(OrgMemberEntity)
-    private readonly orgMemberRepository: EntityRepository<OrgMemberEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -59,11 +57,11 @@ export class OrgMemberService {
   async create(
     user: UserEntity,
     organization: OrganizationEntity,
-    role: OrgRoleEnum
+    role: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
     const orgMember = new OrgMemberEntity(user, organization, role);
     try {
-      await this.orgMemberRepository.persistAndFlush(orgMember);
+      await this.em.persistAndFlush(orgMember);
     } catch (err) {
       this.logger.error(err);
 
@@ -77,11 +75,11 @@ export class OrgMemberService {
     try {
       await this.solrCli.addDocs(
         organization.id,
-        await this.entityService.createOrgMemberDocParams(orgMember)
+        await this.entityService.createOrgMemberDocParams(orgMember),
       );
     } catch (err) {
       this.logger.error(err);
-      await this.orgMemberRepository.removeAndFlush(orgMember);
+      await this.em.removeAndFlush(orgMember);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -100,10 +98,10 @@ export class OrgMemberService {
    */
   async findOneByUserAndOrg(
     user: UserEntity,
-    organization: OrganizationEntity
+    organization: OrganizationEntity,
   ): Promise<OrgMemberEntity> {
     try {
-      return await this.orgMemberRepository.findOneOrFail({
+      return await this.em.findOneOrFail(OrgMemberEntity, {
         user,
         organization,
       });
@@ -130,10 +128,10 @@ export class OrgMemberService {
    */
   async findOneByOrgAndSlug(
     organization: OrganizationEntity,
-    slug: string
+    slug: string,
   ): Promise<OrgMemberEntity> {
     try {
-      return await this.orgMemberRepository.findOneOrFail({
+      return await this.em.findOneOrFail(OrgMemberEntity, {
         organization,
         slug,
       });
@@ -159,10 +157,10 @@ export class OrgMemberService {
    */
   async findOneByUserAndOrgOrNull(
     user: UserEntity,
-    organization: OrganizationEntity
+    organization: OrganizationEntity,
   ): Promise<OrgMemberEntity | null> {
     try {
-      return await this.orgMemberRepository.findOne({
+      return await this.em.findOne(OrgMemberEntity, {
         user,
         organization,
       });
@@ -186,17 +184,17 @@ export class OrgMemberService {
   async updateRole(
     orgMember: OrgMemberEntity,
     newRole: OrgRoleEnum,
-    requesterOrgRole: OrgRoleEnum
+    requesterOrgRole: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
     this.checkRequester(requesterOrgRole, newRole);
     this.checkRequester(requesterOrgRole, orgMember.role);
 
-    const updatedOrgMember = this.orgMemberRepository.assign(orgMember, {
+    const updatedOrgMember = this.em.assign(orgMember, {
       role: newRole,
     });
 
     try {
-      await this.orgMemberRepository.flush();
+      await this.em.flush();
       return updatedOrgMember;
     } catch (err) {
       this.logger.error(err);
@@ -217,7 +215,7 @@ export class OrgMemberService {
    */
   async delete(
     orgMember: OrgMemberEntity,
-    requesterOrgRole: OrgRoleEnum
+    requesterOrgRole: OrgRoleEnum,
   ): Promise<void> {
     this.checkRequester(requesterOrgRole, orgMember.role);
 
@@ -226,7 +224,7 @@ export class OrgMemberService {
     await this.entityService.safeToDelete(orgMember);
 
     try {
-      await this.orgMemberRepository.removeAndFlush(orgMember);
+      await this.em.removeAndFlush(orgMember);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -252,7 +250,7 @@ export class OrgMemberService {
    */
   checkRequester(
     requesterOrgRole: OrgRoleEnum,
-    subjectRole: OrgRoleEnum
+    subjectRole: OrgRoleEnum,
   ): void {
     if (compareOrgRoles(requesterOrgRole, subjectRole) >= 0) {
       return;

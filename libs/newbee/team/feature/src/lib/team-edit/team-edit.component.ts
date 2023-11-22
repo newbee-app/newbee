@@ -6,6 +6,7 @@ import {
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { teamFeature as teamModuleFeature } from '@newbee/newbee/team/data-access';
+import { BaseUpdateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -16,6 +17,13 @@ import { Store } from '@ngrx/store';
   templateUrl: './team-edit.component.html',
 })
 export class TeamEditComponent {
+  /**
+   * The currently selected organization.
+   */
+  selectedOrganization$ = this.store.select(
+    organizationFeature.selectSelectedOrganization,
+  );
+
   /**
    * The currently selected team.
    */
@@ -84,10 +92,10 @@ export class TeamEditComponent {
   /**
    * When the dumb UI emits an edit event, send an edit action with the new name value.
    *
-   * @param name The new value for the team's anme.
+   * @param updateTeamDto The value to send to the backend.
    */
-  onEdit(name: string): void {
-    this.store.dispatch(TeamActions.editTeam({ updateTeamDto: { name } }));
+  onEdit(updateTeamDto: BaseUpdateTeamDto): void {
+    this.store.dispatch(TeamActions.editTeam({ updateTeamDto }));
   }
 
   /**

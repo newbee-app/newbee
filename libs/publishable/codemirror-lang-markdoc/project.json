@@ -1,0 +1,47 @@
+{
+  "name": "publishable-codemirror-lang-markdoc",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publishable/codemirror-lang-markdoc/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/publishable/codemirror-lang-markdoc",
+        "main": "libs/publishable/codemirror-lang-markdoc/src/index.ts",
+        "tsConfig": "libs/publishable/codemirror-lang-markdoc/tsconfig.lib.json",
+        "assets": ["libs/publishable/codemirror-lang-markdoc/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs codemirror-lang-markdoc {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/publishable/codemirror-lang-markdoc/**/*.ts",
+          "libs/publishable/codemirror-lang-markdoc/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/publishable/codemirror-lang-markdoc/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

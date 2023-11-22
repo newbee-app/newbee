@@ -2,7 +2,11 @@ import type { StorybookConfig } from '@storybook/angular';
 
 const config: StorybookConfig = {
   stories: [],
-  addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
+  addons: [
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y',
+  ],
 
   framework: {
     name: '@storybook/angular',
@@ -10,8 +14,8 @@ const config: StorybookConfig = {
   },
 
   docs: {
-    autodocs: true
-  }
+    autodocs: true,
+  },
 };
 
 export default config;

@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
@@ -18,21 +17,21 @@ import { AppOrgMemberInviteConfig } from '@newbee/api/org-member-invite/util';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
+  OrganizationEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, shortenUuid } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
+  OrgRoleEnum,
   forbiddenError,
   internalServerError,
   orgMemberAlreadyBadRequest,
-  orgMemberInvitedBadRequest,
   orgMemberInviteTokenNotFound,
-  OrgRoleEnum,
+  orgMemberInvitedBadRequest,
 } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 
@@ -47,8 +46,6 @@ export class OrgMemberInviteService {
   private readonly logger = new Logger(OrgMemberInviteService.name);
 
   constructor(
-    @InjectRepository(OrgMemberInviteEntity)
-    private readonly orgMemberInviteRepository: EntityRepository<OrgMemberInviteEntity>,
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly userService: UserService,
@@ -58,7 +55,7 @@ export class OrgMemberInviteService {
     private readonly configService: ConfigService<
       AppOrgMemberInviteConfig,
       true
-    >
+    >,
   ) {}
 
   /**
@@ -79,21 +76,20 @@ export class OrgMemberInviteService {
     email: string,
     role: OrgRoleEnum,
     inviter: OrgMemberEntity,
-    organization: OrganizationEntity
+    organization: OrganizationEntity,
   ): Promise<OrgMemberInviteEntity> {
     this.orgMemberService.checkRequester(inviter.role, role);
     await this.checkIfOrgMember(organization, email);
 
-    const userInvites = await this.userInvitesService.findOrCreateOneByEmail(
-      email
-    );
+    const userInvites =
+      await this.userInvitesService.findOrCreateOneByEmail(email);
     const id = v4();
     const token = shortenUuid(id);
     const orgMemberInvite = new OrgMemberInviteEntity(
       id,
       userInvites,
       inviter,
-      role
+      role,
     );
 
     const acceptLink =
@@ -106,7 +102,7 @@ export class OrgMemberInviteService {
       }) + `/${token}`;
 
     try {
-      await this.orgMemberInviteRepository.persistAndFlush(orgMemberInvite);
+      await this.em.persistAndFlush(orgMemberInvite);
       await this.mailerService.sendMail({
         to: email,
         subject: `Your NewBee Invitation`,
@@ -137,7 +133,7 @@ export class OrgMemberInviteService {
   async findOneByToken(token: string): Promise<OrgMemberInviteEntity> {
     const id = elongateUuid(token);
     try {
-      return await this.orgMemberInviteRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(OrgMemberInviteEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -176,7 +172,7 @@ export class OrgMemberInviteService {
 
     await this.entityService.safeToDelete(orgMemberInvite);
     try {
-      await this.orgMemberInviteRepository.removeAndFlush(orgMemberInvite);
+      await this.em.removeAndFlush(orgMemberInvite);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -198,7 +194,7 @@ export class OrgMemberInviteService {
    */
   async acceptInvite(
     token: string,
-    user: UserEntity
+    user: UserEntity,
   ): Promise<OrgMemberEntity> {
     const orgMemberInvite = await this.findOneByToken(token);
     await this.checkUser(user, orgMemberInvite);
@@ -213,7 +209,7 @@ export class OrgMemberInviteService {
     const orgMember = await this.orgMemberService.create(
       user,
       orgMemberInvite.organization,
-      orgMemberInvite.role
+      orgMemberInvite.role,
     );
     await this.delete(orgMemberInvite);
 
@@ -246,7 +242,7 @@ export class OrgMemberInviteService {
    */
   private async checkIfOrgMember(
     organization: OrganizationEntity,
-    email: string
+    email: string,
   ): Promise<void> {
     const user = await this.userService.findOneByEmailOrNull(email);
     if (!user) {
@@ -255,7 +251,7 @@ export class OrgMemberInviteService {
 
     const orgMember = await this.orgMemberService.findOneByUserAndOrgOrNull(
       user,
-      organization
+      organization,
     );
     if (!orgMember) {
       return;
@@ -276,7 +272,7 @@ export class OrgMemberInviteService {
    */
   private async checkUser(
     user: UserEntity,
-    orgMemberInvite: OrgMemberInviteEntity
+    orgMemberInvite: OrgMemberInviteEntity,
   ): Promise<void> {
     try {
       await this.em.populate(orgMemberInvite, ['userInvites.user']);

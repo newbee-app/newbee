@@ -19,17 +19,15 @@ import {
   EntityService,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { authJwtCookie, Public, User } from '@newbee/api/shared/util';
+import { Public, User, authJwtCookie } from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseMagicLinkLoginDto,
   BaseUserRelationAndOptionsDto,
-} from '@newbee/shared/data-access';
-import {
-  internalServerError,
   Keyword,
   UserRelation,
+  internalServerError,
 } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { CookieOptions, Response } from 'express';
@@ -101,7 +99,7 @@ export class AuthController {
    * @param emailDto The user's email as a verified DTO.
    *
    * @returns The challenge for the user's authenticator to verify.
-   * @throws {NotFoundException} `userChallengeEmailNotFound`. If the ORM throws a `NotFoundError`.
+   * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Public()
@@ -127,7 +125,7 @@ export class AuthController {
    * @param webAuthnLoginDto The user's authenticator's attempt at verifying the backend's challenge.
    *
    * @returns The logged in user and their access token, if verified.
-   * @throws {NotFoundException} `userChallengeEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
+   * @throws {NotFoundException} `userEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
    * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
    * @throws {ForbiddenException} `forbiddenError`. If the user's authenticator is somehow not assigned to the user (should never happen).
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.

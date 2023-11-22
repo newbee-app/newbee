@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterModule } from '@angular/router';
 import { OrgMemberActions } from '@newbee/newbee/shared/data-access';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgMemberRootComponent } from './org-member-root.component';
@@ -10,6 +11,7 @@ describe('OrgMemberRootComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [RouterModule],
       declarations: [OrgMemberRootComponent],
       providers: [provideMockStore()],
     }).compileComponents();
@@ -33,7 +35,7 @@ describe('OrgMemberRootComponent', () => {
     it('should dispatch resetSelectedOrgMember', () => {
       component.ngOnDestroy();
       expect(store.dispatch).toBeCalledWith(
-        OrgMemberActions.resetSelectedOrgMember()
+        OrgMemberActions.resetSelectedOrgMember(),
       );
     });
   });

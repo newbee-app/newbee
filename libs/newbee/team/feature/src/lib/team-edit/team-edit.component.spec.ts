@@ -4,7 +4,9 @@ import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { EditTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
+  testBaseUpdateTeamDto1,
   testOrgMemberRelation1,
+  testOrganizationRelation1,
   testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -24,6 +26,7 @@ describe('TeamEditComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
             },
             [Keyword.Team]: {
@@ -53,7 +56,7 @@ describe('TeamEditComponent', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testTeam1.slug);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.typingSlug({ slug: testTeam1.slug })
+        TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
     });
   });
@@ -62,16 +65,16 @@ describe('TeamEditComponent', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testTeam1.slug);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.checkSlug({ slug: testTeam1.slug })
+        TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
     });
   });
 
   describe('onEdit', () => {
     it('should dispatch editTeam', () => {
-      component.onEdit(testTeam1.name);
+      component.onEdit(testBaseUpdateTeamDto1);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.editTeam({ updateTeamDto: { name: testTeam1.name } })
+        TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
       );
     });
   });
@@ -80,7 +83,7 @@ describe('TeamEditComponent', () => {
     it('should dispatch editTeamSlug', () => {
       component.onEditSlug(testTeam1.slug);
       expect(store.dispatch).toBeCalledWith(
-        TeamActions.editTeamSlug({ updateTeamDto: { slug: testTeam1.slug } })
+        TeamActions.editTeamSlug({ updateTeamDto: { slug: testTeam1.slug } }),
       );
     });
   });

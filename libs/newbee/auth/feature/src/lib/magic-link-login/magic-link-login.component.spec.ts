@@ -1,10 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  ParamMap,
-} from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -12,7 +8,6 @@ import { MagicLinkLoginComponent } from './magic-link-login.component';
 
 describe('MagicLinkLoginComponent', () => {
   let component: MagicLinkLoginComponent;
-  let fixture: ComponentFixture<MagicLinkLoginComponent>;
   let store: MockStore;
   let route: ActivatedRoute;
 
@@ -21,44 +16,34 @@ describe('MagicLinkLoginComponent', () => {
       declarations: [MagicLinkLoginComponent],
       providers: [
         provideMockStore(),
-        {
-          provide: ActivatedRoute,
-          useValue: createMock<ActivatedRoute>({
-            snapshot: createMock<ActivatedRouteSnapshot>({
-              paramMap: createMock<ParamMap>({
-                get: jest.fn().mockReturnValue('1234'),
-              }),
-            }),
-          }),
-        },
+        provideRouter([
+          {
+            path: `:${Keyword.MagicLinkLogin}`,
+            component: MagicLinkLoginComponent,
+          },
+        ]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MagicLinkLoginComponent);
-    component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     route = TestBed.inject(ActivatedRoute);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl('/1234', MagicLinkLoginComponent);
   });
 
   it('should be defined', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(route).toBeDefined();
   });
 
-  describe('selectQueryParams', () => {
+  describe('ngOnInit', () => {
     it('should dispatch confirmMagicLink', () => {
       expect(store.dispatch).toBeCalledWith(
-        AuthActions.confirmMagicLink({ token: '1234' })
-      );
-      expect(route.snapshot.paramMap.get).toBeCalledTimes(1);
-      expect(route.snapshot.paramMap.get).toBeCalledWith(
-        Keyword.MagicLinkLogin
+        AuthActions.confirmMagicLink({ token: '1234' }),
       );
     });
   });

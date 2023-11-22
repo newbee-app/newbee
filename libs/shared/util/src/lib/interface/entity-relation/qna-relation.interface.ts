@@ -35,3 +35,8 @@ export interface QnaRelation {
  * QnaRelation with org information removed.
  */
 export type QnaNoOrg = Omit<QnaRelation, 'organization'>;
+
+/**
+ * QnaRelation with org and team information removed.
+ */
+export type QnaNoOrgTeam = Omit<QnaRelation, 'organization' | 'team'>;

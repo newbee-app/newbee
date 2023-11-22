@@ -1,5 +1,6 @@
 import { testPost1 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
+import dayjs from 'dayjs';
 import { UpToDateBtnComponent } from './up-to-date-btn.component';
 
 export default {
@@ -14,5 +15,10 @@ type Story = StoryObj<UpToDateBtnComponent>;
 export const UpToDate: Story = {};
 
 export const OutOfDate: Story = {
-  args: { post: { ...testPost1, upToDate: false } },
+  args: {
+    post: {
+      ...testPost1,
+      outOfDateAt: dayjs(new Date()).subtract(1, 'year').toDate(),
+    },
+  },
 };

@@ -90,28 +90,19 @@
         "libs/api/team/data-access/src/index.ts"
       ],
       "@newbee/api/team/feature": ["libs/api/team/feature/src/index.ts"],
-      "@newbee/api/user-challenge/data-access": [
-        "libs/api/user-challenge/data-access/src/index.ts"
-      ],
-      "@newbee/api/user-challenge/feature": [
-        "libs/api/user-challenge/feature/src/index.ts"
-      ],
       "@newbee/api/user-invites/data-access": [
         "libs/api/user-invites/data-access/src/index.ts"
       ],
       "@newbee/api/user-invites/feature": [
         "libs/api/user-invites/feature/src/index.ts"
       ],
-      "@newbee/api/user-settings/data-access": [
-        "libs/api/user-settings/data-access/src/index.ts"
-      ],
-      "@newbee/api/user-settings/feature": [
-        "libs/api/user-settings/feature/src/index.ts"
-      ],
       "@newbee/api/user/data-access": [
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
+      "@newbee/codemirror-lang-markdoc": [
+        "libs/publishable/codemirror-lang-markdoc/src/index.ts"
+      ],
       "@newbee/markdoc-txt-renderer": [
         "libs/publishable/markdoc-txt-renderer/src/index.ts"
       ],
@@ -121,7 +112,6 @@
       ],
       "@newbee/newbee/auth/feature": ["libs/newbee/auth/feature/src/index.ts"],
       "@newbee/newbee/auth/ui": ["libs/newbee/auth/ui/src/index.ts"],
-      "@newbee/newbee/auth/util": ["libs/newbee/auth/util/src/index.ts"],
       "@newbee/newbee/home/feature": ["libs/newbee/home/feature/src/index.ts"],
       "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
       "@newbee/newbee/invite/data-access": [
@@ -151,9 +141,12 @@
       "@newbee/newbee/organization/ui": [
         "libs/newbee/organization/ui/src/index.ts"
       ],
-      "@newbee/newbee/organization/util": [
-        "libs/newbee/organization/util/src/index.ts"
+      "@newbee/newbee/qna/data-access": [
+        "libs/newbee/qna/data-access/src/index.ts"
       ],
+      "@newbee/newbee/qna/feature": ["libs/newbee/qna/feature/src/index.ts"],
+      "@newbee/newbee/qna/ui": ["libs/newbee/qna/ui/src/index.ts"],
+      "@newbee/newbee/qna/util": ["libs/newbee/qna/util/src/index.ts"],
       "@newbee/newbee/search/data-access": [
         "libs/newbee/search/data-access/src/index.ts"
       ],
@@ -175,13 +168,14 @@
       ],
       "@newbee/newbee/team/feature": ["libs/newbee/team/feature/src/index.ts"],
       "@newbee/newbee/team/ui": ["libs/newbee/team/ui/src/index.ts"],
-      "@newbee/newbee/team/util": ["libs/newbee/team/util/src/index.ts"],
       "@newbee/newbee/user/data-access": [
         "libs/newbee/user/data-access/src/index.ts"
       ],
       "@newbee/newbee/user/feature": ["libs/newbee/user/feature/src/index.ts"],
       "@newbee/newbee/user/ui": ["libs/newbee/user/ui/src/index.ts"],
-      "@newbee/newbee/user/util": ["libs/newbee/user/util/src/index.ts"],
+      "@newbee/ngx-codemirror": [
+        "libs/publishable/ngx-codemirror/src/index.ts"
+      ],
       "@newbee/passport-magic-link-login": [
         "libs/publishable/passport-magic-link-login/src/index.ts"
       ],

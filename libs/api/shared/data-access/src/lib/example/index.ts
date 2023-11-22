@@ -8,16 +8,18 @@ import {
   SolrEntryEnum,
   TeamRoleEnum,
   testAuthenticator1,
+  testBaseSuggestDto1,
+  testBaseSuggestResultDto1,
+  testChallenge1,
   testDoc1,
-  testOrganization1,
+  testNow1,
   testOrgMember1,
   testOrgMemberInvite1,
+  testOrganization1,
   testQna1,
   testTeam1,
   testUser1,
-  testUserChallenge1,
   testUserInvites1,
-  testUserSettings1,
 } from '@newbee/shared/util';
 import type {
   DocResponse,
@@ -25,18 +27,17 @@ import type {
   QueryResponse,
   ResponseHeader,
 } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import {
   AuthenticatorEntity,
   DocEntity,
-  OrganizationEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
+  OrganizationEntity,
   QnaEntity,
   TeamEntity,
-  UserChallengeEntity,
   UserEntity,
   UserInvitesEntity,
-  UserSettingsEntity,
 } from '../entity';
 import { TeamMemberEntity } from '../entity/team-member.entity';
 
@@ -44,7 +45,11 @@ import { TeamMemberEntity } from '../entity/team-member.entity';
  * An example instance of `UserEntity`.
  * Strictly for use in testing.
  */
-export const testUserEntity1 = { ...testUser1, id: '1' } as UserEntity;
+export const testUserEntity1 = {
+  ...testUser1,
+  id: '1',
+  challenge: testChallenge1,
+} as UserEntity;
 
 /**
  * An example instance of `AuthenticatorEntity`.
@@ -54,24 +59,6 @@ export const testAuthenticatorEntity1 = {
   ...testAuthenticator1,
   user: testUserEntity1,
 } as AuthenticatorEntity;
-
-/**
- * An example instance of `UserChallengeEntity`.
- * Strictly for use in testing.
- */
-export const testUserChallengeEntity1 = {
-  ...testUserChallenge1,
-  user: testUserEntity1,
-} as UserChallengeEntity;
-
-/**
- * An example instance of `UserSettingsEntity`.
- * Strictly for use in testing.
- */
-export const testUserSettingsEntity1 = {
-  ...testUserSettings1,
-  user: testUserEntity1,
-} as UserSettingsEntity;
 
 /**
  * An example instance of `UserInvitesEntity`.
@@ -90,6 +77,7 @@ export const testUserInvitesEntity1 = {
 export const testOrganizationEntity1 = {
   ...testOrganization1,
   id: 'org1',
+  suggesterBuiltAt: testNow1,
 } as OrganizationEntity;
 
 /**
@@ -147,6 +135,8 @@ export const testDocEntity1 = {
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  trueUpToDateDuration: async () =>
+    dayjs.duration(testOrganization1.upToDateDuration),
 } as DocEntity;
 
 /**
@@ -162,6 +152,8 @@ export const testQnaEntity1 = {
   maintainer: testOrgMemberEntity1,
   organization: testOrganizationEntity1,
   team: testTeamEntity1,
+  trueUpToDateDuration: async () =>
+    dayjs.duration(testOrganization1.upToDateDuration),
 } as QnaEntity;
 
 /**
@@ -175,7 +167,7 @@ export const testOrgMemberDocParams1 = new OrgMemberDocParams(
   testUserEntity1.name,
   testUserEntity1.displayName,
   testUserEntity1.phoneNumber,
-  testOrgMemberEntity1.role
+  testOrgMemberEntity1.role,
 );
 
 /**
@@ -185,7 +177,7 @@ export const testOrgMemberDocParams1 = new OrgMemberDocParams(
 export const testTeamDocParams1 = new TeamDocParams(
   testTeamEntity1.id,
   testTeamEntity1.slug,
-  testTeamEntity1.name
+  testTeamEntity1.name,
 );
 
 /**
@@ -199,11 +191,11 @@ export const testDocDocParams1 = new DocDocParams(
   testDocEntity1.createdAt,
   testDocEntity1.updatedAt,
   testDocEntity1.markedUpToDateAt,
-  testDocEntity1.upToDate,
+  testDocEntity1.outOfDateAt,
   testDocEntity1.title,
   testDocEntity1.creator?.id ?? null,
   testDocEntity1.maintainer?.id ?? null,
-  testDocEntity1.docTxt
+  testDocEntity1.docTxt,
 );
 
 /**
@@ -217,12 +209,12 @@ export const testQnaDocParams1 = new QnaDocParams(
   testQnaEntity1.createdAt,
   testQnaEntity1.updatedAt,
   testQnaEntity1.markedUpToDateAt,
-  testQnaEntity1.upToDate,
+  testQnaEntity1.outOfDateAt,
   testQnaEntity1.title,
   testQnaEntity1.creator?.id ?? null,
   testQnaEntity1.maintainer?.id ?? null,
   testQnaEntity1.questionTxt,
-  testQnaEntity1.answerTxt
+  testQnaEntity1.answerTxt,
 );
 
 /**
@@ -290,6 +282,7 @@ export const testQueryResponse1: QueryResponse = {
 /**
  * An example instance of `QueryResponse`.
  * Strictly for use in testing.
+ * Simulates spellcheck suggestions.
  */
 export const testQueryResponse2: QueryResponse = {
   responseHeader: testResponseHeader1,
@@ -305,5 +298,28 @@ export const testQueryResponse2: QueryResponse = {
         misspellingsAndCorrections: [],
       },
     ],
+  },
+};
+
+/**
+ * An example instance of `QueryResponse`.
+ * Strictly for use in testing.
+ * Simulates suggester suggestions.
+ */
+export const testQueryResponse3: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  suggest: {
+    default: {
+      [testBaseSuggestDto1.query]: {
+        numFound: 1,
+        suggestions: [
+          {
+            term: testBaseSuggestResultDto1.suggestions[0] as string,
+            weight: 5,
+            payload: '',
+          },
+        ],
+      },
+    },
   },
 };

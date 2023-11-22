@@ -1,4 +1,4 @@
-import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -15,6 +15,7 @@ describe('NgUniversalInterceptor', () => {
   let http: HttpClient;
   const baseApiUrl = 'http://localhost:3333';
   const testCookie = 'cookie';
+  const testVal = 'testVal';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -39,9 +40,6 @@ describe('NgUniversalInterceptor', () => {
         },
       ],
     });
-
-    httpController = TestBed.inject(HttpTestingController);
-    http = TestBed.inject(HttpClient);
   });
 
   afterEach(() => {
@@ -50,7 +48,9 @@ describe('NgUniversalInterceptor', () => {
 
   describe('intercept', () => {
     it('should clone the request, prepend the base API URL to the URL, and add the request cookie', (done) => {
-      const testVal = 'testVal';
+      httpController = TestBed.inject(HttpTestingController);
+      http = TestBed.inject(HttpClient);
+
       http.get<string>(`/${Keyword.Api}/test`).subscribe({
         next: (val) => {
           try {
@@ -67,7 +67,33 @@ describe('NgUniversalInterceptor', () => {
       expect(req.request.method).toEqual('GET');
 
       const headers = req.request.headers;
-      expect(headers.get('Cookie')).toEqual(testCookie);
+      expect(headers.get('cookie')).toEqual(testCookie);
+
+      req.flush(testVal);
+    });
+
+    it('should do nothing if on browser-side', (done) => {
+      TestBed.overrideProvider(PLATFORM_ID, { useValue: 'browser' });
+      httpController = TestBed.inject(HttpTestingController);
+      http = TestBed.inject(HttpClient);
+
+      http.get<string>(`/${Keyword.Api}/test`).subscribe({
+        next: (val) => {
+          try {
+            expect(val).toEqual(testVal);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(`/${Keyword.Api}/test`);
+      expect(req.request.method).toEqual('GET');
+
+      const headers = req.request.headers;
+      expect(headers.get('cookie')).toBeNull();
 
       req.flush(testVal);
     });

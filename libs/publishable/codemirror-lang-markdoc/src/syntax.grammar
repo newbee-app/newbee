@@ -1,0 +1,153 @@
+// Designed (mostly) according to the Markdoc spec
+// https://markdoc.dev/spec
+
+// Automatically detect delimiters
+@detectDelim
+
+// Add highlighting support
+@external propSource markdocHighlight from "./highlight"
+
+// All of the ways in which a document can start
+@top Document { Tag | Annotation | Interpolation }
+
+// Section 1
+Tag { TagStart space* tagInterior TagEnd }
+tagInterior { TagOpen | TagClose }
+
+// Section 1.1
+TagOpen { Identifier primaryAttribute? attributeItem* space* }
+primaryAttribute { space+ value }
+attributeItem { space+ attribute }
+
+// Section 1.5
+// Changed from the spec
+Annotation { TagStart space* (attribute space+)* (attribute)? TagEnd }
+
+// Section 1.6
+attribute {
+  AttributeFull |
+  AttributeShorthand
+}
+AttributeFull { Identifier "=" value }
+
+// Section 2
+Interpolation { TagStart space* interpolationValue space* TagEnd }
+interpolationValue { Function | Variable }
+
+// Section 3
+value {
+  primitiveValue |
+  compoundValue |
+  Variable |
+  Function
+}
+
+// Section 3.1
+primitiveValue {
+  ValueNull |
+  ValueBoolean |
+  ValueNumber |
+  ValueString
+}
+
+// Section 3.1.4
+ValueString { '"' stringElement* '"' }
+stringElement { stringCharacter | StringEscapeSequence }
+
+// Section 3.2
+compoundValue { ValueArray | ValueHash }
+
+// Section 3.2.1
+ValueArray { "[" space* arrayItem* arrayItemWithoutComma? "]" }
+arrayItem { value space* "," space* }
+
+// Not in the spec
+arrayItemWithoutComma { value space* }
+
+// Section 3.2.2
+// Changed from spec
+ValueHash { "{" space* hashItem* hashKeyValue? "}" }
+hashKeyValue { HashKey ":" space* value space* }
+hashItem { hashKeyValue "," space* }
+HashKey { Identifier | ValueString }
+
+// Section 3.3
+Variable { VariableIdentifier VariableTail* }
+VariableTail {
+  "." Identifier |
+  !shift "[" variableSegmentValue "]"
+}
+variableSegmentValue { ValueNumber | ValueString }
+
+// Section 3.4
+Function { Identifier "(" space* functionParameters* ")" }
+functionParameters { value functionParameterTail* space* }
+functionParameterTail { space* "," space* functionParameter }
+functionParameter {
+  FunctionParameterNamed |
+  value
+}
+FunctionParameterNamed {
+  Identifier "=" value
+}
+
+// Needed for shift-reduce conflicts
+@precedence {
+  // When we run into a shift-reduce conflict, prefer to shift rather than reduce
+  shift @right
+}
+
+@tokens {
+  // Not in the spec, here to assist in highlighting
+  "{" "}"
+  "[" "]"
+  "(" ")"
+  ":" "="
+  ","
+  "."
+
+  // Section 1
+  TagStart { "{%" }
+
+  // Changed from spec
+  TagEnd { "%}" | "/%}" }
+
+  // Section 1.3
+  TagClose { "/" Identifier space* }
+
+  // Section 1.6.1
+  AttributeShorthand { shorthandSigil Identifier }
+  shorthandSigil { "#" | "." }
+
+  // Section 3.1.1
+  ValueNull { "null" }
+
+  // Section 3.1.2
+  ValueBoolean { "true" | "false" }
+
+  // Section 3.1.3
+  ValueNumber { "-"? digit+ fraction? }
+  digit { $[0-9] }
+  fraction { "." digit+ }
+
+  // Section 3.1.4
+  StringEscapeSequence { "\\" stringEscapeCharacter }
+  stringEscapeCharacter { '"' | "\\" | "n" | "r" | "t" }
+  stringCharacter { !["\\] }
+
+  // Section 3.3
+  variableSigil { "$" | "@" }
+
+  // Changed from the spec
+  VariableIdentifier { variableSigil Identifier }
+
+  // Section 4
+  space { " " | "\t" | "\n" }
+
+  // Section 5
+  Identifier { $[a-zA-Z] identifierTail* }
+  identifierTail { $[-_a-zA-Z0-9] }
+
+  // Resolve token reduce-reduce conflicts
+  @precedence { ValueNull, ValueBoolean, Identifier }
+}

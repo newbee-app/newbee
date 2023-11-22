@@ -14,15 +14,15 @@ import { QnaService } from '@newbee/api/qna/data-access';
 import { OrgMemberEntity, PostEntity } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
+  PostRoleEnum,
+  ROLE_KEY,
+  RoleType,
   conditionalRoleEnumSet,
   docKey,
-  organizationKey,
   orgMemberKey,
-  PostRoleEnum,
+  organizationKey,
   postRoleEnumSet,
   qnaKey,
-  RoleType,
-  ROLE_KEY,
   subjectOrgMemberKey,
   subjectTeamMemberKey,
   teamKey,
@@ -49,7 +49,7 @@ export class RoleGuard implements CanActivate {
     private readonly teamService: TeamService,
     private readonly teamMemberService: TeamMemberService,
     private readonly docService: DocService,
-    private readonly qnaService: QnaService
+    private readonly qnaService: QnaService,
   ) {}
 
   /**
@@ -70,7 +70,7 @@ export class RoleGuard implements CanActivate {
     // Get all of the roles annotated at the endpoint
     const roles = this.reflector.get<RoleType[] | undefined>(
       ROLE_KEY,
-      context.getHandler()
+      context.getHandler(),
     );
 
     // If no roles were specified, we should pass
@@ -80,7 +80,7 @@ export class RoleGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const { params, query, user } = request;
+    const { params, query, body, user } = request;
     const orgSlug: string | undefined = params[Keyword.Organization];
 
     // fail if org slug wasn't specified but roles were
@@ -89,22 +89,25 @@ export class RoleGuard implements CanActivate {
       return result;
     }
 
-    const orgMemberSlug: string | undefined = params[Keyword.Member];
-    const teamSlug: string | undefined = params[Keyword.Team]
+    // Look for the team slug first in the params, then the query string, then the req body
+    const teamSlug: string | null | undefined = params[Keyword.Team]
       ? params[Keyword.Team]
-      : query[Keyword.Team];
+      : query[Keyword.Team]
+      ? query[Keyword.Team]
+      : body[Keyword.Team];
+
+    const orgMemberSlug: string | undefined = params[Keyword.Member];
     const docSlug: string | undefined = params[Keyword.Doc];
     const qnaSlug: string | undefined = params[Keyword.Qna];
 
     try {
-      const organization = await this.organizationService.findOneBySlug(
-        orgSlug
-      );
+      const organization =
+        await this.organizationService.findOneBySlug(orgSlug);
       request[organizationKey] = organization;
 
       const orgMember = await this.orgMemberService.findOneByUserAndOrg(
         user,
-        organization
+        organization,
       );
       request[orgMemberKey] = orgMember;
 
@@ -124,7 +127,7 @@ export class RoleGuard implements CanActivate {
           (role) =>
             teamRoleEnumSet.has(role) ||
             postRoleEnumSet.has(role) ||
-            conditionalRoleEnumSet.has(role)
+            conditionalRoleEnumSet.has(role),
         ) &&
         !result
       ) {
@@ -135,7 +138,7 @@ export class RoleGuard implements CanActivate {
         const subjectOrgMember =
           await this.orgMemberService.findOneByOrgAndSlug(
             organization,
-            orgMemberSlug
+            orgMemberSlug,
           );
         request[subjectOrgMemberKey] = subjectOrgMember;
       }
@@ -145,14 +148,14 @@ export class RoleGuard implements CanActivate {
       if (teamSlug) {
         const team = await this.teamService.findOneBySlug(
           organization,
-          teamSlug
+          teamSlug,
         );
         request[teamKey] = team;
 
         const teamMember =
           await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
-            team
+            team,
           );
         if (teamMember) {
           request[teamMemberKey] = teamMember;
@@ -167,7 +170,7 @@ export class RoleGuard implements CanActivate {
           const subjectTeamMember =
             await this.teamMemberService.findOneByOrgMemberAndTeam(
               subjectOrgMember,
-              team
+              team,
             );
           request[subjectTeamMemberKey] = subjectTeamMember;
         }
@@ -230,14 +233,14 @@ export class RoleGuard implements CanActivate {
   private static checkPostRoles(
     post: PostEntity,
     orgMember: OrgMemberEntity,
-    roles: RoleType[]
+    roles: RoleType[],
   ): boolean {
     const isCreator = post.creator === orgMember;
     const isMaintainer = post.maintainer === orgMember;
     return roles.some(
       (role) =>
         (isCreator && role === PostRoleEnum.Creator) ||
-        (isMaintainer && role === PostRoleEnum.Maintainer)
+        (isMaintainer && role === PostRoleEnum.Maintainer),
     );
   }
 }

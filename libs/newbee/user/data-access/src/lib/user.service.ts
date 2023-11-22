@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { apiVersion, BaseUpdateUserDto } from '@newbee/shared/data-access';
-import { Keyword, User } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { BaseUpdateUserDto, Keyword, User } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**

@@ -7,8 +7,11 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseQueryDto1 } from '@newbee/shared/data-access';
-import { Keyword, testQueryResult1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testBaseQueryDto1,
+  testQueryResult1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { searchGuard } from './search.guard';
 
@@ -62,13 +65,13 @@ describe('searchGuard', () => {
 
   it('should dispatch search to store and navigate', async () => {
     await expect(
-      router.navigate([`/${testBaseQueryDto1.query}`])
+      router.navigate([`/${testBaseQueryDto1.query}`]),
     ).resolves.toBeTruthy();
     expect(store.dispatch).toBeCalledWith(
-      SearchActions.search({ query: testBaseQueryDto1 })
+      SearchActions.search({ query: testBaseQueryDto1 }),
     );
     expect(location.path()).toEqual(
-      `/${encodeURIComponent(testBaseQueryDto1.query)}`
+      `/${encodeURIComponent(testBaseQueryDto1.query)}`,
     );
   });
 });

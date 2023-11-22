@@ -14,7 +14,7 @@ import { Store } from '@ngrx/store';
 export class OrgInviteAcceptComponent implements OnInit {
   constructor(
     private readonly store: Store,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**

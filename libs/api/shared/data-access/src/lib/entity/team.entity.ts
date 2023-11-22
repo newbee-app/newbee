@@ -1,6 +1,7 @@
 import {
   Collection,
   Entity,
+  Index,
   ManyToOne,
   OneToMany,
   PrimaryKey,
@@ -42,6 +43,13 @@ export class TeamEntity implements Team {
    */
   @Property()
   slug: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ nullable: true })
+  @Index()
+  upToDateDuration: string | null;
 
   /**
    * All of the docs that belong to the team.
@@ -90,11 +98,13 @@ export class TeamEntity implements Team {
     id: string,
     name: string,
     slug: string,
-    creator: OrgMemberEntity
+    upToDateDuration: string | null,
+    creator: OrgMemberEntity,
   ) {
     this.id = id;
     this.name = name;
     this.slug = slugify(slug);
+    this.upToDateDuration = upToDateDuration;
     this.organization = creator.organization;
     new TeamMemberEntity(creator, this, TeamRoleEnum.Owner);
   }

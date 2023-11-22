@@ -2,8 +2,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
@@ -19,12 +18,12 @@ import {
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  OrgRoleEnum,
+  TeamRoleEnum,
   compareTeamRoles,
   forbiddenError,
   internalServerError,
-  OrgRoleEnum,
   teamMemberNotFound,
-  TeamRoleEnum,
   userAlreadyTeamMemberBadRequest,
 } from '@newbee/shared/util';
 
@@ -39,9 +38,8 @@ export class TeamMemberService {
   private readonly logger = new Logger(TeamMemberService.name);
 
   constructor(
-    @InjectRepository(TeamMemberEntity)
-    private readonly teamMemberRepository: EntityRepository<TeamMemberEntity>,
-    private readonly entityService: EntityService
+    private readonly em: EntityManager,
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -63,13 +61,13 @@ export class TeamMemberService {
     team: TeamEntity,
     role: TeamRoleEnum,
     requesterOrgRole: OrgRoleEnum,
-    requesterTeamRole: TeamRoleEnum | null
+    requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
     this.checkRequester(requesterOrgRole, requesterTeamRole, role);
 
     const teamMember = new TeamMemberEntity(orgMember, team, role);
     try {
-      await this.teamMemberRepository.persistAndFlush(teamMember);
+      await this.em.persistAndFlush(teamMember);
       return teamMember;
     } catch (err) {
       this.logger.error(err);
@@ -94,10 +92,10 @@ export class TeamMemberService {
    */
   async findOneByOrgMemberAndTeam(
     orgMember: OrgMemberEntity,
-    team: TeamEntity
+    team: TeamEntity,
   ): Promise<TeamMemberEntity> {
     try {
-      return await this.teamMemberRepository.findOneOrFail({ orgMember, team });
+      return await this.em.findOneOrFail(TeamMemberEntity, { orgMember, team });
     } catch (err) {
       this.logger.error(err);
 
@@ -121,10 +119,10 @@ export class TeamMemberService {
    */
   async findOneByOrgMemberAndTeamOrNull(
     orgMember: OrgMemberEntity,
-    team: TeamEntity
+    team: TeamEntity,
   ): Promise<TeamMemberEntity | null> {
     try {
-      return await this.teamMemberRepository.findOne({ orgMember, team });
+      return await this.em.findOne(TeamMemberEntity, { orgMember, team });
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -147,16 +145,16 @@ export class TeamMemberService {
     teamMember: TeamMemberEntity,
     newRole: TeamRoleEnum,
     requesterOrgRole: OrgRoleEnum,
-    requesterTeamRole: TeamRoleEnum | null
+    requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
     this.checkRequester(requesterOrgRole, requesterTeamRole, newRole);
     this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
 
-    const updatedTeamMember = this.teamMemberRepository.assign(teamMember, {
+    const updatedTeamMember = this.em.assign(teamMember, {
       role: newRole,
     });
     try {
-      await this.teamMemberRepository.flush();
+      await this.em.flush();
       return updatedTeamMember;
     } catch (err) {
       this.logger.error(err);
@@ -179,13 +177,13 @@ export class TeamMemberService {
   async delete(
     teamMember: TeamMemberEntity,
     requesterOrgRole: OrgRoleEnum,
-    requesterTeamRole: TeamRoleEnum | null
+    requesterTeamRole: TeamRoleEnum | null,
   ): Promise<void> {
     this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
 
     await this.entityService.safeToDelete(teamMember);
     try {
-      await this.teamMemberRepository.removeAndFlush(teamMember);
+      await this.em.removeAndFlush(teamMember);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -205,7 +203,7 @@ export class TeamMemberService {
   checkRequester(
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
-    subjectRole: TeamRoleEnum
+    subjectRole: TeamRoleEnum,
   ): void {
     if (
       requesterOrgRole === OrgRoleEnum.Moderator ||

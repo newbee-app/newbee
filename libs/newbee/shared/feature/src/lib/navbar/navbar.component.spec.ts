@@ -1,11 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Event, NavigationEnd, Router, Scroll } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword, testOrganization1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { Subject } from 'rxjs';
 import { NavbarComponent } from './navbar.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -17,90 +20,67 @@ jest.mock('@floating-ui/dom', () => ({
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
-  let fixture: ComponentFixture<NavbarComponent>;
   let store: MockStore;
   let router: Router;
-
-  const events = new Subject<Event>();
+  let harness: RouterTestingHarness;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NavbarComponent],
       providers: [
         provideMockStore({ initialState: { [Keyword.Auth]: { user: null } } }),
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            events,
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
+        provideRouter([{ path: '**', component: NavbarComponent }]),
       ],
     }).compileComponents();
-
-    fixture = TestBed.createComponent(NavbarComponent);
-    component = fixture.componentInstance;
 
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl('/', NavbarComponent);
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
+    expect(harness).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
-    it('should set includeCenter to true if route is past org home', () => {
-      expect(component.includeCenter).toBeFalsy();
-
-      events.next(
-        new NavigationEnd(
-          0,
-          `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
-          `/${ShortUrl.Organization}/${testOrganization1.slug}/past`
-        )
-      );
-      expect(component.includeCenter).toBeFalsy();
-
-      const validScroll = new Scroll(
-        createMock<NavigationEnd>({
-          url: `/${ShortUrl.Organization}/${testOrganization1.slug}/past`,
-        }),
-        null,
-        null
-      );
-      events.next(validScroll);
+  describe('constructor', () => {
+    it('should set includeCenter to true if route is past org home', async () => {
       expect(component.includeCenter).toBeFalsy();
 
       store.setState({
-        [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+        [Keyword.Organization]: {
+          selectedOrganization: testOrganizationRelation1,
+        },
       });
-      events.next(validScroll);
       expect(component.includeCenter).toBeTruthy();
+
+      component = await harness.navigateByUrl(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}`,
+        NavbarComponent,
+      );
+      expect(component.includeCenter).toBeFalsy();
     });
   });
 
   describe('selectOrganization', () => {
     it('should navigate to org', async () => {
       await component.selectOrganization(testOrganization1);
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith([
+      expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}`,
-      ]);
+      );
     });
   });
 
   describe('navigateToLink', () => {
     it('should navigate', async () => {
-      await component.navigateToLink('/');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['/']);
+      await component.navigateToLink('test');
+      expect(router.url).toEqual('/test');
     });
   });
 

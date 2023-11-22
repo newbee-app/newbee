@@ -35,3 +35,8 @@ export interface DocRelation {
  * DocRelation with org information removed.
  */
 export type DocNoOrg = Omit<DocRelation, 'organization'>;
+
+/**
+ * DocRelation with org and team information removed.
+ */
+export type DocNoOrgTeam = Omit<DocRelation, 'organization' | 'team'>;

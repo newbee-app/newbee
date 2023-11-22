@@ -1,0 +1,7 @@
+<newbee-create-qna
+  [httpClientError]="httpClientError$ | async"
+  [createPending]="(pendingCreate$ | async)!"
+  [teams]="(selectedOrganization$ | async)?.teams ?? []"
+  [teamSlugParam]="teamSlugParam$ | async"
+  (create)="onCreate($event)"
+></newbee-create-qna>

@@ -5,12 +5,12 @@ import {
 } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  Organization,
   OrgMember,
+  Organization,
   Role,
   SubjectOrgMember,
 } from '@newbee/api/shared/util';
@@ -32,7 +32,7 @@ export class OrgMemberController {
 
   constructor(
     private readonly orgMemberService: OrgMemberService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -49,10 +49,10 @@ export class OrgMemberController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async getBySlug(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<OrgMemberNoOrg> {
     this.logger.log(
-      `Get org member request received in organization ID: ${organization.id}, for slug: ${subjectOrgMember.slug}`
+      `Get org member request received in organization ID: ${organization.id}, for slug: ${subjectOrgMember.slug}`,
     );
     this.logger.log(`Found org member, slug: ${subjectOrgMember.slug}`);
     return await this.entityService.createOrgMemberNoOrg(subjectOrgMember);
@@ -74,20 +74,20 @@ export class OrgMemberController {
     @Body() updateOrgMemberDto: UpdateOrgMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<OrgMemberEntity> {
     this.logger.log(
-      `Update org member request received in organization ID: ${organization.id}, for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}`
+      `Update org member request received in organization ID: ${organization.id}, for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}`,
     );
 
     const { role } = updateOrgMemberDto;
     const updatedOrgMember = await this.orgMemberService.updateRole(
       subjectOrgMember,
       role,
-      orgMember.role
+      orgMember.role,
     );
     this.logger.log(
-      `Updated org member for org member slug: ${updatedOrgMember.slug}, in organization ID: ${organization.id}`
+      `Updated org member for org member slug: ${updatedOrgMember.slug}, in organization ID: ${organization.id}`,
     );
 
     return updatedOrgMember;
@@ -105,14 +105,14 @@ export class OrgMemberController {
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<void> {
     this.logger.log(
-      `Delete org member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}`
+      `Delete org member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}`,
     );
     await this.orgMemberService.delete(subjectOrgMember, orgMember.role);
     this.logger.log(
-      `Deleted org member with slug: ${subjectOrgMember.slug}, in organization ID: ${organization.id}`
+      `Deleted org member with slug: ${subjectOrgMember.slug}, in organization ID: ${organization.id}`,
     );
   }
 }

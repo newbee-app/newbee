@@ -1,7 +1,8 @@
-import { BaseCreateQnaDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateQnaDto,
   answerIsNotEmpty,
   questionIsNotEmpty,
+  teamIsNotEmpty,
   titleIsNotEmpty,
 } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
@@ -30,4 +31,11 @@ export class CreateQnaDto implements BaseCreateQnaDto {
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
   answerMarkdoc: string | null = null;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team: string | null = null;
 }

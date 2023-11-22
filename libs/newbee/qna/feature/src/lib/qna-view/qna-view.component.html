@@ -1,0 +1,10 @@
+<newbee-view-qna
+  [httpClientError]="httpClientError$ | async"
+  [qna]="(selectedQna$ | async)!"
+  [orgMember]="(orgMember$ | async)?.orgMember ?? null"
+  [teamMember]="teamMember$ | async"
+  [upToDatePending]="(pendingUpToDate$ | async)!"
+  (orgNavigate)="onOrgNavigate($event)"
+  (qnaNavigate)="onQnaNavigate($event)"
+  (markAsUpToDate)="onMarkAsUpToDate()"
+></newbee-view-qna>

@@ -3,8 +3,7 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
@@ -39,8 +38,7 @@ export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: EntityRepository<UserEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
     private readonly configService: ConfigService<AppConfig, true>,
@@ -48,7 +46,7 @@ export class UserService {
   ) {}
 
   /**
-   * Creates a new `UserEntity`, `UserChallengeEntity`, and `UserSettingsEntity` with the given information.
+   * Creates a new `UserEntity` with the given information.
    *
    * @param createUserDto The information needed to create a new user.
    * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.
@@ -67,6 +65,10 @@ export class UserService {
       userID: id,
       userName: email,
       userDisplayName: displayName ?? name,
+      authenticatorSelection: {
+        residentKey: 'required',
+        userVerification: 'required',
+      },
     });
     const user = new UserEntity(
       id,
@@ -78,7 +80,7 @@ export class UserService {
       userInvites,
     );
     try {
-      await this.userRepository.persistAndFlush(user);
+      await this.em.persistAndFlush(user);
       return { user, options };
     } catch (err) {
       this.logger.error(err);
@@ -102,7 +104,7 @@ export class UserService {
    */
   async findOneById(id: string): Promise<UserEntity> {
     try {
-      return await this.userRepository.findOneOrFail(id);
+      return await this.em.findOneOrFail(UserEntity, id);
     } catch (err) {
       this.logger.error(err);
 
@@ -125,7 +127,7 @@ export class UserService {
    */
   async findOneByEmail(email: string): Promise<UserEntity> {
     try {
-      return await this.userRepository.findOneOrFail({ email });
+      return await this.em.findOneOrFail(UserEntity, { email });
     } catch (err) {
       this.logger.error(err);
 
@@ -147,7 +149,7 @@ export class UserService {
    */
   async findOneByEmailOrNull(email: string): Promise<UserEntity | null> {
     try {
-      return await this.userRepository.findOne({ email });
+      return await this.em.findOne(UserEntity, { email });
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -168,10 +170,10 @@ export class UserService {
     user: UserEntity,
     data: EntityData<UserEntity>,
   ): Promise<UserEntity> {
-    const updatedUser = this.userRepository.assign(user, data);
+    const updatedUser = this.em.assign(user, data);
 
     try {
-      await this.userRepository.flush();
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
 
@@ -219,7 +221,7 @@ export class UserService {
       .map((orgMember) => [orgMember.organization.id, orgMember.slug]);
 
     try {
-      await this.userRepository.removeAndFlush(user);
+      await this.em.removeAndFlush(user);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

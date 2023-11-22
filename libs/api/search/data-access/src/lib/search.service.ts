@@ -15,15 +15,12 @@ import type {
 import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
-} from '@newbee/shared/data-access';
-import {
   DocQueryResult,
-  internalServerError,
   OrgMemberQueryResult,
   QnaQueryResult,
   SolrEntryEnum,
-  surroundSubstringsWith,
   TeamQueryResult,
+  internalServerError,
 } from '@newbee/shared/util';
 import { QueryResponse, SolrCli, Spellcheck } from '@newbee/solr-cli';
 import { QueryDto, SuggestDto } from './dto';
@@ -34,16 +31,6 @@ export class SearchService {
    * The logger to use when logging anything in the service.
    */
   private readonly logger = new Logger(SearchService.name);
-
-  /**
-   * The left portion of what to surround query matches with.
-   */
-  private readonly leftSurround = '<strong>';
-
-  /**
-   * The right portion of what to surround query matches with.
-   */
-  private readonly rightSurround = '</strong>';
 
   constructor(private readonly solrCli: SolrCli) {}
 
@@ -58,64 +45,21 @@ export class SearchService {
    */
   async suggest(
     organization: OrganizationEntity,
-    suggestDto: SuggestDto
+    suggestDto: SuggestDto,
   ): Promise<BaseSuggestResultDto> {
-    let { query } = suggestDto;
+    const { query } = suggestDto;
     try {
       // Execute the query
-      let solrRes = await this.solrCli.suggest(organization.id, { query });
-
-      // No responses found, execute again with the spellchecked alternative
-      if (!solrRes.response.numFound) {
-        const suggestion = solrRes.spellcheck
-          ? SearchService.getSpellcheckSuggestion(solrRes.spellcheck)
-          : null;
-        if (!suggestion) {
-          return { suggestions: [] };
-        }
-
-        query = suggestion;
-        solrRes = await this.solrCli.suggest(organization.id, { query });
-      }
-
-      // Tokenize the query and turn the token into regexes
-      const queries = Array.from(new Set(query.toLowerCase().split(/\s+/)));
-      const queryRegexes = queries.map((query) => new RegExp(query, 'i'));
+      const solrRes = await this.solrCli.suggest(organization.id, {
+        params: { 'suggest.q': query },
+      });
 
       // Go through all of the result docs and generate suggestions based on the parts of the doc that matched
-      const docs = solrRes.response.docs as SolrDoc[];
-      const suggestions = docs
-        .map((doc) => {
-          const {
-            user_name,
-            user_display_name,
-            user_email,
-            user_phone_number,
-            team_name,
-            title,
-          } = doc;
-
-          for (const field of [
-            user_name,
-            user_display_name,
-            user_email,
-            user_phone_number,
-            team_name,
-            title,
-          ]) {
-            if (queryRegexes.some((regex) => regex.test(field ?? ''))) {
-              return surroundSubstringsWith(
-                field ?? '',
-                queries,
-                this.leftSurround,
-                this.rightSurround
-              );
-            }
-          }
-
-          return '';
-        })
-        .filter(Boolean);
+      const suggestionObjects =
+        solrRes.suggest?.['default']?.[query]?.suggestions ?? [];
+      const suggestions = suggestionObjects.map(
+        (suggestion) => suggestion.term,
+      );
 
       return { suggestions };
     } catch (err) {
@@ -135,12 +79,12 @@ export class SearchService {
    */
   async query(
     organization: OrganizationEntity,
-    queryDto: QueryDto
+    queryDto: QueryDto,
   ): Promise<BaseQueryResultDto> {
     const { query, offset } = queryDto;
     const result = new BaseQueryResultDto(offset);
 
-    // this should never happen, but leave it for safety
+    // This should never happen, but leave it for safety
     if (!query) {
       return result;
     }
@@ -148,8 +92,14 @@ export class SearchService {
     // Execute the query
     const solrRes = await this.makeQuery(organization, queryDto);
 
+    // This shouldn't happen, but needed for type safety
+    const { response } = solrRes;
+    if (!response) {
+      return result;
+    }
+
     // Record how many results were found
-    const numFound = solrRes.response.numFound;
+    const numFound = response.numFound;
     result.total = numFound;
 
     // No results found, suggest an alternative spelling
@@ -164,27 +114,28 @@ export class SearchService {
     }
 
     // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
-    const docs = solrRes.response.docs as SolrDoc[];
+    const docs = response.docs as SolrDoc[];
     const queryIds = Array.from(
       new Set(
         docs
           .filter((doc) =>
-            [SolrEntryEnum.Doc, SolrEntryEnum.Qna].includes(doc.entry_type)
+            [SolrEntryEnum.Doc, SolrEntryEnum.Qna].includes(doc.entry_type),
           )
           .flatMap(
             (doc) =>
               [doc.team, doc.creator, doc.maintainer].filter(
-                Boolean
-              ) as string[]
-          )
-      )
+                Boolean,
+              ) as string[],
+          ),
+      ),
     );
 
     // Execute the additional query
     const idsRes = queryIds.length
       ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
       : null;
-    const idsResDocs = idsRes ? (idsRes.response.docs as SolrDoc[]) : [];
+    const idsResDocs =
+      idsRes && idsRes.response ? (idsRes.response.docs as SolrDoc[]) : [];
 
     // Take the org members resulting from the additional query and map them from their IDs to the information we care about
     const orgMemberMap = new Map(
@@ -193,21 +144,21 @@ export class SearchService {
         .map((doc) => [
           doc.id,
           SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
-        ])
+        ]),
     );
 
     // Take the teams resulting from the additional query and map them from their IDs to the information we care about
     const teamMap = new Map(
       idsResDocs
         .filter((doc) => doc.entry_type === SolrEntryEnum.Team)
-        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)])
+        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)]),
     );
 
     // Construct a map from the highlighting portion of the original response
     const highlightMap = new Map<string, SolrHighlightedFields>(
       Object.entries(solrRes.highlighting ?? {}).filter(
-        ([, highlightedFields]) => Object.keys(highlightedFields).length
-      )
+        ([, highlightedFields]) => Object.keys(highlightedFields).length,
+      ),
     );
 
     // Iterate through the responses to construct the result
@@ -217,7 +168,7 @@ export class SearchService {
       switch (entryType) {
         case SolrEntryEnum.User: {
           result.results.push(
-            SearchService.handleOrgMember(doc as OrgMemberSolrDoc)
+            SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
           );
           break;
         }
@@ -231,8 +182,8 @@ export class SearchService {
               doc as DocSolrDoc,
               orgMemberMap,
               teamMap,
-              highlightedFields
-            )
+              highlightedFields,
+            ),
           );
           break;
         }
@@ -242,8 +193,8 @@ export class SearchService {
               doc as QnaSolrDoc,
               orgMemberMap,
               teamMap,
-              highlightedFields
-            )
+              highlightedFields,
+            ),
           );
           break;
         }
@@ -251,6 +202,23 @@ export class SearchService {
     });
 
     return result;
+  }
+
+  /**
+   * Send a request to build an organization's suggester.
+   *
+   * @param organization The organization to build.
+   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
+   */
+  async buildSuggester(organization: OrganizationEntity): Promise<void> {
+    try {
+      await this.solrCli.suggest(organization.id, {
+        params: { 'suggest.build': true },
+      });
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
   }
 
   /**
@@ -264,7 +232,7 @@ export class SearchService {
    */
   private async makeQuery(
     organization: OrganizationEntity,
-    queryDto: QueryDto
+    queryDto: QueryDto,
   ): Promise<QueryResponse> {
     const { query, offset, type } = queryDto;
     try {
@@ -291,10 +259,10 @@ export class SearchService {
    * @returns The suggestion as a string if it exists, null otherwise.
    */
   private static getSpellcheckSuggestion(
-    spellcheck: Spellcheck
+    spellcheck: Spellcheck,
   ): string | null {
     const spellcheckSuggestion = spellcheck.collations[1] ?? null;
-    return spellcheckSuggestion ? spellcheckSuggestion.collationQuery : null;
+    return spellcheckSuggestion?.collationQuery ?? null;
   }
 
   /**
@@ -350,13 +318,13 @@ export class SearchService {
     doc: DocSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {}
+    highlightedFields: SolrHighlightedFields = {},
   ): DocQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
-      up_to_date,
+      out_of_date_at,
       title,
       slug,
       team,
@@ -369,7 +337,7 @@ export class SearchService {
         createdAt: new Date(created_at),
         updatedAt: new Date(updated_at),
         markedUpToDateAt: new Date(marked_up_to_date_at),
-        upToDate: up_to_date,
+        outOfDateAt: new Date(out_of_date_at),
         title,
         slug,
         docSnippet: highlightedFields.doc_txt?.[0] ?? doc_txt.slice(0, 100),
@@ -396,13 +364,13 @@ export class SearchService {
     doc: QnaSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {}
+    highlightedFields: SolrHighlightedFields = {},
   ): QnaQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
-      up_to_date,
+      out_of_date_at,
       title,
       slug,
       team,
@@ -416,7 +384,7 @@ export class SearchService {
         createdAt: new Date(created_at),
         updatedAt: new Date(updated_at),
         markedUpToDateAt: new Date(marked_up_to_date_at),
-        upToDate: up_to_date,
+        outOfDateAt: new Date(out_of_date_at),
         title,
         slug,
         questionSnippet:

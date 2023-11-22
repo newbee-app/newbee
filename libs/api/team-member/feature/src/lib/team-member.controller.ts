@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Logger, Patch, Post } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   TeamEntity,
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
-  Organization,
   OrgMember,
+  Organization,
   Role,
   SubjectOrgMember,
   SubjectTeamMember,
@@ -38,7 +38,7 @@ export class TeamMemberController {
 
   constructor(
     private readonly teamMemberService: TeamMemberService,
-    private readonly orgMemberService: OrgMemberService
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
@@ -61,34 +61,34 @@ export class TeamMemberController {
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner
+    TeamRoleEnum.Owner,
   )
   async create(
     @Body() createTeamMemberDto: CreateTeamMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @TeamMember() teamMember: TeamMemberEntity | undefined,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
+    @Team() team: TeamEntity,
   ): Promise<TeamMemberEntity> {
     this.logger.log(
       `Create team member request received from org member slug: ${
         orgMember.slug
       }, in organization ID: ${organization.id}, in team ID: ${
         team.id
-      }, with values: ${JSON.stringify(createTeamMemberDto)}`
+      }, with values: ${JSON.stringify(createTeamMemberDto)}`,
     );
 
     const { role, orgMemberSlug } = createTeamMemberDto;
     const invitee = await this.orgMemberService.findOneByOrgAndSlug(
       organization,
-      orgMemberSlug
+      orgMemberSlug,
     );
     const newTeamMember = await this.teamMemberService.create(
       invitee,
       team,
       role,
       orgMember.role,
-      teamMember?.role ?? null
+      teamMember?.role ?? null,
     );
     this.logger.log(`Team member created for org member: ${invitee.slug}`);
 
@@ -114,7 +114,7 @@ export class TeamMemberController {
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner
+    TeamRoleEnum.Owner,
   )
   async update(
     @Body() updateTeamMemberDto: UpdateTeamMemberDto,
@@ -123,7 +123,7 @@ export class TeamMemberController {
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @SubjectTeamMember() subjectTeamMember: TeamMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
+    @Team() team: TeamEntity,
   ): Promise<TeamMemberEntity> {
     this.logger.log(
       `Update team member request received for org member slug: ${
@@ -131,8 +131,8 @@ export class TeamMemberController {
       }, from org member slug: ${orgMember.slug}, in organization ID: ${
         organization.id
       }, in team ID: ${team.id}, with values: ${JSON.stringify(
-        updateTeamMemberDto
-      )}`
+        updateTeamMemberDto,
+      )}`,
     );
 
     const { role } = updateTeamMemberDto;
@@ -140,10 +140,10 @@ export class TeamMemberController {
       subjectTeamMember,
       role,
       orgMember.role,
-      teamMember?.role ?? null
+      teamMember?.role ?? null,
     );
     this.logger.log(
-      `Updated team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`
+      `Updated team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );
 
     return updatedTeamMember;
@@ -166,7 +166,7 @@ export class TeamMemberController {
     OrgRoleEnum.Moderator,
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner
+    TeamRoleEnum.Owner,
   )
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
@@ -174,18 +174,18 @@ export class TeamMemberController {
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @SubjectTeamMember() subjectTeamMember: TeamMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity
+    @Team() team: TeamEntity,
   ): Promise<void> {
     this.logger.log(
-      `Delete team member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, in team ID: ${team.id}`
+      `Delete team member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, in team ID: ${team.id}`,
     );
     await this.teamMemberService.delete(
       subjectTeamMember,
       orgMember.role,
-      teamMember?.role ?? null
+      teamMember?.role ?? null,
     );
     this.logger.log(
-      `Deleted team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`
+      `Deleted team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );
   }
 }

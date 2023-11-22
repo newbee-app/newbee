@@ -1,19 +1,19 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  Keyword,
   testBaseCreateOrganizationDto1,
   testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseOrgAndMemberDto1,
   testBaseSlugTakenDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testOrganization1,
   testOrganization2,
+  testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -36,9 +36,12 @@ describe('OrganizationEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         OrganizationEffects,
         {
           provide: OrganizationService,
@@ -54,12 +57,6 @@ describe('OrganizationEffects', () => {
             inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -67,6 +64,8 @@ describe('OrganizationEffects', () => {
     service = TestBed.inject(OrganizationService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {
@@ -345,7 +344,7 @@ describe('OrganizationEffects', () => {
         expect(service.inviteUser).toBeCalledTimes(1);
         expect(service.inviteUser).toBeCalledWith(
           testOrganization1.slug,
-          testBaseCreateOrgMemberInviteDto1
+          testBaseCreateOrgMemberInviteDto1,
         );
       });
     });

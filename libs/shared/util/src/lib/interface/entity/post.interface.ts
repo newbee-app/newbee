@@ -5,24 +5,19 @@
  */
 export interface Post {
   /**
-   * The DateTime when the post was created.
+   * The DateTime or datetime string when the post was created.
    */
-  createdAt: Date;
+  createdAt: Date | string;
 
   /**
-   * The DateTime when the post was last updated.
+   * The DateTime or datetime string when the post was last updated.
    */
-  updatedAt: Date;
+  updatedAt: Date | string;
 
   /**
-   * The DateTime when the post was last marked up-to-date.
+   * The DateTime or datetime string when the post was last marked up-to-date.
    */
-  markedUpToDateAt: Date;
-
-  /**
-   * Whether the post is up-to-date.
-   */
-  upToDate: boolean;
+  markedUpToDateAt: Date | string;
 
   /**
    * The title of the post.
@@ -36,4 +31,15 @@ export interface Post {
    * The slug should be globally unique, as it's a shortened version of the UUID.
    */
   slug: string;
+
+  /**
+   * The amount of time to wait before marking a post as out-of-date, represented as an ISO 8601 duration string.
+   * If null, inherits from the post's parent team or organization.
+   */
+  upToDateDuration: string | null;
+
+  /**
+   * The DateTime or datetime string when the post is out-of-date, based on its `upToDateDuration` and `markedUpToDateAt` values.
+   */
+  outOfDateAt: Date | string;
 }

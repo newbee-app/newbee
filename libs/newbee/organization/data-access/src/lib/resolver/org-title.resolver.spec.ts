@@ -10,9 +10,10 @@ import {
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  forbiddenError,
   Keyword,
+  forbiddenError,
   testOrganization1,
+  testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { orgTitleResolver } from './org-title.resolver';
@@ -58,11 +59,11 @@ describe('orgTitleResolver', () => {
     store.setState({
       [Keyword.Organization]: {
         ...initialOrganizationState,
-        selectedOrganization: testOrganization1,
+        selectedOrganization: testOrganizationRelation1,
       },
     });
     await expect(
-      router.navigate([`/${testOrganization1.slug}`])
+      router.navigate([`/${testOrganization1.slug}`]),
     ).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);
     expect(title.getTitle()).toEqual(testOrganization1.name);
@@ -76,7 +77,7 @@ describe('orgTitleResolver', () => {
       },
     });
     await expect(
-      router.navigate([`/${testOrganization1.slug}`])
+      router.navigate([`/${testOrganization1.slug}`]),
     ).resolves.toBeTruthy();
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);
     expect(title.getTitle()).toEqual('Error');

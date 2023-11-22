@@ -5,8 +5,12 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { testCreateTeamForm1 } from '@newbee/newbee/team/util';
-import { testTeam1 } from '@newbee/shared/util';
+import {
+  Frequency,
+  testBaseCreateTeamDto1,
+  testOrganization1,
+  testTeam1,
+} from '@newbee/shared/util';
 import { CreateTeamComponent } from './create-team.component';
 
 describe('CreateTeamComponent', () => {
@@ -20,6 +24,8 @@ describe('CreateTeamComponent', () => {
 
     fixture = TestBed.createComponent(CreateTeamComponent);
     component = fixture.componentInstance;
+
+    component.organization = testOrganization1;
 
     jest.spyOn(component.name, 'emit');
     jest.spyOn(component.slug, 'emit');
@@ -58,15 +64,29 @@ describe('CreateTeamComponent', () => {
       it('should emit create', () => {
         component.emitCreate();
         expect(component.create.emit).toBeCalledTimes(1);
-        expect(component.create.emit).toBeCalledWith({ name: '', slug: '' });
+        expect(component.create.emit).toBeCalledWith({
+          name: '',
+          slug: '',
+          upToDateDuration: null,
+        });
 
-        component.createTeamForm.setValue({
+        component.createTeamForm.patchValue({
           name: testTeam1.name,
           slug: testTeam1.slug,
         });
         component.emitCreate();
         expect(component.create.emit).toBeCalledTimes(2);
-        expect(component.create.emit).toBeCalledWith(testCreateTeamForm1);
+        expect(component.create.emit).toBeCalledWith(testBaseCreateTeamDto1);
+
+        component.createTeamForm.patchValue({
+          upToDateDuration: { num: 1, frequency: Frequency.Year },
+        });
+        component.emitCreate();
+        expect(component.create.emit).toBeCalledTimes(3);
+        expect(component.create.emit).toBeCalledWith({
+          ...testBaseCreateTeamDto1,
+          upToDateDuration: 'P1Y',
+        });
       });
     });
   });
@@ -77,7 +97,7 @@ describe('CreateTeamComponent', () => {
         generatedSlug: new SimpleChange('', testTeam1.slug, true),
       });
       expect(component.createTeamForm.controls.slug.value).toEqual(
-        testTeam1.slug
+        testTeam1.slug,
       );
       expect(component.slug.emit).not.toBeCalled();
     });

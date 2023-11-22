@@ -14,16 +14,20 @@ import { Store } from '@ngrx/store';
 export class MagicLinkLoginComponent implements OnInit {
   constructor(
     private readonly store: Store,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**
    * Make a request to confirm the magic link token.
    */
   ngOnInit(): void {
-    const token = this.route.snapshot.paramMap.get(
-      Keyword.MagicLinkLogin
-    ) as string;
-    this.store.dispatch(AuthActions.confirmMagicLink({ token: token }));
+    const token = this.route.snapshot.paramMap.get(Keyword.MagicLinkLogin);
+
+    // this shouldn't happen, but keep it in for safety
+    if (!token) {
+      return;
+    }
+
+    this.store.dispatch(AuthActions.confirmMagicLink({ token }));
   }
 }

@@ -39,19 +39,24 @@ export const titleIsNotEmpty = 'Title cannot be an empty string.';
 export const slugIsNotEmpty = 'Slug cannot be an empty string.';
 
 /**
- * Constant to say that a doc cannot be empty.
+ * Constant to say that doc cannot be an empty string.
  */
-export const docIsNotEmpty = 'You cannot save an empty doc.';
+export const docIsNotEmpty = 'Doc cannot be an empty string.';
 
 /**
- * Constant to say that a question cannot be empty.
+ * Constant to say that question cannot be an empty string.
  */
-export const questionIsNotEmpty = 'You cannot save an empty question.';
+export const questionIsNotEmpty = 'Question cannot be an empty string.';
 
 /**
- * Constant to say that an answer cannot be empty.
+ * Constant to say that answer cannot be an empty string.
  */
-export const answerIsNotEmpty = 'You cannot save an empty answer.';
+export const answerIsNotEmpty = 'Answer cannot be an empty string.';
+
+/**
+ * Constant to say that team cannot ben an empty string.
+ */
+export const teamIsNotEmpty = 'Team cannot be an empty string.';
 
 /**
  * Constant to say that query cannot be an empty string.
@@ -69,6 +74,12 @@ export const tokenIsNotEmpty = 'Token cannot be an empty string.';
 export const baseIsNotEmpty = 'Base cannot be an empty string.';
 
 /**
+ * Constant to say that up-to-date duration must be an ISO 8601 string.
+ */
+export const upToDateDurationMatches =
+  'Up-to-date duration must be an ISO 8601 duration string.';
+
+/**
  * Constant to say that offset must be an int.
  */
 export const offsetIsInt = 'Offset must be an int.';
@@ -82,19 +93,19 @@ export const offsetMin0 = 'Offset cannot be less than 0.';
  * Constant to say that the value for type must be in SolrEntryEnum.
  */
 export const typeIsEnum = `Type can only be one of the following values: ${Object.values(
-  SolrEntryEnum
+  SolrEntryEnum,
 )}`;
 
 /**
  * Constant to say that the value for orgRole must be in OrgRoleEnum.
  */
 export const orgRoleIsEnum = `Type can only be one of the following values: ${Object.values(
-  OrgRoleEnum
+  OrgRoleEnum,
 )}`;
 
 /**
  * Constant to say that the value of teamRole must be in TeamRoleEnum.
  */
 export const teamRoleIsEnum = `Type can only be one of the following values: ${Object.values(
-  TeamRoleEnum
+  TeamRoleEnum,
 )}`;

@@ -58,7 +58,7 @@ describe('SearchResultHeaderComponent', () => {
   describe('searchResultHeader', () => {
     it('should return a header for the search result', () => {
       expect(component.searchResultHeader).toEqual(
-        userDisplayName(testOrgMemberQueryResult1.user)
+        userDisplayName(testOrgMemberQueryResult1.user),
       );
 
       component.searchResult = testTeamQueryResult1;
@@ -66,12 +66,12 @@ describe('SearchResultHeaderComponent', () => {
 
       component.searchResult = testDocQueryResult1;
       expect(component.searchResultHeader).toEqual(
-        testDocQueryResult1.doc.title
+        testDocQueryResult1.doc.title,
       );
 
       component.searchResult = testQnaQueryResult1;
       expect(component.searchResultHeader).toEqual(
-        testQnaQueryResult1.qna.title
+        testQnaQueryResult1.qna.title,
       );
     });
   });
@@ -80,25 +80,25 @@ describe('SearchResultHeaderComponent', () => {
     it('should navigate to the proper URL', () => {
       component.headerClick();
       expect(component.orgNavigate.emit).toBeCalledWith(
-        `${ShortUrl.Member}/${testOrgMemberQueryResult1.orgMember.slug}`
+        `/${ShortUrl.Member}/${testOrgMemberQueryResult1.orgMember.slug}`,
       );
 
       component.searchResult = testTeamQueryResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toBeCalledWith(
-        `${ShortUrl.Team}/${testTeamQueryResult1.slug}`
+        `/${ShortUrl.Team}/${testTeamQueryResult1.slug}`,
       );
 
       component.searchResult = testDocQueryResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toBeCalledWith(
-        `${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`
+        `/${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`,
       );
 
       component.searchResult = testQnaQueryResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toBeCalledWith(
-        `${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`
+        `/${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`,
       );
     });
   });

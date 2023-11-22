@@ -23,19 +23,19 @@ export class OrgMemberEffects {
     return this.actions$.pipe(
       ofType(OrgMemberActions.getOrgMember),
       concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization)
+        this.store.select(organizationFeature.selectSelectedOrganization),
       ),
       filter(([, selectedOrganization]) => !!selectedOrganization),
       switchMap(([{ slug }, selectedOrganization]) => {
         return this.orgMemberService
-          .get(selectedOrganization?.slug as string, slug)
+          .get(selectedOrganization?.organization.slug as string, slug)
           .pipe(
             map((orgMember) => {
               return OrgMemberActions.getOrgMemberSuccess({ orgMember });
             }),
-            catchError(catchHttpScreenError)
+            catchError(catchHttpScreenError),
           );
-      })
+      }),
     );
   });
 
@@ -48,23 +48,23 @@ export class OrgMemberEffects {
       ]),
       filter(
         ([, selectedOrganization, selectedOrgMember]) =>
-          !!selectedOrganization && !!selectedOrgMember
+          !!selectedOrganization && !!selectedOrgMember,
       ),
       switchMap(
         ([{ updateOrgMemberDto }, selectedOrganization, selectedOrgMember]) => {
           return this.orgMemberService
             .edit(
-              selectedOrganization?.slug as string,
+              selectedOrganization?.organization.slug as string,
               selectedOrgMember?.orgMember.slug as string,
-              updateOrgMemberDto
+              updateOrgMemberDto,
             )
             .pipe(
               map((orgMember) => {
                 return OrgMemberActions.editOrgMemberSuccess({ orgMember });
-              })
+              }),
             );
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -77,13 +77,13 @@ export class OrgMemberEffects {
       ]),
       filter(
         ([, selectedOrganization, selectedOrgMember]) =>
-          !!selectedOrganization && !!selectedOrgMember
+          !!selectedOrganization && !!selectedOrgMember,
       ),
       switchMap(([, selectedOrganization, selectedOrgMember]) => {
         return this.orgMemberService
           .delete(
-            selectedOrganization?.slug as string,
-            selectedOrgMember?.orgMember.slug as string
+            selectedOrganization?.organization.slug as string,
+            selectedOrgMember?.orgMember.slug as string,
           )
           .pipe(
             map(() => {
@@ -92,11 +92,11 @@ export class OrgMemberEffects {
             catchError((err) =>
               catchHttpClientError(
                 err,
-                () => `${Keyword.Member}-${Keyword.Delete}`
-              )
-            )
+                () => `${Keyword.Member}-${Keyword.Delete}`,
+              ),
+            ),
           );
-      })
+      }),
     );
   });
 
@@ -105,7 +105,7 @@ export class OrgMemberEffects {
       return this.actions$.pipe(
         ofType(OrgMemberActions.deleteOrgMemberSuccess),
         concatLatestFrom(() =>
-          this.store.select(organizationFeature.selectSelectedOrganization)
+          this.store.select(organizationFeature.selectSelectedOrganization),
         ),
         tap(async ([, selectedOrganization]) => {
           if (!selectedOrganization) {
@@ -114,18 +114,18 @@ export class OrgMemberEffects {
           }
 
           await this.router.navigate([
-            `/${ShortUrl.Organization}/${selectedOrganization.slug}`,
+            `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`,
           ]);
-        })
+        }),
       );
     },
-    { dispatch: false }
+    { dispatch: false },
   );
 
   constructor(
     private readonly actions$: Actions,
     private readonly orgMemberService: OrgMemberService,
     private readonly store: Store,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 }

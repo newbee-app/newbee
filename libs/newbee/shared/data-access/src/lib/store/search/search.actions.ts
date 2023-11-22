@@ -3,8 +3,8 @@ import {
   BaseQueryResultDto,
   BaseSuggestDto,
   BaseSuggestResultDto,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+  Keyword,
+} from '@newbee/shared/util';
 import { createActionGroup, props } from '@ngrx/store';
 
 /**

@@ -18,16 +18,76 @@
           class="input border-neutral w-full"
           [ngClass]="{
             'input-error':
-              inputDisplayError('name') ||
+              inputDisplayError(editTeamForm, 'name') ||
               !!httpClientErrorMsg(keyword.Team, keyword.Edit)
           }"
         />
 
         <newbee-alert
-          [show]="inputDisplayError('name')"
-          [text]="inputErrorMessage('name')"
+          [show]="inputDisplayError(editTeamForm, 'name')"
+          [text]="inputErrorMessage(editTeamForm, 'name')"
           [type]="alertType.Error"
         ></newbee-alert>
+      </div>
+
+      <div
+        formGroupName="upToDateDuration"
+        class="flex flex-col flex-nowrap gap-y-2 w-full"
+      >
+        <div>
+          <p>How long should posts stay relevant?</p>
+          <p class="opacity-75">
+            Mark blank to default to the organization's value of
+            {{ orgDurationStr }}.
+          </p>
+        </div>
+
+        <div class="flex flex-row flex-wrap gap-2 items-baseline">
+          For
+
+          <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+            <input
+              type="number"
+              step="1"
+              formControlName="num"
+              newbeeDigitOnly
+              [min]="1"
+              class="input input-bordered"
+              [ngClass]="{
+                'input-error': inputDisplayError(
+                  editTeamForm.controls.upToDateDuration,
+                  'num'
+                )
+              }"
+            />
+
+            <newbee-alert
+              [type]="alertType.Error"
+              [show]="
+                inputDisplayError(editTeamForm.controls.upToDateDuration, 'num')
+              "
+              [text]="
+                inputErrorMessage(editTeamForm.controls.upToDateDuration, 'num')
+              "
+            ></newbee-alert>
+          </div>
+
+          <div class="w-44 flex-auto">
+            <newbee-searchable-select
+              [showSearchbar]="false"
+              [options]="frequencyOptions"
+              optionName="frequency"
+              [valid]="
+                !inputDisplayError(
+                  editTeamForm.controls.upToDateDuration,
+                  'frequency'
+                )
+              "
+              [errorText]="inputErrorMessage(editTeamForm, 'frequency')"
+              formControlName="frequency"
+            ></newbee-searchable-select>
+          </div>
+        </div>
       </div>
 
       <div class="flex flex-col flex-nowrap gap-y-2">
@@ -89,7 +149,7 @@
             [ngClass]="{
               'input-error':
                 (!checkPending && slugTaken) ||
-                inputDisplayError('slug') ||
+                inputDisplayError(editTeamSlugForm, 'slug') ||
                 !!httpClientErrorMsg(keyword.Team, keyword.Slug, keyword.Edit)
             }"
           />
@@ -99,9 +159,12 @@
           </div>
 
           <newbee-alert
-            [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
+            [show]="
+              (!checkPending && slugTaken) ||
+              inputDisplayError(editTeamSlugForm, 'slug')
+            "
             [text]="
-              inputErrorMessage('slug') ||
+              inputErrorMessage(editTeamSlugForm, 'slug') ||
               'This slug is already taken, please choose another'
             "
             [type]="alertType.Error"
@@ -165,12 +228,14 @@
             formControlName="slug"
             [placeholder]="team.slug"
             class="input border-neutral"
-            [ngClass]="{ 'input-error': inputDisplayError('delete') }"
+            [ngClass]="{
+              'input-error': inputDisplayError(deleteTeamForm, 'slug')
+            }"
           />
 
           <newbee-alert
-            [show]="inputDisplayError('delete')"
-            [text]="inputErrorMessage('delete')"
+            [show]="inputDisplayError(deleteTeamForm, 'slug')"
+            [text]="inputErrorMessage(deleteTeamForm, 'slug')"
             [type]="alertType.Error"
           ></newbee-alert>
         </div>

@@ -1,18 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   AuthActions,
   AuthenticatorActions,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
+  Keyword,
   testBaseCreateUserDto1,
   testBaseEmailDto1,
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -33,6 +32,7 @@ describe('AuthEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         AuthEffects,
         {
           provide: AuthService,
@@ -51,18 +51,14 @@ describe('AuthEffects', () => {
             logout: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
     effects = TestBed.inject(AuthEffects);
     service = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { apiVersion, BaseUpdateOrgMemberDto } from '@newbee/shared/data-access';
-import { Keyword, OrgMember, OrgMemberNoOrg } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import {
+  BaseUpdateOrgMemberDto,
+  Keyword,
+  OrgMember,
+  OrgMemberNoOrg,
+} from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -34,7 +39,7 @@ export class OrgMemberService {
    */
   get(orgSlug: string, memberSlug: string): Observable<OrgMemberNoOrg> {
     return this.http.get<OrgMemberNoOrg>(
-      OrgMemberService.baseApiUrl(orgSlug, memberSlug)
+      OrgMemberService.baseApiUrl(orgSlug, memberSlug),
     );
   }
 
@@ -50,11 +55,11 @@ export class OrgMemberService {
   edit(
     orgSlug: string,
     memberSlug: string,
-    updateOrgMemberDto: BaseUpdateOrgMemberDto
+    updateOrgMemberDto: BaseUpdateOrgMemberDto,
   ): Observable<OrgMember> {
     return this.http.patch<OrgMember>(
       OrgMemberService.baseApiUrl(orgSlug, memberSlug),
-      updateOrgMemberDto
+      updateOrgMemberDto,
     );
   }
 
@@ -68,7 +73,7 @@ export class OrgMemberService {
    */
   delete(orgSlug: string, memberSlug: string): Observable<null> {
     return this.http.delete<null>(
-      OrgMemberService.baseApiUrl(orgSlug, memberSlug)
+      OrgMemberService.baseApiUrl(orgSlug, memberSlug),
     );
   }
 }

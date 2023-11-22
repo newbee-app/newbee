@@ -6,7 +6,6 @@ import {
   HostListener,
   Input,
   OnDestroy,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -38,9 +37,7 @@ import { DropdownComponent } from '../../dropdown';
   ],
   templateUrl: './searchbar.component.html',
 })
-export class SearchbarComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
-{
+export class SearchbarComponent implements OnDestroy, ControlValueAccessor {
   /**
    * Whether to include a placeholder saying `Search...`.
    */
@@ -147,7 +144,7 @@ export class SearchbarComponent
   /**
    * Initialize the searchbar with the value of `searchTerm`.
    */
-  ngOnInit(): void {
+  constructor() {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (value) => {
         this._onChange(value);

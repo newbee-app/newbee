@@ -1,22 +1,17 @@
 import { CommonModule } from '@angular/common';
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { OrgSearchbarComponent } from '@newbee/newbee/organization/ui';
 import {
   initialSearchState,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
+  Keyword,
   testBaseQueryDto1,
   testBaseSuggestDto1,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgHomeComponent } from './org-home.component';
 
@@ -29,10 +24,8 @@ jest.mock('@floating-ui/dom', () => ({
 
 describe('OrgHomeComponent', () => {
   let component: OrgHomeComponent;
-  let fixture: ComponentFixture<OrgHomeComponent>;
   let store: MockStore;
   let router: Router;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -44,45 +37,30 @@ describe('OrgHomeComponent', () => {
             [Keyword.Search]: { ...initialSearchState, suggestions: [] },
           },
         }),
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: createMock<ActivatedRoute>(),
-        },
+        provideRouter([{ path: '**', component: OrgHomeComponent }]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrgHomeComponent);
-    component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    route = TestBed.inject(ActivatedRoute);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl('/', OrgHomeComponent);
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(route).toBeDefined();
   });
 
   describe('onSearch', () => {
     it('should navigate to search', async () => {
       await component.onSearch(testBaseQueryDto1.query);
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(
-        [`${Keyword.Search}/${testBaseQueryDto1.query}`],
-        { relativeTo: route }
+      expect(router.url).toEqual(
+        `/${Keyword.Search}/${testBaseQueryDto1.query}`,
       );
     });
   });
@@ -93,7 +71,7 @@ describe('OrgHomeComponent', () => {
       tick(300);
       expect(store.dispatch).toBeCalledTimes(1);
       expect(store.dispatch).toBeCalledWith(
-        SearchActions.suggest({ query: testBaseSuggestDto1 })
+        SearchActions.suggest({ query: testBaseSuggestDto1 }),
       );
     }));
   });

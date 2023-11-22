@@ -9,28 +9,40 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
+  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AlertComponent } from '@newbee/newbee/shared/ui';
+import {
+  AlertComponent,
+  SearchableSelectComponent,
+} from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
+  DigitOnlyDirectiveModule,
   HttpClientError,
+  SlugInputDirectiveModule,
+  frequencySelectOptions,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SlugInputDirectiveModule,
+  numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
+  BaseUpdateTeamDto,
+  Frequency,
   Keyword,
+  NumAndFreq,
   OrgRoleEnum,
   TeamRoleEnum,
+  compareOrgRoles,
+  durationToNumAndFreq,
   type OrgMember,
+  type Organization,
   type Team,
   type TeamMember,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -43,7 +55,9 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
+    SearchableSelectComponent,
     SlugInputDirectiveModule,
+    DigitOnlyDirectiveModule,
   ],
   templateUrl: './edit-team.component.html',
 })
@@ -62,6 +76,11 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Supported alert types.
    */
   readonly alertType = AlertType;
+
+  /**
+   * The organization the team belongs to.
+   */
+  @Input() organization!: Organization;
 
   /**
    * Information about the team.
@@ -121,7 +140,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   /**
    * The emitted edit team form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<string>();
+  @Output() edit = new EventEmitter<BaseUpdateTeamDto>();
 
   /**
    * The emitted edit team slug form, for use in the smart UI parent.
@@ -138,7 +157,18 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    */
   editTeamForm = this.fb.group({
     name: ['', Validators.required],
+    upToDateDuration: this.fb.group({
+      num: [null as number | null, [Validators.min(1)]],
+      frequency: [null as Frequency | null],
+    }),
   });
+
+  /**
+   * The possible frequency values as select options.
+   */
+  readonly frequencyOptions = frequencySelectOptions(
+    this.editTeamForm.controls.upToDateDuration.controls.num,
+  );
 
   /**
    * The internal form to edit the team's slug.
@@ -154,14 +184,31 @@ export class EditTeamComponent implements OnInit, OnDestroy {
     slug: ['', Validators.required],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
+  /**
+   * Emit the team slug whenever the value changes.
+   */
+  constructor(private readonly fb: FormBuilder) {
+    this.editTeamSlugForm.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (editTeamSlugForm) => {
+          this.slug.emit(editTeamSlugForm.slug ?? '');
+        },
+      });
+  }
 
   /**
    * Whether the edit team form has a value distinct from the current team's values.
    */
   get editDistinct(): boolean {
     const { name } = this.editTeamForm.value;
-    return name !== this.team.name;
+    return (
+      name !== this.team.name ||
+      numAndFreqIsDistinct(
+        this.teamNumAndFreq,
+        this.editTeamForm.controls.upToDateDuration.value,
+      )
+    );
   }
 
   /**
@@ -196,19 +243,36 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * The org's duration represented as a human-readable string.
+   */
+  get orgDurationStr(): string {
+    return dayjs.duration(this.organization.upToDateDuration).humanize();
+  }
+
+  /**
+   * The team's up-to-date duration, represented as a num and frequency.
+   */
+  private get teamNumAndFreq(): NumAndFreq | null {
+    return !this.team.upToDateDuration
+      ? null
+      : durationToNumAndFreq(dayjs.duration(this.team.upToDateDuration));
+  }
+
+  /**
    * Initialize the edit team form with the values of the current team.
    */
   ngOnInit(): void {
-    this.editTeamForm.setValue({ name: this.team.name });
-    this.editTeamSlugForm.setValue({ slug: this.team.slug });
-
-    this.editTeamSlugForm.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (editTeamSlugForm) => {
-          this.slug.emit(editTeamSlugForm.slug ?? '');
-        },
-      });
+    this.editTeamForm.setValue(
+      {
+        name: this.team.name,
+        upToDateDuration: this.teamNumAndFreq ?? { num: null, frequency: null },
+      },
+      { emitEvent: false },
+    );
+    this.editTeamSlugForm.setValue(
+      { slug: this.team.slug },
+      { emitEvent: false },
+    );
   }
 
   /**
@@ -223,7 +287,17 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    this.edit.emit(this.editTeamForm.value.name ?? '');
+    const { name, upToDateDuration } = this.editTeamForm.value;
+    const updateTeamDto: BaseUpdateTeamDto = {
+      ...(name && { name }),
+      upToDateDuration:
+        upToDateDuration?.num && upToDateDuration.frequency
+          ? dayjs
+              .duration(upToDateDuration.num, upToDateDuration.frequency)
+              .toISOString()
+          : null,
+    };
+    this.edit.emit(updateTeamDto);
   }
 
   /**
@@ -254,40 +328,24 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   /**
    * Whether to display a form input as having an error.
    *
+   * @param inputGroup The form group to look in.
    * @param inputName The name of the input to look at.
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  inputDisplayError(inputName: 'name' | 'slug' | 'delete'): boolean {
-    return inputDisplayError(this.getFormControl(inputName));
+  inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
+    return inputDisplayError(inputGroup.get(inputName));
   }
 
   /**
    * The input error message for the given form input.
    *
+   * @param inputGroup The form group to look in.
    * @param inputName The name of the input to look at.
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(inputName: 'name' | 'slug' | 'delete'): string {
-    return inputErrorMessage(this.getFormControl(inputName));
-  }
-
-  /**
-   * Get the form control associated with the given name.
-   *
-   * @param inputName The name of the form control to get.
-   *
-   * @returns The form control associated with the given name.
-   */
-  private getFormControl(inputName: 'name' | 'slug' | 'delete'): FormControl {
-    switch (inputName) {
-      case 'name':
-        return this.editTeamForm.controls.name;
-      case 'slug':
-        return this.editTeamSlugForm.controls.slug;
-      case 'delete':
-        return this.deleteTeamForm.controls.slug;
-    }
+  inputErrorMessage(inputGroup: FormGroup, inputName: string): string {
+    return inputErrorMessage(inputGroup.get(inputName));
   }
 }

@@ -3,15 +3,13 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  apiVersion,
-  testBaseUpdateOrgMemberDto1,
-} from '@newbee/shared/data-access';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testOrganization1,
+  testBaseUpdateOrgMemberDto1,
   testOrgMember1,
   testOrgMemberRelation1,
+  testOrganization1,
 } from '@newbee/shared/util';
 import { OrgMemberService } from './org-member.service';
 
@@ -36,9 +34,12 @@ describe('OrgMemberService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(
-        OrgMemberService.baseApiUrl(testOrganization1.slug, testOrgMember1.slug)
+        OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        ),
       ).toEqual(
-        `/${Keyword.Api}/v${apiVersion.orgMember}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Member}/${testOrgMember1.slug}`
+        `/${Keyword.Api}/v${apiVersion.orgMember}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Member}/${testOrgMember1.slug}`,
       );
     });
   });
@@ -58,7 +59,10 @@ describe('OrgMemberService', () => {
       });
 
       const req = httpController.expectOne(
-        OrgMemberService.baseApiUrl(testOrganization1.slug, testOrgMember1.slug)
+        OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        ),
       );
       expect(req.request.method).toEqual('GET');
 
@@ -72,7 +76,7 @@ describe('OrgMemberService', () => {
         .edit(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseUpdateOrgMemberDto1
+          testBaseUpdateOrgMemberDto1,
         )
         .subscribe({
           next: (orgMember) => {
@@ -87,7 +91,10 @@ describe('OrgMemberService', () => {
         });
 
       const req = httpController.expectOne(
-        OrgMemberService.baseApiUrl(testOrganization1.slug, testOrgMember1.slug)
+        OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        ),
       );
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateOrgMemberDto1);
@@ -111,7 +118,10 @@ describe('OrgMemberService', () => {
       });
 
       const req = httpController.expectOne(
-        OrgMemberService.baseApiUrl(testOrganization1.slug, testOrgMember1.slug)
+        OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        ),
       );
       expect(req.request.method).toEqual('DELETE');
 

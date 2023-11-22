@@ -7,7 +7,7 @@ import { RenderableTreeNodes, Tag } from '@markdoc/markdoc';
  *
  * @returns The rendered output as a string.
  */
-export default function render(node: RenderableTreeNodes): string {
+export default function markdocTxtRenderer(node: RenderableTreeNodes): string {
   if (typeof node === 'string' || typeof node === 'number') {
     return normalizeWhitespace(String(node));
   }
@@ -20,11 +20,13 @@ export default function render(node: RenderableTreeNodes): string {
         .map((val) => {
           const currIsTag = typeof val === 'object' && Tag.isTag(val);
           const strVal =
-            lastWasTag && currIsTag ? ` ${render(val)}` : render(val);
+            lastWasTag && currIsTag
+              ? ` ${markdocTxtRenderer(val)}`
+              : markdocTxtRenderer(val);
           lastWasTag = currIsTag;
           return strVal;
         })
-        .join('')
+        .join(''),
     );
   }
 
@@ -34,7 +36,7 @@ export default function render(node: RenderableTreeNodes): string {
   }
 
   const { children = [] } = node;
-  return render(children);
+  return markdocTxtRenderer(children);
 }
 
 /**

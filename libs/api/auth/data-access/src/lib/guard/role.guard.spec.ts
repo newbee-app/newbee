@@ -31,7 +31,7 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {
@@ -80,25 +80,24 @@ describe('RoleGuard', () => {
       teamService,
       teamMemberService,
       docService,
-      qnaService
+      qnaService,
     );
     context = createMock<ExecutionContext>({
       switchToHttp: jest.fn().mockReturnValue(
         createMock<HttpArgumentsHost>({
           getRequest: jest.fn().mockReturnValue({
             params: {
-              org: testOrganizationEntity1.slug,
-              team: testTeamEntity1.slug,
-              doc: testDocEntity1.slug,
-              qna: testQnaEntity1.slug,
-              member: testOrgMemberEntity1.slug,
+              [Keyword.Organization]: testOrganizationEntity1.slug,
+              [Keyword.Team]: testTeamEntity1.slug,
+              [Keyword.Doc]: testDocEntity1.slug,
+              [Keyword.Qna]: testQnaEntity1.slug,
+              [Keyword.Member]: testOrgMemberEntity1.slug,
             },
-            query: {
-              team: testTeamEntity1.slug,
-            },
+            query: { [Keyword.Team]: testTeamEntity1.slug },
+            body: { [Keyword.Team]: testTeamEntity1.slug },
             user: testUserEntity1,
           }),
-        })
+        }),
       ),
     });
   });
@@ -141,25 +140,25 @@ describe('RoleGuard', () => {
     afterEach(() => {
       expect(organizationService.findOneBySlug).toBeCalledTimes(1);
       expect(organizationService.findOneBySlug).toBeCalledWith(
-        testOrganizationEntity1.slug
+        testOrganizationEntity1.slug,
       );
       expect(context.switchToHttp().getRequest()[organizationKey]).toEqual(
-        testOrganizationEntity1
+        testOrganizationEntity1,
       );
 
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
       expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
         testUserEntity1,
-        testOrganizationEntity1
+        testOrganizationEntity1,
       );
 
       expect(orgMemberService.findOneByOrgAndSlug).toBeCalledTimes(1);
       expect(orgMemberService.findOneByOrgAndSlug).toBeCalledWith(
         testOrganizationEntity1,
-        testOrgMemberEntity1.slug
+        testOrgMemberEntity1.slug,
       );
       expect(context.switchToHttp().getRequest()[subjectOrgMemberKey]).toEqual(
-        testOrgMemberEntity1
+        testOrgMemberEntity1,
       );
     });
 
@@ -167,7 +166,7 @@ describe('RoleGuard', () => {
       jest.spyOn(reflector, 'get').mockReturnValue([OrgRoleEnum.Owner]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
-        testOrgMemberEntity1
+        testOrgMemberEntity1,
       );
     });
 
@@ -188,7 +187,7 @@ describe('RoleGuard', () => {
 
       afterEach(() => {
         expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
-          testOrgMemberEntity2
+          testOrgMemberEntity2,
         );
       });
 
@@ -201,6 +200,7 @@ describe('RoleGuard', () => {
             member: testOrgMemberEntity1.slug,
           },
           query: {},
+          body: {},
           user: testUserEntity1,
         });
         await expect(guard.canActivate(context)).resolves.toBeTruthy();
@@ -221,34 +221,34 @@ describe('RoleGuard', () => {
       expect(teamService.findOneBySlug).toBeCalledTimes(1);
       expect(teamService.findOneBySlug).toBeCalledWith(
         testOrganizationEntity1,
-        testTeamEntity1.slug
+        testTeamEntity1.slug,
       );
       expect(context.switchToHttp().getRequest()[teamKey]).toEqual(
-        testTeamEntity1
+        testTeamEntity1,
       );
 
       expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledTimes(
-        1
+        1,
       );
       expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
         testOrgMemberEntity1,
-        testTeamEntity1
+        testTeamEntity1,
       );
 
       expect(teamMemberService.findOneByOrgMemberAndTeam).toBeCalledTimes(1);
       expect(teamMemberService.findOneByOrgMemberAndTeam).toBeCalledWith(
         testOrgMemberEntity1,
-        testTeamEntity1
+        testTeamEntity1,
       );
       expect(context.switchToHttp().getRequest()[subjectTeamMemberKey]).toEqual(
-        testTeamMemberEntity1
+        testTeamMemberEntity1,
       );
     });
 
     it(`should return true if roles contains team member's role`, async () => {
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[teamMemberKey]).toEqual(
-        testTeamMemberEntity1
+        testTeamMemberEntity1,
       );
     });
 
@@ -259,7 +259,7 @@ describe('RoleGuard', () => {
           .mockResolvedValue(null);
         await expect(guard.canActivate(context)).resolves.toBeFalsy();
         expect(
-          context.switchToHttp().getRequest()[teamMemberKey]
+          context.switchToHttp().getRequest()[teamMemberKey],
         ).toBeUndefined();
       });
     });
@@ -275,7 +275,7 @@ describe('RoleGuard', () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[docKey]).toEqual(
-        testDocEntity1
+        testDocEntity1,
       );
     });
 
@@ -291,13 +291,17 @@ describe('RoleGuard', () => {
       });
 
       it(`should return true if org member's role is member and the doc doesn't specify a team`, async () => {
-        const testDocEntity2 = { ...testDocEntity1, team: null };
+        const testDocEntity2 = {
+          ...testDocEntity1,
+          team: null,
+          trueUpToDateDuration: testDocEntity1.trueUpToDateDuration,
+        };
         jest
           .spyOn(docService, 'findOneBySlug')
           .mockResolvedValue(testDocEntity2);
         await expect(guard.canActivate(context)).resolves.toBeTruthy();
         expect(context.switchToHttp().getRequest()[docKey]).toEqual(
-          testDocEntity2
+          testDocEntity2,
         );
       });
 
@@ -317,7 +321,7 @@ describe('RoleGuard', () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
-        testQnaEntity1
+        testQnaEntity1,
       );
     });
 
@@ -333,13 +337,17 @@ describe('RoleGuard', () => {
       });
 
       it(`should return true if org member's role is member and the qna doesn't specify a team`, async () => {
-        const testQnaEntity2 = { ...testQnaEntity1, team: null };
+        const testQnaEntity2 = {
+          ...testQnaEntity1,
+          team: null,
+          trueUpToDateDuration: testQnaEntity1.trueUpToDateDuration,
+        };
         jest
           .spyOn(qnaService, 'findOneBySlug')
-          .mockResolvedValue({ ...testQnaEntity1, team: null });
+          .mockResolvedValue(testQnaEntity2);
         await expect(guard.canActivate(context)).resolves.toBeTruthy();
         expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
-          testQnaEntity2
+          testQnaEntity2,
         );
       });
 

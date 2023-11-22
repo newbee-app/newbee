@@ -4,32 +4,41 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { getRepositoryToken } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
+  DocEntity,
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
+  QnaEntity,
+  TeamEntity,
+  testDocDocParams1,
+  testDocEntity1,
   testOrganizationEntity1,
+  testQnaDocParams1,
+  testQnaEntity1,
+  testTeamEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import { newOrgConfigset } from '@newbee/api/shared/util';
-import {
-  testBaseCreateOrganizationDto1,
-  testBaseUpdateOrganizationDto1,
-} from '@newbee/shared/data-access';
+import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
+  testBaseCreateOrganizationDto1,
+  testBaseUpdateOrganizationDto1,
+  testNow1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { OrganizationService } from './organization.service';
 
@@ -48,8 +57,10 @@ const mockV4 = v4 as jest.Mock;
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
-  let repository: EntityRepository<OrganizationEntity>;
+  let em: EntityManager;
   let entityService: EntityService;
+  let teamService: TeamService;
+  let searchService: SearchService;
   let solrCli: SolrCli;
 
   const testOrganizationEntity = createMock<OrganizationEntity>({
@@ -66,8 +77,8 @@ describe('OrganizationService', () => {
       providers: [
         OrganizationService,
         {
-          provide: getRepositoryToken(OrganizationEntity),
-          useValue: createMock<EntityRepository<OrganizationEntity>>({
+          provide: EntityManager,
+          useValue: createMock<EntityManager>({
             findOne: jest.fn().mockResolvedValue(testOrganizationEntity),
             findOneOrFail: jest.fn().mockResolvedValue(testOrganizationEntity),
             assign: jest.fn().mockReturnValue(testUpdatedOrganization),
@@ -75,7 +86,23 @@ describe('OrganizationService', () => {
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>(),
+          useValue: createMock<EntityService>({
+            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
+            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
+          }),
+        },
+        {
+          provide: TeamService,
+          useValue: createMock<TeamService>({
+            changeUpToDateDuration: jest.fn().mockResolvedValue({
+              docs: [testDocEntity1],
+              qnas: testQnaEntity1,
+            }),
+          }),
+        },
+        {
+          provide: SearchService,
+          useValue: createMock<SearchService>(),
         },
         {
           provide: SolrCli,
@@ -85,21 +112,25 @@ describe('OrganizationService', () => {
     }).compile();
 
     service = module.get<OrganizationService>(OrganizationService);
-    repository = module.get<EntityRepository<OrganizationEntity>>(
-      getRepositoryToken(OrganizationEntity)
-    );
+    em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
+    teamService = module.get<TeamService>(TeamService);
+    searchService = module.get<SearchService>(SearchService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrganizationEntity.mockReturnValue(testOrganizationEntity);
     mockV4.mockReturnValue(testOrganizationEntity.id);
+
+    jest.useFakeTimers().setSystemTime(testNow1);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(repository).toBeDefined();
+    expect(em).toBeDefined();
     expect(entityService).toBeDefined();
+    expect(teamService).toBeDefined();
+    expect(searchService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -110,15 +141,16 @@ describe('OrganizationService', () => {
         testOrganizationEntity.id,
         testBaseCreateOrganizationDto1.name,
         testBaseCreateOrganizationDto1.slug,
-        testUserEntity1
+        testBaseCreateOrganizationDto1.upToDateDuration,
+        testUserEntity1,
       );
-      expect(repository.persistAndFlush).toBeCalledTimes(1);
-      expect(repository.persistAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(em.persistAndFlush).toBeCalledTimes(1);
+      expect(em.persistAndFlush).toBeCalledWith(testOrganizationEntity);
     });
 
     it('should create an organization', async () => {
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).resolves.toEqual(testOrganizationEntity);
       expect(solrCli.createCollection).toBeCalledTimes(1);
       expect(solrCli.createCollection).toBeCalledWith({
@@ -130,23 +162,23 @@ describe('OrganizationService', () => {
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
       jest
-        .spyOn(repository, 'persistAndFlush')
+        .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
     it('should throw a BadRequestException if name already exists', async () => {
       jest
-        .spyOn(repository, 'persistAndFlush')
+        .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('persistAndFlush'))
+          new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(
-        new BadRequestException(organizationSlugTakenBadRequest)
+        new BadRequestException(organizationSlugTakenBadRequest),
       );
     });
 
@@ -155,97 +187,159 @@ describe('OrganizationService', () => {
         .spyOn(solrCli, 'createCollection')
         .mockRejectedValue(new Error('createCollection'));
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1)
+        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.createCollection).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(em.removeAndFlush).toBeCalledTimes(1);
+      expect(em.removeAndFlush).toBeCalledWith(testOrganizationEntity);
     });
   });
 
   describe('hasOneBySlug', () => {
     afterEach(() => {
-      expect(repository.findOne).toBeCalledTimes(1);
-      expect(repository.findOne).toBeCalledWith({
+      expect(em.findOne).toBeCalledTimes(1);
+      expect(em.findOne).toBeCalledWith(OrganizationEntity, {
         slug: testOrganizationEntity.slug,
       });
     });
 
     it(`should say an organization exists if it's found`, async () => {
       await expect(
-        service.hasOneBySlug(testOrganizationEntity.slug)
+        service.hasOneBySlug(testOrganizationEntity.slug),
       ).resolves.toBeTruthy();
     });
 
     it(`should say an organization does not exist if it can't be found`, async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(em, 'findOne').mockResolvedValue(null);
       await expect(
-        service.hasOneBySlug(testOrganizationEntity.slug)
+        service.hasOneBySlug(testOrganizationEntity.slug),
       ).resolves.toBeFalsy();
     });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(repository.findOneOrFail).toBeCalledTimes(1);
-      expect(repository.findOneOrFail).toBeCalledWith({
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(OrganizationEntity, {
         slug: testOrganizationEntity.slug,
       });
     });
 
     it('should find an organization', async () => {
       await expect(
-        service.findOneBySlug(testOrganizationEntity.slug)
+        service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
+      expect(searchService.buildSuggester).not.toBeCalled();
+    });
+
+    it(`should build the suggester if it's been at least a day since last build`, async () => {
+      const testOrganizationEntity2: OrganizationEntity = {
+        ...testOrganizationEntity,
+        suggesterBuiltAt: dayjs().subtract(1, 'day').toDate(),
+      };
+      jest
+        .spyOn(em, 'findOneOrFail')
+        .mockResolvedValue(testOrganizationEntity2);
+      jest.spyOn(em, 'assign').mockReturnValue(testOrganizationEntity);
+
+      await expect(
+        service.findOneBySlug(testOrganizationEntity.slug),
+      ).resolves.toEqual(testOrganizationEntity);
+      expect(searchService.buildSuggester).toBeCalledTimes(1);
+      expect(searchService.buildSuggester).toBeCalledWith(
+        testOrganizationEntity,
+      );
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(testOrganizationEntity, {
+        suggesterBuiltAt: testNow1,
+      });
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneBySlug(testOrganizationEntity.slug)
+        service.findOneBySlug(testOrganizationEntity.slug),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
     it('should throw a NotFoundException if slug does not exist', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneBySlug(testOrganizationEntity.slug)
+        service.findOneBySlug(testOrganizationEntity.slug),
       ).rejects.toThrow(new NotFoundException(organizationSlugNotFound));
     });
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(service, 'changeUpToDateDuration')
+        .mockResolvedValue({ docs: [testDocEntity1], qnas: [testQnaEntity1] });
+    });
+
     afterEach(() => {
-      expect(repository.flush).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledTimes(1);
+      expect(em.assign).toBeCalledWith(
+        testOrganizationEntity,
+        testBaseUpdateOrganizationDto1,
+      );
+      expect(service.changeUpToDateDuration).toBeCalledTimes(1);
+      expect(service.changeUpToDateDuration).toBeCalledWith(
+        testOrganizationEntity,
+        testBaseUpdateOrganizationDto1.upToDateDuration,
+      );
+      expect(em.flush).toBeCalledTimes(1);
     });
 
     it('should update an organization', async () => {
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1)
+        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganization);
+
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity.id,
+        [testDocDocParams1, testQnaDocParams1],
+      );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(repository, 'flush').mockRejectedValue(new Error('flush'));
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1)
+        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
     it('should throw a BadRequestException if name already exists', async () => {
       jest
-        .spyOn(repository, 'flush')
+        .spyOn(em, 'flush')
         .mockRejectedValue(
-          new UniqueConstraintViolationException(new Error('flush'))
+          new UniqueConstraintViolationException(new Error('flush')),
         );
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1)
+        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
       ).rejects.toThrow(
-        new BadRequestException(organizationSlugTakenBadRequest)
+        new BadRequestException(organizationSlugTakenBadRequest),
+      );
+    });
+
+    it('should not throw if getVersionAndReplaceDocs throws an error', async () => {
+      jest
+        .spyOn(solrCli, 'getVersionAndReplaceDocs')
+        .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
+      await expect(
+        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
+      ).resolves.toEqual(testUpdatedOrganization);
+
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+        testOrganizationEntity.id,
+        [testDocDocParams1, testQnaDocParams1],
       );
     });
   });
@@ -254,26 +348,26 @@ describe('OrganizationService', () => {
     afterEach(() => {
       expect(entityService.safeToDelete).toBeCalledTimes(1);
       expect(entityService.safeToDelete).toBeCalledWith(testOrganizationEntity);
-      expect(repository.removeAndFlush).toBeCalledTimes(1);
-      expect(repository.removeAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(em.removeAndFlush).toBeCalledTimes(1);
+      expect(em.removeAndFlush).toBeCalledWith(testOrganizationEntity);
     });
 
     it('should remove an organization', async () => {
       await expect(
-        service.delete(testOrganizationEntity)
+        service.delete(testOrganizationEntity),
       ).resolves.toBeUndefined();
       expect(solrCli.deleteCollection).toBeCalledTimes(1);
       expect(solrCli.deleteCollection).toBeCalledWith(
-        testOrganizationEntity.id
+        testOrganizationEntity.id,
       );
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest
-        .spyOn(repository, 'removeAndFlush')
+        .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
       await expect(service.delete(testOrganizationEntity)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError)
+        new InternalServerErrorException(internalServerError),
       );
     });
 
@@ -282,9 +376,76 @@ describe('OrganizationService', () => {
         .spyOn(solrCli, 'deleteCollection')
         .mockRejectedValue(new Error('deleteCollection'));
       await expect(
-        service.delete(testOrganizationEntity)
+        service.delete(testOrganizationEntity),
       ).resolves.toBeUndefined();
       expect(solrCli.deleteCollection).toBeCalledTimes(1);
+    });
+  });
+
+  describe('changeUpToDateDuration', () => {
+    const newDurationStr = 'P1Y';
+    const newDuration = dayjs.duration(newDurationStr);
+
+    beforeEach(() => {
+      jest
+        .spyOn(em, 'find')
+        .mockResolvedValueOnce([testTeamEntity1])
+        .mockResolvedValueOnce([testDocEntity1])
+        .mockResolvedValueOnce([testQnaEntity1]);
+    });
+
+    afterEach(() => {
+      expect(em.find).toBeCalledWith(TeamEntity, {
+        organization: testOrganizationEntity,
+        upToDateDuration: null,
+      });
+    });
+
+    it('should find all child posts and upate their expirations', async () => {
+      await expect(
+        service.changeUpToDateDuration(testOrganizationEntity, newDurationStr),
+      ).resolves.toEqual({
+        docs: [testDocEntity1, testDocEntity1],
+        qnas: [testQnaEntity1, testQnaEntity1],
+      });
+
+      expect(em.find).toBeCalledTimes(3);
+      expect(em.find).toBeCalledWith(DocEntity, {
+        organization: testOrganizationEntity,
+        team: null,
+        upToDateDuration: null,
+      });
+      expect(em.find).toBeCalledWith(QnaEntity, {
+        organization: testOrganizationEntity,
+        team: null,
+        upToDateDuration: null,
+      });
+
+      expect(teamService.changeUpToDateDuration).toBeCalledTimes(1);
+      expect(teamService.changeUpToDateDuration).toBeCalledWith(
+        testTeamEntity1,
+        newDurationStr,
+      );
+
+      expect(em.assign).toBeCalledTimes(2);
+      expect(em.assign).toBeCalledWith(testDocEntity1, {
+        outOfDateAt: dayjs(testDocEntity1.markedUpToDateAt)
+          .add(newDuration)
+          .toDate(),
+      });
+      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+        outOfDateAt: dayjs(testQnaEntity1.markedUpToDateAt)
+          .add(newDuration)
+          .toDate(),
+      });
+    });
+
+    it('should throw an InternalServerErrorException if find throws an error', async () => {
+      jest.spyOn(em, 'find').mockReset().mockRejectedValue(new Error('find'));
+      await expect(
+        service.changeUpToDateDuration(testOrganizationEntity, newDurationStr),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      expect(em.find).toBeCalledTimes(1);
     });
   });
 });

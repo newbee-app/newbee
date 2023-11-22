@@ -6,7 +6,6 @@ import {
   Logger,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   CreateDocDto,
@@ -15,16 +14,15 @@ import {
 } from '@newbee/api/doc/data-access';
 import {
   DocEntity,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   TeamEntity,
-  TeamSlugDto,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
   Doc,
-  Organization,
   OrgMember,
+  Organization,
   PostRoleEnum,
   Role,
   Team,
@@ -67,30 +65,24 @@ export class DocController {
     TeamRoleEnum.Member,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInReq
+    ConditionalRoleEnum.OrgMemberIfNoTeamInReq,
   )
   async create(
     @Body() createDocDto: CreateDocDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity | undefined,
-    @Query() teamSlugDto: TeamSlugDto
   ): Promise<DocEntity> {
-    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create doc request received from org member slug: ${
-        orgMember.slug
-      }, in organization ID: ${organization.id}${
-        teamSlug ? `, in team: ${teamSlug}` : ''
-      }, with title: ${createDocDto.title}`
+      `Create doc request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createDocDto.title}`,
     );
     const doc = await this.docService.create(
       createDocDto,
       team ?? null,
-      orgMember
+      orgMember,
     );
     this.logger.log(
-      `Doc created with ID: ${doc.id}, slug: ${doc.slug}, title: ${doc.title}`
+      `Doc created with ID: ${doc.id}, slug: ${doc.slug}, title: ${doc.title}`,
     );
     return doc;
   }
@@ -131,16 +123,16 @@ export class DocController {
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInDoc
+    ConditionalRoleEnum.OrgMemberIfNoTeamInDoc,
   )
   async update(
     @Body() updateDocDto: UpdateDocDto,
-    @Doc() doc: DocEntity
+    @Doc() doc: DocEntity,
   ): Promise<DocEntity> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.update(doc, updateDocDto);
     this.logger.log(
-      `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
+      `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
     );
     return updatedDoc;
   }
@@ -160,13 +152,13 @@ export class DocController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
   )
   async markUpToDate(@Doc() doc: DocEntity): Promise<DocEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.markUpToDate(doc);
     this.logger.log(
-      `Marked doc up-to-date, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`
+      `Marked doc up-to-date, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
     );
     return updatedDoc;
   }
@@ -185,7 +177,7 @@ export class DocController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
   )
   async delete(@Doc() doc: DocEntity): Promise<void> {
     this.logger.log(`Delete doc request received for doc slug: ${doc.slug}`);

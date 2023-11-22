@@ -16,12 +16,12 @@
         placeholder="My Org"
         required
         class="input border-neutral w-full"
-        [ngClass]="{ 'input-error': inputDisplayError('name') }"
+        [ngClass]="{ 'input-error': inputDisplayError(createOrgForm, 'name') }"
       />
       <newbee-alert
-        [show]="inputDisplayError('name')"
+        [show]="inputDisplayError(createOrgForm, 'name')"
         [type]="alertType.Error"
-        [text]="inputErrorMessage('name')"
+        [text]="inputErrorMessage(createOrgForm, 'name')"
       ></newbee-alert>
     </div>
 
@@ -39,7 +39,8 @@
         class="input border-neutral w-full"
         [ngClass]="{
           'input-error':
-            (!checkPending && slugTaken) || inputDisplayError('slug')
+            (!checkPending && slugTaken) ||
+            inputDisplayError(createOrgForm, 'slug')
         }"
       />
 
@@ -48,11 +49,89 @@
       </div>
 
       <newbee-alert
-        [show]="(!checkPending && slugTaken) || inputDisplayError('slug')"
+        [show]="
+          (!checkPending && slugTaken) ||
+          inputDisplayError(createOrgForm, 'slug')
+        "
         [type]="alertType.Error"
         [text]="
-          inputErrorMessage('slug') ||
+          inputErrorMessage(createOrgForm, 'slug') ||
           'This slug is already taken, please choose another'
+        "
+      ></newbee-alert>
+    </div>
+
+    <div
+      formGroupName="upToDateDuration"
+      class="flex flex-col flex-nowrap gap-y-2 w-full"
+    >
+      <p>How long should posts stay relevant?</p>
+
+      <div class="flex flex-row flex-wrap gap-2 items-baseline">
+        For
+
+        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+          <input
+            type="number"
+            step="1"
+            formControlName="num"
+            newbeeDigitOnly
+            [min]="1"
+            class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                createOrgForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
+          />
+
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="
+              inputDisplayError(createOrgForm.controls.upToDateDuration, 'num')
+            "
+            [text]="
+              inputErrorMessage(createOrgForm.controls.upToDateDuration, 'num')
+            "
+          ></newbee-alert>
+        </div>
+
+        <div class="w-32 flex-auto">
+          <newbee-searchable-select
+            [showSearchbar]="false"
+            [options]="frequencyOptions"
+            optionName="frequency"
+            [valid]="
+              !inputDisplayError(
+                createOrgForm.controls.upToDateDuration,
+                'frequency'
+              )
+            "
+            [errorText]="
+              inputErrorMessage(
+                createOrgForm.controls.upToDateDuration,
+                'frequency'
+              )
+            "
+            formControlName="frequency"
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="
+          inputDisplayError(
+            createOrgForm.controls.upToDateDuration,
+            keyword.Duration
+          )
+        "
+        [text]="
+          inputErrorMessage(
+            createOrgForm.controls.upToDateDuration,
+            keyword.Duration
+          )
         "
       ></newbee-alert>
     </div>

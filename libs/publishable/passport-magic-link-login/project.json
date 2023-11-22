@@ -31,7 +31,8 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "libs/publishable/passport-magic-link-login/**/*.ts"
+          "libs/publishable/passport-magic-link-login/**/*.ts",
+          "libs/publishable/passport-magic-link-login/package.json"
         ]
       }
     },

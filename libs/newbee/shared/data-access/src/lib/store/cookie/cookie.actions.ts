@@ -1,5 +1,4 @@
-import { BaseCsrfTokenAndDataDto } from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { BaseCsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**

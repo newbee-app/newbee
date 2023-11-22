@@ -44,7 +44,7 @@ describe('FormFunction', () => {
       it('should work for invalid', () => {
         control.setErrors({ phoneNumber: { invalid: true } });
         expect(inputErrorMessage(control)).toEqual(
-          'Not a valid phone number or country'
+          'Not a valid phone number or country',
         );
       });
     });
@@ -60,18 +60,7 @@ describe('FormFunction', () => {
     it('should be marked as clean if pristine and untouched', () => {
       expect(inputIsClean(control)).toBeTruthy();
       control.markAsDirty();
-      expect(inputIsClean(control)).toBeFalsy();
-      control.markAsPristine();
-      control.markAsTouched();
-      expect(inputIsClean(control)).toBeFalsy();
-    });
-
-    it('should be marked as not clean if dirty', () => {
-      control.markAsDirty();
-      expect(inputIsClean(control)).toBeFalsy();
-    });
-
-    it('should be marked as not clean if touched', () => {
+      expect(inputIsClean(control)).toBeTruthy();
       control.markAsTouched();
       expect(inputIsClean(control)).toBeFalsy();
     });
@@ -84,8 +73,11 @@ describe('FormFunction', () => {
     });
 
     it('should only display error if input is not clean and not valid', () => {
+      expect(inputDisplayError(null)).toBeFalsy();
       expect(inputDisplayError(control)).toBeFalsy();
       control.markAsTouched();
+      expect(inputDisplayError(control)).toBeFalsy();
+      control.markAsDirty();
       expect(inputDisplayError(control)).toBeFalsy();
       control.setValue('bademail');
       expect(inputDisplayError(control)).toBeTruthy();

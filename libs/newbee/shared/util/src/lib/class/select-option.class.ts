@@ -10,16 +10,38 @@ export class SelectOption<T> {
   /**
    * The value to be displayed in the dropdown of all options.
    */
-  dropdownValue: string;
+  private readonly _dropdownValue: string | (() => string);
+
+  /**
+   * The getter for `_dropdownValue`.
+   */
+  get dropdownValue(): string {
+    return typeof this._dropdownValue === 'function'
+      ? this._dropdownValue()
+      : this._dropdownValue;
+  }
 
   /**
    * The value to be displayed when the option is selected.
    */
-  selectedValue: string;
+  private readonly _selectedValue: string | (() => string);
 
-  constructor(value: T, dropdownValue: string, selectedValue?: string) {
+  /**
+   * The getter for `_selectedValue`.
+   */
+  get selectedValue(): string {
+    return typeof this._selectedValue === 'function'
+      ? this._selectedValue()
+      : this._selectedValue;
+  }
+
+  constructor(
+    value: T,
+    dropdownValue: string | (() => string),
+    selectedValue?: string | (() => string),
+  ) {
     this.value = value;
-    this.dropdownValue = dropdownValue;
-    this.selectedValue = selectedValue ?? dropdownValue;
+    this._dropdownValue = dropdownValue;
+    this._selectedValue = selectedValue ?? dropdownValue;
   }
 }

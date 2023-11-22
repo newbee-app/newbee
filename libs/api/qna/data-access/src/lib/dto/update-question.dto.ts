@@ -1,5 +1,9 @@
-import { BaseUpdateQuestionDto } from '@newbee/shared/data-access';
-import { questionIsNotEmpty, titleIsNotEmpty } from '@newbee/shared/util';
+import {
+  BaseUpdateQuestionDto,
+  questionIsNotEmpty,
+  teamIsNotEmpty,
+  titleIsNotEmpty,
+} from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
@@ -20,4 +24,11 @@ export class UpdateQuestionDto implements BaseUpdateQuestionDto {
   @IsOptional()
   @IsNotEmpty({ message: questionIsNotEmpty })
   questionMarkdoc?: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team?: string | null;
 }

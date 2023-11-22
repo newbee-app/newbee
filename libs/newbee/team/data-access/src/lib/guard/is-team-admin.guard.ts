@@ -6,13 +6,13 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
-  compareTeamRoles,
   OrgRoleEnum,
   TeamRoleEnum,
+  compareOrgRoles,
+  compareTeamRoles,
 } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, take } from 'rxjs';
+import { Observable, combineLatest, map, take } from 'rxjs';
 
 /**
  * A route guard preventing users from accessing the link unless the user is an org member or team member with admin-level privileges.
@@ -49,17 +49,17 @@ export const isTeamAdminGuard: CanActivateFn = (): Observable<
         if (selectedOrganization) {
           if (selectedTeam) {
             return router.createUrlTree([
-              `/${ShortUrl.Organization}/${selectedOrganization.slug}/${ShortUrl.Team}/${selectedTeam.team.slug}`,
+              `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}/${ShortUrl.Team}/${selectedTeam.team.slug}`,
             ]);
           }
 
           return router.createUrlTree([
-            `/${ShortUrl.Organization}/${selectedOrganization.slug}`,
+            `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}`,
           ]);
         }
 
         return router.createUrlTree(['/']);
-      }
-    )
+      },
+    ),
   );
 };

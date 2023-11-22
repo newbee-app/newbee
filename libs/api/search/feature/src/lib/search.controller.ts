@@ -6,12 +6,13 @@ import {
 } from '@newbee/api/search/data-access';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role } from '@newbee/api/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
 import {
-  apiVersion,
   BaseQueryResultDto,
   BaseSuggestResultDto,
-} from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
+  Keyword,
+  OrgRoleEnum,
+} from '@newbee/shared/util';
 
 @Controller({
   path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Search}`,
@@ -39,12 +40,12 @@ export class SearchController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async search(
     @Query() queryDto: QueryDto,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<BaseQueryResultDto> {
     this.logger.log(
       `Search request received for organization ID ${
         organization.id
-      }: ${JSON.stringify(queryDto)}`
+      }: ${JSON.stringify(queryDto)}`,
     );
 
     const result = await this.searchService.query(organization, queryDto);
@@ -67,12 +68,12 @@ export class SearchController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async suggest(
     @Query() suggestDto: SuggestDto,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<BaseSuggestResultDto> {
     this.logger.log(
       `Suggest request received for organization ID ${
         organization.id
-      }: ${JSON.stringify(suggestDto)}`
+      }: ${JSON.stringify(suggestDto)}`,
     );
 
     const result = await this.searchService.suggest(organization, suggestDto);

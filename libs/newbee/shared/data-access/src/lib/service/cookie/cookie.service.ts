@@ -1,10 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  apiVersion,
-  BaseCsrfTokenAndDataDto,
-} from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import { BaseCsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
 import { Observable, retry } from 'rxjs';
 
 /**

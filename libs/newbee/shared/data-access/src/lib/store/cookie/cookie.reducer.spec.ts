@@ -1,4 +1,4 @@
-import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/data-access';
+import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { CookieActions } from './cookie.actions';
 import {
   cookieFeature,
@@ -24,7 +24,7 @@ describe('CookieReducer', () => {
         initialCookieState,
         CookieActions.initCookiesSuccess({
           csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterInitCookiesSuccess);
     });

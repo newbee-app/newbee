@@ -19,23 +19,23 @@ async function main(): Promise<void> {
   program
     .name('configset')
     .description(
-      'A utility script for working with configsets and setting them up for use by NewBee.'
+      'A utility script for working with configsets and setting them up for use by NewBee.',
     )
     .version('1.0.0');
 
   program
     .command('create')
     .description(
-      'Creates the new configset from scratch, without using uploads'
+      'Creates the new configset from scratch, without using uploads',
     )
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(create);
 
@@ -45,11 +45,11 @@ async function main(): Promise<void> {
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(deleteConfigset);
 
@@ -59,7 +59,7 @@ async function main(): Promise<void> {
     .option(
       '-z, --zookeeper <zookeeper>',
       `The location of Solr's Zookeeper instance`,
-      'localhost:2181'
+      'localhost:2181',
     )
     .action(download);
 
@@ -69,18 +69,18 @@ async function main(): Promise<void> {
     .option(
       '-u, --url <url>',
       'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983'
+      'http://127.0.0.1:8983',
     )
     .option(
       '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)'
+      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
     )
     .action(upload);
 
   program
     .command('zip <path> <destination>')
     .description(
-      'Zip a configset located on the local filepath to get it ready to be uploaded'
+      'Zip a configset located on the local filepath to get it ready to be uploaded',
     )
     .action(zip);
 
@@ -111,14 +111,12 @@ async function create(options: OptionValues): Promise<void> {
   const edgeNGramText = 'edge_n_gram_text';
   const stringFieldType = 'string';
   const pdate = 'pdate';
-  const booleanFieldType = 'boolean';
   const textGeneral = 'text_general';
 
   // Related to fields
   const textField = '_text_';
   const spellcheckText = '_spellcheck_text_';
   const suggestText = '_suggest_text_';
-  const suggestNGramText = '_suggest_n_gram_text_';
   const slug = 'slug';
   const userName = 'user_name';
   const userDisplayName = 'user_display_name';
@@ -130,44 +128,22 @@ async function create(options: OptionValues): Promise<void> {
   const createdAt = 'created_at';
   const updatedAt = 'updated_at';
   const markedUpToDateAt = 'marked_up_to_date_at';
-  const upToDate = 'up_to_date';
+  const outOfDateAt = 'out_of_date_at';
+  const title = 'title';
   const creator = 'creator';
   const maintainer = 'maintainer';
-  const docTitle = 'doc_title';
   const docTxt = 'doc_txt';
-  const qnaTitle = 'qna_title';
   const questionTxt = 'question_txt';
   const answerTxt = 'answer_txt';
   const commonCopyFields = [textField, spellcheckText];
-  const suggestCopyFields = [
-    ...commonCopyFields,
-    suggestText,
-    suggestNGramText,
-  ];
+  const suggestCopyFields = [...commonCopyFields, suggestText];
 
   // Related to request handlers
   const defaultName = 'default';
+  const suggest = 'suggest';
   const spellcheck = 'spellcheck';
   const solrSpellCheckComponent = 'solr.SpellCheckComponent';
   const solrSearchHandler = 'solr.SearchHandler';
-  const highlightFields = [docTxt, questionTxt, answerTxt];
-  const searchDefaults = {
-    wt: 'json',
-    indent: 'true',
-    defType: 'edismax',
-  };
-  const spellcheckDefaults = {
-    spellcheck: 'true',
-    'spellcheck.count': '1',
-    'spellcheck.alternativeTermCount': '5',
-    'spellcheck.extendedResults': 'true',
-    'spellcheck.collate': 'true',
-    'spellcheck.maxCollations': '1',
-    'spellcheck.maxCollationTries': '10',
-    'spellcheck.collateExtendedResults': 'true',
-    'spellcheck.maxResultsForSuggest': '3',
-    'spellcheck.dictionary': defaultName,
-  };
 
   const solrCli = createSolrCli(options);
 
@@ -176,7 +152,7 @@ async function create(options: OptionValues): Promise<void> {
   if (configsets.includes(newbeeOrg)) {
     let res = await solrCli.deleteConfigset(newbeeOrg);
     console.log(
-      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`
+      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`,
     );
   }
 
@@ -188,10 +164,10 @@ async function create(options: OptionValues): Promise<void> {
   res = await solrCli.uploadConfigset(
     newbeeOrg,
     enumsConfigXml,
-    enumsConfigXml
+    enumsConfigXml,
   );
   console.log(
-    `Uploading '${enumsConfigXml}' to configset: ${prettyJson(res)}\n`
+    `Uploading '${enumsConfigXml}' to configset: ${prettyJson(res)}\n`,
   );
 
   // Create a temporary collection that uses the configset to allow us to make changes to it
@@ -201,7 +177,7 @@ async function create(options: OptionValues): Promise<void> {
     config: newbeeOrg,
   });
   console.log(
-    `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
+    `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
   );
 
   // Make a bulk request to set up the schema
@@ -277,14 +253,7 @@ async function create(options: OptionValues): Promise<void> {
         name: suggestText,
         type: basicText,
         multiValued: true,
-        stored: false,
-      },
-      // Only includes titles and such, no body text
-      {
-        name: suggestNGramText,
-        type: edgeNGramText,
-        multiValued: true,
-        stored: false,
+        stored: true,
       },
 
       // Required on all entries to distinguish them
@@ -308,16 +277,15 @@ async function create(options: OptionValues): Promise<void> {
       { name: createdAt, type: pdate },
       { name: updatedAt, type: pdate },
       { name: markedUpToDateAt, type: pdate },
-      { name: upToDate, type: booleanFieldType, docValues: true },
+      { name: outOfDateAt, type: pdate },
+      { name: title, type: stringFieldType },
       { name: creator, type: stringFieldType },
       { name: maintainer, type: stringFieldType },
 
       // Applicable for doc
-      { name: docTitle, type: textGeneral, multiValued: false },
       { name: docTxt, type: textGeneral, multiValued: false },
 
       // Applicable for qna
-      { name: qnaTitle, type: textGeneral, multiValued: false },
       { name: questionTxt, type: textGeneral, multiValued: false },
       { name: answerTxt, type: textGeneral, multiValued: false },
     ],
@@ -329,9 +297,8 @@ async function create(options: OptionValues): Promise<void> {
       { source: userDisplayName, dest: suggestCopyFields },
       { source: userPhoneNumber, dest: suggestCopyFields },
       { source: teamName, dest: suggestCopyFields },
-      { source: docTitle, dest: suggestCopyFields },
+      { source: title, dest: suggestCopyFields },
       { source: docTxt, dest: commonCopyFields },
-      { source: qnaTitle, dest: suggestCopyFields },
       { source: questionTxt, dest: commonCopyFields },
       { source: answerTxt, dest: commonCopyFields },
     ],
@@ -347,7 +314,22 @@ async function create(options: OptionValues): Promise<void> {
 
     // Turn on auto soft commits
     'set-property': {
-      'updateHandler.autoSoftCommit.maxTime': 60000,
+      'updateHandler.autoSoftCommit.maxTime': 60000, // 1 min
+      'updateHandler.autoCommit.maxTime': 300000, // 5 mins
+    },
+
+    // Add a suggester search component
+    'add-searchcomponent': {
+      name: suggest,
+      class: 'solr.SuggestComponent',
+      suggester: {
+        name: defaultName,
+        lookupImpl: 'BlendedInfixLookupFactory',
+        dictionaryImpl: 'DocumentDictionaryFactory',
+        field: suggestText,
+        suggestAnalyzerFieldType: basicText,
+        contextField: outOfDateAt,
+      },
     },
 
     // Modify spellcheck to use _basic_text_ and basic_text instead of _text_ and text_general
@@ -374,37 +356,48 @@ async function create(options: OptionValues): Promise<void> {
       name: '/query',
       class: solrSearchHandler,
       defaults: {
-        ...searchDefaults,
-        ...spellcheckDefaults,
+        wt: 'json',
+        indent: 'true',
+        defType: 'edismax',
+        spellcheck: 'true',
+        'spellcheck.count': '1',
+        'spellcheck.alternativeTermCount': '5',
+        'spellcheck.extendedResults': 'true',
+        'spellcheck.collate': 'true',
+        'spellcheck.maxCollations': '1',
+        'spellcheck.maxCollationTries': '10',
+        'spellcheck.collateExtendedResults': 'true',
+        'spellcheck.maxResultsForSuggest': '3',
+        'spellcheck.dictionary': defaultName,
         hl: 'true',
+        'hl.fl': [docTxt, questionTxt, answerTxt],
         'hl.tag.pre': '<strong>',
         'hl.tag.post': '</strong>',
         'hl.defaultSummary': 'true',
-        'hl.fl': highlightFields,
       },
       'last-components': [spellcheck],
     },
 
-    // Add a request handler to generate suggestions based on titles
+    // Add a request handler to generate suggestions based on the suggest copy fields
     'add-requesthandler': {
       name: '/suggest',
       class: solrSearchHandler,
       defaults: {
-        ...searchDefaults,
-        ...spellcheckDefaults,
-        qf: `${suggestText}^10 ${suggestNGramText}`,
+        suggest: 'true',
+        'suggest.count': '10',
+        'suggest.dictionary': defaultName,
       },
-      'last-components': [spellcheck],
+      components: [suggest],
     },
   });
   console.log(
-    `Creating config overlay with bulk request: ${prettyJson(res)}\n`
+    `Creating config overlay with bulk request: ${prettyJson(res)}\n`,
   );
 
   // Delete the temporary collection
   res = await solrCli.deleteCollection(newbeeOrg);
   console.log(
-    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`
+    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
   );
 }
 
@@ -416,7 +409,7 @@ async function create(options: OptionValues): Promise<void> {
  */
 async function deleteConfigset(
   configset: string,
-  options: OptionValues
+  options: OptionValues,
 ): Promise<void> {
   const solrCli = createSolrCli(options);
   const res = await solrCli.deleteConfigset(configset);
@@ -433,12 +426,12 @@ async function deleteConfigset(
 async function download(
   configset: string,
   destination: string,
-  options: OptionValues
+  options: OptionValues,
 ): Promise<void> {
   const zookeeper: string = options['zookeeper'];
 
   await execute(
-    `solr zk downconfig -n ${configset} -d ${destination} -z ${zookeeper}`
+    `solr zk downconfig -n ${configset} -d ${destination} -z ${zookeeper}`,
   );
 }
 

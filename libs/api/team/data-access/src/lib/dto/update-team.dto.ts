@@ -1,5 +1,9 @@
-import { BaseUpdateTeamDto } from '@newbee/shared/data-access';
-import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
+import {
+  BaseUpdateTeamDto,
+  nameIsNotEmpty,
+  slugIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
@@ -20,4 +24,11 @@ export class UpdateTeamDto implements BaseUpdateTeamDto {
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
   slug?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: upToDateDurationMatches })
+  upToDateDuration?: string | null;
 }

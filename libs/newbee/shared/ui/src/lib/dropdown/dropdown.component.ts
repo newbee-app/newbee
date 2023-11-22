@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -8,6 +8,7 @@ import {
   HostListener,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   Output,
   PLATFORM_ID,
@@ -100,9 +101,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * A cleanup function for the floating UI autoUpdate function we set up for the dropdown.
    */
-  private cleanup: () => void = () => {
-    return;
-  };
+  private cleanup: (() => void) | null = null;
 
   /**
    * Subscribe to the user's clicks and shrink the dropdown if the user clicks outside of the dropdown.
@@ -113,7 +112,8 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   constructor(
     clickService: ClickService,
     elementRef: ElementRef<HTMLElement>,
-    @Inject(PLATFORM_ID) private readonly platformId: object
+    @Inject(PLATFORM_ID) private readonly platformId: object,
+    private readonly ngZone: NgZone,
   ) {
     clickService.documentClickTarget
       .pipe(takeUntil(this.unsubscribe$))
@@ -133,29 +133,31 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   /**
    * Compute the absolute position for the dropdown.
    */
-  private async recompute(): Promise<void> {
-    const { x, y } = await computePosition(
-      this.label.nativeElement,
-      this.dropdown.nativeElement,
-      {
-        placement: this.placement,
-        middleware: [
-          offset(this.offset),
-          flip(),
-          shift({ padding: 6 }),
-          size({
-            apply: ({ rects, elements }) => {
-              Object.assign(elements.floating.style, {
-                minWidth: `${rects.reference.width}px`,
-              });
-            },
-          }),
-        ],
-      }
-    );
-    Object.assign(this.dropdown.nativeElement.style, {
-      left: `${x}px`,
-      top: `${y}px`,
+  private recompute(): void {
+    this.ngZone.runOutsideAngular(async () => {
+      const { x, y } = await computePosition(
+        this.label.nativeElement,
+        this.dropdown.nativeElement,
+        {
+          placement: this.placement,
+          middleware: [
+            offset(this.offset),
+            flip(),
+            shift({ padding: 6 }),
+            size({
+              apply: ({ rects, elements }) => {
+                Object.assign(elements.floating.style, {
+                  minWidth: `${rects.reference.width}px`,
+                });
+              },
+            }),
+          ],
+        },
+      );
+      Object.assign(this.dropdown.nativeElement.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
     });
   }
 
@@ -163,17 +165,19 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * Assign cleanup and set up floating UI's autoUpdate with the dropdown.
    */
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (isPlatformServer(this.platformId)) {
       return;
     }
 
-    this.cleanup = autoUpdate(
-      this.label.nativeElement,
-      this.dropdown.nativeElement,
-      () => {
-        this.recompute();
-      }
-    );
+    this.ngZone.runOutsideAngular(() => {
+      this.cleanup = autoUpdate(
+        this.label.nativeElement,
+        this.dropdown.nativeElement,
+        () => {
+          this.recompute();
+        },
+      );
+    });
   }
 
   /**
@@ -183,7 +187,7 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
 
-    this.cleanup();
+    this.cleanup?.();
   }
 
   /**

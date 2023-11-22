@@ -1,8 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { ViewTeamComponent } from '@newbee/newbee/team/ui';
-import { Keyword, testTeamRelation1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testOrganizationRelation1,
+  testTeam1,
+  testTeamRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamViewComponent } from './team-view.component';
 
@@ -15,10 +22,8 @@ jest.mock('@floating-ui/dom', () => ({
 
 describe('TeamViewComponent', () => {
   let component: TeamViewComponent;
-  let fixture: ComponentFixture<TeamViewComponent>;
   let store: MockStore;
   let router: Router;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,57 +32,49 @@ describe('TeamViewComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
             [Keyword.Team]: {
               selectedTeam: testTeamRelation1,
             },
           },
         }),
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: createMock<ActivatedRoute>(),
-        },
+        provideRouter([{ path: '**', component: TeamViewComponent }]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TeamViewComponent);
-    component = fixture.componentInstance;
-
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    route = TestBed.inject(ActivatedRoute);
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl(
+      `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}`,
+      TeamViewComponent,
+    );
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(route).toBeDefined();
   });
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
       await component.onOrgNavigate('path');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['../../path'], {
-        relativeTo: route,
-      });
+      expect(router.url).toEqual(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/path`,
+      );
     });
   });
 
   describe('onTeamNavigate', () => {
     it('should navigate relative to team', async () => {
       await component.onTeamNavigate('path');
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['./path'], { relativeTo: route });
+      expect(router.url).toEqual(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}/path`,
+      );
     });
   });
 });

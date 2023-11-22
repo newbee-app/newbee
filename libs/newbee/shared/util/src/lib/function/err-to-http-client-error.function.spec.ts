@@ -1,70 +1,105 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { internalServerError } from '@newbee/shared/util';
+import { Keyword, internalServerError } from '@newbee/shared/util';
 import { errToHttpClientError } from './err-to-http-client-error.function';
 
 describe('errToHttpClientError', () => {
   describe('err is not HttpErrorResponse', () => {
-    it('should return an internal server error', () => {
+    it(`should try to get the error msg, but default to internalServerError if it can't be found`, () => {
       expect(errToHttpClientError(new Error('error'))).toEqual({
         status: 500,
+        messages: 'error',
+      });
+      expect(errToHttpClientError('error')).toEqual({
+        status: 500,
+        messages: 'error',
+      });
+      expect(errToHttpClientError(['error', 'msg'])).toEqual({
+        status: 500,
+        messages: ['error', 'msg'],
+      });
+      expect(errToHttpClientError({})).toEqual({
+        status: 500,
         messages: internalServerError,
+      });
+
+      expect(
+        errToHttpClientError(new Error('error'), () => Keyword.Misc),
+      ).toEqual({
+        status: 500,
+        messages: { [Keyword.Misc]: 'error' },
+      });
+      expect(errToHttpClientError('error', () => Keyword.Misc)).toEqual({
+        status: 500,
+        messages: { [Keyword.Misc]: 'error' },
+      });
+      expect(
+        errToHttpClientError(['error', 'msg', 'a', 'b'], (msg) => {
+          switch (msg) {
+            case 'a':
+              return 'a';
+            case 'b':
+              return 'b';
+            default:
+              return Keyword.Misc;
+          }
+        }),
+      ).toEqual({
+        status: 500,
+        messages: { a: 'a', b: 'b', [Keyword.Misc]: ['error', 'msg'] },
+      });
+      expect(errToHttpClientError({}, () => Keyword.Misc)).toEqual({
+        status: 500,
+        messages: { [Keyword.Misc]: internalServerError },
       });
     });
   });
 
   describe('err is HttpErrorResponse', () => {
-    it('should return the error if error response is just a string', () => {
-      const err = new HttpErrorResponse({ status: 500, error: 'error' });
-      expect(errToHttpClientError(err)).toEqual({
-        status: 500,
+    it(`should try to get the error msg, but default to internalServerError if it can't be found`, () => {
+      expect(
+        errToHttpClientError(
+          new HttpErrorResponse({ status: 400, error: { message: 'error' } }),
+        ),
+      ).toEqual({
+        status: 400,
         messages: 'error',
       });
-      expect(errToHttpClientError(err, () => 'misc')).toEqual({
-        status: 500,
-        messages: { misc: 'error' },
-      });
-    });
-
-    it('should return an internal server error if no message is in the error object', () => {
       expect(
-        errToHttpClientError(new HttpErrorResponse({ status: 500, error: {} }))
-      ).toEqual({ status: 500, messages: internalServerError });
-    });
-
-    it('should return the error if message is a string', () => {
-      const err = new HttpErrorResponse({
-        status: 500,
-        error: { message: 'error' },
-      });
-      expect(errToHttpClientError(err)).toEqual({
-        status: 500,
-        messages: 'error',
-      });
-      expect(errToHttpClientError(err, () => 'misc')).toEqual({
-        status: 500,
-        messages: { misc: 'error' },
-      });
-    });
-
-    it('should return the errors if message is an array', () => {
-      const err = new HttpErrorResponse({
-        status: 500,
-        error: { message: ['some', 'error', 'here'] },
-      });
-      expect(errToHttpClientError(err)).toEqual({
-        status: 500,
-        messages: ['some', 'error', 'here'],
+        errToHttpClientError(
+          new HttpErrorResponse({
+            status: 400,
+            error: { message: ['error', 'msg'] },
+          }),
+        ),
+      ).toEqual({
+        status: 400,
+        messages: ['error', 'msg'],
       });
       expect(
-        errToHttpClientError(err, (msg) => {
-          switch (msg) {
-            case 'some':
-              return 'a';
-            default:
-              return 'b';
-          }
-        })
-      ).toEqual({ status: 500, messages: { a: 'some', b: ['error', 'here'] } });
+        errToHttpClientError(new HttpErrorResponse({ status: 400, error: {} })),
+      ).toEqual({ status: 400, messages: internalServerError });
+
+      expect(
+        errToHttpClientError(
+          new HttpErrorResponse({ status: 400, error: 'error' }),
+          () => Keyword.Misc,
+        ),
+      ).toEqual({
+        status: 400,
+        messages: { [Keyword.Misc]: 'error' },
+      });
+      expect(
+        errToHttpClientError(
+          new HttpErrorResponse({ status: 400, error: ['error', 'msg'] }),
+          () => Keyword.Misc,
+        ),
+      ).toEqual({
+        status: 400,
+        messages: { [Keyword.Misc]: ['error', 'msg'] },
+      });
+      expect(
+        errToHttpClientError(new HttpErrorResponse({ status: 400, error: {} })),
+      ).toEqual({ status: 400, messages: internalServerError });
     });
   });
 });

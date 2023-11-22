@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { teamFeature } from '@newbee/newbee/shared/data-access';
+import {
+  organizationFeature,
+  teamFeature,
+} from '@newbee/newbee/shared/data-access';
 import { Store } from '@ngrx/store';
 
 /**
@@ -11,6 +14,13 @@ import { Store } from '@ngrx/store';
   templateUrl: './team-view.component.html',
 })
 export class TeamViewComponent {
+  /**
+   * The organization the team is in.
+   */
+  selectedOrganization$ = this.store.select(
+    organizationFeature.selectSelectedOrganization,
+  );
+
   /**
    * The team to view.
    */
@@ -24,7 +34,7 @@ export class TeamViewComponent {
   constructor(
     private readonly store: Store,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**

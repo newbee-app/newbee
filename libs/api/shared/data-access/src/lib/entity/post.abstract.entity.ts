@@ -1,13 +1,15 @@
 import {
   Entity,
   Index,
-  OptionalProps,
   PrimaryKey,
   Property,
   Unique,
+  wrap,
 } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
-import type { Post } from '@newbee/shared/util';
+import { type Post } from '@newbee/shared/util';
+import dayjs from 'dayjs';
+import { Duration } from 'dayjs/plugin/duration';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { TeamEntity } from './team.entity';
@@ -30,29 +32,20 @@ export abstract class PostEntity implements Post {
   /**
    * @inheritdoc
    */
-  @Property({ type: 'datetime' })
-  @Index()
-  createdAt = new Date();
+  @Property()
+  createdAt: Date = new Date();
 
   /**
    * @inheritdoc
    */
-  @Property({ type: 'datetime' })
-  @Index()
-  updatedAt = this.createdAt;
+  @Property()
+  updatedAt: Date = this.createdAt;
 
   /**
    * @inheritdoc
    */
-  @Property({ type: 'datetime' })
-  @Index()
-  markedUpToDateAt = this.createdAt;
-
-  /**
-   * @inheritdoc
-   */
-  @Property({ type: 'boolean' })
-  upToDate = true;
+  @Property()
+  markedUpToDateAt: Date = this.createdAt;
 
   /**
    * @inheritdoc
@@ -67,9 +60,17 @@ export abstract class PostEntity implements Post {
   slug: string;
 
   /**
-   * All of the properties in the entity that are optional, even if they don't appear that way.
+   * @inheritdoc
    */
-  [OptionalProps]?: 'createdAt' | 'updatedAt' | 'markedUpToDateAt' | 'upToDate';
+  @Property({ nullable: true })
+  @Index()
+  upToDateDuration: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @Property()
+  outOfDateAt: Date;
 
   /**
    * The organization associated with the post.
@@ -99,9 +100,50 @@ export abstract class PostEntity implements Post {
    */
   abstract maintainer: OrgMemberEntity | null;
 
-  constructor(id: string, title: string) {
+  constructor(
+    id: string,
+    title: string,
+    upToDateDuration: string | null,
+    team: TeamEntity | null,
+    creator: OrgMemberEntity,
+  ) {
     this.id = id;
     this.title = title;
     this.slug = shortenUuid(id);
+    this.upToDateDuration = upToDateDuration;
+    this.outOfDateAt = dayjs(new Date())
+      .add(
+        dayjs.duration(
+          upToDateDuration ??
+            team?.upToDateDuration ??
+            creator.organization.upToDateDuration,
+        ),
+      )
+      .toDate();
+  }
+
+  /**
+   * Get the actual up-to-date duration for the post, consulting the organization or team if necessary.
+   */
+  async trueUpToDateDuration(): Promise<Duration> {
+    if (this.upToDateDuration) {
+      return dayjs.duration(this.upToDateDuration);
+    } else if (this.team) {
+      const wrappedTeam = wrap(this.team);
+      if (!wrappedTeam.isInitialized()) {
+        await wrappedTeam.init();
+      }
+
+      if (this.team.upToDateDuration) {
+        return dayjs.duration(this.team.upToDateDuration);
+      }
+    }
+
+    const wrappedOrg = wrap(this.organization);
+    if (!wrappedOrg.isInitialized()) {
+      await wrappedOrg.init();
+    }
+
+    return dayjs.duration(this.organization.upToDateDuration);
   }
 }

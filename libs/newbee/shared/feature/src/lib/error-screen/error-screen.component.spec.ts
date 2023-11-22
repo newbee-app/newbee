@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { createMock } from '@golevelup/ts-jest';
+import { Router, provideRouter } from '@angular/router';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { TemplateMarkerDirectiveModule } from '@newbee/newbee/shared/util';
 import { provideMockStore } from '@ngrx/store/testing';
 import { ErrorScreenComponent } from './error-screen.component';
@@ -32,15 +32,14 @@ describe('ErrorScreenComponent', () => {
       imports: [TestComponent],
       providers: [
         provideMockStore(),
-        {
-          provide: Router,
-          useValue: createMock<Router>(),
-        },
+        provideRouter([{ path: '**', component: EmptyComponent }]),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
 
     fixture.detectChanges();
 

@@ -1,7 +1,7 @@
-<newbee-tooltip placement="top-start" [text]="lastMarkedUpToDate()">
+<newbee-tooltip placement="top-start" [text]="lastMarkedUpToDate">
   <!-- check-circle svg -->
   <svg
-    *ngIf="post.upToDate; else outdated"
+    *ngIf="upToDate; else outdated"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"

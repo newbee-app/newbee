@@ -6,7 +6,6 @@ import {
   Logger,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   CreateQnaDto,
@@ -15,23 +14,30 @@ import {
   UpdateQuestionDto,
 } from '@newbee/api/qna/data-access';
 import {
-  OrganizationEntity,
+  EntityService,
   OrgMemberEntity,
+  OrganizationEntity,
   QnaEntity,
   TeamEntity,
-  TeamSlugDto,
+  TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
-  Organization,
   OrgMember,
+  Organization,
   PostRoleEnum,
   Qna,
   Role,
   Team,
+  TeamMember,
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  BaseQnaAndMemberDto,
+  Keyword,
+  OrgRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `QnaEntity`.
@@ -46,7 +52,10 @@ export class QnaController {
    */
   private readonly logger = new Logger(QnaController.name);
 
-  constructor(private readonly qnaService: QnaService) {}
+  constructor(
+    private readonly qnaService: QnaService,
+    private readonly entityService: EntityService,
+  ) {}
 
   /**
    * The API route for creating a qna.
@@ -67,23 +76,17 @@ export class QnaController {
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity | undefined,
-    @Query() teamSlugDto: TeamSlugDto
   ): Promise<QnaEntity> {
-    const { team: teamSlug } = teamSlugDto;
     this.logger.log(
-      `Create qna request received from org member slug: ${
-        orgMember.slug
-      }, in organization ID: ${organization.id}${
-        teamSlug ? `, in team: ${teamSlug}` : ''
-      }, with title: ${createQnaDto.title}`
+      `Create qna request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createQnaDto.title}`,
     );
     const qna = await this.qnaService.create(
       createQnaDto,
       team ?? null,
-      orgMember
+      orgMember,
     );
     this.logger.log(
-      `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`
+      `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`,
     );
 
     return qna;
@@ -100,10 +103,16 @@ export class QnaController {
    */
   @Get(`:${Keyword.Qna}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Qna() qna: QnaEntity): Promise<QnaEntity> {
+  async get(
+    @Qna() qna: QnaEntity,
+    @TeamMember() teamMember: TeamMemberEntity | undefined,
+  ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
-    return qna;
+    return {
+      qna: await this.entityService.createQnaNoOrg(qna),
+      teamMember: teamMember ?? null,
+    };
   }
 
   /**
@@ -123,16 +132,16 @@ export class QnaController {
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
     PostRoleEnum.Creator,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
   )
   async updateQuestion(
     @Body() updateQuestionDto: UpdateQuestionDto,
-    @Qna() qna: QnaEntity
+    @Qna() qna: QnaEntity,
   ): Promise<QnaEntity> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
     this.logger.log(
-      `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+      `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
     return updatedQna;
   }
@@ -158,12 +167,12 @@ export class QnaController {
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInQna
+    ConditionalRoleEnum.OrgMemberIfNoTeamInQna,
   )
   async updateAnswer(
     @Body() updateAnswerDto: UpdateAnswerDto,
     @Qna() qna: QnaEntity,
-    @OrgMember() orgMember: OrgMemberEntity
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<QnaEntity> {
     this.logger.log(`Update answer request received for slug: ${qna.slug}`);
     let updatedQna: QnaEntity;
@@ -173,11 +182,11 @@ export class QnaController {
       updatedQna = await this.qnaService.update(
         qna,
         updateAnswerDto,
-        orgMember
+        orgMember,
       );
     }
     this.logger.log(
-      `Updated answer, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+      `Updated answer, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
 
     return updatedQna;
@@ -198,13 +207,13 @@ export class QnaController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
   )
   async markUpToDate(@Qna() qna: QnaEntity): Promise<QnaEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.markUpToDate(qna);
     this.logger.log(
-      `Marked qna up-to-date, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`
+      `Marked qna up-to-date, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
     return updatedQna;
   }
@@ -223,7 +232,7 @@ export class QnaController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer
+    PostRoleEnum.Maintainer,
   )
   async delete(@Qna() qna: QnaEntity): Promise<void> {
     this.logger.log(`Delete qna request received for qna slug: ${qna.slug}`);

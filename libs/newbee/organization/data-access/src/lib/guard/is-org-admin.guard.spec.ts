@@ -7,6 +7,7 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testOrganization1,
+  testOrganizationRelation1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -71,11 +72,13 @@ describe('isOrgAdminGuard', () => {
   describe('non-admin org member', () => {
     it('should redirect to org if org is selected', async () => {
       store.setState({
-        [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+        [Keyword.Organization]: {
+          selectedOrganization: testOrganizationRelation1,
+        },
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
       expect(location.path()).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}`
+        `/${ShortUrl.Organization}/${testOrganization1.slug}`,
       );
     });
 

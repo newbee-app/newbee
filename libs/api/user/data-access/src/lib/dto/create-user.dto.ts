@@ -1,5 +1,5 @@
-import { BaseCreateUserDto } from '@newbee/shared/data-access';
 import {
+  BaseCreateUserDto,
   displayNameIsNotEmpty,
   emailIsEmail,
   nameIsNotEmpty,

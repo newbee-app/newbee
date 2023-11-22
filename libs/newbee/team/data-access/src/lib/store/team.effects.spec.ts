@@ -1,21 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  Keyword,
   testBaseCreateTeamDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
-} from '@newbee/shared/data-access';
-import {
-  Keyword,
   testOrganization1,
+  testOrganizationRelation1,
   testTeam1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -40,12 +40,15 @@ describe('TeamEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
             [Keyword.Team]: {
               selectedTeam: testTeamRelation1,
             },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         TeamEffects,
         {
           provide: TeamService,
@@ -60,12 +63,6 @@ describe('TeamEffects', () => {
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -73,6 +70,8 @@ describe('TeamEffects', () => {
     service = TestBed.inject(TeamService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {
@@ -96,7 +95,7 @@ describe('TeamEffects', () => {
         expect(service.get).toBeCalledTimes(1);
         expect(service.get).toBeCalledWith(
           testTeam1.slug,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });
@@ -118,14 +117,17 @@ describe('TeamEffects', () => {
         a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+        a: TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
       });
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).toBeCalledTimes(1);
         expect(service.create).toBeCalledWith(
           testBaseCreateTeamDto1,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });
@@ -146,12 +148,18 @@ describe('TeamEffects', () => {
   describe('createTeamSuccess$', () => {
     it('should navigate to team', () => {
       actions$ = hot('a', {
-        a: TeamActions.createTeamSuccess({ team: testTeam1 }),
+        a: TeamActions.createTeamSuccess({
+          organization: testOrganization1,
+          team: testTeam1,
+        }),
       });
       const expected$ = hot('a', {
         a: [
-          TeamActions.createTeamSuccess({ team: testTeam1 }),
-          testOrganization1,
+          TeamActions.createTeamSuccess({
+            organization: testOrganization1,
+            team: testTeam1,
+          }),
+          testOrganizationRelation1,
         ],
       });
       expect(effects.createTeamSuccess$).toBeObservable(expected$);
@@ -170,7 +178,10 @@ describe('TeamEffects', () => {
         a: TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.editTeamSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -178,7 +189,7 @@ describe('TeamEffects', () => {
         expect(service.edit).toBeCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
-          testBaseUpdateTeamDto1
+          testBaseUpdateTeamDto1,
         );
       });
     });
@@ -188,7 +199,10 @@ describe('TeamEffects', () => {
         a: TeamActions.editTeamSlug({ updateTeamDto: testBaseUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
-        a: TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -196,7 +210,7 @@ describe('TeamEffects', () => {
         expect(service.edit).toBeCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
-          testBaseUpdateTeamDto1
+          testBaseUpdateTeamDto1,
         );
       });
     });
@@ -216,12 +230,18 @@ describe('TeamEffects', () => {
   describe('editTeamSlugSuccess$', () => {
     it('should navigate to team edit', () => {
       actions$ = hot('a', {
-        a: TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
+        a: TeamActions.editTeamSlugSuccess({
+          oldSlug: testTeam1.slug,
+          newTeam: testTeam1,
+        }),
       });
       const expected$ = hot('a', {
         a: [
-          TeamActions.editTeamSlugSuccess({ newTeam: testTeam1 }),
-          testOrganization1,
+          TeamActions.editTeamSlugSuccess({
+            oldSlug: testTeam1.slug,
+            newTeam: testTeam1,
+          }),
+          testOrganizationRelation1,
         ],
       });
       expect(effects.editTeamSlugSuccess$).toBeObservable(expected$);
@@ -237,13 +257,15 @@ describe('TeamEffects', () => {
   describe('deleteTeam$', () => {
     it('should fire deleteTeamSuccess if successful', () => {
       actions$ = hot('a', { a: TeamActions.deleteTeam() });
-      const expected$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      const expected$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       expect(effects.deleteTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.delete).toBeCalledTimes(1);
         expect(service.delete).toBeCalledWith(
           testOrganization1.slug,
-          testTeam1.slug
+          testTeam1.slug,
         );
       });
     });
@@ -261,9 +283,14 @@ describe('TeamEffects', () => {
 
   describe('deleteTeamSuccess$', () => {
     it('should navigate to org', () => {
-      actions$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       const expected$ = hot('a', {
-        a: [TeamActions.deleteTeamSuccess(), testOrganization1],
+        a: [
+          TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+          testOrganizationRelation1,
+        ],
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -276,9 +303,11 @@ describe('TeamEffects', () => {
 
     it('should navigate home if selected org is not set', () => {
       store.setState({ [Keyword.Organization]: initialOrganizationState });
-      actions$ = hot('a', { a: TeamActions.deleteTeamSuccess() });
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }),
+      });
       const expected$ = hot('a', {
-        a: [TeamActions.deleteTeamSuccess(), null],
+        a: [TeamActions.deleteTeamSuccess({ slug: testTeam1.slug }), null],
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -292,7 +321,7 @@ describe('TeamEffects', () => {
     it('should fire checkSlugSuccess if successful', () => {
       store.setState({
         [Keyword.Organization]: {
-          selectedOrganization: testOrganization1,
+          selectedOrganization: testOrganizationRelation1,
         },
       });
       actions$ = hot('a', {
@@ -308,7 +337,7 @@ describe('TeamEffects', () => {
         expect(service.checkSlug).toBeCalledTimes(1);
         expect(service.checkSlug).toBeCalledWith(
           testTeam1.slug,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });
@@ -363,7 +392,7 @@ describe('TeamEffects', () => {
         expect(service.generateSlug).toBeCalledTimes(1);
         expect(service.generateSlug).toBeCalledWith(
           testTeam1.name,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });

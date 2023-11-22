@@ -1,6 +1,11 @@
-import { BaseUpdateDocDto } from '@newbee/shared/data-access';
-import { docIsNotEmpty, titleIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  BaseUpdateDocDto,
+  docIsNotEmpty,
+  iso8601DurationRegex,
+  titleIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 /**
  * The verifiable DTO sent from the frontend to the backend to update a Doc.
@@ -13,6 +18,13 @@ export class UpdateDocDto implements BaseUpdateDocDto {
   @IsOptional()
   @IsNotEmpty({ message: titleIsNotEmpty })
   title?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration?: string | null;
 
   /**
    * @inheritdoc

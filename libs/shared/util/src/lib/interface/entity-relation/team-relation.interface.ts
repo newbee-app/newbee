@@ -3,7 +3,7 @@ import type { Organization, Team } from '../entity';
 import type { TeamMemberUserOrgMember } from './team-member-relation.interface';
 
 /**
- * The Team interface with relevanbt relationship information.
+ * The Team interface with relevant relationship information.
  */
 export interface TeamRelation {
   /**

@@ -5,12 +5,12 @@ import {
 } from '@newbee/api/org-member-invite/data-access';
 import {
   EntityService,
-  OrganizationEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   TokenDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { Organization, OrgMember, Role, User } from '@newbee/api/shared/util';
+import { OrgMember, Organization, Role, User } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import { Keyword, OrgMemberNoUser, OrgRoleEnum } from '@newbee/shared/util';
 
@@ -29,7 +29,7 @@ export class OrgMemberInviteController {
 
   constructor(
     private readonly orgMemberInviteService: OrgMemberInviteService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -47,17 +47,17 @@ export class OrgMemberInviteController {
   async invite(
     @Body() createOrgMemberInviteDto: CreateOrgMemberInviteDto,
     @OrgMember() orgMember: OrgMemberEntity,
-    @Organization() organization: OrganizationEntity
+    @Organization() organization: OrganizationEntity,
   ): Promise<void> {
     const { email, role } = createOrgMemberInviteDto;
     this.logger.log(
-      `Invite org member request received for organization ID: ${organization.id}, for email: ${email}, by org member slug: ${orgMember.slug}`
+      `Invite org member request received for organization ID: ${organization.id}, for email: ${email}, by org member slug: ${orgMember.slug}`,
     );
     const orgMemberInvite = await this.orgMemberInviteService.create(
       email,
       role,
       orgMember,
-      organization
+      organization,
     );
     this.logger.log(`Created org member invite, id: ${orgMemberInvite.id}`);
   }
@@ -76,18 +76,18 @@ export class OrgMemberInviteController {
   @Post(Keyword.Accept)
   async accept(
     @Body() tokenDto: TokenDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<OrgMemberNoUser> {
     const { token } = tokenDto;
     this.logger.log(
-      `Accept org member invite request received, token: ${token}, user ID: ${user.id}`
+      `Accept org member invite request received, token: ${token}, user ID: ${user.id}`,
     );
     const orgMember = await this.orgMemberInviteService.acceptInvite(
       token,
-      user
+      user,
     );
     this.logger.log(
-      `Accepted org member invite for token: ${token}, orgMember created with slug: ${orgMember.slug}`
+      `Accepted org member invite for token: ${token}, orgMember created with slug: ${orgMember.slug}`,
     );
     return await this.entityService.createOrgMemberNoUser(orgMember);
   }
@@ -105,11 +105,11 @@ export class OrgMemberInviteController {
   @Post(Keyword.Decline)
   async decline(
     @Body() tokenDto: TokenDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<void> {
     const { token } = tokenDto;
     this.logger.log(
-      `Decline org member invite request received, token: ${token}, user ID: ${user.id}`
+      `Decline org member invite request received, token: ${token}, user ID: ${user.id}`,
     );
     await this.orgMemberInviteService.declineInvite(token, user);
     this.logger.log(`Declined org member invite for token: ${token}`);

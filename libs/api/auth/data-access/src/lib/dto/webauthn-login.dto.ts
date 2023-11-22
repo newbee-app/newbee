@@ -1,6 +1,5 @@
 import { EmailDto } from '@newbee/api/shared/data-access';
-import { BaseWebAuthnLoginDto } from '@newbee/shared/data-access';
-import { responseIsDefined } from '@newbee/shared/util';
+import { BaseWebAuthnLoginDto, responseIsDefined } from '@newbee/shared/util';
 import type { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types';
 import { IsDefined } from 'class-validator';
 

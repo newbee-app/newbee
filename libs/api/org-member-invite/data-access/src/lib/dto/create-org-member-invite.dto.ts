@@ -1,6 +1,9 @@
 import { EmailDto } from '@newbee/api/shared/data-access';
-import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/data-access';
-import { OrgRoleEnum, orgRoleIsEnum } from '@newbee/shared/util';
+import {
+  BaseCreateOrgMemberInviteDto,
+  OrgRoleEnum,
+  orgRoleIsEnum,
+} from '@newbee/shared/util';
 import { IsEnum } from 'class-validator';
 
 /**

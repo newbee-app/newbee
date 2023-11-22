@@ -35,7 +35,10 @@ export class ErrorScreenComponent {
    */
   httpScreenError$ = this.store.select(httpFeature.selectScreenError);
 
-  constructor(private readonly store: Store, private readonly router: Router) {}
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+  ) {}
 
   /**
    * When the dumb UI emits a request to navigate home, pass it to the router.

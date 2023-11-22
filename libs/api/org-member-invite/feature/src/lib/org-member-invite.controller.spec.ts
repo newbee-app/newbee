@@ -3,16 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberInviteService } from '@newbee/api/org-member-invite/data-access';
 import {
   EntityService,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
   testOrgMemberInviteEntity1,
+  testOrganizationEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateOrgMemberInviteDto1,
   testBaseTokenDto1,
-} from '@newbee/shared/data-access';
-import { testOrgMemberRelation1 } from '@newbee/shared/util';
+  testOrgMemberRelation1,
+} from '@newbee/shared/util';
 import { OrgMemberInviteController } from './org-member-invite.controller';
 
 describe('OrgMemberInviteController', () => {
@@ -43,7 +43,7 @@ describe('OrgMemberInviteController', () => {
     }).compile();
 
     controller = module.get<OrgMemberInviteController>(
-      OrgMemberInviteController
+      OrgMemberInviteController,
     );
     service = module.get<OrgMemberInviteService>(OrgMemberInviteService);
     entityService = module.get<EntityService>(EntityService);
@@ -61,15 +61,15 @@ describe('OrgMemberInviteController', () => {
         controller.invite(
           testBaseCreateOrgMemberInviteDto1,
           testOrgMemberEntity1,
-          testOrganizationEntity1
-        )
+          testOrganizationEntity1,
+        ),
       ).resolves.toBeUndefined();
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
         testOrgMemberInviteEntity1.userInvites.email,
         testOrgMemberInviteEntity1.role,
         testOrgMemberEntity1,
-        testOrgMemberInviteEntity1.organization
+        testOrgMemberInviteEntity1.organization,
       );
     });
   });
@@ -77,16 +77,16 @@ describe('OrgMemberInviteController', () => {
   describe('accept', () => {
     it('should accept an org member invite', async () => {
       await expect(
-        controller.accept(testBaseTokenDto1, testUserEntity1)
+        controller.accept(testBaseTokenDto1, testUserEntity1),
       ).resolves.toEqual(testOrgMemberRelation1);
       expect(service.acceptInvite).toBeCalledTimes(1);
       expect(service.acceptInvite).toBeCalledWith(
         testBaseTokenDto1.token,
-        testUserEntity1
+        testUserEntity1,
       );
       expect(entityService.createOrgMemberNoUser).toBeCalledTimes(1);
       expect(entityService.createOrgMemberNoUser).toBeCalledWith(
-        testOrgMemberEntity1
+        testOrgMemberEntity1,
       );
     });
   });
@@ -94,12 +94,12 @@ describe('OrgMemberInviteController', () => {
   describe('decline', () => {
     it('should decline an org member invite', async () => {
       await expect(
-        controller.decline(testBaseTokenDto1, testUserEntity1)
+        controller.decline(testBaseTokenDto1, testUserEntity1),
       ).resolves.toBeUndefined();
       expect(service.declineInvite).toBeCalledTimes(1);
       expect(service.declineInvite).toBeCalledWith(
         testBaseTokenDto1.token,
-        testUserEntity1
+        testUserEntity1,
       );
     });
   });

@@ -1,5 +1,4 @@
-import { BaseTokenDto } from '@newbee/shared/data-access';
-import { tokenIsNotEmpty } from '@newbee/shared/util';
+import { BaseTokenDto, tokenIsNotEmpty } from '@newbee/shared/util';
 import { IsNotEmpty } from 'class-validator';
 
 /**

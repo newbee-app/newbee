@@ -5,7 +5,9 @@ import {
   tick,
 } from '@angular/core/testing';
 import {
+  Frequency,
   OrgRoleEnum,
+  testOrganization1,
   testOrgMember1,
   testTeam1,
   testTeamMember1,
@@ -24,6 +26,7 @@ describe('EditTeamComponent', () => {
     fixture = TestBed.createComponent(EditTeamComponent);
     component = fixture.componentInstance;
 
+    component.organization = testOrganization1;
     component.team = testTeam1;
     component.orgMember = testOrgMember1;
 
@@ -65,7 +68,20 @@ describe('EditTeamComponent', () => {
       it('should emit edit', () => {
         component.emitEdit();
         expect(component.edit.emit).toBeCalledTimes(1);
-        expect(component.edit.emit).toBeCalledWith(testTeam1.name);
+        expect(component.edit.emit).toBeCalledWith({
+          name: testTeam1.name,
+          upToDateDuration: null,
+        });
+
+        component.editTeamForm.setValue({
+          name: null,
+          upToDateDuration: { num: 1, frequency: Frequency.Year },
+        });
+        component.emitEdit();
+        expect(component.edit.emit).toBeCalledTimes(2);
+        expect(component.edit.emit).toBeCalledWith({
+          upToDateDuration: 'P1Y',
+        });
       });
     });
 
@@ -89,7 +105,13 @@ describe('EditTeamComponent', () => {
     describe('editDistinct', () => {
       it('should be true when edit team form is distinct from team, false otherwise', () => {
         expect(component.editDistinct).toBeFalsy();
-        component.editTeamForm.setValue({ name: 'new name' });
+        component.editTeamForm.patchValue({ name: 'new name' });
+        expect(component.editDistinct).toBeTruthy();
+        component.editTeamForm.patchValue({ name: testTeam1.name });
+        expect(component.editDistinct).toBeFalsy();
+        component.editTeamForm.patchValue({
+          upToDateDuration: { num: 1, frequency: Frequency.Year },
+        });
         expect(component.editDistinct).toBeTruthy();
       });
     });

@@ -1,5 +1,4 @@
-import { BaseEmailDto } from '@newbee/shared/data-access';
-import { emailIsEmail } from '@newbee/shared/util';
+import { BaseEmailDto, emailIsEmail } from '@newbee/shared/util';
 import { IsEmail } from 'class-validator';
 
 /**

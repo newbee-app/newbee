@@ -19,7 +19,7 @@ export default {
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {
@@ -45,4 +45,4 @@ export const NoSelectedOrg: Story = {
   args: { selectedOrganization: null },
 };
 
-export const includeCenter: Story = { args: { includeCenter: true } };
+export const IncludeCenter: Story = { args: { includeCenter: true } };

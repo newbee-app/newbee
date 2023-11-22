@@ -11,12 +11,10 @@ export interface Qna extends Post {
    */
   questionMarkdoc: string | null;
 
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // /**
-  // /**
-  //  * The raw markdoc of the question rendered into HTML, for display on the frontend.
-  //  */
-  // questionHtml: string;
+  /**
+   * The raw markdoc of the question rendered into HTML, for display on the frontend.
+   */
+  questionHtml: string | null;
 
   /**
    * The raw markdoc of the answer portion of the QnA.
@@ -24,10 +22,8 @@ export interface Qna extends Post {
    */
   answerMarkdoc: string | null;
 
-  // TODO: add this in later once we figure out what we wanna do with markdoc
-  // /**
-  // /**
-  //  * The raw markdoc of the answer rendered into HTML, for display on the frontend.
-  //  */
-  // answerHtml: string;
+  /**
+   * The raw markdoc of the answer rendered into HTML, for display on the frontend.
+   */
+  answerHtml: string | null;
 }

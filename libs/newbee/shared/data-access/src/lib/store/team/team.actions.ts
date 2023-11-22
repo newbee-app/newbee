@@ -2,8 +2,10 @@ import {
   BaseCreateTeamDto,
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
-} from '@newbee/shared/data-access';
-import { Keyword, Team } from '@newbee/shared/util';
+  Keyword,
+  Organization,
+  Team,
+} from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
@@ -30,7 +32,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that a team was successfully created.
      */
-    'Create Team Success': props<{ team: Team }>(),
+    'Create Team Success': props<{ organization: Organization; team: Team }>(),
 
     /**
      * Edits the currently selected team with the given information.
@@ -40,7 +42,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that the currently selected team was successfully updated.
      */
-    'Edit Team Success': props<{ newTeam: Team }>(),
+    'Edit Team Success': props<{ oldSlug: string; newTeam: Team }>(),
 
     /**
      * Edits the currently selected team with a new slug.
@@ -50,7 +52,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that the currently selected team was successfully updated with the new slug.
      */
-    'Edit Team Slug Success': props<{ newTeam: Team }>(),
+    'Edit Team Slug Success': props<{ oldSlug: string; newTeam: Team }>(),
 
     /**
      * Send a request to the API to delete the currently selected team.
@@ -60,7 +62,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that the currently selected team was successfully deleted.
      */
-    'Delete Team Success': emptyProps(),
+    'Delete Team Success': props<{ slug: string }>(),
 
     /**
      * Indicates that a user is typing in a slug at the moment.

@@ -1,12 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { httpFeature, TeamActions } from '@newbee/newbee/shared/data-access';
-import { teamFeature } from '@newbee/newbee/team/data-access';
+import { Component, OnDestroy } from '@angular/core';
 import {
-  createTeamFormToDto,
-  type CreateTeamForm,
-} from '@newbee/newbee/team/util';
+  TeamActions,
+  httpFeature,
+  organizationFeature,
+} from '@newbee/newbee/shared/data-access';
+import { teamFeature } from '@newbee/newbee/team/data-access';
+import { BaseCreateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 /**
  * The smart UI for the create team screen.
@@ -15,11 +16,18 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'newbee-team-create',
   templateUrl: './team-create.component.html',
 })
-export class TeamCreateComponent implements OnInit, OnDestroy {
+export class TeamCreateComponent implements OnDestroy {
   /**
    * Represents the form's current name value, for use in generating slugs.
    */
   readonly name$ = new Subject<string>();
+
+  /**
+   * The organization the team is being created in.
+   */
+  selectedOrganization$ = this.store.select(
+    organizationFeature.selectSelectedOrganization,
+  );
 
   /**
    * The auto-generated slug based on the team's name.
@@ -46,12 +54,10 @@ export class TeamCreateComponent implements OnInit, OnDestroy {
    */
   httpClientError$ = this.store.select(httpFeature.selectError);
 
-  constructor(private readonly store: Store) {}
-
   /**
    * Set up the `name$` slug to generate slug.
    */
-  ngOnInit(): void {
+  constructor(private readonly store: Store) {
     this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
       next: (name) => {
         this.store.dispatch(TeamActions.generateSlug({ name }));
@@ -96,13 +102,9 @@ export class TeamCreateComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits a create event, send a create action with the value of the team form.
    *
-   * @param createTeamForm The values to send to the backend.
+   * @param createTeamDto The values to send to the backend.
    */
-  onCreate(createTeamForm: Partial<CreateTeamForm>): void {
-    this.store.dispatch(
-      TeamActions.createTeam({
-        createTeamDto: createTeamFormToDto(createTeamForm),
-      })
-    );
+  onCreate(createTeamDto: BaseCreateTeamDto): void {
+    this.store.dispatch(TeamActions.createTeam({ createTeamDto }));
   }
 }

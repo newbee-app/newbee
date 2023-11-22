@@ -1,10 +1,22 @@
-import { testOrganization1 } from '@newbee/shared/util';
-import { Meta, StoryObj } from '@storybook/angular';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { Keyword, testOrganization1 } from '@newbee/shared/util';
+import {
+  Meta,
+  StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
+} from '@storybook/angular';
 import { CreateOrgComponent } from './create-org.component';
 
 export default {
   title: 'CreateOrgComponent',
   component: CreateOrgComponent,
+  decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    componentWrapperDecorator(
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+    ),
+  ],
   args: {
     generatedSlug: '',
     slugTaken: false,
@@ -38,7 +50,12 @@ export const WithErrors: Story = {
   args: {
     httpClientError: {
       status: 400,
-      messages: { name: 'Name error', slug: 'Slug error', misc: 'Misc error' },
+      messages: {
+        name: 'Name error',
+        slug: 'Slug error',
+        [Keyword.Duration]: 'Duration error',
+        [Keyword.Misc]: 'Misc error',
+      },
     },
   },
 };

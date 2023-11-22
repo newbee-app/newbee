@@ -1,4 +1,5 @@
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { prependParentTitle } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 
 /**
@@ -8,13 +9,10 @@ import { Keyword } from '@newbee/shared/util';
  * @returns The query the user is searching for, `Error` if the parent title encountered an error earlier.
  */
 export const searchTitleResolver: ResolveFn<string> = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): string => {
-  const parentTitle = route.parent?.title ?? '';
-  if (parentTitle.includes('Error')) {
-    return parentTitle;
-  }
-
-  const query = route.paramMap.get(Keyword.Search);
-  return `${query} - ${parentTitle}`;
+  return prependParentTitle(
+    route,
+    route.paramMap.get(Keyword.Search) ?? 'Search',
+  );
 };

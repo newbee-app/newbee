@@ -41,6 +41,13 @@ const routes: Routes = [
         },
       },
       {
+        path: ShortUrl.Qna,
+        loadChildren: async () => {
+          const m = await import('@newbee/newbee/qna/feature');
+          return m.QnaModule;
+        },
+      },
+      {
         path: Keyword.Search,
         loadChildren: async () => {
           const m = await import('@newbee/newbee/search/feature');

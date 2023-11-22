@@ -17,6 +17,7 @@
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
     "redhat.vscode-xml",
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "tamuratak.vscode-lezer"
   ]
 }

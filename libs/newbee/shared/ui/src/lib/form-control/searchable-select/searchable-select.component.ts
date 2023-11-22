@@ -203,7 +203,7 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
         ? option.dropdownValue
             .toLowerCase()
             .includes(this.searchTerm.value?.toLowerCase())
-        : true
+        : true,
     );
   }
 

@@ -18,15 +18,19 @@ import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   CountryService,
-  getHttpClientErrorMsg,
   HttpClientError,
+  PhoneInput,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  PhoneInput,
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
-import type { EditUserForm } from '@newbee/newbee/user/util';
-import { Authenticator, Keyword, type User } from '@newbee/shared/util';
+import {
+  Authenticator,
+  BaseUpdateUserDto,
+  Keyword,
+  type User,
+} from '@newbee/shared/util';
 import parsePhoneNumber from 'libphonenumber-js';
 
 /**
@@ -97,7 +101,7 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The emitted edit user form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<Partial<EditUserForm>>();
+  @Output() edit = new EventEmitter<BaseUpdateUserDto>();
 
   /**
    * Indicates that the user has initiated a request to add a new authenticator.
@@ -155,7 +159,7 @@ export class EditUserComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly countryService: CountryService
+    private readonly countryService: CountryService,
   ) {}
 
   /**
@@ -183,7 +187,7 @@ export class EditUserComponent implements OnInit, OnChanges {
     const phoneNumber: PhoneInput | null = parsedPhoneNumber
       ? {
           country: this.countryService.getCountry(
-            parsedPhoneNumber.country as string
+            parsedPhoneNumber.country as string,
           ),
           number: parsedPhoneNumber.nationalNumber,
         }
@@ -212,7 +216,7 @@ export class EditUserComponent implements OnInit, OnChanges {
     (authenticators.currentValue as Authenticator[]).forEach(
       (authenticator) => {
         authenticatorNames.push(this.fb.control(authenticator.name));
-      }
+      },
     );
   }
 
@@ -220,7 +224,15 @@ export class EditUserComponent implements OnInit, OnChanges {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    this.edit.emit(this.editUserForm.value);
+    const { name, displayName, phoneNumber } = this.editUserForm.value;
+    const phoneNumberString = phoneNumber
+      ? phoneInputToString(phoneNumber)
+      : null;
+    this.edit.emit({
+      ...(name && { name }),
+      displayName: displayName || null,
+      phoneNumber: phoneNumberString,
+    });
   }
 
   /**
@@ -288,7 +300,7 @@ export class EditUserComponent implements OnInit, OnChanges {
    */
   inputDisplayError(
     formName: 'editUser' | 'deleteUser',
-    inputName: string
+    inputName: string,
   ): boolean {
     const form = this.getFormGroup(formName);
     return (
@@ -307,7 +319,7 @@ export class EditUserComponent implements OnInit, OnChanges {
    */
   inputErrorMessage(
     formName: 'editUser' | 'deleteUser',
-    inputName: string
+    inputName: string,
   ): string {
     const form = this.getFormGroup(formName);
     return (

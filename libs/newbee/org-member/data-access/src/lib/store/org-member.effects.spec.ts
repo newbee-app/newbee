@@ -1,15 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
   OrgMemberActions,
 } from '@newbee/newbee/shared/data-access';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { testBaseUpdateOrgMemberDto1 } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseUpdateOrgMemberDto1,
   testOrganization1,
+  testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
@@ -34,12 +36,15 @@ describe('OrgMemberEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
-            [Keyword.Organization]: { selectedOrganization: testOrganization1 },
+            [Keyword.Organization]: {
+              selectedOrganization: testOrganizationRelation1,
+            },
             [Keyword.Member]: {
               selectedOrgMember: testOrgMemberRelation1,
             },
           },
         }),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         OrgMemberEffects,
         {
           provide: OrgMemberService,
@@ -49,12 +54,6 @@ describe('OrgMemberEffects', () => {
             delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
@@ -62,6 +61,8 @@ describe('OrgMemberEffects', () => {
     service = TestBed.inject(OrgMemberService);
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {
@@ -87,7 +88,7 @@ describe('OrgMemberEffects', () => {
         expect(service.get).toBeCalledTimes(1);
         expect(service.get).toBeCalledWith(
           testOrganization1.slug,
-          testOrgMember1.slug
+          testOrgMember1.slug,
         );
       });
     });
@@ -109,7 +110,7 @@ describe('OrgMemberEffects', () => {
         expect(service.edit).toBeCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseUpdateOrgMemberDto1
+          testBaseUpdateOrgMemberDto1,
         );
       });
     });
@@ -126,7 +127,7 @@ describe('OrgMemberEffects', () => {
         expect(service.delete).toBeCalledTimes(1);
         expect(service.delete).toBeCalledWith(
           testOrganization1.slug,
-          testOrgMember1.slug
+          testOrgMember1.slug,
         );
       });
     });
@@ -136,7 +137,10 @@ describe('OrgMemberEffects', () => {
     it('should navigate to org', () => {
       actions$ = hot('a', { a: OrgMemberActions.deleteOrgMemberSuccess() });
       const expected$ = hot('a', {
-        a: [OrgMemberActions.deleteOrgMemberSuccess(), testOrganization1],
+        a: [
+          OrgMemberActions.deleteOrgMemberSuccess(),
+          testOrganizationRelation1,
+        ],
       });
       expect(effects.deleteOrgMemberSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

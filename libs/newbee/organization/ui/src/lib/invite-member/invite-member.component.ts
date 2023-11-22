@@ -8,20 +8,23 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import type { InviteMemberForm } from '@newbee/newbee/organization/util';
 import {
   AlertComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  SelectOption,
+  getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
-  SelectOption,
 } from '@newbee/newbee/shared/util';
-import { Keyword, OrgRoleEnum } from '@newbee/shared/util';
+import {
+  BaseCreateOrgMemberInviteDto,
+  Keyword,
+  OrgRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The dumb UI for inviting a user to an org.
@@ -61,13 +64,13 @@ export class InviteMemberComponent implements OnChanges {
   /**
    * The emitted invite member form, for use in the smart UI parent.
    */
-  @Output() invite = new EventEmitter<Partial<InviteMemberForm>>();
+  @Output() invite = new EventEmitter<BaseCreateOrgMemberInviteDto>();
 
   /**
    * All possible org roles as select options.
    */
   roleOptions = Object.entries(OrgRoleEnum).map(
-    ([key, value]) => new SelectOption(value, key)
+    ([key, value]) => new SelectOption(value, key),
   );
 
   /**
@@ -107,7 +110,8 @@ export class InviteMemberComponent implements OnChanges {
    * Emit the `invite` output.
    */
   emitInvite(): void {
-    this.invite.emit(this.inviteMemberForm.value);
+    const { email, role } = this.inviteMemberForm.value;
+    this.invite.emit({ email: email as string, role: role as OrgRoleEnum });
   }
 
   /**

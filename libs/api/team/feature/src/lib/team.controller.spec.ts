@@ -2,8 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   EntityService,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testTeamEntity1,
   testTeamMemberEntity1,
   testUserEntity1,
@@ -11,13 +11,13 @@ import {
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   testBaseCreateTeamDto1,
-  testBaseGeneratedSlugDto1,
   testBaseGenerateSlugDto1,
+  testBaseGeneratedSlugDto1,
   testBaseSlugDto1,
   testBaseSlugTakenDto1,
   testBaseUpdateTeamDto1,
-} from '@newbee/shared/data-access';
-import { testTeamRelation1 } from '@newbee/shared/util';
+  testTeamRelation1,
+} from '@newbee/shared/util';
 import slug from 'slug';
 import { TeamController } from './team.controller';
 
@@ -69,13 +69,13 @@ describe('TeamController', () => {
         controller.create(
           testBaseCreateTeamDto1,
           testOrgMemberEntity1,
-          testOrganizationEntity1
-        )
+          testOrganizationEntity1,
+        ),
       ).resolves.toEqual(testTeamEntity1);
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith(
         testBaseCreateTeamDto1,
-        testOrgMemberEntity1
+        testOrgMemberEntity1,
       );
     });
   });
@@ -86,13 +86,13 @@ describe('TeamController', () => {
         controller.checkSlug(
           testBaseSlugDto1,
           testOrganizationEntity1,
-          testUserEntity1
-        )
+          testUserEntity1,
+        ),
       ).resolves.toEqual(testBaseSlugTakenDto1);
       expect(service.hasOneBySlug).toBeCalledTimes(1);
       expect(service.hasOneBySlug).toBeCalledWith(
         testOrganizationEntity1,
-        testBaseSlugDto1.slug
+        testBaseSlugDto1.slug,
       );
 
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
@@ -100,13 +100,13 @@ describe('TeamController', () => {
         controller.checkSlug(
           testBaseSlugDto1,
           testOrganizationEntity1,
-          testUserEntity1
-        )
+          testUserEntity1,
+        ),
       ).resolves.toEqual({ slugTaken: false });
       expect(service.hasOneBySlug).toBeCalledTimes(2);
       expect(service.hasOneBySlug).toBeCalledWith(
         testOrganizationEntity1,
-        testBaseSlugDto1.slug
+        testBaseSlugDto1.slug,
       );
     });
   });
@@ -119,13 +119,13 @@ describe('TeamController', () => {
         controller.generateSlug(
           testBaseGenerateSlugDto1,
           testOrganizationEntity1,
-          testUserEntity1
-        )
+          testUserEntity1,
+        ),
       ).resolves.toEqual(testBaseGeneratedSlugDto1);
       expect(service.hasOneBySlug).toBeCalledTimes(1);
       expect(service.hasOneBySlug).toBeCalledWith(
         testOrganizationEntity1,
-        sluggedBase
+        sluggedBase,
       );
     });
   });
@@ -136,8 +136,8 @@ describe('TeamController', () => {
         controller.get(
           testOrganizationEntity1,
           testTeamEntity1,
-          testTeamMemberEntity1
-        )
+          testTeamMemberEntity1,
+        ),
       ).resolves.toEqual({
         team: testTeamRelation1,
         teamMember: testTeamMemberEntity1,
@@ -148,7 +148,7 @@ describe('TeamController', () => {
 
     it('should return null for teamMember if user is not a teamMember', async () => {
       await expect(
-        controller.get(testOrganizationEntity1, testTeamEntity1, undefined)
+        controller.get(testOrganizationEntity1, testTeamEntity1, undefined),
       ).resolves.toEqual({ team: testTeamRelation1, teamMember: null });
       expect(entityService.createTeamNoOrg).toBeCalledTimes(1);
       expect(entityService.createTeamNoOrg).toBeCalledWith(testTeamEntity1);
@@ -160,19 +160,19 @@ describe('TeamController', () => {
       controller.update(
         testBaseUpdateTeamDto1,
         testOrganizationEntity1,
-        testTeamEntity1
-      )
+        testTeamEntity1,
+      ),
     ).resolves.toEqual(testUpdatedTeamEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testTeamEntity1,
-      testBaseUpdateTeamDto1
+      testBaseUpdateTeamDto1,
     );
   });
 
   it('should delete the team', async () => {
     await expect(
-      controller.delete(testOrganizationEntity1, testTeamEntity1)
+      controller.delete(testOrganizationEntity1, testTeamEntity1),
     ).resolves.toBeUndefined();
     expect(service.delete).toBeCalledTimes(1);
     expect(service.delete).toBeCalledWith(testTeamEntity1);

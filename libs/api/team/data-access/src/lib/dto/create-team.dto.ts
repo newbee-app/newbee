@@ -1,6 +1,11 @@
-import { BaseCreateTeamDto } from '@newbee/shared/data-access';
-import { nameIsNotEmpty, slugIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  BaseCreateTeamDto,
+  iso8601DurationRegex,
+  nameIsNotEmpty,
+  slugIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 /**
  * The verifiable DTO sent from the frontend to the backend to create a new team.
@@ -19,4 +24,11 @@ export class CreateTeamDto implements BaseCreateTeamDto {
   @IsOptional()
   @IsNotEmpty({ message: slugIsNotEmpty })
   slug!: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration: string | null = null;
 }

@@ -10,8 +10,8 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchTab } from '@newbee/newbee/search/util';
 import {
-  SearchbarComponent,
   SearchResultComponent,
+  SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
 import type { QueryResult } from '@newbee/shared/util';
@@ -104,15 +104,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    */
   searchTerm = this.fb.group({ searchbar: ['', [Validators.required]] });
 
-  constructor(private readonly fb: FormBuilder) {}
-
   /**
-   * Sets the value of the searchbar to the initial search term.
-   * Also emits the suggest event with the current searchbar value.
+   * Emits the suggest event with the current searchbar value.
    */
-  ngOnInit(): void {
-    this.searchTerm.setValue({ searchbar: this.initialSearchTerm });
-
+  constructor(private readonly fb: FormBuilder) {
     this.searchTerm.controls.searchbar.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
@@ -120,6 +115,16 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           this.searchbar.emit(value ?? '');
         },
       });
+  }
+
+  /**
+   * Sets the value of the searchbar to the initial search term.
+   */
+  ngOnInit(): void {
+    this.searchTerm.setValue(
+      { searchbar: this.initialSearchTerm },
+      { emitEvent: false },
+    );
   }
 
   /**

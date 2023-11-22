@@ -2,27 +2,33 @@ import {
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
+  DocEntity,
   EntityService,
   OrganizationEntity,
+  QnaEntity,
+  TeamEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { newOrgConfigset } from '@newbee/api/shared/util';
+import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
+import dayjs from 'dayjs';
 import slugify from 'slug';
 import { v4 } from 'uuid';
 import { CreateOrganizationDto } from './dto';
@@ -39,10 +45,11 @@ export class OrganizationService {
   private readonly logger = new Logger(OrganizationService.name);
 
   constructor(
-    @InjectRepository(OrganizationEntity)
-    private readonly organizationRepository: EntityRepository<OrganizationEntity>,
+    private readonly em: EntityManager,
     private readonly entityService: EntityService,
-    private readonly solrCli: SolrCli
+    private readonly teamService: TeamService,
+    private readonly searchService: SearchService,
+    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -57,14 +64,20 @@ export class OrganizationService {
    */
   async create(
     createOrganizationDto: CreateOrganizationDto,
-    creator: UserEntity
+    creator: UserEntity,
   ): Promise<OrganizationEntity> {
-    const { name, slug } = createOrganizationDto;
+    const { name, slug, upToDateDuration } = createOrganizationDto;
     const id = v4();
-    const organization = new OrganizationEntity(id, name, slug, creator);
+    const organization = new OrganizationEntity(
+      id,
+      name,
+      slug,
+      upToDateDuration,
+      creator,
+    );
 
     try {
-      await this.organizationRepository.persistAndFlush(organization);
+      await this.em.persistAndFlush(organization);
     } catch (err) {
       this.logger.error(err);
 
@@ -90,12 +103,12 @@ export class OrganizationService {
       for (const orgMember of organization.members) {
         await this.solrCli.addDocs(
           id,
-          await this.entityService.createOrgMemberDocParams(orgMember)
+          await this.entityService.createOrgMemberDocParams(orgMember),
         );
       }
     } catch (err) {
       this.logger.error(err);
-      await this.organizationRepository.removeAndFlush(organization);
+      await this.em.removeAndFlush(organization);
       throw new InternalServerErrorException(internalServerError);
     }
 
@@ -112,7 +125,7 @@ export class OrganizationService {
    */
   async hasOneBySlug(slug: string): Promise<boolean> {
     try {
-      return !!(await this.organizationRepository.findOne({ slug }));
+      return !!(await this.em.findOne(OrganizationEntity, { slug }));
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -121,6 +134,7 @@ export class OrganizationService {
 
   /**
    * Finds the `OrganizationEntity` in the database associated with the given slug.
+   * Also builds the suggester for the org, if it's been at least a day since it was last built.
    *
    * @param slug The slug to look for.
    *
@@ -130,8 +144,27 @@ export class OrganizationService {
    */
   async findOneBySlug(slug: string): Promise<OrganizationEntity> {
     try {
-      return await this.organizationRepository.findOneOrFail({ slug });
+      let organization = await this.em.findOneOrFail(OrganizationEntity, {
+        slug,
+      });
+
+      // If it's been a day or more since the suggester was last built, build the suggester for the org
+      const now = new Date();
+      if (
+        now.getTime() - organization.suggesterBuiltAt.getTime() >=
+        86400000 /* 1 day in ms */
+      ) {
+        await this.searchService.buildSuggester(organization);
+        organization = this.em.assign(organization, { suggesterBuiltAt: now });
+        await this.em.flush();
+      }
+
+      return organization;
     } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+
       this.logger.error(err);
 
       if (err instanceof NotFoundError) {
@@ -154,20 +187,25 @@ export class OrganizationService {
    */
   async update(
     organization: OrganizationEntity,
-    updateOrganizationDto: UpdateOrganizationDto
+    updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<OrganizationEntity> {
-    const { slug } = updateOrganizationDto;
+    const { slug, upToDateDuration } = updateOrganizationDto;
     if (slug) {
       updateOrganizationDto.slug = slugify(slug);
     }
 
-    const updatedOrganization = this.organizationRepository.assign(
+    const updatedOrganization = this.em.assign(
       organization,
-      updateOrganizationDto
+      updateOrganizationDto,
     );
+
+    const { docs, qnas } = await this.changeUpToDateDuration(
+      organization,
+      upToDateDuration,
+    );
+
     try {
-      await this.organizationRepository.flush();
-      return updatedOrganization;
+      await this.em.flush();
     } catch (err) {
       this.logger.error(err);
 
@@ -177,6 +215,17 @@ export class OrganizationService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    try {
+      await this.solrCli.getVersionAndReplaceDocs(organization.id, [
+        ...docs.map((doc) => this.entityService.createDocDocParams(doc)),
+        ...qnas.map((qna) => this.entityService.createQnaDocParams(qna)),
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+    }
+
+    return updatedOrganization;
   }
 
   /**
@@ -190,7 +239,7 @@ export class OrganizationService {
     const { id } = organization;
     await this.entityService.safeToDelete(organization);
     try {
-      await this.organizationRepository.removeAndFlush(organization);
+      await this.em.removeAndFlush(organization);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -200,6 +249,74 @@ export class OrganizationService {
       await this.solrCli.deleteCollection(id);
     } catch (err) {
       this.logger.error(err);
+    }
+  }
+
+  /**
+   * Helper function for changing out-of-date datetimes for all child posts that use the organization's duration value.
+   *
+   * @param organization The organization whose duration changed.
+   * @param upToDateDuration The new value for the up-to-date duration as an ISO 8601 duration string.
+   *
+   * @returns All of the posts that were updated.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error.
+   */
+  async changeUpToDateDuration(
+    organization: OrganizationEntity,
+    upToDateDuration: string | undefined,
+  ): Promise<{ docs: DocEntity[]; qnas: QnaEntity[] }> {
+    if (
+      upToDateDuration === undefined ||
+      upToDateDuration === organization.upToDateDuration
+    ) {
+      return { docs: [], qnas: [] };
+    }
+
+    try {
+      let allDocs: DocEntity[] = [];
+      let allQnas: QnaEntity[] = [];
+
+      const teams = await this.em.find(TeamEntity, {
+        organization,
+        upToDateDuration: null,
+      });
+      teams.forEach(async (team) => {
+        const { docs, qnas } = await this.teamService.changeUpToDateDuration(
+          team,
+          upToDateDuration,
+        );
+        allDocs = allDocs.concat(docs);
+        allQnas = allQnas.concat(qnas);
+      });
+
+      const docs = await this.em.find(DocEntity, {
+        organization,
+        team: null,
+        upToDateDuration: null,
+      });
+      const qnas = await this.em.find(QnaEntity, {
+        organization,
+        team: null,
+        upToDateDuration: null,
+      });
+
+      const newDuration = dayjs.duration(upToDateDuration);
+      [...docs, ...qnas].forEach((post) => {
+        this.em.assign(post, {
+          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
+        });
+      });
+      allDocs = allDocs.concat(docs);
+      allQnas = allQnas.concat(qnas);
+
+      return { docs: allDocs, qnas: allQnas };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 }

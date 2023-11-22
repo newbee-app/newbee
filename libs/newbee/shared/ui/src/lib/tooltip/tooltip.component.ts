@@ -1,10 +1,11 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   PLATFORM_ID,
   ViewChild,
@@ -57,50 +58,53 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   @ViewChild('arrow') arrow!: ElementRef<HTMLDivElement>;
 
   /**
-   * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip.
+   * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip, which can be null on the server-side.
    */
-  private cleanup: () => void = () => {
-    return;
-  };
+  private cleanup: (() => void) | null = null;
 
-  constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private readonly platformId: object,
+    private readonly ngZone: NgZone,
+  ) {}
 
   /**
    * Compute the absolute position for the tooltip and its arrow.
    */
-  private async recompute(): Promise<void> {
-    // Compute position of the tooltip text
-    const { x, y, placement, middlewareData } = await computePosition(
-      this.content.nativeElement,
-      this.tooltip.nativeElement,
-      {
-        placement: this.placement,
-        middleware: [
-          offset(10),
-          flip(),
-          shift({ padding: 6 }),
-          arrow({ element: this.arrow.nativeElement }),
-        ],
-      }
-    );
-    Object.assign(this.tooltip.nativeElement.style, {
-      left: `${x}px`,
-      top: `${y}px`,
-    });
+  private recompute(): void {
+    this.ngZone.runOutsideAngular(async () => {
+      // Compute position of the tooltip text
+      const { x, y, placement, middlewareData } = await computePosition(
+        this.content.nativeElement,
+        this.tooltip.nativeElement,
+        {
+          placement: this.placement,
+          middleware: [
+            offset(10),
+            flip(),
+            shift({ padding: 6 }),
+            arrow({ element: this.arrow.nativeElement }),
+          ],
+        },
+      );
+      Object.assign(this.tooltip.nativeElement.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
 
-    // Compute position of the arrow
-    const staticSide = {
-      top: 'bottom',
-      right: 'left',
-      bottom: 'top',
-      left: 'right',
-    }[placement.split('-')[0] as string] as string;
-    const arrowX = middlewareData.arrow?.x;
-    const arrowY = middlewareData.arrow?.y;
-    Object.assign(this.arrow.nativeElement.style, {
-      left: arrowX ? `${arrowX}px` : '',
-      top: arrowY ? `${arrowY}px` : '',
-      [staticSide]: '-4px',
+      // Compute position of the arrow
+      const staticSide = {
+        top: 'bottom',
+        right: 'left',
+        bottom: 'top',
+        left: 'right',
+      }[placement.split('-')[0] as string] as string;
+      const arrowX = middlewareData.arrow?.x;
+      const arrowY = middlewareData.arrow?.y;
+      Object.assign(this.arrow.nativeElement.style, {
+        left: arrowX ? `${arrowX}px` : '',
+        top: arrowY ? `${arrowY}px` : '',
+        [staticSide]: '-4px',
+      });
     });
   }
 
@@ -108,23 +112,25 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
    * Assign cleanup and set up floating UI's autoUpdate with the tooltip.
    */
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (isPlatformServer(this.platformId)) {
       return;
     }
 
-    this.cleanup = autoUpdate(
-      this.content.nativeElement,
-      this.tooltip.nativeElement,
-      () => {
-        this.recompute();
-      }
-    );
+    this.ngZone.runOutsideAngular(() => {
+      this.cleanup = autoUpdate(
+        this.content.nativeElement,
+        this.tooltip.nativeElement,
+        () => {
+          this.recompute();
+        },
+      );
+    });
   }
 
   /**
    * Call cleanup to clean up the floating UI tooltip.
    */
   ngOnDestroy(): void {
-    this.cleanup();
+    this.cleanup?.();
   }
 }

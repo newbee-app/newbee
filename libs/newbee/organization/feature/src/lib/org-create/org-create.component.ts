@@ -1,15 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { organizationFeature } from '@newbee/newbee/organization/data-access';
 import {
-  CreateOrgForm,
-  createOrgFormToDto,
-} from '@newbee/newbee/organization/util';
-import {
-  httpFeature,
   OrganizationActions,
+  httpFeature,
 } from '@newbee/newbee/shared/data-access';
+import { BaseCreateOrganizationDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 /**
  * The smart UI for the create organization screen.
@@ -18,7 +15,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'newbee-org-create',
   templateUrl: './org-create.component.html',
 })
-export class OrgCreateComponent implements OnInit, OnDestroy {
+export class OrgCreateComponent implements OnDestroy {
   /**
    * Represents the form's current name value, for use in generating slugs.
    */
@@ -49,15 +46,13 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
    */
   httpClientError$ = this.store.select(httpFeature.selectError);
 
-  constructor(private readonly store: Store) {}
-
   /**
    * Set up the `name$` subject to generate slug.
    */
-  ngOnInit(): void {
+  constructor(private readonly store: Store) {
     this.name$.pipe(debounceTime(600), distinctUntilChanged()).subscribe({
       next: (name) => {
-        this.store.dispatch(OrganizationActions.generateSlug({ name }));
+        store.dispatch(OrganizationActions.generateSlug({ name }));
       },
     });
   }
@@ -99,13 +94,11 @@ export class OrgCreateComponent implements OnInit, OnDestroy {
   /**
    * When the dumb UI emits a create event, send a create action with the value of the org form.
    *
-   * @param createOrgForm The values to send to the backend.
+   * @param createOrganizationDto The values to send to the backend.
    */
-  onCreate(createOrgForm: Partial<CreateOrgForm>): void {
+  onCreate(createOrganizationDto: BaseCreateOrganizationDto): void {
     this.store.dispatch(
-      OrganizationActions.createOrg({
-        createOrganizationDto: createOrgFormToDto(createOrgForm),
-      })
+      OrganizationActions.createOrg({ createOrganizationDto }),
     );
   }
 }

@@ -15,7 +15,7 @@ export class OrgMemberDocParams implements SolrDocFields, AddDocParams {
     readonly user_name: string,
     readonly user_display_name: string | null,
     readonly user_phone_number: string | null,
-    readonly org_role: OrgRoleEnum
+    readonly org_role: OrgRoleEnum,
   ) {}
 
   [docFields: string]: DocInput;
@@ -30,7 +30,7 @@ export class TeamDocParams implements SolrDocFields, AddDocParams {
   constructor(
     readonly id: string,
     readonly slug: string,
-    readonly team_name: string
+    readonly team_name: string,
   ) {}
 
   [docFields: string]: DocInput;
@@ -49,11 +49,11 @@ export class DocDocParams implements SolrDocFields, AddDocParams {
     readonly created_at: Date,
     readonly updated_at: Date,
     readonly marked_up_to_date_at: Date,
-    readonly up_to_date: boolean,
+    readonly out_of_date_at: Date,
     readonly title: string,
     readonly creator: string | null,
     readonly maintainer: string | null,
-    readonly doc_txt: string
+    readonly doc_txt: string,
   ) {}
 
   [docFields: string]: DocInput;
@@ -72,12 +72,12 @@ export class QnaDocParams implements SolrDocFields, AddDocParams {
     readonly created_at: Date,
     readonly updated_at: Date,
     readonly marked_up_to_date_at: Date,
-    readonly up_to_date: boolean,
+    readonly out_of_date_at: Date,
     readonly title: string,
     readonly creator: string | null,
     readonly maintainer: string | null,
     readonly question_txt: string | null,
-    readonly answer_txt: string | null
+    readonly answer_txt: string | null,
   ) {}
 
   [docFields: string]: DocInput;

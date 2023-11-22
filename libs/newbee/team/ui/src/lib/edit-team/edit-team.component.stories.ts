@@ -1,18 +1,32 @@
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   OrgRoleEnum,
   TeamRoleEnum,
   testOrgMember1,
+  testOrganization1,
   testTeam1,
   testTeamMember1,
 } from '@newbee/shared/util';
-import { Meta, StoryObj } from '@storybook/angular';
+import {
+  Meta,
+  StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
+} from '@storybook/angular';
 import { EditTeamComponent } from './edit-team.component';
 
 export default {
   title: 'EditTeamComponent',
   component: EditTeamComponent,
+  decorators: [
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    componentWrapperDecorator(
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+    ),
+  ],
   args: {
+    organization: testOrganization1,
     team: testTeam1,
     orgMember: testOrgMember1,
     teamMember: testTeamMember1,
@@ -40,6 +54,12 @@ export const TeamModerator: Story = {
   args: {
     orgMember: { ...testOrgMember1, role: OrgRoleEnum.Member },
     teamMember: { ...testTeamMember1, role: TeamRoleEnum.Moderator },
+  },
+};
+
+export const TeamWithDuration: Story = {
+  args: {
+    team: { ...testTeam1, upToDateDuration: 'P1Y' },
   },
 };
 

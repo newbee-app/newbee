@@ -8,12 +8,14 @@ import {
 } from '@newbee/newbee/shared/ui';
 import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  compareTeamRoles,
   Keyword,
   TeamRoleEnum,
+  compareTeamRoles,
+  type Organization,
   type TeamMember,
   type TeamNoOrg,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 
 /**
  * The dumb UI for viewing the details of a team.
@@ -47,6 +49,11 @@ export class ViewTeamComponent {
   readonly searchResultFormat = SearchResultFormat;
 
   /**
+   * The organization the team is in.
+   */
+  @Input() organization!: Organization;
+
+  /**
    * Information about the team we're looking at.
    */
   @Input() team!: TeamNoOrg;
@@ -65,6 +72,17 @@ export class ViewTeamComponent {
    * Where to navigate to, relative to the current team.
    */
   @Output() teamNavigate = new EventEmitter<string>();
+
+  /**
+   * The team's up-to-date duration as a string.
+   */
+  get teamDurationStr(): string {
+    return dayjs
+      .duration(
+        this.team.team.upToDateDuration ?? this.organization.upToDateDuration,
+      )
+      .humanize();
+  }
 
   /**
    * A string detailing how many users are members of the team.

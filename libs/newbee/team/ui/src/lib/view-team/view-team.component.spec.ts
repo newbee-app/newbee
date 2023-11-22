@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { testTeamRelation1 } from '@newbee/shared/util';
+import { testOrganization1, testTeamRelation1 } from '@newbee/shared/util';
 import { ViewTeamComponent } from './view-team.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -21,6 +21,7 @@ describe('ViewTeamComponent', () => {
     fixture = TestBed.createComponent(ViewTeamComponent);
     component = fixture.componentInstance;
 
+    component.organization = testOrganization1;
     component.team = testTeamRelation1;
 
     jest.spyOn(component.orgNavigate, 'emit');

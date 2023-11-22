@@ -37,7 +37,7 @@ export function inputErrorMessage(control: AbstractControl | null): string {
  * @returns `true` if the input is clean, `false` otherwise.
  */
 export function inputIsClean(control: AbstractControl | null): boolean {
-  return !!control?.pristine && control.untouched;
+  return !!control?.pristine || !!control?.untouched;
 }
 
 /**
@@ -59,5 +59,9 @@ export function inputIsValid(control: AbstractControl | null): boolean {
  * @returns `true` if the input should display an error, `false` otherwise.
  */
 export function inputDisplayError(control: AbstractControl | null): boolean {
+  if (!control) {
+    return false;
+  }
+
   return !inputIsClean(control) && !inputIsValid(control);
 }

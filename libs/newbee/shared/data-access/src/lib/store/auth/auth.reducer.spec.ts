@@ -1,8 +1,6 @@
 import {
   testBaseCsrfTokenAndDataDto1,
   testBaseUserRelationAndOptionsDto1,
-} from '@newbee/shared/data-access';
-import {
   testOrgMemberInviteRelation1,
   testUser1,
   testUser2,
@@ -11,7 +9,7 @@ import {
 import { CookieActions } from '../cookie';
 import { UserActions } from '../user';
 import { AuthActions } from './auth.actions';
-import { authFeature, AuthState, initialAuthState } from './auth.reducer';
+import { AuthState, authFeature, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
   const stateAfterLoginSuccess: AuthState = {

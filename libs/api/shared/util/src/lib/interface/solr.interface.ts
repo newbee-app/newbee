@@ -68,9 +68,9 @@ export interface SolrDocFields {
   marked_up_to_date_at?: Date | string;
 
   /**
-   * Whether the post is up-to-date, if the doc is a doc or a qna.
+   * When the post should be considered out-of-date, if the doc is a doc or a qna.
    */
-  up_to_date?: boolean;
+  out_of_date_at?: Date | string;
 
   /**
    * The title of the post, if the doc is a doc or a qna.
@@ -139,6 +139,11 @@ export interface SolrDoc extends SolrDocFields, DocResponse {
    * @inheritdoc
    */
   marked_up_to_date_at?: string;
+
+  /**
+   * @inheritdoc
+   */
+  out_of_date_at?: string;
 
   /**
    * @inheritdoc
@@ -221,7 +226,7 @@ export interface PostSolrDoc extends SolrDoc {
   /**
    * @inheritdoc
    */
-  up_to_date: boolean;
+  out_of_date_at: string;
 
   /**
    * @inheritdoc

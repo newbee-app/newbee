@@ -3,8 +3,12 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { apiVersion, testBaseUpdateUserDto1 } from '@newbee/shared/data-access';
-import { Keyword, testUser1 } from '@newbee/shared/util';
+import { apiVersion } from '@newbee/shared/data-access';
+import {
+  Keyword,
+  testBaseUpdateUserDto1,
+  testUser1,
+} from '@newbee/shared/util';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -28,7 +32,7 @@ describe('UserService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(UserService.baseApiUrl).toEqual(
-        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`
+        `/${Keyword.Api}/v${apiVersion.user}/${Keyword.User}`,
       );
     });
   });

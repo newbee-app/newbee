@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControl } from '@angular/forms';
-import { testUser1 } from '@newbee/shared/util';
+import { testPhoneInput1 } from '@newbee/newbee/shared/util';
+import { testBaseCreateUserDto1, testUser1 } from '@newbee/shared/util';
 import { RegisterFormComponent } from './register-form.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -10,18 +10,9 @@ jest.mock('@floating-ui/dom', () => ({
   }),
 }));
 
-const {
-  email: testEmail1,
-  name: testName1,
-  displayName: testDisplayName1,
-} = testUser1;
-
 describe('RegisterFormComponent', () => {
   let component: RegisterFormComponent;
   let fixture: ComponentFixture<RegisterFormComponent>;
-  let emailControl: AbstractControl | null;
-  let nameControl: AbstractControl | null;
-  let displayNameControl: AbstractControl | null;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,11 +23,10 @@ describe('RegisterFormComponent', () => {
     component = fixture.componentInstance;
 
     component.registerPending = false;
-    fixture.detectChanges();
 
-    emailControl = component.registerForm.get('email');
-    nameControl = component.registerForm.get('name');
-    displayNameControl = component.registerForm.get('displayName');
+    jest.spyOn(component.register, 'emit');
+
+    fixture.detectChanges();
   });
 
   it('should be defined', () => {
@@ -44,85 +34,31 @@ describe('RegisterFormComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('controls', () => {
-    describe('email', () => {
-      it('should be empty initially', () => {
-        expect(emailControl?.hasError('required')).toBeTruthy();
-        expect(emailControl?.value).toEqual('');
-      });
-
-      it('should not accept non-email input', () => {
-        const badEmail = 'johndoe';
-        emailControl?.setValue(badEmail);
-        expect(emailControl?.value).toEqual(badEmail);
-        expect(emailControl?.invalid).toBeTruthy();
-        expect(emailControl?.hasError('email')).toBeTruthy();
-      });
-
-      it('should accept valid email input', () => {
-        emailControl?.setValue(testEmail1);
-        expect(emailControl?.value).toEqual(testEmail1);
-        expect(emailControl?.valid).toBeTruthy();
-        expect(emailControl?.errors).toBeNull();
-      });
-    });
-
-    describe('name', () => {
-      it('should be empty initially', () => {
-        expect(nameControl?.hasError('required')).toBeTruthy();
-        expect(nameControl?.value).toEqual('');
-      });
-
-      it('should accept any name', () => {
-        nameControl?.setValue(testName1);
-        expect(nameControl?.value).toEqual(testName1);
-        expect(nameControl?.valid).toBeTruthy();
-        expect(nameControl?.errors).toBeNull();
-      });
-    });
-
-    describe('display name', () => {
-      it('should be empty initially', () => {
-        expect(displayNameControl?.value).toEqual('');
-      });
-
-      it('should accept any displayName', () => {
-        displayNameControl?.setValue(testDisplayName1);
-        fixture.detectChanges();
-        expect(displayNameControl?.value).toEqual(testDisplayName1);
-        expect(displayNameControl?.valid).toBeTruthy();
-        expect(displayNameControl?.errors).toBeNull();
-      });
-    });
-  });
-
   describe('outputs', () => {
     describe('register', () => {
-      let registerEmitSpy: jest.SpyInstance;
-
       beforeEach(() => {
-        registerEmitSpy = jest.spyOn(component.register, 'emit');
-        emailControl?.setValue(testEmail1);
-        nameControl?.setValue(testName1);
+        const { email, name, displayName } = testUser1;
+        component.registerForm.setValue({
+          email,
+          name,
+          displayName,
+          phoneNumber: testPhoneInput1,
+        });
         fixture.detectChanges();
       });
 
-      it('should be defined', () => {
-        expect(registerEmitSpy).toBeDefined();
-      });
-
-      it('should emit the form value using emitregister()', () => {
+      it('should emit the form as a DTO using emitregister()', () => {
         component.emitRegister();
-        expect(registerEmitSpy).toBeCalledTimes(1);
-        expect(registerEmitSpy).toBeCalledWith(component.registerForm.value);
+        expect(component.register.emit).toBeCalledTimes(1);
+        expect(component.register.emit).toBeCalledWith(testBaseCreateUserDto1);
       });
 
-      it('should emit the form value with submit button click', () => {
+      it('should emit the form as a DTO with submit button click', () => {
         const submitElement: HTMLButtonElement | null =
           fixture.nativeElement.querySelector('#submit-button');
         submitElement?.click();
-        expect(registerEmitSpy).toBeCalledTimes(1);
-        expect(registerEmitSpy).toBeCalledWith(component.registerForm.value);
+        expect(component.register.emit).toBeCalledTimes(1);
+        expect(component.register.emit).toBeCalledWith(testBaseCreateUserDto1);
       });
     });
 

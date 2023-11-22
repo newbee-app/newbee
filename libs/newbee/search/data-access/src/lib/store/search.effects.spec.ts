@@ -10,8 +10,9 @@ import {
   testBaseQueryResultDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultDto1,
-} from '@newbee/shared/data-access';
-import { testOrganization1 } from '@newbee/shared/util';
+  testOrganization1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -31,7 +32,7 @@ describe('SearchEffects', () => {
       providers: [
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrganization1 },
+            org: { selectedOrganization: testOrganizationRelation1 },
           },
         }),
         provideMockActions(() => actions$),
@@ -71,7 +72,7 @@ describe('SearchEffects', () => {
         expect(service.search).toBeCalledTimes(1);
         expect(service.search).toBeCalledWith(
           testBaseQueryDto1,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });
@@ -115,7 +116,7 @@ describe('SearchEffects', () => {
         expect(service.suggest).toBeCalledTimes(1);
         expect(service.suggest).toBeCalledWith(
           testBaseSuggestDto1,
-          testOrganization1.slug
+          testOrganization1.slug,
         );
       });
     });

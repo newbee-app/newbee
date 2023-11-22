@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
-import { testBaseTokenDto1 } from '@newbee/shared/data-access';
-import { testOrgMemberRelation1 } from '@newbee/shared/util';
+import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import { testBaseTokenDto1, testOrgMemberRelation1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
@@ -21,6 +21,7 @@ describe('InviteEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
+        provideRouter([{ path: '**', component: EmptyComponent }]),
         InviteEffects,
         {
           provide: InviteService,
@@ -29,18 +30,14 @@ describe('InviteEffects', () => {
             declineInvite: jest.fn().mockReturnValue(of(null)),
           }),
         },
-        {
-          provide: Router,
-          useValue: createMock<Router>({
-            navigate: jest.fn().mockResolvedValue(true),
-          }),
-        },
       ],
     });
 
     effects = TestBed.inject(InviteEffects);
     service = TestBed.inject(InviteService);
     router = TestBed.inject(Router);
+
+    jest.spyOn(router, 'navigate');
   });
 
   it('should be defined', () => {

@@ -10,8 +10,9 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testOrganization1,
   testOrgMemberRelation1,
+  testOrganization1,
+  testOrganizationRelation1,
   testTeamMember1,
   testTeamRelation1,
 } from '@newbee/shared/util';
@@ -103,13 +104,13 @@ describe('isTeamAdminGuard', () => {
       store.setState({
         [Keyword.Organization]: {
           ...initialOrganizationState,
-          selectedOrganization: testOrganization1,
+          selectedOrganization: testOrganizationRelation1,
         },
         [Keyword.Team]: initialTeamState,
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
       expect(location.path()).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}`
+        `/${ShortUrl.Organization}/${testOrganization1.slug}`,
       );
     });
 
@@ -117,7 +118,7 @@ describe('isTeamAdminGuard', () => {
       store.setState({
         [Keyword.Organization]: {
           ...initialOrganizationState,
-          selectedOrganization: testOrganization1,
+          selectedOrganization: testOrganizationRelation1,
         },
         [Keyword.Team]: {
           ...initialTeamState,
@@ -126,7 +127,7 @@ describe('isTeamAdminGuard', () => {
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
       expect(location.path()).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeamRelation1.team.slug}`
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeamRelation1.team.slug}`,
       );
     });
   });

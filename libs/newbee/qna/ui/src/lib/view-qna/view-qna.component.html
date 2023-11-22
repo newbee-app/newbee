@@ -1,0 +1,160 @@
+<div class="flex flex-col flex-nowrap gap-y-4 mt-mid">
+  <div id="question-div" class="border border-neutral-content p-4 rounded-box">
+    <div class="flex flex-row flex-nowrap gap-x-2 items-baseline">
+      <h3>{{ qna.qna.title }}</h3>
+      <newbee-up-to-date-btn [post]="qna.qna"></newbee-up-to-date-btn>
+    </div>
+
+    <p class="opacity-50">
+      Asked by
+      <a
+        *ngIf="qna.creator; else noCreator"
+        (click)="emitOrgNavigate(shortUrl.Member, qna.creator.orgMember.slug)"
+        class="link"
+        >{{ userDisplayName(qna.creator.user) }}</a
+      >
+      <ng-template #noCreator>a deleted user</ng-template>
+
+      to
+      <a
+        *ngIf="qna.team; else noTeam"
+        (click)="emitOrgNavigate(shortUrl.Team, qna.team.slug)"
+        class="link"
+        >{{ qna.team.name }}</a
+      >
+      <ng-template #noTeam>the whole org</ng-template>
+    </p>
+
+    <p class="opacity-50">
+      Created
+      <span [title]="qna.qna.createdAt | date: 'medium'">
+        {{ dayjs(qna.qna.createdAt).fromNow() }}
+      </span>
+
+      | Updated
+      <span [title]="qna.qna.updatedAt | date: 'medium'">{{
+        dayjs(qna.qna.updatedAt).fromNow()
+      }}</span>
+
+      | {{ upToDate ? 'Expires' : 'Expired' }}
+      <span [title]="qna.qna.outOfDateAt | date: 'medium'">{{
+        dayjs(qna.qna.outOfDateAt).fromNow()
+      }}</span>
+    </p>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <div
+        *ngIf="hasQuestionPermissions || hasUpToDatePermissions"
+        class="flex flex-row flex-wrap gap-2 mt-1"
+      >
+        <button
+          type="button"
+          *ngIf="hasQuestionPermissions"
+          (click)="emitQnaNavigate(keyword.Edit)"
+          class="btn btn-sm btn-info"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          *ngIf="hasUpToDatePermissions"
+          (click)="markAsUpToDate.emit()"
+          [disabled]="upToDatePending"
+          class="btn btn-sm btn-success"
+        >
+          <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
+          Mark as up-to-date
+        </button>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg('up-to-date')"
+        [text]="httpClientErrorMsg('up-to-date')"
+      ></newbee-alert>
+    </div>
+
+    <ng-container *ngIf="qna.qna.questionHtml">
+      <div class="divider mt-2 mb-0"></div>
+      <div [innerHTML]="qna.qna.questionHtml" class="prose"></div>
+    </ng-container>
+  </div>
+
+  <div id="answer-div" class="flex flex-row flex-nowrap gap-x-2 items-center">
+    <!-- arrow-right svg -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-10 h-10"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+      />
+    </svg>
+
+    <div
+      class="border p-4 rounded-box w-full"
+      [ngClass]="{
+        'border-success': borderSuccess,
+        'border-error': !borderSuccess
+      }"
+    >
+      <ng-container *ngIf="qna.qna.answerHtml; else noAnswer">
+        <p *ngIf="qna.maintainer; else noMaintainer" class="opacity-50">
+          Maintained by
+          <a
+            (click)="
+              emitOrgNavigate(shortUrl.Member, qna.maintainer.orgMember.slug)
+            "
+            class="link"
+            >{{ userDisplayName(qna.maintainer.user) }}</a
+          >
+        </p>
+
+        <ng-template #noMaintainer>
+          <p class="opacity-50">Not actively maintained</p>
+        </ng-template>
+
+        <p class="opacity-50">
+          Marked up-to-date
+          <span [title]="qna.qna.markedUpToDateAt | date: 'medium'">{{
+            dayjs(qna.qna.markedUpToDateAt).fromNow()
+          }}</span>
+        </p>
+
+        <button
+          type="button"
+          *ngIf="hasAnswerPermissions"
+          (click)="emitQnaNavigate(keyword.Edit)"
+          class="btn btn-sm btn-info mt-1"
+        >
+          Edit
+        </button>
+
+        <div class="divider mt-2 mb-0"></div>
+
+        <div [innerHTML]="qna.qna.answerHtml" class="prose"></div>
+      </ng-container>
+
+      <ng-template #noAnswer>
+        <h4>This question has not been answered</h4>
+
+        <ng-container *ngIf="hasAnswerPermissions">
+          <div class="divider mt-2 mb-0"></div>
+
+          <p class="prose">
+            Would you like to
+            <a (click)="emitQnaNavigate(keyword.Edit)" class="link link-info"
+              >provide one?</a
+            >
+          </p>
+        </ng-container>
+      </ng-template>
+    </div>
+  </div>
+</div>

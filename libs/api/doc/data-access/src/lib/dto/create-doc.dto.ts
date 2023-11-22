@@ -1,6 +1,11 @@
-import { BaseCreateDocDto } from '@newbee/shared/data-access';
-import { docIsNotEmpty, titleIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty } from 'class-validator';
+import {
+  BaseCreateDocDto,
+  docIsNotEmpty,
+  iso8601DurationRegex,
+  titleIsNotEmpty,
+  upToDateDurationMatches,
+} from '@newbee/shared/util';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 /**
  * The verifiable DTO sent from the frontend to the backed to create a new doc.
@@ -12,6 +17,13 @@ export class CreateDocDto implements BaseCreateDocDto {
    */
   @IsNotEmpty({ message: titleIsNotEmpty })
   title!: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @Matches(iso8601DurationRegex, { message: upToDateDurationMatches })
+  upToDateDuration: string | null = null;
 
   /**
    * @inheritdoc

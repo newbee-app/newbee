@@ -36,7 +36,7 @@ export default (): AppConfig => ({
       winston.format.timestamp(),
       winston.format.errors({ stack: true }),
       winston.format.splat(),
-      winston.format.json()
+      winston.format.json(),
     ),
     defaultMeta: {
       service: 'api',
@@ -50,7 +50,7 @@ export default (): AppConfig => ({
       new winston.transports.Console({
         format: winston.format.combine(
           winston.format.colorize(),
-          winston.format.simple()
+          winston.format.simple(),
         ),
       }),
     ],

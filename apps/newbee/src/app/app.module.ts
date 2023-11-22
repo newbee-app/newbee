@@ -1,5 +1,5 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { APP_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import {
@@ -34,7 +34,7 @@ import { AppRoutingModule } from './routing';
 @NgModule({
   imports: [
     // third party modules
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule,
     HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -62,6 +62,10 @@ import { AppRoutingModule } from './routing';
     AppRoutingModule,
   ],
   providers: [
+    {
+      provide: APP_ID,
+      useValue: 'serverApp',
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HeaderInterceptor,
