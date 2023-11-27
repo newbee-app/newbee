@@ -7,6 +7,7 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testBaseCreateDocDto1,
+  testBaseDocAndMemberDto1,
   testDoc1,
   testOrganization1,
 } from '@newbee/shared/util';
@@ -57,6 +58,53 @@ describe('DocService', () => {
       );
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual(testBaseCreateDocDto1);
+
+      req.flush(testDoc1);
+    });
+  });
+
+  describe('get', () => {
+    it('should send out a get request', (done) => {
+      service.get(testDoc1.slug, testOrganization1.slug).subscribe({
+        next: (docAndMemberDto) => {
+          try {
+            expect(docAndMemberDto).toEqual(testBaseDocAndMemberDto1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `${DocService.baseApiUrl(testOrganization1.slug)}/${testDoc1.slug}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testBaseDocAndMemberDto1);
+    });
+  });
+
+  describe('markUpToDate', () => {
+    it('should send out a post request', (done) => {
+      service.markUpToDate(testDoc1.slug, testOrganization1.slug).subscribe({
+        next: (doc) => {
+          try {
+            expect(doc).toEqual(testDoc1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `${DocService.baseApiUrl(testOrganization1.slug)}/${testDoc1.slug}`,
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual({});
 
       req.flush(testDoc1);
     });

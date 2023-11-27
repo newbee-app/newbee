@@ -14,6 +14,11 @@ export interface DocState {
    * Whether the user is waiting for a response for creating a doc.
    */
   pendingCreate: boolean;
+
+  /**
+   * Whether the user is waiting for a response for marking a doc up-to-date.
+   */
+  pendingUpToDate: boolean;
 }
 
 /**
@@ -21,6 +26,7 @@ export interface DocState {
  */
 export const initialDocState: DocState = {
   pendingCreate: false,
+  pendingUpToDate: false,
 };
 
 /**
@@ -38,7 +44,13 @@ export const docFeature = createFeature({
       }),
     ),
     on(
+      DocActions.markDocAsUpToDate,
+      (state): DocState => ({ ...state, pendingUpToDate: true }),
+    ),
+    on(
       DocActions.createDocSuccess,
+      DocActions.editDocSuccess,
+      DocActions.resetSelectedDoc,
       HttpActions.clientError,
       RouterActions.routerRequest,
       (): DocState => initialDocState,

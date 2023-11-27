@@ -3,6 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   DocActions,
+  initialDocstate,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
@@ -10,7 +11,9 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateDocDto1,
+  testBaseDocAndMemberDto1,
   testDoc1,
+  testDocRelation1,
   testOrganization1,
   testOrganizationRelation1,
 } from '@newbee/shared/util';
@@ -39,6 +42,10 @@ describe('DocEffects', () => {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
+            [Keyword.Doc]: {
+              ...initialDocstate,
+              selectedDoc: testDocRelation1,
+            },
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -47,6 +54,8 @@ describe('DocEffects', () => {
           provide: DocService,
           useValue: createMock<DocService>({
             create: jest.fn().mockReturnValue(of(testDoc1)),
+            get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
+            markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
           }),
         },
       ],
@@ -128,6 +137,70 @@ describe('DocEffects', () => {
       expect(effects.createDocSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('getDoc$', () => {
+    it('should fire getDocSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: DocActions.getDoc({ slug: testDoc1.slug }),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.getDocSuccess({
+          docAndMemberDto: testBaseDocAndMemberDto1,
+        }),
+      });
+      expect(effects.getDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).toBeCalledTimes(1);
+        expect(service.get).toBeCalledWith(
+          testDoc1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: DocActions.getDoc({ slug: testDoc1.slug }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.get).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('markDocAsUpToDate$', () => {
+    it('should fire editDocSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: DocActions.markDocAsUpToDate(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.editDocSuccess({ doc: testDoc1 }),
+      });
+      expect(effects.markDocAsUpToDate$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.markUpToDate).toBeCalledTimes(1);
+        expect(service.markUpToDate).toBeCalledWith(
+          testDoc1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedDoc isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: DocActions.markDocAsUpToDate(),
+      });
+      const expected$ = hot('-');
+      expect(effects.markDocAsUpToDate$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.markUpToDate).not.toBeCalled();
       });
     });
   });

@@ -198,7 +198,7 @@ describe('QnaEffects', () => {
       });
     });
 
-    it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
+    it(`should do nothing if selectedOrganization or selectedQna isn't set`, () => {
       store.setState({});
       actions$ = hot('a', { a: QnaActions.markQnaAsUpToDate() });
       const expected$ = hot('-');

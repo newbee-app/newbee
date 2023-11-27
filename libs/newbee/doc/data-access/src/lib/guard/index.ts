@@ -1,1 +1,1 @@
-
+export * from './doc.guard';

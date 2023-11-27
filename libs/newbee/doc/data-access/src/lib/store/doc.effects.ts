@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import {
   DocActions,
   catchHttpClientError,
+  catchHttpScreenError,
+  docFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
@@ -77,6 +79,53 @@ export class DocEffects {
     },
     { dispatch: false },
   );
+
+  getDoc$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DocActions.getDoc),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ slug }, selectedOrganization]) => {
+        return this.docService
+          .get(slug, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map((docAndMemberDto) => {
+              return DocActions.getDocSuccess({ docAndMemberDto });
+            }),
+            catchError(catchHttpScreenError),
+          );
+      }),
+    );
+  });
+
+  markDocAsUpToDate$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DocActions.markDocAsUpToDate),
+      concatLatestFrom(() => [
+        this.store.select(docFeature.selectSelectedDoc),
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ]),
+      filter(
+        ([, selectedDoc, selectedOrganization]) =>
+          !!(selectedDoc && selectedOrganization),
+      ),
+      switchMap(([, selectedDoc, selectedOrganization]) => {
+        return this.docService
+          .markUpToDate(
+            selectedDoc?.doc.slug as string,
+            selectedOrganization?.organization.slug as string,
+          )
+          .pipe(
+            map((doc) => {
+              return DocActions.editDocSuccess({ doc });
+            }),
+            catchError((err) => catchHttpClientError(err, () => 'up-to-date')),
+          );
+      }),
+    );
+  });
 
   constructor(
     private readonly actions$: Actions,

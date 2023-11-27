@@ -21,6 +21,9 @@ import {
   type DocNoOrg,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 /**
  * The dumb UI for viewing a doc.

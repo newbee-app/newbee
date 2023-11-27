@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseCreateDocDto, Doc, Keyword } from '@newbee/shared/util';
+import {
+  BaseCreateDocDto,
+  BaseDocAndMemberDto,
+  Doc,
+  Keyword,
+} from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -32,5 +37,34 @@ export class DocService {
    */
   create(orgSlug: string, createDocDto: BaseCreateDocDto): Observable<Doc> {
     return this.http.post<Doc>(DocService.baseApiUrl(orgSlug), createDocDto);
+  }
+
+  /**
+   * Sends a request to the API to get a doc in the given organization with the given slug.
+   *
+   * @param docSlug The slug of the doc to get.
+   * @param orgSlug The org to look in.
+   *
+   * @returns An observable containing the requested doc.
+   */
+  get(docSlug: string, orgSlug: string): Observable<BaseDocAndMemberDto> {
+    return this.http.get<BaseDocAndMemberDto>(
+      `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
+    );
+  }
+
+  /**
+   * Sends a request to the API to mark a doc as up-to-date.
+   *
+   * @param docSlug The slug of the doc to update.
+   * @param orgSlug The org to look in.
+   *
+   * @returns An observable containing the udpated doc.
+   */
+  markUpToDate(docSlug: string, orgSlug: string): Observable<Doc> {
+    return this.http.post<Doc>(
+      `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
+      {},
+    );
   }
 }

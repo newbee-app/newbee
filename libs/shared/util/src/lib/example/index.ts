@@ -17,6 +17,7 @@ import {
   BaseCreateTeamMemberDto,
   BaseCreateUserDto,
   BaseCsrfTokenAndDataDto,
+  BaseDocAndMemberDto,
   BaseEmailDto,
   BaseGenerateSlugDto,
   BaseGeneratedSlugDto,
@@ -608,6 +609,15 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   docMarkdoc: 'new raw markdoc',
   upToDateDuration: 'P1Y',
   team: testTeam1.slug,
+};
+
+/**
+ * An example instance of BaseDocAndMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseDocAndMemberDto1: BaseDocAndMemberDto = {
+  doc: testDocRelation1,
+  teamMember: testTeamMember1,
 };
 
 /**

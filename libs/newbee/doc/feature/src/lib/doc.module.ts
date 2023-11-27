@@ -5,10 +5,12 @@ import {
   DocService,
   docFeature,
 } from '@newbee/newbee/doc/data-access';
-import { CreateDocComponent } from '@newbee/newbee/doc/ui';
+import { CreateDocComponent, ViewDocComponent } from '@newbee/newbee/doc/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { DocCreateComponent } from './doc-create';
+import { DocRootComponent } from './doc-root';
+import { DocViewComponent } from './doc-view';
 import { DocRoutingModule } from './routing';
 
 @NgModule({
@@ -17,9 +19,10 @@ import { DocRoutingModule } from './routing';
     StoreModule.forFeature(docFeature),
     EffectsModule.forFeature([DocEffects]),
     CreateDocComponent,
+    ViewDocComponent,
     DocRoutingModule,
   ],
   providers: [DocService],
-  declarations: [DocCreateComponent],
+  declarations: [DocCreateComponent, DocRootComponent, DocViewComponent],
 })
 export class DocModule {}
