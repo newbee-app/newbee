@@ -1,130 +1,155 @@
 import {
   OrgMember,
   OrgRoleEnum,
-  QnaNoOrg,
+  QnaRelation,
   TeamMember,
   TeamRoleEnum,
   testOrgMember1,
+  testQna1,
   testQnaRelation1,
   testTeamMember1,
 } from '@newbee/shared/util';
 import {
   userHasAnswerPermissions,
-  userHasDeletePermissions,
   userHasQuestionPermissions,
   userHasUpToDatePermissions,
 } from './permissions.function';
 
 describe('PermissionsFunction', () => {
-  const noMaintainerQna: QnaNoOrg = { ...testQnaRelation1, maintainer: null };
-  const noCreatorQna: QnaNoOrg = { ...testQnaRelation1, creator: null };
-  const noCreatorMaintainerQna: QnaNoOrg = {
+  const orgModerator: OrgMember = { role: OrgRoleEnum.Moderator, slug: 'bad' };
+  const orgMember: OrgMember = { role: OrgRoleEnum.Member, slug: 'bad' };
+  const teamModerator: TeamMember = { role: TeamRoleEnum.Moderator };
+  const teamMember: TeamMember = { role: TeamRoleEnum.Member };
+  const memberMaintainer: OrgMember = {
+    ...testOrgMember1,
+    role: OrgRoleEnum.Member,
+  };
+  const memberCreator: OrgMember = {
+    ...testOrgMember1,
+    role: OrgRoleEnum.Member,
+  };
+  const qnaNullMaintainer: QnaRelation = {
     ...testQnaRelation1,
-    creator: null,
     maintainer: null,
   };
-  const noTeamQna: QnaNoOrg = { ...testQnaRelation1, team: null };
-
-  const memberOrgMember: OrgMember = { role: OrgRoleEnum.Member, slug: 'bad' };
-  const memberTeamMember: TeamMember = { role: TeamRoleEnum.Member };
-
-  type Combo = [QnaNoOrg, OrgMember | null, TeamMember | null];
+  const qnaNullCreator: QnaRelation = { ...testQnaRelation1, creator: null };
+  const qnaNullTeam: QnaRelation = { ...testQnaRelation1, team: null };
 
   describe('userHasQuestionPermissions', () => {
     it('should return true if the user has right permissions', () => {
-      const truthyCombos: Combo[] = [
-        [testQnaRelation1, testOrgMember1, testTeamMember1],
-        [noMaintainerQna, testOrgMember1, testTeamMember1],
-        [noCreatorQna, testOrgMember1, testTeamMember1],
-        [noCreatorMaintainerQna, testOrgMember1, testTeamMember1],
-        [noTeamQna, testOrgMember1, testTeamMember1],
-        [noTeamQna, testOrgMember1, null],
-        [testQnaRelation1, { slug: 'bad', role: OrgRoleEnum.Moderator }, null],
-        [testQnaRelation1, memberOrgMember, { role: TeamRoleEnum.Moderator }],
-      ];
-      truthyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasQuestionPermissions(qna, orgMember, teamMember),
-        ).toBeTruthy();
-      });
-
-      const falsyCombos: Combo[] = [
-        [testQnaRelation1, null, null],
-        [testQnaRelation1, memberOrgMember, memberTeamMember],
-      ];
-      falsyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasQuestionPermissions(qna, orgMember, teamMember),
-        ).toBeFalsy();
-      });
+      expect(
+        userHasQuestionPermissions(
+          testQnaRelation1,
+          testOrgMember1,
+          testTeamMember1,
+        ),
+      ).toBeTruthy();
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, testOrgMember1, null),
+      ).toBeTruthy();
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, orgModerator, null),
+      ).toBeTruthy();
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, orgMember, null),
+      ).toBeFalsy();
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, null, testTeamMember1),
+      );
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, null, teamModerator),
+      ).toBeTruthy();
+      expect(
+        userHasQuestionPermissions(testQnaRelation1, null, teamMember),
+      ).toBeFalsy();
+      expect(
+        userHasQuestionPermissions(qnaNullCreator, memberMaintainer, null),
+      ).toBeTruthy();
+      expect(
+        userHasQuestionPermissions(qnaNullMaintainer, memberCreator, null),
+      ).toBeFalsy();
+      expect(
+        userHasQuestionPermissions(
+          {
+            ...qnaNullMaintainer,
+            qna: { ...testQna1, answerHtml: null, answerMarkdoc: null },
+          },
+          memberCreator,
+          null,
+        ),
+      ).toBeTruthy();
     });
   });
 
   describe('userHasAnswerPermissions', () => {
     it('should return true if the user has right permissions', () => {
-      const truthyCombos: Combo[] = [
-        [testQnaRelation1, testOrgMember1, testTeamMember1],
-        [noMaintainerQna, testOrgMember1, testTeamMember1],
-        [noCreatorQna, testOrgMember1, testTeamMember1],
-        [noCreatorMaintainerQna, testOrgMember1, testTeamMember1],
-        [noTeamQna, testOrgMember1, testTeamMember1],
-        [noTeamQna, testOrgMember1, null],
-        [testQnaRelation1, { slug: 'bad', role: OrgRoleEnum.Moderator }, null],
-        [testQnaRelation1, memberOrgMember, memberTeamMember],
-        [noTeamQna, memberOrgMember, null],
-      ];
-      truthyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasAnswerPermissions(qna, orgMember, teamMember),
-        ).toBeTruthy();
-      });
-
-      const falsyCombos: Combo[] = [
-        [testQnaRelation1, null, null],
-        [testQnaRelation1, memberOrgMember, null],
-      ];
-      falsyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasAnswerPermissions(qna, orgMember, teamMember),
-        ).toBeFalsy();
-      });
+      expect(
+        userHasAnswerPermissions(
+          testQnaRelation1,
+          testOrgMember1,
+          testTeamMember1,
+        ),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(testQnaRelation1, orgModerator, null),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(testQnaRelation1, orgMember, null),
+      ).toBeFalsy();
+      expect(
+        userHasAnswerPermissions(testQnaRelation1, null, testTeamMember1),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(testQnaRelation1, null, teamModerator),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(testQnaRelation1, null, teamMember),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(qnaNullTeam, orgMember, null),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(qnaNullCreator, memberMaintainer, null),
+      ).toBeTruthy();
+      expect(
+        userHasAnswerPermissions(qnaNullMaintainer, memberCreator, null),
+      ).toBeFalsy();
     });
   });
 
   describe('userHasUpToDatePermissions & userHasDeletePermissions', () => {
     it('should return true if the user has right permissions', () => {
-      const truthyCombos: Combo[] = [
-        [testQnaRelation1, testOrgMember1, testTeamMember1],
-        [noMaintainerQna, testOrgMember1, testTeamMember1],
-        [noCreatorQna, testOrgMember1, testTeamMember1],
-        [noCreatorMaintainerQna, testOrgMember1, testTeamMember1],
-        [noTeamQna, testOrgMember1, null],
-        [testQnaRelation1, { slug: 'bad', role: OrgRoleEnum.Moderator }, null],
-        [testQnaRelation1, memberOrgMember, { role: TeamRoleEnum.Moderator }],
-      ];
-      truthyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasUpToDatePermissions(qna, orgMember, teamMember),
-        ).toBeTruthy();
-        expect(
-          userHasDeletePermissions(qna, orgMember, teamMember),
-        ).toBeTruthy();
-      });
-
-      const falsyCombos: Combo[] = [
-        [testQnaRelation1, null, null],
-        [testQnaRelation1, memberOrgMember, memberTeamMember],
-        [noMaintainerQna, memberOrgMember, memberTeamMember],
-        [noTeamQna, memberOrgMember, null],
-      ];
-      falsyCombos.forEach(([qna, orgMember, teamMember]) => {
-        expect(
-          userHasUpToDatePermissions(qna, orgMember, teamMember),
-        ).toBeFalsy();
-        expect(
-          userHasDeletePermissions(qna, orgMember, teamMember),
-        ).toBeFalsy();
-      });
+      expect(
+        userHasUpToDatePermissions(
+          testQnaRelation1,
+          testOrgMember1,
+          testTeamMember1,
+        ),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, testOrgMember1, null),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, orgModerator, null),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, orgMember, null),
+      ).toBeFalsy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, null, testTeamMember1),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, null, teamModerator),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(testQnaRelation1, null, teamMember),
+      ).toBeFalsy();
+      expect(
+        userHasUpToDatePermissions(qnaNullCreator, memberMaintainer, null),
+      ).toBeTruthy();
+      expect(
+        userHasUpToDatePermissions(qnaNullMaintainer, memberCreator, null),
+      ).toBeFalsy();
     });
   });
 });

@@ -16,6 +16,7 @@ import {
   Keyword,
   OrgMember,
   TeamMember,
+  isUpToDate,
   userDisplayName,
   type QnaNoOrg,
 } from '@newbee/shared/util';
@@ -84,7 +85,7 @@ export class ViewQnaComponent {
    * Whether the qna is up-to-date.
    */
   get upToDate(): boolean {
-    return new Date() < new Date(this.qna.qna.outOfDateAt);
+    return isUpToDate(this.qna.qna.outOfDateAt);
   }
 
   /**

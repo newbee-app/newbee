@@ -26,21 +26,6 @@ describe('ViewQnaComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('upToDate', () => {
-    it('should be up-to-date if outOfDateAt has not happened yet', () => {
-      expect(component.upToDate).toBeTruthy();
-
-      component.qna = {
-        ...testQnaRelation1,
-        qna: {
-          ...testQna1,
-          outOfDateAt: testOldNow1,
-        },
-      };
-      expect(component.upToDate).toBeFalsy();
-    });
-  });
-
   describe('borderSuccess', () => {
     it('should be true if the border should be green', () => {
       expect(component.borderSuccess).toBeTruthy();

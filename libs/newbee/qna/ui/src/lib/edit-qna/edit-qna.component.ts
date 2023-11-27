@@ -39,6 +39,7 @@ import {
   Keyword,
   Team,
   TeamMember,
+  TeamMemberAndTeam,
   type OrgMember,
   type Organization,
   type QnaNoOrg,
@@ -125,7 +126,7 @@ export class EditQnaComponent implements OnInit {
   /**
    * All of the teams of the org the question can be asked to.
    */
-  @Input() teams: Team[] = [];
+  @Input() teams: TeamMemberAndTeam[] = [];
 
   /**
    * The organization the qna is in.
@@ -182,7 +183,9 @@ export class EditQnaComponent implements OnInit {
       this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
       this.teamOptions = [
         new SelectOption(null, 'Entire org'),
-        ...this.teams.map((team) => new SelectOption(team, team.name)),
+        ...this.teams.map(
+          (team) => new SelectOption(team.team, team.team.name),
+        ),
       ];
 
       this.editQuestionForm.setValue(

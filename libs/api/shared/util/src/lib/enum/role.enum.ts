@@ -12,7 +12,7 @@ export enum PostRoleEnum {
  * PostRoleEnum as a set.
  */
 export const postRoleEnumSet: Set<string> = new Set(
-  Object.values(PostRoleEnum)
+  Object.values(PostRoleEnum),
 );
 
 /**
@@ -20,26 +20,31 @@ export const postRoleEnumSet: Set<string> = new Set(
  */
 export enum ConditionalRoleEnum {
   /**
-   * Allow OrgRoleEnum.Member if there's no team specified in the request's query or body.
+   * Allow OrgRoleEnum.Member if there's no team specified in the request's params and there's no team associated with the request's post (if it's related to a post).
    */
-  OrgMemberIfNoTeamInReq = 'Org Member If No Team In Req',
+  OrgMemberIfNoTeam = 'Org Member If No Team',
 
   /**
-   * Allows OrgRoleEnum.Member if there's no team associated with the qna.
+   * Allows PostRoleEnum.Creator if there's no answer associated with the qna.
    */
-  OrgMemberIfNoTeamInQna = 'Org Member If No Team In Qna',
+  CreatorIfNoAnswerInQna = 'Creator If No Answer In Qna',
 
   /**
-   * Allows OrgRoleEnum.Member if there's no team associated with the doc.
+   * Allows the request only if the requester's org role is >= the subject's org role.
    */
-  OrgMemberIfNoTeamInDoc = 'Org Member If No Team In Doc',
+  OrgRoleGteSubject = 'Org Role Gte Subject',
+
+  /**
+   * Allows the request only if the requester's team role is >= the subject's team role.
+   */
+  TeamRoleGteSubject = 'Team Role Gte Subject',
 }
 
 /**
  * ConditionalRoleEnum as a set.
  */
 export const conditionalRoleEnumSet: Set<string> = new Set(
-  Object.values(ConditionalRoleEnum)
+  Object.values(ConditionalRoleEnum),
 );
 
 /**

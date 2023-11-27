@@ -78,7 +78,7 @@ export class OrgMemberInviteService {
     inviter: OrgMemberEntity,
     organization: OrganizationEntity,
   ): Promise<OrgMemberInviteEntity> {
-    this.orgMemberService.checkRequester(inviter.role, role);
+    OrgMemberService.checkRequester(inviter.role, role);
     await this.checkIfOrgMember(organization, email);
 
     const userInvites =
@@ -233,7 +233,7 @@ export class OrgMemberInviteService {
   }
 
   /**
-   * A helper function to check if a user with the given email is already a member of the given organization.
+   * A helper function that throws a BadRequestException if a user with the given email is already a member of the given organization.
    *
    * @param organization The organization to check.
    * @param email The email to check.
@@ -261,9 +261,9 @@ export class OrgMemberInviteService {
   }
 
   /**
-   * A helper function to check if the given `user` is the invitee of the given `orgMemberInvite`.
+   * A helper function that throws a ForbiddenException if the given `user` is not the invitee of the given `orgMemberInvite`.
    *
-   * @param user The user who made the request.
+   * @param user The user to check.
    * @param orgMemberInvite The `OrgMemberInviteEntity` to check.
    *
    * @returns `true` if the given `user` is the invitee of the given `orgMemberInvite`, `false` otherwise.

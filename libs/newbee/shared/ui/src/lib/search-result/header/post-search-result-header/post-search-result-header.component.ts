@@ -4,6 +4,7 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   DocQueryResult,
   QnaQueryResult,
+  maintainerIsCreator,
   resultIsDocQueryResult,
   resultIsQnaQueryResult,
   userDisplayName,
@@ -44,12 +45,7 @@ export class PostSearchResultHeaderComponent {
    * Whether the maintainer is the same org member as the creator.
    */
   get maintainerIsCreator(): boolean {
-    const { creator, maintainer } = this.searchResult;
-    return (
-      !!creator &&
-      !!maintainer &&
-      creator.orgMember.slug === maintainer.orgMember.slug
-    );
+    return maintainerIsCreator(this.searchResult);
   }
 
   /**

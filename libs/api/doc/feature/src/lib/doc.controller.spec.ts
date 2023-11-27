@@ -5,7 +5,6 @@ import {
   testDocEntity1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
-  testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import {
   testBaseCreateDocDto1,
@@ -49,13 +48,11 @@ describe('DocController', () => {
         testBaseCreateDocDto1,
         testOrgMemberEntity1,
         testOrganizationEntity1,
-        testTeamEntity1,
       ),
     ).resolves.toEqual(testDocEntity1);
     expect(service.create).toBeCalledTimes(1);
     expect(service.create).toBeCalledWith(
       testBaseCreateDocDto1,
-      testTeamEntity1,
       testOrgMemberEntity1,
     );
   });
@@ -68,12 +65,17 @@ describe('DocController', () => {
 
   it('update should update a doc', async () => {
     await expect(
-      controller.update(testBaseUpdateDocDto1, testDocEntity1),
+      controller.update(
+        testBaseUpdateDocDto1,
+        testDocEntity1,
+        testOrgMemberEntity1,
+      ),
     ).resolves.toEqual(testUpdatedDocEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testDocEntity1,
       testBaseUpdateDocDto1,
+      testOrgMemberEntity1,
     );
   });
 

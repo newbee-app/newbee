@@ -314,7 +314,7 @@ describe('OrgMemberService', () => {
 
     it('should delete an org member', async () => {
       await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
+        service.delete(testOrgMemberEntity1),
       ).resolves.toBeUndefined();
     });
 
@@ -322,9 +322,9 @@ describe('OrgMemberService', () => {
       jest
         .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      await expect(service.delete(testOrgMemberEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
     });
 
     it('should not throw if deleteDocs throws an error', async () => {
@@ -332,7 +332,7 @@ describe('OrgMemberService', () => {
         .spyOn(solrCli, 'deleteDocs')
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
+        service.delete(testOrgMemberEntity1),
       ).resolves.toBeUndefined();
       expect(solrCli.deleteDocs).toBeCalledTimes(1);
     });
@@ -341,35 +341,47 @@ describe('OrgMemberService', () => {
   describe('checkRequester', () => {
     it(`should pass if the requester's org role is greater than or equal to the subject's org role`, () => {
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Owner),
+        OrgMemberService.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Owner),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Moderator),
+        OrgMemberService.checkRequester(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Moderator,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Member),
+        OrgMemberService.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Member),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Moderator),
+        OrgMemberService.checkRequester(
+          OrgRoleEnum.Moderator,
+          OrgRoleEnum.Moderator,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Member),
+        OrgMemberService.checkRequester(
+          OrgRoleEnum.Moderator,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Member),
+        OrgMemberService.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Member),
       ).toBeUndefined();
     });
   });
 
   it(`should fail if the requester's org role is lower than the subject's org role`, () => {
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Moderator),
+      OrgMemberService.checkRequester(
+        OrgRoleEnum.Member,
+        OrgRoleEnum.Moderator,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Owner),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Owner),
     ).toThrow(new ForbiddenException(forbiddenError));
   });
 });

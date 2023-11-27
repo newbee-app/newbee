@@ -19,4 +19,9 @@ export class BaseUpdateDocDto implements Partial<BaseCreateDocDto> {
    * @inheritdoc
    */
   docMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  team?: string | null;
 }

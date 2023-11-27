@@ -9,6 +9,7 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   testBaseCreateDocDto1,
+  testOrgMemberRelation1,
   testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -30,6 +31,7 @@ describe('DocCreateComponent', () => {
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
+              orgMember: testOrgMemberRelation1,
             },
           },
         }),

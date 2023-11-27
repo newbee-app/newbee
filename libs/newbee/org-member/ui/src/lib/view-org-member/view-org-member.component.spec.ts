@@ -50,12 +50,10 @@ describe('ViewOrgMemberComponent', () => {
         expect(component.totalCreatedDocs).toEqual('1 doc');
         expect(component.totalMaintainedDocs).toEqual('1 doc');
 
-        component.orgMember.teams.total = 100;
         component.orgMember.createdQnas.total = 100;
         component.orgMember.maintainedQnas.total = 100;
         component.orgMember.createdDocs.total = 100;
         component.orgMember.maintainedDocs.total = 100;
-        expect(component.totalTeams).toEqual('100 teams');
         expect(component.totalCreatedQnas).toEqual('100 QnAs');
         expect(component.totalMaintainedQnas).toEqual('100 QnAs');
         expect(component.totalCreatedDocs).toEqual('100 docs');
@@ -71,7 +69,9 @@ describe('ViewOrgMemberComponent', () => {
         component.userOrgMember = testOrgMember1;
         expect(component.canEdit).toBeTruthy();
         expect(component.orgRoleEnumOptions).toEqual(
-          Object.values(OrgRoleEnum).map((role) => new SelectOption(role, role))
+          Object.values(OrgRoleEnum).map(
+            (role) => new SelectOption(role, role),
+          ),
         );
 
         component.userOrgMember = {
@@ -81,8 +81,8 @@ describe('ViewOrgMemberComponent', () => {
         expect(component.canEdit).toBeFalsy();
         expect(component.orgRoleEnumOptions).toEqual(
           [OrgRoleEnum.Member, OrgRoleEnum.Moderator].map(
-            (role) => new SelectOption(role, role)
-          )
+            (role) => new SelectOption(role, role),
+          ),
         );
 
         component.userOrgMember = {
@@ -91,7 +91,7 @@ describe('ViewOrgMemberComponent', () => {
         };
         expect(component.canEdit).toBeFalsy();
         expect(component.orgRoleEnumOptions).toEqual(
-          [OrgRoleEnum.Member].map((role) => new SelectOption(role, role))
+          [OrgRoleEnum.Member].map((role) => new SelectOption(role, role)),
         );
 
         component.orgMember = {
@@ -133,7 +133,7 @@ describe('ViewOrgMemberComponent', () => {
   describe('init', () => {
     it('should set changeRoleSelect', () => {
       expect(component.changeRoleSelect.value).toEqual(
-        component.orgMember.orgMember.role
+        component.orgMember.orgMember.role,
       );
     });
   });

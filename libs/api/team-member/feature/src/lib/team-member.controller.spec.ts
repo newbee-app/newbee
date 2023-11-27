@@ -112,7 +112,6 @@ describe('TeamMemberController', () => {
       await expect(
         controller.delete(
           testOrgMemberEntity1,
-          testTeamMemberEntity1,
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
@@ -120,11 +119,7 @@ describe('TeamMemberController', () => {
         ),
       ).resolves.toBeUndefined();
       expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(
-        testTeamMemberEntity1,
-        testOrgMemberEntity1.role,
-        testTeamMemberEntity1.role,
-      );
+      expect(service.delete).toBeCalledWith(testTeamMemberEntity1);
     });
   });
 });

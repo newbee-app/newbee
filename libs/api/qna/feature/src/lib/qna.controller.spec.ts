@@ -6,7 +6,6 @@ import {
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testQnaEntity1,
-  testTeamEntity1,
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
 import {
@@ -64,13 +63,11 @@ describe('QnaController', () => {
         testBaseCreateQnaDto1,
         testOrgMemberEntity1,
         testOrganizationEntity1,
-        testTeamEntity1,
       ),
     ).resolves.toEqual(testQnaEntity1);
     expect(service.create).toBeCalledTimes(1);
     expect(service.create).toBeCalledWith(
       testBaseCreateQnaDto1,
-      testTeamEntity1,
       testOrgMemberEntity1,
     );
   });
@@ -88,12 +85,17 @@ describe('QnaController', () => {
 
   it('updateQuestion should update the question', async () => {
     await expect(
-      controller.updateQuestion(testBaseUpdateQuestionDto1, testQnaEntity1),
+      controller.updateQuestion(
+        testBaseUpdateQuestionDto1,
+        testQnaEntity1,
+        testOrgMemberEntity1,
+      ),
     ).resolves.toEqual(testUpdatedQnaEntity);
     expect(service.update).toBeCalledTimes(1);
     expect(service.update).toBeCalledWith(
       testQnaEntity1,
       testBaseUpdateQuestionDto1,
+      testOrgMemberEntity1,
     );
   });
 
@@ -116,6 +118,7 @@ describe('QnaController', () => {
       testQnaEntity2,
       testBaseUpdateAnswerDto1,
       testOrgMemberEntity1,
+      true,
     );
   });
 

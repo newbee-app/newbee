@@ -17,6 +17,8 @@ import {
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
+import { TeamService } from '@newbee/api/team/data-access';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   docSlugNotFound,
@@ -57,10 +59,13 @@ describe('DocService', () => {
   let em: EntityManager;
   let entityService: EntityService;
   let solrCli: SolrCli;
+  let teamService: TeamService;
+  let teamMemberService: TeamMemberService;
 
   const testUpdatedDoc = createMock<DocEntity>({
     ...testDocEntity1,
     ...testBaseUpdateDocDto1,
+    team: testTeamEntity1,
   });
   const testUpdatedDocDocParams: DocDocParams = {
     ...testDocDocParams1,
@@ -90,6 +95,16 @@ describe('DocService', () => {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
+        {
+          provide: TeamService,
+          useValue: createMock<TeamService>({
+            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+          }),
+        },
+        {
+          provide: TeamMemberService,
+          useValue: createMock<TeamMemberService>(),
+        },
       ],
     }).compile();
 
@@ -97,6 +112,8 @@ describe('DocService', () => {
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
+    teamService = module.get<TeamService>(TeamService);
+    teamMemberService = module.get<TeamMemberService>(TeamMemberService);
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
@@ -110,10 +127,17 @@ describe('DocService', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
     expect(solrCli).toBeDefined();
+    expect(teamService).toBeDefined();
+    expect(teamMemberService).toBeDefined();
   });
 
   describe('create', () => {
     afterEach(() => {
+      expect(teamService.findOneBySlug).toBeCalledTimes(1);
+      expect(teamService.findOneBySlug).toBeCalledWith(
+        testOrganizationEntity1,
+        testBaseCreateDocDto1.team,
+      );
       expect(mockDocEntity).toBeCalledTimes(1);
       expect(mockDocEntity).toBeCalledWith(
         testDocEntity1.id,
@@ -129,11 +153,7 @@ describe('DocService', () => {
 
     it('should create a doc', async () => {
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).resolves.toEqual(testDocEntity1);
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(solrCli.addDocs).toBeCalledWith(
@@ -147,22 +167,14 @@ describe('DocService', () => {
         .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
     it('should throw an InternalServerErrorException and delete if addDocs throws an error', async () => {
       jest.spyOn(solrCli, 'addDocs').mockRejectedValue(new Error('addDocs'));
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.addDocs).toBeCalledTimes(1);
       expect(em.removeAndFlush).toBeCalledTimes(1);
@@ -209,6 +221,12 @@ describe('DocService', () => {
     });
 
     afterEach(() => {
+      expect(teamService.findOneBySlug).toBeCalledTimes(1);
+      expect(teamService.findOneBySlug).toBeCalledWith(
+        testOrganizationEntity1,
+        testBaseCreateDocDto1.team,
+      );
+
       const docContent = strToContent(
         testBaseUpdateDocDto1.docMarkdoc as string,
       );
@@ -220,6 +238,7 @@ describe('DocService', () => {
         ...testBaseUpdateDocDto1,
         docTxt,
         docHtml,
+        team: testTeamEntity1,
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
@@ -231,7 +250,11 @@ describe('DocService', () => {
 
     it('should update a doc', async () => {
       await expect(
-        service.update(testDocEntity1, testBaseUpdateDocDto1),
+        service.update(
+          testDocEntity1,
+          testBaseUpdateDocDto1,
+          testOrgMemberEntity1,
+        ),
       ).resolves.toEqual(testUpdatedDoc);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
@@ -243,7 +266,11 @@ describe('DocService', () => {
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testDocEntity1, testBaseUpdateDocDto1),
+        service.update(
+          testDocEntity1,
+          testBaseUpdateDocDto1,
+          testOrgMemberEntity1,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -252,7 +279,11 @@ describe('DocService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(
-        service.update(testDocEntity1, testBaseUpdateDocDto1),
+        service.update(
+          testDocEntity1,
+          testBaseUpdateDocDto1,
+          testOrgMemberEntity1,
+        ),
       ).resolves.toEqual(testUpdatedDoc);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(

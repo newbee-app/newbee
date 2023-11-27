@@ -1,0 +1,96 @@
+<div class="flex flex-col flex-nowrap gap-y-4 mt-mid">
+  <div id="doc-title">
+    <div class="flex flex-row flex-nowrap gap-x-2 items-baseline">
+      <h3>{{ doc.doc.title }}</h3>
+      <newbee-up-to-date-btn [post]="doc.doc"></newbee-up-to-date-btn>
+    </div>
+
+    <p class="opacity-50">
+      <span *ngIf="doc.team">
+        Posted in
+        <a
+          (click)="emitOrgNavigate(shortUrl.Team, doc.team.slug)"
+          class="link"
+          >{{ doc.team.name }}</a
+        >
+        |
+      </span>
+
+      Maintained
+      <span *ngIf="maintainerIsCreator"> & Created</span>
+
+      by
+      <a
+        *ngIf="doc.maintainer; else noMaintainer"
+        (click)="
+          emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
+        "
+        class="link"
+        >{{ userDisplayName(doc.maintainer.user) }}</a
+      >
+      <ng-template #noMaintainer>a deleted user</ng-template>
+
+      <span *ngIf="doc.creator && !maintainerIsCreator">
+        | Created by
+        <a
+          (click)="emitOrgNavigate(shortUrl.Member, doc.creator.orgMember.slug)"
+          class="link"
+          >{{ userDisplayName(doc.creator.user) }}</a
+        >
+      </span>
+    </p>
+
+    <p class="opacity-50">
+      Created
+      <span [title]="doc.doc.createdAt | date: 'medium'">{{
+        dayjs(doc.doc.createdAt).fromNow()
+      }}</span>
+
+      | Updated
+      <span [title]="doc.doc.updatedAt | date: 'medium'">{{
+        dayjs(doc.doc.updatedAt).fromNow()
+      }}</span>
+
+      | {{ upToDate ? 'Expires' : 'Expired' }}
+      <span [title]="doc.doc.outOfDateAt | date: 'medium'">{{
+        dayjs(doc.doc.outOfDateAt).fromNow()
+      }}</span>
+    </p>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <div
+        *ngIf="hasEditPermissions || hasUpToDatePermissions"
+        class="flex flex-row flex-wrap gap-2 mt-1"
+      >
+        <button
+          type="button"
+          *ngIf="hasEditPermissions"
+          (click)="emitDocNavigate(keyword.Edit)"
+          class="btn btn-sm btn-info"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          *ngIf="hasUpToDatePermissions"
+          (click)="markAsUpToDate.emit()"
+          [disabled]="upToDatePending"
+          class="btn btn-sm btn-success"
+        >
+          <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
+          Mark as up-to-date
+        </button>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg('up-to-date')"
+        [text]="httpClientErrorMsg('up-to-date')"
+      ></newbee-alert>
+    </div>
+
+    <div class="divider my-0"></div>
+  </div>
+
+  <div [innerHTML]="doc.doc.docHtml" class="prose max-w-full"></div>
+</div>

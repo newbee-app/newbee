@@ -8,10 +8,10 @@ import {
   testUser1,
 } from '@newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
 import { ViewOrgMemberComponent } from './view-org-member.component';
 
@@ -21,22 +21,19 @@ export default {
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {
     orgMember: {
       ...testOrgMemberRelation1,
-      teams: {
-        sample: [
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-        ],
-        total: 100,
-      },
+      teams: [
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+      ],
       createdQnas: {
         sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
         total: 100,
@@ -85,6 +82,6 @@ export const LongDisplayName: Story = {
   },
 };
 
-export const editPending: Story = { args: { editPending: true } };
+export const EditPending: Story = { args: { editPending: true } };
 
-export const deletePending: Story = { args: { deletePending: true } };
+export const DeletePending: Story = { args: { deletePending: true } };

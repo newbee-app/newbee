@@ -36,6 +36,11 @@ export class DocCreateComponent {
   );
 
   /**
+   * The org member associated with the user.
+   */
+  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
+
+  /**
    * The team slug taken from the route's query params.
    */
   teamSlugParam$ = this.route.queryParamMap.pipe(

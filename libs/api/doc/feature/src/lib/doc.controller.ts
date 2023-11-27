@@ -16,7 +16,6 @@ import {
   DocEntity,
   OrgMemberEntity,
   OrganizationEntity,
-  TeamEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
@@ -25,7 +24,6 @@ import {
   Organization,
   PostRoleEnum,
   Role,
-  Team,
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
@@ -59,28 +57,16 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Member,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInReq,
-  )
+  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async create(
     @Body() createDocDto: CreateDocDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity | undefined,
   ): Promise<DocEntity> {
     this.logger.log(
       `Create doc request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createDocDto.title}`,
     );
-    const doc = await this.docService.create(
-      createDocDto,
-      team ?? null,
-      orgMember,
-    );
+    const doc = await this.docService.create(createDocDto, orgMember);
     this.logger.log(
       `Doc created with ID: ${doc.id}, slug: ${doc.slug}, title: ${doc.title}`,
     );
@@ -123,14 +109,19 @@ export class DocController {
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInDoc,
+    ConditionalRoleEnum.OrgMemberIfNoTeam,
   )
   async update(
     @Body() updateDocDto: UpdateDocDto,
     @Doc() doc: DocEntity,
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<DocEntity> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
-    const updatedDoc = await this.docService.update(doc, updateDocDto);
+    const updatedDoc = await this.docService.update(
+      doc,
+      updateDocDto,
+      orgMember,
+    );
     this.logger.log(
       `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
     );

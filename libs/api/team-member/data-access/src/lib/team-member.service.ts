@@ -63,7 +63,7 @@ export class TeamMemberService {
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
-    this.checkRequester(requesterOrgRole, requesterTeamRole, role);
+    TeamMemberService.checkRequester(requesterOrgRole, requesterTeamRole, role);
 
     const teamMember = new TeamMemberEntity(orgMember, team, role);
     try {
@@ -147,8 +147,11 @@ export class TeamMemberService {
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
-    this.checkRequester(requesterOrgRole, requesterTeamRole, newRole);
-    this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
+    TeamMemberService.checkRequester(
+      requesterOrgRole,
+      requesterTeamRole,
+      newRole,
+    );
 
     const updatedTeamMember = this.em.assign(teamMember, {
       role: newRole,
@@ -174,13 +177,7 @@ export class TeamMemberService {
    * @throws {BadRequestException} `cannotDeleteOnlyOwnerBadRequest`. If the team member is the only owner of the team.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async delete(
-    teamMember: TeamMemberEntity,
-    requesterOrgRole: OrgRoleEnum,
-    requesterTeamRole: TeamRoleEnum | null,
-  ): Promise<void> {
-    this.checkRequester(requesterOrgRole, requesterTeamRole, teamMember.role);
-
+  async delete(teamMember: TeamMemberEntity): Promise<void> {
     await this.entityService.safeToDelete(teamMember);
     try {
       await this.em.removeAndFlush(teamMember);
@@ -200,7 +197,7 @@ export class TeamMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the operation isn't permissible.
    */
-  checkRequester(
+  static checkRequester(
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
     subjectRole: TeamRoleEnum,
@@ -221,5 +218,30 @@ export class TeamMemberService {
     }
 
     throw new ForbiddenException(forbiddenError);
+  }
+
+  /**
+   * A helper function to check whether the org member has the team permissions to fulfill the request.
+   *
+   * It will pass if the org member is >= moderator or they are >= a member of the team.
+   *
+   * @param orgMember The org member to examine.
+   * @param team The team to check the org member against.
+   *
+   * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the adequate permissions.
+   */
+  async checkOrgMemberTeam(
+    orgMember: OrgMemberEntity,
+    team: TeamEntity,
+  ): Promise<void> {
+    const teamMember = await this.findOneByOrgMemberAndTeamOrNull(
+      orgMember,
+      team,
+    );
+    TeamMemberService.checkRequester(
+      orgMember.role,
+      teamMember?.role ?? null,
+      TeamRoleEnum.Member,
+    );
   }
 }

@@ -9,6 +9,7 @@ import {
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  ConditionalRoleEnum,
   OrgMember,
   Organization,
   Role,
@@ -69,7 +70,11 @@ export class OrgMemberController {
    * @returns Information about the updated org member.
    */
   @Patch(`:${Keyword.Member}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    ConditionalRoleEnum.OrgRoleGteSubject,
+  )
   async update(
     @Body() updateOrgMemberDto: UpdateOrgMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -101,7 +106,11 @@ export class OrgMemberController {
    * @param organization The organization this is all happening in.
    */
   @Delete(`:${Keyword.Member}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(
+    OrgRoleEnum.Moderator,
+    OrgRoleEnum.Owner,
+    ConditionalRoleEnum.OrgRoleGteSubject,
+  )
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
@@ -110,7 +119,7 @@ export class OrgMemberController {
     this.logger.log(
       `Delete org member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}`,
     );
-    await this.orgMemberService.delete(subjectOrgMember, orgMember.role);
+    await this.orgMemberService.delete(subjectOrgMember);
     this.logger.log(
       `Deleted org member with slug: ${subjectOrgMember.slug}, in organization ID: ${organization.id}`,
     );

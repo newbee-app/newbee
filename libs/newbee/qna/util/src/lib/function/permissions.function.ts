@@ -15,21 +15,23 @@ import {
  * @param orgMember The role the user has in the qna's org, if any.
  * @param teamMember The role the user has in the qna's team, if any.
  *
- * @returns `true` if they are the creator or maintainer of the post, is an org moderator, or is a team moderator for the team the qna belongs to.
+ * @returns `true` if they are the creator or maintainer of the post, an org moderator, or is a team member.
  */
 export function userHasQuestionPermissions(
   qna: QnaNoOrg,
   orgMember: OrgMember | null,
   teamMember: TeamMember | null,
 ): boolean {
+  const { creator, maintainer } = qna;
   return !!(
     (orgMember &&
       (compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0 ||
-        [qna.creator?.orgMember.slug, qna.maintainer?.orgMember.slug].includes(
-          orgMember.slug,
-        ))) ||
-    (qna.team &&
-      teamMember &&
+        (maintainer && maintainer.orgMember.slug === orgMember.slug) ||
+        (creator &&
+          creator.orgMember.slug === orgMember.slug &&
+          !qna.qna.answerMarkdoc &&
+          !qna.qna.answerHtml))) ||
+    (teamMember &&
       compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0)
   );
 }
@@ -41,23 +43,22 @@ export function userHasQuestionPermissions(
  * @param orgMember The role the user has in the qna's org, if any.
  * @param teamMember The role the user has in the qna's team, if any.
  *
- * @returns `true` if they are the maintainer of the post, is an org/team moderator, or is an org/team member and the question hasn't been answered yet.
+ * @returns `true` if they are the maintainer of the post, an org moderator, or a team member.
  */
 export function userHasAnswerPermissions(
   qna: QnaNoOrg,
   orgMember: OrgMember | null,
   teamMember: TeamMember | null,
 ): boolean {
+  const { maintainer, team } = qna;
   return !!(
     (orgMember &&
       (compareOrgRoles(
         orgMember.role,
-        qna.team ? OrgRoleEnum.Moderator : OrgRoleEnum.Member,
+        team ? OrgRoleEnum.Moderator : OrgRoleEnum.Member,
       ) >= 0 ||
-        qna.maintainer?.orgMember.slug === orgMember.slug)) ||
-    (qna.team &&
-      teamMember &&
-      compareTeamRoles(teamMember.role, TeamRoleEnum.Member) >= 0)
+        (maintainer && maintainer.orgMember.slug === orgMember.slug))) ||
+    (teamMember && compareTeamRoles(teamMember.role, TeamRoleEnum.Member) >= 0)
   );
 }
 
@@ -75,12 +76,12 @@ export function userHasUpToDatePermissions(
   orgMember: OrgMember | null,
   teamMember: TeamMember | null,
 ): boolean {
+  const { maintainer } = qna;
   return !!(
     (orgMember &&
       (compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0 ||
-        orgMember.slug === qna.maintainer?.orgMember.slug)) ||
-    (qna.team &&
-      teamMember &&
+        (maintainer && maintainer.orgMember.slug === orgMember.slug))) ||
+    (teamMember &&
       compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0)
   );
 }

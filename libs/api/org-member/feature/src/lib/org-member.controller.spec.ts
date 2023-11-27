@@ -95,10 +95,7 @@ describe('OrgMemberController', () => {
         ),
       ).resolves.toBeUndefined();
       expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(
-        testOrgMemberEntity1,
-        testOrgMemberEntity1.role,
-      );
+      expect(service.delete).toBeCalledWith(testOrgMemberEntity1);
     });
   });
 });

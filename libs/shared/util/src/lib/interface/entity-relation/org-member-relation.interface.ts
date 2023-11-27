@@ -1,5 +1,5 @@
 import type { DocQueryResult, QnaQueryResult, Sample } from '../../type';
-import type { Organization, OrgMember, User } from '../entity';
+import type { OrgMember, Organization, User } from '../entity';
 import type { TeamMemberAndTeam } from './team-member-relation.interface';
 
 /**
@@ -24,7 +24,7 @@ export interface OrgMemberRelation {
   /**
    * The teams the org member is a part of, and the role they hold in each team.
    */
-  teams: Sample<TeamMemberAndTeam>;
+  teams: TeamMemberAndTeam[];
 
   /**
    * The docs the org member created.

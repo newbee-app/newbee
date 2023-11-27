@@ -14,6 +14,11 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, map, take } from 'rxjs';
 
+/**
+ * A guard to check whether the current user can edit the route's qna.
+ *
+ * @returns An observable returning `true` if there are adequate permissions, a redirect to the org or home page if not.
+ */
 export const canEditQnaGuard: CanActivateFn = (): Observable<
   boolean | UrlTree
 > => {

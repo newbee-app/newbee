@@ -227,6 +227,28 @@ describe('TeamService', () => {
     });
   });
 
+  describe('findOneById', () => {
+    afterEach(() => {
+      expect(em.findOneOrFail).toBeCalledTimes(1);
+      expect(em.findOneOrFail).toBeCalledWith(TeamEntity, testTeamEntity1.id);
+    });
+
+    it('should find a team by ID', async () => {
+      await expect(service.findOneById(testTeamEntity1.id)).resolves.toEqual(
+        testTeamEntity1,
+      );
+    });
+
+    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
+      jest
+        .spyOn(em, 'findOneOrFail')
+        .mockRejectedValue(new Error('findOneOrFail'));
+      await expect(service.findOneById(testTeamEntity1.id)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
+    });
+  });
+
   describe('update', () => {
     beforeEach(() => {
       jest

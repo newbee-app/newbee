@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   DropdownComponent,
-  SearchableSelectComponent,
   SearchResultComponent,
+  SearchableSelectComponent,
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
@@ -15,9 +15,9 @@ import {
   ShortUrl,
 } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
   Keyword,
   OrgRoleEnum,
+  compareOrgRoles,
   type OrgMember,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
@@ -105,8 +105,8 @@ export class ViewOrgMemberComponent implements OnInit {
    * A string detailing how many teams the org member is in.
    */
   get totalTeams(): string {
-    return `${this.orgMember.teams.total} ${
-      this.orgMember.teams.total === 1 ? 'team' : 'teams'
+    return `${this.orgMember.teams.length} ${
+      this.orgMember.teams.length === 1 ? 'team' : 'teams'
     }`;
   }
 
@@ -170,7 +170,7 @@ export class ViewOrgMemberComponent implements OnInit {
       .filter(
         (role) =>
           this.userOrgMember &&
-          compareOrgRoles(role, this.userOrgMember.role) <= 0
+          compareOrgRoles(role, this.userOrgMember.role) <= 0,
       )
       .map((role) => new SelectOption(role, role));
   }

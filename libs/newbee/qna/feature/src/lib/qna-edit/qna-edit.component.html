@@ -3,7 +3,7 @@
   [qna]="(qnaState$ | async)!.selectedQna!"
   [orgMember]="(orgMember$ | async)!.orgMember"
   [teamMember]="(qnaState$ | async)!.teamMember"
-  [teams]="(selectedOrganization$ | async)!.teams"
+  [teams]="(orgMember$ | async)!.teams"
   [organization]="(selectedOrganization$ | async)!.organization"
   [editQuestionPending]="(qnaModuleState$ | async)!.pendingEditQuestion"
   [editAnswerPending]="(qnaModuleState$ | async)!.pendingEditAnswer"

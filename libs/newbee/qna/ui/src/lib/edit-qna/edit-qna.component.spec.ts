@@ -6,6 +6,7 @@ import {
   testQna1,
   testQnaRelation1,
   testTeam1,
+  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import { EditQnaComponent } from './edit-qna.component';
 
@@ -23,7 +24,7 @@ describe('EditQnaComponent', () => {
 
     component.qna = testQnaRelation1;
     component.orgMember = testOrgMember1;
-    component.teams = [testTeam1];
+    component.teams = [testTeamMemberRelation1];
     component.organization = testOrganization1;
 
     jest.spyOn(component.editQuestion, 'emit');

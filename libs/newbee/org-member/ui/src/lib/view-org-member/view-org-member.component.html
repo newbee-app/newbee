@@ -167,7 +167,7 @@
 
     <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
       <newbee-search-result
-        *ngFor="let team of orgMember.teams.sample"
+        *ngFor="let team of orgMember.teams.slice(0, 5)"
         [format]="searchResultFormat.Card"
         [searchResult]="team.team"
         [teamRole]="team.teamMember.role"

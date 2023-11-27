@@ -131,6 +131,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.GenerateSlug)
+  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto,
     @Organization() organization: OrganizationEntity,

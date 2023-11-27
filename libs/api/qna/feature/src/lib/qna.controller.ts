@@ -18,7 +18,6 @@ import {
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
-  TeamEntity,
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -28,7 +27,6 @@ import {
   PostRoleEnum,
   Qna,
   Role,
-  Team,
   TeamMember,
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
@@ -75,16 +73,11 @@ export class QnaController {
     @Body() createQnaDto: CreateQnaDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity | undefined,
   ): Promise<QnaEntity> {
     this.logger.log(
       `Create qna request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createQnaDto.title}`,
     );
-    const qna = await this.qnaService.create(
-      createQnaDto,
-      team ?? null,
-      orgMember,
-    );
+    const qna = await this.qnaService.create(createQnaDto, orgMember);
     this.logger.log(
       `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`,
     );
@@ -131,15 +124,20 @@ export class QnaController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
-    PostRoleEnum.Creator,
     PostRoleEnum.Maintainer,
+    ConditionalRoleEnum.CreatorIfNoAnswerInQna,
   )
   async updateQuestion(
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Qna() qna: QnaEntity,
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<QnaEntity> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
-    const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
+    const updatedQna = await this.qnaService.update(
+      qna,
+      updateQuestionDto,
+      orgMember,
+    );
     this.logger.log(
       `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
@@ -167,7 +165,7 @@ export class QnaController {
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
     PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInQna,
+    ConditionalRoleEnum.OrgMemberIfNoTeam,
   )
   async updateAnswer(
     @Body() updateAnswerDto: UpdateAnswerDto,
@@ -177,12 +175,17 @@ export class QnaController {
     this.logger.log(`Update answer request received for slug: ${qna.slug}`);
     let updatedQna: QnaEntity;
     if (qna.maintainer) {
-      updatedQna = await this.qnaService.update(qna, updateAnswerDto);
+      updatedQna = await this.qnaService.update(
+        qna,
+        updateAnswerDto,
+        orgMember,
+      );
     } else {
       updatedQna = await this.qnaService.update(
         qna,
         updateAnswerDto,
         orgMember,
+        true,
       );
     }
     this.logger.log(

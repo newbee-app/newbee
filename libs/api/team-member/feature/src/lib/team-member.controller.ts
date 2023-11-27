@@ -7,6 +7,7 @@ import {
   TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  ConditionalRoleEnum,
   OrgMember,
   Organization,
   Role,
@@ -115,6 +116,7 @@ export class TeamMemberController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
+    ConditionalRoleEnum.TeamRoleGteSubject,
   )
   async update(
     @Body() updateTeamMemberDto: UpdateTeamMemberDto,
@@ -167,10 +169,10 @@ export class TeamMemberController {
     OrgRoleEnum.Owner,
     TeamRoleEnum.Moderator,
     TeamRoleEnum.Owner,
+    ConditionalRoleEnum.TeamRoleGteSubject,
   )
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
-    @TeamMember() teamMember: TeamMemberEntity | undefined,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @SubjectTeamMember() subjectTeamMember: TeamMemberEntity,
     @Organization() organization: OrganizationEntity,
@@ -179,11 +181,7 @@ export class TeamMemberController {
     this.logger.log(
       `Delete team member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, in team ID: ${team.id}`,
     );
-    await this.teamMemberService.delete(
-      subjectTeamMember,
-      orgMember.role,
-      teamMember?.role ?? null,
-    );
+    await this.teamMemberService.delete(subjectTeamMember);
     this.logger.log(
       `Deleted team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );

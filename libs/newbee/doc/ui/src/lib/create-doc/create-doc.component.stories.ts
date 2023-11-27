@@ -1,5 +1,10 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testOrganization1, testTeam1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganization1,
+  testTeam1,
+  testTeamMemberRelation1,
+} from '@newbee/shared/util';
 import {
   Meta,
   StoryObj,
@@ -21,7 +26,7 @@ export default {
     httpClientError: null,
     createPending: false,
     organization: testOrganization1,
-    teams: [testTeam1],
+    teams: [testTeamMemberRelation1],
     teamSlugParam: testTeam1.slug,
   },
   argTypes: {
@@ -42,7 +47,14 @@ export const Pending: Story = {
 };
 
 export const TeamWithDuration: Story = {
-  args: { teams: [{ ...testTeam1, upToDateDuration: 'P1Y' }] },
+  args: {
+    teams: [
+      {
+        ...testTeamMemberRelation1,
+        team: { ...testTeam1, upToDateDuration: 'P1Y' },
+      },
+    ],
+  },
 };
 
 export const WithErrors: Story = {

@@ -427,7 +427,7 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
   user: testUser1,
-  teams: { sample: [testTeamMemberRelation1], total: 1 },
+  teams: [testTeamMemberRelation1],
   createdDocs: { sample: [testDocQueryResult1], total: 1 },
   maintainedDocs: { sample: [testDocQueryResult1], total: 1 },
   createdQnas: { sample: [testQnaQueryResult1], total: 1 },
@@ -607,6 +607,7 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   title: 'New title',
   docMarkdoc: 'new raw markdoc',
   upToDateDuration: 'P1Y',
+  team: testTeam1.slug,
 };
 
 /**

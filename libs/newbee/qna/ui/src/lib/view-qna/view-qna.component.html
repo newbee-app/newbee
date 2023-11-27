@@ -76,7 +76,7 @@
 
     <ng-container *ngIf="qna.qna.questionHtml">
       <div class="divider mt-2 mb-0"></div>
-      <div [innerHTML]="qna.qna.questionHtml" class="prose"></div>
+      <div [innerHTML]="qna.qna.questionHtml" class="prose max-w-full"></div>
     </ng-container>
   </div>
 
@@ -138,7 +138,7 @@
 
         <div class="divider mt-2 mb-0"></div>
 
-        <div [innerHTML]="qna.qna.answerHtml" class="prose"></div>
+        <div [innerHTML]="qna.qna.answerHtml" class="prose max-w-full"></div>
       </ng-container>
 
       <ng-template #noAnswer>
@@ -147,7 +147,7 @@
         <ng-container *ngIf="hasAnswerPermissions">
           <div class="divider mt-2 mb-0"></div>
 
-          <p class="prose">
+          <p class="prose max-w-full">
             Would you like to
             <a (click)="emitQnaNavigate(keyword.Edit)" class="link link-info"
               >provide one?</a
