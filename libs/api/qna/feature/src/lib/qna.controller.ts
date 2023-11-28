@@ -18,7 +18,6 @@ import {
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
-  TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ConditionalRoleEnum,
@@ -27,8 +26,8 @@ import {
   PostRoleEnum,
   Qna,
   Role,
-  TeamMember,
 } from '@newbee/api/shared/util';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseQnaAndMemberDto,
@@ -53,6 +52,7 @@ export class QnaController {
   constructor(
     private readonly qnaService: QnaService,
     private readonly entityService: EntityService,
+    private readonly teamMemberService: TeamMemberService,
   ) {}
 
   /**
@@ -90,6 +90,7 @@ export class QnaController {
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param qna The qna we're looking for.
+   * @param orgMember The org member making the request.
    *
    * @returns The qna associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
@@ -98,13 +99,20 @@ export class QnaController {
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
   async get(
     @Qna() qna: QnaEntity,
-    @TeamMember() teamMember: TeamMemberEntity | undefined,
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
+
+    const { team } = qna;
     return {
       qna: await this.entityService.createQnaNoOrg(qna),
-      teamMember: teamMember ?? null,
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
     };
   }
 

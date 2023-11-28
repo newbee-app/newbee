@@ -14,6 +14,7 @@ import {
 } from '@newbee/api/doc/data-access';
 import {
   DocEntity,
+  EntityService,
   OrgMemberEntity,
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
@@ -25,8 +26,14 @@ import {
   PostRoleEnum,
   Role,
 } from '@newbee/api/shared/util';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  BaseDocAndMemberDto,
+  Keyword,
+  OrgRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
@@ -41,7 +48,11 @@ export class DocController {
    */
   private readonly logger = new Logger(DocController.name);
 
-  constructor(private readonly docService: DocService) {}
+  constructor(
+    private readonly docService: DocService,
+    private readonly entityService: EntityService,
+    private readonly teamMemberService: TeamMemberService,
+  ) {}
 
   /**
    * The API route for creating a doc.
@@ -78,16 +89,30 @@ export class DocController {
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param doc The doc we're looking for.
+   * @param orgMember The org member making the request.
    *
    * @returns The doc associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${Keyword.Doc}`)
   @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Doc() doc: DocEntity): Promise<DocEntity> {
+  async get(
+    @Doc() doc: DocEntity,
+    @OrgMember() orgMember: OrgMemberEntity,
+  ): Promise<BaseDocAndMemberDto> {
     this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
     this.logger.log(`Found doc, slug: ${doc.slug}, ID: ${doc.id}`);
-    return doc;
+
+    const { team } = doc;
+    return {
+      doc: await this.entityService.createDocNoOrg(doc),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**

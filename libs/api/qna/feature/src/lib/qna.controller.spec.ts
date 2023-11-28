@@ -8,6 +8,7 @@ import {
   testQnaEntity1,
   testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateQnaDto1,
   testBaseUpdateAnswerDto1,
@@ -21,6 +22,7 @@ describe('QnaController', () => {
   let controller: QnaController;
   let service: QnaService;
   let entityService: EntityService;
+  let teamMemberService: TeamMemberService;
 
   const testUpdatedQnaEntity = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
 
@@ -43,18 +45,28 @@ describe('QnaController', () => {
             createQnaNoOrg: jest.fn().mockResolvedValue(testQnaRelation1),
           }),
         },
+        {
+          provide: TeamMemberService,
+          useValue: createMock<TeamMemberService>({
+            findOneByOrgMemberAndTeamOrNull: jest
+              .fn()
+              .mockResolvedValue(testTeamMemberEntity1),
+          }),
+        },
       ],
     }).compile();
 
     controller = module.get<QnaController>(QnaController);
     service = module.get<QnaService>(QnaService);
     entityService = module.get<EntityService>(EntityService);
+    teamMemberService = module.get<TeamMemberService>(TeamMemberService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
     expect(entityService).toBeDefined();
+    expect(teamMemberService).toBeDefined();
   });
 
   it('create should create a qna', async () => {
@@ -74,13 +86,20 @@ describe('QnaController', () => {
 
   it('get should get a qna', async () => {
     await expect(
-      controller.get(testQnaEntity1, testTeamMemberEntity1),
+      controller.get(testQnaEntity1, testOrgMemberEntity1),
     ).resolves.toEqual({
       qna: testQnaRelation1,
       teamMember: testTeamMemberEntity1,
     });
     expect(entityService.createQnaNoOrg).toBeCalledTimes(1);
     expect(entityService.createQnaNoOrg).toBeCalledWith(testQnaEntity1);
+    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledTimes(
+      1,
+    );
+    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
+      testOrgMemberEntity1,
+      testQnaEntity1.team,
+    );
   });
 
   it('updateQuestion should update the question', async () => {

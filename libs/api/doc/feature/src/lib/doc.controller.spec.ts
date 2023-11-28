@@ -2,19 +2,25 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocService } from '@newbee/api/doc/data-access';
 import {
+  EntityService,
   testDocEntity1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
+  testTeamMemberEntity1,
 } from '@newbee/api/shared/data-access';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
+  testDocRelation1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
 
 describe('DocController', () => {
   let controller: DocController;
   let service: DocService;
+  let entityService: EntityService;
+  let teamMemberService: TeamMemberService;
 
   const testUpdatedDocEntity = { ...testDocEntity1, ...testBaseUpdateDocDto1 };
 
@@ -30,16 +36,34 @@ describe('DocController', () => {
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedDocEntity),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createDocNoOrg: jest.fn().mockResolvedValue(testDocRelation1),
+          }),
+        },
+        {
+          provide: TeamMemberService,
+          useValue: createMock<TeamMemberService>({
+            findOneByOrgMemberAndTeamOrNull: jest
+              .fn()
+              .mockResolvedValue(testTeamMemberEntity1),
+          }),
+        },
       ],
     }).compile();
 
     controller = module.get<DocController>(DocController);
     service = module.get<DocService>(DocService);
+    entityService = module.get<EntityService>(EntityService);
+    teamMemberService = module.get<TeamMemberService>(TeamMemberService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(entityService).toBeDefined();
+    expect(teamMemberService).toBeDefined();
   });
 
   it('create should create a doc', async () => {
@@ -58,8 +82,20 @@ describe('DocController', () => {
   });
 
   it('get should get a doc', async () => {
-    await expect(controller.get(testDocEntity1)).resolves.toEqual(
-      testDocEntity1,
+    await expect(
+      controller.get(testDocEntity1, testOrgMemberEntity1),
+    ).resolves.toEqual({
+      doc: testDocRelation1,
+      teamMember: testTeamMemberEntity1,
+    });
+    expect(entityService.createDocNoOrg).toBeCalledTimes(1);
+    expect(entityService.createDocNoOrg).toBeCalledWith(testDocEntity1);
+    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledTimes(
+      1,
+    );
+    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
+      testOrgMemberEntity1,
+      testDocEntity1.team,
     );
   });
 
