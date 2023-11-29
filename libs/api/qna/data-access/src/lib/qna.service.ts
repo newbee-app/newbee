@@ -61,9 +61,6 @@ export class QnaService {
     const team = teamSlug
       ? await this.teamService.findOneBySlug(creator.organization, teamSlug)
       : null;
-    if (team) {
-      await this.teamMemberService.checkOrgMemberTeam(creator, team);
-    }
 
     const id = v4();
     const qna = new QnaEntity(
@@ -145,11 +142,17 @@ export class QnaService {
       team: teamSlug,
     } = updateQnaDto;
 
+    const hasAnswer = !!(
+      qna.answerHtml ||
+      qna.answerMarkdoc ||
+      qna.answerTxt ||
+      answerMarkdoc
+    );
     const team =
       typeof teamSlug === 'string'
         ? await this.teamService.findOneBySlug(qna.organization, teamSlug)
         : teamSlug;
-    if (team) {
+    if (team && hasAnswer) {
       await this.teamMemberService.checkOrgMemberTeam(orgMember, team);
     }
 

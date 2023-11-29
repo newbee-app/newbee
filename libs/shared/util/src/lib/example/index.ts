@@ -162,6 +162,16 @@ export const testTeam1: Team = {
 };
 
 /**
+ * An example instance of Team.
+ * Strictly for use in testing.
+ */
+export const testTeam2: Team = {
+  name: 'HR',
+  slug: 'hr',
+  upToDateDuration: 'P1Y',
+};
+
+/**
  * An example instance of TeamMember.
  * Strictly for use in testing.
  */

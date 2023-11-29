@@ -2,7 +2,7 @@
   [httpClientError]="httpClientError$ | async"
   [createPending]="(pendingCreate$ | async)!"
   [organization]="(selectedOrganization$ | async)!.organization"
-  [teams]="(orgMember$ | async)!.teams"
+  [teams]="(teams$ | async)!"
   [teamSlugParam]="teamSlugParam$ | async"
   (create)="onCreate($event)"
 ></newbee-create-doc>

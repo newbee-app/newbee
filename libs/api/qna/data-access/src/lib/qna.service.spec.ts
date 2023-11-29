@@ -143,6 +143,10 @@ describe('QnaService', () => {
         testQnaEntity1.questionMarkdoc,
         testQnaEntity1.answerMarkdoc,
       );
+      expect(teamService.findOneBySlug).toBeCalledTimes(1);
+      expect(teamService.findOneBySlug).toBeCalledWith(
+        testBaseCreateQnaDto1.team,
+      );
       expect(em.persistAndFlush).toBeCalledTimes(1);
       expect(em.persistAndFlush).toBeCalledWith(testQnaEntity1);
     });
@@ -263,7 +267,7 @@ describe('QnaService', () => {
       );
     });
 
-    it('should udpate the maintainer if one is specified', async () => {
+    it('should udpate the maintainer if newMaintainer is true', async () => {
       await expect(
         service.update(
           testQnaEntity1,
@@ -281,6 +285,49 @@ describe('QnaService', () => {
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
+    });
+
+    it('should check org member and team if a team has been specified and there is an answer', async () => {
+      await expect(
+        service.update(
+          testQnaEntity1,
+          { ...testBaseUpdateQnaDto1, team: testTeamEntity1.slug },
+          testOrgMemberEntity1,
+        ),
+      ).resolves.toEqual(testUpdatedQna);
+      expect(teamService.findOneBySlug).toBeCalledTimes(1);
+      expect(teamService.findOneBySlug).toBeCalledWith(
+        testQnaEntity1.organization,
+        testTeamEntity1.slug,
+      );
+      expect(teamMemberService.checkOrgMemberTeam).toBeCalledTimes(1);
+      expect(teamMemberService.checkOrgMemberTeam).toBeCalledWith(
+        testOrgMemberEntity1,
+        testTeamEntity1,
+      );
+    });
+
+    it('should not check org member and team if there is no answer', async () => {
+      const { answerMarkdoc, ...rest } = testBaseUpdateQnaDto1;
+      answerMarkdoc;
+      await expect(
+        service.update(
+          {
+            ...testQnaEntity1,
+            answerHtml: null,
+            answerMarkdoc: null,
+            answerTxt: null,
+          } as QnaEntity,
+          { ...rest, team: testTeamEntity1.slug },
+          testOrgMemberEntity1,
+        ),
+      ).resolves.toEqual(testUpdatedQna);
+      expect(teamService.findOneBySlug).toBeCalledTimes(1);
+      expect(teamService.findOneBySlug).toBeCalledWith(
+        testQnaEntity1.organization,
+        testTeamEntity1.slug,
+      );
+      expect(teamMemberService.checkOrgMemberTeam).not.toBeCalled();
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {

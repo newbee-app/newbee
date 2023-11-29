@@ -28,7 +28,6 @@ import {
   BaseCreateDocDto,
   Keyword,
   Team,
-  TeamMemberAndTeam,
   type Organization,
 } from '@newbee/shared/util';
 
@@ -70,7 +69,7 @@ export class CreateDocComponent implements OnInit {
   /**
    * All of the teams of the org the doc can be put in, mixed in with the user's role in the teams to ensure they have the adequate permissions to create docs in those teams.
    */
-  @Input() teams: TeamMemberAndTeam[] = [];
+  @Input() teams: Team[] = [];
 
   /**
    * The query param representing a team slug, if one is specified.
@@ -124,21 +123,19 @@ export class CreateDocComponent implements OnInit {
   ngOnInit(): void {
     this.teamOptions = [
       new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team.team, team.team.name)),
+      ...this.teams.map((team) => new SelectOption(team, team.name)),
     ];
 
     if (!this.teamSlugParam) {
       return;
     }
 
-    const team = this.teams.find(
-      (team) => team.team.slug === this.teamSlugParam,
-    );
+    const team = this.teams.find((team) => team.slug === this.teamSlugParam);
     if (!team) {
       return;
     }
 
-    this.docForm.controls.team.setValue(team.team);
+    this.docForm.controls.team.setValue(team);
   }
 
   /**

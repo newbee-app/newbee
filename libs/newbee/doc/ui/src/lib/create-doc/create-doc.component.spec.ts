@@ -5,7 +5,6 @@ import {
   testDoc1,
   testOrganization1,
   testTeam1,
-  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import { CreateDocComponent } from './create-doc.component';
 
@@ -22,7 +21,7 @@ describe('CreateDocComponent', () => {
     component = fixture.componentInstance;
 
     component.organization = testOrganization1;
-    component.teams = [testTeamMemberRelation1];
+    component.teams = [testTeam1];
 
     jest.spyOn(component.create, 'emit');
 

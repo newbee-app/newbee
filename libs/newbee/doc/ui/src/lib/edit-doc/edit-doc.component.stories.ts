@@ -1,9 +1,11 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
+  testDocRelation1,
+  testOrgMember1,
   testOrganization1,
   testTeam1,
-  testTeam2,
+  testTeamMember1,
 } from '@newbee/shared/util';
 import {
   Meta,
@@ -11,11 +13,11 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { CreateDocComponent } from './create-doc.component';
+import { EditDocComponent } from './edit-doc.component';
 
 export default {
-  title: 'CreateDocComponent',
-  component: CreateDocComponent,
+  title: 'EditDocComponent',
+  component: EditDocComponent,
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
@@ -24,32 +26,28 @@ export default {
   ],
   args: {
     httpClientError: null,
-    createPending: false,
-    organization: testOrganization1,
+    doc: testDocRelation1,
+    orgMember: testOrgMember1,
+    teamMember: testTeamMember1,
     teams: [testTeam1],
-    teamSlugParam: testTeam1.slug,
+    organization: testOrganization1,
+    editDocPending: false,
+    upToDatePending: false,
+    deletePending: false,
   },
   argTypes: {
-    create: { action: 'create' },
+    edit: { action: 'edit' },
+    markAsUpToDate: { action: 'markAsUpToDate' },
+    delete: { action: 'delete' },
   },
-} as Meta<CreateDocComponent>;
+} as Meta<EditDocComponent>;
 
-type Story = StoryObj<CreateDocComponent>;
+type Story = StoryObj<EditDocComponent>;
 
 export const Primary: Story = {};
 
-export const NoTeamSlugParam: Story = {
-  args: { teamSlugParam: null },
-};
-
 export const Pending: Story = {
-  args: { createPending: true },
-};
-
-export const TeamWithDuration: Story = {
-  args: {
-    teams: [testTeam2],
-  },
+  args: { editDocPending: true, upToDatePending: true, deletePending: true },
 };
 
 export const WithErrors: Story = {
@@ -64,6 +62,7 @@ export const WithErrors: Story = {
         title: 'Title error',
         [Keyword.Doc]: 'Doc error',
         [Keyword.Misc]: 'Misc error',
+        'up-to-date': 'Up-to-date error',
       },
     },
   },

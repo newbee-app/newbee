@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { qnaFeature as qnaModuleFeature } from '@newbee/newbee/qna/data-access';
+import {
+  qnaFeature as qnaModuleFeature,
+  selectQnaTeams,
+} from '@newbee/newbee/qna/data-access';
 import {
   QnaActions,
   httpFeature,
@@ -41,6 +44,11 @@ export class QnaEditComponent {
   selectedOrganization$ = this.store.select(
     organizationFeature.selectSelectedOrganization,
   );
+
+  /**
+   * The teams that the user can move the qna to.
+   */
+  teams$ = this.store.select(selectQnaTeams);
 
   /**
    * The entire qna module state.

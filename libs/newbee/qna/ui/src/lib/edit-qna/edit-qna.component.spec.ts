@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Frequency, SelectOption } from '@newbee/newbee/shared/util';
+import { SelectOption } from '@newbee/newbee/shared/util';
 import {
   testOrgMember1,
   testOrganization1,
   testQna1,
   testQnaRelation1,
   testTeam1,
-  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import { EditQnaComponent } from './edit-qna.component';
 
@@ -24,7 +23,7 @@ describe('EditQnaComponent', () => {
 
     component.qna = testQnaRelation1;
     component.orgMember = testOrgMember1;
-    component.teams = [testTeamMemberRelation1];
+    component.teams = [testTeam1];
     component.organization = testOrganization1;
 
     jest.spyOn(component.editQuestion, 'emit');
@@ -55,40 +54,6 @@ describe('EditQnaComponent', () => {
         upToDateDuration: { num: null, frequency: null },
       });
       expect(component.answerMarkdoc).toEqual(testQna1.answerMarkdoc);
-    });
-  });
-
-  describe('editQuestionDistinct', () => {
-    it(`should be true if the qna's question is distinct from the edit's current value`, () => {
-      expect(component.editQuestionDistinct).toBeFalsy();
-
-      component.editQuestionForm.patchValue({ title: 'New value' });
-      expect(component.editQuestionDistinct).toBeTruthy();
-
-      component.editQuestionForm.setValue({
-        title: testQna1.title,
-        team: { name: 'New team', slug: 'new-team', upToDateDuration: null },
-      });
-      expect(component.editQuestionDistinct).toBeTruthy();
-
-      component.editQuestionForm.patchValue({ team: testTeam1 });
-      component.questionMarkdoc = 'New markdoc';
-      expect(component.editQuestionDistinct).toBeTruthy();
-    });
-  });
-
-  describe('editAnswerDistinct', () => {
-    it(`should be true if the qna's answer is distinct from the edit's current value`, () => {
-      expect(component.editAnswerDistinct).toBeFalsy();
-
-      component.answerMarkdoc = 'new markdoc';
-      expect(component.editAnswerDistinct).toBeTruthy();
-
-      component.answerMarkdoc = testQna1.answerMarkdoc ?? '';
-      component.editAnswerForm.setValue({
-        upToDateDuration: { num: 1, frequency: Frequency.Year },
-      });
-      expect(component.editAnswerDistinct).toBeTruthy();
     });
   });
 

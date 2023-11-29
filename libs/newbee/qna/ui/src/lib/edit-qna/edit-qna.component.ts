@@ -39,12 +39,12 @@ import {
   Keyword,
   Team,
   TeamMember,
-  TeamMemberAndTeam,
   type OrgMember,
   type Organization,
   type QnaNoOrg,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
+import { isEqual } from 'lodash-es';
 
 /**
  * A dumb UI for editing a qna.
@@ -126,7 +126,7 @@ export class EditQnaComponent implements OnInit {
   /**
    * All of the teams of the org the question can be asked to.
    */
-  @Input() teams: TeamMemberAndTeam[] = [];
+  @Input() teams: Team[] = [];
 
   /**
    * The organization the qna is in.
@@ -183,9 +183,7 @@ export class EditQnaComponent implements OnInit {
       this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
       this.teamOptions = [
         new SelectOption(null, 'Entire org'),
-        ...this.teams.map(
-          (team) => new SelectOption(team.team, team.team.name),
-        ),
+        ...this.teams.map((team) => new SelectOption(team, team.name)),
       ];
 
       this.editQuestionForm.setValue(
@@ -262,7 +260,7 @@ export class EditQnaComponent implements OnInit {
   get editQuestionDistinct(): boolean {
     const { team, title } = this.editQuestionForm.value;
     return (
-      team !== this.qna.team ||
+      !isEqual(team, this.qna.team) ||
       title !== this.qna.qna.title ||
       this.questionMarkdoc !== this.qna.qna.questionMarkdoc
     );

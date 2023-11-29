@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { docFeature } from '@newbee/newbee/doc/data-access';
+import { docFeature, selectDocTeams } from '@newbee/newbee/doc/data-access';
 import {
   DocActions,
   httpFeature,
@@ -39,6 +39,11 @@ export class DocCreateComponent {
    * The org member associated with the user.
    */
   orgMember$ = this.store.select(organizationFeature.selectOrgMember);
+
+  /**
+   * The teams the user can create a doc in.
+   */
+  teams$ = this.store.select(selectDocTeams);
 
   /**
    * The team slug taken from the route's query params.

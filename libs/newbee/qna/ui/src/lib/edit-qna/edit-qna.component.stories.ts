@@ -7,8 +7,8 @@ import {
   testOrgMemberUser1,
   testOrganization1,
   testQnaRelation1,
+  testTeam1,
   testTeamMember1,
-  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import {
   Meta,
@@ -32,7 +32,7 @@ export default {
     qna: testQnaRelation1,
     orgMember: testOrgMember1,
     teamMember: testTeamMember1,
-    teams: [testTeamMemberRelation1],
+    teams: [testTeam1],
     organization: testOrganization1,
     editQuestionPending: false,
     editAnswerPending: false,
