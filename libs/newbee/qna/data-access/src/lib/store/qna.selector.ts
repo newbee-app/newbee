@@ -10,6 +10,7 @@ import {
   compareOrgRoles,
 } from '@newbee/shared/util';
 import { createSelector } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 
 /**
  * A selector for selecting the teams that should be displayed for creating or editing a qna.
@@ -31,7 +32,12 @@ export const selectQnaTeams = createSelector(
       return selectedOrganization.teams;
     } else if (selectedQna && selectedQna.team) {
       const orgMemberTeams = orgMember.teams.map((team) => team.team);
-      return addToArrayIfUnique(orgMemberTeams, selectedQna.team, false);
+      return addToArrayIfUnique(
+        orgMemberTeams,
+        selectedQna.team,
+        false,
+        isEqual,
+      );
     }
 
     return orgMember.teams.map((team) => team.team);
