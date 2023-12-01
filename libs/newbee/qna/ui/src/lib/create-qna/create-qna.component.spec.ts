@@ -45,8 +45,8 @@ describe('CreateQnaComponent', () => {
   describe('createQna', () => {
     it('should emit create', () => {
       component.emitCreate();
-      expect(component.create.emit).toBeCalledTimes(1);
-      expect(component.create.emit).toBeCalledWith({
+      expect(component.create.emit).toHaveBeenCalledTimes(1);
+      expect(component.create.emit).toHaveBeenCalledWith({
         title: '',
         questionMarkdoc: null,
         answerMarkdoc: null,
@@ -56,8 +56,8 @@ describe('CreateQnaComponent', () => {
       component.qnaForm.controls.title.setValue('Question?');
       component.qnaForm.controls.team.setValue(testTeam1);
       component.emitCreate();
-      expect(component.create.emit).toBeCalledTimes(2);
-      expect(component.create.emit).toBeCalledWith({
+      expect(component.create.emit).toHaveBeenCalledTimes(2);
+      expect(component.create.emit).toHaveBeenCalledWith({
         title: 'Question?',
         questionMarkdoc: null,
         answerMarkdoc: null,

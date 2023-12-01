@@ -59,7 +59,7 @@ describe('DocCreateComponent', () => {
   describe('onCreate', () => {
     it('should dispatch createDoc', () => {
       component.onCreate(testBaseCreateDocDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         DocActions.createDoc({ createDocDto: testBaseCreateDocDto1 }),
       );
     });

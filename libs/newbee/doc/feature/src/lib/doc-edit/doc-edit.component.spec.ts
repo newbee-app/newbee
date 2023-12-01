@@ -61,8 +61,8 @@ describe('DocEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editDoc', () => {
       component.onEdit(testBaseUpdateDocDto1);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
       );
     });
@@ -71,16 +71,18 @@ describe('DocEditComponent', () => {
   describe('onMarkAsUpToDate', () => {
     it('should dispatch markDocAsUpToDate', () => {
       component.onMarkAsUpToDate();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(DocActions.markDocAsUpToDate());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        DocActions.markDocAsUpToDate(),
+      );
     });
   });
 
   describe('onDelete', () => {
     it('should dispatch deleteDoc', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(DocActions.deleteDoc());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(DocActions.deleteDoc());
     });
   });
 });

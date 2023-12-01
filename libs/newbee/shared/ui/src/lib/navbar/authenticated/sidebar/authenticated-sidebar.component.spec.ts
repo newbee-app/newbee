@@ -53,9 +53,11 @@ describe('AuthenticatedSidebarComponent', () => {
     it('should change the selected organization and emit outputs', () => {
       component.selectOrganization(testOrganization2);
       expect(component.selectedOrganization).toEqual(testOrganization2);
-      expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
-      expect(component.selectedOrganizationChange.emit).toBeCalledWith(
-        testOrganization2
+      expect(component.selectedOrganizationChange.emit).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(component.selectedOrganizationChange.emit).toHaveBeenCalledWith(
+        testOrganization2,
       );
     });
   });
@@ -63,9 +65,9 @@ describe('AuthenticatedSidebarComponent', () => {
   describe('emitNavigateToLink', () => {
     it('should emit a request to navigate to the link associated with the route keyword', () => {
       component.emitNavigateToLink(ShortUrl.Organization, Keyword.New);
-      expect(component.navigateToLink.emit).toBeCalledTimes(1);
-      expect(component.navigateToLink.emit).toBeCalledWith(
-        `/${ShortUrl.Organization}/${Keyword.New}`
+      expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
+      expect(component.navigateToLink.emit).toHaveBeenCalledWith(
+        `/${ShortUrl.Organization}/${Keyword.New}`,
       );
     });
   });

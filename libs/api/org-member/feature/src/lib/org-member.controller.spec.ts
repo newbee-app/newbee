@@ -59,8 +59,8 @@ describe('OrgMemberController', () => {
       await expect(
         controller.getBySlug(testOrgMemberEntity1, testOrganizationEntity1),
       ).resolves.toEqual(testOrgMemberRelation1);
-      expect(entityService.createOrgMemberNoOrg).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberNoOrg).toBeCalledWith(
+      expect(entityService.createOrgMemberNoOrg).toHaveBeenCalledTimes(1);
+      expect(entityService.createOrgMemberNoOrg).toHaveBeenCalledWith(
         testOrgMemberEntity1,
       );
     });
@@ -76,8 +76,8 @@ describe('OrgMemberController', () => {
           testOrganizationEntity1,
         ),
       ).resolves.toEqual(testUpdatedOrgMember);
-      expect(service.updateRole).toBeCalledTimes(1);
-      expect(service.updateRole).toBeCalledWith(
+      expect(service.updateRole).toHaveBeenCalledTimes(1);
+      expect(service.updateRole).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testBaseUpdateOrgMemberDto1.role,
         testOrgMemberEntity1.role,
@@ -94,8 +94,8 @@ describe('OrgMemberController', () => {
           testOrganizationEntity1,
         ),
       ).resolves.toBeUndefined();
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testOrgMemberEntity1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testOrgMemberEntity1);
     });
   });
 });

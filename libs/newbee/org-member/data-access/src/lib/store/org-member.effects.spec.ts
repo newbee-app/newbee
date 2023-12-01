@@ -88,8 +88,8 @@ describe('OrgMemberEffects', () => {
       });
       expect(effects.getOrgMember$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).toBeCalledTimes(1);
-        expect(service.get).toBeCalledWith(
+        expect(service.get).toHaveBeenCalledTimes(1);
+        expect(service.get).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
         );
@@ -109,8 +109,8 @@ describe('OrgMemberEffects', () => {
       });
       expect(effects.editOrgMember$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
           testBaseUpdateOrgMemberDto1,
@@ -127,8 +127,8 @@ describe('OrgMemberEffects', () => {
       });
       expect(effects.deleteOrgMember$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
         );
@@ -147,8 +147,8 @@ describe('OrgMemberEffects', () => {
       });
       expect(effects.deleteOrgMemberSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}`,
         ]);
       });
@@ -162,8 +162,8 @@ describe('OrgMemberEffects', () => {
       });
       expect(effects.deleteOrgMemberSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });

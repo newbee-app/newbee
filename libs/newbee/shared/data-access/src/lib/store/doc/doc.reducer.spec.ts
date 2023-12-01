@@ -3,6 +3,7 @@ import {
   testBaseDocAndMemberDto1,
   testDoc1,
   testDocRelation1,
+  testNowDayjs1,
   testTeamMember1,
 } from '@newbee/shared/util';
 import { DocActions } from './doc.actions';
@@ -23,10 +24,10 @@ describe('DocReducer', () => {
       expect(updatedState).toEqual(stateAfterGetDocSuccess);
     });
 
-    it('should do nothing for editDocSuccess', () => {
+    it('should do nothing for markDocAsUpToDateSuccess', () => {
       const updatedState = docFeature.reducer(
         initialDocState,
-        DocActions.editDocSuccess({ doc: testDoc1 }),
+        DocActions.markDocAsUpToDateSuccess({ doc: testDoc1 }),
       );
       expect(updatedState).toEqual(initialDocState);
     });
@@ -47,11 +48,14 @@ describe('DocReducer', () => {
       expect(updatedState).toEqual(initialDocState);
     });
 
-    it('should update state for editDocSuccess', () => {
-      const newDoc: Doc = { ...testDoc1, title: 'New title' };
+    it('should update state for markDocAsUpToDateSuccess', () => {
+      const newDoc: Doc = {
+        ...testDoc1,
+        markedUpToDateAt: testNowDayjs1.add(1, 'day').toDate(),
+      };
       const updatedState = docFeature.reducer(
         stateAfterGetDocSuccess,
-        DocActions.editDocSuccess({ doc: newDoc }),
+        DocActions.markDocAsUpToDateSuccess({ doc: newDoc }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetDocSuccess,

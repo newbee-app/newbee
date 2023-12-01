@@ -136,24 +136,24 @@ describe('OrganizationService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockOrganizationEntity).toBeCalledTimes(1);
-      expect(mockOrganizationEntity).toBeCalledWith(
+      expect(mockOrganizationEntity).toHaveBeenCalledTimes(1);
+      expect(mockOrganizationEntity).toHaveBeenCalledWith(
         testOrganizationEntity.id,
         testBaseCreateOrganizationDto1.name,
         testBaseCreateOrganizationDto1.slug,
         testBaseCreateOrganizationDto1.upToDateDuration,
         testUserEntity1,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testOrganizationEntity);
     });
 
     it('should create an organization', async () => {
       await expect(
         service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(solrCli.createCollection).toBeCalledTimes(1);
-      expect(solrCli.createCollection).toBeCalledWith({
+      expect(solrCli.createCollection).toHaveBeenCalledTimes(1);
+      expect(solrCli.createCollection).toHaveBeenCalledWith({
         name: testOrganizationEntity.id,
         numShards: 1,
         config: newOrgConfigset,
@@ -189,16 +189,16 @@ describe('OrganizationService', () => {
       await expect(
         service.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.createCollection).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(solrCli.createCollection).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testOrganizationEntity);
     });
   });
 
   describe('hasOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(OrganizationEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(OrganizationEntity, {
         slug: testOrganizationEntity.slug,
       });
     });
@@ -219,8 +219,8 @@ describe('OrganizationService', () => {
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(OrganizationEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(OrganizationEntity, {
         slug: testOrganizationEntity.slug,
       });
     });
@@ -229,7 +229,7 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggester).not.toBeCalled();
+      expect(searchService.buildSuggester).not.toHaveBeenCalled();
     });
 
     it(`should build the suggester if it's been at least a day since last build`, async () => {
@@ -245,15 +245,15 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggester).toBeCalledTimes(1);
-      expect(searchService.buildSuggester).toBeCalledWith(
+      expect(searchService.buildSuggester).toHaveBeenCalledTimes(1);
+      expect(searchService.buildSuggester).toHaveBeenCalledWith(
         testOrganizationEntity,
       );
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testOrganizationEntity, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testOrganizationEntity, {
         suggesterBuiltAt: testNow1,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
@@ -283,17 +283,17 @@ describe('OrganizationService', () => {
     });
 
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(
         testOrganizationEntity,
         testBaseUpdateOrganizationDto1,
       );
-      expect(service.changeUpToDateDuration).toBeCalledTimes(1);
-      expect(service.changeUpToDateDuration).toBeCalledWith(
+      expect(service.changeUpToDateDuration).toHaveBeenCalledTimes(1);
+      expect(service.changeUpToDateDuration).toHaveBeenCalledWith(
         testOrganizationEntity,
         testBaseUpdateOrganizationDto1.upToDateDuration,
       );
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update an organization', async () => {
@@ -301,8 +301,8 @@ describe('OrganizationService', () => {
         service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganization);
 
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity.id,
         [testDocDocParams1, testQnaDocParams1],
       );
@@ -336,8 +336,8 @@ describe('OrganizationService', () => {
         service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganization);
 
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity.id,
         [testDocDocParams1, testQnaDocParams1],
       );
@@ -346,18 +346,20 @@ describe('OrganizationService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testOrganizationEntity);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testOrganizationEntity);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
+        testOrganizationEntity,
+      );
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testOrganizationEntity);
     });
 
     it('should remove an organization', async () => {
       await expect(
         service.delete(testOrganizationEntity),
       ).resolves.toBeUndefined();
-      expect(solrCli.deleteCollection).toBeCalledTimes(1);
-      expect(solrCli.deleteCollection).toBeCalledWith(
+      expect(solrCli.deleteCollection).toHaveBeenCalledTimes(1);
+      expect(solrCli.deleteCollection).toHaveBeenCalledWith(
         testOrganizationEntity.id,
       );
     });
@@ -378,7 +380,7 @@ describe('OrganizationService', () => {
       await expect(
         service.delete(testOrganizationEntity),
       ).resolves.toBeUndefined();
-      expect(solrCli.deleteCollection).toBeCalledTimes(1);
+      expect(solrCli.deleteCollection).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -395,7 +397,7 @@ describe('OrganizationService', () => {
     });
 
     afterEach(() => {
-      expect(em.find).toBeCalledWith(TeamEntity, {
+      expect(em.find).toHaveBeenCalledWith(TeamEntity, {
         organization: testOrganizationEntity,
         upToDateDuration: null,
       });
@@ -409,31 +411,31 @@ describe('OrganizationService', () => {
         qnas: [testQnaEntity1, testQnaEntity1],
       });
 
-      expect(em.find).toBeCalledTimes(3);
-      expect(em.find).toBeCalledWith(DocEntity, {
+      expect(em.find).toHaveBeenCalledTimes(3);
+      expect(em.find).toHaveBeenCalledWith(DocEntity, {
         organization: testOrganizationEntity,
         team: null,
         upToDateDuration: null,
       });
-      expect(em.find).toBeCalledWith(QnaEntity, {
+      expect(em.find).toHaveBeenCalledWith(QnaEntity, {
         organization: testOrganizationEntity,
         team: null,
         upToDateDuration: null,
       });
 
-      expect(teamService.changeUpToDateDuration).toBeCalledTimes(1);
-      expect(teamService.changeUpToDateDuration).toBeCalledWith(
+      expect(teamService.changeUpToDateDuration).toHaveBeenCalledTimes(1);
+      expect(teamService.changeUpToDateDuration).toHaveBeenCalledWith(
         testTeamEntity1,
         newDurationStr,
       );
 
-      expect(em.assign).toBeCalledTimes(2);
-      expect(em.assign).toBeCalledWith(testDocEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(2);
+      expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {
         outOfDateAt: dayjs(testDocEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
       });
-      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, {
         outOfDateAt: dayjs(testQnaEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
@@ -445,7 +447,7 @@ describe('OrganizationService', () => {
       await expect(
         service.changeUpToDateDuration(testOrganizationEntity, newDurationStr),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.find).toBeCalledTimes(1);
+      expect(em.find).toHaveBeenCalledTimes(1);
     });
   });
 });

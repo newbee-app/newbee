@@ -57,8 +57,8 @@ describe('EditDocComponent', () => {
   describe('emitEdit', () => {
     it('should emit doc values', () => {
       component.emitEdit();
-      expect(component.edit.emit).toBeCalledTimes(1);
-      expect(component.edit.emit).toBeCalledWith({
+      expect(component.edit.emit).toHaveBeenCalledTimes(1);
+      expect(component.edit.emit).toHaveBeenCalledWith({
         title: testDoc1.title,
         team: testDocRelation1.team?.slug ?? null,
         upToDateDuration: testDoc1.upToDateDuration,

@@ -39,14 +39,14 @@ export const DocActions = createActionGroup({
     'Mark Doc As Up To Date': emptyProps(),
 
     /**
+     * Indicates that a doc was successfully marked up-to-date.
+     */
+    'Mark Doc As Up To Date Success': props<{ doc: Doc }>(),
+
+    /**
      * Edit the currently selected doc.
      */
     'Edit Doc': props<{ updateDocDto: BaseUpdateDocDto }>(),
-
-    /**
-     * Indicates that a doc was successfully edited.
-     */
-    'Edit Doc Success': props<{ doc: Doc }>(),
 
     /**
      * Delete the currently selected doc.

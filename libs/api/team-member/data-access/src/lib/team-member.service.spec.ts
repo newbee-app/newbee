@@ -82,14 +82,14 @@ describe('TeamMemberService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockTeamMemberEntity).toBeCalledTimes(1);
-      expect(mockTeamMemberEntity).toBeCalledWith(
+      expect(mockTeamMemberEntity).toHaveBeenCalledTimes(1);
+      expect(mockTeamMemberEntity).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
         testTeamMemberEntity1.role,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testTeamMemberEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testTeamMemberEntity1);
     });
 
     it('should create a new team member', async () => {
@@ -141,8 +141,8 @@ describe('TeamMemberService', () => {
 
   describe('findOneByOrgMemberAndTeam', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(TeamMemberEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(TeamMemberEntity, {
         orgMember: testOrgMemberEntity1,
         team: testTeamEntity1,
       });
@@ -184,8 +184,8 @@ describe('TeamMemberService', () => {
 
   describe('findOneByOrgMemberAndTeamOrNull', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(TeamMemberEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(TeamMemberEntity, {
         orgMember: testOrgMemberEntity1,
         team: testTeamEntity1,
       });
@@ -213,11 +213,11 @@ describe('TeamMemberService', () => {
 
   describe('updateRole', () => {
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testTeamMemberEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testTeamMemberEntity1, {
         role: testUpdatedTeamMember.role,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it(`should update an org member's role`, async () => {
@@ -246,10 +246,12 @@ describe('TeamMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testTeamMemberEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
+        testTeamMemberEntity1,
+      );
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testTeamMemberEntity1);
     });
 
     it('should delete a team member', async () => {
@@ -408,7 +410,7 @@ describe('TeamMemberService', () => {
       await expect(
         service.checkOrgMemberTeam(orgMember, testTeamEntity1),
       ).resolves.toBeUndefined();
-      expect(em.findOne).toBeCalledTimes(5);
+      expect(em.findOne).toHaveBeenCalledTimes(5);
     });
 
     it('should throw ForbiddenException if org role is member and team member is null', async () => {

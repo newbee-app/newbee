@@ -63,8 +63,8 @@ describe('UserInvitesService', () => {
 
   describe('findOrCreateOneByEmail', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(UserInvitesEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(UserInvitesEntity, {
         email: testUserInvitesEntity1.email,
       });
     });
@@ -88,13 +88,13 @@ describe('UserInvitesService', () => {
       });
 
       afterEach(() => {
-        expect(mockUserInvitesEntity).toBeCalledTimes(1);
-        expect(mockUserInvitesEntity).toBeCalledWith(
+        expect(mockUserInvitesEntity).toHaveBeenCalledTimes(1);
+        expect(mockUserInvitesEntity).toHaveBeenCalledWith(
           testUserInvitesEntity1.id,
           testUserInvitesEntity1.email,
         );
-        expect(em.persistAndFlush).toBeCalledTimes(1);
-        expect(em.persistAndFlush).toBeCalledWith(testUserInvitesEntity1);
+        expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+        expect(em.persistAndFlush).toHaveBeenCalledWith(testUserInvitesEntity1);
       });
 
       it('should create a user invites', async () => {
@@ -118,10 +118,12 @@ describe('UserInvitesService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testUserInvitesEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testUserInvitesEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
+        testUserInvitesEntity1,
+      );
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testUserInvitesEntity1);
     });
 
     it('should delete a user invites object', async () => {

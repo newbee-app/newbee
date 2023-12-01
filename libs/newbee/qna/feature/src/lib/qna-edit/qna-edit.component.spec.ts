@@ -66,8 +66,8 @@ describe('QnaEditComponent', () => {
   describe('onEditQuestion', () => {
     it('should dispatch editQuestion', () => {
       component.onEditQuestion(testBaseUpdateQuestionDto1);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         QnaActions.editQuestion({
           updateQuestionDto: testBaseUpdateQuestionDto1,
         }),
@@ -78,8 +78,8 @@ describe('QnaEditComponent', () => {
   describe('onEditAnswer', () => {
     it('should dispatch editAnswer', () => {
       component.onEditAnswer(testBaseUpdateAnswerDto1);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
       );
     });
@@ -88,16 +88,18 @@ describe('QnaEditComponent', () => {
   describe('onMarkAsUpToDate', () => {
     it('should dispatch markQnaAsUpToDate', () => {
       component.onMarkAsUpToDate();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(QnaActions.markQnaAsUpToDate());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        QnaActions.markQnaAsUpToDate(),
+      );
     });
   });
 
   describe('onDelete', () => {
     it('should dispatch deleteQna', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(QnaActions.deleteQna());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(QnaActions.deleteQna());
     });
   });
 });

@@ -72,8 +72,8 @@ describe('TeamController', () => {
           testOrganizationEntity1,
         ),
       ).resolves.toEqual(testTeamEntity1);
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testBaseCreateTeamDto1,
         testOrgMemberEntity1,
       );
@@ -89,8 +89,8 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual(testBaseSlugTakenDto1);
-      expect(service.hasOneBySlug).toBeCalledTimes(1);
-      expect(service.hasOneBySlug).toBeCalledWith(
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseSlugDto1.slug,
       );
@@ -103,8 +103,8 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual({ slugTaken: false });
-      expect(service.hasOneBySlug).toBeCalledTimes(2);
-      expect(service.hasOneBySlug).toBeCalledWith(
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(2);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseSlugDto1.slug,
       );
@@ -122,8 +122,8 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual(testBaseGeneratedSlugDto1);
-      expect(service.hasOneBySlug).toBeCalledTimes(1);
-      expect(service.hasOneBySlug).toBeCalledWith(
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         sluggedBase,
       );
@@ -142,16 +142,20 @@ describe('TeamController', () => {
         team: testTeamRelation1,
         teamMember: testTeamMemberEntity1,
       });
-      expect(entityService.createTeamNoOrg).toBeCalledTimes(1);
-      expect(entityService.createTeamNoOrg).toBeCalledWith(testTeamEntity1);
+      expect(entityService.createTeamNoOrg).toHaveBeenCalledTimes(1);
+      expect(entityService.createTeamNoOrg).toHaveBeenCalledWith(
+        testTeamEntity1,
+      );
     });
 
     it('should return null for teamMember if user is not a teamMember', async () => {
       await expect(
         controller.get(testOrganizationEntity1, testTeamEntity1, undefined),
       ).resolves.toEqual({ team: testTeamRelation1, teamMember: null });
-      expect(entityService.createTeamNoOrg).toBeCalledTimes(1);
-      expect(entityService.createTeamNoOrg).toBeCalledWith(testTeamEntity1);
+      expect(entityService.createTeamNoOrg).toHaveBeenCalledTimes(1);
+      expect(entityService.createTeamNoOrg).toHaveBeenCalledWith(
+        testTeamEntity1,
+      );
     });
   });
 
@@ -163,8 +167,8 @@ describe('TeamController', () => {
         testTeamEntity1,
       ),
     ).resolves.toEqual(testUpdatedTeamEntity);
-    expect(service.update).toBeCalledTimes(1);
-    expect(service.update).toBeCalledWith(
+    expect(service.update).toHaveBeenCalledTimes(1);
+    expect(service.update).toHaveBeenCalledWith(
       testTeamEntity1,
       testBaseUpdateTeamDto1,
     );
@@ -174,7 +178,7 @@ describe('TeamController', () => {
     await expect(
       controller.delete(testOrganizationEntity1, testTeamEntity1),
     ).resolves.toBeUndefined();
-    expect(service.delete).toBeCalledTimes(1);
-    expect(service.delete).toBeCalledWith(testTeamEntity1);
+    expect(service.delete).toHaveBeenCalledTimes(1);
+    expect(service.delete).toHaveBeenCalledWith(testTeamEntity1);
   });
 });

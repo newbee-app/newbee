@@ -134,8 +134,8 @@ describe('QnaService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockQnaEntity).toBeCalledTimes(1);
-      expect(mockQnaEntity).toBeCalledWith(
+      expect(mockQnaEntity).toHaveBeenCalledTimes(1);
+      expect(mockQnaEntity).toHaveBeenCalledWith(
         testQnaEntity1.id,
         testQnaEntity1.title,
         testTeamEntity1,
@@ -143,21 +143,21 @@ describe('QnaService', () => {
         testQnaEntity1.questionMarkdoc,
         testQnaEntity1.answerMarkdoc,
       );
-      expect(teamService.findOneBySlug).toBeCalledTimes(1);
-      expect(teamService.findOneBySlug).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseCreateQnaDto1.team,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testQnaEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testQnaEntity1);
     });
 
     it('should create a qna', async () => {
       await expect(
         service.create(testBaseCreateQnaDto1, testOrgMemberEntity1),
       ).resolves.toEqual(testQnaEntity1);
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testQnaDocParams1,
       );
@@ -178,16 +178,19 @@ describe('QnaService', () => {
       await expect(
         service.create(testBaseCreateQnaDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testQnaEntity1);
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testQnaEntity1);
     });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(QnaEntity, testQnaEntity1.slug);
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
+        QnaEntity,
+        testQnaEntity1.slug,
+      );
     });
 
     it('should find a qna using the slug', async () => {
@@ -248,8 +251,8 @@ describe('QnaService', () => {
     });
 
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update a qna', async () => {
@@ -260,9 +263,9 @@ describe('QnaService', () => {
           testOrgMemberEntity1,
         ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(em.assign).toBeCalledWith(testQnaEntity1, testAssignParams);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, testAssignParams);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
@@ -277,12 +280,12 @@ describe('QnaService', () => {
           true,
         ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, {
         ...testAssignParams,
         maintainer: testOrgMemberEntity1,
       });
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
@@ -296,13 +299,13 @@ describe('QnaService', () => {
           testOrgMemberEntity1,
         ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(teamService.findOneBySlug).toBeCalledTimes(1);
-      expect(teamService.findOneBySlug).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
         testQnaEntity1.organization,
         testTeamEntity1.slug,
       );
-      expect(teamMemberService.checkOrgMemberTeam).toBeCalledTimes(1);
-      expect(teamMemberService.checkOrgMemberTeam).toBeCalledWith(
+      expect(teamMemberService.checkOrgMemberTeam).toHaveBeenCalledTimes(1);
+      expect(teamMemberService.checkOrgMemberTeam).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
       );
@@ -323,12 +326,12 @@ describe('QnaService', () => {
           testOrgMemberEntity1,
         ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(teamService.findOneBySlug).toBeCalledTimes(1);
-      expect(teamService.findOneBySlug).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
         testQnaEntity1.organization,
         testTeamEntity1.slug,
       );
-      expect(teamMemberService.checkOrgMemberTeam).not.toBeCalled();
+      expect(teamMemberService.checkOrgMemberTeam).not.toHaveBeenCalled();
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
@@ -353,8 +356,8 @@ describe('QnaService', () => {
           testOrgMemberEntity1,
         ),
       ).resolves.toEqual(testUpdatedQna);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
@@ -369,22 +372,22 @@ describe('QnaService', () => {
     });
 
     afterEach(async () => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, {
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
           .add(await testQnaEntity1.trueUpToDateDuration())
           .toDate(),
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should mark the qna as up to date', async () => {
       await expect(service.markUpToDate(testQnaEntity1)).resolves.toEqual(
         testUpdatedQna,
       );
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
@@ -404,8 +407,8 @@ describe('QnaService', () => {
       await expect(service.markUpToDate(testQnaEntity1)).resolves.toEqual(
         testUpdatedQna,
       );
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedQnaDocParams,
       );
@@ -414,18 +417,21 @@ describe('QnaService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testQnaEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(testQnaEntity1);
     });
 
     it('should delete a qna', async () => {
       await expect(service.delete(testQnaEntity1)).resolves.toBeUndefined();
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testQnaEntity1);
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
-      expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: testQnaEntity1.id,
-      });
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testQnaEntity1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledWith(
+        testOrganizationEntity1.id,
+        {
+          id: testQnaEntity1.id,
+        },
+      );
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
@@ -442,7 +448,7 @@ describe('QnaService', () => {
         .spyOn(solrCli, 'deleteDocs')
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(service.delete(testQnaEntity1)).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   OrgRoleEnum,
-  testOrganization1,
-  testOrganization2,
   testOrgMember1,
   testOrgMemberRelation1,
+  testOrganization1,
+  testOrganization2,
   testUser1,
 } from '@newbee/shared/util';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
@@ -67,9 +67,11 @@ describe('AuthenticatedNavbarComponent', () => {
     it('should change the selected organization and emit', () => {
       component.selectOrganization(testOrganization2);
       expect(component.selectedOrganization).toEqual(testOrganization2);
-      expect(component.selectedOrganizationChange.emit).toBeCalledTimes(1);
-      expect(component.selectedOrganizationChange.emit).toBeCalledWith(
-        testOrganization2
+      expect(component.selectedOrganizationChange.emit).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(component.selectedOrganizationChange.emit).toHaveBeenCalledWith(
+        testOrganization2,
       );
     });
   });
@@ -77,16 +79,16 @@ describe('AuthenticatedNavbarComponent', () => {
   describe('emitNavigateToLink', () => {
     it('should emit a request to navigate to the link associated with the route keyword', () => {
       component.emitNavigateToLink('');
-      expect(component.navigateToLink.emit).toBeCalledTimes(1);
-      expect(component.navigateToLink.emit).toBeCalledWith('/');
+      expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
+      expect(component.navigateToLink.emit).toHaveBeenCalledWith('/');
     });
   });
 
   describe('emitLogout', () => {
     it('should emit logout output', () => {
       component.emitLogout();
-      expect(component.logout.emit).toBeCalledTimes(1);
-      expect(component.logout.emit).toBeCalledWith();
+      expect(component.logout.emit).toHaveBeenCalledTimes(1);
+      expect(component.logout.emit).toHaveBeenCalledWith();
     });
   });
 });

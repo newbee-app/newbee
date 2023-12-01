@@ -43,8 +43,8 @@ describe('UserController', () => {
       await expect(
         controller.update(testBaseUpdateUserDto1, testUserEntity1),
       ).resolves.toEqual(testUpdatedUserEntity);
-      expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(
+      expect(service.update).toHaveBeenCalledTimes(1);
+      expect(service.update).toHaveBeenCalledWith(
         testUserEntity1,
         testBaseUpdateUserDto1,
       );
@@ -54,8 +54,8 @@ describe('UserController', () => {
   describe('delete', () => {
     it('should find and delete a user', async () => {
       await expect(controller.delete(testUserEntity1)).resolves.toBeUndefined();
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testUserEntity1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testUserEntity1);
     });
   });
 });

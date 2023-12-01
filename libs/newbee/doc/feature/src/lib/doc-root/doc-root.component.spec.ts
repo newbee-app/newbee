@@ -34,7 +34,9 @@ describe('DocRootComponent', () => {
   describe('ngOnDestroy', () => {
     it('should dispatch resetSelectedDoc', () => {
       component.ngOnDestroy();
-      expect(store.dispatch).toBeCalledWith(DocActions.resetSelectedDoc());
+      expect(store.dispatch).toHaveBeenCalledWith(
+        DocActions.resetSelectedDoc(),
+      );
     });
   });
 });

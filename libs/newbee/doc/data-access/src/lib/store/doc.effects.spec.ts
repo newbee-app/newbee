@@ -57,7 +57,7 @@ describe('DocEffects', () => {
             create: jest.fn().mockReturnValue(of(testDoc1)),
             get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
-            edit: jest.fn().mockReturnValue(of(testDoc1)),
+            edit: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
             delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -90,8 +90,8 @@ describe('DocEffects', () => {
       });
       expect(effects.createDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(
+        expect(service.create).toHaveBeenCalledTimes(1);
+        expect(service.create).toHaveBeenCalledWith(
           testOrganization1.slug,
           testBaseCreateDocDto1,
         );
@@ -106,7 +106,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.createDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).not.toBeCalled();
+        expect(service.create).not.toHaveBeenCalled();
       });
     });
   });
@@ -124,8 +124,8 @@ describe('DocEffects', () => {
       });
       expect(effects.createDocSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Doc}/${testDoc1.slug}`,
         ]);
       });
@@ -139,7 +139,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.createDocSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).not.toBeCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
       });
     });
   });
@@ -156,8 +156,8 @@ describe('DocEffects', () => {
       });
       expect(effects.getDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).toBeCalledTimes(1);
-        expect(service.get).toBeCalledWith(
+        expect(service.get).toHaveBeenCalledTimes(1);
+        expect(service.get).toHaveBeenCalledWith(
           testDoc1.slug,
           testOrganization1.slug,
         );
@@ -172,23 +172,23 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.getDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).not.toBeCalled();
+        expect(service.get).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('markDocAsUpToDate$', () => {
-    it('should fire editDocSuccess if successful', () => {
+    it('should fire markDocAsUpToDateSuccess if successful', () => {
       actions$ = hot('a', {
         a: DocActions.markDocAsUpToDate(),
       });
       const expected$ = hot('a', {
-        a: DocActions.editDocSuccess({ doc: testDoc1 }),
+        a: DocActions.markDocAsUpToDateSuccess({ doc: testDoc1 }),
       });
       expect(effects.markDocAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.markUpToDate).toBeCalledTimes(1);
-        expect(service.markUpToDate).toBeCalledWith(
+        expect(service.markUpToDate).toHaveBeenCalledTimes(1);
+        expect(service.markUpToDate).toHaveBeenCalledWith(
           testDoc1.slug,
           testOrganization1.slug,
         );
@@ -203,7 +203,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.markDocAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.markUpToDate).not.toBeCalled();
+        expect(service.markUpToDate).not.toHaveBeenCalled();
       });
     });
   });
@@ -214,12 +214,14 @@ describe('DocEffects', () => {
         a: DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
       });
       const expected$ = hot('a', {
-        a: DocActions.editDocSuccess({ doc: testDoc1 }),
+        a: DocActions.getDocSuccess({
+          docAndMemberDto: testBaseDocAndMemberDto1,
+        }),
       });
       expect(effects.editDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(
           testDoc1.slug,
           testOrganization1.slug,
           testBaseUpdateDocDto1,
@@ -235,7 +237,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.editDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
+        expect(service.edit).not.toHaveBeenCalled();
       });
     });
   });
@@ -250,8 +252,8 @@ describe('DocEffects', () => {
       });
       expect(effects.deleteDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(
           testDoc1.slug,
           testOrganization1.slug,
         );
@@ -266,7 +268,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.deleteDoc$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).not.toBeCalled();
+        expect(service.delete).not.toHaveBeenCalled();
       });
     });
   });
@@ -281,8 +283,8 @@ describe('DocEffects', () => {
       });
       expect(effects.deleteDocSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}`,
         ]);
       });
@@ -296,7 +298,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.deleteDocSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).not.toBeCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
       });
     });
   });

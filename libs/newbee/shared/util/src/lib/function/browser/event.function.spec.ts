@@ -11,7 +11,7 @@ describe('EventFunction', () => {
   describe('ignoreMouseEvent', () => {
     it('should call prevent default', () => {
       ignoreMouseEvent(mouseEvent);
-      expect(mouseEvent.preventDefault).toBeCalledTimes(1);
+      expect(mouseEvent.preventDefault).toHaveBeenCalledTimes(1);
     });
   });
 });

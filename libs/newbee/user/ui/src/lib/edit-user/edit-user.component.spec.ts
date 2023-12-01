@@ -57,8 +57,8 @@ describe('EditUserComponent', () => {
     describe('emitEdit', () => {
       it('should emit edit', () => {
         component.emitEdit();
-        expect(component.edit.emit).toBeCalledTimes(1);
-        expect(component.edit.emit).toBeCalledWith({
+        expect(component.edit.emit).toHaveBeenCalledTimes(1);
+        expect(component.edit.emit).toHaveBeenCalledWith({
           name: testUser1.name,
           displayName: testUser1.displayName,
           phoneNumber: testUser1.phoneNumber,
@@ -73,8 +73,8 @@ describe('EditUserComponent', () => {
           .at(0)
           .setValue('new name');
         component.emitEditAuthenticator(0, testAuthenticator1.id);
-        expect(component.editAuthenticator.emit).toBeCalledTimes(1);
-        expect(component.editAuthenticator.emit).toBeCalledWith({
+        expect(component.editAuthenticator.emit).toHaveBeenCalledTimes(1);
+        expect(component.editAuthenticator.emit).toHaveBeenCalledWith({
           id: testAuthenticator1.id,
           name: 'new name',
         });

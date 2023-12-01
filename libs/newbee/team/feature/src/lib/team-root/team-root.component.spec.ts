@@ -34,7 +34,9 @@ describe('TeamRootComponent', () => {
   describe('ngOnDestroy', () => {
     it('should dispatch resetSelectedTeam', () => {
       component.ngOnDestroy();
-      expect(store.dispatch).toBeCalledWith(TeamActions.resetSelectedTeam());
+      expect(store.dispatch).toHaveBeenCalledWith(
+        TeamActions.resetSelectedTeam(),
+      );
     });
   });
 });

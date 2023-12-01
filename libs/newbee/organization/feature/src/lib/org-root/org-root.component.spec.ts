@@ -34,7 +34,7 @@ describe('OrgRootComponent', () => {
   describe('ngOnDestroy', () => {
     it('should dispatch resetSelectedOrg', () => {
       component.ngOnDestroy();
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.resetSelectedOrg(),
       );
     });

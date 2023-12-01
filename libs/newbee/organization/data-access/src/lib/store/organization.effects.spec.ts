@@ -90,8 +90,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.getOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).toBeCalledTimes(1);
-        expect(service.get).toBeCalledWith(testOrganization1.slug);
+        expect(service.get).toHaveBeenCalledTimes(1);
+        expect(service.get).toHaveBeenCalledWith(testOrganization1.slug);
       });
     });
   });
@@ -110,8 +110,10 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.createOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(testBaseCreateOrganizationDto1);
+        expect(service.create).toHaveBeenCalledTimes(1);
+        expect(service.create).toHaveBeenCalledWith(
+          testBaseCreateOrganizationDto1,
+        );
       });
     });
   });
@@ -130,8 +132,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.createOrgSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}`,
         ]);
       });
@@ -152,8 +154,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.editOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(testOrganization1.slug, {
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(testOrganization1.slug, {
           name: testOrganization1.name,
         });
       });
@@ -172,8 +174,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.editOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(testOrganization1.slug, {
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(testOrganization1.slug, {
           slug: testOrganization2.slug,
         });
       });
@@ -189,7 +191,7 @@ describe('OrganizationEffects', () => {
       const expected$ = hot('-');
       expect(effects.editOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
+        expect(service.edit).not.toHaveBeenCalled();
       });
     });
   });
@@ -208,8 +210,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.editOrgSlugSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Edit}`,
         ]);
       });
@@ -226,8 +228,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.deleteOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(testOrganization1.slug);
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(testOrganization1.slug);
       });
     });
 
@@ -239,7 +241,7 @@ describe('OrganizationEffects', () => {
       const expected$ = hot('-');
       expect(effects.editOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
+        expect(service.edit).not.toHaveBeenCalled();
       });
     });
   });
@@ -254,8 +256,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.deleteOrgSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });
@@ -273,8 +275,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).toBeCalledTimes(1);
-        expect(service.checkSlug).toBeCalledWith(testOrganization1.slug);
+        expect(service.checkSlug).toHaveBeenCalledTimes(1);
+        expect(service.checkSlug).toHaveBeenCalledWith(testOrganization1.slug);
       });
     });
 
@@ -283,7 +285,7 @@ describe('OrganizationEffects', () => {
       const expected$ = hot('-');
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).not.toBeCalled();
+        expect(service.checkSlug).not.toHaveBeenCalled();
       });
     });
 
@@ -296,7 +298,7 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).not.toBeCalled();
+        expect(service.checkSlug).not.toHaveBeenCalled();
       });
     });
   });
@@ -313,8 +315,10 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.generateSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.generateSlug).toBeCalledTimes(1);
-        expect(service.generateSlug).toBeCalledWith(testOrganization1.name);
+        expect(service.generateSlug).toHaveBeenCalledTimes(1);
+        expect(service.generateSlug).toHaveBeenCalledWith(
+          testOrganization1.name,
+        );
       });
     });
 
@@ -341,8 +345,8 @@ describe('OrganizationEffects', () => {
       });
       expect(effects.inviteUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.inviteUser).toBeCalledTimes(1);
-        expect(service.inviteUser).toBeCalledWith(
+        expect(service.inviteUser).toHaveBeenCalledTimes(1);
+        expect(service.inviteUser).toHaveBeenCalledWith(
           testOrganization1.slug,
           testBaseCreateOrgMemberInviteDto1,
         );
@@ -359,7 +363,7 @@ describe('OrganizationEffects', () => {
       const expected$ = hot('-');
       expect(effects.inviteUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.inviteUser).not.toBeCalled();
+        expect(service.inviteUser).not.toHaveBeenCalled();
       });
     });
   });

@@ -55,7 +55,7 @@ describe('TeamEditComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
     });
@@ -64,7 +64,7 @@ describe('TeamEditComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
     });
@@ -73,7 +73,7 @@ describe('TeamEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editTeam', () => {
       component.onEdit(testBaseUpdateTeamDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
       );
     });
@@ -82,7 +82,7 @@ describe('TeamEditComponent', () => {
   describe('onEditSlug', () => {
     it('should dispatch editTeamSlug', () => {
       component.onEditSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.editTeamSlug({ updateTeamDto: { slug: testTeam1.slug } }),
       );
     });
@@ -91,7 +91,7 @@ describe('TeamEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteTeam', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(TeamActions.deleteTeam());
+      expect(store.dispatch).toHaveBeenCalledWith(TeamActions.deleteTeam());
     });
   });
 });

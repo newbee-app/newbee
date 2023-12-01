@@ -66,11 +66,11 @@ describe('orgMemberGuard', () => {
 
   it('should dispatch store and navigate', async () => {
     await expect(
-      router.navigate([`/${testOrgMember1.slug}`])
+      router.navigate([`/${testOrgMember1.slug}`]),
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
-      OrgMemberActions.getOrgMember({ slug: testOrgMember1.slug })
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(
+      OrgMemberActions.getOrgMember({ slug: testOrgMember1.slug }),
     );
     expect(location.path()).toEqual(`/${testOrgMember1.slug}`);
   });

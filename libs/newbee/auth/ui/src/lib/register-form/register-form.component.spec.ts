@@ -49,16 +49,20 @@ describe('RegisterFormComponent', () => {
 
       it('should emit the form as a DTO using emitregister()', () => {
         component.emitRegister();
-        expect(component.register.emit).toBeCalledTimes(1);
-        expect(component.register.emit).toBeCalledWith(testBaseCreateUserDto1);
+        expect(component.register.emit).toHaveBeenCalledTimes(1);
+        expect(component.register.emit).toHaveBeenCalledWith(
+          testBaseCreateUserDto1,
+        );
       });
 
       it('should emit the form as a DTO with submit button click', () => {
         const submitElement: HTMLButtonElement | null =
           fixture.nativeElement.querySelector('#submit-button');
         submitElement?.click();
-        expect(component.register.emit).toBeCalledTimes(1);
-        expect(component.register.emit).toBeCalledWith(testBaseCreateUserDto1);
+        expect(component.register.emit).toHaveBeenCalledTimes(1);
+        expect(component.register.emit).toHaveBeenCalledWith(
+          testBaseCreateUserDto1,
+        );
       });
     });
 
@@ -75,16 +79,16 @@ describe('RegisterFormComponent', () => {
 
       it('should emit true using emitNavigateToLogin()', () => {
         component.emitNavigateToLogin();
-        expect(navigateToLoginEmitSpy).toBeCalledTimes(1);
-        expect(navigateToLoginEmitSpy).toBeCalledWith();
+        expect(navigateToLoginEmitSpy).toHaveBeenCalledTimes(1);
+        expect(navigateToLoginEmitSpy).toHaveBeenCalledWith();
       });
 
       it('should emit true with link click', () => {
         const loginElement: HTMLAnchorElement | null =
           fixture.nativeElement.querySelector('#login-link');
         loginElement?.click();
-        expect(navigateToLoginEmitSpy).toBeCalledTimes(1);
-        expect(navigateToLoginEmitSpy).toBeCalledWith();
+        expect(navigateToLoginEmitSpy).toHaveBeenCalledTimes(1);
+        expect(navigateToLoginEmitSpy).toHaveBeenCalledWith();
       });
     });
   });

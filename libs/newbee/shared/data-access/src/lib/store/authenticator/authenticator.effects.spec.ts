@@ -60,8 +60,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.getAuthenticators$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAuthenticators).toBeCalledTimes(1);
-        expect(service.getAuthenticators).toBeCalledWith();
+        expect(service.getAuthenticators).toHaveBeenCalledTimes(1);
+        expect(service.getAuthenticators).toHaveBeenCalledWith();
       });
     });
   });
@@ -79,8 +79,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createRegistrationOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.createOptions).toBeCalledTimes(1);
-        expect(service.createOptions).toBeCalledWith();
+        expect(service.createOptions).toHaveBeenCalledTimes(1);
+        expect(service.createOptions).toHaveBeenCalledWith();
       });
     });
   });
@@ -100,9 +100,9 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.createAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(
-          testPublicKeyCredentialCreationOptions1
+        expect(service.create).toHaveBeenCalledTimes(1);
+        expect(service.create).toHaveBeenCalledWith(
+          testPublicKeyCredentialCreationOptions1,
         );
       });
     });
@@ -123,10 +123,10 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.editAuthenticatorName$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.editName).toBeCalledTimes(1);
-        expect(service.editName).toBeCalledWith(
+        expect(service.editName).toHaveBeenCalledTimes(1);
+        expect(service.editName).toHaveBeenCalledWith(
           testAuthenticator1.id,
-          testAuthenticator1.name
+          testAuthenticator1.name,
         );
       });
     });
@@ -146,8 +146,8 @@ describe('AuthenticatorEffects', () => {
       });
       expect(effects.deleteAuthenticator$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(testAuthenticator1.id);
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(testAuthenticator1.id);
       });
     });
   });

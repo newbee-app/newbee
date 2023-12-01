@@ -126,13 +126,15 @@ describe('UserService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(userInvitesService.findOrCreateOneByEmail).toBeCalledTimes(1);
-      expect(userInvitesService.findOrCreateOneByEmail).toBeCalledWith(
+      expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledWith(
         testBaseCreateUserDto1.email,
       );
-      expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testUserEntity);
+      expect(mockGenerateRegistrationOptions).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testUserEntity);
     });
 
     it('should create a user', async () => {
@@ -164,8 +166,11 @@ describe('UserService', () => {
 
   describe('findOneById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(UserEntity, testUserEntity.id);
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
+        UserEntity,
+        testUserEntity.id,
+      );
     });
 
     it('should get a single user by id', async () => {
@@ -195,8 +200,8 @@ describe('UserService', () => {
 
   describe('findOneByEmail', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(UserEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(UserEntity, {
         email: testUserEntity.email,
       });
     });
@@ -228,8 +233,8 @@ describe('UserService', () => {
 
   describe('findOneByEmailOrNull', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(UserEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(UserEntity, {
         email: testUserEntity.email,
       });
     });
@@ -250,9 +255,12 @@ describe('UserService', () => {
 
   describe('update', () => {
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testUserEntity, testBaseUpdateUserDto1);
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(
+        testUserEntity,
+        testBaseUpdateUserDto1,
+      );
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update the user', async () => {
@@ -282,10 +290,10 @@ describe('UserService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testUserEntity);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testUserEntity);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(testUserEntity);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testUserEntity);
     });
 
     it('should delete the user', async () => {

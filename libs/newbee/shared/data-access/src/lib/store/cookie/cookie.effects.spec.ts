@@ -56,8 +56,8 @@ describe('CookieEffects', () => {
       });
       expect(effects.initCookies$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.initCookies).toBeCalledTimes(1);
-        expect(service.initCookies).toBeCalledWith();
+        expect(service.initCookies).toHaveBeenCalledTimes(1);
+        expect(service.initCookies).toHaveBeenCalledWith();
       });
     });
 
@@ -72,7 +72,7 @@ describe('CookieEffects', () => {
       const expected$ = hot('-');
       expect(effects.initCookies$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.initCookies).not.toBeCalled();
+        expect(service.initCookies).not.toHaveBeenCalled();
       });
     });
   });

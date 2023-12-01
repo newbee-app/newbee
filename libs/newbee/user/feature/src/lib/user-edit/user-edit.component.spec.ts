@@ -65,7 +65,7 @@ describe('UserEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editUser', () => {
       component.onEdit(testBaseUpdateUserDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
       );
     });
@@ -74,7 +74,7 @@ describe('UserEditComponent', () => {
   describe('onAddAuthenticator', () => {
     it('should dispatch createRegistrationOptions', () => {
       component.onAddAuthenticator();
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.createRegistrationOptions(),
       );
     });
@@ -86,7 +86,7 @@ describe('UserEditComponent', () => {
         id: testAuthenticator1.id,
         name: testAuthenticator1.name,
       });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.editAuthenticatorName({
           id: testAuthenticator1.id,
           name: testAuthenticator1.name,
@@ -98,7 +98,7 @@ describe('UserEditComponent', () => {
   describe('onDeleteAuthenticator', () => {
     it('should dispatch deleteAuthenticator', () => {
       component.onDeleteAuthenticator(testAuthenticator1.id);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id }),
       );
     });
@@ -107,7 +107,7 @@ describe('UserEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteUser', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(UserActions.deleteUser());
+      expect(store.dispatch).toHaveBeenCalledWith(UserActions.deleteUser());
     });
   });
 });

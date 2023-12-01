@@ -116,9 +116,9 @@ describe('DocService', () => {
       service
         .edit(testDoc1.slug, testOrganization1.slug, testBaseUpdateDocDto1)
         .subscribe({
-          next: (doc) => {
+          next: (docAndMemberDto) => {
             try {
-              expect(doc).toEqual(testDoc1);
+              expect(docAndMemberDto).toEqual(testBaseDocAndMemberDto1);
               done();
             } catch (err) {
               done(err);
@@ -133,7 +133,7 @@ describe('DocService', () => {
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateDocDto1);
 
-      req.flush(testDoc1);
+      req.flush(testBaseDocAndMemberDto1);
     });
   });
 

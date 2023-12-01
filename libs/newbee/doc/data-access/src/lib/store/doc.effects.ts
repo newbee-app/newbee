@@ -116,7 +116,7 @@ export class DocEffects {
           )
           .pipe(
             map((doc) => {
-              return DocActions.editDocSuccess({ doc });
+              return DocActions.markDocAsUpToDateSuccess({ doc });
             }),
             catchError((err) => catchHttpClientError(err, () => 'up-to-date')),
           );
@@ -140,8 +140,8 @@ export class DocEffects {
             updateDocDto,
           )
           .pipe(
-            map((doc) => {
-              return DocActions.editDocSuccess({ doc });
+            map((docAndMemberDto) => {
+              return DocActions.getDocSuccess({ docAndMemberDto });
             }),
             catchError((err) =>
               catchHttpClientError(err, (msg) => {

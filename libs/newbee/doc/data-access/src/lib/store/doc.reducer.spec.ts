@@ -66,10 +66,10 @@ describe('DocReducer', () => {
       expect(updatedState).toEqual(initialDocState);
     });
 
-    it('should update state for editDocSuccess', () => {
+    it('should update state for markDocAsUpToDateSuccess', () => {
       const updatedState = docFeature.reducer(
         stateAfterMarkDocAsUpToDate,
-        DocActions.editDocSuccess,
+        DocActions.markDocAsUpToDateSuccess,
       );
       expect(updatedState).toEqual(initialDocState);
     });

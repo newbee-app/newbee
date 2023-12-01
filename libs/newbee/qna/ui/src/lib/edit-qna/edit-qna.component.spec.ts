@@ -60,8 +60,8 @@ describe('EditQnaComponent', () => {
   describe('emitEditQuestion', () => {
     it('should emit question values', () => {
       component.emitEditQuestion();
-      expect(component.editQuestion.emit).toBeCalledTimes(1);
-      expect(component.editQuestion.emit).toBeCalledWith({
+      expect(component.editQuestion.emit).toHaveBeenCalledTimes(1);
+      expect(component.editQuestion.emit).toHaveBeenCalledWith({
         title: testQna1.title,
         questionMarkdoc: testQna1.questionMarkdoc,
         team: testQnaRelation1.team?.slug || null,
@@ -72,8 +72,8 @@ describe('EditQnaComponent', () => {
   describe('emitEditAnswer', () => {
     it('should emit answer values', () => {
       component.emitEditAnswer();
-      expect(component.editAnswer.emit).toBeCalledTimes(1);
-      expect(component.editAnswer.emit).toBeCalledWith({
+      expect(component.editAnswer.emit).toHaveBeenCalledTimes(1);
+      expect(component.editAnswer.emit).toHaveBeenCalledWith({
         answerMarkdoc: testQna1.answerMarkdoc,
         upToDateDuration: testQna1.upToDateDuration,
       });

@@ -127,8 +127,11 @@ describe('RoleGuard', () => {
 
   describe('preliminary checks', () => {
     afterEach(() => {
-      expect(reflector.get).toBeCalledTimes(1);
-      expect(reflector.get).toBeCalledWith(ROLE_KEY, context.getHandler());
+      expect(reflector.get).toHaveBeenCalledTimes(1);
+      expect(reflector.get).toHaveBeenCalledWith(
+        ROLE_KEY,
+        context.getHandler(),
+      );
     });
 
     it('should return true if roles were never specified and org is not a route parameter', async () => {
@@ -158,14 +161,14 @@ describe('RoleGuard', () => {
     } as OrgMemberEntity;
 
     afterEach(() => {
-      expect(organizationService.findOneBySlug).toBeCalledWith(
+      expect(organizationService.findOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1.slug,
       );
       expect(context.switchToHttp().getRequest()[organizationKey]).toEqual(
         testOrganizationEntity1,
       );
 
-      expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
+      expect(orgMemberService.findOneByUserAndOrg).toHaveBeenCalledWith(
         testUserEntity1,
         testOrganizationEntity1,
       );
@@ -240,7 +243,7 @@ describe('RoleGuard', () => {
         .spyOn(orgMemberService, 'findOneByOrgAndSlug')
         .mockResolvedValue(moderator);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
-      expect(orgMemberService.findOneByOrgAndSlug).toBeCalledWith(
+      expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testOrgMemberEntity1.slug,
       );
@@ -267,7 +270,7 @@ describe('RoleGuard', () => {
     });
 
     afterEach(() => {
-      expect(teamService.findOneBySlug).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testTeamEntity1.slug,
       );
@@ -275,12 +278,11 @@ describe('RoleGuard', () => {
         testTeamEntity1,
       );
 
-      expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
-        testOrgMemberEntity1,
-        testTeamEntity1,
-      );
+      expect(
+        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+      ).toHaveBeenCalledWith(testOrgMemberEntity1, testTeamEntity1);
 
-      expect(teamMemberService.findOneByOrgMemberAndTeam).toBeCalledWith(
+      expect(teamMemberService.findOneByOrgMemberAndTeam).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
       );
@@ -358,7 +360,9 @@ describe('RoleGuard', () => {
     });
 
     afterEach(() => {
-      expect(docService.findOneBySlug).toBeCalledWith(testDocEntity1.slug);
+      expect(docService.findOneBySlug).toHaveBeenCalledWith(
+        testDocEntity1.slug,
+      );
     });
 
     it('should return true if roles contains post role', async () => {
@@ -397,7 +401,9 @@ describe('RoleGuard', () => {
     });
 
     afterEach(() => {
-      expect(qnaService.findOneBySlug).toBeCalledWith(testQnaEntity1.slug);
+      expect(qnaService.findOneBySlug).toHaveBeenCalledWith(
+        testQnaEntity1.slug,
+      );
     });
 
     it('should return true if roles contains post maintainer role', async () => {

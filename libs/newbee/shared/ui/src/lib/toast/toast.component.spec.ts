@@ -50,7 +50,7 @@ describe('ToastComponent', () => {
       component.ngOnChanges({});
       component.ngOnChanges({ random: new SimpleChange('', 'random', true) });
       expect(component.show).toBeFalsy();
-      expect(setTimeout).not.toBeCalled();
+      expect(setTimeout).not.toHaveBeenCalled();
     });
 
     describe('new values', () => {
@@ -60,8 +60,8 @@ describe('ToastComponent', () => {
 
       afterEach(() => {
         expect(component.show).toBeTruthy();
-        expect(component.clearTimeout).toBeCalledTimes(1);
-        expect(setTimeout).toBeCalledTimes(1);
+        expect(component.clearTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenCalledTimes(1);
       });
 
       it('should set up timer if changes has new values for header', () => {
@@ -77,13 +77,13 @@ describe('ToastComponent', () => {
   describe('clearTimeout', () => {
     it('should do nothing if timeout is null', () => {
       component.clearTimeout();
-      expect(clearTimeout).not.toBeCalled();
+      expect(clearTimeout).not.toHaveBeenCalled();
     });
 
     it('should call clearTimeout if timeout is not null', () => {
       component.ngOnChanges({ text: new SimpleChange('', 'text', true) });
       component.clearTimeout();
-      expect(clearTimeout).toBeCalledTimes(1);
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -91,9 +91,9 @@ describe('ToastComponent', () => {
     it('should call clearTimeout, set show to false, and emit dismissed', () => {
       jest.spyOn(component, 'clearTimeout');
       component.dismiss();
-      expect(component.clearTimeout).toBeCalledTimes(1);
+      expect(component.clearTimeout).toHaveBeenCalledTimes(1);
       expect(component.show).toBeFalsy();
-      expect(component.dismissed.emit).toBeCalledTimes(1);
+      expect(component.dismissed.emit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -101,9 +101,9 @@ describe('ToastComponent', () => {
     it('should only call dismiss if show value is false', () => {
       jest.spyOn(component, 'dismiss');
       component.onShowChange(true);
-      expect(component.dismiss).not.toBeCalled();
+      expect(component.dismiss).not.toHaveBeenCalled();
       component.onShowChange(false);
-      expect(component.dismiss).toBeCalledTimes(1);
+      expect(component.dismiss).toHaveBeenCalledTimes(1);
     });
   });
 });

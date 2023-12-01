@@ -33,9 +33,9 @@ describe('StoreToastComponent', () => {
   describe('onDismissed', () => {
     it('should dispatch removeToast', () => {
       component.onDismissed(testToast1.id);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
-        ToastActions.removeToast({ id: testToast1.id })
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        ToastActions.removeToast({ id: testToast1.id }),
       );
     });
   });

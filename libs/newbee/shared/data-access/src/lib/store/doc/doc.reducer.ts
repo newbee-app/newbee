@@ -40,7 +40,7 @@ export const docFeature = createFeature({
         teamMember: docAndMemberDto.teamMember,
       }),
     ),
-    on(DocActions.editDocSuccess, (state, { doc }): DocState => {
+    on(DocActions.markDocAsUpToDateSuccess, (state, { doc }): DocState => {
       const { selectedDoc } = state;
       if (!selectedDoc || selectedDoc.doc.slug !== doc.slug) {
         return state;

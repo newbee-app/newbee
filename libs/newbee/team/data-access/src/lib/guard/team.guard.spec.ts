@@ -62,11 +62,11 @@ describe('teamGuard', () => {
 
   it('should dispatch store and navigate', async () => {
     await expect(
-      router.navigate([`/${testTeamRelation1.team.slug}`])
+      router.navigate([`/${testTeamRelation1.team.slug}`]),
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
-      TeamActions.getTeam({ slug: testTeamRelation1.team.slug })
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(
+      TeamActions.getTeam({ slug: testTeamRelation1.team.slug }),
     );
     expect(location.path()).toEqual(`/${testTeamRelation1.team.slug}`);
   });

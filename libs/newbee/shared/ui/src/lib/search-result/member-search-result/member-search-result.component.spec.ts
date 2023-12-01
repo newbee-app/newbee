@@ -41,12 +41,12 @@ describe('MemberSearchResultComponent', () => {
   describe('permissionsLine', () => {
     it(`should output the org member's permissions`, () => {
       expect(component.permissionsLine).toEqual(
-        testOrgMemberQueryResult1.orgMember.role
+        testOrgMemberQueryResult1.orgMember.role,
       );
 
       component.teamRole = TeamRoleEnum.Owner;
       expect(component.permissionsLine).toEqual(
-        `${testOrgMemberQueryResult1.orgMember.role} | ${TeamRoleEnum.Owner}`
+        `${testOrgMemberQueryResult1.orgMember.role} | ${TeamRoleEnum.Owner}`,
       );
     });
   });
@@ -54,9 +54,9 @@ describe('MemberSearchResultComponent', () => {
   describe('orgMemberNavigate', () => {
     it('should navigate to the given org member', () => {
       component.orgMemberNavigate();
-      expect(component.orgNavigate.emit).toBeCalledTimes(1);
-      expect(component.orgNavigate.emit).toBeCalledWith(
-        `/${ShortUrl.Member}/${testOrgMember1.slug}`
+      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
+        `/${ShortUrl.Member}/${testOrgMember1.slug}`,
       );
     });
   });

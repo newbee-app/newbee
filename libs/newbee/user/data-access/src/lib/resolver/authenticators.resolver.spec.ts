@@ -47,11 +47,11 @@ describe('authenticatorsResolver', () => {
   it('should dispatch getAuthenticators', async () => {
     store.setState({ userModule: { authenticators: [testAuthenticator1] } });
     await expect(
-      router.navigate([Keyword.Authenticator])
+      router.navigate([Keyword.Authenticator]),
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
-      AuthenticatorActions.getAuthenticators()
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(
+      AuthenticatorActions.getAuthenticators(),
     );
   });
 });

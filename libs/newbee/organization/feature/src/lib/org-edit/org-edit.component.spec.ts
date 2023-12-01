@@ -56,7 +56,7 @@ describe('OrgEditComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -65,7 +65,7 @@ describe('OrgEditComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -74,7 +74,7 @@ describe('OrgEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editOrg', () => {
       component.onEdit({ name: testOrganization2.name });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.editOrg({
           updateOrganizationDto: { name: testOrganization2.name },
         }),
@@ -85,7 +85,7 @@ describe('OrgEditComponent', () => {
   describe('onEditSlug', () => {
     it('should dispatch editOrgSlug', () => {
       component.onEditSlug({ slug: testOrganization2.slug });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testOrganization2.slug },
         }),
@@ -96,7 +96,9 @@ describe('OrgEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteOrg', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(OrganizationActions.deleteOrg());
+      expect(store.dispatch).toHaveBeenCalledWith(
+        OrganizationActions.deleteOrg(),
+      );
     });
   });
 });

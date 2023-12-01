@@ -77,8 +77,8 @@ describe('QnaController', () => {
         testOrganizationEntity1,
       ),
     ).resolves.toEqual(testQnaEntity1);
-    expect(service.create).toBeCalledTimes(1);
-    expect(service.create).toBeCalledWith(
+    expect(service.create).toHaveBeenCalledTimes(1);
+    expect(service.create).toHaveBeenCalledWith(
       testBaseCreateQnaDto1,
       testOrgMemberEntity1,
     );
@@ -91,15 +91,14 @@ describe('QnaController', () => {
       qna: testQnaRelation1,
       teamMember: testTeamMemberEntity1,
     });
-    expect(entityService.createQnaNoOrg).toBeCalledTimes(1);
-    expect(entityService.createQnaNoOrg).toBeCalledWith(testQnaEntity1);
-    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledTimes(
-      1,
-    );
-    expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
-      testOrgMemberEntity1,
-      testQnaEntity1.team,
-    );
+    expect(entityService.createQnaNoOrg).toHaveBeenCalledTimes(1);
+    expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(testQnaEntity1);
+    expect(
+      teamMemberService.findOneByOrgMemberAndTeamOrNull,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      teamMemberService.findOneByOrgMemberAndTeamOrNull,
+    ).toHaveBeenCalledWith(testOrgMemberEntity1, testQnaEntity1.team);
   });
 
   it('updateQuestion should update the question', async () => {
@@ -110,8 +109,8 @@ describe('QnaController', () => {
         testOrgMemberEntity1,
       ),
     ).resolves.toEqual(testUpdatedQnaEntity);
-    expect(service.update).toBeCalledTimes(1);
-    expect(service.update).toBeCalledWith(
+    expect(service.update).toHaveBeenCalledTimes(1);
+    expect(service.update).toHaveBeenCalledWith(
       testQnaEntity1,
       testBaseUpdateQuestionDto1,
       testOrgMemberEntity1,
@@ -132,8 +131,8 @@ describe('QnaController', () => {
         testOrgMemberEntity1,
       ),
     ).resolves.toEqual(testUpdatedQnaEntity);
-    expect(service.update).toBeCalledTimes(1);
-    expect(service.update).toBeCalledWith(
+    expect(service.update).toHaveBeenCalledTimes(1);
+    expect(service.update).toHaveBeenCalledWith(
       testQnaEntity2,
       testBaseUpdateAnswerDto1,
       testOrgMemberEntity1,
@@ -145,13 +144,13 @@ describe('QnaController', () => {
     await expect(controller.markUpToDate(testQnaEntity1)).resolves.toEqual(
       testUpdatedQnaEntity,
     );
-    expect(service.markUpToDate).toBeCalledTimes(1);
-    expect(service.markUpToDate).toBeCalledWith(testQnaEntity1);
+    expect(service.markUpToDate).toHaveBeenCalledTimes(1);
+    expect(service.markUpToDate).toHaveBeenCalledWith(testQnaEntity1);
   });
 
   it('delete should delete a qna', async () => {
     await expect(controller.delete(testQnaEntity1)).resolves.toBeUndefined();
-    expect(service.delete).toBeCalledTimes(1);
-    expect(service.delete).toBeCalledWith(testQnaEntity1);
+    expect(service.delete).toHaveBeenCalledTimes(1);
+    expect(service.delete).toHaveBeenCalledWith(testQnaEntity1);
   });
 });

@@ -97,8 +97,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.createQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(
+        expect(service.create).toHaveBeenCalledTimes(1);
+        expect(service.create).toHaveBeenCalledWith(
           testBaseCreateQnaDto1,
           testOrganization1.slug,
         );
@@ -113,7 +113,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.createQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).not.toBeCalled();
+        expect(service.create).not.toHaveBeenCalled();
       });
     });
   });
@@ -131,8 +131,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.createQnaSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Qna}/${testQna1.slug}`,
         ]);
       });
@@ -146,7 +146,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.createQnaSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).not.toBeCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
       });
     });
   });
@@ -163,8 +163,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.getQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).toBeCalledTimes(1);
-        expect(service.get).toBeCalledWith(
+        expect(service.get).toHaveBeenCalledTimes(1);
+        expect(service.get).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
         );
@@ -177,7 +177,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.getQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).not.toBeCalled();
+        expect(service.create).not.toHaveBeenCalled();
       });
     });
   });
@@ -190,8 +190,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.markUpToDate).toBeCalledTimes(1);
-        expect(service.markUpToDate).toBeCalledWith(
+        expect(service.markUpToDate).toHaveBeenCalledTimes(1);
+        expect(service.markUpToDate).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
         );
@@ -204,7 +204,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.markQnaAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.markUpToDate).not.toBeCalled();
+        expect(service.markUpToDate).not.toHaveBeenCalled();
       });
     });
   });
@@ -221,8 +221,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.editQuestion$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.editQuestion).toBeCalledTimes(1);
-        expect(service.editQuestion).toBeCalledWith(
+        expect(service.editQuestion).toHaveBeenCalledTimes(1);
+        expect(service.editQuestion).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
           testBaseUpdateQuestionDto1,
@@ -240,7 +240,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.editQuestion$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.editQuestion).not.toBeCalled();
+        expect(service.editQuestion).not.toHaveBeenCalled();
       });
     });
   });
@@ -255,8 +255,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.editAnswer$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.editAnswer).toBeCalledTimes(1);
-        expect(service.editAnswer).toBeCalledWith(
+        expect(service.editAnswer).toHaveBeenCalledTimes(1);
+        expect(service.editAnswer).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
           testBaseUpdateAnswerDto1,
@@ -272,7 +272,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.editAnswer$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.editAnswer).not.toBeCalled();
+        expect(service.editAnswer).not.toHaveBeenCalled();
       });
     });
   });
@@ -285,8 +285,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.deleteQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
         );
@@ -299,7 +299,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.deleteQna$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).not.toBeCalled();
+        expect(service.delete).not.toHaveBeenCalled();
       });
     });
   });
@@ -314,8 +314,8 @@ describe('QnaEffects', () => {
       });
       expect(effects.deleteQnaSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}`,
         ]);
       });
@@ -329,7 +329,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('-');
       expect(effects.deleteQnaSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).not.toBeCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
       });
     });
   });

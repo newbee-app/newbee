@@ -35,8 +35,8 @@ describe('InviteMemberComponent', () => {
   describe('emitInvite', () => {
     it('should emit invite', () => {
       component.emitInvite();
-      expect(component.invite.emit).toBeCalledTimes(1);
-      expect(component.invite.emit).toBeCalledWith({
+      expect(component.invite.emit).toHaveBeenCalledTimes(1);
+      expect(component.invite.emit).toHaveBeenCalledWith({
         email: '',
         role: OrgRoleEnum.Member,
       });

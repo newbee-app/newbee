@@ -43,7 +43,7 @@ describe('OrgInviteComponent', () => {
   describe('onInvite', () => {
     it('should dispatch inviteUser', () => {
       component.onInvite(testBaseCreateOrgMemberInviteDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.inviteUser({
           createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
         }),

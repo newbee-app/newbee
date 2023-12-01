@@ -50,8 +50,8 @@ describe('CreateDocComponent', () => {
   describe('emitCreate', () => {
     it('should emit create output', () => {
       component.emitCreate();
-      expect(component.create.emit).toBeCalledTimes(1);
-      expect(component.create.emit).toBeCalledWith({
+      expect(component.create.emit).toHaveBeenCalledTimes(1);
+      expect(component.create.emit).toHaveBeenCalledWith({
         title: '',
         team: null,
         docMarkdoc: '',
@@ -65,8 +65,8 @@ describe('CreateDocComponent', () => {
       });
       component.docMarkdoc = testDoc1.docMarkdoc;
       component.emitCreate();
-      expect(component.create.emit).toBeCalledTimes(2);
-      expect(component.create.emit).toBeCalledWith(testBaseCreateDocDto1);
+      expect(component.create.emit).toHaveBeenCalledTimes(2);
+      expect(component.create.emit).toHaveBeenCalledWith(testBaseCreateDocDto1);
     });
   });
 });

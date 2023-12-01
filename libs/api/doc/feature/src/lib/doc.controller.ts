@@ -140,7 +140,7 @@ export class DocController {
     @Body() updateDocDto: UpdateDocDto,
     @Doc() doc: DocEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<DocEntity> {
+  ): Promise<BaseDocAndMemberDto> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.update(
       doc,
@@ -150,7 +150,17 @@ export class DocController {
     this.logger.log(
       `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
     );
-    return updatedDoc;
+
+    const { team } = updatedDoc;
+    return {
+      doc: await this.entityService.createDocNoOrg(updatedDoc),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**

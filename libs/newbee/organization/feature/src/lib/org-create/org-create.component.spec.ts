@@ -52,7 +52,7 @@ describe('OrgCreateComponent', () => {
     it('should dispatch generateSlug', fakeAsync(() => {
       component.onName(testOrganization1.name);
       tick(600);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.generateSlug({ name: testOrganization1.name }),
       );
     }));
@@ -61,7 +61,7 @@ describe('OrgCreateComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -70,7 +70,7 @@ describe('OrgCreateComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -79,7 +79,7 @@ describe('OrgCreateComponent', () => {
   describe('onCreate', () => {
     it('should dispatch createOrg', () => {
       component.onCreate(testBaseCreateOrganizationDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.createOrg({
           createOrganizationDto: testBaseCreateOrganizationDto1,
         }),

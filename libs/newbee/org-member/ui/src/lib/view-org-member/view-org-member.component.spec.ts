@@ -141,17 +141,19 @@ describe('ViewOrgMemberComponent', () => {
   describe('editOrgMemberRole', () => {
     it('should emit editRole if the select is unique', () => {
       component.editOrgMemberRole();
-      expect(component.editRole.emit).not.toBeCalled();
+      expect(component.editRole.emit).not.toHaveBeenCalled();
 
       component.changeRoleSelect.setValue(OrgRoleEnum.Moderator);
       component.editOrgMemberRole();
-      expect(component.editRole.emit).toBeCalledTimes(1);
-      expect(component.editRole.emit).toBeCalledWith(OrgRoleEnum.Moderator);
+      expect(component.editRole.emit).toHaveBeenCalledTimes(1);
+      expect(component.editRole.emit).toHaveBeenCalledWith(
+        OrgRoleEnum.Moderator,
+      );
 
       component.changeRoleSelect.setValue(OrgRoleEnum.Member);
       component.editOrgMemberRole();
-      expect(component.editRole.emit).toBeCalledTimes(2);
-      expect(component.editRole.emit).toBeCalledWith(OrgRoleEnum.Member);
+      expect(component.editRole.emit).toHaveBeenCalledTimes(2);
+      expect(component.editRole.emit).toHaveBeenCalledWith(OrgRoleEnum.Member);
     });
   });
 });

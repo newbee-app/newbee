@@ -47,10 +47,13 @@ describe('SearchService', () => {
   describe('suggest', () => {
     describe('calls suggest once', () => {
       afterEach(() => {
-        expect(solrCli.suggest).toBeCalledTimes(1);
-        expect(solrCli.suggest).toBeCalledWith(testOrganizationEntity1.id, {
-          params: { 'suggest.q': testBaseSuggestDto1.query },
-        });
+        expect(solrCli.suggest).toHaveBeenCalledTimes(1);
+        expect(solrCli.suggest).toHaveBeenCalledWith(
+          testOrganizationEntity1.id,
+          {
+            params: { 'suggest.q': testBaseSuggestDto1.query },
+          },
+        );
       });
 
       it('should generate suggestions', async () => {
@@ -73,8 +76,8 @@ describe('SearchService', () => {
   describe('query', () => {
     afterEach(() => {
       const { query } = testBaseQueryDto1;
-      expect(solrCli.query).toBeCalledTimes(1);
-      expect(solrCli.query).toBeCalledWith(testOrganizationEntity1.id, {
+      expect(solrCli.query).toHaveBeenCalledTimes(1);
+      expect(solrCli.query).toHaveBeenCalledWith(testOrganizationEntity1.id, {
         query,
         offset: testBaseQueryDto1.offset,
         params: { 'hl.q': query, 'spellcheck.q': query },
@@ -113,8 +116,8 @@ describe('SearchService', () => {
       await expect(
         service.buildSuggester(testOrganizationEntity1),
       ).resolves.toBeUndefined();
-      expect(solrCli.suggest).toBeCalledTimes(1);
-      expect(solrCli.suggest).toBeCalledWith(testOrganizationEntity1.id, {
+      expect(solrCli.suggest).toHaveBeenCalledTimes(1);
+      expect(solrCli.suggest).toHaveBeenCalledWith(testOrganizationEntity1.id, {
         params: { 'suggest.build': true },
       });
     });

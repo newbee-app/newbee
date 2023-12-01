@@ -82,8 +82,10 @@ describe('DocViewComponent', () => {
   describe('onMarkAsUpToDate', () => {
     it('should dispatch markDocAsUpToDate', () => {
       component.onMarkAsUpToDate();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(DocActions.markDocAsUpToDate());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        DocActions.markDocAsUpToDate(),
+      );
     });
   });
 });

@@ -82,8 +82,8 @@ export class DocService {
     docSlug: string,
     orgSlug: string,
     updateDocDto: BaseUpdateDocDto,
-  ): Observable<Doc> {
-    return this.http.patch<Doc>(
+  ): Observable<BaseDocAndMemberDto> {
+    return this.http.patch<BaseDocAndMemberDto>(
       `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
       updateDocDto,
     );

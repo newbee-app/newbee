@@ -68,13 +68,13 @@ describe('TeamMemberController', () => {
           testTeamEntity1,
         ),
       ).resolves.toEqual(testTeamMemberEntity1);
-      expect(orgMemberService.findOneByOrgAndSlug).toBeCalledTimes(1);
-      expect(orgMemberService.findOneByOrgAndSlug).toBeCalledWith(
+      expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseCreateTeamMemberDto1.orgMemberSlug,
       );
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
         testBaseCreateTeamMemberDto1.role,
@@ -97,8 +97,8 @@ describe('TeamMemberController', () => {
           testTeamEntity1,
         ),
       ).resolves.toEqual(testUpdatedTeamMember);
-      expect(service.updateRole).toBeCalledTimes(1);
-      expect(service.updateRole).toBeCalledWith(
+      expect(service.updateRole).toHaveBeenCalledTimes(1);
+      expect(service.updateRole).toHaveBeenCalledWith(
         testTeamMemberEntity1,
         testBaseUpdateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
@@ -118,8 +118,8 @@ describe('TeamMemberController', () => {
           testTeamEntity1,
         ),
       ).resolves.toBeUndefined();
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testTeamMemberEntity1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testTeamMemberEntity1);
     });
   });
 });
