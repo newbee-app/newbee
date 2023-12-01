@@ -262,7 +262,7 @@ export class EditQnaComponent implements OnInit {
     return (
       !isEqual(team, this.qna.team) ||
       title !== this.qna.qna.title ||
-      this.questionMarkdoc !== this.qna.qna.questionMarkdoc
+      this.questionMarkdoc !== (this.qna.qna.questionMarkdoc ?? '')
     );
   }
 
@@ -270,7 +270,7 @@ export class EditQnaComponent implements OnInit {
    * Whether the edit answer portion is distinct from the current qna.
    */
   get editAnswerDistinct(): boolean {
-    return (
+    return !!(
       this.answerMarkdoc !== this.qna.qna.answerMarkdoc ||
       numAndFreqIsDistinct(
         this.qnaNumAndFreq,

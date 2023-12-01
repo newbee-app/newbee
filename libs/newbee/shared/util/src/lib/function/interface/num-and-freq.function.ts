@@ -16,9 +16,7 @@ export function numAndFreqIsDistinct(
   numAndFreq: NumAndFreq | null,
   controlNumAndFreq: Partial<Nullable<NumAndFreq>>,
 ): boolean {
-  const num = controlNumAndFreq?.num;
-  const frequency = controlNumAndFreq?.frequency;
-
+  const { num, frequency } = controlNumAndFreq;
   return !!(
     (!numAndFreq && num && frequency) ||
     (numAndFreq &&

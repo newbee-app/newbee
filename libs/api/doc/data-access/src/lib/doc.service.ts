@@ -140,12 +140,8 @@ export class DocService {
     updateDocDto: UpdateDocDto,
     orgMember: OrgMemberEntity,
   ): Promise<DocEntity> {
-    const {
-      title,
-      docMarkdoc,
-      upToDateDuration,
-      team: teamSlug,
-    } = updateDocDto;
+    const { team: teamSlug, ...restUpdateDocDto } = updateDocDto;
+    const { title, docMarkdoc, upToDateDuration } = restUpdateDocDto;
 
     const team =
       typeof teamSlug === 'string'
@@ -160,7 +156,7 @@ export class DocService {
     const updateTime =
       title !== undefined || docMarkdoc !== undefined ? new Date() : null;
     const updatedDoc = this.em.assign(doc, {
-      ...updateDocDto,
+      ...restUpdateDocDto,
       ...(docTxt !== undefined && { docTxt }),
       ...(docHtml !== undefined && { docHtml }),
       ...(team !== undefined && { team }),

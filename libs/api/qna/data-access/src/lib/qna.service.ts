@@ -134,13 +134,9 @@ export class QnaService {
     orgMember: OrgMemberEntity,
     newMaintainer = false,
   ): Promise<QnaEntity> {
-    const {
-      title,
-      questionMarkdoc,
-      answerMarkdoc,
-      upToDateDuration,
-      team: teamSlug,
-    } = updateQnaDto;
+    const { team: teamSlug, ...restUpdateQnaDto } = updateQnaDto;
+    const { title, questionMarkdoc, answerMarkdoc, upToDateDuration } =
+      restUpdateQnaDto;
 
     const hasAnswer = !!(
       qna.answerHtml ||
@@ -165,11 +161,12 @@ export class QnaService {
       ? new Date()
       : null;
     const updatedQna = this.em.assign(qna, {
-      ...updateQnaDto,
+      ...restUpdateQnaDto,
       ...(questionTxt !== undefined && { questionTxt }),
       ...(questionHtml !== undefined && { questionHtml }),
       ...(answerTxt !== undefined && { answerTxt }),
       ...(answerHtml !== undefined && { answerHtml }),
+      ...(team !== undefined && { team }),
       ...(newMaintainer && { maintainer: orgMember }),
       ...(updateTime && {
         updatedAt: updateTime,

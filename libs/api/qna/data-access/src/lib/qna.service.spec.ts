@@ -65,6 +65,7 @@ describe('QnaService', () => {
   const testUpdatedQna = {
     ...testQnaEntity1,
     ...testBaseUpdateQnaDto1,
+    team: testTeamEntity1,
   };
   const testUpdatedQnaDocParams: QnaDocParams = {
     ...testQnaDocParams1,
@@ -237,6 +238,7 @@ describe('QnaService', () => {
       questionHtml,
       answerTxt,
       answerHtml,
+      team: testTeamEntity1,
       updatedAt: testNow1,
       markedUpToDateAt: testNow1,
       outOfDateAt: testNowDayjs1
@@ -251,6 +253,11 @@ describe('QnaService', () => {
     });
 
     afterEach(() => {
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+        testQnaEntity1.organization,
+        testBaseUpdateQnaDto1.team,
+      );
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.flush).toHaveBeenCalledTimes(1);
     });

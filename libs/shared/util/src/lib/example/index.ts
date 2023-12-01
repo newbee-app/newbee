@@ -650,7 +650,7 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   upToDateDuration: 'P1Y',
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
-  team: null,
+  team: testTeam1.slug,
 };
 
 /**

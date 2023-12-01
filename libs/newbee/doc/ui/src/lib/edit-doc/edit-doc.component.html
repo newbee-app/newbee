@@ -112,7 +112,7 @@
       <button
         type="button"
         (click)="emitEdit()"
-        [disabled]="editPending || !editDistinct"
+        [disabled]="editPending || !editDistinct || !docMarkdoc"
         class="btn btn-primary w-fit"
       >
         <span *ngIf="editPending" class="loading loading-spinner"></span>
