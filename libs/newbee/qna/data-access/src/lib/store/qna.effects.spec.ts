@@ -161,7 +161,6 @@ describe('QnaEffects', () => {
       const expected$ = hot('a', {
         a: QnaActions.getQnaSuccess({
           qnaAndMemberDto: testBaseQnaAndMemberDto1,
-          redirect: true,
         }),
       });
       expect(effects.getQna$).toBeObservable(expected$);
@@ -222,7 +221,6 @@ describe('QnaEffects', () => {
       const expected$ = hot('a', {
         a: QnaActions.getQnaSuccess({
           qnaAndMemberDto: testBaseQnaAndMemberDto1,
-          redirect: false,
         }),
       });
       expect(effects.editQuestion$).toBeObservable(expected$);
