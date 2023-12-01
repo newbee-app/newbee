@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import {
-  initialDocstate,
+  initialDocState,
+  initialHttpState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
+import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgRoleEnum,
@@ -15,7 +17,12 @@ import {
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
-import { selectDocTeams } from './doc.selector';
+import {
+  selectDocAndOrg,
+  selectDocAndOrgStates,
+  selectDocAndScreenError,
+  selectDocTeams,
+} from './doc.selector';
 
 describe('DocSelector', () => {
   let store: MockStore;
@@ -26,7 +33,7 @@ describe('DocSelector', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: initialOrganizationState,
-            [Keyword.Doc]: initialDocstate,
+            [Keyword.Doc]: initialDocState,
           },
         }),
       ],
@@ -52,7 +59,7 @@ describe('DocSelector', () => {
           selectedOrganization: testOrganizationRelation1,
           orgMember: { ...testOrgMemberRelation1, teams: [] },
         },
-        [Keyword.Doc]: initialDocstate,
+        [Keyword.Doc]: initialDocState,
       });
       const expected$ = hot('a', { a: testOrganizationRelation1.teams });
       expect(store.select(selectDocTeams)).toBeObservable(expected$);
@@ -69,7 +76,7 @@ describe('DocSelector', () => {
           },
         },
         [Keyword.Doc]: {
-          ...initialDocstate,
+          ...initialDocState,
           selectedDoc: {
             ...testDocRelation1,
             team: testTeam2,
@@ -91,7 +98,7 @@ describe('DocSelector', () => {
           },
         },
         [Keyword.Doc]: {
-          ...initialDocstate,
+          ...initialDocState,
           selectedDoc: {
             ...testDocRelation1,
             team: null,
@@ -102,6 +109,66 @@ describe('DocSelector', () => {
         a: testOrgMemberRelation1.teams.map((team) => team.team),
       });
       expect(store.select(selectDocTeams)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectDocAndOrg', () => {
+    it('should handle null values', () => {
+      const expected$ = hot('a', {
+        a: { selectedDoc: null, selectedOrganization: null },
+      });
+      expect(store.select(selectDocAndOrg)).toBeObservable(expected$);
+    });
+
+    it('should return currently selected doc and org', () => {
+      store.setState({
+        [Keyword.Doc]: {
+          ...initialDocState,
+          selectedDoc: testDocRelation1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          selectedDoc: testDocRelation1,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      expect(store.select(selectDocAndOrg)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectDocAndScreenError', () => {
+    it('should return doc and screen error', () => {
+      store.setState({
+        [Keyword.Doc]: {
+          ...initialDocState,
+          selectedDoc: testDocRelation1,
+        },
+        [Keyword.Http]: {
+          ...initialHttpState,
+          screenError: testHttpScreenError1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          selectedDoc: testDocRelation1,
+          screenError: testHttpScreenError1,
+        },
+      });
+      expect(store.select(selectDocAndScreenError)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectDocAndOrgStates', () => {
+    it('should return doc and org states', () => {
+      const expected$ = hot('a', {
+        a: { orgState: initialOrganizationState, docState: initialDocState },
+      });
+      expect(store.select(selectDocAndOrgStates)).toBeObservable(expected$);
     });
   });
 });

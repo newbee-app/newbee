@@ -34,6 +34,9 @@ export class UpdateDocDto implements BaseUpdateDocDto {
   @IsNotEmpty({ message: docIsNotEmpty })
   docMarkdoc?: string;
 
+  /**
+   * @inheritdoc
+   */
   @IsOptional()
   @IsNotEmpty({ message: teamIsNotEmpty })
   team?: string | null;

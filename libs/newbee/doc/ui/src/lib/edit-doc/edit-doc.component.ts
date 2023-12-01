@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import {
   userHasDeletePermissions,
-  userHasEditPermissions,
   userHasUpToDatePermissions,
 } from '@newbee/newbee/doc/util';
 import {
@@ -121,9 +120,9 @@ export class EditDocComponent implements OnInit {
   @Input() organization!: Organization;
 
   /**
-   * Whether the edit doc action is pending.
+   * Whether the edit action is pending.
    */
-  @Input() editDocPending = false;
+  @Input() editPending = false;
 
   /**
    * Whether the up-to-date action is pending.
@@ -166,13 +165,6 @@ export class EditDocComponent implements OnInit {
       team: this.doc.team,
       upToDateDuration: this.docNumAndFreq ?? { num: null, frequency: null },
     });
-  }
-
-  /**
-   * Whether the user has edit permissions.
-   */
-  get hasEditPermissions(): boolean {
-    return userHasEditPermissions(this.doc, this.orgMember, this.teamMember);
   }
 
   /**

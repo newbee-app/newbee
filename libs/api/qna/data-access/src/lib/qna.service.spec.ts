@@ -145,6 +145,7 @@ describe('QnaService', () => {
       );
       expect(teamService.findOneBySlug).toBeCalledTimes(1);
       expect(teamService.findOneBySlug).toBeCalledWith(
+        testOrganizationEntity1,
         testBaseCreateQnaDto1.team,
       );
       expect(em.persistAndFlush).toBeCalledTimes(1);

@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
-import { httpFeature, teamFeature } from '@newbee/newbee/shared/data-access';
 import { ShortUrl, prependParentTitle } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectTeamAndScreenError } from '../store';
 
 /**
  * A resolver to get the title for team pages.
@@ -18,16 +18,17 @@ export const teamTitleResolver: ResolveFn<string> = (
 
   const teamSlug = route.paramMap.get(ShortUrl.Team) as string;
 
-  return combineLatest([
-    store.select(teamFeature.selectSelectedTeam),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectTeamAndScreenError).pipe(
     skipWhile(
-      ([team, screenError]) => team?.team.slug !== teamSlug && !screenError,
+      ({ selectedTeam, screenError }) =>
+        selectedTeam?.team.slug !== teamSlug && !screenError,
     ),
     take(1),
-    map(([team]) => {
-      return prependParentTitle(route, team ? team.team.name : 'Error');
+    map(({ selectedTeam }) => {
+      return prependParentTitle(
+        route,
+        selectedTeam ? selectedTeam.team.name : 'Error',
+      );
     }),
   );
 };

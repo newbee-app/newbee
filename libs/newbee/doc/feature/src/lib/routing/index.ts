@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
+  canEditDocGuard,
   createDocTitleResolver,
   docGuard,
   docTitleResolver,
@@ -8,6 +9,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { DocCreateComponent } from '../doc-create';
+import { DocEditComponent } from '../doc-edit';
 import { DocRootComponent } from '../doc-root';
 import { DocViewComponent } from '../doc-view';
 
@@ -23,6 +25,11 @@ const routes: Routes = [
     title: docTitleResolver,
     canActivate: [docGuard],
     children: [
+      {
+        path: Keyword.Edit,
+        component: DocEditComponent,
+        canActivate: [canEditDocGuard],
+      },
       {
         path: '',
         component: DocViewComponent,

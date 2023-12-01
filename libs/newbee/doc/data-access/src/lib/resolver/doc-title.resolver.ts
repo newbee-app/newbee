@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
-import { docFeature, httpFeature } from '@newbee/newbee/shared/data-access';
 import { ShortUrl, prependParentTitle } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectDocAndScreenError } from '../store';
 
 /**
  * A resolver to get the title for doc pages.
@@ -19,14 +19,14 @@ export const docTitleResolver: ResolveFn<string> = (
 
   const docSlug = route.paramMap.get(ShortUrl.Doc) as string;
 
-  return combineLatest([
-    store.select(docFeature.selectSelectedDoc),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectDocAndScreenError).pipe(
     skipWhile(
-      ([doc, screenError]) => doc?.doc.slug !== docSlug && !screenError,
+      ({ selectedDoc, screenError }) =>
+        selectedDoc?.doc.slug !== docSlug && !screenError,
     ),
     take(1),
-    map(([doc]) => prependParentTitle(route, doc ? doc.doc.title : 'Error')),
+    map(({ selectedDoc }) =>
+      prependParentTitle(route, selectedDoc ? selectedDoc.doc.title : 'Error'),
+    ),
   );
 };

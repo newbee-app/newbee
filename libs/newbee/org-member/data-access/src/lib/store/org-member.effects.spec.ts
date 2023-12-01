@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
+  initialOrgMemberState,
   OrgMemberActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
@@ -37,9 +38,11 @@ describe('OrgMemberEffects', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
             [Keyword.Member]: {
+              ...initialOrgMemberState,
               selectedOrgMember: testOrgMemberRelation1,
             },
           },

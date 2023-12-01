@@ -1,13 +1,10 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
-import {
-  httpFeature,
-  SearchActions,
-  searchFeature,
-} from '@newbee/newbee/shared/data-access';
+import { SearchActions } from '@newbee/newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectSearchResultAndScreenError } from '../store';
 
 /**
  * A guard that fires the search request and only proceeds if it completes.
@@ -17,7 +14,7 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  * @returns `true` after the search result is returned or an error is thrown.
  */
 export const searchGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): Observable<boolean> => {
   const store = inject(Store);
 
@@ -25,12 +22,9 @@ export const searchGuard: CanActivateFn = (
   store.dispatch(SearchActions.search({ query: { offset: 0, query } }));
   store.dispatch(SearchActions.suggest({ query: { query } }));
 
-  return combineLatest([
-    store.select(searchFeature.selectSearchResult),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
-    skipWhile(([searchResult, screenError]) => !searchResult && !screenError),
+  return store.select(selectSearchResultAndScreenError).pipe(
+    skipWhile(({ searchResult, screenError }) => !searchResult && !screenError),
     take(1),
-    map(() => true)
+    map(() => true),
   );
 };

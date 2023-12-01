@@ -1,6 +1,7 @@
 import {
   BaseCreateDocDto,
   BaseDocAndMemberDto,
+  BaseUpdateDocDto,
   Doc,
   Keyword,
 } from '@newbee/shared/util';
@@ -38,9 +39,24 @@ export const DocActions = createActionGroup({
     'Mark Doc As Up To Date': emptyProps(),
 
     /**
+     * Edit the currently selected doc.
+     */
+    'Edit Doc': props<{ updateDocDto: BaseUpdateDocDto }>(),
+
+    /**
      * Indicates that a doc was successfully edited.
      */
     'Edit Doc Success': props<{ doc: Doc }>(),
+
+    /**
+     * Delete the currently selected doc.
+     */
+    'Delete Doc': emptyProps(),
+
+    /**
+     * Indicates that a doc was successfully deleted.
+     */
+    'Delete Doc Success': emptyProps(),
 
     /**
      * Reset the selected doc.

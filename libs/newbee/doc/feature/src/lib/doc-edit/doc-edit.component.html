@@ -1,0 +1,14 @@
+<newbee-edit-doc
+  [httpClientError]="httpClientError$ | async"
+  [doc]="(docState$ | async)!.selectedDoc!"
+  [orgMember]="(orgState$ | async)!.orgMember!.orgMember"
+  [teamMember]="(docState$ | async)!.teamMember"
+  [teams]="(orgState$ | async)!.selectedOrganization!.teams"
+  [organization]="(orgState$ | async)!.selectedOrganization!.organization"
+  [editPending]="(docModuleState$ | async)!.pendingEdit"
+  [upToDatePending]="(docModuleState$ | async)!.pendingUpToDate"
+  [deletePending]="(docModuleState$ | async)!.pendingDelete"
+  (edit)="onEdit($event)"
+  (markAsUpToDate)="onMarkAsUpToDate()"
+  (delete)="onDelete()"
+></newbee-edit-doc>

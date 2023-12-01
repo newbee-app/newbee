@@ -3,7 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   DocActions,
-  initialDocstate,
+  initialDocState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
@@ -12,6 +12,7 @@ import {
   Keyword,
   testBaseCreateDocDto1,
   testBaseDocAndMemberDto1,
+  testBaseUpdateDocDto1,
   testDoc1,
   testDocRelation1,
   testOrganization1,
@@ -43,7 +44,7 @@ describe('DocEffects', () => {
               selectedOrganization: testOrganizationRelation1,
             },
             [Keyword.Doc]: {
-              ...initialDocstate,
+              ...initialDocState,
               selectedDoc: testDocRelation1,
             },
           },
@@ -56,6 +57,8 @@ describe('DocEffects', () => {
             create: jest.fn().mockReturnValue(of(testDoc1)),
             get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
+            edit: jest.fn().mockReturnValue(of(testDoc1)),
+            delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -201,6 +204,99 @@ describe('DocEffects', () => {
       expect(effects.markDocAsUpToDate$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.markUpToDate).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('editDoc$', () => {
+    it('should fire editDocSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.editDocSuccess({ doc: testDoc1 }),
+      });
+      expect(effects.editDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.edit).toBeCalledTimes(1);
+        expect(service.edit).toBeCalledWith(
+          testDoc1.slug,
+          testOrganization1.slug,
+          testBaseUpdateDocDto1,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedDoc isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
+      });
+      const expected$ = hot('-');
+      expect(effects.editDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.edit).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('deleteDoc$', () => {
+    it('should fire deleteDocSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: DocActions.deleteDoc(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.deleteDocSuccess(),
+      });
+      expect(effects.deleteDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.delete).toBeCalledTimes(1);
+        expect(service.delete).toBeCalledWith(
+          testDoc1.slug,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedDoc isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: DocActions.deleteDoc(),
+      });
+      const expected$ = hot('-');
+      expect(effects.deleteDoc$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.delete).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('deleteDocSuccess$', () => {
+    it('should navigate to org', () => {
+      actions$ = hot('a', {
+        a: DocActions.deleteDocSuccess(),
+      });
+      const expected$ = hot('a', {
+        a: [DocActions.deleteDocSuccess(), testOrganizationRelation1],
+      });
+      expect(effects.deleteDocSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toBeCalledTimes(1);
+        expect(router.navigate).toBeCalledWith([
+          `/${ShortUrl.Organization}/${testOrganization1.slug}`,
+        ]);
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: DocActions.deleteDocSuccess(),
+      });
+      const expected$ = hot('-');
+      expect(effects.deleteDocSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).not.toBeCalled();
       });
     });
   });

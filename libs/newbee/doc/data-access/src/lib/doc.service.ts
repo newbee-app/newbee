@@ -4,6 +4,7 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseCreateDocDto,
   BaseDocAndMemberDto,
+  BaseUpdateDocDto,
   Doc,
   Keyword,
 } from '@newbee/shared/util';
@@ -65,6 +66,40 @@ export class DocService {
     return this.http.post<Doc>(
       `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
       {},
+    );
+  }
+
+  /**
+   * Sends a request to the API to edit a doc.
+   *
+   * @param docSlug The slug of the doc to edit.
+   * @param orgSlug The org to look in.
+   * @param updateDocDto The new details for the doc.
+   *
+   * @returns An observable containing the updated doc.
+   */
+  edit(
+    docSlug: string,
+    orgSlug: string,
+    updateDocDto: BaseUpdateDocDto,
+  ): Observable<Doc> {
+    return this.http.patch<Doc>(
+      `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
+      updateDocDto,
+    );
+  }
+
+  /**
+   * Sends a request to the API to delete a doc.
+   *
+   * @param docSlug The slug of the doc to delete.
+   * @param orgSlug The org to look in.
+   *
+   * @returns A null observable.
+   */
+  delete(docSlug: string, orgSlug: string): Observable<null> {
+    return this.http.delete<null>(
+      `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
     );
   }
 }

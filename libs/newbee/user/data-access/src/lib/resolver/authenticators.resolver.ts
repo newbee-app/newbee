@@ -1,13 +1,10 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
-import {
-  AuthenticatorActions,
-  httpFeature,
-} from '@newbee/newbee/shared/data-access';
+import { AuthenticatorActions } from '@newbee/newbee/shared/data-access';
 import { Authenticator } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
-import { userFeature } from '../store';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectAuthenticatorsAndScreenError } from '../store';
 
 /**
  * A resolver to get all of the user's authenticators.
@@ -20,14 +17,11 @@ export const authenticatorsResolver: ResolveFn<
   const store = inject(Store);
 
   store.dispatch(AuthenticatorActions.getAuthenticators());
-  return combineLatest([
-    store.select(userFeature.selectAuthenticators),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectAuthenticatorsAndScreenError).pipe(
     skipWhile(
-      ([authenticators, screenError]) => !authenticators && !screenError
+      ({ authenticators, screenError }) => !authenticators && !screenError,
     ),
     take(1),
-    map(([authenticators]) => authenticators ?? [])
+    map(({ authenticators }) => authenticators ?? []),
   );
 };

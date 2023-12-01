@@ -1,12 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
-import {
-  httpFeature,
-  orgMemberFeature,
-} from '@newbee/newbee/shared/data-access';
 import { ShortUrl, prependParentTitle } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectOrgMemberAndScreenError } from '../store';
 
 /**
  * A resolver to get the title for org member pages.
@@ -21,19 +18,18 @@ export const orgMemberTitleResolver: ResolveFn<string> = (
 
   const orgMemberSlug = route.paramMap.get(ShortUrl.Member) as string;
 
-  return combineLatest([
-    store.select(orgMemberFeature.selectSelectedOrgMember),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectOrgMemberAndScreenError).pipe(
     skipWhile(
-      ([orgMember, screenError]) =>
-        orgMember?.orgMember.slug !== orgMemberSlug && !screenError,
+      ({ selectedOrgMember, screenError }) =>
+        selectedOrgMember?.orgMember.slug !== orgMemberSlug && !screenError,
     ),
     take(1),
-    map(([orgMember]) => {
+    map(({ selectedOrgMember }) => {
       return prependParentTitle(
         route,
-        orgMember ? orgMember.user.displayName ?? orgMember.user.name : 'Error',
+        selectedOrgMember
+          ? selectedOrgMember.user.displayName ?? selectedOrgMember.user.name
+          : 'Error',
       );
     }),
   );

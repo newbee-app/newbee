@@ -112,14 +112,15 @@
       <button
         type="button"
         (click)="emitEdit()"
-        [disabled]="editDocPending || !editDistinct"
+        [disabled]="editPending || !editDistinct"
         class="btn btn-primary w-fit"
       >
-        <span *ngIf="editDocPending" class="loading loading-spinner"></span>
+        <span *ngIf="editPending" class="loading loading-spinner"></span>
         Update
       </button>
 
       <button
+        *ngIf="hasUpToDatePermissions"
         type="button"
         (click)="markAsUpToDate.emit()"
         [disabled]="upToDatePending"
@@ -130,6 +131,7 @@
       </button>
 
       <button
+        *ngIf="hasDeletePermissions"
         type="button"
         (click)="delete.emit()"
         [disabled]="deletePending"

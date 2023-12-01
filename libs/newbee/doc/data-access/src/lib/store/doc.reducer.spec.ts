@@ -14,6 +14,14 @@ describe('DocReducer', () => {
     ...initialDocState,
     pendingUpToDate: true,
   };
+  const stateAfterEditDoc: DocState = {
+    ...initialDocState,
+    pendingEdit: true,
+  };
+  const stateAfterDeleteDoc: DocState = {
+    ...initialDocState,
+    pendingDelete: true,
+  };
 
   describe('from initial state', () => {
     it('should update state for createDoc', () => {
@@ -31,6 +39,22 @@ describe('DocReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterMarkDocAsUpToDate);
     });
+
+    it('should update state for editDoc', () => {
+      const updatedState = docFeature.reducer(
+        initialDocState,
+        DocActions.editDoc,
+      );
+      expect(updatedState).toEqual(stateAfterEditDoc);
+    });
+
+    it('should update state after deleteDoc', () => {
+      const updatedState = docFeature.reducer(
+        initialDocState,
+        DocActions.deleteDoc,
+      );
+      expect(updatedState).toEqual(stateAfterDeleteDoc);
+    });
   });
 
   describe('from altered state', () => {
@@ -46,6 +70,14 @@ describe('DocReducer', () => {
       const updatedState = docFeature.reducer(
         stateAfterMarkDocAsUpToDate,
         DocActions.editDocSuccess,
+      );
+      expect(updatedState).toEqual(initialDocState);
+    });
+
+    it('should update state for deleteDocSuccess', () => {
+      const updatedState = docFeature.reducer(
+        stateAfterDeleteDoc,
+        DocActions.deleteDocSuccess,
       );
       expect(updatedState).toEqual(initialDocState);
     });

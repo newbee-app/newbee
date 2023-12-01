@@ -8,6 +8,7 @@ import {
   Keyword,
   testBaseCreateDocDto1,
   testBaseDocAndMemberDto1,
+  testBaseUpdateDocDto1,
   testDoc1,
   testOrganization1,
 } from '@newbee/shared/util';
@@ -107,6 +108,55 @@ describe('DocService', () => {
       expect(req.request.body).toEqual({});
 
       req.flush(testDoc1);
+    });
+  });
+
+  describe('edit', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .edit(testDoc1.slug, testOrganization1.slug, testBaseUpdateDocDto1)
+        .subscribe({
+          next: (doc) => {
+            try {
+              expect(doc).toEqual(testDoc1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${DocService.baseApiUrl(testOrganization1.slug)}/${testDoc1.slug}`,
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateDocDto1);
+
+      req.flush(testDoc1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should send out a delete request', (done) => {
+      service.delete(testDoc1.slug, testOrganization1.slug).subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `${DocService.baseApiUrl(testOrganization1.slug)}/${testDoc1.slug}`,
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
     });
   });
 });

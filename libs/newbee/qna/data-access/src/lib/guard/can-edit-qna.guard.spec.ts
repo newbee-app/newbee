@@ -79,7 +79,7 @@ describe('canEditQnaGuard', () => {
     );
   });
 
-  it('should redirect home if no permissions, qna not set, and selectedOrganizatio not set', async () => {
+  it('should redirect home if no permissions, qna not set, and selectedOrganization not set', async () => {
     store.setState({
       [Keyword.Organization]: initialOrganizationState,
       [Keyword.Qna]: initialQnaState,

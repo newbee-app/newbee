@@ -6,7 +6,7 @@ import {
   testTeamMember1,
 } from '@newbee/shared/util';
 import { DocActions } from './doc.actions';
-import { DocState, docFeature, initialDocstate } from './doc.reducer';
+import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
   const stateAfterGetDocSuccess: DocState = {
@@ -17,7 +17,7 @@ describe('DocReducer', () => {
   describe('from initial state', () => {
     it('should update state for getDocSuccess', () => {
       const updatedState = docFeature.reducer(
-        initialDocstate,
+        initialDocState,
         DocActions.getDocSuccess({ docAndMemberDto: testBaseDocAndMemberDto1 }),
       );
       expect(updatedState).toEqual(stateAfterGetDocSuccess);
@@ -25,20 +25,26 @@ describe('DocReducer', () => {
 
     it('should do nothing for editDocSuccess', () => {
       const updatedState = docFeature.reducer(
-        initialDocstate,
+        initialDocState,
         DocActions.editDocSuccess({ doc: testDoc1 }),
       );
-      expect(updatedState).toEqual(initialDocstate);
+      expect(updatedState).toEqual(initialDocState);
     });
   });
 
   describe('from altered state', () => {
     it('should reset state for certain actions', () => {
-      const updatedState = docFeature.reducer(
+      let updatedState = docFeature.reducer(
         stateAfterGetDocSuccess,
         DocActions.resetSelectedDoc,
       );
-      expect(updatedState).toEqual(initialDocstate);
+      expect(updatedState).toEqual(initialDocState);
+
+      updatedState = docFeature.reducer(
+        stateAfterGetDocSuccess,
+        DocActions.deleteDocSuccess,
+      );
+      expect(updatedState).toEqual(initialDocState);
     });
 
     it('should update state for editDocSuccess', () => {

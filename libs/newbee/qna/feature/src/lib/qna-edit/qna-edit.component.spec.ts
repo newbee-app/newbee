@@ -60,6 +60,7 @@ describe('QnaEditComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
+    expect(store).toBeDefined();
   });
 
   describe('onEditQuestion', () => {

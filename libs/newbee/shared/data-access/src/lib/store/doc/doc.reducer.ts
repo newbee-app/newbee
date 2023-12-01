@@ -20,7 +20,7 @@ export interface DocState {
 /**
  * The initial value for `DocState`.
  */
-export const initialDocstate: DocState = {
+export const initialDocState: DocState = {
   selectedDoc: null,
   teamMember: null,
 };
@@ -31,7 +31,7 @@ export const initialDocstate: DocState = {
 export const docFeature = createFeature({
   name: Keyword.Doc,
   reducer: createReducer(
-    initialDocstate,
+    initialDocState,
     on(
       DocActions.getDocSuccess,
       (state, { docAndMemberDto }): DocState => ({
@@ -48,6 +48,10 @@ export const docFeature = createFeature({
 
       return { ...state, selectedDoc: { ...selectedDoc, doc } };
     }),
-    on(DocActions.resetSelectedDoc, (): DocState => initialDocstate),
+    on(
+      DocActions.deleteDocSuccess,
+      DocActions.resetSelectedDoc,
+      (): DocState => initialDocState,
+    ),
   ),
 });

@@ -1,12 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
-import {
-  httpFeature,
-  organizationFeature,
-} from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectOrgAndScreenError } from '../store';
 
 /**
  * A resolver to get the title for org pages.
@@ -22,16 +19,13 @@ export const orgTitleResolver: ResolveFn<string> = (
 
   const orgSlug = route.paramMap.get(ShortUrl.Organization) as string;
 
-  return combineLatest([
-    store.select(organizationFeature.selectSelectedOrganization),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectOrgAndScreenError).pipe(
     skipWhile(
-      ([selectedOrganization, screenError]) =>
+      ({ selectedOrganization, screenError }) =>
         selectedOrganization?.organization.slug !== orgSlug && !screenError,
     ),
     take(1),
-    map(([selectedOrganization]) => {
+    map(({ selectedOrganization }) => {
       if (selectedOrganization) {
         return selectedOrganization.organization.name;
       }

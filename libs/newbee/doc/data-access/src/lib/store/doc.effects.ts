@@ -4,7 +4,6 @@ import {
   DocActions,
   catchHttpClientError,
   catchHttpScreenError,
-  docFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
@@ -19,6 +18,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { DocService } from '../doc.service';
+import { selectDocAndOrg } from './doc.selector';
 
 @Injectable()
 export class DocEffects {
@@ -103,15 +103,12 @@ export class DocEffects {
   markDocAsUpToDate$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DocActions.markDocAsUpToDate),
-      concatLatestFrom(() => [
-        this.store.select(docFeature.selectSelectedDoc),
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ]),
+      concatLatestFrom(() => this.store.select(selectDocAndOrg)),
       filter(
-        ([, selectedDoc, selectedOrganization]) =>
+        ([, { selectedDoc, selectedOrganization }]) =>
           !!(selectedDoc && selectedOrganization),
       ),
-      switchMap(([, selectedDoc, selectedOrganization]) => {
+      switchMap(([, { selectedDoc, selectedOrganization }]) => {
         return this.docService
           .markUpToDate(
             selectedDoc?.doc.slug as string,
@@ -126,6 +123,90 @@ export class DocEffects {
       }),
     );
   });
+
+  editDoc$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DocActions.editDoc),
+      concatLatestFrom(() => this.store.select(selectDocAndOrg)),
+      filter(
+        ([, { selectedDoc, selectedOrganization }]) =>
+          !!(selectedDoc && selectedOrganization),
+      ),
+      switchMap(([{ updateDocDto }, { selectedDoc, selectedOrganization }]) => {
+        return this.docService
+          .edit(
+            selectedDoc?.doc.slug as string,
+            selectedOrganization?.organization.slug as string,
+            updateDocDto,
+          )
+          .pipe(
+            map((doc) => {
+              return DocActions.editDocSuccess({ doc });
+            }),
+            catchError((err) =>
+              catchHttpClientError(err, (msg) => {
+                switch (msg) {
+                  case titleIsNotEmpty:
+                    return 'title';
+                  case upToDateDurationMatches:
+                    return 'duration';
+                  case docIsNotEmpty:
+                    return Keyword.Doc;
+                  case teamIsNotEmpty:
+                    return Keyword.Team;
+                  default:
+                    return Keyword.Misc;
+                }
+              }),
+            ),
+          );
+      }),
+    );
+  });
+
+  deleteDoc$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DocActions.deleteDoc),
+      concatLatestFrom(() => this.store.select(selectDocAndOrg)),
+      filter(
+        ([, { selectedDoc, selectedOrganization }]) =>
+          !!(selectedDoc && selectedOrganization),
+      ),
+      switchMap(([, { selectedDoc, selectedOrganization }]) => {
+        return this.docService
+          .delete(
+            selectedDoc?.doc.slug as string,
+            selectedOrganization?.organization.slug as string,
+          )
+          .pipe(
+            map(() => {
+              return DocActions.deleteDocSuccess();
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
+          );
+      }),
+    );
+  });
+
+  deleteDocSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(DocActions.deleteDocSuccess),
+        concatLatestFrom(() =>
+          this.store.select(organizationFeature.selectSelectedOrganization),
+        ),
+        filter(([, selectedOrganization]) => !!selectedOrganization),
+        tap(async ([, selectedOrganization]) => {
+          await this.router.navigate([
+            `/${ShortUrl.Organization}/${
+              selectedOrganization?.organization.slug as string
+            }`,
+          ]);
+        }),
+      );
+    },
+    { dispatch: false },
+  );
 
   constructor(
     private readonly actions$: Actions,

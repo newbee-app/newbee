@@ -1,13 +1,10 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
-import {
-  QnaActions,
-  httpFeature,
-  qnaFeature,
-} from '@newbee/newbee/shared/data-access';
+import { QnaActions } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectQnaAndScreenError } from '../store';
 
 /**
  * A guard that fires the request to get a qna and only proceeds if it completes.
@@ -24,12 +21,10 @@ export const qnaGuard: CanActivateFn = (
   const qnaSlug = route.paramMap.get(ShortUrl.Qna) as string;
   store.dispatch(QnaActions.getQna({ slug: qnaSlug }));
 
-  return combineLatest([
-    store.select(qnaFeature.selectSelectedQna),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectQnaAndScreenError).pipe(
     skipWhile(
-      ([qna, screenError]) => qna?.qna.slug !== qnaSlug && !screenError,
+      ({ selectedQna, screenError }) =>
+        selectedQna?.qna.slug !== qnaSlug && !screenError,
     ),
     take(1),
     map(() => true),

@@ -4,7 +4,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { ViewDocComponent } from '@newbee/newbee/doc/ui';
 import {
   DocActions,
-  initialDocstate,
+  initialDocState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
@@ -31,7 +31,7 @@ describe('DocViewComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Doc]: {
-              ...initialDocstate,
+              ...initialDocState,
               selectedDoc: testDocRelation1,
               teamMember: testTeamMember1,
             },

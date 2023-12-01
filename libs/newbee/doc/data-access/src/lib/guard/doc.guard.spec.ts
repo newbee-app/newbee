@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { DocActions, initialDocstate } from '@newbee/newbee/shared/data-access';
+import { DocActions, initialDocState } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, testDoc1, testDocRelation1 } from '@newbee/shared/util';
@@ -19,7 +19,7 @@ describe('qnaGuard', () => {
         provideMockStore({
           initialState: {
             [Keyword.Doc]: {
-              ...initialDocstate,
+              ...initialDocState,
               selectedDoc: testDocRelation1,
             },
           },

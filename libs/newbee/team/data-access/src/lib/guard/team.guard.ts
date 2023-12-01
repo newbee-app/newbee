@@ -1,13 +1,10 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
-import {
-  httpFeature,
-  TeamActions,
-  teamFeature,
-} from '@newbee/newbee/shared/data-access';
+import { TeamActions } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectTeamAndScreenError } from '../store';
 
 /**
  * A guard that fires the request to get a team and only proceeds if it completes.
@@ -17,21 +14,19 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  * @returns `true` after the team is retrieved or an error is thrown.
  */
 export const teamGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): Observable<boolean> => {
   const store = inject(Store);
 
   const teamSlug = route.paramMap.get(ShortUrl.Team) as string;
   store.dispatch(TeamActions.getTeam({ slug: teamSlug }));
 
-  return combineLatest([
-    store.select(teamFeature.selectSelectedTeam),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectTeamAndScreenError).pipe(
     skipWhile(
-      ([team, screenError]) => team?.team.slug !== teamSlug && !screenError
+      ({ selectedTeam, screenError }) =>
+        selectedTeam?.team.slug !== teamSlug && !screenError,
     ),
     take(1),
-    map(() => true)
+    map(() => true),
   );
 };
