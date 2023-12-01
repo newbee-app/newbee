@@ -84,8 +84,8 @@ export class QnaService {
     qnaSlug: string,
     orgSlug: string,
     updateQuestionDto: BaseUpdateQuestionDto,
-  ): Observable<Qna> {
-    return this.http.patch<Qna>(
+  ): Observable<BaseQnaAndMemberDto> {
+    return this.http.patch<BaseQnaAndMemberDto>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Question}`,
       updateQuestionDto,
     );

@@ -24,7 +24,9 @@ describe('QnaController', () => {
   let entityService: EntityService;
   let teamMemberService: TeamMemberService;
 
-  const testUpdatedQnaEntity = { ...testQnaEntity1, ...testBaseUpdateQnaDto1 };
+  const { team: _team, ...restUpdateQnaDto } = testBaseUpdateQnaDto1;
+  _team;
+  const testUpdatedQnaEntity = { ...testQnaEntity1, ...restUpdateQnaDto };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -84,37 +86,47 @@ describe('QnaController', () => {
     );
   });
 
-  it('get should get a qna', async () => {
-    await expect(
-      controller.get(testQnaEntity1, testOrgMemberEntity1),
-    ).resolves.toEqual({
+  describe('get & updateQuestion', () => {
+    const qnaAndMemberDto = {
       qna: testQnaRelation1,
       teamMember: testTeamMemberEntity1,
-    });
-    expect(entityService.createQnaNoOrg).toHaveBeenCalledTimes(1);
-    expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(testQnaEntity1);
-    expect(
-      teamMemberService.findOneByOrgMemberAndTeamOrNull,
-    ).toHaveBeenCalledTimes(1);
-    expect(
-      teamMemberService.findOneByOrgMemberAndTeamOrNull,
-    ).toHaveBeenCalledWith(testOrgMemberEntity1, testQnaEntity1.team);
-  });
+    };
 
-  it('updateQuestion should update the question', async () => {
-    await expect(
-      controller.updateQuestion(
-        testBaseUpdateQuestionDto1,
+    afterEach(() => {
+      expect(entityService.createQnaNoOrg).toHaveBeenCalledTimes(1);
+      expect(
+        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+      ).toHaveBeenCalledWith(testOrgMemberEntity1, testQnaEntity1.team);
+    });
+
+    it('get should get a qna', async () => {
+      await expect(
+        controller.get(testQnaEntity1, testOrgMemberEntity1),
+      ).resolves.toEqual(qnaAndMemberDto);
+      expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(testQnaEntity1);
+    });
+
+    it('updateQuestion should update the question', async () => {
+      await expect(
+        controller.updateQuestion(
+          testBaseUpdateQuestionDto1,
+          testQnaEntity1,
+          testOrgMemberEntity1,
+        ),
+      ).resolves.toEqual(qnaAndMemberDto);
+      expect(service.update).toHaveBeenCalledTimes(1);
+      expect(service.update).toHaveBeenCalledWith(
         testQnaEntity1,
+        testBaseUpdateQuestionDto1,
         testOrgMemberEntity1,
-      ),
-    ).resolves.toEqual(testUpdatedQnaEntity);
-    expect(service.update).toHaveBeenCalledTimes(1);
-    expect(service.update).toHaveBeenCalledWith(
-      testQnaEntity1,
-      testBaseUpdateQuestionDto1,
-      testOrgMemberEntity1,
-    );
+      );
+      expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(
+        testUpdatedQnaEntity,
+      );
+    });
   });
 
   it('updateAnswer should update the answer', async () => {

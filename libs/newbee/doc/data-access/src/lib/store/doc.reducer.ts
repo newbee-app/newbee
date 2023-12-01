@@ -69,6 +69,7 @@ export const docFeature = createFeature({
     ),
     on(
       DocActions.createDocSuccess,
+      DocActions.getDocSuccess,
       DocActions.markDocAsUpToDateSuccess,
       DocActions.deleteDocSuccess,
       DocActions.resetSelectedDoc,

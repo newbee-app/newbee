@@ -142,8 +142,8 @@ export class QnaEffects {
               updateQuestionDto,
             )
             .pipe(
-              map((qna) => {
-                return QnaActions.editQnaSuccess({ qna });
+              map((qnaAndMemberDto) => {
+                return QnaActions.getQnaSuccess({ qnaAndMemberDto });
               }),
               catchError((err) =>
                 catchHttpClientError(err, (msg) => {

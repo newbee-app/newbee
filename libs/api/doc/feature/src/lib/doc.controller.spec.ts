@@ -22,8 +22,8 @@ describe('DocController', () => {
   let entityService: EntityService;
   let teamMemberService: TeamMemberService;
 
-  const { team, ...restUpdateDocDto } = testBaseUpdateDocDto1;
-  team;
+  const { team: _team, ...restUpdateDocDto } = testBaseUpdateDocDto1;
+  _team;
   const testUpdatedDocEntity = { ...testDocEntity1, ...restUpdateDocDto };
 
   beforeEach(async () => {

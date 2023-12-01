@@ -139,7 +139,7 @@ export class QnaController {
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Qna() qna: QnaEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<QnaEntity> {
+  ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.update(
       qna,
@@ -149,7 +149,17 @@ export class QnaController {
     this.logger.log(
       `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
-    return updatedQna;
+
+    const { team } = updatedQna;
+    return {
+      qna: await this.entityService.createQnaNoOrg(updatedQna),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**

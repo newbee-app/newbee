@@ -63,7 +63,9 @@ describe('QnaEffects', () => {
             create: jest.fn().mockReturnValue(of(testQna1)),
             get: jest.fn().mockReturnValue(of(testBaseQnaAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
-            editQuestion: jest.fn().mockReturnValue(of(testQna1)),
+            editQuestion: jest
+              .fn()
+              .mockReturnValue(of(testBaseQnaAndMemberDto1)),
             editAnswer: jest.fn().mockReturnValue(of(testQna1)),
             delete: jest.fn().mockReturnValue(of(null)),
           }),
@@ -159,6 +161,7 @@ describe('QnaEffects', () => {
       const expected$ = hot('a', {
         a: QnaActions.getQnaSuccess({
           qnaAndMemberDto: testBaseQnaAndMemberDto1,
+          redirect: true,
         }),
       });
       expect(effects.getQna$).toBeObservable(expected$);
@@ -210,14 +213,17 @@ describe('QnaEffects', () => {
   });
 
   describe('editQuestion$', () => {
-    it('should fire editQnaSuccess if successful', () => {
+    it('should fire getQnaSuccess if successful', () => {
       actions$ = hot('a', {
         a: QnaActions.editQuestion({
           updateQuestionDto: testBaseUpdateQuestionDto1,
         }),
       });
       const expected$ = hot('a', {
-        a: QnaActions.editQnaSuccess({ qna: testQna1 }),
+        a: QnaActions.getQnaSuccess({
+          qnaAndMemberDto: testBaseQnaAndMemberDto1,
+          redirect: false,
+        }),
       });
       expect(effects.editQuestion$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

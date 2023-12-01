@@ -79,6 +79,7 @@ export const qnaFeature = createFeature({
     ),
     on(
       QnaActions.createQnaSuccess,
+      QnaActions.getQnaSuccess,
       QnaActions.editQnaSuccess,
       QnaActions.deleteQnaSuccess,
       QnaActions.resetSelectedQna,
