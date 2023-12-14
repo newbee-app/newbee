@@ -304,7 +304,7 @@ export class EntityService {
         organization,
         teams: organization.teams.toArray(),
         members: organization.members
-          .toArray()
+          .getItems()
           .map((orgMember) => ({ orgMember, user: orgMember.user })),
       };
     } catch (err) {
