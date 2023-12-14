@@ -10,7 +10,16 @@
 
 <div *ngIf="!deletePending; else isDeletePending" class="mt-close">
   <div class="flex flex-col flex-nowrap gap-y-2">
-    <div *ngIf="canEdit; else displayName" class="w-fit">
+    <div
+      *ngIf="
+        checkRoles(editDeleteRoles, {
+          orgMember: userOrgMember,
+          subjectOrgRole: orgMember.orgMember.role
+        });
+        else displayName
+      "
+      class="w-fit"
+    >
       <newbee-dropdown placement="bottom-start">
         <h2
           label
@@ -36,12 +45,26 @@
         </h2>
 
         <ul dropdown class="menu flex flex-col flex-nowrap">
-          <li>
+          <li
+            *ngIf="
+              checkRoles(apiRoles['org-member'].update, {
+                orgMember: userOrgMember,
+                subjectOrgRole: orgMember.orgMember.role
+              })
+            "
+          >
             <a onclick="changeRoleModal.showModal()" class="flex"
               >Change role</a
             >
           </li>
-          <li>
+          <li
+            *ngIf="
+              checkRoles(apiRoles['org-member'].delete, {
+                orgMember: userOrgMember,
+                subjectOrgRole: orgMember.orgMember.role
+              })
+            "
+          >
             <a onclick="deleteModal.showModal()" class="flex"
               >Remove from org</a
             >

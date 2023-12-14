@@ -13,7 +13,6 @@ import {
   testDoc1,
   testDocRelation1,
   testOrgMemberRelation1,
-  testTeamMember1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DocViewComponent } from './doc-view.component';
@@ -33,7 +32,6 @@ describe('DocViewComponent', () => {
             [Keyword.Doc]: {
               ...initialDocState,
               selectedDoc: testDocRelation1,
-              teamMember: testTeamMember1,
             },
             [Keyword.Organization]: {
               ...initialOrganizationState,

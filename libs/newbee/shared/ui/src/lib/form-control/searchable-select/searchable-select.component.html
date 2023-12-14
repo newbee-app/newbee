@@ -8,7 +8,8 @@
       label
       type="button"
       [disabled]="disabled"
-      class="btn border-neutral flex flex-row flex-nowrap gap-x-1 justify-between w-full"
+      class="btn flex flex-row flex-nowrap gap-x-1 justify-between w-full"
+      [ngClass]="{ 'border-neutral': valid, 'border-error': !valid }"
     >
       <span class="truncate">{{ selectedText }}</span>
 
@@ -60,8 +61,8 @@
   </newbee-dropdown>
 
   <newbee-alert
-    [show]="!valid"
     [type]="alertType.Error"
+    [show]="!valid"
     [text]="errorText"
   ></newbee-alert>
 </div>

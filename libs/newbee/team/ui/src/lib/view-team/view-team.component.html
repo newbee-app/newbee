@@ -1,5 +1,15 @@
 <div class="flex flex-col flex-nowrap gap-y-2 mt-close">
-  <div *ngIf="isAdmin; else teamName" class="w-fit">
+  <div
+    *ngIf="
+      checkRoles(editAndInviteRoles, {
+        orgMember,
+        teamRole: teamMember?.role,
+        team: true
+      });
+      else teamName
+    "
+    class="w-fit"
+  >
     <newbee-dropdown placement="bottom-start">
       <h2
         label
@@ -25,12 +35,28 @@
       </h2>
 
       <ul dropdown class="menu flex flex-col flex-nowrap">
-        <li>
+        <li
+          *ngIf="
+            checkRoles(apiRoles.team.update, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: true
+            })
+          "
+        >
           <a (click)="teamNavigate.emit(keyword.Edit)" class="flex"
             >Edit team</a
           >
         </li>
-        <li>
+        <li
+          *ngIf="
+            checkRoles(apiRoles['team-member'].create, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: true
+            })
+          "
+        >
           <a (click)="teamNavigate.emit(keyword.Invite)" class="flex"
             >Invite members</a
           >

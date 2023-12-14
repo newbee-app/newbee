@@ -117,7 +117,6 @@
       ],
       "@newbee/newbee/doc/feature": ["libs/newbee/doc/feature/src/index.ts"],
       "@newbee/newbee/doc/ui": ["libs/newbee/doc/ui/src/index.ts"],
-      "@newbee/newbee/doc/util": ["libs/newbee/doc/util/src/index.ts"],
       "@newbee/newbee/home/feature": ["libs/newbee/home/feature/src/index.ts"],
       "@newbee/newbee/home/ui": ["libs/newbee/home/ui/src/index.ts"],
       "@newbee/newbee/invite/data-access": [
@@ -152,7 +151,6 @@
       ],
       "@newbee/newbee/qna/feature": ["libs/newbee/qna/feature/src/index.ts"],
       "@newbee/newbee/qna/ui": ["libs/newbee/qna/ui/src/index.ts"],
-      "@newbee/newbee/qna/util": ["libs/newbee/qna/util/src/index.ts"],
       "@newbee/newbee/search/data-access": [
         "libs/newbee/search/data-access/src/index.ts"
       ],

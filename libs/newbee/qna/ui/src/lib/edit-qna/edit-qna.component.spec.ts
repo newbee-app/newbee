@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SelectOption } from '@newbee/newbee/shared/util';
 import {
-  testOrgMember1,
+  testOrgMemberUser1,
   testOrganization1,
   testQna1,
   testQnaRelation1,
@@ -22,7 +22,7 @@ describe('EditQnaComponent', () => {
     component = fixture.componentInstance;
 
     component.qna = testQnaRelation1;
-    component.orgMember = testOrgMember1;
+    component.orgMember = testOrgMemberUser1;
     component.teams = [testTeam1];
     component.organization = testOrganization1;
 
@@ -51,6 +51,7 @@ describe('EditQnaComponent', () => {
         team: testQnaRelation1.team,
       });
       expect(component.editAnswerForm.value).toEqual({
+        maintainer: testOrgMemberUser1,
         upToDateDuration: { num: null, frequency: null },
       });
       expect(component.answerMarkdoc).toEqual(testQna1.answerMarkdoc);
@@ -75,6 +76,7 @@ describe('EditQnaComponent', () => {
       expect(component.editAnswer.emit).toHaveBeenCalledTimes(1);
       expect(component.editAnswer.emit).toHaveBeenCalledWith({
         answerMarkdoc: testQna1.answerMarkdoc,
+        maintainer: testQnaRelation1.maintainer?.orgMember.slug,
         upToDateDuration: testQna1.upToDateDuration,
       });
     });

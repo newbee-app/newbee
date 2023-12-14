@@ -2,7 +2,8 @@ import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map, Observable, skipWhile, take } from 'rxjs';
-import { CookieActions, selectCsrfTokenAndScreenError } from '../store';
+import { CookieActions } from '../store';
+import { selectCsrfTokenAndScreenError } from '../store/app.selector';
 
 /**
  * A guard that fires the request to init cookies and only proceeds if it completes.

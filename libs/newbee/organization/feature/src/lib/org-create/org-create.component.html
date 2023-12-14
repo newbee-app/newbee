@@ -1,8 +1,8 @@
 <newbee-create-org
-  [generatedSlug]="(generatedSlug$ | async)!"
-  [slugTaken]="(slugTaken$ | async)!"
-  [createPending]="(pendingCreate$ | async)!"
-  [checkPending]="(pendingCheck$ | async)!"
+  [generatedSlug]="(orgModuleState$ | async)!.generatedSlug"
+  [slugTaken]="(orgModuleState$ | async)!.slugTaken"
+  [createPending]="(orgModuleState$ | async)!.pendingCreate"
+  [checkPending]="(orgModuleState$ | async)!.pendingCheck"
   [httpClientError]="(httpClientError$ | async)!"
   (name)="onName($event)"
   (slug)="onSlug($event)"

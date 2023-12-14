@@ -16,28 +16,39 @@
         |
       </span>
 
-      Maintained
-      <span *ngIf="maintainerIsCreator"> & Created</span>
+      <span *ngIf="maintainerIsCreator; else maintainerNotCreator"
+        >Maintained & created by
+        <a
+          *ngIf="doc.maintainer"
+          (click)="
+            emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
+          "
+          class="link"
+          >{{ userDisplayName(doc.maintainer.user) }}</a
+        >
+      </span>
+      <ng-template #maintainerNotCreator>
+        <span *ngIf="doc.maintainer; else noMaintainer"
+          >Maintained by
+          <a
+            (click)="
+              emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
+            "
+            class="link"
+            >{{ userDisplayName(doc.maintainer.user) }}</a
+          ></span
+        >
+        <ng-template #noMaintainer>Not actively maintained</ng-template>
 
-      by
-      <a
-        *ngIf="doc.maintainer; else noMaintainer"
-        (click)="
-          emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
-        "
-        class="link"
-        >{{ userDisplayName(doc.maintainer.user) }}</a
-      >
-      <ng-template #noMaintainer>a deleted user</ng-template>
-
-      <span *ngIf="doc.creator && !maintainerIsCreator">
         | Created by
         <a
+          *ngIf="doc.creator; else noCreator"
           (click)="emitOrgNavigate(shortUrl.Member, doc.creator.orgMember.slug)"
           class="link"
           >{{ userDisplayName(doc.creator.user) }}</a
         >
-      </span>
+        <ng-template #noCreator>a deleted user</ng-template>
+      </ng-template>
     </p>
 
     <p class="opacity-50">
@@ -59,12 +70,28 @@
 
     <div class="flex flex-col flex-nowrap gap-y-2">
       <div
-        *ngIf="hasEditPermissions || hasUpToDatePermissions"
+        *ngIf="
+          checkRoles(editAndUpToDateRoles, {
+            orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember
+          })
+        "
         class="flex flex-row flex-wrap gap-2 mt-1"
       >
         <button
           type="button"
-          *ngIf="hasEditPermissions"
+          *ngIf="
+            checkRoles(apiRoles.doc.update, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!doc.team,
+              postCreator: doc.creator?.orgMember,
+              postMaintainer: doc.maintainer?.orgMember
+            })
+          "
           (click)="emitDocNavigate(keyword.Edit)"
           class="btn btn-sm btn-info"
         >
@@ -72,7 +99,15 @@
         </button>
         <button
           type="button"
-          *ngIf="hasUpToDatePermissions"
+          *ngIf="
+            checkRoles(apiRoles.doc.markUpToDate, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!doc.team,
+              postCreator: doc.creator?.orgMember,
+              postMaintainer: doc.maintainer?.orgMember
+            })
+          "
           (click)="markAsUpToDate.emit()"
           [disabled]="upToDatePending"
           class="btn btn-sm btn-success"

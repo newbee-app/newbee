@@ -19,7 +19,7 @@ import type {
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
   OrgMemberRelation,
-  OrgTeams,
+  OrgTeamsMembers,
   QnaNoOrg,
   QnaQueryResult,
   TeamNoOrg,
@@ -33,6 +33,8 @@ import {
   cannotDeleteOnlyTeamOwnerBadRequest,
   internalServerError,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
+import { Duration } from 'dayjs/plugin/duration';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -293,10 +295,18 @@ export class EntityService {
    * @returns The org as an `OrgTeams`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createOrgTeams(organization: OrganizationEntity): Promise<OrgTeams> {
+  async createOrgTeamsMembers(
+    organization: OrganizationEntity,
+  ): Promise<OrgTeamsMembers> {
     try {
-      await this.em.populate(organization, ['teams']);
-      return { organization, teams: organization.teams.toArray() };
+      await this.em.populate(organization, ['teams', 'members.user']);
+      return {
+        organization,
+        teams: organization.teams.toArray(),
+        members: organization.members
+          .toArray()
+          .map((orgMember) => ({ orgMember, user: orgMember.user })),
+      };
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -687,5 +697,55 @@ export class EntityService {
         await this.safeToDelete(orgMember);
       }
     }
+  }
+
+  /**
+   * A helper function for finding the true up-to-date duration value for a post, which may optionally have new values for its up-to-date duration or team.
+   *
+   * The method makes the assumption that the post's team and organization have been populated. If working with the doc or qna endpoints, this should be done by the `RoleGuard`.
+   *
+   * @param post The post to examine.
+   * @param upToDateDuration The new value for up-to-date duration, if any. It should be `undefined` if there is no new value.
+   * @param team The new value for team, if any. It should be `undefined` if there is no new value.
+   *
+   * @returns The up-to-date duration that the post is actually using.
+   */
+  static trueUpToDateDuration(
+    post: PostEntity,
+    upToDateDuration: string | null | undefined,
+    team: TeamEntity | null | undefined,
+  ): Duration {
+    if (upToDateDuration || upToDateDuration === null) {
+      if (team || team === null) {
+        return dayjs.duration(
+          upToDateDuration ??
+            team?.upToDateDuration ??
+            post.organization.upToDateDuration,
+        );
+      }
+
+      // team === undefined
+      return dayjs.duration(
+        upToDateDuration ??
+          post.team?.upToDateDuration ??
+          post.organization.upToDateDuration,
+      );
+    }
+
+    // upToDateDuration === undefined
+    if (team || team === null) {
+      return dayjs.duration(
+        post.upToDateDuration ??
+          team?.upToDateDuration ??
+          post.organization.upToDateDuration,
+      );
+    }
+
+    // upToDateDuration === undefined && team === undefined
+    return dayjs.duration(
+      post.upToDateDuration ??
+        post.team?.upToDateDuration ??
+        post.organization.upToDateDuration,
+    );
   }
 }

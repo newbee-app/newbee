@@ -270,17 +270,17 @@ describe('TeamMemberService', () => {
     });
   });
 
-  describe('checkRequester', () => {
+  describe('checkRequesterTeamRole', () => {
     it('should pass if the org role is moderator or higher', () => {
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Owner,
           null,
           TeamRoleEnum.Owner,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Moderator,
           null,
           TeamRoleEnum.Owner,
@@ -290,7 +290,7 @@ describe('TeamMemberService', () => {
 
     it('should fail if the org role is too low and team role is null', () => {
       expect(() =>
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           null,
           TeamRoleEnum.Owner,
@@ -300,42 +300,42 @@ describe('TeamMemberService', () => {
 
     it(`should pass if the requester's team role is greater than or equal to the subject's team role`, () => {
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Owner,
@@ -345,21 +345,21 @@ describe('TeamMemberService', () => {
 
     it(`should fail if the requester's team role is lower than the subject's team role`, () => {
       expect(() =>
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Moderator,
         ),
       ).toThrow(new ForbiddenException(forbiddenError));
       expect(() =>
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Owner,
         ),
       ).toThrow(new ForbiddenException(forbiddenError));
       expect(() =>
-        TeamMemberService.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Owner,
@@ -380,10 +380,13 @@ describe('TeamMemberService', () => {
 
     it('should pass if org role is >= moderator or team role is >= member', async () => {
       await expect(
-        service.checkOrgMemberTeam(testOrgMemberEntity1, testTeamEntity1),
+        service.findAndCheckRequesterTeamRoles(
+          testOrgMemberEntity1,
+          testTeamEntity1,
+        ),
       ).resolves.toBeUndefined();
       await expect(
-        service.checkOrgMemberTeam(
+        service.findAndCheckRequesterTeamRoles(
           {
             ...testOrgMemberEntity1,
             role: OrgRoleEnum.Moderator,
@@ -394,28 +397,28 @@ describe('TeamMemberService', () => {
 
       jest.spyOn(em, 'findOne').mockResolvedValue(testTeamMemberEntity1);
       await expect(
-        service.checkOrgMemberTeam(orgMember, testTeamEntity1),
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
       ).resolves.toBeUndefined();
       jest.spyOn(em, 'findOne').mockResolvedValue({
         ...testTeamMemberEntity1,
         role: TeamRoleEnum.Moderator,
       });
       await expect(
-        service.checkOrgMemberTeam(orgMember, testTeamEntity1),
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
       ).resolves.toBeUndefined();
       jest.spyOn(em, 'findOne').mockResolvedValue({
         ...testTeamMemberEntity1,
         role: TeamRoleEnum.Member,
       });
       await expect(
-        service.checkOrgMemberTeam(orgMember, testTeamEntity1),
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
       ).resolves.toBeUndefined();
       expect(em.findOne).toHaveBeenCalledTimes(5);
     });
 
     it('should throw ForbiddenException if org role is member and team member is null', async () => {
       await expect(
-        service.checkOrgMemberTeam(orgMember, testTeamEntity1),
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
       ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
   });

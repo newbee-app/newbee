@@ -22,24 +22,9 @@ export class OrgCreateComponent implements OnDestroy {
   readonly name$ = new Subject<string>();
 
   /**
-   * The auto-generated slug based on the org's name.
+   * The org module state.
    */
-  generatedSlug$ = this.store.select(organizationFeature.selectGeneratedSlug);
-
-  /**
-   * Whether the form's slug value is taken.
-   */
-  slugTaken$ = this.store.select(organizationFeature.selectSlugTaken);
-
-  /**
-   * Whether the create action is pending.
-   */
-  pendingCreate$ = this.store.select(organizationFeature.selectPendingCreate);
-
-  /**
-   * Whether the check slug action is pending.
-   */
-  pendingCheck$ = this.store.select(organizationFeature.selectPendingCheck);
+  orgModuleState$ = this.store.select(organizationFeature.selectOrgModuleState);
 
   /**
    * Request HTTP error, if any exist.

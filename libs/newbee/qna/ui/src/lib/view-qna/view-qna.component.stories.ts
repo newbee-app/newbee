@@ -1,9 +1,6 @@
 import {
   OrgRoleEnum,
-  TeamRoleEnum,
   testOrgMember1,
-  testOrgMemberRelation1,
-  testOrgMemberUser1,
   testQna1,
   testQnaRelation1,
   testTeamMember1,
@@ -32,12 +29,14 @@ type Story = StoryObj<ViewQnaComponent>;
 
 export const Primary: Story = {};
 
-export const UpToDatePending: Story = {
-  args: { upToDatePending: true },
+export const Member: Story = {
+  args: {
+    orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
+  },
 };
 
-export const NoMember: Story = {
-  args: { orgMember: null, teamMember: null },
+export const UpToDatePending: Story = {
+  args: { upToDatePending: true },
 };
 
 export const NoQuestionAnswer: Story = {
@@ -45,52 +44,6 @@ export const NoQuestionAnswer: Story = {
     qna: {
       ...testQnaRelation1,
       qna: { ...testQna1, questionHtml: null, answerHtml: null },
-    },
-  },
-};
-
-export const NoQuestionAnswerPermissions: Story = {
-  args: {
-    ...NoQuestionAnswer.args,
-    orgMember: null,
-    teamMember: null,
-  },
-};
-
-export const IsCreator: Story = {
-  args: {
-    qna: {
-      ...testQnaRelation1,
-      maintainer: {
-        ...testOrgMemberUser1,
-        orgMember: { ...testOrgMember1, slug: 'nonsense' },
-      },
-    },
-    orgMember: { ...testOrgMember1, role: OrgRoleEnum.Member },
-    teamMember: { ...testTeamMember1, role: TeamRoleEnum.Member },
-  },
-};
-
-export const IsMaintainer: Story = {
-  args: {
-    ...IsCreator.args,
-    qna: {
-      ...testQnaRelation1,
-      creator: {
-        ...testOrgMemberRelation1,
-        orgMember: { ...testOrgMember1, slug: 'nonsense' },
-      },
-    },
-  },
-};
-
-export const NoMaintainerTeamMember: Story = {
-  args: {
-    ...IsCreator.args,
-    qna: {
-      ...testQnaRelation1,
-      creator: null,
-      maintainer: null,
     },
   },
 };

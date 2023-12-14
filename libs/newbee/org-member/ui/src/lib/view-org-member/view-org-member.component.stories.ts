@@ -1,5 +1,6 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
+  OrgRoleEnum,
   testDocQueryResult1,
   testOrgMember1,
   testOrgMemberRelation1,
@@ -67,7 +68,11 @@ type Story = StoryObj<ViewOrgMemberComponent>;
 
 export const Primary: Story = {};
 
-export const NoUserOrgMember: Story = { args: { userOrgMember: null } };
+export const MemberPermissions: Story = {
+  args: {
+    userOrgMember: { slug: 'bad', role: OrgRoleEnum.Member },
+  },
+};
 
 export const LongDisplayName: Story = {
   args: {

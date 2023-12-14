@@ -5,6 +5,7 @@ import {
   docFeature,
   httpFeature,
   organizationFeature,
+  selectOrgMemberUser,
 } from '@newbee/newbee/shared/data-access';
 import { BaseUpdateDocDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
@@ -28,9 +29,16 @@ export class DocEditComponent {
   docState$ = this.store.select(docFeature.selectDocState);
 
   /**
-   * The org state.
+   * The org member and user.
    */
-  orgState$ = this.store.select(organizationFeature.selectOrgState);
+  orgMemberUser$ = this.store.select(selectOrgMemberUser);
+
+  /**
+   * The selected organization.
+   */
+  selectedOrganization$ = this.store.select(
+    organizationFeature.selectSelectedOrganization,
+  );
 
   /**
    * The doc module state.

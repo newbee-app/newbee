@@ -2,6 +2,7 @@ import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseUpdateAnswerDto,
   answerIsNotEmpty,
+  maintainerIsNotEmpty,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
 import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
@@ -24,4 +25,11 @@ export class UpdateAnswerDto implements BaseUpdateAnswerDto {
   @IsOptional()
   @IsNotEmpty({ message: answerIsNotEmpty })
   answerMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: maintainerIsNotEmpty })
+  maintainer?: string;
 }

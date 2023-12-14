@@ -67,7 +67,7 @@ export class CreateDocComponent implements OnInit {
   @Input() organization!: Organization;
 
   /**
-   * All of the teams of the org the doc can be put in, mixed in with the user's role in the teams to ensure they have the adequate permissions to create docs in those teams.
+   * All of the teams of the org the doc can be put in.
    */
   @Input() teams: Team[] = [];
 
@@ -135,7 +135,7 @@ export class CreateDocComponent implements OnInit {
       return;
     }
 
-    this.docForm.controls.team.setValue(team);
+    this.docForm.controls.team.setValue(team, { emitEvent: false });
   }
 
   /**

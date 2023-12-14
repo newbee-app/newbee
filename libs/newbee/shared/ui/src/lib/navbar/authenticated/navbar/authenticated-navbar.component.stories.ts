@@ -1,7 +1,8 @@
 import {
+  OrgRoleEnum,
   testOrganization1,
   testOrganization2,
-  testOrgMemberRelation1,
+  testOrgMember1,
   testUser1,
 } from '@newbee/shared/util';
 import {
@@ -26,7 +27,7 @@ export default {
     user: testUser1,
     organizations: [testOrganization1, testOrganization2],
     selectedOrganization: testOrganization1,
-    orgMember: testOrgMemberRelation1,
+    orgMember: testOrgMember1,
     includeCenter: false,
   },
   argTypes: {
@@ -42,7 +43,11 @@ type Story = StoryObj<AuthenticatedNavbarComponent>;
 export const SelectedOrg: Story = {};
 
 export const NoSelectedOrg: Story = {
-  args: { selectedOrganization: null },
+  args: { selectedOrganization: null, orgMember: null },
 };
 
 export const IncludeCenter: Story = { args: { includeCenter: true } };
+
+export const Member: Story = {
+  args: { orgMember: { slug: 'bad', role: OrgRoleEnum.Member } },
+};

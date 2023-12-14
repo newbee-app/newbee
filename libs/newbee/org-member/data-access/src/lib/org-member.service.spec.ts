@@ -39,7 +39,7 @@ describe('OrgMemberService', () => {
           testOrgMember1.slug,
         ),
       ).toEqual(
-        `/${Keyword.Api}/v${apiVersion.orgMember}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Member}/${testOrgMember1.slug}`,
+        `/${Keyword.Api}/v${apiVersion['org-member']}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Member}/${testOrgMember1.slug}`,
       );
     });
   });

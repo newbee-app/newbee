@@ -340,50 +340,65 @@ describe('OrgMemberService', () => {
     });
   });
 
-  describe('checkRequester', () => {
+  describe('checkRequesterOrgRole', () => {
     it(`should pass if the requester's org role is greater than or equal to the subject's org role`, () => {
       expect(
-        OrgMemberService.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Owner),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Owner,
+        ),
       ).toBeUndefined();
       expect(
-        OrgMemberService.checkRequester(
+        OrgMemberService.checkRequesterOrgRole(
           OrgRoleEnum.Owner,
           OrgRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        OrgMemberService.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Member),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
       expect(
-        OrgMemberService.checkRequester(
+        OrgMemberService.checkRequesterOrgRole(
           OrgRoleEnum.Moderator,
           OrgRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        OrgMemberService.checkRequester(
+        OrgMemberService.checkRequesterOrgRole(
           OrgRoleEnum.Moderator,
           OrgRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        OrgMemberService.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Member),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Member,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
     });
   });
 
   it(`should fail if the requester's org role is lower than the subject's org role`, () => {
     expect(() =>
-      OrgMemberService.checkRequester(
+      OrgMemberService.checkRequesterOrgRole(
         OrgRoleEnum.Member,
         OrgRoleEnum.Moderator,
       ),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      OrgMemberService.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequesterOrgRole(
+        OrgRoleEnum.Member,
+        OrgRoleEnum.Owner,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      OrgMemberService.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequesterOrgRole(
+        OrgRoleEnum.Moderator,
+        OrgRoleEnum.Owner,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
   });
 });

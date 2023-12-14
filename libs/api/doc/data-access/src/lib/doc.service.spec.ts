@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocEntity,
   EntityService,
@@ -17,7 +18,6 @@ import {
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
-import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
@@ -60,12 +60,13 @@ describe('DocService', () => {
   let entityService: EntityService;
   let solrCli: SolrCli;
   let teamService: TeamService;
-  let teamMemberService: TeamMemberService;
+  let orgMemberService: OrgMemberService;
 
   const testUpdatedDoc = createMock<DocEntity>({
     ...testDocEntity1,
     ...testBaseUpdateDocDto1,
     team: testTeamEntity1,
+    maintainer: testOrgMemberEntity1,
   });
   const testUpdatedDocDocParams: DocDocParams = {
     ...testDocDocParams1,
@@ -102,8 +103,12 @@ describe('DocService', () => {
           }),
         },
         {
-          provide: TeamMemberService,
-          useValue: createMock<TeamMemberService>(),
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>({
+            findOneByOrgAndSlug: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberEntity1),
+          }),
         },
       ],
     }).compile();
@@ -113,7 +118,7 @@ describe('DocService', () => {
     entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
     teamService = module.get<TeamService>(TeamService);
-    teamMemberService = module.get<TeamMemberService>(TeamMemberService);
+    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
@@ -128,7 +133,7 @@ describe('DocService', () => {
     expect(em).toBeDefined();
     expect(solrCli).toBeDefined();
     expect(teamService).toBeDefined();
-    expect(teamMemberService).toBeDefined();
+    expect(orgMemberService).toBeDefined();
   });
 
   describe('create', () => {
@@ -242,6 +247,7 @@ describe('DocService', () => {
         docTxt,
         docHtml,
         team: testTeamEntity1,
+        maintainer: testOrgMemberEntity1,
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
@@ -253,11 +259,7 @@ describe('DocService', () => {
 
     it('should update a doc', async () => {
       await expect(
-        service.update(
-          testDocEntity1,
-          testBaseUpdateDocDto1,
-          testOrgMemberEntity1,
-        ),
+        service.update(testDocEntity1, testBaseUpdateDocDto1),
       ).resolves.toEqual(testUpdatedDoc);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
@@ -269,11 +271,7 @@ describe('DocService', () => {
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(
-          testDocEntity1,
-          testBaseUpdateDocDto1,
-          testOrgMemberEntity1,
-        ),
+        service.update(testDocEntity1, testBaseUpdateDocDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -282,11 +280,7 @@ describe('DocService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(
-        service.update(
-          testDocEntity1,
-          testBaseUpdateDocDto1,
-          testOrgMemberEntity1,
-        ),
+        service.update(testDocEntity1, testBaseUpdateDocDto1),
       ).resolves.toEqual(testUpdatedDoc);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
@@ -308,7 +302,7 @@ describe('DocService', () => {
       expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
-          .add(await testDocEntity1.trueUpToDateDuration())
+          .add(dayjs.duration(testOrganizationEntity1.upToDateDuration))
           .toDate(),
       });
       expect(em.flush).toHaveBeenCalledTimes(1);

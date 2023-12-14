@@ -21,15 +21,19 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   SlugInputDirectiveModule,
+  durationToNumAndFreq,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateOrganizationDto, Keyword } from '@newbee/shared/util';
+import {
+  BaseCreateOrganizationDto,
+  Keyword,
+  defaultOrgDuration,
+} from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -113,10 +117,8 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
   /**
    * The initial value for the up-to-date duration.
    */
-  private static readonly initialDuration = {
-    num: 6,
-    frequency: Frequency.Month,
-  };
+  private static readonly defaultOrgNumAndFreq =
+    durationToNumAndFreq(defaultOrgDuration);
 
   /**
    * The internal form to create a new organization.
@@ -126,11 +128,11 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
     slug: ['', [Validators.required]],
     upToDateDuration: this.fb.group({
       num: [
-        CreateOrgComponent.initialDuration.num,
+        CreateOrgComponent.defaultOrgNumAndFreq.num,
         [Validators.required, Validators.min(1)],
       ],
       frequency: [
-        CreateOrgComponent.initialDuration.frequency,
+        CreateOrgComponent.defaultOrgNumAndFreq.frequency,
         [Validators.required],
       ],
     }),
@@ -194,10 +196,11 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
    */
   emitCreate(): void {
     const { name, slug, upToDateDuration } = this.createOrgForm.value;
-    const num = upToDateDuration?.num ?? CreateOrgComponent.initialDuration.num;
+    const num =
+      upToDateDuration?.num ?? CreateOrgComponent.defaultOrgNumAndFreq.num;
     const frequency =
       upToDateDuration?.frequency ??
-      CreateOrgComponent.initialDuration.frequency;
+      CreateOrgComponent.defaultOrgNumAndFreq.frequency;
 
     const createOrganizationDto: BaseCreateOrganizationDto = {
       name: name ?? '',

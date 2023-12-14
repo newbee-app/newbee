@@ -22,7 +22,7 @@ export class OrganizationService {
   /**
    * The base API URL for dealing with orgs.
    */
-  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`;
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.org}/${Keyword.Organization}`;
 
   constructor(private readonly http: HttpClient) {}
 

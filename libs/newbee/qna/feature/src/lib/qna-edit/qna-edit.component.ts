@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
-import {
-  qnaFeature as qnaModuleFeature,
-  selectQnaTeams,
-} from '@newbee/newbee/qna/data-access';
+import { qnaFeature as qnaModuleFeature } from '@newbee/newbee/qna/data-access';
 import {
   QnaActions,
   httpFeature,
   organizationFeature,
   qnaFeature,
+  selectOrgMemberUser,
 } from '@newbee/newbee/shared/data-access';
 import {
   BaseUpdateAnswerDto,
@@ -34,21 +32,14 @@ export class QnaEditComponent {
   qnaState$ = this.store.select(qnaFeature.selectQnaState);
 
   /**
-   * The org member associated with the user.
+   * The OrgMemberUser making the request.
    */
-  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
+  orgMemberUser$ = this.store.select(selectOrgMemberUser);
 
   /**
-   * The currently selected org.
+   * The org state.
    */
-  selectedOrganization$ = this.store.select(
-    organizationFeature.selectSelectedOrganization,
-  );
-
-  /**
-   * The teams that the user can move the qna to.
-   */
-  teams$ = this.store.select(selectQnaTeams);
+  orgState$ = this.store.select(organizationFeature.selectOrgState);
 
   /**
    * The entire qna module state.

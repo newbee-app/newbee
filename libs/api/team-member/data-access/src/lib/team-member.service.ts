@@ -20,8 +20,8 @@ import {
 import {
   OrgRoleEnum,
   TeamRoleEnum,
-  compareTeamRoles,
   forbiddenError,
+  generateLteTeamRoles,
   internalServerError,
   teamMemberNotFound,
   userAlreadyTeamMemberBadRequest,
@@ -63,7 +63,11 @@ export class TeamMemberService {
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
-    TeamMemberService.checkRequester(requesterOrgRole, requesterTeamRole, role);
+    TeamMemberService.checkRequesterTeamRole(
+      requesterOrgRole,
+      requesterTeamRole,
+      role,
+    );
 
     const teamMember = new TeamMemberEntity(orgMember, team, role);
     try {
@@ -147,7 +151,7 @@ export class TeamMemberService {
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
   ): Promise<TeamMemberEntity> {
-    TeamMemberService.checkRequester(
+    TeamMemberService.checkRequesterTeamRole(
       requesterOrgRole,
       requesterTeamRole,
       newRole,
@@ -197,23 +201,16 @@ export class TeamMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the operation isn't permissible.
    */
-  static checkRequester(
+  static checkRequesterTeamRole(
     requesterOrgRole: OrgRoleEnum,
     requesterTeamRole: TeamRoleEnum | null,
     subjectRole: TeamRoleEnum,
   ): void {
     if (
-      requesterOrgRole === OrgRoleEnum.Moderator ||
-      requesterOrgRole === OrgRoleEnum.Owner
+      generateLteTeamRoles(requesterOrgRole, requesterTeamRole).includes(
+        subjectRole,
+      )
     ) {
-      return;
-    }
-
-    if (!requesterTeamRole) {
-      throw new ForbiddenException(forbiddenError);
-    }
-
-    if (compareTeamRoles(requesterTeamRole, subjectRole) >= 0) {
       return;
     }
 
@@ -230,7 +227,7 @@ export class TeamMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the adequate permissions.
    */
-  async checkOrgMemberTeam(
+  async findAndCheckRequesterTeamRoles(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<void> {
@@ -238,7 +235,7 @@ export class TeamMemberService {
       orgMember,
       team,
     );
-    TeamMemberService.checkRequester(
+    TeamMemberService.checkRequesterTeamRole(
       orgMember.role,
       teamMember?.role ?? null,
       TeamRoleEnum.Member,

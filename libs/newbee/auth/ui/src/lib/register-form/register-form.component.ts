@@ -31,10 +31,8 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent {
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
+  readonly keyword = Keyword;
 
   /**
    * Whether to display the spinner on the register button.
@@ -74,10 +72,10 @@ export class RegisterFormComponent {
   ) {}
 
   /**
-   * The misc errors, will be an empty string if there aren't any.
+   * The HTTP client error associate dwith the key, will be an empty string if there aren't any.
    */
-  get miscError(): string {
-    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
+  httpClientErrorMsg(...keys: string[]): string {
+    return getHttpClientErrorMsg(this.httpClientError, keys.join('-'));
   }
 
   /**

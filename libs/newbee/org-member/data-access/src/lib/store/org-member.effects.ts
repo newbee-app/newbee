@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  catchHttpClientError,
   catchHttpScreenError,
+  catchToastError,
   organizationFeature,
   OrgMemberActions,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
@@ -62,6 +61,7 @@ export class OrgMemberEffects {
               map((orgMember) => {
                 return OrgMemberActions.editOrgMemberSuccess({ orgMember });
               }),
+              catchError(catchToastError),
             );
         },
       ),
@@ -86,12 +86,7 @@ export class OrgMemberEffects {
             map(() => {
               return OrgMemberActions.deleteOrgMemberSuccess();
             }),
-            catchError((err) =>
-              catchHttpClientError(
-                err,
-                () => `${Keyword.Member}-${Keyword.Delete}`,
-              ),
-            ),
+            catchError(catchToastError),
           );
       }),
     );

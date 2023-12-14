@@ -10,7 +10,7 @@
     (orgState$ | async)!.selectedOrganization?.organization ?? null
   "
   (selectedOrganizationChange)="selectOrganization($event)"
-  [orgMember]="(orgState$ | async)?.orgMember ?? null"
+  [orgMember]="(orgState$ | async)!.orgMember?.orgMember ?? null"
   [includeCenter]="includeCenter"
   (navigateToLink)="navigateToLink($event)"
   (logout)="logout()"

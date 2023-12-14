@@ -34,7 +34,7 @@ describe('OrgHomeComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            [Keyword.Search]: { ...initialSearchState, suggestions: [] },
+            [Keyword.Search]: initialSearchState,
           },
         }),
         provideRouter([{ path: '**', component: OrgHomeComponent }]),

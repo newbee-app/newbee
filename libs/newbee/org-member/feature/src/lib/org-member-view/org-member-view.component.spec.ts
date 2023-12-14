@@ -1,8 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { initialOrgMemberState as initialOrgMemberModuleState } from '@newbee/newbee/org-member/data-access';
 import { ViewOrgMemberComponent } from '@newbee/newbee/org-member/ui';
-import { OrgMemberActions } from '@newbee/newbee/shared/data-access';
+import {
+  OrgMemberActions,
+  initialOrgMemberState,
+  initialOrganizationState,
+} from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
@@ -34,10 +39,17 @@ describe('OrgMemberViewComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Member]: {
+              ...initialOrgMemberState,
               selectedOrgMember: testOrgMemberRelation1,
             },
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               orgMember: testOrgMemberRelation1,
+            },
+            [`${Keyword.Member}Module`]: {
+              ...initialOrgMemberModuleState,
+              pendingEdit: false,
+              pendingDelete: false,
             },
           },
         }),

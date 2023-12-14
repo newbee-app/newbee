@@ -7,13 +7,17 @@ import { AbstractControl } from '@angular/forms';
  * @returns The form control input's errors if they have any, an empty string if they don't.
  */
 export function inputErrorMessage(control: AbstractControl | null): string {
-  if (control?.hasError('required')) {
+  if (!control) {
+    return '';
+  }
+
+  if (control.hasError('required')) {
     return 'You must enter a value';
-  } else if (control?.hasError('email')) {
+  } else if (control.hasError('email')) {
     return 'Not a valid email';
-  } else if (control?.hasError('pattern')) {
+  } else if (control.hasError('pattern')) {
     return 'You must match the specified pattern';
-  } else if (control?.hasError('phoneNumber')) {
+  } else if (control.hasError('phoneNumber')) {
     const phoneNumberError = control.getError('phoneNumber');
     if (phoneNumberError.missingCountry) {
       return 'You must select a country';
@@ -56,7 +60,7 @@ export function inputIsValid(control: AbstractControl | null): boolean {
  *
  * @param control The control to check.
  *
- * @returns `true` if the input should display an error, `false` otherwise.
+ * @returns `true` if the input is dirty, touched, and invalid; `false` otherwise.
  */
 export function inputDisplayError(control: AbstractControl | null): boolean {
   if (!control) {

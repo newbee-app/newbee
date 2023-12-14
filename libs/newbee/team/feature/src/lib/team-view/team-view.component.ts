@@ -15,21 +15,14 @@ import { Store } from '@ngrx/store';
 })
 export class TeamViewComponent {
   /**
-   * The organization the team is in.
+   * The org state.
    */
-  selectedOrganization$ = this.store.select(
-    organizationFeature.selectSelectedOrganization,
-  );
+  orgState$ = this.store.select(organizationFeature.selectOrgState);
 
   /**
-   * The team to view.
+   * The team state.
    */
-  selectedTeam$ = this.store.select(teamFeature.selectSelectedTeam);
-
-  /**
-   * The user's role in the team, if they have any.
-   */
-  teamMember$ = this.store.select(teamFeature.selectTeamMember);
+  teamState$ = this.store.select(teamFeature.selectTeamState);
 
   constructor(
     private readonly store: Store,

@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { ExecutionContext } from '@nestjs/common';
 import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
@@ -20,11 +21,9 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  ConditionalRoleEnum,
   docKey,
   organizationKey,
   orgMemberKey,
-  PostRoleEnum,
   qnaKey,
   ROLE_KEY,
   subjectOrgMemberKey,
@@ -34,18 +33,25 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  ConditionalRoleEnum,
+  Keyword,
+  OrgRoleEnum,
+  PostRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {
-  let guard: RoleGuard;
   let reflector: Reflector;
+  let em: EntityManager;
   let organizationService: OrganizationService;
   let orgMemberService: OrgMemberService;
   let teamService: TeamService;
   let teamMemberService: TeamMemberService;
   let docService: DocService;
   let qnaService: QnaService;
+  let guard: RoleGuard;
   let context: ExecutionContext;
 
   const baseParams = {
@@ -57,11 +63,20 @@ describe('RoleGuard', () => {
   };
 
   beforeEach(() => {
-    qnaService = createMock<QnaService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
+    reflector = createMock<Reflector>({
+      get: jest.fn().mockReturnValue([]),
     });
-    docService = createMock<DocService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
+    em = createMock<EntityManager>();
+    organizationService = createMock<OrganizationService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
+    });
+    orgMemberService = createMock<OrgMemberService>({
+      findOneByUserAndOrg: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+      findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+    });
+    teamService = createMock<TeamService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+      findOneById: jest.fn().mockResolvedValue(testTeamEntity1),
     });
     teamMemberService = createMock<TeamMemberService>({
       findOneByOrgMemberAndTeam: jest
@@ -71,22 +86,16 @@ describe('RoleGuard', () => {
         .fn()
         .mockResolvedValue(testTeamMemberEntity1),
     });
-    teamService = createMock<TeamService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
-      findOneById: jest.fn().mockResolvedValue(testTeamEntity1),
+    docService = createMock<DocService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
     });
-    orgMemberService = createMock<OrgMemberService>({
-      findOneByUserAndOrg: jest.fn().mockResolvedValue(testOrgMemberEntity1),
-      findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+    qnaService = createMock<QnaService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
     });
-    organizationService = createMock<OrganizationService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
-    });
-    reflector = createMock<Reflector>({
-      get: jest.fn().mockReturnValue([]),
-    });
+
     guard = new RoleGuard(
       reflector,
+      em,
       organizationService,
       orgMemberService,
       teamService,
@@ -114,14 +123,15 @@ describe('RoleGuard', () => {
   });
 
   it('should be defined', () => {
-    expect(guard).toBeDefined();
     expect(reflector).toBeDefined();
+    expect(em).toBeDefined();
     expect(organizationService).toBeDefined();
     expect(orgMemberService).toBeDefined();
     expect(teamService).toBeDefined();
     expect(teamMemberService).toBeDefined();
     expect(docService).toBeDefined();
     expect(qnaService).toBeDefined();
+    expect(guard).toBeDefined();
     expect(context).toBeDefined();
   });
 
@@ -180,9 +190,6 @@ describe('RoleGuard', () => {
       expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
         testOrgMemberEntity1,
       );
-      expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
-        testOrgMemberEntity1,
-      );
 
       jest
         .spyOn(orgMemberService, 'findOneByUserAndOrg')
@@ -199,9 +206,6 @@ describe('RoleGuard', () => {
         .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeam]);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      const baseParams = {
-        [Keyword.Organization]: testOrganizationEntity1.slug,
-      };
       jest
         .spyOn(context.switchToHttp(), 'getRequest')
         .mockReturnValue({ ...baseRequest, params: baseParams });
@@ -406,7 +410,7 @@ describe('RoleGuard', () => {
       );
     });
 
-    it('should return true if roles contains post maintainer role', async () => {
+    it('should return true if roles contains post role', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
@@ -426,21 +430,6 @@ describe('RoleGuard', () => {
         .spyOn(qnaService, 'findOneBySlug')
         .mockResolvedValue({ ...testQnaEntity1, creator: null } as QnaEntity);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
-    });
-
-    it('should account for CreatorIfNoAnswerInQna', async () => {
-      jest
-        .spyOn(reflector, 'get')
-        .mockReturnValue([ConditionalRoleEnum.CreatorIfNoAnswerInQna]);
-      await expect(guard.canActivate(context)).resolves.toBeFalsy();
-
-      jest.spyOn(qnaService, 'findOneBySlug').mockResolvedValue({
-        ...testQnaEntity1,
-        answerHtml: null,
-        answerMarkdoc: null,
-        answerTxt: null,
-      } as QnaEntity);
-      await expect(guard.canActivate(context)).resolves.toBeTruthy();
     });
   });
 });

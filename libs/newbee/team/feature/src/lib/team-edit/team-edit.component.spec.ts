@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TeamActions } from '@newbee/newbee/shared/data-access';
+import {
+  TeamActions,
+  initialOrganizationState,
+  initialTeamState,
+} from '@newbee/newbee/shared/data-access';
+import { initialTeamState as initialTeamModuleState } from '@newbee/newbee/team/data-access';
 import { EditTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
@@ -26,12 +31,15 @@ describe('TeamEditComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
             },
             [Keyword.Team]: {
+              ...initialTeamState,
               selectedTeam: testTeamRelation1,
             },
+            [`${Keyword.Team}Module`]: initialTeamModuleState,
           },
         }),
       ],

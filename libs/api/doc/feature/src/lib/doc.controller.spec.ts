@@ -118,7 +118,6 @@ describe('DocController', () => {
       expect(service.update).toHaveBeenCalledWith(
         testDocEntity1,
         testBaseUpdateDocDto1,
-        testOrgMemberEntity1,
       );
       expect(entityService.createDocNoOrg).toHaveBeenCalledWith(
         testUpdatedDocEntity,

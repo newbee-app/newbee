@@ -7,10 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  userHasDeletePermissions,
-  userHasUpToDatePermissions,
-} from '@newbee/newbee/doc/util';
-import {
   AlertComponent,
   MarkdocEditorComponent,
   SearchableSelectComponent,
@@ -36,8 +32,11 @@ import {
   Keyword,
   Team,
   TeamMember,
+  apiRoles,
+  checkRoles,
+  userDisplayName,
   type DocNoOrg,
-  type OrgMember,
+  type OrgMemberUser,
   type Organization,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
@@ -62,6 +61,8 @@ import { isEqual } from 'lodash-es';
 export class EditDocComponent implements OnInit {
   readonly alertType = AlertType;
   readonly keyword = Keyword;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
 
   /**
    * The form containing the doc's title, team, and up-to-date duration.
@@ -69,25 +70,27 @@ export class EditDocComponent implements OnInit {
   editDocForm = this.fb.group({
     title: ['', [Validators.required]],
     team: [null as null | Team],
+    maintainer: [null as null | OrgMemberUser, [Validators.required]],
     upToDateDuration: this.fb.group({
       num: [null as null | number, [Validators.min(0)]],
       frequency: [null as null | Frequency],
     }),
   });
 
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editDocForm.controls.upToDateDuration.controls.num,
-  );
+  /**
+   * All of the input teams as select options.
+   */
+  teamOptions: SelectOption<Team | null>[] = [];
+
+  /**
+   * All of the input org member users as select options.
+   */
+  orgMemberOptions: SelectOption<OrgMemberUser | null>[] = [];
 
   /**
    * The doc markdoc as a string, for internal tracking.
    */
   docMarkdoc = '';
-
-  /**
-   * All of the input teams as select options.
-   */
-  teamOptions: SelectOption<Team | null>[] = [];
 
   /**
    * An HTTP error for the component, if one exists.
@@ -102,7 +105,7 @@ export class EditDocComponent implements OnInit {
   /**
    * The user's role in the doc's org.
    */
-  @Input() orgMember!: OrgMember;
+  @Input() orgMember!: OrgMemberUser;
 
   /**
    * The user's role in the doc's team, if any.
@@ -118,6 +121,11 @@ export class EditDocComponent implements OnInit {
    * The organization the doc is in.
    */
   @Input() organization!: Organization;
+
+  /**
+   * All org members belonging to the org.
+   */
+  @Input() orgMembers: OrgMemberUser[] = [];
 
   /**
    * Whether the edit action is pending.
@@ -149,49 +157,49 @@ export class EditDocComponent implements OnInit {
    */
   @Output() delete = new EventEmitter<void>();
 
+  readonly frequencyOptions = frequencySelectOptions(
+    this.editDocForm.controls.upToDateDuration.controls.num,
+  );
+
   constructor(private readonly fb: FormBuilder) {}
 
   /**
    * Initialize the values of docMarkdoc and teamOptions with the input doc.
    */
   ngOnInit(): void {
-    this.docMarkdoc = this.doc.doc.docMarkdoc;
     this.teamOptions = [
       new SelectOption(null, 'Entire org'),
       ...this.teams.map((team) => new SelectOption(team, team.name)),
     ];
-    this.editDocForm.setValue({
-      title: this.doc.doc.title,
-      team: this.doc.team,
-      upToDateDuration: this.docNumAndFreq ?? { num: null, frequency: null },
+    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
+      const name = userDisplayName(orgMember.user);
+      return new SelectOption(
+        orgMember,
+        `${name} (${orgMember.user.email})`,
+        name,
+      );
     });
-  }
 
-  /**
-   * Whether the user has up-to-date permissions.
-   */
-  get hasUpToDatePermissions(): boolean {
-    return userHasUpToDatePermissions(
-      this.doc,
-      this.orgMember,
-      this.teamMember,
+    this.docMarkdoc = this.doc.doc.docMarkdoc;
+    this.editDocForm.setValue(
+      {
+        title: this.doc.doc.title,
+        team: this.doc.team,
+        maintainer: this.doc.maintainer ?? this.orgMember,
+        upToDateDuration: this.docNumAndFreq ?? { num: null, frequency: null },
+      },
+      { emitEvent: false },
     );
-  }
-
-  /**
-   * Whether the user has delete permissions.
-   */
-  get hasDeletePermissions(): boolean {
-    return userHasDeletePermissions(this.doc, this.orgMember, this.teamMember);
   }
 
   /**
    * Whether the edit portion is distinct from the current doc.
    */
   get editDistinct(): boolean {
-    const { team, title } = this.editDocForm.value;
+    const { team, title, maintainer } = this.editDocForm.value;
     return (
       !isEqual(team, this.doc.team) ||
+      !isEqual(maintainer, this.doc.maintainer) ||
       title !== this.doc.doc.title ||
       this.docMarkdoc !== this.doc.doc.docMarkdoc ||
       numAndFreqIsDistinct(
@@ -221,10 +229,11 @@ export class EditDocComponent implements OnInit {
    * Emit a request to edit the doc.
    */
   emitEdit(): void {
-    const { title, team } = this.editDocForm.value;
+    const { title, team, maintainer } = this.editDocForm.value;
     this.edit.emit({
       title: title ?? '',
       team: team?.slug ?? null,
+      maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
         formNumAndFreqToDuration(
           this.editDocForm.controls.upToDateDuration.value,

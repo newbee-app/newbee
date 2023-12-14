@@ -23,19 +23,14 @@ export class QnaViewComponent {
   httpClientError$ = this.store.select(httpFeature.selectError);
 
   /**
-   * The currently selected qna.
+   * The qna state.
    */
-  selectedQna$ = this.store.select(qnaFeature.selectSelectedQna);
+  qnaState$ = this.store.select(qnaFeature.selectQnaState);
 
   /**
    * The current user's role in the qna's org, if any.
    */
   orgMember$ = this.store.select(organizationFeature.selectOrgMember);
-
-  /**
-   * The current user's role in the qna's team, if any.
-   */
-  teamMember$ = this.store.select(qnaFeature.selectTeamMember);
 
   /**
    * Whether the mark as up-to-date action is pending.

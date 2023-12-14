@@ -2,7 +2,7 @@ import {
   Keyword,
   Organization,
   OrgMemberNoUserOrg,
-  OrgTeams,
+  OrgTeamsMembers,
 } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash-es';
@@ -24,7 +24,7 @@ export interface OrganizationState {
   /**
    * The organization the user is looking at right now.
    */
-  selectedOrganization: OrgTeams | null;
+  selectedOrganization: OrgTeamsMembers | null;
 
   /**
    * The user's relation to the selected organization, if they have any.

@@ -5,7 +5,11 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { TeamActions } from '@newbee/newbee/shared/data-access';
+import {
+  initialOrganizationState,
+  TeamActions,
+} from '@newbee/newbee/shared/data-access';
+import { initialTeamState } from '@newbee/newbee/team/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
@@ -36,8 +40,10 @@ describe('TeamCreateComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
+            [`${Keyword.Team}Module`]: initialTeamState,
           },
         }),
       ],

@@ -4,14 +4,13 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { Frequency } from '@newbee/newbee/shared/util';
+import { durationToNumAndFreq, Frequency } from '@newbee/newbee/shared/util';
 import {
-  OrgRoleEnum,
   testOrganization1,
   testOrgMember1,
   testTeam1,
-  testTeamMember1,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { EditTeamComponent } from './edit-team.component';
 
 describe('EditTeamComponent', () => {
@@ -42,6 +41,20 @@ describe('EditTeamComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
+  });
+
+  describe('ngOnInit', () => {
+    it('should set form values', () => {
+      expect(component.editTeamForm.value).toEqual({
+        name: testTeam1.name,
+        upToDateDuration: testTeam1.upToDateDuration
+          ? durationToNumAndFreq(dayjs.duration(testTeam1.upToDateDuration))
+          : { num: null, frequency: null },
+      });
+      expect(component.editTeamSlugForm.value).toEqual({
+        slug: testTeam1.slug,
+      });
+    });
   });
 
   describe('outputs', () => {
@@ -82,6 +95,7 @@ describe('EditTeamComponent', () => {
         component.emitEdit();
         expect(component.edit.emit).toHaveBeenCalledTimes(2);
         expect(component.edit.emit).toHaveBeenCalledWith({
+          name: '',
           upToDateDuration: 'P1Y',
         });
       });
@@ -131,16 +145,6 @@ describe('EditTeamComponent', () => {
         expect(component.deleteSlugMatches).toBeFalsy();
         component.deleteTeamForm.setValue({ slug: testTeam1.slug });
         expect(component.deleteSlugMatches).toBeTruthy();
-      });
-    });
-
-    describe('canAccessAdvanced', () => {
-      it('should be true if org member is an admin or team member is an owner, false otherwise', () => {
-        expect(component.canAccessAdvanced).toBeTruthy();
-        component.orgMember = { ...testOrgMember1, role: OrgRoleEnum.Member };
-        expect(component.canAccessAdvanced).toBeFalsy();
-        component.teamMember = testTeamMember1;
-        expect(component.canAccessAdvanced).toBeTruthy();
       });
     });
   });

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { testDocRelation1 } from '@newbee/shared/util';
+import { testDocRelation1, testOrgMember1 } from '@newbee/shared/util';
 import { ViewDocComponent } from './view-doc.component';
 
 describe('ViewDocComponent', () => {
@@ -15,6 +15,7 @@ describe('ViewDocComponent', () => {
     component = fixture.componentInstance;
 
     component.doc = testDocRelation1;
+    component.orgMember = testOrgMember1;
 
     fixture.detectChanges();
   });

@@ -17,13 +17,13 @@ import {
   AlertType,
   Country,
   CountryService,
-  inputErrorMessage,
   PhoneInput,
   PhoneNumberInputDirectiveModule,
   PhoneNumberPipe,
   PhoneNumberPipeModule,
-  phoneNumberValidator,
   SelectOption,
+  inputErrorMessage,
+  phoneNumberValidator,
 } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../../alert/alert.component';
@@ -67,9 +67,7 @@ import { SearchableSelectComponent } from '../searchable-select/searchable-selec
 export class PhoneInputComponent
   implements OnDestroy, ControlValueAccessor, Validator
 {
-  /**
-   * Supported alert types.
-   */
+  private readonly unsubscribe$ = new Subject<void>();
   readonly alertType = AlertType;
 
   /**
@@ -81,7 +79,7 @@ export class PhoneInputComponent
       country: new FormControl<Country | null>(null),
       number: [''],
     },
-    { validators: [phoneNumberValidator()] }
+    { validators: [phoneNumberValidator()] },
   );
 
   /**
@@ -93,14 +91,9 @@ export class PhoneInputComponent
         new SelectOption(
           country,
           `${country.name} (+${country.dialingCode})`,
-          `${country.regionCode} (+${country.dialingCode})`
-        )
+          `${country.regionCode} (+${country.dialingCode})`,
+        ),
     );
-
-  /**
-   * A Subject to unsubscribe from the component's infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
 
   /**
    * Whether the control is dirty.
@@ -108,9 +101,23 @@ export class PhoneInputComponent
   private _dirty = false;
 
   /**
+   * Getter for `_dirty`.
+   */
+  get dirty(): boolean {
+    return this._dirty;
+  }
+
+  /**
    * Whether the control has been touched.
    */
   private _touched = false;
+
+  /**
+   * Getter for `_touched`.
+   */
+  get touched(): boolean {
+    return this._touched;
+  }
 
   /**
    * Called to trigger change detection.
@@ -131,7 +138,7 @@ export class PhoneInputComponent
   constructor(
     private readonly countryService: CountryService,
     private readonly fb: FormBuilder,
-    private readonly phoneNumberPipe: PhoneNumberPipe
+    private readonly phoneNumberPipe: PhoneNumberPipe,
   ) {
     this.phoneNumber.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (val) => {
@@ -207,7 +214,7 @@ export class PhoneInputComponent
    */
   validate(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _: AbstractControl<Partial<PhoneInput>>
+    _: AbstractControl<Partial<PhoneInput>>,
   ): ValidationErrors | null {
     return this.phoneNumber.errors;
   }
@@ -220,10 +227,10 @@ export class PhoneInputComponent
   }
 
   /**
-   * Whether the control is clean, defined as being not dirty and not touched.
+   * Whether the control is clean, defined as being not dirty or not touched.
    */
   get clean(): boolean {
-    return !this._dirty && !this._touched;
+    return !this._dirty || !this._touched;
   }
 
   /**
@@ -248,26 +255,24 @@ export class PhoneInputComponent
   }
 
   /**
-   * Whether the control has an error for the given input.
+   * Whether the control should display an error for the given input.
    *
    * @param inputName Whether to look for errors related to the `country` or `number` portion of the control.
    *
-   * @returns `true` if an error exists for the input, `false` if not.
+   * @returns `true` if an error exists and should be displayed for the input, `false` if not.
    */
-  hasError(inputName: 'country' | 'number'): boolean {
+  displayError(inputName: 'country' | 'number'): boolean {
     const phoneNumberError = this.phoneNumber.getError('phoneNumber');
     if (!phoneNumberError) {
       return false;
     }
 
     if (
-      inputName === 'country' &&
-      (phoneNumberError.missingCountry || phoneNumberError.invalidCountry)
-    ) {
-      return true;
-    } else if (
-      inputName === 'number' &&
-      (phoneNumberError.invalid || phoneNumberError.invalidNumber)
+      !this.clean &&
+      ((inputName === 'country' &&
+        (phoneNumberError.missingCountry || phoneNumberError.invalidCountry)) ||
+        (inputName === 'number' &&
+          (phoneNumberError.invalid || phoneNumberError.invalidNumber)))
     ) {
       return true;
     }
@@ -287,7 +292,7 @@ export class PhoneInputComponent
     const parsedNumber = this.phoneNumberPipe.parse(number, country);
     const formattedNumber = this.phoneNumberPipe.transform(
       parsedNumber,
-      country
+      country,
     );
     this.writeValue({ number: formattedNumber });
   }

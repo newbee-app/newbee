@@ -6,13 +6,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
   OrgMemberEntity,
   QnaEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
-import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import { internalServerError, qnaSlugNotFound } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -35,7 +35,7 @@ export class QnaService {
     private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
     private readonly teamService: TeamService,
-    private readonly teamMemberService: TeamMemberService,
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
@@ -128,29 +128,26 @@ export class QnaService {
    * @returns The updated `QnaEntity` instance.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async update(
-    qna: QnaEntity,
-    updateQnaDto: UpdateQnaDto,
-    orgMember: OrgMemberEntity,
-    newMaintainer = false,
-  ): Promise<QnaEntity> {
-    const { team: teamSlug, ...restUpdateQnaDto } = updateQnaDto;
+  async update(qna: QnaEntity, updateQnaDto: UpdateQnaDto): Promise<QnaEntity> {
+    const {
+      team: teamSlug,
+      maintainer: maintainerSlug,
+      ...restUpdateQnaDto
+    } = updateQnaDto;
     const { title, questionMarkdoc, answerMarkdoc, upToDateDuration } =
       restUpdateQnaDto;
 
-    const hasAnswer = !!(
-      qna.answerHtml ||
-      qna.answerMarkdoc ||
-      qna.answerTxt ||
-      answerMarkdoc
-    );
     const team =
       typeof teamSlug === 'string'
         ? await this.teamService.findOneBySlug(qna.organization, teamSlug)
         : teamSlug;
-    if (team && hasAnswer) {
-      await this.teamMemberService.checkOrgMemberTeam(orgMember, team);
-    }
+    const maintainer =
+      typeof maintainerSlug === 'string'
+        ? await this.orgMemberService.findOneByOrgAndSlug(
+            qna.organization,
+            maintainerSlug,
+          )
+        : maintainerSlug;
 
     const { txt: questionTxt, html: questionHtml } =
       renderMarkdoc(questionMarkdoc);
@@ -160,6 +157,11 @@ export class QnaService {
     const updateTime = meaningfulUpdates.some((update) => update !== undefined)
       ? new Date()
       : null;
+    const trueUpToDateDuration = EntityService.trueUpToDateDuration(
+      qna,
+      upToDateDuration,
+      team,
+    );
     const updatedQna = this.em.assign(qna, {
       ...restUpdateQnaDto,
       ...(questionTxt !== undefined && { questionTxt }),
@@ -167,18 +169,18 @@ export class QnaService {
       ...(answerTxt !== undefined && { answerTxt }),
       ...(answerHtml !== undefined && { answerHtml }),
       ...(team !== undefined && { team }),
-      ...(newMaintainer && { maintainer: orgMember }),
+      ...(maintainer !== undefined && { maintainer }),
       ...(updateTime && {
         updatedAt: updateTime,
         markedUpToDateAt: updateTime,
-        outOfDateAt: dayjs(updateTime)
-          .add(
-            upToDateDuration
-              ? dayjs.duration(upToDateDuration)
-              : await qna.trueUpToDateDuration(),
-          )
-          .toDate(),
+        outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
       }),
+      ...(!updateTime &&
+        (upToDateDuration !== undefined || team !== undefined) && {
+          outOfDateAt: dayjs(qna.markedUpToDateAt)
+            .add(trueUpToDateDuration)
+            .toDate(),
+        }),
     });
 
     try {
@@ -214,7 +216,7 @@ export class QnaService {
     const updatedQna = this.em.assign(qna, {
       markedUpToDateAt: now,
       outOfDateAt: dayjs(now)
-        .add(await qna.trueUpToDateDuration())
+        .add(EntityService.trueUpToDateDuration(qna, undefined, undefined))
         .toDate(),
     });
 

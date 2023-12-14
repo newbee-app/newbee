@@ -2,7 +2,8 @@ import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   testDocRelation1,
-  testOrgMember1,
+  testOrgMemberUser1,
+  testOrgMemberUser2,
   testOrganization1,
   testTeam1,
   testTeamMember1,
@@ -27,10 +28,11 @@ export default {
   args: {
     httpClientError: null,
     doc: testDocRelation1,
-    orgMember: testOrgMember1,
+    orgMember: testOrgMemberUser1,
     teamMember: testTeamMember1,
     teams: [testTeam1],
     organization: testOrganization1,
+    orgMembers: [testOrgMemberUser1, testOrgMemberUser2],
     editDocPending: false,
     upToDatePending: false,
     deletePending: false,
@@ -47,7 +49,7 @@ type Story = StoryObj<EditDocComponent>;
 export const Primary: Story = {};
 
 export const Pending: Story = {
-  args: { editDocPending: true, upToDatePending: true, deletePending: true },
+  args: { editPending: true, upToDatePending: true, deletePending: true },
 };
 
 export const WithErrors: Story = {
@@ -56,9 +58,10 @@ export const WithErrors: Story = {
       status: 400,
       messages: {
         [Keyword.Team]: 'Team error',
+        maintainer: 'Maintainer error',
         num: 'Num error',
         frequency: 'Frequency error',
-        duration: 'Duration error',
+        upToDateDuration: 'Up-to-date duration error',
         title: 'Title error',
         [Keyword.Doc]: 'Doc error',
         [Keyword.Misc]: 'Misc error',

@@ -55,19 +55,8 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './create-team.component.html',
 })
 export class CreateTeamComponent implements OnChanges, OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
-
-  /**
-   * NewBee keywords.
-   */
   readonly keyword = Keyword;
 
   /**
@@ -197,16 +186,14 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
    */
   emitCreate(): void {
     const { name, slug } = this.createTeamForm.value;
-
-    const createTeamDto: BaseCreateTeamDto = {
-      name: name as string,
-      slug: slug as string,
+    this.create.emit({
+      name: name ?? '',
+      slug: slug ?? '',
       upToDateDuration:
         formNumAndFreqToDuration(
           this.createTeamForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
-    };
-    this.create.emit(createTeamDto);
+    });
   }
 
   /**

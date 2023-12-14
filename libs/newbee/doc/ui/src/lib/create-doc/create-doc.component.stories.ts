@@ -49,6 +49,7 @@ export const Pending: Story = {
 export const TeamWithDuration: Story = {
   args: {
     teams: [testTeam2],
+    teamSlugParam: testTeam2.slug,
   },
 };
 
@@ -57,12 +58,12 @@ export const WithErrors: Story = {
     httpClientError: {
       status: 400,
       messages: {
+        title: 'Title error',
+        upToDateDuration: 'Up-to-date duration error',
+        [Keyword.Doc]: 'Doc error',
         [Keyword.Team]: 'Team error',
         num: 'Num error',
         frequency: 'Frequency error',
-        duration: 'Duration error',
-        title: 'Title error',
-        [Keyword.Doc]: 'Doc error',
         [Keyword.Misc]: 'Misc error',
       },
     },

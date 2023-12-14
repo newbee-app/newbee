@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  OrgRoleEnum,
   testOrgMember1,
-  testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
   testUser1,
@@ -31,7 +29,7 @@ describe('AuthenticatedNavbarComponent', () => {
     component.user = testUser1;
     component.organizations = [testOrganization1, testOrganization2];
     component.selectedOrganization = testOrganization1;
-    component.orgMember = testOrgMemberRelation1;
+    component.orgMember = testOrgMember1;
 
     jest.spyOn(component.selectedOrganizationChange, 'emit');
     jest.spyOn(component.navigateToLink, 'emit');
@@ -43,24 +41,6 @@ describe('AuthenticatedNavbarComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
-  });
-
-  describe('isAdmin', () => {
-    it('should be true if org member is moderator or higher', () => {
-      expect(component.isAdmin).toBeTruthy();
-
-      component.orgMember = {
-        ...testOrgMemberRelation1,
-        orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
-      };
-      expect(component.isAdmin).toBeTruthy();
-
-      component.orgMember = {
-        ...testOrgMemberRelation1,
-        orgMember: { ...testOrgMember1, role: OrgRoleEnum.Member },
-      };
-      expect(component.isAdmin).toBeFalsy();
-    });
   });
 
   describe('selectOrganization', () => {

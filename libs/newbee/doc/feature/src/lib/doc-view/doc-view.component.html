@@ -1,7 +1,7 @@
 <newbee-view-doc
   [httpClientError]="httpClientError$ | async"
   [doc]="(docState$ | async)!.selectedDoc!"
-  [orgMember]="(orgMember$ | async)?.orgMember ?? null"
+  [orgMember]="(orgMember$ | async)!.orgMember"
   [teamMember]="(docState$ | async)!.teamMember"
   [upToDatePending]="(pendingUpToDate$ | async)!"
   (orgNavigate)="onOrgNavigate($event)"

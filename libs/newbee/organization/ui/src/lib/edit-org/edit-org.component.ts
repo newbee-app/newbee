@@ -25,6 +25,7 @@ import {
   NumAndFreq,
   SlugInputDirectiveModule,
   durationToNumAndFreq,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -34,17 +35,14 @@ import {
 import {
   BaseUpdateOrganizationDto,
   Keyword,
-  OrgMemberNoUserOrg,
-  OrgRoleEnum,
+  apiRoles,
+  checkRoles,
+  defaultOrgDuration,
+  type OrgMember,
   type Organization,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
-
-/**
- * A helper type detailing of the possible input names in the edit org component.
- */
-type PossbileInputNames = 'name' | 'num' | 'frequency' | 'slug';
 
 /**
  * The dumb UI for editing an existing org.
@@ -63,20 +61,11 @@ type PossbileInputNames = 'name' | 'num' | 'frequency' | 'slug';
   templateUrl: './edit-org.component.html',
 })
 export class EditOrgComponent implements OnInit, OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * All NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
 
   /**
    * Information about the org.
@@ -86,7 +75,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * Information about the user's relation to it.
    */
-  @Input() orgMember!: OrgMemberNoUserOrg | null;
+  @Input() orgMember!: OrgMember;
 
   /**
    * Whether the current value for the slug is taken.
@@ -203,7 +192,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   get editDistinct(): boolean {
     const { name } = this.editOrgForm.value;
     return (
-      name !== this.organization.name ||
+      (name && name !== this.organization.name) ||
       numAndFreqIsDistinct(
         this.orgNumAndFreq,
         this.editOrgForm.controls.upToDateDuration.value,
@@ -216,7 +205,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   get editSlugDistinct(): boolean {
     const { slug } = this.editOrgSlugForm.value;
-    return slug !== this.organization.slug;
+    return !!(slug && slug !== this.organization.slug);
   }
 
   /**
@@ -225,13 +214,6 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   get deleteSlugMatches(): boolean {
     const { slug } = this.deleteOrgForm.value;
     return slug === this.organization.slug;
-  }
-
-  /**
-   * Whether the org member is the owner of the organization.
-   */
-  get isOwner(): boolean {
-    return this.orgMember?.orgMember.role === OrgRoleEnum.Owner;
   }
 
   /**
@@ -264,15 +246,14 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    const { name, upToDateDuration } = this.editOrgForm.value;
+    const { name } = this.editOrgForm.value;
     this.edit.emit({
-      ...(name && { name }),
-      ...(upToDateDuration?.num &&
-        upToDateDuration.frequency && {
-          upToDateDuration: dayjs
-            .duration(upToDateDuration.num, upToDateDuration.frequency)
-            .toISOString(),
-        }),
+      name: name ?? '',
+      upToDateDuration: (
+        formNumAndFreqToDuration(
+          this.editOrgForm.controls.upToDateDuration.value,
+        ) ?? defaultOrgDuration
+      ).toISOString(),
     });
   }
 
@@ -310,11 +291,11 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  inputDisplayError(
-    inputGroup: FormGroup,
-    inputName: PossbileInputNames,
-  ): boolean {
-    return inputDisplayError(inputGroup.get(inputName));
+  inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
+    return (
+      inputDisplayError(inputGroup.get(inputName)) ||
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
   }
 
   /**
@@ -325,10 +306,10 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(
-    inputGroup: FormGroup,
-    inputName: PossbileInputNames,
-  ): string {
-    return inputErrorMessage(inputGroup.get(inputName));
+  inputErrorMessage(inputGroup: FormGroup, inputName: string): string {
+    return (
+      inputErrorMessage(inputGroup.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
   }
 }

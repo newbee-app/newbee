@@ -6,13 +6,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocEntity,
   EntityService,
   OrgMemberEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
-import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -35,7 +35,7 @@ export class DocService {
     private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
     private readonly teamService: TeamService,
-    private readonly teamMemberService: TeamMemberService,
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
@@ -63,9 +63,6 @@ export class DocService {
     const team = teamSlug
       ? await this.teamService.findOneBySlug(creator.organization, teamSlug)
       : null;
-    if (team) {
-      await this.teamMemberService.checkOrgMemberTeam(creator, team);
-    }
 
     const id = v4();
     const doc = new DocEntity(
@@ -135,42 +132,54 @@ export class DocService {
    * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the permissions to change the doc's teams.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async update(
-    doc: DocEntity,
-    updateDocDto: UpdateDocDto,
-    orgMember: OrgMemberEntity,
-  ): Promise<DocEntity> {
-    const { team: teamSlug, ...restUpdateDocDto } = updateDocDto;
+  async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
+    const {
+      team: teamSlug,
+      maintainer: maintainerSlug,
+      ...restUpdateDocDto
+    } = updateDocDto;
     const { title, docMarkdoc, upToDateDuration } = restUpdateDocDto;
 
     const team =
       typeof teamSlug === 'string'
         ? await this.teamService.findOneBySlug(doc.organization, teamSlug)
         : teamSlug;
-    if (team) {
-      await this.teamMemberService.checkOrgMemberTeam(orgMember, team);
-    }
+    const maintainer =
+      typeof maintainerSlug === 'string'
+        ? await this.orgMemberService.findOneByOrgAndSlug(
+            doc.organization,
+            maintainerSlug,
+          )
+        : maintainerSlug;
 
     const { txt: docTxt, html: docHtml } = renderMarkdoc(docMarkdoc);
 
-    const updateTime =
-      title !== undefined || docMarkdoc !== undefined ? new Date() : null;
+    const meaningfulUpdates = [title, docMarkdoc];
+    const updateTime = meaningfulUpdates.some((update) => update !== undefined)
+      ? new Date()
+      : null;
+    const trueUpToDateDuration = EntityService.trueUpToDateDuration(
+      doc,
+      upToDateDuration,
+      team,
+    );
     const updatedDoc = this.em.assign(doc, {
       ...restUpdateDocDto,
       ...(docTxt !== undefined && { docTxt }),
       ...(docHtml !== undefined && { docHtml }),
       ...(team !== undefined && { team }),
+      ...(maintainer !== undefined && { maintainer }),
       ...(updateTime && {
         updatedAt: updateTime,
         markedUpToDateAt: updateTime,
-        outOfDateAt: dayjs(updateTime)
-          .add(
-            upToDateDuration
-              ? dayjs.duration(upToDateDuration)
-              : await doc.trueUpToDateDuration(),
-          )
-          .toDate(),
+        outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
       }),
+      ...(!updateTime &&
+        (upToDateDuration !== undefined || team !== undefined) && {
+          outOfDateAt: dayjs(doc.markedUpToDateAt)
+            .add(trueUpToDateDuration)
+            .toDate(),
+        }),
     });
 
     try {
@@ -206,7 +215,7 @@ export class DocService {
     const updatedDoc = this.em.assign(doc, {
       markedUpToDateAt: now,
       outOfDateAt: dayjs(now)
-        .add(await doc.trueUpToDateDuration())
+        .add(EntityService.trueUpToDateDuration(doc, undefined, undefined))
         .toDate(),
     });
 

@@ -3,9 +3,10 @@ import { SelectOption, durationToNumAndFreq } from '@newbee/newbee/shared/util';
 import {
   testDoc1,
   testDocRelation1,
-  testOrgMember1,
+  testOrgMemberUser1,
   testOrganization1,
   testTeam1,
+  userDisplayName,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { EditDocComponent } from './edit-doc.component';
@@ -23,9 +24,10 @@ describe('EditDocComponent', () => {
     component = fixture.componentInstance;
 
     component.doc = testDocRelation1;
-    component.orgMember = testOrgMember1;
-    component.organization = testOrganization1;
+    component.orgMember = testOrgMemberUser1;
     component.teams = [testTeam1];
+    component.organization = testOrganization1;
+    component.orgMembers = [testOrgMemberUser1];
 
     jest.spyOn(component.edit, 'emit');
 
@@ -44,9 +46,19 @@ describe('EditDocComponent', () => {
         new SelectOption(null, 'Entire org'),
         new SelectOption(testTeam1, testTeam1.name),
       ]);
+      expect(component.orgMemberOptions).toEqual([
+        new SelectOption(
+          testOrgMemberUser1,
+          `${userDisplayName(testOrgMemberUser1.user)} (${
+            testOrgMemberUser1.user.email
+          })`,
+          userDisplayName(testOrgMemberUser1.user),
+        ),
+      ]);
       expect(component.editDocForm.value).toEqual({
         title: testDoc1.title,
         team: testDocRelation1.team,
+        maintainer: testDocRelation1.maintainer ?? testOrgMemberUser1,
         upToDateDuration: testDoc1.upToDateDuration
           ? durationToNumAndFreq(dayjs.duration(testDoc1.upToDateDuration))
           : { num: null, frequency: null },
@@ -61,6 +73,7 @@ describe('EditDocComponent', () => {
       expect(component.edit.emit).toHaveBeenCalledWith({
         title: testDoc1.title,
         team: testDocRelation1.team?.slug ?? null,
+        maintainer: testOrgMemberUser1.orgMember.slug,
         upToDateDuration: testDoc1.upToDateDuration,
         docMarkdoc: testDoc1.docMarkdoc,
       });

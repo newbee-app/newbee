@@ -41,7 +41,7 @@ describe('OrganizationService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(OrganizationService.baseApiUrl).toEqual(
-        `/${Keyword.Api}/v${apiVersion.organization}/${Keyword.Organization}`,
+        `/${Keyword.Api}/v${apiVersion.org}/${Keyword.Organization}`,
       );
     });
   });

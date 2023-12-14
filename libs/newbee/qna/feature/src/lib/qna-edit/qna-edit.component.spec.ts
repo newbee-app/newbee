@@ -3,6 +3,7 @@ import { initialQnaState as initialQnaModuleState } from '@newbee/newbee/qna/dat
 import { EditQnaComponent } from '@newbee/newbee/qna/ui';
 import {
   QnaActions,
+  initialAuthState,
   initialHttpState,
   initialOrganizationState,
   initialQnaState,
@@ -14,7 +15,7 @@ import {
   testOrgMemberRelation1,
   testOrganizationRelation1,
   testQnaRelation1,
-  testTeamMember1,
+  testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaEditComponent } from './qna-edit.component';
@@ -34,13 +35,16 @@ describe('QnaEditComponent', () => {
             [Keyword.Qna]: {
               ...initialQnaState,
               selectedQna: testQnaRelation1,
-              teamMember: testTeamMember1,
             },
             [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
+            },
+            [Keyword.Auth]: {
+              ...initialAuthState,
+              user: testUser1,
             },
             [`${Keyword.Qna}Module`]: initialQnaModuleState,
           },

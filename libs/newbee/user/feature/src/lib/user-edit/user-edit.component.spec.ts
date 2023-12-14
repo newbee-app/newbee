@@ -3,9 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   AuthenticatorActions,
   UserActions,
+  initialAuthState,
 } from '@newbee/newbee/shared/data-access';
+import { initialUserState } from '@newbee/newbee/user/data-access';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
 import {
+  Keyword,
   testAuthenticator1,
   testBaseUpdateUserDto1,
   testUser1,
@@ -32,8 +35,9 @@ describe('UserEditComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            auth: { user: testUser1 },
-            userModule: {
+            [Keyword.Auth]: { ...initialAuthState, user: testUser1 },
+            [`${Keyword.User}Module`]: {
+              ...initialUserState,
               authenticators: [testAuthenticator1],
               pendingEditAuthenticator: new Map([
                 [testAuthenticator1.id, false],

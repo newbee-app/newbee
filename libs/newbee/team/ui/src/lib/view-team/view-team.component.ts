@@ -9,8 +9,9 @@ import {
 import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  TeamRoleEnum,
-  compareTeamRoles,
+  apiRoles,
+  checkRoles,
+  type OrgMember,
   type Organization,
   type TeamMember,
   type TeamNoOrg,
@@ -33,25 +34,28 @@ import dayjs from 'dayjs';
   templateUrl: './view-team.component.html',
 })
 export class ViewTeamComponent {
-  /**
-   * All NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * All NewBee short URLs.
-   */
   readonly shortUrl = ShortUrl;
+  readonly searchResultFormat = SearchResultFormat;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
 
   /**
-   * All search result display formats.
+   * The roles needed to edit the team or invite new members.
    */
-  readonly searchResultFormat = SearchResultFormat;
+  readonly editAndInviteRoles = new Set(
+    apiRoles.team.update.concat(apiRoles['team-member'].create),
+  );
 
   /**
    * The organization the team is in.
    */
   @Input() organization!: Organization;
+
+  /**
+   * The org member viewing the team.
+   */
+  @Input() orgMember!: OrgMember;
 
   /**
    * Information about the team we're looking at.
@@ -109,15 +113,5 @@ export class ViewTeamComponent {
     return `${this.team.docs.total} ${
       this.team.docs.total === 1 ? 'doc' : 'docs'
     }`;
-  }
-
-  /**
-   * Whether the current user has at least moderator level team permissions.
-   */
-  get isAdmin(): boolean {
-    return !!(
-      this.teamMember &&
-      compareTeamRoles(TeamRoleEnum.Moderator, this.teamMember.role) <= 0
-    );
   }
 }

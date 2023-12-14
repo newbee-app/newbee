@@ -4,6 +4,7 @@ import {
   testOrgMember1,
   testOrgMemberRelation1,
   testTeamMember1,
+  testUser2,
 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { ViewDocComponent } from './view-doc.component';
@@ -59,6 +60,7 @@ export const CreatorNotMaintainer: Story = {
       creator: {
         ...testOrgMemberRelation1,
         orgMember: { role: OrgRoleEnum.Moderator, slug: 'creator' },
+        user: testUser2,
       },
     },
   },

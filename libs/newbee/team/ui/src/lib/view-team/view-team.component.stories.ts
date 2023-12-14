@@ -1,5 +1,7 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
+  OrgRoleEnum,
+  TeamRoleEnum,
   testDocQueryResult1,
   testOrganization1,
   testQnaQueryResult1,
@@ -60,7 +62,19 @@ type Story = StoryObj<ViewTeamComponent>;
 
 export const Primary: Story = {};
 
-export const NoTeamMember: Story = { args: { teamMember: null } };
+export const OrgMember: Story = {
+  args: {
+    orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
+    teamMember: null,
+  },
+};
+
+export const TeamMember: Story = {
+  args: {
+    orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
+    teamMember: { role: TeamRoleEnum.Member },
+  },
+};
 
 export const LongTeamName: Story = {
   args: {

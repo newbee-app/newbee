@@ -38,6 +38,12 @@
             newbeeDigitOnly
             [min]="1"
             class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                docForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
           />
 
           <newbee-alert
@@ -65,8 +71,8 @@
 
       <newbee-alert
         [type]="alertType.Error"
-        [show]="!!httpClientErrorMsg('duration')"
-        [text]="httpClientErrorMsg('duration')"
+        [show]="inputDisplayError(docForm, 'upToDateDuration')"
+        [text]="inputErrorMessage(docForm, 'upToDateDuration')"
       ></newbee-alert>
     </div>
 

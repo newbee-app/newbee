@@ -3,6 +3,7 @@ import { initialDocState as initialDocModuleState } from '@newbee/newbee/doc/dat
 import { EditDocComponent } from '@newbee/newbee/doc/ui';
 import {
   DocActions,
+  initialAuthState,
   initialDocState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
@@ -12,6 +13,7 @@ import {
   testDocRelation1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
+  testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DocEditComponent } from './doc-edit.component';
@@ -36,6 +38,10 @@ describe('DocEditComponent', () => {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
+            },
+            [Keyword.Auth]: {
+              ...initialAuthState,
+              user: testUser1,
             },
             [`${Keyword.Doc}Module`]: initialDocModuleState,
           },

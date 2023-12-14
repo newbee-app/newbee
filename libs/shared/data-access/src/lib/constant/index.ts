@@ -1,1 +1,1 @@
-export * from './api-version';
+export * from './api-version.constant';

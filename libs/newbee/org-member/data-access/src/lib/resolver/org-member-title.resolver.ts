@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { ShortUrl, prependParentTitle } from '@newbee/newbee/shared/util';
+import { userDisplayName } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, skipWhile, take } from 'rxjs';
 import { selectOrgMemberAndScreenError } from '../store';
@@ -27,9 +28,7 @@ export const orgMemberTitleResolver: ResolveFn<string> = (
     map(({ selectedOrgMember }) => {
       return prependParentTitle(
         route,
-        selectedOrgMember
-          ? selectedOrgMember.user.displayName ?? selectedOrgMember.user.name
-          : 'Error',
+        selectedOrgMember ? userDisplayName(selectedOrgMember.user) : 'Error',
       );
     }),
   );

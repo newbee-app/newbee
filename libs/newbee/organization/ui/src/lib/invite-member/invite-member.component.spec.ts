@@ -1,6 +1,6 @@
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OrgRoleEnum, testUser1 } from '@newbee/shared/util';
+import { OrgRoleEnum, testOrgMember1, testUser1 } from '@newbee/shared/util';
 import { InviteMemberComponent } from './invite-member.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -21,6 +21,8 @@ describe('InviteMemberComponent', () => {
 
     fixture = TestBed.createComponent(InviteMemberComponent);
     component = fixture.componentInstance;
+
+    component.orgMember = testOrgMember1;
 
     jest.spyOn(component.invite, 'emit');
 

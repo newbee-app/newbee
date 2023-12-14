@@ -45,7 +45,7 @@ export class DocEffects {
                   case titleIsNotEmpty:
                     return 'title';
                   case upToDateDurationMatches:
-                    return 'duration';
+                    return 'upToDateDuration';
                   case docIsNotEmpty:
                     return Keyword.Doc;
                   case teamIsNotEmpty:

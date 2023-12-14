@@ -1,6 +1,6 @@
 <newbee-org-searchbar
-  [searchPending]="(searchPending$ | async)!"
-  [suggestions]="(suggestions$ | async)!"
+  [searchPending]="(searchState$ | async)!.pendingSearch"
+  [suggestions]="(searchState$ | async)!.suggestions"
   (search)="onSearch($event)"
   (searchbar)="onSearchbar($event)"
 ></newbee-org-searchbar>

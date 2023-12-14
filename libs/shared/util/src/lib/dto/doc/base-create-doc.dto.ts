@@ -5,7 +5,7 @@ import { Doc } from '../../interface';
  * Suitable for use in POST requests.
  */
 export class BaseCreateDocDto
-  implements Pick<Doc, 'title' | 'docMarkdoc' | 'upToDateDuration'>
+  implements Pick<Doc, 'title' | 'upToDateDuration' | 'docMarkdoc'>
 {
   /**
    * @inheritdoc

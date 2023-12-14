@@ -13,7 +13,6 @@ import {
   testOrgMemberRelation1,
   testQna1,
   testQnaRelation1,
-  testTeamMember1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaViewComponent } from './qna-view.component';
@@ -33,7 +32,6 @@ describe('QnaViewComponent', () => {
             [Keyword.Qna]: {
               ...initialQnaState,
               selectedQna: testQnaRelation1,
-              teamMember: testTeamMember1,
             },
             [Keyword.Organization]: {
               ...initialOrganizationState,

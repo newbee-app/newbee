@@ -48,14 +48,7 @@ import parsePhoneNumber from 'libphonenumber-js';
   templateUrl: './edit-user.component.html',
 })
 export class EditUserComponent implements OnInit, OnChanges {
-  /**
-   * All NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
 
   /**
@@ -184,7 +177,7 @@ export class EditUserComponent implements OnInit, OnChanges {
     const parsedPhoneNumber = this.user.phoneNumber
       ? parsePhoneNumber(this.user.phoneNumber)
       : undefined;
-    const phoneNumber: PhoneInput | null = parsedPhoneNumber
+    const phoneNumber = parsedPhoneNumber
       ? {
           country: this.countryService.getCountry(
             parsedPhoneNumber.country as string,
@@ -229,7 +222,7 @@ export class EditUserComponent implements OnInit, OnChanges {
       ? phoneInputToString(phoneNumber)
       : null;
     this.edit.emit({
-      ...(name && { name }),
+      name: name ?? '',
       displayName: displayName || null,
       phoneNumber: phoneNumberString,
     });
@@ -293,18 +286,14 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * Whether to display a form input as having an error.
    *
-   * @param formName The name of the form group to look at.
+   * @param inputGroup The form group to look at.
    * @param inputName The name of the form group's input to look at.
    *
    * @returns `true` if the input should display an error, `false` otherwise.
    */
-  inputDisplayError(
-    formName: 'editUser' | 'deleteUser',
-    inputName: string,
-  ): boolean {
-    const form = this.getFormGroup(formName);
+  inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
     return (
-      inputDisplayError(form.get(inputName)) ||
+      inputDisplayError(inputGroup.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }
@@ -312,35 +301,15 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The input error message for the given form.
    *
-   * @param formName The name of the form group to look at.
+   * @param inputGroup The form group to look at.
    * @param inputName The name of the form group's input to look at.
    *
    * @returns The input's error message if it has one, an empty string otherwise.
    */
-  inputErrorMessage(
-    formName: 'editUser' | 'deleteUser',
-    inputName: string,
-  ): string {
-    const form = this.getFormGroup(formName);
+  inputErrorMessage(inputGroup: FormGroup, inputName: string): string {
     return (
-      inputErrorMessage(form.get(inputName)) ||
+      inputErrorMessage(inputGroup.get(inputName)) ||
       getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  }
-
-  /**
-   * Get the form group associated with the given name.
-   *
-   * @param formName The name of the form group to get.
-   *
-   * @returns The form group associated with the given name.
-   */
-  private getFormGroup(formName: 'editUser' | 'deleteUser'): FormGroup {
-    switch (formName) {
-      case 'editUser':
-        return this.editUserForm;
-      case 'deleteUser':
-        return this.deleteUserForm;
-    }
   }
 }

@@ -18,7 +18,7 @@
             id="email-input"
             formControlName="email"
             placeholder="johndoe@example.com"
-            class="input border-neutral w-full"
+            class="input input-bordered w-full"
             [ngClass]="{ 'input-error': inputDisplayError('email') }"
           />
 
@@ -54,13 +54,13 @@
 
     <div class="w-full">
       <newbee-alert
-        [show]="!!invitedUser"
         [type]="alertType.Success"
+        [show]="!!invitedUser"
         [text]="inviteSuccessText"
       ></newbee-alert>
       <newbee-alert
-        [show]="!!miscError"
         [type]="alertType.Error"
+        [show]="!!miscError"
         [text]="miscError"
       ></newbee-alert>
     </div>

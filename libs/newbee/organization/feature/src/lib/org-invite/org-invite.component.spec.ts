@@ -1,8 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { initialOrganizationState as initialOrganizationModuleState } from '@newbee/newbee/organization/data-access';
 import { InviteMemberComponent } from '@newbee/newbee/organization/ui';
-import { OrganizationActions } from '@newbee/newbee/shared/data-access';
-import { testBaseCreateOrgMemberInviteDto1 } from '@newbee/shared/util';
+import {
+  OrganizationActions,
+  initialOrganizationState,
+} from '@newbee/newbee/shared/data-access';
+import {
+  Keyword,
+  testBaseCreateOrgMemberInviteDto1,
+  testOrgMemberRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteComponent } from './org-invite.component';
 
@@ -22,7 +30,17 @@ describe('OrgInviteComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CommonModule, InviteMemberComponent],
       declarations: [OrgInviteComponent],
-      providers: [provideMockStore({})],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Organization]: {
+              ...initialOrganizationState,
+              orgMember: testOrgMemberRelation1,
+            },
+            [`${Keyword.Organization}Module`]: initialOrganizationModuleState,
+          },
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OrgInviteComponent);

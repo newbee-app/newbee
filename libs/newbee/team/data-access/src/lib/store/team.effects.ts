@@ -65,7 +65,7 @@ export class TeamEffects {
                 case teamSlugTakenBadRequest:
                   return 'slug';
                 case upToDateDurationMatches:
-                  return Keyword.Duration;
+                  return 'upToDateDuration';
                 default:
                   return Keyword.Misc;
               }
@@ -129,10 +129,18 @@ export class TeamEffects {
                 }
               }),
               catchError((err) =>
-                catchHttpClientError(
-                  err,
-                  () => `${Keyword.Team}-${Keyword.Edit}`,
-                ),
+                catchHttpClientError(err, (message) => {
+                  switch (message) {
+                    case nameIsNotEmpty:
+                      return 'name';
+                    case upToDateDurationMatches:
+                      return 'upToDateDuration';
+                    default:
+                      return type === TeamActions.editTeam.type
+                        ? `${Keyword.Team}-${Keyword.Edit}`
+                        : `${Keyword.Team}-${Keyword.Slug}-${Keyword.Edit}`;
+                  }
+                }),
               ),
             );
         },

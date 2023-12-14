@@ -28,11 +28,8 @@
       [innerHTML]="qna.qna.answerSnippet"
     ></p>
 
-    <ng-template #noAnswer
-      ><p>
-        This question does not have an answer. Would you like to
-        <a (click)="editQna()" class="link">provide one?</a>
-      </p></ng-template
-    >
+    <ng-template #noAnswer>
+      <p>This question does not have an answer.</p>
+    </ng-template>
   </div>
 </div>

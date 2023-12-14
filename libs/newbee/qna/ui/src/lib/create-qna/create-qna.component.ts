@@ -103,7 +103,7 @@ export class CreateQnaComponent implements OnInit {
       return;
     }
 
-    this.qnaForm.controls.team.setValue(team);
+    this.qnaForm.controls.team.setValue(team, { emitEvent: false });
   }
 
   /**

@@ -1,9 +1,5 @@
 <newbee-toast
   *ngFor="let toast of toasts$ | async"
-  [header]="toast.header"
-  [text]="toast.text"
-  [type]="toast.type"
-  [position]="toast.position"
-  [duration]="toast.duration"
+  [toast]="toast"
   (dismissed)="onDismissed(toast.id)"
 ></newbee-toast>

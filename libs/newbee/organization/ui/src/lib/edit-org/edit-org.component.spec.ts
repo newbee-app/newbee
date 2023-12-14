@@ -6,11 +6,9 @@ import {
 } from '@angular/core/testing';
 import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  OrgRoleEnum,
   testOrganization1,
   testOrganization2,
   testOrgMember1,
-  testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import { EditOrgComponent } from './edit-org.component';
 
@@ -27,7 +25,7 @@ describe('EditOrgComponent', () => {
     component = fixture.componentInstance;
 
     component.organization = testOrganization1;
-    component.orgMember = testOrgMemberRelation1;
+    component.orgMember = testOrgMember1;
 
     jest.spyOn(component.slug, 'emit');
     jest.spyOn(component.formattedSlug, 'emit');
@@ -69,7 +67,7 @@ describe('EditOrgComponent', () => {
       }));
     });
 
-    describe('edit', () => {
+    describe('emitEdit', () => {
       it('should emit edit', () => {
         component.emitEdit();
         expect(component.edit.emit).toHaveBeenCalledTimes(1);
@@ -85,12 +83,13 @@ describe('EditOrgComponent', () => {
         component.emitEdit();
         expect(component.edit.emit).toHaveBeenCalledTimes(2);
         expect(component.edit.emit).toHaveBeenCalledWith({
+          name: '',
           upToDateDuration: 'P1Y',
         });
       });
     });
 
-    describe('editSlug', () => {
+    describe('emitEditSlug', () => {
       it('should emit editSlug', () => {
         component.emitEditSlug();
         expect(component.editSlug.emit).toHaveBeenCalledTimes(1);
@@ -100,7 +99,7 @@ describe('EditOrgComponent', () => {
       });
     });
 
-    describe('delete', () => {
+    describe('emitDelete', () => {
       it('should emit delete', () => {
         component.emitDelete();
         expect(component.delete.emit).toHaveBeenCalledTimes(1);
@@ -137,17 +136,6 @@ describe('EditOrgComponent', () => {
         expect(component.deleteSlugMatches).toBeFalsy();
         component.deleteOrgForm.setValue({ slug: testOrganization1.slug });
         expect(component.deleteSlugMatches).toBeTruthy();
-      });
-    });
-
-    describe('isOwner', () => {
-      it('should be true if org member is the owner of the org, false otherwise', () => {
-        expect(component.isOwner).toBeTruthy();
-        component.orgMember = {
-          ...testOrgMemberRelation1,
-          orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
-        };
-        expect(component.isOwner).toBeFalsy();
       });
     });
   });

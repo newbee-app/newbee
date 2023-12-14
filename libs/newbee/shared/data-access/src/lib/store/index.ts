@@ -1,4 +1,3 @@
-export * from './app.reducer';
 export * from './auth';
 export * from './authenticator';
 export * from './cookie';

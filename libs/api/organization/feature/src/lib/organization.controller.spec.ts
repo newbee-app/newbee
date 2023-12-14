@@ -45,7 +45,7 @@ describe('OrganizationController', () => {
         {
           provide: EntityService,
           useValue: createMock<EntityService>({
-            createOrgTeams: jest
+            createOrgTeamsMembers: jest
               .fn()
               .mockResolvedValue(testOrganizationRelation1),
             createOrgMemberNoUserOrg: jest
@@ -117,8 +117,8 @@ describe('OrganizationController', () => {
         organization: testOrganizationRelation1,
         orgMember: testOrgMemberRelation1,
       });
-      expect(entityService.createOrgTeams).toHaveBeenCalledTimes(1);
-      expect(entityService.createOrgTeams).toHaveBeenCalledWith(
+      expect(entityService.createOrgTeamsMembers).toHaveBeenCalledTimes(1);
+      expect(entityService.createOrgTeamsMembers).toHaveBeenCalledWith(
         testOrganizationEntity1,
       );
       expect(entityService.createOrgMemberNoUserOrg).toHaveBeenCalledTimes(1);

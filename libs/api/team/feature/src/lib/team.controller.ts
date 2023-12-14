@@ -38,8 +38,7 @@ import {
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
   Keyword,
-  OrgRoleEnum,
-  TeamRoleEnum,
+  apiRoles,
 } from '@newbee/shared/util';
 
 /**
@@ -73,7 +72,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.team.create)
   async create(
     @Body() createTeamDto: CreateTeamDto,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -104,7 +103,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.CheckSlug)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.team.checkSlug)
   async checkSlug(
     @Query() checkSlugDto: SlugDto,
     @Organization() organization: OrganizationEntity,
@@ -131,7 +130,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.GenerateSlug)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.team.generateSlug)
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto,
     @Organization() organization: OrganizationEntity,
@@ -165,7 +164,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${Keyword.Team}`)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.team.get)
   async get(
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
@@ -194,12 +193,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${Keyword.Team}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-  )
+  @Role(apiRoles.team.update)
   async update(
     @Body() updateTeamDto: UpdateTeamDto,
     @Organization() organization: OrganizationEntity,
@@ -230,7 +224,7 @@ export class TeamController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Team}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner, TeamRoleEnum.Owner)
+  @Role(apiRoles.team.delete)
   async delete(
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,

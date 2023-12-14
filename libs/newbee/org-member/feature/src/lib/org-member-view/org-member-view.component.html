@@ -1,6 +1,6 @@
 <newbee-view-org-member
-  [orgMember]="(orgMember$ | async)!"
-  [userOrgMember]="(userOrgMember$ | async)?.orgMember ?? null"
+  [orgMember]="(selectedOrgMember$ | async)!"
+  [userOrgMember]="(orgMember$ | async)!.orgMember"
   [editPending]="(editPending$ | async)!"
   [deletePending]="(deletePending$ | async)!"
   (orgNavigate)="onOrgNavigate($event)"

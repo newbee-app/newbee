@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { initialOrganizationState as initialOrganizationModuleState } from '@newbee/newbee/organization/data-access';
 import { EditOrgComponent } from '@newbee/newbee/organization/ui';
-import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import {
+  OrganizationActions,
+  initialOrganizationState,
+} from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
+  testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
   testOrganizationRelation1,
@@ -31,8 +36,11 @@ describe('OrgEditComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
+              orgMember: testOrgMemberRelation1,
             },
+            [`${Keyword.Organization}Module`]: initialOrganizationModuleState,
           },
         }),
       ],

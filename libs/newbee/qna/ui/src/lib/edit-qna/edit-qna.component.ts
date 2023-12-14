@@ -7,12 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  userHasAnswerPermissions,
-  userHasDeletePermissions,
-  userHasQuestionPermissions,
-  userHasUpToDatePermissions,
-} from '@newbee/newbee/qna/util';
-import {
   AlertComponent,
   MarkdocEditorComponent,
   SearchableSelectComponent,
@@ -37,9 +31,13 @@ import {
   BaseUpdateAnswerDto,
   BaseUpdateQuestionDto,
   Keyword,
+  RoleType,
   Team,
   TeamMember,
-  type OrgMember,
+  apiRoles,
+  checkRoles,
+  userDisplayName,
+  type OrgMemberUser,
   type Organization,
   type QnaNoOrg,
 } from '@newbee/shared/util';
@@ -65,6 +63,15 @@ import { isEqual } from 'lodash-es';
 export class EditQnaComponent implements OnInit {
   readonly alertType = AlertType;
   readonly keyword = Keyword;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
+
+  /**
+   * Up-to-date and delete role permissions.
+   */
+  readonly upToDateAndDeleteRoles = new Set(
+    (apiRoles.qna.markUpToDate as RoleType[]).concat(apiRoles.qna.delete),
+  );
 
   /**
    * The form containing the qna's title and team.
@@ -75,9 +82,10 @@ export class EditQnaComponent implements OnInit {
   });
 
   /**
-   * The form containing the qna's up-to-date duration.
+   * The form containing the qna's maintainer and up-to-date duration.
    */
   editAnswerForm = this.fb.group({
+    maintainer: [null as null | OrgMemberUser, [Validators.required]],
     upToDateDuration: this.fb.group({
       num: [null as null | number, [Validators.min(0)]],
       frequency: [null as null | Frequency],
@@ -89,6 +97,16 @@ export class EditQnaComponent implements OnInit {
   );
 
   /**
+   * All of the input teams as select options.
+   */
+  teamOptions: SelectOption<Team | null>[] = [];
+
+  /**
+   * All of the input org member users as select options.
+   */
+  orgMemberOptions: SelectOption<OrgMemberUser | null>[] = [];
+
+  /**
    * The question markdoc as a string, for internal tracking.
    */
   questionMarkdoc = '';
@@ -97,11 +115,6 @@ export class EditQnaComponent implements OnInit {
    * The answer markdoc as a string, for internal tracking.
    */
   answerMarkdoc = '';
-
-  /**
-   * All of the input teams as select options.
-   */
-  teamOptions: SelectOption<Team | null>[] = [];
 
   /**
    * An HTTP error for the component, if one exists.
@@ -116,7 +129,7 @@ export class EditQnaComponent implements OnInit {
   /**
    * The user's role in the qna's org.
    */
-  @Input() orgMember!: OrgMember;
+  @Input() orgMember!: OrgMemberUser;
 
   /**
    * The user's role in the qna's team, if any.
@@ -132,6 +145,11 @@ export class EditQnaComponent implements OnInit {
    * The organization the qna is in.
    */
   @Input() organization!: Organization;
+
+  /**
+   * All org members belonging to the org.
+   */
+  @Input() orgMembers: OrgMemberUser[] = [];
 
   /**
    * Whether the edit question action is pending.
@@ -179,72 +197,36 @@ export class EditQnaComponent implements OnInit {
    * Initialize the values of questionMarkdoc, answerMarkdoc, and editQuestionForm with the input qna.
    */
   ngOnInit(): void {
-    if (this.hasQuestionPermissions) {
-      this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
-      this.teamOptions = [
-        new SelectOption(null, 'Entire org'),
-        ...this.teams.map((team) => new SelectOption(team, team.name)),
-      ];
-
-      this.editQuestionForm.setValue(
-        { title: this.qna.qna.title, team: this.qna.team },
-        { emitEvent: false },
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...this.teams.map((team) => new SelectOption(team, team.name)),
+    ];
+    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
+      const name = userDisplayName(orgMember.user);
+      return new SelectOption(
+        orgMember,
+        `${name} (${orgMember.user.email})`,
+        name,
       );
-    }
+    });
 
-    if (this.hasAnswerPermissions) {
-      this.answerMarkdoc = this.qna.qna.answerMarkdoc ?? '';
+    this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
+    this.editQuestionForm.setValue(
+      { title: this.qna.qna.title, team: this.qna.team },
+      { emitEvent: false },
+    );
 
-      this.editAnswerForm.setValue({
+    this.answerMarkdoc = this.qna.qna.answerMarkdoc ?? '';
+    this.editAnswerForm.setValue(
+      {
+        maintainer: this.qna.maintainer ?? this.orgMember,
         upToDateDuration: this.qnaNumAndFreq ?? {
           num: null,
           frequency: null,
         },
-      });
-    }
-  }
-
-  /**
-   * Whether the user has question permissions.
-   */
-  get hasQuestionPermissions(): boolean {
-    return userHasQuestionPermissions(
-      this.qna,
-      this.orgMember,
-      this.teamMember,
+      },
+      { emitEvent: false },
     );
-  }
-
-  /**
-   * Whether the user has answer permissions.
-   */
-  get hasAnswerPermissions(): boolean {
-    return userHasAnswerPermissions(this.qna, this.orgMember, this.teamMember);
-  }
-
-  /**
-   * Whether the user has up-to-date permissions.
-   */
-  get hasUpToDatePermissions(): boolean {
-    return userHasUpToDatePermissions(
-      this.qna,
-      this.orgMember,
-      this.teamMember,
-    );
-  }
-
-  /**
-   * Whether the user has delete permissions.
-   */
-  get hasDeletePermissions(): boolean {
-    return userHasDeletePermissions(this.qna, this.orgMember, this.teamMember);
-  }
-
-  /**
-   * Whether to show quick actions.
-   */
-  get showQuickActions(): boolean {
-    return this.hasUpToDatePermissions || this.hasDeletePermissions;
   }
 
   /**
@@ -270,8 +252,10 @@ export class EditQnaComponent implements OnInit {
    * Whether the edit answer portion is distinct from the current qna.
    */
   get editAnswerDistinct(): boolean {
+    const { maintainer } = this.editAnswerForm.value;
     return !!(
       this.answerMarkdoc !== this.qna.qna.answerMarkdoc ||
+      !isEqual(maintainer, this.qna.maintainer) ||
       numAndFreqIsDistinct(
         this.qnaNumAndFreq,
         this.editAnswerForm.controls.upToDateDuration.value,
@@ -304,8 +288,10 @@ export class EditQnaComponent implements OnInit {
    * Emit a request to edit the qna's answer.
    */
   emitEditAnswer(): void {
+    const { maintainer } = this.editAnswerForm.value;
     this.editAnswer.emit({
       answerMarkdoc: this.answerMarkdoc,
+      maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
         formNumAndFreqToDuration(
           this.editAnswerForm.controls.upToDateDuration.value,

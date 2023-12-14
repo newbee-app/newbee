@@ -10,6 +10,7 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   answerIsNotEmpty,
+  maintainerIsNotEmpty,
   questionIsNotEmpty,
   teamIsNotEmpty,
   titleIsNotEmpty,
@@ -189,9 +190,11 @@ export class QnaEffects {
                 catchHttpClientError(err, (msg) => {
                   switch (msg) {
                     case upToDateDurationMatches:
-                      return 'duration';
+                      return 'upToDateDuration';
                     case answerIsNotEmpty:
                       return Keyword.Answer;
+                    case maintainerIsNotEmpty:
+                      return 'maintainer';
                     default:
                       return `${Keyword.Answer}-${Keyword.Edit}`;
                   }

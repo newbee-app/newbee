@@ -8,7 +8,7 @@
       [options]="countryOptions"
       optionName="Country"
       formControlName="country"
-      [valid]="!hasError('country') || clean"
+      [valid]="!displayError('country')"
       [errorText]="errorMessage"
       (exited)="onTouched(); formatNumber()"
     ></newbee-searchable-select>
@@ -29,12 +29,12 @@
       newbeePhoneNumberInput
       [country]="value.country ?? null"
       (blur)="onTouched()"
-      class="input border-neutral truncate"
-      [ngClass]="{ 'input-error': hasError('number') && !clean }"
+      class="input input-bordered truncate"
+      [ngClass]="{ 'input-error': displayError('number') }"
     />
     <newbee-alert
-      [show]="hasError('number') && !clean"
       [type]="alertType.Error"
+      [show]="displayError('number') && !clean"
       [text]="errorMessage"
     ></newbee-alert>
   </div>

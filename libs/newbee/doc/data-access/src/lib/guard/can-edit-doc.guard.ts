@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { userHasEditPermissions } from '@newbee/newbee/doc/util';
 import { ShortUrl } from '@newbee/newbee/shared/util';
+import { apiRoles, checkRoles } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, take } from 'rxjs';
 import { selectDocAndOrgStates } from '../store';
@@ -32,7 +32,15 @@ export const canEditDocGuard: CanActivateFn = (): Observable<
         }
 
         const orgMember = orgMemberRelation?.orgMember ?? null;
-        if (userHasEditPermissions(doc, orgMember, teamMember)) {
+        if (
+          checkRoles(apiRoles.doc.update, {
+            orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember,
+          })
+        ) {
           return true;
         }
 

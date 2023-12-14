@@ -19,8 +19,8 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   OrgRoleEnum,
-  compareOrgRoles,
   forbiddenError,
+  generateLteOrgRoles,
   internalServerError,
   orgMemberNotFound,
   userAlreadyOrgMemberBadRequest,
@@ -186,7 +186,7 @@ export class OrgMemberService {
     newRole: OrgRoleEnum,
     requesterOrgRole: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
-    OrgMemberService.checkRequester(requesterOrgRole, newRole);
+    OrgMemberService.checkRequesterOrgRole(requesterOrgRole, newRole);
     const updatedOrgMember = this.em.assign(orgMember, {
       role: newRole,
     });
@@ -240,11 +240,11 @@ export class OrgMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the operation isn't permissible.
    */
-  static checkRequester(
+  static checkRequesterOrgRole(
     requesterOrgRole: OrgRoleEnum,
     subjectRole: OrgRoleEnum,
   ): void {
-    if (compareOrgRoles(requesterOrgRole, subjectRole) >= 0) {
+    if (generateLteOrgRoles(requesterOrgRole).includes(subjectRole)) {
       return;
     }
 

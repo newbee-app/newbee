@@ -95,7 +95,7 @@ describe('CreateTeamComponent', () => {
     });
   });
 
-  describe('changes', () => {
+  describe('ngOnChanges', () => {
     it('should update form for generatedSlug changes', () => {
       component.ngOnChanges({
         generatedSlug: new SimpleChange('', testTeam1.slug, true),

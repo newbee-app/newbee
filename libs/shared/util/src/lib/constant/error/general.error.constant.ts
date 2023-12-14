@@ -8,7 +8,7 @@ export const internalServerError =
  * Constant to describe a forbidden error.
  */
 export const forbiddenError =
-  'You do not have permissions to access this resource. Please contact an admin about your permissions if you think this is an error.';
+  'You do not have the permissions to do this. Please contact an admin about your permissions if you think this is an error.';
 
 /**
  * Constant to describe an aunauthorized error.

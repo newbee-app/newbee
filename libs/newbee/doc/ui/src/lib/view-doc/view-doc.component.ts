@@ -1,9 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  userHasEditPermissions,
-  userHasUpToDatePermissions,
-} from '@newbee/newbee/doc/util';
 import { AlertComponent, UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
@@ -13,12 +9,14 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  OrgMember,
   TeamMember,
+  apiRoles,
+  checkRoles,
   isUpToDate,
   maintainerIsCreator,
   userDisplayName,
   type DocNoOrg,
+  type OrgMember,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -37,9 +35,18 @@ dayjs.extend(relativeTime);
 export class ViewDocComponent {
   readonly keyword = Keyword;
   readonly shortUrl = ShortUrl;
+  readonly alertType = AlertType;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
   readonly userDisplayName = userDisplayName;
   readonly dayjs = dayjs;
-  readonly alertType = AlertType;
+
+  /**
+   * The roles needed to edit the doc or mark it as up-to-date.
+   */
+  readonly editAndUpToDateRoles = new Set(
+    apiRoles.doc.update.concat(apiRoles.doc.markUpToDate),
+  );
 
   /**
    * HTTP client error.
@@ -52,9 +59,9 @@ export class ViewDocComponent {
   @Input() doc!: DocNoOrg;
 
   /**
-   * The role the current user holds in the post's org, if any.
+   * The role the current user holds in the post's org.
    */
-  @Input() orgMember: OrgMember | null = null;
+  @Input() orgMember!: OrgMember;
 
   /**
    * The role the current user holds in the post's team, if any.
@@ -93,24 +100,6 @@ export class ViewDocComponent {
    */
   get maintainerIsCreator(): boolean {
     return maintainerIsCreator(this.doc);
-  }
-
-  /**
-   * Whether the user has the permissions to edit the doc.
-   */
-  get hasEditPermissions(): boolean {
-    return userHasEditPermissions(this.doc, this.orgMember, this.teamMember);
-  }
-
-  /**
-   * Whether the user has the permissions to the mark the doc as up-to-date.
-   */
-  get hasUpToDatePermissions(): boolean {
-    return userHasUpToDatePermissions(
-      this.doc,
-      this.orgMember,
-      this.teamMember,
-    );
   }
 
   /**

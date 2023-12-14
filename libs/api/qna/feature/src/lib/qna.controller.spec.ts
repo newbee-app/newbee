@@ -121,7 +121,6 @@ describe('QnaController', () => {
       expect(service.update).toHaveBeenCalledWith(
         testQnaEntity1,
         testBaseUpdateQuestionDto1,
-        testOrgMemberEntity1,
       );
       expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(
         testUpdatedQnaEntity,
@@ -130,25 +129,13 @@ describe('QnaController', () => {
   });
 
   it('updateAnswer should update the answer', async () => {
-    const testQnaEntity2 = {
-      ...testQnaEntity1,
-      maintainer: null,
-      trueUpToDateDuration: testQnaEntity1.trueUpToDateDuration,
-    };
-    jest.spyOn(service, 'findOneBySlug').mockResolvedValue(testQnaEntity2);
     await expect(
-      controller.updateAnswer(
-        testBaseUpdateAnswerDto1,
-        testQnaEntity2,
-        testOrgMemberEntity1,
-      ),
+      controller.updateAnswer(testBaseUpdateAnswerDto1, testQnaEntity1),
     ).resolves.toEqual(testUpdatedQnaEntity);
     expect(service.update).toHaveBeenCalledTimes(1);
     expect(service.update).toHaveBeenCalledWith(
-      testQnaEntity2,
+      testQnaEntity1,
       testBaseUpdateAnswerDto1,
-      testOrgMemberEntity1,
-      true,
     );
   });
 

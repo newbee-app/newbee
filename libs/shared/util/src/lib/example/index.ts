@@ -318,6 +318,15 @@ export const testOrgMemberUser1: OrgMemberUser = {
 };
 
 /**
+ * An example instance of `OrgMemberUser`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberUser2: OrgMemberUser = {
+  orgMember: testOrgMember1,
+  user: testUser2,
+};
+
+/**
  * An example instance of `OrgMemberQueryResult`.
  * Strictly for use in testing.
  */
@@ -377,9 +386,9 @@ export const testQueryResult1: QueryResult = {
 export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
+  members: [testOrgMemberUser1],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
-  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
 };
 
 /**
@@ -389,9 +398,9 @@ export const testOrganizationRelation1: OrganizationRelation = {
 export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
+  members: [testOrgMemberUser1],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
-  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
 };
 
 /**
@@ -619,6 +628,7 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   docMarkdoc: 'new raw markdoc',
   upToDateDuration: 'P1Y',
   team: testTeam1.slug,
+  maintainer: testOrgMember1.slug,
 };
 
 /**
@@ -651,6 +661,7 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
   team: testTeam1.slug,
+  maintainer: testOrgMember1.slug,
 };
 
 /**
@@ -670,6 +681,7 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
   upToDateDuration: 'P1Y',
   answerMarkdoc: 'new answer',
+  maintainer: testOrgMember1.slug,
 };
 
 /**

@@ -78,7 +78,7 @@ export class OrgMemberInviteService {
     inviter: OrgMemberEntity,
     organization: OrganizationEntity,
   ): Promise<OrgMemberInviteEntity> {
-    OrgMemberService.checkRequester(inviter.role, role);
+    OrgMemberService.checkRequesterOrgRole(inviter.role, role);
     await this.checkIfOrgMember(organization, email);
 
     const userInvites =

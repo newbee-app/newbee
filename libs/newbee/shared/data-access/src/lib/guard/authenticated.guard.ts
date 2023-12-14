@@ -3,7 +3,7 @@ import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, skipWhile, take } from 'rxjs';
-import { selectUserAndCsrfToken } from '../store';
+import { selectUserAndCsrfToken } from '../store/app.selector';
 
 /**
  * A route guard that prevents users from accessing the link if the store doesn't contain user information (user is not logged in).

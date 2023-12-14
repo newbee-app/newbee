@@ -2,18 +2,35 @@
   <h3>Edit doc</h3>
 
   <form [formGroup]="editDocForm" class="flex flex-col flex-nowrap gap-y-4">
-    <div class="flex flex-col flex-nowrap gap-y-2">
-      <label for="team-input">Team to post in</label>
-      <div class="w-fit max-w-full">
-        <newbee-searchable-select
-          id="team-input"
-          formControlName="team"
-          [showSearchbar]="true"
-          [options]="teamOptions"
-          optionName="team"
-          [valid]="!inputDisplayError(editDocForm, 'team')"
-          [errorText]="inputErrorMessage(editDocForm, 'team')"
-        ></newbee-searchable-select>
+    <div class="flex flex-row flex-wrap gap-4">
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="team-input">Team to post in</label>
+        <div class="w-fit max-w-full">
+          <newbee-searchable-select
+            id="team-input"
+            formControlName="team"
+            [showSearchbar]="true"
+            [options]="teamOptions"
+            optionName="team"
+            [valid]="!inputDisplayError(editDocForm, keyword.Team)"
+            [errorText]="inputErrorMessage(editDocForm, keyword.Team)"
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="maintainer-input">Maintainer</label>
+        <div class="w-fit max-w-full">
+          <newbee-searchable-select
+            id="maintainer-input"
+            formControlName="maintainer"
+            [showSearchbar]="true"
+            [options]="orgMemberOptions"
+            optionName="user"
+            [valid]="!inputDisplayError(editDocForm, 'maintainer')"
+            [errorText]="inputErrorMessage(editDocForm, 'maintainer')"
+          ></newbee-searchable-select>
+        </div>
       </div>
     </div>
 
@@ -37,6 +54,12 @@
             newbeeDigitOnly
             [min]="1"
             class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                editDocForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
           />
           <newbee-alert
             [type]="alertType.Error"
@@ -44,10 +67,7 @@
               inputDisplayError(editDocForm.controls.upToDateDuration, 'num')
             "
             [text]="
-              inputErrorMessage(
-                editDocForm.controls.upToDateDuration,
-                'frequency'
-              )
+              inputErrorMessage(editDocForm.controls.upToDateDuration, 'num')
             "
           ></newbee-alert>
         </div>
@@ -76,8 +96,8 @@
 
       <newbee-alert
         [type]="alertType.Error"
-        [show]="!!httpClientErrorMsg('duration')"
-        [text]="httpClientErrorMsg('duration')"
+        [show]="inputDisplayError(editDocForm, 'upToDateDuration')"
+        [text]="inputErrorMessage(editDocForm, 'upToDateDuration')"
       ></newbee-alert>
     </div>
 
@@ -88,6 +108,7 @@
         type="text"
         formControlName="title"
         class="input input-bordered"
+        [ngClass]="{ 'input-error': inputDisplayError(editDocForm, 'title') }"
       />
       <newbee-alert
         [type]="alertType.Error"
@@ -120,7 +141,15 @@
       </button>
 
       <button
-        *ngIf="hasUpToDatePermissions"
+        *ngIf="
+          checkRoles(apiRoles.doc.markUpToDate, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember
+          })
+        "
         type="button"
         (click)="markAsUpToDate.emit()"
         [disabled]="upToDatePending"
@@ -131,7 +160,15 @@
       </button>
 
       <button
-        *ngIf="hasDeletePermissions"
+        *ngIf="
+          checkRoles(apiRoles.doc.delete, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember
+          })
+        "
         type="button"
         (click)="delete.emit()"
         [disabled]="deletePending"

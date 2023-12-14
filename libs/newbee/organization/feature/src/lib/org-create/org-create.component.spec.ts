@@ -5,9 +5,11 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { initialOrganizationState } from '@newbee/newbee/organization/data-access';
 import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import {
+  Keyword,
   testBaseCreateOrganizationDto1,
   testOrganization1,
 } from '@newbee/shared/util';
@@ -30,7 +32,13 @@ describe('OrgCreateComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CommonModule, CreateOrgComponent],
       declarations: [OrgCreateComponent],
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [`${Keyword.Organization}Module`]: initialOrganizationState,
+          },
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OrgCreateComponent);

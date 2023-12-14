@@ -24,6 +24,8 @@ import {
   BaseCreateOrgMemberInviteDto,
   Keyword,
   OrgRoleEnum,
+  generateLteOrgRoles,
+  type OrgMember,
 } from '@newbee/shared/util';
 
 /**
@@ -41,10 +43,12 @@ import {
   templateUrl: './invite-member.component.html',
 })
 export class InviteMemberComponent implements OnChanges {
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
+
+  /**
+   * The org member making the invite requests and looking at the page.
+   */
+  @Input() orgMember!: OrgMember;
 
   /**
    * Whether to display the spinner on the invite button.
@@ -67,18 +71,11 @@ export class InviteMemberComponent implements OnChanges {
   @Output() invite = new EventEmitter<BaseCreateOrgMemberInviteDto>();
 
   /**
-   * All possible org roles as select options.
-   */
-  roleOptions = Object.entries(OrgRoleEnum).map(
-    ([key, value]) => new SelectOption(value, key),
-  );
-
-  /**
    * The internal form to invite a user to an org.
    */
   inviteMemberForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    role: [OrgRoleEnum.Member, Validators.required],
+    role: [OrgRoleEnum.Member, [Validators.required]],
   });
 
   constructor(private readonly fb: FormBuilder) {}
@@ -88,6 +85,15 @@ export class InviteMemberComponent implements OnChanges {
    */
   get inviteSuccessText(): string {
     return `An invite was successfully sent to ${this.invitedUser}`;
+  }
+
+  /**
+   * All possible org roles as select options.
+   */
+  get roleOptions(): SelectOption<OrgRoleEnum>[] {
+    return generateLteOrgRoles(this.orgMember.role).map(
+      (role) => new SelectOption(role, role),
+    );
   }
 
   /**
