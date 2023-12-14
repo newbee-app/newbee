@@ -5,7 +5,11 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { TeamActions } from '@newbee/newbee/shared/data-access';
+import {
+  initialOrganizationState,
+  TeamActions,
+} from '@newbee/newbee/shared/data-access';
+import { initialTeamState } from '@newbee/newbee/team/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
@@ -36,8 +40,10 @@ describe('TeamCreateComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
+            [`${Keyword.Team}Module`]: initialTeamState,
           },
         }),
       ],
@@ -62,7 +68,7 @@ describe('TeamCreateComponent', () => {
     it('should dispatch generateSlug', fakeAsync(() => {
       component.onName(testTeam1.name);
       tick(600);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.generateSlug({ name: testTeam1.name }),
       );
     }));
@@ -71,7 +77,7 @@ describe('TeamCreateComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
     });
@@ -80,7 +86,7 @@ describe('TeamCreateComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
     });
@@ -89,7 +95,7 @@ describe('TeamCreateComponent', () => {
   describe('onCreate', () => {
     it('should dispatch createTeam', () => {
       component.onCreate(testBaseCreateTeamDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
       );
     });

@@ -5,6 +5,7 @@ import {
   httpFeature,
   organizationFeature,
   qnaFeature,
+  selectOrgMemberUser,
 } from '@newbee/newbee/shared/data-access';
 import {
   BaseUpdateAnswerDto,
@@ -31,16 +32,14 @@ export class QnaEditComponent {
   qnaState$ = this.store.select(qnaFeature.selectQnaState);
 
   /**
-   * The org member associated with the user.
+   * The OrgMemberUser making the request.
    */
-  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
+  orgMemberUser$ = this.store.select(selectOrgMemberUser);
 
   /**
-   * The currently selected org.
+   * The org state.
    */
-  selectedOrganization$ = this.store.select(
-    organizationFeature.selectSelectedOrganization,
-  );
+  orgState$ = this.store.select(organizationFeature.selectOrgState);
 
   /**
    * The entire qna module state.

@@ -171,8 +171,8 @@ describe('AuthService', () => {
           error: done.fail,
         });
 
-      expect(mockStartAuthentication).toBeCalledTimes(1);
-      expect(mockStartAuthentication).toBeCalledWith(
+      expect(mockStartAuthentication).toHaveBeenCalledTimes(1);
+      expect(mockStartAuthentication).toHaveBeenCalledWith(
         testPublicKeyCredentialRequestOptions1,
       );
 

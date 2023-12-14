@@ -3,9 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   AuthenticatorActions,
   UserActions,
+  initialAuthState,
 } from '@newbee/newbee/shared/data-access';
+import { initialUserState } from '@newbee/newbee/user/data-access';
 import { EditUserComponent } from '@newbee/newbee/user/ui';
 import {
+  Keyword,
   testAuthenticator1,
   testBaseUpdateUserDto1,
   testUser1,
@@ -32,8 +35,9 @@ describe('UserEditComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            auth: { user: testUser1 },
-            userModule: {
+            [Keyword.Auth]: { ...initialAuthState, user: testUser1 },
+            [`${Keyword.User}Module`]: {
+              ...initialUserState,
               authenticators: [testAuthenticator1],
               pendingEditAuthenticator: new Map([
                 [testAuthenticator1.id, false],
@@ -65,7 +69,7 @@ describe('UserEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editUser', () => {
       component.onEdit(testBaseUpdateUserDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
       );
     });
@@ -74,7 +78,7 @@ describe('UserEditComponent', () => {
   describe('onAddAuthenticator', () => {
     it('should dispatch createRegistrationOptions', () => {
       component.onAddAuthenticator();
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.createRegistrationOptions(),
       );
     });
@@ -86,7 +90,7 @@ describe('UserEditComponent', () => {
         id: testAuthenticator1.id,
         name: testAuthenticator1.name,
       });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.editAuthenticatorName({
           id: testAuthenticator1.id,
           name: testAuthenticator1.name,
@@ -98,7 +102,7 @@ describe('UserEditComponent', () => {
   describe('onDeleteAuthenticator', () => {
     it('should dispatch deleteAuthenticator', () => {
       component.onDeleteAuthenticator(testAuthenticator1.id);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id }),
       );
     });
@@ -107,7 +111,7 @@ describe('UserEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteUser', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(UserActions.deleteUser());
+      expect(store.dispatch).toHaveBeenCalledWith(UserActions.deleteUser());
     });
   });
 });

@@ -1,6 +1,6 @@
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OrgRoleEnum, testUser1 } from '@newbee/shared/util';
+import { OrgRoleEnum, testOrgMember1, testUser1 } from '@newbee/shared/util';
 import { InviteMemberComponent } from './invite-member.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -22,6 +22,8 @@ describe('InviteMemberComponent', () => {
     fixture = TestBed.createComponent(InviteMemberComponent);
     component = fixture.componentInstance;
 
+    component.orgMember = testOrgMember1;
+
     jest.spyOn(component.invite, 'emit');
 
     fixture.detectChanges();
@@ -35,8 +37,8 @@ describe('InviteMemberComponent', () => {
   describe('emitInvite', () => {
     it('should emit invite', () => {
       component.emitInvite();
-      expect(component.invite.emit).toBeCalledTimes(1);
-      expect(component.invite.emit).toBeCalledWith({
+      expect(component.invite.emit).toHaveBeenCalledTimes(1);
+      expect(component.invite.emit).toHaveBeenCalledWith({
         email: '',
         role: OrgRoleEnum.Member,
       });

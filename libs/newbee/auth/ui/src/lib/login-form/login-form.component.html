@@ -16,13 +16,13 @@
           formControlName="email"
           placeholder="Email address*"
           required
-          class="input border-neutral w-full"
+          class="input input-bordered w-full"
           [ngClass]="{ 'input-error': showEmailError }"
         />
 
         <newbee-alert
-          [show]="showEmailError"
           [type]="alertType.Error"
+          [show]="showEmailError"
           [text]="emailErrorMessage"
         ></newbee-alert>
       </div>
@@ -49,8 +49,8 @@
         </button>
 
         <newbee-alert
-          [show]="!!miscError"
           [type]="alertType.Error"
+          [show]="!!miscError"
           [text]="miscError"
         ></newbee-alert>
       </div>

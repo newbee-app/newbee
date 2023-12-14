@@ -4,13 +4,11 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
-  OrgRoleEnum,
   testOrganization1,
   testOrganization2,
   testOrgMember1,
-  testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import { EditOrgComponent } from './edit-org.component';
 
@@ -27,7 +25,7 @@ describe('EditOrgComponent', () => {
     component = fixture.componentInstance;
 
     component.organization = testOrganization1;
-    component.orgMember = testOrgMemberRelation1;
+    component.orgMember = testOrgMember1;
 
     jest.spyOn(component.slug, 'emit');
     jest.spyOn(component.formattedSlug, 'emit');
@@ -47,31 +45,33 @@ describe('EditOrgComponent', () => {
     describe('slug', () => {
       it('should emit whenever the slug input is changed', () => {
         component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
-        expect(component.slug.emit).toBeCalledTimes(1);
-        expect(component.slug.emit).toBeCalledWith(testOrganization2.slug);
+        expect(component.slug.emit).toHaveBeenCalledTimes(1);
+        expect(component.slug.emit).toHaveBeenCalledWith(
+          testOrganization2.slug,
+        );
       });
     });
 
     describe('formattedSlug', () => {
       it('should emit whenever the slug input is formatted', fakeAsync(() => {
-        expect(component.formattedSlug.emit).toBeCalledTimes(1);
-        expect(component.formattedSlug.emit).toBeCalledWith(
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith(
           testOrganization1.slug,
         );
         component.editOrgSlugForm.setValue({ slug: testOrganization2.slug });
         tick(600);
-        expect(component.formattedSlug.emit).toBeCalledTimes(2);
-        expect(component.formattedSlug.emit).toBeCalledWith(
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(2);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith(
           testOrganization2.slug,
         );
       }));
     });
 
-    describe('edit', () => {
+    describe('emitEdit', () => {
       it('should emit edit', () => {
         component.emitEdit();
-        expect(component.edit.emit).toBeCalledTimes(1);
-        expect(component.edit.emit).toBeCalledWith({
+        expect(component.edit.emit).toHaveBeenCalledTimes(1);
+        expect(component.edit.emit).toHaveBeenCalledWith({
           name: testOrganization1.name,
           upToDateDuration: 'P6M',
         });
@@ -81,26 +81,29 @@ describe('EditOrgComponent', () => {
           upToDateDuration: { num: 1, frequency: Frequency.Year },
         });
         component.emitEdit();
-        expect(component.edit.emit).toBeCalledTimes(2);
-        expect(component.edit.emit).toBeCalledWith({ upToDateDuration: 'P1Y' });
+        expect(component.edit.emit).toHaveBeenCalledTimes(2);
+        expect(component.edit.emit).toHaveBeenCalledWith({
+          name: '',
+          upToDateDuration: 'P1Y',
+        });
       });
     });
 
-    describe('editSlug', () => {
+    describe('emitEditSlug', () => {
       it('should emit editSlug', () => {
         component.emitEditSlug();
-        expect(component.editSlug.emit).toBeCalledTimes(1);
-        expect(component.editSlug.emit).toBeCalledWith({
+        expect(component.editSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.editSlug.emit).toHaveBeenCalledWith({
           slug: testOrganization1.slug,
         });
       });
     });
 
-    describe('delete', () => {
+    describe('emitDelete', () => {
       it('should emit delete', () => {
         component.emitDelete();
-        expect(component.delete.emit).toBeCalledTimes(1);
-        expect(component.delete.emit).toBeCalledWith();
+        expect(component.delete.emit).toHaveBeenCalledTimes(1);
+        expect(component.delete.emit).toHaveBeenCalledWith();
       });
     });
   });
@@ -133,17 +136,6 @@ describe('EditOrgComponent', () => {
         expect(component.deleteSlugMatches).toBeFalsy();
         component.deleteOrgForm.setValue({ slug: testOrganization1.slug });
         expect(component.deleteSlugMatches).toBeTruthy();
-      });
-    });
-
-    describe('isOwner', () => {
-      it('should be true if org member is the owner of the org, false otherwise', () => {
-        expect(component.isOwner).toBeTruthy();
-        component.orgMember = {
-          ...testOrgMemberRelation1,
-          orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
-        };
-        expect(component.isOwner).toBeFalsy();
       });
     });
   });

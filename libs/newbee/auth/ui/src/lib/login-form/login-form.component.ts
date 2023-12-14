@@ -27,9 +27,6 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
-  /**
-   * Suported alert types.
-   */
   readonly alertType = AlertType;
 
   /**

@@ -3,14 +3,14 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
+  OnDestroy,
+  OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import {
-  AlertType,
   ToastXPosition,
   ToastYPosition,
+  type Toast,
 } from '@newbee/newbee/shared/util';
 import { AlertComponent } from '../alert';
 
@@ -23,11 +23,11 @@ import { AlertComponent } from '../alert';
   imports: [CommonModule, AlertComponent],
   templateUrl: './toast.component.html',
 })
-export class ToastComponent implements OnChanges {
+export class ToastComponent implements OnInit, OnDestroy {
   /**
    * Whether to show the toast.
    */
-  private _show = false;
+  private _show = true;
 
   /**
    * Getter for `_show`.
@@ -42,33 +42,9 @@ export class ToastComponent implements OnChanges {
   private timeout: ReturnType<typeof setTimeout> | null = null;
 
   /**
-   * A string detailing the alert header.
+   * The toast to show.
    */
-  @Input() header = '';
-
-  /**
-   * A string detailing the alert text.
-   */
-  @Input() text = '';
-
-  /**
-   * The type of alert to use for the toast, `error` by default.
-   */
-  @Input() type: AlertType = AlertType.Error;
-
-  /**
-   * Where to show the toast.
-   */
-  @Input() position: [ToastXPosition, ToastYPosition] = [
-    ToastXPosition.Center,
-    ToastYPosition.Bottom,
-  ];
-
-  /**
-   * How long the toast should stay on the screen, in ms.
-   * `null` will ensure it will stay on the screen until the user dismisses it manually.
-   */
-  @Input() duration: number | null = null;
+  @Input() toast!: Toast;
 
   /**
    * Emit to let the parent component know the toast was dismissed, whether by the user or time.
@@ -79,7 +55,7 @@ export class ToastComponent implements OnChanges {
    * The classses needed to set up the toast div.
    */
   get toastClasses(): string[] {
-    const [x, y] = this.position;
+    const [x, y] = this.toast.position;
     const result: string[] = ['toast'];
 
     switch (x) {
@@ -110,23 +86,26 @@ export class ToastComponent implements OnChanges {
   }
 
   /**
-   * If the header or text is changed, set the timeout
-   * @param changes The changes to the toast component's inputs.
+   * Set the timeout for the toast.
    */
-  ngOnChanges(changes: SimpleChanges): void {
-    const header = changes['header'];
-    const text = changes['text'];
-    if (!header?.currentValue && !text?.currentValue) {
+  ngOnInit(): void {
+    if (!this.toast.header && !this.toast.text) {
+      this.dismiss();
       return;
     }
 
-    this._show = true;
-    this.clearTimeout();
-    if (this.duration) {
+    if (this.toast.duration) {
       this.timeout = setTimeout(() => {
         this.dismiss();
-      }, this.duration);
+      }, this.toast.duration);
     }
+  }
+
+  /**
+   * When the component is destroyed, ensure the timeout is cleared.
+   */
+  ngOnDestroy(): void {
+    this.clearTimeout();
   }
 
   /**
@@ -143,8 +122,8 @@ export class ToastComponent implements OnChanges {
    * Dismiss the toast alert.
    */
   dismiss(): void {
-    this.clearTimeout();
     this._show = false;
+    this.clearTimeout();
     this.dismissed.emit();
   }
 

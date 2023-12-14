@@ -38,16 +38,16 @@ describe('JwtIdComponent', () => {
 
     it('should emit using emitResendLink', () => {
       component.emitResendLink();
-      expect(resendLinkEmitSpy).toBeCalledTimes(1);
-      expect(resendLinkEmitSpy).toBeCalledWith(component.email);
+      expect(resendLinkEmitSpy).toHaveBeenCalledTimes(1);
+      expect(resendLinkEmitSpy).toHaveBeenCalledWith(component.email);
     });
 
     it('should emit with link click', () => {
       const resendLinkElement: HTMLAnchorElement | null =
         fixture.nativeElement.querySelector('#resend-link');
       resendLinkElement?.click();
-      expect(resendLinkEmitSpy).toBeCalledTimes(1);
-      expect(resendLinkEmitSpy).toBeCalledWith(component.email);
+      expect(resendLinkEmitSpy).toHaveBeenCalledTimes(1);
+      expect(resendLinkEmitSpy).toHaveBeenCalledWith(component.email);
     });
   });
 });

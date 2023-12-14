@@ -18,6 +18,11 @@ export interface OrganizationRelation {
   teams: Team[];
 
   /**
+   * All of the org members that belong to the org.
+   */
+  members: OrgMemberUser[];
+
+  /**
    * A selection of docs that belong to the team, as well as a count of the total number of docs in the org.
    */
   docs: Sample<DocQueryResult>;
@@ -26,14 +31,12 @@ export interface OrganizationRelation {
    * A selection of QnAs that belong to the team, as well as a count of the total number of QnAs in the org.
    */
   qnas: Sample<QnaQueryResult>;
-
-  /**
-   * A selection of org members that belong to the org, as well as a count of the total number of people in the org.
-   */
-  orgMembers: Sample<OrgMemberUser>;
 }
 
 /**
- * OrganizationRelation with org and teams information.
+ * OrganizationRelation with org, teams, and org members information.
  */
-export type OrgTeams = Pick<OrganizationRelation, 'organization' | 'teams'>;
+export type OrgTeamsMembers = Pick<
+  OrganizationRelation,
+  'organization' | 'teams' | 'members'
+>;

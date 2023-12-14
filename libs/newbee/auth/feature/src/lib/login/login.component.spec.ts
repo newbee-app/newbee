@@ -43,7 +43,7 @@ describe('LoginComponent', () => {
   describe('onWebAuthn', () => {
     it('should dispatch createWebAuthnLoginOptions', () => {
       component.onWebAuthn(testBaseEmailDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthActions.createWebAuthnLoginOptions({ emailDto: testBaseEmailDto1 }),
       );
     });
@@ -52,7 +52,7 @@ describe('LoginComponent', () => {
   describe('onMagicLinkLogin', () => {
     it('should dispatch sendLoginMagicLink action', () => {
       component.onMagicLinkLogin(testBaseEmailDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
       );
     });

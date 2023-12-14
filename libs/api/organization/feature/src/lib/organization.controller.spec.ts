@@ -45,7 +45,7 @@ describe('OrganizationController', () => {
         {
           provide: EntityService,
           useValue: createMock<EntityService>({
-            createOrgTeams: jest
+            createOrgTeamsMembers: jest
               .fn()
               .mockResolvedValue(testOrganizationRelation1),
             createOrgMemberNoUserOrg: jest
@@ -72,8 +72,8 @@ describe('OrganizationController', () => {
       await expect(
         controller.create(testBaseCreateOrganizationDto1, testUserEntity1),
       ).resolves.toEqual(testOrganizationEntity1);
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testBaseCreateOrganizationDto1,
         testUserEntity1,
       );
@@ -85,15 +85,15 @@ describe('OrganizationController', () => {
       await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual(
         testBaseSlugTakenDto1,
       );
-      expect(service.hasOneBySlug).toBeCalledTimes(1);
-      expect(service.hasOneBySlug).toBeCalledWith(testBaseSlugDto1.slug);
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(testBaseSlugDto1.slug);
 
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
       await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual({
         slugTaken: false,
       });
-      expect(service.hasOneBySlug).toBeCalledTimes(2);
-      expect(service.hasOneBySlug).toBeCalledWith(testBaseSlugDto1.slug);
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(2);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(testBaseSlugDto1.slug);
     });
   });
 
@@ -104,8 +104,8 @@ describe('OrganizationController', () => {
       await expect(
         controller.generateSlug(testBaseGenerateSlugDto1),
       ).resolves.toEqual(testBaseGeneratedSlugDto1);
-      expect(service.hasOneBySlug).toBeCalledTimes(1);
-      expect(service.hasOneBySlug).toBeCalledWith(sluggedBase);
+      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(sluggedBase);
     });
   });
 
@@ -117,12 +117,12 @@ describe('OrganizationController', () => {
         organization: testOrganizationRelation1,
         orgMember: testOrgMemberRelation1,
       });
-      expect(entityService.createOrgTeams).toBeCalledTimes(1);
-      expect(entityService.createOrgTeams).toBeCalledWith(
+      expect(entityService.createOrgTeamsMembers).toHaveBeenCalledTimes(1);
+      expect(entityService.createOrgTeamsMembers).toHaveBeenCalledWith(
         testOrganizationEntity1,
       );
-      expect(entityService.createOrgMemberNoUserOrg).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberNoUserOrg).toBeCalledWith(
+      expect(entityService.createOrgMemberNoUserOrg).toHaveBeenCalledTimes(1);
+      expect(entityService.createOrgMemberNoUserOrg).toHaveBeenCalledWith(
         testOrgMemberEntity1,
       );
     });
@@ -136,8 +136,8 @@ describe('OrganizationController', () => {
           testBaseUpdateOrganizationDto1,
         ),
       ).resolves.toEqual(testUpdatedOrganizationEntity);
-      expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith(
+      expect(service.update).toHaveBeenCalledTimes(1);
+      expect(service.update).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseUpdateOrganizationDto1,
       );
@@ -149,8 +149,8 @@ describe('OrganizationController', () => {
       await expect(
         controller.delete(testOrganizationEntity1),
       ).resolves.toBeUndefined();
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testOrganizationEntity1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testOrganizationEntity1);
     });
   });
 });

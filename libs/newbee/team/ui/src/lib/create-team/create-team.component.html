@@ -15,7 +15,8 @@
         formControlName="name"
         placeholder="My Team"
         required
-        class="input border-neutral w-full"
+        class="input input-bordered w-full"
+        [ngClass]="{ 'input-error': inputDisplayError(createTeamForm, 'name') }"
       />
       <newbee-alert
         [show]="inputDisplayError(createTeamForm, 'name')"
@@ -35,7 +36,12 @@
         placeholder="my-team"
         newbeeSlugInput
         (slug)="formattedSlug.emit($event)"
-        class="input border-neutral w-full"
+        class="input input-bordered w-full"
+        [ngClass]="{
+          'input-error':
+            (!checkPending && slugTaken) ||
+            inputDisplayError(createTeamForm, 'slug')
+        }"
       />
       <div *ngIf="checkPending" class="self-center">
         <span class="loading loading-dots"></span>
@@ -117,13 +123,13 @@
         [show]="
           inputDisplayError(
             createTeamForm.controls.upToDateDuration,
-            keyword.Duration
+            'upToDateDuration'
           )
         "
         [text]="
           inputErrorMessage(
             createTeamForm.controls.upToDateDuration,
-            keyword.Duration
+            'upToDateDuration'
           )
         "
       ></newbee-alert>

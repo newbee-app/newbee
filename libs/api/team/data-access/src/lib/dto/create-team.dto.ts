@@ -1,6 +1,6 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseCreateTeamDto,
-  iso8601DurationRegex,
   nameIsNotEmpty,
   slugIsNotEmpty,
   upToDateDurationMatches,

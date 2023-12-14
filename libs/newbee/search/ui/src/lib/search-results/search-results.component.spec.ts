@@ -42,20 +42,20 @@ describe('SearchResultsComponent', () => {
     it('should set the search term and emit search', () => {
       component.selectSuggestion('suggestion');
       expect(component.searchTerm.value).toEqual({ searchbar: 'suggestion' });
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith('suggestion');
+      expect(component.search.emit).toHaveBeenCalledTimes(1);
+      expect(component.search.emit).toHaveBeenCalledWith('suggestion');
     });
   });
 
   describe('emitSearch', () => {
     it(`should emit the search term if it's not empty`, () => {
       component.emitSearch();
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith('searching');
+      expect(component.search.emit).toHaveBeenCalledTimes(1);
+      expect(component.search.emit).toHaveBeenCalledWith('searching');
 
       component.searchTerm.setValue({ searchbar: '' });
       component.emitSearch();
-      expect(component.search.emit).toBeCalledTimes(1);
+      expect(component.search.emit).toHaveBeenCalledTimes(1);
     });
   });
 });

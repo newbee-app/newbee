@@ -11,9 +11,10 @@ export class ProxyThrottlerGuard extends ThrottlerGuard {
    * Make the throttler respect proxies by getting the correct IP information.
    *
    * @param req The request the guard receives.
+   *
    * @returns The correct tracking information for the request.
    */
   protected override getTracker(req: Request): string {
-    return req.ips[0] ?? req.ip;
+    return req.ips[0] ?? req.ip ?? '';
   }
 }

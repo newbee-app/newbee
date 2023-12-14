@@ -76,7 +76,7 @@ export class CreateQnaComponent implements OnInit {
   /**
    * The question markdoc as a string, for internal tracking.
    */
-  private questionMarkdoc = '';
+  questionMarkdoc = '';
 
   /**
    * All of the input teams as select options.
@@ -103,7 +103,7 @@ export class CreateQnaComponent implements OnInit {
       return;
     }
 
-    this.qnaForm.controls.team.setValue(team);
+    this.qnaForm.controls.team.setValue(team, { emitEvent: false });
   }
 
   /**
@@ -145,15 +145,6 @@ export class CreateQnaComponent implements OnInit {
       inputErrorMessage(inputGroup.get(inputName)) ||
       getHttpClientErrorMsg(this.httpClientError, inputName)
     );
-  }
-
-  /**
-   * Update the internal question markdoc value whenever the text changes.
-   *
-   * @param textMarkdoc The new value for question markdoc.
-   */
-  onTextChange(textMarkdoc: string): void {
-    this.questionMarkdoc = textMarkdoc;
   }
 
   /**

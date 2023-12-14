@@ -38,23 +38,23 @@ describe('OrgSearchbarComponent', () => {
 
     it('should emit suggest when the searchbar changes', () => {
       component.searchTerm.setValue({ searchbar: 'hello' });
-      expect(component.searchbar.emit).toBeCalledTimes(1);
-      expect(component.searchbar.emit).toBeCalledWith('hello');
+      expect(component.searchbar.emit).toHaveBeenCalledTimes(1);
+      expect(component.searchbar.emit).toHaveBeenCalledWith('hello');
     });
   });
 
   describe('emitSearch', () => {
     it('should not emit when search term is empty', () => {
       component.emitSearch();
-      expect(component.search.emit).toBeCalledTimes(0);
+      expect(component.search.emit).toHaveBeenCalledTimes(0);
     });
 
     it('should emit when search term is not empty', () => {
       component.searchTerm.setValue({ searchbar: 'search' });
       component.emitSearch();
-      expect(component.search.emit).toBeCalledTimes(1);
-      expect(component.search.emit).toBeCalledWith(
-        component.searchTerm.controls.searchbar.value
+      expect(component.search.emit).toHaveBeenCalledTimes(1);
+      expect(component.search.emit).toHaveBeenCalledWith(
+        component.searchTerm.controls.searchbar.value,
       );
     });
   });

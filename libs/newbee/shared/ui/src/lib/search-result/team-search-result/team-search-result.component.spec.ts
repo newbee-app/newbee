@@ -37,9 +37,9 @@ describe('TeamSearchResultComponent', () => {
   describe('teamNavigate', () => {
     it('should navigate to the given team', () => {
       component.teamNavigate();
-      expect(component.orgNavigate.emit).toBeCalledTimes(1);
-      expect(component.orgNavigate.emit).toBeCalledWith(
-        `/${ShortUrl.Team}/${testTeam1.slug}`
+      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
+        `/${ShortUrl.Team}/${testTeam1.slug}`,
       );
     });
   });

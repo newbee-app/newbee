@@ -2,6 +2,7 @@ import {
   AppState,
   authFeature,
   cookieFeature,
+  docFeature,
   httpFeature,
   organizationFeature,
   orgMemberFeature,
@@ -20,6 +21,7 @@ import { ActionReducerMap } from '@ngrx/store';
 export const reducers: ActionReducerMap<AppState> = {
   [Keyword.Auth]: authFeature.reducer,
   [Keyword.Cookie]: cookieFeature.reducer,
+  [Keyword.Doc]: docFeature.reducer,
   [Keyword.Http]: httpFeature.reducer,
   [Keyword.Member]: orgMemberFeature.reducer,
   [Keyword.Organization]: organizationFeature.reducer,

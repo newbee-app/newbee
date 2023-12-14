@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { ExecutionContext } from '@nestjs/common';
 import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
@@ -7,7 +8,10 @@ import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationService } from '@newbee/api/organization/data-access';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
+  DocEntity,
   OrgMemberEntity,
+  QnaEntity,
+  TeamMemberEntity,
   testDocEntity1,
   testOrganizationEntity1,
   testOrgMemberEntity1,
@@ -17,11 +21,9 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  ConditionalRoleEnum,
   docKey,
   organizationKey,
   orgMemberKey,
-  PostRoleEnum,
   qnaKey,
   ROLE_KEY,
   subjectOrgMemberKey,
@@ -31,26 +33,50 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  ConditionalRoleEnum,
+  Keyword,
+  OrgRoleEnum,
+  PostRoleEnum,
+  TeamRoleEnum,
+} from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {
-  let guard: RoleGuard;
   let reflector: Reflector;
+  let em: EntityManager;
   let organizationService: OrganizationService;
   let orgMemberService: OrgMemberService;
   let teamService: TeamService;
   let teamMemberService: TeamMemberService;
   let docService: DocService;
   let qnaService: QnaService;
+  let guard: RoleGuard;
   let context: ExecutionContext;
 
+  const baseParams = {
+    [Keyword.Organization]: testOrganizationEntity1.slug,
+  };
+  const baseRequest = {
+    [Keyword.User]: testUserEntity1,
+    params: baseParams,
+  };
+
   beforeEach(() => {
-    qnaService = createMock<QnaService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
+    reflector = createMock<Reflector>({
+      get: jest.fn().mockReturnValue([]),
     });
-    docService = createMock<DocService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
+    em = createMock<EntityManager>();
+    organizationService = createMock<OrganizationService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
+    });
+    orgMemberService = createMock<OrgMemberService>({
+      findOneByUserAndOrg: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+      findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+    });
+    teamService = createMock<TeamService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+      findOneById: jest.fn().mockResolvedValue(testTeamEntity1),
     });
     teamMemberService = createMock<TeamMemberService>({
       findOneByOrgMemberAndTeam: jest
@@ -60,21 +86,16 @@ describe('RoleGuard', () => {
         .fn()
         .mockResolvedValue(testTeamMemberEntity1),
     });
-    teamService = createMock<TeamService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+    docService = createMock<DocService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testDocEntity1),
     });
-    orgMemberService = createMock<OrgMemberService>({
-      findOneByUserAndOrg: jest.fn().mockResolvedValue(testOrgMemberEntity1),
-      findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+    qnaService = createMock<QnaService>({
+      findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
     });
-    organizationService = createMock<OrganizationService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
-    });
-    reflector = createMock<Reflector>({
-      get: jest.fn().mockReturnValue([]),
-    });
+
     guard = new RoleGuard(
       reflector,
+      em,
       organizationService,
       orgMemberService,
       teamService,
@@ -82,20 +103,19 @@ describe('RoleGuard', () => {
       docService,
       qnaService,
     );
+
     context = createMock<ExecutionContext>({
       switchToHttp: jest.fn().mockReturnValue(
         createMock<HttpArgumentsHost>({
           getRequest: jest.fn().mockReturnValue({
+            ...baseRequest,
             params: {
-              [Keyword.Organization]: testOrganizationEntity1.slug,
+              ...baseParams,
               [Keyword.Team]: testTeamEntity1.slug,
               [Keyword.Doc]: testDocEntity1.slug,
               [Keyword.Qna]: testQnaEntity1.slug,
               [Keyword.Member]: testOrgMemberEntity1.slug,
             },
-            query: { [Keyword.Team]: testTeamEntity1.slug },
-            body: { [Keyword.Team]: testTeamEntity1.slug },
-            user: testUserEntity1,
           }),
         }),
       ),
@@ -103,21 +123,25 @@ describe('RoleGuard', () => {
   });
 
   it('should be defined', () => {
-    expect(guard).toBeDefined();
     expect(reflector).toBeDefined();
+    expect(em).toBeDefined();
     expect(organizationService).toBeDefined();
     expect(orgMemberService).toBeDefined();
     expect(teamService).toBeDefined();
     expect(teamMemberService).toBeDefined();
     expect(docService).toBeDefined();
     expect(qnaService).toBeDefined();
+    expect(guard).toBeDefined();
     expect(context).toBeDefined();
   });
 
   describe('preliminary checks', () => {
     afterEach(() => {
-      expect(reflector.get).toBeCalledTimes(1);
-      expect(reflector.get).toBeCalledWith(ROLE_KEY, context.getHandler());
+      expect(reflector.get).toHaveBeenCalledTimes(1);
+      expect(reflector.get).toHaveBeenCalledWith(
+        ROLE_KEY,
+        context.getHandler(),
+      );
     });
 
     it('should return true if roles were never specified and org is not a route parameter', async () => {
@@ -136,29 +160,27 @@ describe('RoleGuard', () => {
     });
   });
 
-  describe('org member role check', () => {
+  describe('org role checks', () => {
+    const member = {
+      ...testOrgMemberEntity1,
+      role: OrgRoleEnum.Member,
+    } as OrgMemberEntity;
+    const moderator = {
+      ...testOrgMemberEntity1,
+      role: OrgRoleEnum.Moderator,
+    } as OrgMemberEntity;
+
     afterEach(() => {
-      expect(organizationService.findOneBySlug).toBeCalledTimes(1);
-      expect(organizationService.findOneBySlug).toBeCalledWith(
+      expect(organizationService.findOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1.slug,
       );
       expect(context.switchToHttp().getRequest()[organizationKey]).toEqual(
         testOrganizationEntity1,
       );
 
-      expect(orgMemberService.findOneByUserAndOrg).toBeCalledTimes(1);
-      expect(orgMemberService.findOneByUserAndOrg).toBeCalledWith(
+      expect(orgMemberService.findOneByUserAndOrg).toHaveBeenCalledWith(
         testUserEntity1,
         testOrganizationEntity1,
-      );
-
-      expect(orgMemberService.findOneByOrgAndSlug).toBeCalledTimes(1);
-      expect(orgMemberService.findOneByOrgAndSlug).toBeCalledWith(
-        testOrganizationEntity1,
-        testOrgMemberEntity1.slug,
-      );
-      expect(context.switchToHttp().getRequest()[subjectOrgMemberKey]).toEqual(
-        testOrgMemberEntity1,
       );
     });
 
@@ -168,58 +190,91 @@ describe('RoleGuard', () => {
       expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
         testOrgMemberEntity1,
       );
+
+      jest
+        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .mockResolvedValue(moderator);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
 
-    describe('OrgMemberIfNoTeamInReq', () => {
-      const testOrgMemberEntity2 = {
-        ...testOrgMemberEntity1,
-        role: OrgRoleEnum.Member,
-      } as OrgMemberEntity;
+    it('should account for OrgMemberIfNoTeam', async () => {
+      jest
+        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .mockResolvedValue(member);
+      jest
+        .spyOn(reflector, 'get')
+        .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeam]);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      beforeEach(() => {
-        jest
-          .spyOn(reflector, 'get')
-          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInReq]);
-        jest
-          .spyOn(orgMemberService, 'findOneByUserAndOrg')
-          .mockResolvedValue(testOrgMemberEntity2);
-      });
+      jest
+        .spyOn(context.switchToHttp(), 'getRequest')
+        .mockReturnValue({ ...baseRequest, params: baseParams });
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
 
-      afterEach(() => {
-        expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
-          testOrgMemberEntity2,
-        );
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { ...baseParams, [Keyword.Team]: testTeamEntity1.slug },
       });
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      it(`should return true if org member's role is member and no team was specified in the request`, async () => {
-        jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
-          params: {
-            org: testOrganizationEntity1.slug,
-            doc: testDocEntity1.slug,
-            qna: testQnaEntity1.slug,
-            member: testOrgMemberEntity1.slug,
-          },
-          query: {},
-          body: {},
-          user: testUserEntity1,
-        });
-        await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { ...baseParams, [Keyword.Qna]: testQnaEntity1.slug },
       });
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      it(`should return false if org member's role is member and a team was specified in the request`, async () => {
-        await expect(guard.canActivate(context)).resolves.toBeFalsy();
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { ...baseParams, [Keyword.Doc]: testDocEntity1.slug },
       });
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+    });
+
+    it('should account for OrgRoleGteSubject', async () => {
+      jest
+        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .mockResolvedValue(moderator);
+      jest
+        .spyOn(reflector, 'get')
+        .mockReturnValue([
+          OrgRoleEnum.Moderator,
+          OrgRoleEnum.Owner,
+          ConditionalRoleEnum.OrgRoleGteSubject,
+        ]);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+
+      jest
+        .spyOn(orgMemberService, 'findOneByOrgAndSlug')
+        .mockResolvedValue(moderator);
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledWith(
+        testOrganizationEntity1,
+        testOrgMemberEntity1.slug,
+      );
+      expect(context.switchToHttp().getRequest()[subjectOrgMemberKey]).toEqual(
+        moderator,
+      );
     });
   });
 
-  describe('team member role check', () => {
+  describe('team role checks', () => {
+    const member: TeamMemberEntity = {
+      ...testTeamMemberEntity1,
+      role: TeamRoleEnum.Member,
+    };
+    const moderator: TeamMemberEntity = {
+      ...testTeamMemberEntity1,
+      role: TeamRoleEnum.Moderator,
+    };
+
     beforeEach(() => {
-      jest.spyOn(reflector, 'get').mockReturnValue([TeamRoleEnum.Owner]);
+      jest
+        .spyOn(reflector, 'get')
+        .mockReturnValue([TeamRoleEnum.Moderator, TeamRoleEnum.Owner]);
     });
 
     afterEach(() => {
-      expect(teamService.findOneBySlug).toBeCalledTimes(1);
-      expect(teamService.findOneBySlug).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testTeamEntity1.slug,
       );
@@ -227,21 +282,13 @@ describe('RoleGuard', () => {
         testTeamEntity1,
       );
 
-      expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledTimes(
-        1,
-      );
-      expect(teamMemberService.findOneByOrgMemberAndTeamOrNull).toBeCalledWith(
-        testOrgMemberEntity1,
-        testTeamEntity1,
-      );
+      expect(
+        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+      ).toHaveBeenCalledWith(testOrgMemberEntity1, testTeamEntity1);
 
-      expect(teamMemberService.findOneByOrgMemberAndTeam).toBeCalledTimes(1);
-      expect(teamMemberService.findOneByOrgMemberAndTeam).toBeCalledWith(
+      expect(teamMemberService.findOneByOrgMemberAndTeam).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
-      );
-      expect(context.switchToHttp().getRequest()[subjectTeamMemberKey]).toEqual(
-        testTeamMemberEntity1,
       );
     });
 
@@ -250,110 +297,139 @@ describe('RoleGuard', () => {
       expect(context.switchToHttp().getRequest()[teamMemberKey]).toEqual(
         testTeamMemberEntity1,
       );
+
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .mockResolvedValue(null);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .mockResolvedValue(member);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
 
-    describe('team member is null', () => {
-      it('should not append team member to request', async () => {
-        jest
-          .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
-          .mockResolvedValue(null);
-        await expect(guard.canActivate(context)).resolves.toBeFalsy();
-        expect(
-          context.switchToHttp().getRequest()[teamMemberKey],
-        ).toBeUndefined();
-      });
+    it('should account for post teams', async () => {
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .mockResolvedValueOnce(testTeamMemberEntity1)
+        .mockResolvedValueOnce(member)
+        .mockResolvedValue(member);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .mockResolvedValueOnce(testTeamMemberEntity1)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+    });
+
+    it('should account for TeamRoleGteSubject', async () => {
+      jest
+        .spyOn(reflector, 'get')
+        .mockReturnValue([
+          TeamRoleEnum.Moderator,
+          TeamRoleEnum.Owner,
+          ConditionalRoleEnum.TeamRoleGteSubject,
+        ]);
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .mockResolvedValue(moderator);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
+
+      jest
+        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeam')
+        .mockResolvedValue(moderator);
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
+      expect(context.switchToHttp().getRequest()[teamMemberKey]).toEqual(
+        moderator,
+      );
+      expect(context.switchToHttp().getRequest()[subjectTeamMemberKey]).toEqual(
+        moderator,
+      );
     });
   });
 
   describe('doc role check', () => {
-    afterEach(() => {
-      expect(docService.findOneBySlug).toBeCalledTimes(1);
-      expect(docService.findOneBySlug).toBeCalledWith(testDocEntity1.slug);
+    beforeEach(() => {
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: {
+          ...baseParams,
+          [Keyword.Team]: testTeamEntity1.slug,
+          [Keyword.Doc]: testDocEntity1.slug,
+        },
+      });
     });
 
-    it('should return true if roles contains post maintainer role', async () => {
+    afterEach(() => {
+      expect(docService.findOneBySlug).toHaveBeenCalledWith(
+        testDocEntity1.slug,
+      );
+    });
+
+    it('should return true if roles contains post role', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[docKey]).toEqual(
         testDocEntity1,
       );
-    });
 
-    describe('OrgMemberIfNoTeamInDoc', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(reflector, 'get')
-          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInDoc]);
-        jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
-          ...testOrgMemberEntity1,
-          role: OrgRoleEnum.Member,
-        } as OrgMemberEntity);
-      });
+      jest.spyOn(docService, 'findOneBySlug').mockResolvedValue({
+        ...testDocEntity1,
+        maintainer: null,
+      } as DocEntity);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      it(`should return true if org member's role is member and the doc doesn't specify a team`, async () => {
-        const testDocEntity2 = {
-          ...testDocEntity1,
-          team: null,
-          trueUpToDateDuration: testDocEntity1.trueUpToDateDuration,
-        };
-        jest
-          .spyOn(docService, 'findOneBySlug')
-          .mockResolvedValue(testDocEntity2);
-        await expect(guard.canActivate(context)).resolves.toBeTruthy();
-        expect(context.switchToHttp().getRequest()[docKey]).toEqual(
-          testDocEntity2,
-        );
-      });
+      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Creator]);
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
 
-      it(`should return false if org member's role is member and the doc specifies a team`, async () => {
-        await expect(guard.canActivate(context)).resolves.toBeFalsy();
-      });
+      jest
+        .spyOn(docService, 'findOneBySlug')
+        .mockResolvedValue({ ...testDocEntity1, creator: null } as DocEntity);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
   });
 
   describe('qna role check', () => {
-    afterEach(() => {
-      expect(qnaService.findOneBySlug).toBeCalledTimes(1);
-      expect(qnaService.findOneBySlug).toBeCalledWith(testQnaEntity1.slug);
+    beforeEach(() => {
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: {
+          ...baseParams,
+          [Keyword.Team]: testTeamEntity1.slug,
+          [Keyword.Qna]: testQnaEntity1.slug,
+        },
+      });
     });
 
-    it('should return true if roles contains post maintainer role', async () => {
+    afterEach(() => {
+      expect(qnaService.findOneBySlug).toHaveBeenCalledWith(
+        testQnaEntity1.slug,
+      );
+    });
+
+    it('should return true if roles contains post role', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
         testQnaEntity1,
       );
-    });
 
-    describe('OrgMemberIfNoTeamInQna', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(reflector, 'get')
-          .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeamInQna]);
-        jest.spyOn(orgMemberService, 'findOneByUserAndOrg').mockResolvedValue({
-          ...testOrgMemberEntity1,
-          role: OrgRoleEnum.Member,
-        } as OrgMemberEntity);
-      });
+      jest.spyOn(qnaService, 'findOneBySlug').mockResolvedValue({
+        ...testQnaEntity1,
+        maintainer: null,
+      } as QnaEntity);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      it(`should return true if org member's role is member and the qna doesn't specify a team`, async () => {
-        const testQnaEntity2 = {
-          ...testQnaEntity1,
-          team: null,
-          trueUpToDateDuration: testQnaEntity1.trueUpToDateDuration,
-        };
-        jest
-          .spyOn(qnaService, 'findOneBySlug')
-          .mockResolvedValue(testQnaEntity2);
-        await expect(guard.canActivate(context)).resolves.toBeTruthy();
-        expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
-          testQnaEntity2,
-        );
-      });
+      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Creator]);
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
 
-      it(`should return false if org member's role is member and the qna specifies a team`, async () => {
-        await expect(guard.canActivate(context)).resolves.toBeFalsy();
-      });
+      jest
+        .spyOn(qnaService, 'findOneBySlug')
+        .mockResolvedValue({ ...testQnaEntity1, creator: null } as QnaEntity);
+      await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
   });
 });

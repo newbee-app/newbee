@@ -44,12 +44,28 @@
 
     <div class="flex flex-col flex-nowrap gap-y-2">
       <div
-        *ngIf="hasQuestionPermissions || hasUpToDatePermissions"
+        *ngIf="
+          checkRoles(questionAndUpToDateRoles, {
+            orgMember,
+            teamRole: teamMember?.role,
+            team: !!qna.team,
+            postCreator: qna.creator?.orgMember,
+            postMaintainer: qna.maintainer?.orgMember
+          })
+        "
         class="flex flex-row flex-wrap gap-2 mt-1"
       >
         <button
           type="button"
-          *ngIf="hasQuestionPermissions"
+          *ngIf="
+            checkRoles(apiRoles.qna.updateQuestion, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
           (click)="emitQnaNavigate(keyword.Edit)"
           class="btn btn-sm btn-info"
         >
@@ -57,7 +73,15 @@
         </button>
         <button
           type="button"
-          *ngIf="hasUpToDatePermissions"
+          *ngIf="
+            checkRoles(apiRoles.qna.markUpToDate, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
           (click)="markAsUpToDate.emit()"
           [disabled]="upToDatePending"
           class="btn btn-sm btn-success"
@@ -76,7 +100,7 @@
 
     <ng-container *ngIf="qna.qna.questionHtml">
       <div class="divider mt-2 mb-0"></div>
-      <div [innerHTML]="qna.qna.questionHtml" class="prose"></div>
+      <div [innerHTML]="qna.qna.questionHtml" class="prose max-w-full"></div>
     </ng-container>
   </div>
 
@@ -129,7 +153,15 @@
 
         <button
           type="button"
-          *ngIf="hasAnswerPermissions"
+          *ngIf="
+            checkRoles(apiRoles.qna.updateAnswer, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
           (click)="emitQnaNavigate(keyword.Edit)"
           class="btn btn-sm btn-info mt-1"
         >
@@ -138,16 +170,26 @@
 
         <div class="divider mt-2 mb-0"></div>
 
-        <div [innerHTML]="qna.qna.answerHtml" class="prose"></div>
+        <div [innerHTML]="qna.qna.answerHtml" class="prose max-w-full"></div>
       </ng-container>
 
       <ng-template #noAnswer>
         <h4>This question has not been answered</h4>
 
-        <ng-container *ngIf="hasAnswerPermissions">
+        <ng-container
+          *ngIf="
+            checkRoles(apiRoles.qna.updateAnswer, {
+              orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
+        >
           <div class="divider mt-2 mb-0"></div>
 
-          <p class="prose">
+          <p class="prose max-w-full">
             Would you like to
             <a (click)="emitQnaNavigate(keyword.Edit)" class="link link-info"
               >provide one?</a

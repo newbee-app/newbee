@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -8,9 +15,9 @@ import {
 } from '@angular/forms';
 import { AlertType, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
+import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../../alert/alert.component';
 import { DropdownComponent } from '../../dropdown';
-import { SearchbarComponent } from '../searchbar/searchbar.component';
 
 /**
  * A custom `<select>` component.
@@ -27,7 +34,6 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    SearchbarComponent,
     AlertComponent,
     DropdownComponent,
   ],
@@ -40,10 +46,10 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
     },
   ],
 })
-export class SearchableSelectComponent<T> implements ControlValueAccessor {
-  /**
-   * Supported alert types.
-   */
+export class SearchableSelectComponent<T>
+  implements ControlValueAccessor, OnInit, OnDestroy
+{
+  private readonly unsubscribe$ = new Subject<void>();
   readonly alertType = AlertType;
 
   /**
@@ -82,6 +88,11 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
   searchTerm = new FormControl('');
 
   /**
+   * A subset of options that include the search term.
+   */
+  optionsWithSearch: SelectOption<T>[] = [];
+
+  /**
    * Whether the component's dropdown is currently expanded.
    */
   private _expanded = false;
@@ -108,6 +119,33 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
    */
   get disabled(): boolean {
     return this._disabled;
+  }
+
+  /**
+   * Set up options with search based on the search term.
+   */
+  ngOnInit(): void {
+    this.optionsWithSearch = this.options;
+    this.searchTerm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: (value) => {
+        if (!value) {
+          this.optionsWithSearch = this.options;
+          return;
+        }
+
+        this.optionsWithSearch = this.options.filter((option) =>
+          option.dropdownValue.toLowerCase().includes(value.toLowerCase()),
+        );
+      },
+    });
+  }
+
+  /**
+   * Unsubscribe from all infinite observables.
+   */
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   /**
@@ -195,19 +233,6 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
   }
 
   /**
-   * Get the list of options after filtering for the searchbox.
-   */
-  get optionsWithSearch(): SelectOption<T>[] {
-    return this.options.filter((option) =>
-      this.searchTerm.value
-        ? option.dropdownValue
-            .toLowerCase()
-            .includes(this.searchTerm.value?.toLowerCase())
-        : true,
-    );
-  }
-
-  /**
    * Set the `selectedOption` to the given option.
    * Calls change detection if we emit the event.
    *
@@ -260,7 +285,7 @@ export class SearchableSelectComponent<T> implements ControlValueAccessor {
    *
    * @param newExpanded The new value for `expanded`.
    */
-  expandedChange(newExpanded: boolean): void {
+  onExpandedChange(newExpanded: boolean): void {
     if (newExpanded) {
       this.expand();
     } else {

@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
   Keyword,
+  OrgMember,
   Organization,
-  OrgMemberNoUserOrg,
-  OrgRoleEnum,
+  apiRoles,
+  checkRoles,
+  userDisplayName,
   type User,
 } from '@newbee/shared/util';
 import { DropdownComponent } from '../../../dropdown';
@@ -28,6 +29,26 @@ import { AuthenticatedSidebarComponent } from '../sidebar';
   templateUrl: './authenticated-navbar.component.html',
 })
 export class AuthenticatedNavbarComponent {
+  readonly keyword = Keyword;
+  readonly shortUrl = ShortUrl;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
+  readonly userDisplayName = userDisplayName;
+
+  /**
+   * Any of the roles needed to display the org dropdown.
+   */
+  readonly orgDropdownRoles = new Set(
+    apiRoles.org.update.concat(apiRoles['org-member-invite'].invite),
+  );
+
+  /**
+   * Any of the roles needed to display the create dropdown.
+   */
+  readonly createDropdownRoles = new Set(
+    apiRoles.doc.create.concat(apiRoles.qna.create, apiRoles.team.create),
+  );
+
   /**
    * The display name of the logged in user.
    */
@@ -51,7 +72,7 @@ export class AuthenticatedNavbarComponent {
   /**
    * Information about the user in the `selectedOrganization`.
    */
-  @Input() orgMember: OrgMemberNoUserOrg | null = null;
+  @Input() orgMember: OrgMember | null = null;
 
   /**
    * Whether to include the navbar-center that redirects to the org home.
@@ -67,28 +88,6 @@ export class AuthenticatedNavbarComponent {
    * An event emitter that tells the parent component when a logout request has been made.
    */
   @Output() logout = new EventEmitter<void>();
-
-  /**
-   * All NewBee keywords.
-   */
-  readonly keyword = Keyword;
-
-  /**
-   * All NewBee short URLs.
-   */
-  readonly shortUrl = ShortUrl;
-
-  /**
-   * Whether or not the user has at least `Moderator` permissions in the selected org.
-   */
-  get isAdmin(): boolean {
-    if (!this.orgMember) {
-      return false;
-    }
-
-    const { orgMember } = this.orgMember;
-    return compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0;
-  }
 
   /**
    * Selects the given organization as the selectedOrganization and emits the change.

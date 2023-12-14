@@ -23,40 +23,9 @@ export class UserEditComponent {
   user$ = this.store.select(authFeature.selectUser);
 
   /**
-   * The user's authenticators.
+   * The user module state.
    */
-  authenticators$ = this.store.select(userFeature.selectAuthenticators);
-
-  /**
-   * Whether the edit action is pending.
-   */
-  editPending$ = this.store.select(userFeature.selectPendingEdit);
-
-  /**
-   * Whether the add authenticator action is pending.
-   */
-  addAuthenticatorsPending$ = this.store.select(
-    userFeature.selectPendingAddAuthenticator,
-  );
-
-  /**
-   * Whether the edit authenticator action is pending.
-   */
-  editAuthenticatorPending$ = this.store.select(
-    userFeature.selectPendingEditAuthenticator,
-  );
-
-  /**
-   * Whether the delete authenticator action is pending.
-   */
-  deleteAuthenticatorPending$ = this.store.select(
-    userFeature.selectPendingDeleteAuthenticator,
-  );
-
-  /**
-   * Whether the delete action is pending.
-   */
-  deletePending$ = this.store.select(userFeature.selectPendingDelete);
+  userModuleState$ = this.store.select(userFeature.selectUserModuleState);
 
   /**
    * An HTTP error for the component, if one exists.

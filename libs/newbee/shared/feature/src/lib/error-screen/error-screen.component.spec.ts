@@ -55,8 +55,8 @@ describe('ErrorScreenComponent', () => {
   describe('onNavigateHome', () => {
     it('should navigate home', async () => {
       await component.onNavigateHome();
-      expect(router.navigate).toBeCalledTimes(1);
-      expect(router.navigate).toBeCalledWith(['/']);
+      expect(router.navigate).toHaveBeenCalledTimes(1);
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
   });
 });

@@ -26,7 +26,7 @@ describe('UnauthenticatedNavbarComponent', () => {
 
   it('should emit navigateToLink', () => {
     component.emitNavigateToLink('');
-    expect(component.navigateToLink.emit).toBeCalledTimes(1);
-    expect(component.navigateToLink.emit).toBeCalledWith('/');
+    expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
+    expect(component.navigateToLink.emit).toHaveBeenCalledWith('/');
   });
 });

@@ -1,0 +1,191 @@
+<div class="flex flex-col flex-nowrap gap-y-6">
+  <h3>Edit doc</h3>
+
+  <form [formGroup]="editDocForm" class="flex flex-col flex-nowrap gap-y-4">
+    <div class="flex flex-row flex-wrap gap-4">
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="team-input">Team to post in</label>
+        <div class="w-fit max-w-full">
+          <newbee-searchable-select
+            id="team-input"
+            formControlName="team"
+            [showSearchbar]="true"
+            [options]="teamOptions"
+            optionName="team"
+            [valid]="!inputDisplayError(editDocForm, keyword.Team)"
+            [errorText]="inputErrorMessage(editDocForm, keyword.Team)"
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <div class="flex flex-col flex-nowrap gap-y-2">
+        <label for="maintainer-input">Maintainer</label>
+        <div class="w-fit max-w-full">
+          <newbee-searchable-select
+            id="maintainer-input"
+            formControlName="maintainer"
+            [showSearchbar]="true"
+            [options]="orgMemberOptions"
+            optionName="user"
+            [valid]="!inputDisplayError(editDocForm, 'maintainer')"
+            [errorText]="inputErrorMessage(editDocForm, 'maintainer')"
+          ></newbee-searchable-select>
+        </div>
+      </div>
+    </div>
+
+    <div
+      formGroupName="upToDateDuration"
+      class="flex flex-col flex-nowrap gap-y-2"
+    >
+      <div>
+        <p>How long should this post stay relevant?</p>
+        <p class="opacity-75">{{ defaultUpToDateDuration }}</p>
+      </div>
+
+      <div class="flex flex-row flex-wrap gap-2 items-baseline">
+        For
+
+        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+          <input
+            type="number"
+            step="1"
+            formControlName="num"
+            newbeeDigitOnly
+            [min]="1"
+            class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                editDocForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
+          />
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="
+              inputDisplayError(editDocForm.controls.upToDateDuration, 'num')
+            "
+            [text]="
+              inputErrorMessage(editDocForm.controls.upToDateDuration, 'num')
+            "
+          ></newbee-alert>
+        </div>
+
+        <div class="w-44 flex-auto">
+          <newbee-searchable-select
+            formControlName="frequency"
+            [showSearchbar]="false"
+            [options]="frequencyOptions"
+            optionName="frequency"
+            [valid]="
+              !inputDisplayError(
+                editDocForm.controls.upToDateDuration,
+                'frequency'
+              )
+            "
+            [errorText]="
+              inputErrorMessage(
+                editDocForm.controls.upToDateDuration,
+                'frequency'
+              )
+            "
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="inputDisplayError(editDocForm, 'upToDateDuration')"
+        [text]="inputErrorMessage(editDocForm, 'upToDateDuration')"
+      ></newbee-alert>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="title-input">Doc title</label>
+      <input
+        id="title-input"
+        type="text"
+        formControlName="title"
+        class="input input-bordered"
+        [ngClass]="{ 'input-error': inputDisplayError(editDocForm, 'title') }"
+      />
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="inputDisplayError(editDocForm, 'title')"
+        [text]="inputErrorMessage(editDocForm, 'title')"
+      ></newbee-alert>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <p>Doc details</p>
+      <newbee-markdoc-editor [(text)]="docMarkdoc"></newbee-markdoc-editor>
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg(keyword.Doc)"
+        [text]="httpClientErrorMsg(keyword.Doc)"
+      ></newbee-alert>
+    </div>
+  </form>
+
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <div class="flex flex-row flex-wrap gap-2">
+      <button
+        type="button"
+        (click)="emitEdit()"
+        [disabled]="editPending || !editDistinct || !docMarkdoc"
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="editPending" class="loading loading-spinner"></span>
+        Update
+      </button>
+
+      <button
+        *ngIf="
+          checkRoles(apiRoles.doc.markUpToDate, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember
+          })
+        "
+        type="button"
+        (click)="markAsUpToDate.emit()"
+        [disabled]="upToDatePending"
+        class="btn btn-success w-fit"
+      >
+        <span *ngIf="upToDatePending" class="loading loading-spinner"></span>
+        Mark as up-to-date
+      </button>
+
+      <button
+        *ngIf="
+          checkRoles(apiRoles.doc.delete, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!doc.team,
+            postCreator: doc.creator?.orgMember,
+            postMaintainer: doc.maintainer?.orgMember
+          })
+        "
+        type="button"
+        (click)="delete.emit()"
+        [disabled]="deletePending"
+        class="btn btn-error w-fit"
+      >
+        <span *ngIf="deletePending" class="loading loading-spinner"></span>
+        Delete
+      </button>
+    </div>
+    <newbee-alert
+      [type]="alertType.Error"
+      [show]="
+        !!httpClientErrorMsg(keyword.Misc) || !!httpClientErrorMsg('up-to-date')
+      "
+      [text]="
+        httpClientErrorMsg(keyword.Misc) || httpClientErrorMsg('up-to-date')
+      "
+    ></newbee-alert>
+  </div>
+</div>

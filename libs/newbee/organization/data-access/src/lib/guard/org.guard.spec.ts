@@ -64,8 +64,8 @@ describe('orgGuard', () => {
     await expect(
       router.navigate([`/${testOrganization1.slug}`]),
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(
       OrganizationActions.getOrg({ orgSlug: testOrganization1.slug }),
     );
     expect(location.path()).toEqual(`/${testOrganization1.slug}`);

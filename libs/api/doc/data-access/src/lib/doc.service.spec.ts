@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocEntity,
   EntityService,
@@ -17,6 +18,7 @@ import {
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
+import { TeamService } from '@newbee/api/team/data-access';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
   docSlugNotFound,
@@ -57,10 +59,14 @@ describe('DocService', () => {
   let em: EntityManager;
   let entityService: EntityService;
   let solrCli: SolrCli;
+  let teamService: TeamService;
+  let orgMemberService: OrgMemberService;
 
   const testUpdatedDoc = createMock<DocEntity>({
     ...testDocEntity1,
     ...testBaseUpdateDocDto1,
+    team: testTeamEntity1,
+    maintainer: testOrgMemberEntity1,
   });
   const testUpdatedDocDocParams: DocDocParams = {
     ...testDocDocParams1,
@@ -90,6 +96,20 @@ describe('DocService', () => {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
+        {
+          provide: TeamService,
+          useValue: createMock<TeamService>({
+            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+          }),
+        },
+        {
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>({
+            findOneByOrgAndSlug: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberEntity1),
+          }),
+        },
       ],
     }).compile();
 
@@ -97,6 +117,8 @@ describe('DocService', () => {
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     solrCli = module.get<SolrCli>(SolrCli);
+    teamService = module.get<TeamService>(TeamService);
+    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
 
     jest.clearAllMocks();
     mockDocEntity.mockReturnValue(testDocEntity1);
@@ -110,33 +132,36 @@ describe('DocService', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
     expect(solrCli).toBeDefined();
+    expect(teamService).toBeDefined();
+    expect(orgMemberService).toBeDefined();
   });
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockDocEntity).toBeCalledTimes(1);
-      expect(mockDocEntity).toBeCalledWith(
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+        testOrganizationEntity1,
+        testBaseCreateDocDto1.team,
+      );
+      expect(mockDocEntity).toHaveBeenCalledTimes(1);
+      expect(mockDocEntity).toHaveBeenCalledWith(
         testDocEntity1.id,
-        testDocEntity1.title,
-        testDocEntity1.upToDateDuration,
+        testBaseCreateDocDto1.title,
+        testBaseCreateDocDto1.upToDateDuration,
         testTeamEntity1,
         testOrgMemberEntity1,
-        testDocEntity1.docMarkdoc,
+        testBaseCreateDocDto1.docMarkdoc,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testDocEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testDocEntity1);
     });
 
     it('should create a doc', async () => {
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).resolves.toEqual(testDocEntity1);
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testDocDocParams1,
       );
@@ -147,33 +172,28 @@ describe('DocService', () => {
         .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
     it('should throw an InternalServerErrorException and delete if addDocs throws an error', async () => {
       jest.spyOn(solrCli, 'addDocs').mockRejectedValue(new Error('addDocs'));
       await expect(
-        service.create(
-          testBaseCreateDocDto1,
-          testTeamEntity1,
-          testOrgMemberEntity1,
-        ),
+        service.create(testBaseCreateDocDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testDocEntity1);
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testDocEntity1);
     });
   });
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(DocEntity, testDocEntity1.slug);
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
+        DocEntity,
+        testDocEntity1.slug,
+      );
     });
 
     it('should find a slug', async () => {
@@ -209,32 +229,40 @@ describe('DocService', () => {
     });
 
     afterEach(() => {
+      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+        testOrganizationEntity1,
+        testBaseCreateDocDto1.team,
+      );
+
       const docContent = strToContent(
         testBaseUpdateDocDto1.docMarkdoc as string,
       );
       const docTxt = markdocTxtRenderer(docContent);
       const docHtml = Markdoc.renderers.html(docContent);
 
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testDocEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {
         ...testBaseUpdateDocDto1,
         docTxt,
         docHtml,
+        team: testTeamEntity1,
+        maintainer: testOrgMemberEntity1,
         updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
           .add(dayjs.duration(testBaseUpdateDocDto1.upToDateDuration as string))
           .toDate(),
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update a doc', async () => {
       await expect(
         service.update(testDocEntity1, testBaseUpdateDocDto1),
       ).resolves.toEqual(testUpdatedDoc);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedDocDocParams,
       );
@@ -254,8 +282,8 @@ describe('DocService', () => {
       await expect(
         service.update(testDocEntity1, testBaseUpdateDocDto1),
       ).resolves.toEqual(testUpdatedDoc);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedDocDocParams,
       );
@@ -270,22 +298,22 @@ describe('DocService', () => {
     });
 
     afterEach(async () => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testDocEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
-          .add(await testDocEntity1.trueUpToDateDuration())
+          .add(dayjs.duration(testOrganizationEntity1.upToDateDuration))
           .toDate(),
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should mark the doc as up to date', async () => {
       await expect(service.markUpToDate(testDocEntity1)).resolves.toEqual(
         testUpdatedDoc,
       );
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedDocDocParams,
       );
@@ -305,8 +333,8 @@ describe('DocService', () => {
       await expect(service.markUpToDate(testDocEntity1)).resolves.toEqual(
         testUpdatedDoc,
       );
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testUpdatedDocDocParams,
       );
@@ -315,18 +343,21 @@ describe('DocService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testDocEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testDocEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(testDocEntity1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testDocEntity1);
     });
 
     it('should delete a doc', async () => {
       await expect(service.delete(testDocEntity1)).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
-      expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, {
-        id: testDocEntity1.id,
-      });
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledWith(
+        testOrganizationEntity1.id,
+        {
+          id: testDocEntity1.id,
+        },
+      );
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
@@ -343,7 +374,7 @@ describe('DocService', () => {
         .spyOn(solrCli, 'deleteDocs')
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(service.delete(testDocEntity1)).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -59,8 +59,8 @@ describe('InviteEffects', () => {
       });
       expect(effects.acceptInvite$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.acceptInvite).toBeCalledTimes(1);
-        expect(service.acceptInvite).toBeCalledWith(testBaseTokenDto1);
+        expect(service.acceptInvite).toHaveBeenCalledTimes(1);
+        expect(service.acceptInvite).toHaveBeenCalledWith(testBaseTokenDto1);
       });
     });
   });
@@ -73,8 +73,8 @@ describe('InviteEffects', () => {
       const expected$ = hot('a', { a: InviteActions.declineInviteSuccess() });
       expect(effects.declineInvite$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.declineInvite).toBeCalledTimes(1);
-        expect(service.declineInvite).toBeCalledWith(testBaseTokenDto1);
+        expect(service.declineInvite).toHaveBeenCalledTimes(1);
+        expect(service.declineInvite).toHaveBeenCalledWith(testBaseTokenDto1);
       });
     });
   });
@@ -93,8 +93,8 @@ describe('InviteEffects', () => {
       });
       expect(effects.inviteSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
 
@@ -103,8 +103,8 @@ describe('InviteEffects', () => {
       const expected$ = hot('a', { a: InviteActions.declineInviteSuccess() });
       expect(effects.inviteSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });

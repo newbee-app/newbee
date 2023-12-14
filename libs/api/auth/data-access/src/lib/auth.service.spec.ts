@@ -117,8 +117,8 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should generate an access token', () => {
       expect(service.login(testUserEntity1)).toEqual(testAccessToken);
-      expect(jwtService.sign).toBeCalledTimes(1);
-      expect(jwtService.sign).toBeCalledWith(testUserJwtPayload1);
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
+      expect(jwtService.sign).toHaveBeenCalledWith(testUserJwtPayload1);
     });
   });
 
@@ -127,8 +127,8 @@ describe('AuthService', () => {
       await expect(service.verifyAuthToken(testAccessToken)).resolves.toEqual(
         testUserEntity1,
       );
-      expect(userService.findOneById).toBeCalledTimes(1);
-      expect(userService.findOneById).toBeCalledWith(testUserEntity1.id);
+      expect(userService.findOneById).toHaveBeenCalledTimes(1);
+      expect(userService.findOneById).toHaveBeenCalledWith(testUserEntity1.id);
     });
 
     it('should return null if verify throws an error', async () => {
@@ -138,7 +138,7 @@ describe('AuthService', () => {
       await expect(
         service.verifyAuthToken(testAccessToken),
       ).resolves.toBeNull();
-      expect(userService.findOneById).not.toBeCalled();
+      expect(userService.findOneById).not.toHaveBeenCalled();
     });
   });
 
@@ -147,15 +147,17 @@ describe('AuthService', () => {
       await expect(
         service.generateLoginChallenge(testUserEntity1.email),
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
-      expect(authenticatorService.findAllByEmail).toBeCalledTimes(1);
-      expect(authenticatorService.findAllByEmail).toBeCalledWith(
+      expect(authenticatorService.findAllByEmail).toHaveBeenCalledTimes(1);
+      expect(authenticatorService.findAllByEmail).toHaveBeenCalledWith(
         testUserEntity1.email,
       );
-      expect(mockGenerateAuthenticationOptions).toBeCalledTimes(1);
-      expect(userService.findOneByEmail).toBeCalledTimes(1);
-      expect(userService.findOneByEmail).toBeCalledWith(testUserEntity1.email);
-      expect(userService.update).toBeCalledTimes(1);
-      expect(userService.update).toBeCalledWith(testUserEntity1, {
+      expect(mockGenerateAuthenticationOptions).toHaveBeenCalledTimes(1);
+      expect(userService.findOneByEmail).toHaveBeenCalledTimes(1);
+      expect(userService.findOneByEmail).toHaveBeenCalledWith(
+        testUserEntity1.email,
+      );
+      expect(userService.update).toHaveBeenCalledTimes(1);
+      expect(userService.update).toHaveBeenCalledWith(testUserEntity1, {
         challenge: testPublicKeyCredentialRequestOptions1.challenge,
       });
     });
@@ -163,8 +165,10 @@ describe('AuthService', () => {
 
   describe('verifyLoginChallenge', () => {
     afterEach(() => {
-      expect(userService.findOneByEmail).toBeCalledTimes(1);
-      expect(userService.findOneByEmail).toBeCalledWith(testUserEntity1.email);
+      expect(userService.findOneByEmail).toHaveBeenCalledTimes(1);
+      expect(userService.findOneByEmail).toHaveBeenCalledWith(
+        testUserEntity1.email,
+      );
     });
 
     it('should verify a login challenge and return the user', async () => {
@@ -174,13 +178,15 @@ describe('AuthService', () => {
           testAuthenticationCredential1,
         ),
       ).resolves.toEqual(testUserEntity1);
-      expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
-      expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledWith(
         testAuthenticationCredential1.id,
       );
-      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
-      expect(authenticatorService.updateCounterById).toBeCalledTimes(1);
-      expect(authenticatorService.updateCounterById).toBeCalledWith(
+      expect(mockVerifyAuthenticationResponse).toHaveBeenCalledTimes(1);
+      expect(authenticatorService.updateCounterById).toHaveBeenCalledTimes(1);
+      expect(authenticatorService.updateCounterById).toHaveBeenCalledWith(
         testAuthenticatorEntity1.id,
         testCounter,
         testUserEntity1.id,
@@ -207,11 +213,13 @@ describe('AuthService', () => {
           testAuthenticationCredential1,
         ),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
-      expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
-      expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledWith(
         testAuthenticationCredential1.id,
       );
-      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
+      expect(mockVerifyAuthenticationResponse).toHaveBeenCalledTimes(1);
     });
 
     it('should throw a BadRequestException if not verified', async () => {
@@ -225,11 +233,13 @@ describe('AuthService', () => {
           testAuthenticationCredential1,
         ),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
-      expect(authenticatorService.findOneByCredentialId).toBeCalledTimes(1);
-      expect(authenticatorService.findOneByCredentialId).toBeCalledWith(
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(authenticatorService.findOneByCredentialId).toHaveBeenCalledWith(
         testAuthenticationCredential1.id,
       );
-      expect(mockVerifyAuthenticationResponse).toBeCalledTimes(1);
+      expect(mockVerifyAuthenticationResponse).toHaveBeenCalledTimes(1);
     });
   });
 });

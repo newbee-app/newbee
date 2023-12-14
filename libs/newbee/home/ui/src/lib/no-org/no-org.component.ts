@@ -11,20 +11,13 @@ import { Keyword } from '@newbee/shared/util';
   styles: [],
 })
 export class NoOrgComponent {
+  readonly keyword = Keyword;
+  readonly shortUrl = ShortUrl;
+
   /**
    * The event emitter that tells the parent component what route to navigate to.
    */
   @Output() navigateToLink = new EventEmitter<string>();
-
-  /**
-   * All NewBee keywords.
-   */
-  readonly keyword = Keyword;
-
-  /**
-   * All NewBee short URLs.
-   */
-  readonly shortUrl = ShortUrl;
 
   /**
    * Calls `navigateToLink.emit()` using the given routes, joined by backslashes.

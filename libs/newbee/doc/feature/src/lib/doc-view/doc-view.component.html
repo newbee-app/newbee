@@ -1,0 +1,10 @@
+<newbee-view-doc
+  [httpClientError]="httpClientError$ | async"
+  [doc]="(docState$ | async)!.selectedDoc!"
+  [orgMember]="(orgMember$ | async)!.orgMember"
+  [teamMember]="(docState$ | async)!.teamMember"
+  [upToDatePending]="(pendingUpToDate$ | async)!"
+  (orgNavigate)="onOrgNavigate($event)"
+  (docNavigate)="onDocNavigate($event)"
+  (markAsUpToDate)="onMarkAsUpToDate()"
+></newbee-view-doc>

@@ -63,18 +63,20 @@ describe('CookieController', () => {
 
   describe('initCookies', () => {
     afterEach(() => {
-      expect(generateToken).toBeCalledTimes(1);
-      expect(generateToken).toBeCalledWith(request, response, true);
+      expect(generateToken).toHaveBeenCalledTimes(1);
+      expect(generateToken).toHaveBeenCalledWith(request, response, true);
     });
 
     it('should return a CSRF token and initial data as a DTO', async () => {
       await expect(controller.initCookies(request, response)).resolves.toEqual(
         testBaseCsrfTokenAndDataDto1,
       );
-      expect(authService.verifyAuthToken).toBeCalledTimes(1);
-      expect(authService.verifyAuthToken).toBeCalledWith(testToken);
-      expect(entityService.createUserRelation).toBeCalledTimes(1);
-      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
+      expect(authService.verifyAuthToken).toHaveBeenCalledTimes(1);
+      expect(authService.verifyAuthToken).toHaveBeenCalledWith(testToken);
+      expect(entityService.createUserRelation).toHaveBeenCalledTimes(1);
+      expect(entityService.createUserRelation).toHaveBeenCalledWith(
+        testUserEntity1,
+      );
     });
 
     it('should only return a CSRF token if request has no auth cookie', async () => {
@@ -83,8 +85,8 @@ describe('CookieController', () => {
         ...testBaseCsrfTokenAndDataDto1,
         userRelation: null,
       });
-      expect(authService.verifyAuthToken).not.toBeCalled();
-      expect(entityService.createUserRelation).not.toBeCalled();
+      expect(authService.verifyAuthToken).not.toHaveBeenCalled();
+      expect(entityService.createUserRelation).not.toHaveBeenCalled();
     });
 
     it('should only return a CSRF token if verify returns null', async () => {
@@ -93,11 +95,11 @@ describe('CookieController', () => {
         ...testBaseCsrfTokenAndDataDto1,
         userRelation: null,
       });
-      expect(authService.verifyAuthToken).toBeCalledTimes(1);
-      expect(authService.verifyAuthToken).toBeCalledWith(
+      expect(authService.verifyAuthToken).toHaveBeenCalledTimes(1);
+      expect(authService.verifyAuthToken).toHaveBeenCalledWith(
         request.signedCookies[authJwtCookie],
       );
-      expect(entityService.createUserRelation).not.toBeCalled();
+      expect(entityService.createUserRelation).not.toHaveBeenCalled();
     });
   });
 });

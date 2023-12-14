@@ -11,7 +11,7 @@ export enum TeamRoleEnum {
  * TeamRoleEnum as a set.
  */
 export const teamRoleEnumSet: Set<string> = new Set(
-  Object.values(TeamRoleEnum)
+  Object.values(TeamRoleEnum),
 );
 
 /**
@@ -19,6 +19,19 @@ export const teamRoleEnumSet: Set<string> = new Set(
  */
 export const ascTeamRoleEnum = [
   TeamRoleEnum.Member,
+  TeamRoleEnum.Moderator,
+  TeamRoleEnum.Owner,
+];
+
+/**
+ * For use in permissions, allow any team member to access a resource.
+ */
+export const anyTeamMember = ascTeamRoleEnum;
+
+/**
+ * For use in permissions, allow only team moderators and up to access a resource.
+ */
+export const atLeastTeamModerator = [
   TeamRoleEnum.Moderator,
   TeamRoleEnum.Owner,
 ];

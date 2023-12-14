@@ -78,15 +78,17 @@ describe('QnaReducer', () => {
       expect(updatedState).toEqual(initialQnaState);
     });
 
+    it('should update state for getQnaSuccess', () => {
+      const updatedState = qnaFeature.reducer(
+        stateAfterEditQuestion,
+        QnaActions.getQnaSuccess,
+      );
+      expect(updatedState).toEqual(initialQnaState);
+    });
+
     it('should update state for editQnaSuccess', () => {
       let updatedState = qnaFeature.reducer(
         stateAfterMarkQnaAsUpToDate,
-        QnaActions.editQnaSuccess,
-      );
-      expect(updatedState).toEqual(initialQnaState);
-
-      updatedState = qnaFeature.reducer(
-        stateAfterEditQuestion,
         QnaActions.editQnaSuccess,
       );
       expect(updatedState).toEqual(initialQnaState);

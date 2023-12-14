@@ -26,9 +26,9 @@ describe('NoOrgComponent', () => {
   it('emitNavigateToLink should emit navigateToLink', () => {
     jest.spyOn(component.navigateToLink, 'emit');
     component.emitNavigateToLink(ShortUrl.Organization, Keyword.New);
-    expect(component.navigateToLink.emit).toBeCalledTimes(1);
-    expect(component.navigateToLink.emit).toBeCalledWith(
-      `/${ShortUrl.Organization}/${Keyword.New}`
+    expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
+    expect(component.navigateToLink.emit).toHaveBeenCalledWith(
+      `/${ShortUrl.Organization}/${Keyword.New}`,
     );
   });
 });

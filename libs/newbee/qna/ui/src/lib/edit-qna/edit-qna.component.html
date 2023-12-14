@@ -1,6 +1,14 @@
 <div class="flex flex-col flex-nowrap gap-y-6">
   <div
-    *ngIf="showQuickActions"
+    *ngIf="
+      checkRoles(upToDateAndDeleteRoles, {
+        orgMember: orgMember.orgMember,
+        teamRole: teamMember?.role,
+        team: !!qna.team,
+        postCreator: qna.creator?.orgMember,
+        postMaintainer: qna.maintainer?.orgMember
+      })
+    "
     id="quick-actions"
     class="collapse collapse-arrow z-0 border border-info rounded-box p-4"
   >
@@ -12,6 +20,15 @@
     <div class="collapse-content flex flex-col flex-nowrap gap-y-2">
       <div class="flex flex-row flex-wrap gap-2">
         <button
+          *ngIf="
+            checkRoles(apiRoles.qna.markUpToDate, {
+              orgMember: orgMember.orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
           type="button"
           (click)="markAsUpToDate.emit()"
           [disabled]="upToDatePending"
@@ -22,6 +39,15 @@
         </button>
 
         <button
+          *ngIf="
+            checkRoles(apiRoles.qna.delete, {
+              orgMember: orgMember.orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+          "
           type="button"
           (click)="delete.emit()"
           [disabled]="deletePending"
@@ -50,11 +76,35 @@
   >
     <input type="checkbox" id="question-collapse" checked />
     <label for="question-collapse" class="collapse-title">
-      <h3>{{ hasQuestionPermissions ? 'Edit' : 'View' }} question</h3>
+      <h3>
+        {{
+          checkRoles(apiRoles.qna.updateQuestion, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!qna.team,
+            postCreator: qna.creator?.orgMember,
+            postMaintainer: qna.maintainer?.orgMember
+          })
+            ? 'Edit'
+            : 'View'
+        }}
+        question
+      </h3>
     </label>
 
     <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
-      <ng-container *ngIf="hasQuestionPermissions; else noQuestionPermissions">
+      <ng-container
+        *ngIf="
+          checkRoles(apiRoles.qna.updateQuestion, {
+            orgMember: orgMember.orgMember,
+            teamRole: teamMember?.role,
+            team: !!qna.team,
+            postCreator: qna.creator?.orgMember,
+            postMaintainer: qna.maintainer?.orgMember
+          });
+          else noQuestionPermissions
+        "
+      >
         <form
           [formGroup]="editQuestionForm"
           class="flex flex-col flex-nowrap gap-y-4"
@@ -82,6 +132,9 @@
               id="title-input"
               formControlName="title"
               class="input input-bordered w-full"
+              [ngClass]="{
+                'input-error': inputDisplayError(editQuestionForm, 'title')
+              }"
             />
 
             <newbee-alert
@@ -174,22 +227,61 @@
     >
       <input type="checkbox" id="answer-collapse" checked />
       <label for="answer-collapse" class="collapse-title">
-        <h3>{{ hasAnswerPermissions ? 'Edit' : 'View' }} answer</h3>
+        <h3>
+          {{
+            checkRoles(apiRoles.qna.updateAnswer, {
+              orgMember: orgMember.orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            })
+              ? 'Edit'
+              : 'View'
+          }}
+          answer
+        </h3>
       </label>
 
       <div class="collapse-content flex flex-col flex-nowrap gap-y-4">
-        <ng-container *ngIf="hasAnswerPermissions; else noAnswerPermissions">
+        <ng-container
+          *ngIf="
+            checkRoles(apiRoles.qna.updateAnswer, {
+              orgMember: orgMember.orgMember,
+              teamRole: teamMember?.role,
+              team: !!qna.team,
+              postCreator: qna.creator?.orgMember,
+              postMaintainer: qna.maintainer?.orgMember
+            });
+            else noAnswerPermissions
+          "
+        >
           <form [formGroup]="editAnswerForm">
+            <div class="flex flex-col flex-nowrap gap-y-2">
+              <label for="maintainer-input">Maintainer</label>
+              <div class="w-fit max-w-full">
+                <newbee-searchable-select
+                  id="maintainer-input"
+                  formControlName="maintainer"
+                  [showSearchbar]="true"
+                  [options]="orgMemberOptions"
+                  optionName="user"
+                  [valid]="!inputDisplayError(editAnswerForm, 'maintainer')"
+                  [errorText]="inputErrorMessage(editAnswerForm, 'maintainer')"
+                ></newbee-searchable-select>
+              </div>
+            </div>
+
             <div
               formGroupName="upToDateDuration"
               class="flex flex-col flex-nowrap gap-y-2"
             >
               <div>
                 <p>How long should this post stay relevant?</p>
-                <p class="opacity-75">{{ upToDateDurationTagline }}</p>
+                <p class="opacity-75">{{ defaultUpToDateDuration }}</p>
               </div>
 
-              <div class="flex flex-row flex-wrap gap-2 items-center">
+              <div class="flex flex-row flex-wrap gap-2 items-baseline">
                 For
 
                 <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
@@ -200,6 +292,12 @@
                     newbeeDigitOnly
                     [min]="1"
                     class="input input-bordered"
+                    [ngClass]="{
+                      'input-error': inputDisplayError(
+                        editAnswerForm.controls.upToDateDuration,
+                        'num'
+                      )
+                    }"
                   />
 
                   <newbee-alert
@@ -243,8 +341,8 @@
 
               <newbee-alert
                 [type]="alertType.Error"
-                [show]="!!httpClientErrorMsg('duration')"
-                [text]="httpClientErrorMsg('duration')"
+                [show]="!!httpClientErrorMsg('upToDateDuration')"
+                [text]="httpClientErrorMsg('upToDateDuration')"
               ></newbee-alert>
             </div>
           </form>
@@ -269,7 +367,8 @@
               [disabled]="
                 editAnswerPending ||
                 editAnswerForm.invalid ||
-                !editAnswerDistinct
+                !editAnswerDistinct ||
+                !answerMarkdoc
               "
               class="btn btn-primary w-fit"
             >

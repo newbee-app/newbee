@@ -93,14 +93,14 @@ describe('OrgMemberService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockOrgMemberEntity).toBeCalledTimes(1);
-      expect(mockOrgMemberEntity).toBeCalledWith(
+      expect(mockOrgMemberEntity).toHaveBeenCalledTimes(1);
+      expect(mockOrgMemberEntity).toHaveBeenCalledWith(
         testUserEntity1,
         testOrganizationEntity1,
         testOrgMemberEntity1.role,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testOrgMemberEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testOrgMemberEntity1);
     });
 
     it('should create a new org member', async () => {
@@ -111,8 +111,8 @@ describe('OrgMemberService', () => {
           testOrgMemberEntity1.role,
         ),
       ).resolves.toEqual(testOrgMemberEntity1);
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testOrgMemberDocParams1,
       );
@@ -157,20 +157,20 @@ describe('OrgMemberService', () => {
           testOrgMemberEntity1.role,
         ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testOrgMemberDocParams1,
       );
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testOrgMemberEntity1);
     });
   });
 
   describe('findOneByUserAndOrg', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(OrgMemberEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(OrgMemberEntity, {
         user: testUserEntity1,
         organization: testOrganizationEntity1,
       });
@@ -203,8 +203,8 @@ describe('OrgMemberService', () => {
 
   describe('findOneByUserAndOrgOrNull', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(OrgMemberEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(OrgMemberEntity, {
         user: testUserEntity1,
         organization: testOrganizationEntity1,
       });
@@ -232,8 +232,8 @@ describe('OrgMemberService', () => {
 
   describe('findOneByOrgAndSlug', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(OrgMemberEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(OrgMemberEntity, {
         organization: testOrganizationEntity1,
         slug: testOrgMemberEntity1.slug,
       });
@@ -275,11 +275,11 @@ describe('OrgMemberService', () => {
 
   describe('updateRole', () => {
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testOrgMemberEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testOrgMemberEntity1, {
         role: testUpdatedOrgMember.role,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it(`should update an org member's role`, async () => {
@@ -306,15 +306,17 @@ describe('OrgMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testOrgMemberEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testOrgMemberEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
+        testOrgMemberEntity1,
+      );
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testOrgMemberEntity1);
     });
 
     it('should delete an org member', async () => {
       await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
+        service.delete(testOrgMemberEntity1),
       ).resolves.toBeUndefined();
     });
 
@@ -322,9 +324,9 @@ describe('OrgMemberService', () => {
       jest
         .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      await expect(service.delete(testOrgMemberEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
     });
 
     it('should not throw if deleteDocs throws an error', async () => {
@@ -332,44 +334,71 @@ describe('OrgMemberService', () => {
         .spyOn(solrCli, 'deleteDocs')
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(
-        service.delete(testOrgMemberEntity1, OrgRoleEnum.Owner),
+        service.delete(testOrgMemberEntity1),
       ).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('checkRequester', () => {
+  describe('checkRequesterOrgRole', () => {
     it(`should pass if the requester's org role is greater than or equal to the subject's org role`, () => {
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Owner),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Owner,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Moderator),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Moderator,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, OrgRoleEnum.Member),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Owner,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Moderator),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Moderator,
+          OrgRoleEnum.Moderator,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Member),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Moderator,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Member),
+        OrgMemberService.checkRequesterOrgRole(
+          OrgRoleEnum.Member,
+          OrgRoleEnum.Member,
+        ),
       ).toBeUndefined();
     });
   });
 
   it(`should fail if the requester's org role is lower than the subject's org role`, () => {
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Moderator),
+      OrgMemberService.checkRequesterOrgRole(
+        OrgRoleEnum.Member,
+        OrgRoleEnum.Moderator,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Member, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequesterOrgRole(
+        OrgRoleEnum.Member,
+        OrgRoleEnum.Owner,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
     expect(() =>
-      service.checkRequester(OrgRoleEnum.Moderator, OrgRoleEnum.Owner),
+      OrgMemberService.checkRequesterOrgRole(
+        OrgRoleEnum.Moderator,
+        OrgRoleEnum.Owner,
+      ),
     ).toThrow(new ForbiddenException(forbiddenError));
   });
 });

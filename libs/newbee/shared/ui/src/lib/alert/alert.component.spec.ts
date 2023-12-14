@@ -40,8 +40,8 @@ describe('AlertComponent', () => {
     it('should set show to false and emit output', () => {
       component.hide();
       expect(component.show).toBeFalsy();
-      expect(component.showChange.emit).toBeCalledTimes(1);
-      expect(component.showChange.emit).toBeCalledWith(false);
+      expect(component.showChange.emit).toHaveBeenCalledTimes(1);
+      expect(component.showChange.emit).toHaveBeenCalledWith(false);
     });
   });
 });

@@ -34,7 +34,9 @@ describe('QnaRootComponent', () => {
   describe('ngOnDestroy', () => {
     it('should dispatch resetSelectedQna', () => {
       component.ngOnDestroy();
-      expect(store.dispatch).toBeCalledWith(QnaActions.resetSelectedQna());
+      expect(store.dispatch).toHaveBeenCalledWith(
+        QnaActions.resetSelectedQna(),
+      );
     });
   });
 });

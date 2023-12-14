@@ -1,0 +1,124 @@
+<div class="flex flex-col flex-nowrap gap-y-6 mt-mid">
+  <h3>Create a doc</h3>
+
+  <form [formGroup]="docForm" class="flex flex-col flex-nowrap gap-y-6">
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="team-input">Where would you like to put the doc?</label>
+
+      <div class="w-fit max-w-full">
+        <newbee-searchable-select
+          id="team-input"
+          [showSearchbar]="true"
+          [options]="teamOptions"
+          optionName="team"
+          formControlName="team"
+          [valid]="!inputDisplayError(docForm, keyword.Team)"
+          [errorText]="inputErrorMessage(docForm, keyword.Team)"
+        ></newbee-searchable-select>
+      </div>
+    </div>
+
+    <div
+      formGroupName="upToDateDuration"
+      class="flex flex-col flex-nowrap gap-y-2"
+    >
+      <div>
+        <p>How long should this post stay relevant?</p>
+        <p class="opacity-75">{{ defaultUpToDateDuration }}</p>
+      </div>
+
+      <div class="flex flex-row flex-wrap gap-2 items-baseline">
+        For
+
+        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
+          <input
+            type="number"
+            step="1"
+            formControlName="num"
+            newbeeDigitOnly
+            [min]="1"
+            class="input input-bordered"
+            [ngClass]="{
+              'input-error': inputDisplayError(
+                docForm.controls.upToDateDuration,
+                'num'
+              )
+            }"
+          />
+
+          <newbee-alert
+            [type]="alertType.Error"
+            [show]="inputDisplayError(docForm.controls.upToDateDuration, 'num')"
+            [text]="inputErrorMessage(docForm.controls.upToDateDuration, 'num')"
+          ></newbee-alert>
+        </div>
+
+        <div class="w-44 flex-auto">
+          <newbee-searchable-select
+            formControlName="frequency"
+            [showSearchbar]="false"
+            [options]="frequencyOptions"
+            optionName="frequency"
+            [valid]="
+              !inputDisplayError(docForm.controls.upToDateDuration, 'frequency')
+            "
+            [errorText]="
+              inputErrorMessage(docForm.controls.upToDateDuration, 'frequency')
+            "
+          ></newbee-searchable-select>
+        </div>
+      </div>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="inputDisplayError(docForm, 'upToDateDuration')"
+        [text]="inputErrorMessage(docForm, 'upToDateDuration')"
+      ></newbee-alert>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <label for="title-input" class="sr-only">Doc title</label>
+      <input
+        type="text"
+        id="title-input"
+        formControlName="title"
+        placeholder="Doc title"
+        required
+        class="input input-bordered"
+        [ngClass]="{ 'input-error': inputDisplayError(docForm, 'title') }"
+      />
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="inputDisplayError(docForm, 'title')"
+        [text]="inputErrorMessage(docForm, 'title')"
+      ></newbee-alert>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <newbee-markdoc-editor [(text)]="docMarkdoc"></newbee-markdoc-editor>
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg(keyword.Doc)"
+        [text]="httpClientErrorMsg(keyword.Doc)"
+      ></newbee-alert>
+    </div>
+
+    <div class="flex flex-col flex-nowrap gap-y-2">
+      <button
+        type="button"
+        (click)="emitCreate()"
+        [disabled]="createPending || docForm.invalid"
+        class="btn btn-primary w-fit"
+      >
+        <span *ngIf="createPending" class="loading loading-spinner"></span>
+        Post doc
+      </button>
+
+      <newbee-alert
+        [type]="alertType.Error"
+        [show]="!!httpClientErrorMsg(keyword.Misc)"
+        [text]="httpClientErrorMsg(keyword.Misc)"
+      ></newbee-alert>
+    </div>
+  </form>
+</div>

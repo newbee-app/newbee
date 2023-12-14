@@ -67,15 +67,15 @@ describe('SearchableSelectComponent', () => {
       component.expand();
       component.shrink();
       expect(component.expanded).toBeFalsy();
-      expect(component.onTouched).toBeCalledTimes(1);
-      expect(component.exited.emit).toBeCalledTimes(1);
+      expect(component.onTouched).toHaveBeenCalledTimes(1);
+      expect(component.exited.emit).toHaveBeenCalledTimes(1);
     });
 
     it('should not call onTouched nor emit exited if emitEvent is false', () => {
       component.expand();
       component.shrink(false);
-      expect(component.onTouched).not.toBeCalled();
-      expect(component.exited.emit).not.toBeCalled();
+      expect(component.onTouched).not.toHaveBeenCalled();
+      expect(component.exited.emit).not.toHaveBeenCalled();
     });
   });
 
@@ -83,7 +83,7 @@ describe('SearchableSelectComponent', () => {
     it('should ouput the selected value', () => {
       component.writeValue(testSelectOptionCountry1.value);
       expect(component.selectedText).toEqual(
-        testSelectOptionCountry1.selectedValue
+        testSelectOptionCountry1.selectedValue,
       );
     });
 
@@ -107,8 +107,8 @@ describe('SearchableSelectComponent', () => {
       component.writeValue(testSelectOptionCountry2.value);
       expect(component.value).toEqual(testSelectOptionCountry2.value);
       expect(component.expanded).toBeFalsy();
-      expect(component.onChange).not.toBeCalled();
-      expect(component.onTouched).not.toBeCalled();
+      expect(component.onChange).not.toHaveBeenCalled();
+      expect(component.onTouched).not.toHaveBeenCalled();
     });
 
     it('should do nothing if option does not exist', () => {
@@ -127,8 +127,8 @@ describe('SearchableSelectComponent', () => {
       component.selectOption(testSelectOptionCountry2.value);
       expect(component.value).toEqual(testSelectOptionCountry2.value);
       expect(component.expanded).toBeFalsy();
-      expect(component.onChange).toBeCalledTimes(1);
-      expect(component.onTouched).toBeCalledTimes(1);
+      expect(component.onChange).toHaveBeenCalledTimes(1);
+      expect(component.onTouched).toHaveBeenCalledTimes(1);
     });
 
     it('should do nothing if option does not exist', () => {

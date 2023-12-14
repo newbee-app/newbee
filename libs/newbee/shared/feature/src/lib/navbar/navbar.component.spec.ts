@@ -87,8 +87,8 @@ describe('NavbarComponent', () => {
   describe('logout', () => {
     it('should dispatch logout', () => {
       component.logout();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(AuthActions.logout());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(AuthActions.logout());
     });
   });
 });

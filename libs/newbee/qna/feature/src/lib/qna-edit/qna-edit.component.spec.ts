@@ -3,6 +3,7 @@ import { initialQnaState as initialQnaModuleState } from '@newbee/newbee/qna/dat
 import { EditQnaComponent } from '@newbee/newbee/qna/ui';
 import {
   QnaActions,
+  initialAuthState,
   initialHttpState,
   initialOrganizationState,
   initialQnaState,
@@ -14,7 +15,7 @@ import {
   testOrgMemberRelation1,
   testOrganizationRelation1,
   testQnaRelation1,
-  testTeamMember1,
+  testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaEditComponent } from './qna-edit.component';
@@ -34,13 +35,16 @@ describe('QnaEditComponent', () => {
             [Keyword.Qna]: {
               ...initialQnaState,
               selectedQna: testQnaRelation1,
-              teamMember: testTeamMember1,
             },
             [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
+            },
+            [Keyword.Auth]: {
+              ...initialAuthState,
+              user: testUser1,
             },
             [`${Keyword.Qna}Module`]: initialQnaModuleState,
           },
@@ -60,13 +64,14 @@ describe('QnaEditComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
+    expect(store).toBeDefined();
   });
 
   describe('onEditQuestion', () => {
     it('should dispatch editQuestion', () => {
       component.onEditQuestion(testBaseUpdateQuestionDto1);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         QnaActions.editQuestion({
           updateQuestionDto: testBaseUpdateQuestionDto1,
         }),
@@ -77,8 +82,8 @@ describe('QnaEditComponent', () => {
   describe('onEditAnswer', () => {
     it('should dispatch editAnswer', () => {
       component.onEditAnswer(testBaseUpdateAnswerDto1);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
       );
     });
@@ -87,16 +92,18 @@ describe('QnaEditComponent', () => {
   describe('onMarkAsUpToDate', () => {
     it('should dispatch markQnaAsUpToDate', () => {
       component.onMarkAsUpToDate();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(QnaActions.markQnaAsUpToDate());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        QnaActions.markQnaAsUpToDate(),
+      );
     });
   });
 
   describe('onDelete', () => {
     it('should dispatch deleteQna', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(QnaActions.deleteQna());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(QnaActions.deleteQna());
     });
   });
 });

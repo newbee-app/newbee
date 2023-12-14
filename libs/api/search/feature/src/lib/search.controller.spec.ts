@@ -42,8 +42,8 @@ describe('SearchController', () => {
       await expect(
         controller.search(testBaseQueryDto1, testOrganizationEntity1),
       ).resolves.toEqual(testBaseQueryResultDto1);
-      expect(service.query).toBeCalledTimes(1);
-      expect(service.query).toBeCalledWith(
+      expect(service.query).toHaveBeenCalledTimes(1);
+      expect(service.query).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseQueryDto1,
       );
@@ -55,8 +55,8 @@ describe('SearchController', () => {
       await expect(
         controller.suggest(testBaseSuggestDto1, testOrganizationEntity1),
       ).resolves.toEqual(testBaseSuggestResultDto1);
-      expect(service.suggest).toBeCalledTimes(1);
-      expect(service.suggest).toBeCalledWith(
+      expect(service.suggest).toHaveBeenCalledTimes(1);
+      expect(service.suggest).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testBaseSuggestDto1,
       );

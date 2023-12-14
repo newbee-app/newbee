@@ -57,7 +57,7 @@ export class OrganizationEffects {
                 case nameIsNotEmpty:
                   return 'name';
                 case upToDateDurationMatches:
-                  return Keyword.Duration;
+                  return 'upToDateDuration';
                 default:
                   return Keyword.Misc;
               }
@@ -109,10 +109,18 @@ export class OrganizationEffects {
               }
             }),
             catchError((err) =>
-              catchHttpClientError(
-                err,
-                () => `${Keyword.Organization}-${Keyword.Edit}`,
-              ),
+              catchHttpClientError(err, (message) => {
+                switch (message) {
+                  case nameIsNotEmpty:
+                    return 'name';
+                  case upToDateDurationMatches:
+                    return 'upToDateDuration';
+                  default:
+                    return type === OrganizationActions.editOrg.type
+                      ? `${Keyword.Organization}-${Keyword.Edit}`
+                      : `${Keyword.Organization}-${Keyword.Slug}-${Keyword.Edit}`;
+                }
+              }),
             ),
           );
       }),

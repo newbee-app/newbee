@@ -34,7 +34,7 @@ describe('OrgHomeComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            [Keyword.Search]: { ...initialSearchState, suggestions: [] },
+            [Keyword.Search]: initialSearchState,
           },
         }),
         provideRouter([{ path: '**', component: OrgHomeComponent }]),
@@ -69,8 +69,8 @@ describe('OrgHomeComponent', () => {
     it('should dispatch suggest', fakeAsync(() => {
       component.onSearchbar(testBaseSuggestDto1.query);
       tick(300);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.suggest({ query: testBaseSuggestDto1 }),
       );
     }));

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { organizationFeature } from '@newbee/newbee/organization/data-access';
+import { organizationFeature as organizationModuleFeature } from '@newbee/newbee/organization/data-access';
 import {
   OrganizationActions,
   httpFeature,
+  organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
@@ -16,14 +17,16 @@ import { Store } from '@ngrx/store';
 })
 export class OrgInviteComponent {
   /**
-   * Whether the invite action is pending.
+   * The org member making the request.
    */
-  invitePending$ = this.store.select(organizationFeature.selectPendingInvite);
+  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
 
   /**
-   * The email of the invited user, if an invitation was successfully sent.
+   * The org module state.
    */
-  invitedUser$ = this.store.select(organizationFeature.selectInvitedUser);
+  orgModuleState$ = this.store.select(
+    organizationModuleFeature.selectOrgModuleState,
+  );
 
   /**
    * Request HTTP error, if any exist.

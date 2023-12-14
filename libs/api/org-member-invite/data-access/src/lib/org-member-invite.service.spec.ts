@@ -147,8 +147,8 @@ describe('OrgMemberInviteService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(userService.findOneByEmailOrNull).toBeCalledTimes(1);
-      expect(userService.findOneByEmailOrNull).toBeCalledWith(
+      expect(userService.findOneByEmailOrNull).toHaveBeenCalledTimes(1);
+      expect(userService.findOneByEmailOrNull).toHaveBeenCalledWith(
         testUserEntity1.email,
       );
     });
@@ -172,22 +172,28 @@ describe('OrgMemberInviteService', () => {
 
     describe('passes org member check', () => {
       afterEach(() => {
-        expect(userInvitesService.findOrCreateOneByEmail).toBeCalledTimes(1);
-        expect(userInvitesService.findOrCreateOneByEmail).toBeCalledWith(
+        expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledWith(
           testUserEntity1.email,
         );
-        expect(mockShortenUuid).toBeCalledTimes(1);
-        expect(mockShortenUuid).toBeCalledWith(testOrgMemberInviteEntity1.id);
-        expect(mockOrgMemberInviteEntity).toBeCalledTimes(1);
-        expect(mockOrgMemberInviteEntity).toBeCalledWith(
+        expect(mockShortenUuid).toHaveBeenCalledTimes(1);
+        expect(mockShortenUuid).toHaveBeenCalledWith(
+          testOrgMemberInviteEntity1.id,
+        );
+        expect(mockOrgMemberInviteEntity).toHaveBeenCalledTimes(1);
+        expect(mockOrgMemberInviteEntity).toHaveBeenCalledWith(
           testOrgMemberInviteEntity1.id,
           testUserInvitesEntity1,
           testOrgMemberEntity1,
           testOrgMemberInviteEntity1.role,
         );
-        expect(configService.get).toBeCalledTimes(2);
-        expect(em.persistAndFlush).toBeCalledTimes(1);
-        expect(em.persistAndFlush).toBeCalledWith(testOrgMemberInviteEntity1);
+        expect(configService.get).toHaveBeenCalledTimes(2);
+        expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+        expect(em.persistAndFlush).toHaveBeenCalledWith(
+          testOrgMemberInviteEntity1,
+        );
       });
 
       it('should create an org member invite and send an email', async () => {
@@ -249,17 +255,19 @@ describe('OrgMemberInviteService', () => {
         ).rejects.toThrow(
           new InternalServerErrorException(internalServerError),
         );
-        expect(mailerService.sendMail).toBeCalledTimes(1);
+        expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
       });
     });
   });
 
   describe('findOneByToken', () => {
     afterEach(() => {
-      expect(mockElongateUuid).toBeCalledTimes(1);
-      expect(mockElongateUuid).toBeCalledWith(testOrgMemberInviteEntity1.token);
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(
+      expect(mockElongateUuid).toHaveBeenCalledTimes(1);
+      expect(mockElongateUuid).toHaveBeenCalledWith(
+        testOrgMemberInviteEntity1.token,
+      );
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
         OrgMemberInviteEntity,
         testOrgMemberInviteEntity1.id,
       );
@@ -292,8 +300,8 @@ describe('OrgMemberInviteService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(em.populate).toBeCalledTimes(1);
-      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
+      expect(em.populate).toHaveBeenCalledTimes(1);
+      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
         'userInvites.orgMemberInvites',
         'userInvites.user',
       ]);
@@ -301,12 +309,14 @@ describe('OrgMemberInviteService', () => {
 
     describe('more than one org member invite', () => {
       afterEach(() => {
-        expect(entityService.safeToDelete).toBeCalledTimes(1);
-        expect(entityService.safeToDelete).toBeCalledWith(
+        expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+        expect(entityService.safeToDelete).toHaveBeenCalledWith(
           testOrgMemberInviteEntity1,
         );
-        expect(em.removeAndFlush).toBeCalledTimes(1);
-        expect(em.removeAndFlush).toBeCalledWith(testOrgMemberInviteEntity1);
+        expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+        expect(em.removeAndFlush).toHaveBeenCalledWith(
+          testOrgMemberInviteEntity1,
+        );
       });
 
       it('should only delete the org member invite', async () => {
@@ -341,8 +351,8 @@ describe('OrgMemberInviteService', () => {
       await expect(
         service.acceptInvite(testOrgMemberInviteEntity1.token, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.populate).toBeCalledTimes(1);
-      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
+      expect(em.populate).toHaveBeenCalledTimes(1);
+      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
         'userInvites.user',
       ]);
     });
@@ -360,18 +370,18 @@ describe('OrgMemberInviteService', () => {
       await expect(
         service.acceptInvite(testOrgMemberInviteEntity1.token, testUserEntity1),
       ).resolves.toEqual(testOrgMemberEntity1);
-      expect(em.populate).toBeCalledTimes(2);
-      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
+      expect(em.populate).toHaveBeenCalledTimes(2);
+      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
         'organization',
       ]);
-      expect(orgMemberService.create).toBeCalledTimes(1);
-      expect(orgMemberService.create).toBeCalledWith(
+      expect(orgMemberService.create).toHaveBeenCalledTimes(1);
+      expect(orgMemberService.create).toHaveBeenCalledWith(
         testUserEntity1,
         testOrgMemberInviteEntity1.organization,
         testOrgMemberInviteEntity1.role,
       );
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testOrgMemberInviteEntity1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testOrgMemberInviteEntity1);
     });
   });
 
@@ -391,8 +401,8 @@ describe('OrgMemberInviteService', () => {
           testUserEntity1,
         ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.populate).toBeCalledTimes(1);
-      expect(em.populate).toBeCalledWith(testOrgMemberInviteEntity1, [
+      expect(em.populate).toHaveBeenCalledTimes(1);
+      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
         'userInvites.user',
       ]);
     });
@@ -413,9 +423,9 @@ describe('OrgMemberInviteService', () => {
           testUserEntity1,
         ),
       ).resolves.toBeUndefined();
-      expect(em.populate).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(testOrgMemberInviteEntity1);
+      expect(em.populate).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testOrgMemberInviteEntity1);
     });
   });
 });

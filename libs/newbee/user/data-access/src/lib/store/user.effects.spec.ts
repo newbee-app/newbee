@@ -62,8 +62,8 @@ describe('UserEffects', () => {
       });
       expect(effects.editUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(testBaseUpdateUserDto1);
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(testBaseUpdateUserDto1);
       });
     });
   });
@@ -74,8 +74,8 @@ describe('UserEffects', () => {
       const expected$ = hot('a', { a: UserActions.deleteUserSuccess() });
       expect(effects.deleteUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith();
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith();
       });
     });
   });
@@ -86,8 +86,8 @@ describe('UserEffects', () => {
       const expected$ = hot('a', { a: UserActions.deleteUserSuccess() });
       expect(effects.deleteUserSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });

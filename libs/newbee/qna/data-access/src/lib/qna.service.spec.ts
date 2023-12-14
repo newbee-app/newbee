@@ -121,9 +121,9 @@ describe('QnaService', () => {
           testBaseUpdateQuestionDto1,
         )
         .subscribe({
-          next: (qna) => {
+          next: (qnaAndMemberDto) => {
             try {
-              expect(qna).toEqual(testQna1);
+              expect(qnaAndMemberDto).toEqual(testBaseQnaAndMemberDto1);
               done();
             } catch (err) {
               done(err);
@@ -140,7 +140,7 @@ describe('QnaService', () => {
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testBaseUpdateQuestionDto1);
 
-      req.flush(testQna1);
+      req.flush(testBaseQnaAndMemberDto1);
     });
   });
 

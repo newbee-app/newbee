@@ -50,10 +50,8 @@ describe('QnaCreateComponent', () => {
   describe('onCreate', () => {
     it('should dispatch createQna', () => {
       component.onCreate(testBaseCreateQnaDto1);
-      expect(store.dispatch).toBeCalledWith(
-        QnaActions.createQna({
-          createQnaDto: testBaseCreateQnaDto1,
-        }),
+      expect(store.dispatch).toHaveBeenCalledWith(
+        QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
       );
     });
   });

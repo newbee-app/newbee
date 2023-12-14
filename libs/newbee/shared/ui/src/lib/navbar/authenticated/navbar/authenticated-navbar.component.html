@@ -1,6 +1,10 @@
 <ng-template #orgDropdown>
   <newbee-dropdown
-    *ngIf="selectedOrganization && isAdmin"
+    *ngIf="
+      selectedOrganization &&
+      orgMember &&
+      checkRoles(orgDropdownRoles, { orgMember })
+    "
     placement="bottom-start"
   >
     <button
@@ -8,7 +12,7 @@
       type="button"
       class="btn btn-ghost flex flex-row flex-nowrap gap-x-1"
     >
-      <span class="truncate">{{ selectedOrganization!.name }}</span>
+      <span class="truncate">{{ selectedOrganization.name }}</span>
 
       <!-- chevron-down svg -->
       <svg
@@ -28,7 +32,7 @@
     </button>
 
     <ul dropdown class="menu flex flex-col flex-nowrap min-w-44">
-      <li>
+      <li *ngIf="checkRoles(apiRoles.org.update, { orgMember })">
         <a
           (click)="
             emitNavigateToLink(
@@ -41,7 +45,9 @@
           >Edit org</a
         >
       </li>
-      <li>
+      <li
+        *ngIf="checkRoles(apiRoles['org-member-invite'].invite, { orgMember })"
+      >
         <a
           (click)="
             emitNavigateToLink(
@@ -58,7 +64,11 @@
   </newbee-dropdown>
 
   <p
-    *ngIf="selectedOrganization && !isAdmin"
+    *ngIf="
+      selectedOrganization &&
+      (!orgMember ||
+        (orgMember && !checkRoles(orgDropdownRoles, { orgMember })))
+    "
     class="uppercase font-semibold text-sm mx-4"
   >
     {{ selectedOrganization.name }}
@@ -134,7 +144,11 @@
 
             <div class="hidden md:flex">
               <newbee-dropdown
-                *ngIf="selectedOrganization"
+                *ngIf="
+                  selectedOrganization &&
+                  orgMember &&
+                  checkRoles(createDropdownRoles, { orgMember })
+                "
                 placement="bottom-end"
               >
                 <newbee-tooltip label text="Create" placement="bottom">
@@ -158,7 +172,7 @@
                 </newbee-tooltip>
 
                 <ul dropdown class="menu flex flex-col flex-nowrap min-w-44">
-                  <li>
+                  <li *ngIf="checkRoles(apiRoles.doc.create, { orgMember })">
                     <a
                       (click)="
                         emitNavigateToLink(
@@ -172,7 +186,7 @@
                       >Create doc</a
                     >
                   </li>
-                  <li>
+                  <li *ngIf="checkRoles(apiRoles.qna.create, { orgMember })">
                     <a
                       (click)="
                         emitNavigateToLink(
@@ -186,7 +200,7 @@
                       >Create qna</a
                     >
                   </li>
-                  <li *ngIf="isAdmin">
+                  <li *ngIf="checkRoles(apiRoles.team.create, { orgMember })">
                     <a
                       (click)="
                         emitNavigateToLink(
@@ -206,7 +220,7 @@
               <newbee-dropdown placement="bottom-end">
                 <newbee-tooltip label text="Account" placement="bottom">
                   <button type="button" class="btn btn-ghost">
-                    {{ user.displayName ?? user.name }}
+                    {{ userDisplayName(user) }}
                   </button>
                 </newbee-tooltip>
 
@@ -245,7 +259,11 @@
         class="flex flex-col flex-nowrap p-4 h-screen bg-base-200 w-full overflow-y-auto"
       >
         <div
-          *ngIf="selectedOrganization && isAdmin"
+          *ngIf="
+            selectedOrganization &&
+            orgMember &&
+            checkRoles(orgDropdownRoles, { orgMember })
+          "
           class="collapse collapse-arrow"
         >
           <input type="checkbox" id="org-collapse" />
@@ -254,6 +272,7 @@
           }}</label>
           <div class="collapse-content flex flex-col gap-y-2 flex-nowrap">
             <a
+              *ngIf="checkRoles(apiRoles.org.update, { orgMember })"
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
@@ -265,6 +284,9 @@
               >Edit org</a
             >
             <a
+              *ngIf="
+                checkRoles(apiRoles['org-member-invite'].invite, { orgMember })
+              "
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
@@ -278,11 +300,19 @@
           </div>
         </div>
 
-        <div *ngIf="selectedOrganization" class="collapse collapse-arrow">
+        <div
+          *ngIf="
+            selectedOrganization &&
+            orgMember &&
+            checkRoles(createDropdownRoles, { orgMember })
+          "
+          class="collapse collapse-arrow"
+        >
           <input type="checkbox" id="create-collapse" />
           <label for="create-collapse" class="collapse-title">Create</label>
           <div class="collapse-content flex flex-col flex-nowrap gap-y-2">
             <a
+              *ngIf="checkRoles(apiRoles.doc.create, { orgMember })"
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
@@ -295,6 +325,7 @@
               >Create doc</a
             >
             <a
+              *ngIf="checkRoles(apiRoles.qna.create, { orgMember })"
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
@@ -307,7 +338,7 @@
               >Create question</a
             >
             <a
-              *ngIf="isAdmin"
+              *ngIf="checkRoles(apiRoles.team.create, { orgMember })"
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,

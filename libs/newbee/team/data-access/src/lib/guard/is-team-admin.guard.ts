@@ -1,9 +1,5 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import {
-  organizationFeature,
-  teamFeature,
-} from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   OrgRoleEnum,
@@ -12,7 +8,8 @@ import {
   compareTeamRoles,
 } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, take } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
+import { selectTeamAndOrgStates } from '../store';
 
 /**
  * A route guard preventing users from accessing the link unless the user is an org member or team member with admin-level privileges.
@@ -25,13 +22,13 @@ export const isTeamAdminGuard: CanActivateFn = (): Observable<
   const store = inject(Store);
   const router = inject(Router);
 
-  return combineLatest([
-    store.select(organizationFeature.selectOrgState),
-    store.select(teamFeature.selectTeamState),
-  ]).pipe(
+  return store.select(selectTeamAndOrgStates).pipe(
     take(1),
     map(
-      ([{ selectedOrganization, orgMember }, { selectedTeam, teamMember }]) => {
+      ({
+        teamState: { teamMember, selectedTeam },
+        orgState: { orgMember, selectedOrganization },
+      }) => {
         if (
           orgMember &&
           compareOrgRoles(orgMember.orgMember.role, OrgRoleEnum.Moderator) >= 0

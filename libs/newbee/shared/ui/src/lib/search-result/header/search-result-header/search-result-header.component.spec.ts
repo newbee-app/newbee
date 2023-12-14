@@ -79,25 +79,25 @@ describe('SearchResultHeaderComponent', () => {
   describe('headerClick', () => {
     it('should navigate to the proper URL', () => {
       component.headerClick();
-      expect(component.orgNavigate.emit).toBeCalledWith(
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
         `/${ShortUrl.Member}/${testOrgMemberQueryResult1.orgMember.slug}`,
       );
 
       component.searchResult = testTeamQueryResult1;
       component.headerClick();
-      expect(component.orgNavigate.emit).toBeCalledWith(
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
         `/${ShortUrl.Team}/${testTeamQueryResult1.slug}`,
       );
 
       component.searchResult = testDocQueryResult1;
       component.headerClick();
-      expect(component.orgNavigate.emit).toBeCalledWith(
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
         `/${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`,
       );
 
       component.searchResult = testQnaQueryResult1;
       component.headerClick();
-      expect(component.orgNavigate.emit).toBeCalledWith(
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
         `/${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`,
       );
     });

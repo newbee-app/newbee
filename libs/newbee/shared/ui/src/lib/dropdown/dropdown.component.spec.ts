@@ -34,12 +34,12 @@ describe('DropdownComponent', () => {
     it('should set expanded to true and emit', () => {
       component.expand();
       expect(component.expanded).toBeTruthy();
-      expect(component.expandedChange.emit).toBeCalledTimes(1);
-      expect(component.expandedChange.emit).toBeCalledWith(true);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(1);
+      expect(component.expandedChange.emit).toHaveBeenCalledWith(true);
 
       component.expand();
       expect(component.expanded).toBeTruthy();
-      expect(component.expandedChange.emit).toBeCalledTimes(1);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -47,17 +47,17 @@ describe('DropdownComponent', () => {
     it('should set expanded to false and emit', () => {
       component.shrink();
       expect(component.expanded).toBeFalsy();
-      expect(component.expandedChange.emit).not.toBeCalled();
+      expect(component.expandedChange.emit).not.toHaveBeenCalled();
 
       component.expanded = true;
       component.shrink();
       expect(component.expanded).toBeFalsy();
-      expect(component.expandedChange.emit).toBeCalledTimes(1);
-      expect(component.expandedChange.emit).toBeCalledWith(false);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(1);
+      expect(component.expandedChange.emit).toHaveBeenCalledWith(false);
 
       component.shrink();
       expect(component.expanded).toBeFalsy();
-      expect(component.expandedChange.emit).toBeCalledTimes(1);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -65,13 +65,13 @@ describe('DropdownComponent', () => {
     it('should call expand and shrink depending on current state', () => {
       component.toggleExpand();
       expect(component.expanded).toBeTruthy();
-      expect(component.expandedChange.emit).toBeCalledTimes(1);
-      expect(component.expandedChange.emit).toBeCalledWith(true);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(1);
+      expect(component.expandedChange.emit).toHaveBeenCalledWith(true);
 
       component.toggleExpand();
       expect(component.expanded).toBeFalsy();
-      expect(component.expandedChange.emit).toBeCalledTimes(2);
-      expect(component.expandedChange.emit).toBeCalledWith(false);
+      expect(component.expandedChange.emit).toHaveBeenCalledTimes(2);
+      expect(component.expandedChange.emit).toHaveBeenCalledWith(false);
     });
   });
 
@@ -81,10 +81,10 @@ describe('DropdownComponent', () => {
       jest.spyOn(component, 'expand');
 
       component.labelClick();
-      expect(component.toggleExpand).toBeCalledTimes(1);
+      expect(component.toggleExpand).toHaveBeenCalledTimes(1);
 
       component.expandStrategy = 'expand';
-      expect(component.expand).toBeCalledTimes(1);
+      expect(component.expand).toHaveBeenCalledTimes(1);
     });
   });
 });

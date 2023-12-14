@@ -17,9 +17,6 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './search-results-view.component.html',
 })
 export class SearchResultsViewComponent implements OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
 
   /**

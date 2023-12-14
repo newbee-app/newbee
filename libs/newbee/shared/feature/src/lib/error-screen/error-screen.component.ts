@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ContentChild } from '@angular/core';
+import { Component, ContentChild, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { httpFeature } from '@newbee/newbee/shared/data-access';
 import {
@@ -36,6 +36,7 @@ export class ErrorScreenComponent {
   httpScreenError$ = this.store.select(httpFeature.selectScreenError);
 
   constructor(
+    private readonly ngZone: NgZone,
     private readonly store: Store,
     private readonly router: Router,
   ) {}
@@ -44,6 +45,8 @@ export class ErrorScreenComponent {
    * When the dumb UI emits a request to navigate home, pass it to the router.
    */
   async onNavigateHome(): Promise<void> {
-    await this.router.navigate(['/']);
+    this.ngZone.run(async () => {
+      await this.router.navigate(['/']);
+    });
   }
 }

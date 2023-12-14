@@ -67,7 +67,7 @@ describe('searchGuard', () => {
     await expect(
       router.navigate([`/${testBaseQueryDto1.query}`]),
     ).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledWith(
+    expect(store.dispatch).toHaveBeenCalledWith(
       SearchActions.search({ query: testBaseQueryDto1 }),
     );
     expect(location.path()).toEqual(

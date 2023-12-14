@@ -19,8 +19,8 @@ import {
 } from '@newbee/api/shared/data-access';
 import {
   OrgRoleEnum,
-  compareOrgRoles,
   forbiddenError,
+  generateLteOrgRoles,
   internalServerError,
   orgMemberNotFound,
   userAlreadyOrgMemberBadRequest,
@@ -186,9 +186,7 @@ export class OrgMemberService {
     newRole: OrgRoleEnum,
     requesterOrgRole: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
-    this.checkRequester(requesterOrgRole, newRole);
-    this.checkRequester(requesterOrgRole, orgMember.role);
-
+    OrgMemberService.checkRequesterOrgRole(requesterOrgRole, newRole);
     const updatedOrgMember = this.em.assign(orgMember, {
       role: newRole,
     });
@@ -204,21 +202,15 @@ export class OrgMemberService {
 
   /**
    * Deletes the given org member.
+   *
    * If the org member is the only owner of the org, throw a `BadRequestException`.
    *
    * @param orgMember The org member to delete.
-   * @param requesterOrgRole The org role of the requester.
    *
-   * @throws {ForbiddenException} `forbiddenError`. If the user is trying to delete an org member with permissions that exceed their own.
    * @throws {BadRequestException} `cannotDeleteOnlyOwnerBadRequest`. If the org member is the only owner of the team.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async delete(
-    orgMember: OrgMemberEntity,
-    requesterOrgRole: OrgRoleEnum,
-  ): Promise<void> {
-    this.checkRequester(requesterOrgRole, orgMember.role);
-
+  async delete(orgMember: OrgMemberEntity): Promise<void> {
     const collectionName = orgMember.organization.id;
     const id = orgMember.slug;
     await this.entityService.safeToDelete(orgMember);
@@ -248,11 +240,11 @@ export class OrgMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the operation isn't permissible.
    */
-  checkRequester(
+  static checkRequesterOrgRole(
     requesterOrgRole: OrgRoleEnum,
     subjectRole: OrgRoleEnum,
   ): void {
-    if (compareOrgRoles(requesterOrgRole, subjectRole) >= 0) {
+    if (generateLteOrgRoles(requesterOrgRole).includes(subjectRole)) {
       return;
     }
 

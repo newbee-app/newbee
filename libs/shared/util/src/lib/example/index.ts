@@ -17,6 +17,7 @@ import {
   BaseCreateTeamMemberDto,
   BaseCreateUserDto,
   BaseCsrfTokenAndDataDto,
+  BaseDocAndMemberDto,
   BaseEmailDto,
   BaseGenerateSlugDto,
   BaseGeneratedSlugDto,
@@ -158,6 +159,16 @@ export const testTeam1: Team = {
   name: 'Development',
   slug: 'development',
   upToDateDuration: null,
+};
+
+/**
+ * An example instance of Team.
+ * Strictly for use in testing.
+ */
+export const testTeam2: Team = {
+  name: 'HR',
+  slug: 'hr',
+  upToDateDuration: 'P1Y',
 };
 
 /**
@@ -307,6 +318,15 @@ export const testOrgMemberUser1: OrgMemberUser = {
 };
 
 /**
+ * An example instance of `OrgMemberUser`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberUser2: OrgMemberUser = {
+  orgMember: testOrgMember1,
+  user: testUser2,
+};
+
+/**
  * An example instance of `OrgMemberQueryResult`.
  * Strictly for use in testing.
  */
@@ -366,9 +386,9 @@ export const testQueryResult1: QueryResult = {
 export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
+  members: [testOrgMemberUser1],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
-  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
 };
 
 /**
@@ -378,9 +398,9 @@ export const testOrganizationRelation1: OrganizationRelation = {
 export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
+  members: [testOrgMemberUser1],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
-  orgMembers: { sample: [testOrgMemberUser1], total: 1 },
 };
 
 /**
@@ -427,7 +447,7 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
   user: testUser1,
-  teams: { sample: [testTeamMemberRelation1], total: 1 },
+  teams: [testTeamMemberRelation1],
   createdDocs: { sample: [testDocQueryResult1], total: 1 },
   maintainedDocs: { sample: [testDocQueryResult1], total: 1 },
   createdQnas: { sample: [testQnaQueryResult1], total: 1 },
@@ -594,8 +614,9 @@ export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
  */
 export const testBaseCreateDocDto1: BaseCreateDocDto = {
   title: testDoc1.title,
+  upToDateDuration: 'P1Y',
   docMarkdoc: testDoc1.docMarkdoc,
-  upToDateDuration: null,
+  team: testTeam1.slug,
 };
 
 /**
@@ -606,6 +627,17 @@ export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
   title: 'New title',
   docMarkdoc: 'new raw markdoc',
   upToDateDuration: 'P1Y',
+  team: testTeam1.slug,
+  maintainer: testOrgMember1.slug,
+};
+
+/**
+ * An example instance of BaseDocAndMemberDto.
+ * Strictly for use in testing.
+ */
+export const testBaseDocAndMemberDto1: BaseDocAndMemberDto = {
+  doc: testDocRelation1,
+  teamMember: testTeamMember1,
 };
 
 /**
@@ -628,7 +660,8 @@ export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
   upToDateDuration: 'P1Y',
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
-  team: null,
+  team: testTeam1.slug,
+  maintainer: testOrgMember1.slug,
 };
 
 /**
@@ -648,6 +681,7 @@ export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
 export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
   upToDateDuration: 'P1Y',
   answerMarkdoc: 'new answer',
+  maintainer: testOrgMember1.slug,
 };
 
 /**

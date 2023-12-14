@@ -12,7 +12,7 @@ export class InviteService {
   /**
    * Get the base API URL for dealing with org member invites.
    */
-  static baseApiUrl = `/${Keyword.Api}/v${apiVersion.orgMemberInvite}/${Keyword.Invite}`;
+  static baseApiUrl = `/${Keyword.Api}/v${apiVersion['org-member-invite']}/${Keyword.Invite}`;
 
   constructor(private readonly http: HttpClient) {}
 

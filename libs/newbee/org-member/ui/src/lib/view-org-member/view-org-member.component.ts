@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   DropdownComponent,
-  SearchableSelectComponent,
   SearchResultComponent,
+  SearchableSelectComponent,
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
@@ -15,9 +15,11 @@ import {
   ShortUrl,
 } from '@newbee/newbee/shared/util';
 import {
-  compareOrgRoles,
   Keyword,
   OrgRoleEnum,
+  apiRoles,
+  checkRoles,
+  generateLteOrgRoles,
   type OrgMember,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
@@ -41,20 +43,24 @@ import {
   templateUrl: './view-org-member.component.html',
 })
 export class ViewOrgMemberComponent implements OnInit {
-  /**
-   * All NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * All NewBee short URLs.
-   */
   readonly shortUrl = ShortUrl;
+  readonly searchResultFormat = SearchResultFormat;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
 
   /**
-   * All search result display formats.
+   * The roles needed to edit or delete the org member.
    */
-  readonly searchResultFormat = SearchResultFormat;
+  readonly editDeleteRoles = new Set(
+    apiRoles['org-member'].update.concat(apiRoles['org-member'].delete),
+  );
+
+  /**
+   * The roles the user can change the org member to, as select options.
+   * The user cannot give the org member a role that is higher than their own.
+   */
+  orgRoleEnumOptions: SelectOption<OrgRoleEnum>[] = [];
 
   /**
    * The select form control for changing the org member's role.
@@ -69,7 +75,7 @@ export class ViewOrgMemberComponent implements OnInit {
   /**
    * The org member information of the user who's looking at the page.
    */
-  @Input() userOrgMember: OrgMember | null = null;
+  @Input() userOrgMember!: OrgMember;
 
   /**
    * Whether to display a loader for the org member's role.
@@ -105,8 +111,8 @@ export class ViewOrgMemberComponent implements OnInit {
    * A string detailing how many teams the org member is in.
    */
   get totalTeams(): string {
-    return `${this.orgMember.teams.total} ${
-      this.orgMember.teams.total === 1 ? 'team' : 'teams'
+    return `${this.orgMember.teams.length} ${
+      this.orgMember.teams.length === 1 ? 'team' : 'teams'
     }`;
   }
 
@@ -146,42 +152,18 @@ export class ViewOrgMemberComponent implements OnInit {
     }`;
   }
 
-  /**
-   * Whether the user looking at the page can edit the org member's role or remove the user from the org.
-   */
-  get canEdit(): boolean {
-    if (!this.userOrgMember) {
-      return false;
-    }
-
-    return (
-      compareOrgRoles(this.userOrgMember.role, OrgRoleEnum.Moderator) >= 0 &&
-      compareOrgRoles(this.userOrgMember.role, this.orgMember.orgMember.role) >=
-        0
-    );
-  }
-
-  /**
-   * The roles the user can change the org member to, as select options.
-   * The user cannot give the org member a role that is higher than their own.
-   */
-  get orgRoleEnumOptions(): SelectOption<OrgRoleEnum>[] {
-    return Object.values(OrgRoleEnum)
-      .filter(
-        (role) =>
-          this.userOrgMember &&
-          compareOrgRoles(role, this.userOrgMember.role) <= 0
-      )
-      .map((role) => new SelectOption(role, role));
-  }
-
   constructor(private readonly fb: FormBuilder) {}
 
   /**
    * Set the change role select with an initial value that matches the org member's role.
    */
   ngOnInit(): void {
-    this.changeRoleSelect.setValue(this.orgMember.orgMember.role);
+    this.orgRoleEnumOptions = generateLteOrgRoles(this.userOrgMember?.role).map(
+      (role) => new SelectOption(role, role),
+    );
+    this.changeRoleSelect.setValue(this.orgMember.orgMember.role, {
+      emitEvent: false,
+    });
   }
 
   /**

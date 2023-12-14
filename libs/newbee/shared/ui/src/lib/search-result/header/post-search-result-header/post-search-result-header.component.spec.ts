@@ -70,16 +70,16 @@ describe('PostSearchResultHeaderComponent', () => {
   describe('postNavigate', () => {
     it('should navigate to the given post', () => {
       component.postNavigate();
-      expect(component.orgNavigate.emit).toBeCalledTimes(1);
-      expect(component.orgNavigate.emit).toBeCalledWith(
-        `/${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`
+      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
+        `/${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`,
       );
 
       component.searchResult = testQnaQueryResult1;
       component.postNavigate();
-      expect(component.orgNavigate.emit).toBeCalledTimes(2);
-      expect(component.orgNavigate.emit).toBeCalledWith(
-        `/${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`
+      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(2);
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
+        `/${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`,
       );
     });
   });

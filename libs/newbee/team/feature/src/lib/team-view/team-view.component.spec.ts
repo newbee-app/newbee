@@ -1,10 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import {
+  initialOrganizationState,
+  initialTeamState,
+} from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { ViewTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
+  testOrgMemberRelation1,
   testOrganization1,
   testOrganizationRelation1,
   testTeam1,
@@ -33,9 +38,12 @@ describe('TeamViewComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
+              orgMember: testOrgMemberRelation1,
             },
             [Keyword.Team]: {
+              ...initialTeamState,
               selectedTeam: testTeamRelation1,
             },
           },

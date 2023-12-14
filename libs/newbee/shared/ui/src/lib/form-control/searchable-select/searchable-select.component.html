@@ -1,10 +1,15 @@
 <div class="flex flex-col flex-nowrap gap-y-2 w-full">
-  <newbee-dropdown placement="bottom-start">
+  <newbee-dropdown
+    placement="bottom-start"
+    [expanded]="expanded"
+    (expandedChange)="onExpandedChange($event)"
+  >
     <button
       label
       type="button"
       [disabled]="disabled"
-      class="btn btn-outline border-neutral flex flex-row flex-nowrap gap-x-1 justify-between w-full"
+      class="btn flex flex-row flex-nowrap gap-x-1 justify-between w-full"
+      [ngClass]="{ 'border-neutral': valid, 'border-error': !valid }"
     >
       <span class="truncate">{{ selectedText }}</span>
 
@@ -35,12 +40,13 @@
       class="flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
     >
       <div #dropdownNoToggle>
-        <newbee-searchbar
+        <input
           *ngIf="showSearchbar"
           [formControl]="searchTerm"
-          [includeSearchSymbol]="false"
-          [includeClearSymbol]="false"
-        ></newbee-searchbar>
+          type="text"
+          placeholder="Search"
+          class="input w-full bg-transparent"
+        />
       </div>
 
       <button
@@ -55,8 +61,8 @@
   </newbee-dropdown>
 
   <newbee-alert
-    [show]="!valid"
     [type]="alertType.Error"
+    [show]="!valid"
     [text]="errorText"
   ></newbee-alert>
 </div>

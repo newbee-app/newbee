@@ -10,6 +10,9 @@ import { BaseCreateQnaDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 
+/**
+ * The smart UI for creating a qna.
+ */
 @Component({
   selector: 'newbee-qna-create',
   templateUrl: './qna-create.component.html',
@@ -36,9 +39,7 @@ export class QnaCreateComponent {
    * The team slug taken from the route's query params.
    */
   teamSlugParam$ = this.route.queryParamMap.pipe(
-    map((params) => {
-      return params.get(Keyword.Team) ?? null;
-    }),
+    map((params) => params.get(Keyword.Team) ?? null),
   );
 
   constructor(

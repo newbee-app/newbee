@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AlertComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
-  getHttpClientErrorMsg,
   HttpClientError,
+  getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
@@ -19,9 +19,6 @@ import { BaseFormComponent } from '../base-form';
   templateUrl: './jwt-id.component.html',
 })
 export class JwtIdComponent {
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
 
   /**

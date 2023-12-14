@@ -53,7 +53,9 @@ export const WithErrors: Story = {
       messages: {
         name: 'Name error',
         slug: 'Slug error',
-        [Keyword.Duration]: 'Duration error',
+        num: 'Num error',
+        frequency: 'Frequency error',
+        upToDateDuration: 'Up-to-date duration error',
         [Keyword.Misc]: 'Misc error',
       },
     },

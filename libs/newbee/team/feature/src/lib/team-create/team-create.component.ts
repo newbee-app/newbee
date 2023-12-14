@@ -30,24 +30,9 @@ export class TeamCreateComponent implements OnDestroy {
   );
 
   /**
-   * The auto-generated slug based on the team's name.
+   * Team module state.
    */
-  generatedSlug$ = this.store.select(teamFeature.selectGeneratedSlug);
-
-  /**
-   * Whether the form's slug value is taken.
-   */
-  slugTaken$ = this.store.select(teamFeature.selectSlugTaken);
-
-  /**
-   * Whether the create action is pending.
-   */
-  pendingCreate$ = this.store.select(teamFeature.selectPendingCreate);
-
-  /**
-   * Whether the check slug action is pending.
-   */
-  pendingCheck$ = this.store.select(teamFeature.selectPendingCheck);
+  teamModuleState$ = this.store.select(teamFeature.selectTeamModuleState);
 
   /**
    * Request HTTP error, if any exist.

@@ -34,6 +34,10 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './search-results.component.html',
 })
 export class SearchResultsComponent implements OnInit, OnDestroy {
+  private readonly unsubscribe$ = new Subject<void>();
+  readonly searchTab = SearchTab;
+  readonly searchResultFormat = SearchResultFormat;
+
   /**
    * The initial value for the searchbar.
    */
@@ -83,21 +87,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * Indicates that the user has scrolled to the bottom of the search results.
    */
   @Output() scrolled = new EventEmitter<void>();
-
-  /**
-   * Emits to unsubscribe from all infinite observables.
-   */
-  private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * All of the possible values for a search tab.
-   */
-  readonly searchTab = SearchTab;
-
-  /**
-   * All search result display formats.
-   */
-  readonly searchResultFormat = SearchResultFormat;
 
   /**
    * The search term coming from the searchbar.

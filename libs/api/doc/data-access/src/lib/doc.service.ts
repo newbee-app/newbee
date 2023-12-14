@@ -6,13 +6,14 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocEntity,
   EntityService,
   OrgMemberEntity,
-  TeamEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
+import { TeamService } from '@newbee/api/team/data-access';
 import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -33,24 +34,36 @@ export class DocService {
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
+    private readonly teamService: TeamService,
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
    * Creates a new `DocEntity` and associates it with its relevant `OrganizationEntity` and `TeamEntity`, and marks the creator as the doc's creator and maintainer.
    *
    * @param createDocDto The information needed to create a new doc.
-   * @param team The team the doc belongs to, if applicable.
    * @param creator The user in the organization attempting to create the doc.
    *
    * @returns A new `DocEntity` instance.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
+   * @throws {ForbiddenException} `forbiddenError`. If the creator does not have the adequate permissions to make a doc in the team they want to put it in.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async create(
     createDocDto: CreateDocDto,
-    team: TeamEntity | null,
     creator: OrgMemberEntity,
   ): Promise<DocEntity> {
-    const { title, upToDateDuration, docMarkdoc } = createDocDto;
+    const {
+      title,
+      upToDateDuration,
+      docMarkdoc,
+      team: teamSlug,
+    } = createDocDto;
+
+    const team = teamSlug
+      ? await this.teamService.findOneBySlug(creator.organization, teamSlug)
+      : null;
+
     const id = v4();
     const doc = new DocEntity(
       id,
@@ -112,32 +125,61 @@ export class DocService {
    *
    * @param doc The `DocEntity` to update.
    * @param updateDocDto The new details for the doc.
+   * @param orgMember The org member making the request.
    *
    * @returns The updated `DocEntity` instance.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
+   * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the permissions to change the doc's teams.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
-    const { title, docMarkdoc, upToDateDuration } = updateDocDto;
+    const {
+      team: teamSlug,
+      maintainer: maintainerSlug,
+      ...restUpdateDocDto
+    } = updateDocDto;
+    const { title, docMarkdoc, upToDateDuration } = restUpdateDocDto;
+
+    const team =
+      typeof teamSlug === 'string'
+        ? await this.teamService.findOneBySlug(doc.organization, teamSlug)
+        : teamSlug;
+    const maintainer =
+      typeof maintainerSlug === 'string'
+        ? await this.orgMemberService.findOneByOrgAndSlug(
+            doc.organization,
+            maintainerSlug,
+          )
+        : maintainerSlug;
 
     const { txt: docTxt, html: docHtml } = renderMarkdoc(docMarkdoc);
 
-    const updateTime =
-      title !== undefined || docMarkdoc !== undefined
-        ? new Date()
-        : doc.markedUpToDateAt;
+    const meaningfulUpdates = [title, docMarkdoc];
+    const updateTime = meaningfulUpdates.some((update) => update !== undefined)
+      ? new Date()
+      : null;
+    const trueUpToDateDuration = EntityService.trueUpToDateDuration(
+      doc,
+      upToDateDuration,
+      team,
+    );
     const updatedDoc = this.em.assign(doc, {
-      ...updateDocDto,
+      ...restUpdateDocDto,
       ...(docTxt !== undefined && { docTxt }),
       ...(docHtml !== undefined && { docHtml }),
-      updatedAt: updateTime,
-      markedUpToDateAt: updateTime,
-      outOfDateAt: dayjs(updateTime)
-        .add(
-          upToDateDuration
-            ? dayjs.duration(upToDateDuration)
-            : await doc.trueUpToDateDuration(),
-        )
-        .toDate(),
+      ...(team !== undefined && { team }),
+      ...(maintainer !== undefined && { maintainer }),
+      ...(updateTime && {
+        updatedAt: updateTime,
+        markedUpToDateAt: updateTime,
+        outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
+      }),
+      ...(!updateTime &&
+        (upToDateDuration !== undefined || team !== undefined) && {
+          outOfDateAt: dayjs(doc.markedUpToDateAt)
+            .add(trueUpToDateDuration)
+            .toDate(),
+        }),
     });
 
     try {
@@ -173,7 +215,7 @@ export class DocService {
     const updatedDoc = this.em.assign(doc, {
       markedUpToDateAt: now,
       outOfDateAt: dayjs(now)
-        .add(await doc.trueUpToDateDuration())
+        .add(EntityService.trueUpToDateDuration(doc, undefined, undefined))
         .toDate(),
     });
 

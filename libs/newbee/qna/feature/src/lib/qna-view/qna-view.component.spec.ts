@@ -13,7 +13,6 @@ import {
   testOrgMemberRelation1,
   testQna1,
   testQnaRelation1,
-  testTeamMember1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaViewComponent } from './qna-view.component';
@@ -33,7 +32,6 @@ describe('QnaViewComponent', () => {
             [Keyword.Qna]: {
               ...initialQnaState,
               selectedQna: testQnaRelation1,
-              teamMember: testTeamMember1,
             },
             [Keyword.Organization]: {
               ...initialOrganizationState,
@@ -82,8 +80,10 @@ describe('QnaViewComponent', () => {
   describe('onMarkAsUpToDate', () => {
     it('should dispatch markQnaAsUpToDate', () => {
       component.onMarkAsUpToDate();
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(QnaActions.markQnaAsUpToDate());
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        QnaActions.markQnaAsUpToDate(),
+      );
     });
   });
 });

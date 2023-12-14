@@ -20,3 +20,13 @@ export const ascOrgRoleEnum = [
   OrgRoleEnum.Moderator,
   OrgRoleEnum.Owner,
 ];
+
+/**
+ * For use in permissions, allow any org member to access a resource.
+ */
+export const anyOrgMember = ascOrgRoleEnum;
+
+/**
+ * For use in permissions, allow only org moderators and up to access a resource.
+ */
+export const atLeastOrgModerator = [OrgRoleEnum.Moderator, OrgRoleEnum.Owner];

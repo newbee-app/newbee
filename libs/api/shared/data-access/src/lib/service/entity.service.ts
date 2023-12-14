@@ -19,7 +19,7 @@ import type {
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
   OrgMemberRelation,
-  OrgTeams,
+  OrgTeamsMembers,
   QnaNoOrg,
   QnaQueryResult,
   TeamNoOrg,
@@ -33,6 +33,8 @@ import {
   cannotDeleteOnlyTeamOwnerBadRequest,
   internalServerError,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
+import { Duration } from 'dayjs/plugin/duration';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -59,6 +61,8 @@ export class EntityService {
   private readonly logger = new Logger(EntityService.name);
 
   constructor(private readonly em: EntityManager) {}
+
+  // START: Solr doc params
 
   /**
    * Creates the fields to add or replace a NewBee doc in a Solr index.
@@ -177,6 +181,10 @@ export class EntityService {
     );
   }
 
+  // END: Solr doc params
+
+  // START: Entities to query results
+
   /**
    * Takes in an array of `DocEntity` and converts it into an array of `DocQueryResult`.
    *
@@ -275,10 +283,30 @@ export class EntityService {
     });
   }
 
-  async createOrgTeams(organization: OrganizationEntity): Promise<OrgTeams> {
+  // END: Entities to query results
+
+  // START: Entity relations
+
+  /**
+   * Takes in an organization and converts it to an `OrgTeams`.
+   *
+   * @param organization The org to convert.
+   *
+   * @returns The org as an `OrgTeams`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createOrgTeamsMembers(
+    organization: OrganizationEntity,
+  ): Promise<OrgTeamsMembers> {
     try {
-      await this.em.populate(organization, ['teams']);
-      return { organization, teams: organization.teams.toArray() };
+      await this.em.populate(organization, ['teams', 'members.user']);
+      return {
+        organization,
+        teams: organization.teams.toArray(),
+        members: organization.members
+          .getItems()
+          .map((orgMember) => ({ orgMember, user: orgMember.user })),
+      };
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -492,6 +520,109 @@ export class EntityService {
   }
 
   /**
+   * A helper function to populate the relations related to a post's members and team.
+   *
+   * @param posts The posts to populate.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  private async populatePostMembersTeam(
+    posts: PostEntity | PostEntity[],
+  ): Promise<void> {
+    try {
+      await this.em.populate(posts, [
+        'creator.user',
+        'maintainer.user',
+        'team',
+      ]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * A helper function to populate all of the collections of an org member.
+   *
+   * @param orgMember The org member to populate.
+   *
+   * @returns The popualted collections of the org member.
+   */
+  private async populateOrgMemberCollections(
+    orgMember: OrgMemberEntity,
+  ): Promise<
+    Pick<
+      OrgMemberRelation,
+      | 'teams'
+      | 'createdDocs'
+      | 'maintainedDocs'
+      | 'createdQnas'
+      | 'maintainedQnas'
+    >
+  > {
+    try {
+      const teamMembers = await this.em.find(
+        TeamMemberEntity,
+        { orgMember },
+        { populate: ['team'] },
+      );
+
+      const postFindAndCountOptions = {
+        orderBy: { markedUpToDateAt: QueryOrder.DESC },
+        limit: 3,
+        offset: 0,
+      };
+      const [createdDocs, createdDocsCount] = await this.em.findAndCount(
+        DocEntity,
+        { creator: orgMember },
+        postFindAndCountOptions,
+      );
+      const [maintainedDocs, maintainedDocsCount] = await this.em.findAndCount(
+        DocEntity,
+        { maintainer: orgMember },
+        postFindAndCountOptions,
+      );
+      const [createdQnas, createdQnasCount] = await this.em.findAndCount(
+        QnaEntity,
+        { creator: orgMember },
+        postFindAndCountOptions,
+      );
+      const [maintainedQnas, maintainedQnasCount] = await this.em.findAndCount(
+        QnaEntity,
+        { maintainer: orgMember },
+        postFindAndCountOptions,
+      );
+
+      return {
+        teams: teamMembers.map((teamMember) => ({
+          teamMember,
+          team: teamMember.team,
+        })),
+        createdDocs: {
+          sample: await this.createDocQueryResults(createdDocs),
+          total: createdDocsCount,
+        },
+        maintainedDocs: {
+          sample: await this.createDocQueryResults(maintainedDocs),
+          total: maintainedDocsCount,
+        },
+        createdQnas: {
+          sample: await this.createQnaQueryResults(createdQnas),
+          total: createdQnasCount,
+        },
+        maintainedQnas: {
+          sample: await this.createQnaQueryResults(maintainedQnas),
+          total: maintainedQnasCount,
+        },
+      };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  // END: Entity relations
+
+  /**
    * Check whether the given entity is safe to delete and throw a `BadRequestException` if it's not.
    *
    * @param entity The entity to check.
@@ -569,103 +700,52 @@ export class EntityService {
   }
 
   /**
-   * A helper function to populate the relations related to a post's members and team.
+   * A helper function for finding the true up-to-date duration value for a post, which may optionally have new values for its up-to-date duration or team.
    *
-   * @param posts The posts to populate.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   * The method makes the assumption that the post's team and organization have been populated. If working with the doc or qna endpoints, this should be done by the `RoleGuard`.
+   *
+   * @param post The post to examine.
+   * @param upToDateDuration The new value for up-to-date duration, if any. It should be `undefined` if there is no new value.
+   * @param team The new value for team, if any. It should be `undefined` if there is no new value.
+   *
+   * @returns The up-to-date duration that the post is actually using.
    */
-  private async populatePostMembersTeam(
-    posts: PostEntity | PostEntity[],
-  ): Promise<void> {
-    try {
-      await this.em.populate(posts, [
-        'creator.user',
-        'maintainer.user',
-        'team',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
+  static trueUpToDateDuration(
+    post: PostEntity,
+    upToDateDuration: string | null | undefined,
+    team: TeamEntity | null | undefined,
+  ): Duration {
+    if (upToDateDuration || upToDateDuration === null) {
+      if (team || team === null) {
+        return dayjs.duration(
+          upToDateDuration ??
+            team?.upToDateDuration ??
+            post.organization.upToDateDuration,
+        );
+      }
+
+      // team === undefined
+      return dayjs.duration(
+        upToDateDuration ??
+          post.team?.upToDateDuration ??
+          post.organization.upToDateDuration,
+      );
     }
-  }
 
-  /**
-   * A helper function to populate all of the collections of an org member.
-   *
-   * @param orgMember The org member to populate.
-   *
-   * @returns The popualted collections of the org member.
-   */
-  private async populateOrgMemberCollections(
-    orgMember: OrgMemberEntity,
-  ): Promise<
-    Pick<
-      OrgMemberRelation,
-      | 'teams'
-      | 'createdDocs'
-      | 'maintainedDocs'
-      | 'createdQnas'
-      | 'maintainedQnas'
-    >
-  > {
-    try {
-      const [teams, teamsCount] = await this.em.findAndCount(
-        TeamMemberEntity,
-        { orgMember },
-        { limit: 5, offset: 0, populate: ['team'] },
+    // upToDateDuration === undefined
+    if (team || team === null) {
+      return dayjs.duration(
+        post.upToDateDuration ??
+          team?.upToDateDuration ??
+          post.organization.upToDateDuration,
       );
-
-      const postFindAndCountOptions = {
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        limit: 3,
-        offset: 0,
-      };
-      const [createdDocs, createdDocsCount] = await this.em.findAndCount(
-        DocEntity,
-        { creator: orgMember },
-        postFindAndCountOptions,
-      );
-      const [maintainedDocs, maintainedDocsCount] = await this.em.findAndCount(
-        DocEntity,
-        { maintainer: orgMember },
-        postFindAndCountOptions,
-      );
-      const [createdQnas, createdQnasCount] = await this.em.findAndCount(
-        QnaEntity,
-        { creator: orgMember },
-        postFindAndCountOptions,
-      );
-      const [maintainedQnas, maintainedQnasCount] = await this.em.findAndCount(
-        QnaEntity,
-        { maintainer: orgMember },
-        postFindAndCountOptions,
-      );
-
-      return {
-        teams: {
-          sample: teams.map((team) => ({ teamMember: team, team: team.team })),
-          total: teamsCount,
-        },
-        createdDocs: {
-          sample: await this.createDocQueryResults(createdDocs),
-          total: createdDocsCount,
-        },
-        maintainedDocs: {
-          sample: await this.createDocQueryResults(maintainedDocs),
-          total: maintainedDocsCount,
-        },
-        createdQnas: {
-          sample: await this.createQnaQueryResults(createdQnas),
-          total: createdQnasCount,
-        },
-        maintainedQnas: {
-          sample: await this.createQnaQueryResults(maintainedQnas),
-          total: maintainedQnasCount,
-        },
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
     }
+
+    // upToDateDuration === undefined && team === undefined
+    return dayjs.duration(
+      post.upToDateDuration ??
+        post.team?.upToDateDuration ??
+        post.organization.upToDateDuration,
+    );
   }
 }

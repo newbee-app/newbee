@@ -4,7 +4,6 @@ import {
   OrgRoleEnum,
   testOrganization1,
   testOrgMember1,
-  testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import {
   componentWrapperDecorator,
@@ -25,7 +24,7 @@ export default {
   ],
   args: {
     organization: testOrganization1,
-    orgMember: testOrgMemberRelation1,
+    orgMember: testOrgMember1,
     slugTaken: false,
     editPending: false,
     editSlugPending: false,
@@ -48,10 +47,7 @@ export const Primary: Story = {};
 
 export const NotOwner: Story = {
   args: {
-    orgMember: {
-      ...testOrgMemberRelation1,
-      orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
-    },
+    orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator },
   },
 };
 
@@ -70,6 +66,10 @@ export const WithErrors: Story = {
     httpClientError: {
       status: 400,
       messages: {
+        name: 'name error',
+        num: 'num error',
+        frequency: 'frequency error',
+        upToDateDuration: 'upToDateDuration error',
         [`${Keyword.Organization}-${Keyword.Edit}`]: 'org-edit error',
         [`${Keyword.Organization}-${Keyword.Slug}-${Keyword.Edit}`]:
           'org-slug-edit error',

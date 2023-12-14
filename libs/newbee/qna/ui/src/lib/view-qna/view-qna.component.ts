@@ -1,10 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  userHasAnswerPermissions,
-  userHasQuestionPermissions,
-  userHasUpToDatePermissions,
-} from '@newbee/newbee/qna/util';
 import { AlertComponent, UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
@@ -14,9 +9,12 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  OrgMember,
   TeamMember,
+  apiRoles,
+  checkRoles,
+  isUpToDate,
   userDisplayName,
+  type OrgMember,
   type QnaNoOrg,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
@@ -36,9 +34,18 @@ dayjs.extend(relativeTime);
 export class ViewQnaComponent {
   readonly keyword = Keyword;
   readonly shortUrl = ShortUrl;
+  readonly alertType = AlertType;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
   readonly userDisplayName = userDisplayName;
   readonly dayjs = dayjs;
-  readonly alertType = AlertType;
+
+  /**
+   * The roles to edit the question or mark the qna as up-to-date.
+   */
+  readonly questionAndUpToDateRoles = new Set(
+    apiRoles.qna.updateQuestion.concat(apiRoles.qna.markUpToDate),
+  );
 
   /**
    * HTTP client error.
@@ -51,12 +58,12 @@ export class ViewQnaComponent {
   @Input() qna!: QnaNoOrg;
 
   /**
-   * The role the current user holds in the post's org, if any.
+   * The role the current user holds in the qna's org.
    */
-  @Input() orgMember: OrgMember | null = null;
+  @Input() orgMember!: OrgMember;
 
   /**
-   * The role the current user holds in the post's team, if any.
+   * The role the current user holds in the qna's team, if any.
    */
   @Input() teamMember: TeamMember | null = null;
 
@@ -84,36 +91,7 @@ export class ViewQnaComponent {
    * Whether the qna is up-to-date.
    */
   get upToDate(): boolean {
-    return new Date() < new Date(this.qna.qna.outOfDateAt);
-  }
-
-  /**
-   * Whether the user has the permissions to edit the question in some capacity.
-   */
-  get hasQuestionPermissions(): boolean {
-    return userHasQuestionPermissions(
-      this.qna,
-      this.orgMember,
-      this.teamMember,
-    );
-  }
-
-  /**
-   * Whether the user has the permissions to edit the answer in some capacity.
-   */
-  get hasAnswerPermissions(): boolean {
-    return userHasAnswerPermissions(this.qna, this.orgMember, this.teamMember);
-  }
-
-  /**
-   * Whether the user has the permissions to mark the qna as up-to-date.
-   */
-  get hasUpToDatePermissions(): boolean {
-    return userHasUpToDatePermissions(
-      this.qna,
-      this.orgMember,
-      this.teamMember,
-    );
+    return isUpToDate(this.qna.qna.outOfDateAt);
   }
 
   /**

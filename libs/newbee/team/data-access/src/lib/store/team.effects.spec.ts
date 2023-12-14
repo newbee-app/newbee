@@ -92,8 +92,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.getTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).toBeCalledTimes(1);
-        expect(service.get).toBeCalledWith(
+        expect(service.get).toHaveBeenCalledTimes(1);
+        expect(service.get).toHaveBeenCalledWith(
           testTeam1.slug,
           testOrganization1.slug,
         );
@@ -106,7 +106,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.getTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.get).not.toBeCalled();
+        expect(service.get).not.toHaveBeenCalled();
       });
     });
   });
@@ -124,8 +124,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).toBeCalledTimes(1);
-        expect(service.create).toBeCalledWith(
+        expect(service.create).toHaveBeenCalledTimes(1);
+        expect(service.create).toHaveBeenCalledWith(
           testBaseCreateTeamDto1,
           testOrganization1.slug,
         );
@@ -140,7 +140,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.createTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.create).not.toBeCalled();
+        expect(service.create).not.toHaveBeenCalled();
       });
     });
   });
@@ -164,8 +164,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.createTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}`,
         ]);
       });
@@ -185,8 +185,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
           testBaseUpdateTeamDto1,
@@ -206,8 +206,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.editTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).toBeCalledTimes(1);
-        expect(service.edit).toBeCalledWith(
+        expect(service.edit).toHaveBeenCalledTimes(1);
+        expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
           testBaseUpdateTeamDto1,
@@ -222,7 +222,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('-');
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
+        expect(service.edit).not.toHaveBeenCalled();
       });
     });
   });
@@ -246,8 +246,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.editTeamSlugSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}/${Keyword.Edit}`,
         ]);
       });
@@ -262,8 +262,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.deleteTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(
+        expect(service.delete).toHaveBeenCalledTimes(1);
+        expect(service.delete).toHaveBeenCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
         );
@@ -276,7 +276,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.deleteTeam$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.edit).not.toBeCalled();
+        expect(service.edit).not.toHaveBeenCalled();
       });
     });
   });
@@ -294,8 +294,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${ShortUrl.Organization}/${testOrganization1.slug}`,
         ]);
       });
@@ -311,8 +311,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.deleteTeamSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });
@@ -334,8 +334,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).toBeCalledTimes(1);
-        expect(service.checkSlug).toBeCalledWith(
+        expect(service.checkSlug).toHaveBeenCalledTimes(1);
+        expect(service.checkSlug).toHaveBeenCalledWith(
           testTeam1.slug,
           testOrganization1.slug,
         );
@@ -351,7 +351,7 @@ describe('TeamEffects', () => {
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).not.toBeCalled();
+        expect(service.checkSlug).not.toHaveBeenCalled();
       });
     });
 
@@ -360,7 +360,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).not.toBeCalled();
+        expect(service.checkSlug).not.toHaveBeenCalled();
       });
     });
 
@@ -372,7 +372,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.checkSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.checkSlug).not.toBeCalled();
+        expect(service.checkSlug).not.toHaveBeenCalled();
       });
     });
   });
@@ -389,8 +389,8 @@ describe('TeamEffects', () => {
       });
       expect(effects.generateSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.generateSlug).toBeCalledTimes(1);
-        expect(service.generateSlug).toBeCalledWith(
+        expect(service.generateSlug).toHaveBeenCalledTimes(1);
+        expect(service.generateSlug).toHaveBeenCalledWith(
           testTeam1.name,
           testOrganization1.slug,
         );
@@ -404,7 +404,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.generateSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.generateSlug).not.toBeCalled();
+        expect(service.generateSlug).not.toHaveBeenCalled();
       });
     });
 
@@ -416,7 +416,7 @@ describe('TeamEffects', () => {
       const expected$ = hot('-');
       expect(effects.generateSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.generateSlug).not.toBeCalled();
+        expect(service.generateSlug).not.toHaveBeenCalled();
       });
     });
   });

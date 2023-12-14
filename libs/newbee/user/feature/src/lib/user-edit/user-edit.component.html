@@ -1,11 +1,17 @@
 <newbee-edit-user
   [user]="(user$ | async)!"
-  [authenticators]="(authenticators$ | async) ?? []"
-  [editPending]="(editPending$ | async)!"
-  [addAuthenticatorPending]="(addAuthenticatorsPending$ | async)!"
-  [editAuthenticatorPending]="(editAuthenticatorPending$ | async)!"
-  [deleteAuthenticatorPending]="(deleteAuthenticatorPending$ | async)!"
-  [deletePending]="(deletePending$ | async)!"
+  [authenticators]="(userModuleState$ | async)!.authenticators ?? []"
+  [editPending]="(userModuleState$ | async)!.pendingEdit"
+  [addAuthenticatorPending]="
+    (userModuleState$ | async)!.pendingAddAuthenticator
+  "
+  [editAuthenticatorPending]="
+    (userModuleState$ | async)!.pendingEditAuthenticator
+  "
+  [deleteAuthenticatorPending]="
+    (userModuleState$ | async)!.pendingDeleteAuthenticator
+  "
+  [deletePending]="(userModuleState$ | async)!.pendingDelete"
   [httpClientError]="(httpClientError$ | async)!"
   (edit)="onEdit($event)"
   (addAuthenticator)="onAddAuthenticator()"

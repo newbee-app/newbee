@@ -21,14 +21,14 @@ import {
   UpdateTeamMemberDto,
 } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { Keyword, apiRoles } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamMemberEntity`.
  */
 @Controller({
   path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Team}/:${Keyword.Team}/${Keyword.Member}`,
-  version: apiVersion.teamMember,
+  version: apiVersion['team-member'],
 })
 export class TeamMemberController {
   /**
@@ -57,12 +57,7 @@ export class TeamMemberController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post()
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-  )
+  @Role(apiRoles['team-member'].create)
   async create(
     @Body() createTeamMemberDto: CreateTeamMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -110,12 +105,7 @@ export class TeamMemberController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${Keyword.Member}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-  )
+  @Role(apiRoles['team-member'].update)
   async update(
     @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -162,15 +152,9 @@ export class TeamMemberController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Member}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-  )
+  @Role(apiRoles['team-member'].delete)
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
-    @TeamMember() teamMember: TeamMemberEntity | undefined,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @SubjectTeamMember() subjectTeamMember: TeamMemberEntity,
     @Organization() organization: OrganizationEntity,
@@ -179,11 +163,7 @@ export class TeamMemberController {
     this.logger.log(
       `Delete team member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, in team ID: ${team.id}`,
     );
-    await this.teamMemberService.delete(
-      subjectTeamMember,
-      orgMember.role,
-      teamMember?.role ?? null,
-    );
+    await this.teamMemberService.delete(subjectTeamMember);
     this.logger.log(
       `Deleted team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );

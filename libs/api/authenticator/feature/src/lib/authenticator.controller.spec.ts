@@ -53,8 +53,8 @@ describe('AuthenticatorController', () => {
       await expect(controller.getAll(testUserEntity1)).resolves.toEqual([
         testAuthenticatorEntity1,
       ]);
-      expect(service.findAllByUser).toBeCalledTimes(1);
-      expect(service.findAllByUser).toBeCalledWith(testUserEntity1);
+      expect(service.findAllByUser).toHaveBeenCalledTimes(1);
+      expect(service.findAllByUser).toHaveBeenCalledWith(testUserEntity1);
     });
   });
 
@@ -63,8 +63,8 @@ describe('AuthenticatorController', () => {
       await expect(controller.createOptions(testUserEntity1)).resolves.toEqual(
         testPublicKeyCredentialCreationOptions1,
       );
-      expect(service.generateOptions).toBeCalledTimes(1);
-      expect(service.generateOptions).toBeCalledWith(testUserEntity1);
+      expect(service.generateOptions).toHaveBeenCalledTimes(1);
+      expect(service.generateOptions).toHaveBeenCalledWith(testUserEntity1);
     });
   });
 
@@ -73,8 +73,8 @@ describe('AuthenticatorController', () => {
       await expect(
         controller.create(testBaseRegistrationResponseDto1, testUserEntity1),
       ).resolves.toEqual(testAuthenticatorEntity1);
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testRegistrationResponse1,
         testUserEntity1,
       );
@@ -90,8 +90,8 @@ describe('AuthenticatorController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual(testAuthenticatorEntity1);
-      expect(service.updateNameById).toBeCalledTimes(1);
-      expect(service.updateNameById).toBeCalledWith(
+      expect(service.updateNameById).toHaveBeenCalledTimes(1);
+      expect(service.updateNameById).toHaveBeenCalledWith(
         testAuthenticatorEntity1.id,
         testBaseNameDto1.name,
         testUserEntity1.id,
@@ -104,8 +104,8 @@ describe('AuthenticatorController', () => {
       await expect(
         controller.delete(testAuthenticatorEntity1.id, testUserEntity1),
       ).resolves.toBeUndefined();
-      expect(service.deleteOneById).toBeCalledTimes(1);
-      expect(service.deleteOneById).toBeCalledWith(
+      expect(service.deleteOneById).toHaveBeenCalledTimes(1);
+      expect(service.deleteOneById).toHaveBeenCalledWith(
         testAuthenticatorEntity1.id,
         testUserEntity1.id,
       );

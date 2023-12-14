@@ -18,51 +18,19 @@ import { Store } from '@ngrx/store';
 })
 export class TeamEditComponent {
   /**
-   * The currently selected organization.
+   * The org state.
    */
-  selectedOrganization$ = this.store.select(
-    organizationFeature.selectSelectedOrganization,
-  );
+  orgState$ = this.store.select(organizationFeature.selectOrgState);
 
   /**
-   * The currently selected team.
+   * The team state.
    */
-  selectedTeam$ = this.store.select(teamFeature.selectSelectedTeam);
+  teamState$ = this.store.select(teamFeature.selectTeamState);
 
   /**
-   * The user's relation to the currently selected org.
+   * The team module state.
    */
-  orgMember$ = this.store.select(organizationFeature.selectOrgMember);
-
-  /**
-   * The user's relation to the currently selected team, if any.
-   */
-  teamMember$ = this.store.select(teamFeature.selectTeamMember);
-
-  /**
-   * Whether the form's slug value is taken, excluding the slug for the currently selected team.
-   */
-  slugTaken$ = this.store.select(teamModuleFeature.selectSlugTaken);
-
-  /**
-   * Whether the edit action is pending.
-   */
-  editPending$ = this.store.select(teamModuleFeature.selectPendingEdit);
-
-  /**
-   * Whether the edit slug action is pending.
-   */
-  editSlugPending$ = this.store.select(teamModuleFeature.selectPendingEditSlug);
-
-  /**
-   * Whether the check slug action is pending.
-   */
-  checkPending$ = this.store.select(teamModuleFeature.selectPendingCheck);
-
-  /**
-   * Whether the delete team action is pending.
-   */
-  deletePending$ = this.store.select(teamModuleFeature.selectPendingDelete);
+  teamModuleState$ = this.store.select(teamModuleFeature.selectTeamModuleState);
 
   /**
    * Request HTTP error, if any exist.

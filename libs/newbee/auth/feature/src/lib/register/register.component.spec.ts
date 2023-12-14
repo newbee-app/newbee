@@ -49,7 +49,7 @@ describe('RegisterComponent', () => {
   describe('onRegister', () => {
     it('should dispatch registerWithWebAuthn action', () => {
       component.onRegister(testBaseCreateUserDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         AuthActions.registerWithWebAuthn({
           createUserDto: testBaseCreateUserDto1,
         }),

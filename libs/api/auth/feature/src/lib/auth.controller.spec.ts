@@ -101,12 +101,14 @@ describe('AuthController', () => {
       await expect(
         controller.webAuthnRegister(response, testBaseCreateUserDto1),
       ).resolves.toEqual(testBaseUserRelationAndOptionsDto1);
-      expect(userService.create).toBeCalledTimes(1);
-      expect(userService.create).toBeCalledWith(testBaseCreateUserDto1);
-      expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserAndOptions.user);
-      expect(entityService.createUserRelation).toBeCalledTimes(1);
-      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
+      expect(userService.create).toHaveBeenCalledTimes(1);
+      expect(userService.create).toHaveBeenCalledWith(testBaseCreateUserDto1);
+      expect(service.login).toHaveBeenCalledTimes(1);
+      expect(service.login).toHaveBeenCalledWith(testUserAndOptions.user);
+      expect(entityService.createUserRelation).toHaveBeenCalledTimes(1);
+      expect(entityService.createUserRelation).toHaveBeenCalledWith(
+        testUserEntity1,
+      );
     });
   });
 
@@ -115,8 +117,8 @@ describe('AuthController', () => {
       await expect(
         controller.webAuthnLoginOptions(testBaseEmailDto1),
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
-      expect(service.generateLoginChallenge).toBeCalledTimes(1);
-      expect(service.generateLoginChallenge).toBeCalledWith(
+      expect(service.generateLoginChallenge).toHaveBeenCalledTimes(1);
+      expect(service.generateLoginChallenge).toHaveBeenCalledWith(
         testBaseEmailDto1.email,
       );
     });
@@ -127,22 +129,24 @@ describe('AuthController', () => {
       await expect(
         controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1),
       ).resolves.toEqual(testUserRelation1);
-      expect(service.verifyLoginChallenge).toBeCalledTimes(1);
-      expect(service.verifyLoginChallenge).toBeCalledWith(
+      expect(service.verifyLoginChallenge).toHaveBeenCalledTimes(1);
+      expect(service.verifyLoginChallenge).toHaveBeenCalledWith(
         testBaseWebAuthnLoginDto1.email,
         testBaseWebAuthnLoginDto1.response,
       );
-      expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserEntity1);
-      expect(entityService.createUserRelation).toBeCalledTimes(1);
-      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
+      expect(service.login).toHaveBeenCalledTimes(1);
+      expect(service.login).toHaveBeenCalledWith(testUserEntity1);
+      expect(entityService.createUserRelation).toHaveBeenCalledTimes(1);
+      expect(entityService.createUserRelation).toHaveBeenCalledWith(
+        testUserEntity1,
+      );
     });
   });
 
   describe('magicLinkLoginLogin', () => {
     afterEach(() => {
-      expect(strategy.send).toBeCalledTimes(1);
-      expect(strategy.send).toBeCalledWith({
+      expect(strategy.send).toHaveBeenCalledTimes(1);
+      expect(strategy.send).toHaveBeenCalledWith({
         email: testBaseEmailDto1.email,
       });
     });
@@ -166,18 +170,20 @@ describe('AuthController', () => {
       await expect(
         controller.magicLinkLogin(response, testUserEntity1),
       ).resolves.toEqual(testUserRelation1);
-      expect(service.login).toBeCalledTimes(1);
-      expect(service.login).toBeCalledWith(testUserEntity1);
-      expect(entityService.createUserRelation).toBeCalledTimes(1);
-      expect(entityService.createUserRelation).toBeCalledWith(testUserEntity1);
+      expect(service.login).toHaveBeenCalledTimes(1);
+      expect(service.login).toHaveBeenCalledWith(testUserEntity1);
+      expect(entityService.createUserRelation).toHaveBeenCalledTimes(1);
+      expect(entityService.createUserRelation).toHaveBeenCalledWith(
+        testUserEntity1,
+      );
     });
   });
 
   describe('logout', () => {
     it('should call clearCookie', () => {
       expect(controller.logout(response, testUserEntity1)).toBeUndefined();
-      expect(response.clearCookie).toBeCalledTimes(1);
-      expect(response.clearCookie).toBeCalledWith(authJwtCookie, {});
+      expect(response.clearCookie).toHaveBeenCalledTimes(1);
+      expect(response.clearCookie).toHaveBeenCalledWith(authJwtCookie, {});
     });
   });
 });

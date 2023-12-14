@@ -39,12 +39,15 @@ export enum Keyword {
 
   // member keywords
   Member = 'member',
+  OrgMember = 'org-member',
+  TeamMember = 'team-member',
 
   // search keywords
   Search = 'search',
   Suggest = 'suggest',
 
   // org member invite keywords
+  OrgMemberInvite = 'org-member-invite',
   Invite = 'invite',
   Accept = 'accept',
   Decline = 'decline',
@@ -65,5 +68,4 @@ export enum Keyword {
   Misc = 'misc',
   Router = 'router',
   Slug = 'slug',
-  Duration = 'duration',
 }

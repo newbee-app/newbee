@@ -1,7 +1,8 @@
+import { iso8601DurationRegex } from '@newbee/api/shared/util';
 import {
   BaseUpdateQnaDto,
   answerIsNotEmpty,
-  iso8601DurationRegex,
+  maintainerIsNotEmpty,
   questionIsNotEmpty,
   teamIsNotEmpty,
   titleIsNotEmpty,
@@ -48,4 +49,11 @@ export class UpdateQnaDto implements BaseUpdateQnaDto {
   @IsOptional()
   @IsNotEmpty({ message: teamIsNotEmpty })
   team?: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: maintainerIsNotEmpty })
+  maintainer?: string;
 }

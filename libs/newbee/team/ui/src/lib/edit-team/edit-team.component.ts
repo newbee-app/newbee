@@ -20,8 +20,12 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   HttpClientError,
+  NumAndFreq,
   SlugInputDirectiveModule,
+  durationToNumAndFreq,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -30,13 +34,9 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateTeamDto,
-  Frequency,
   Keyword,
-  NumAndFreq,
-  OrgRoleEnum,
-  TeamRoleEnum,
-  compareOrgRoles,
-  durationToNumAndFreq,
+  apiRoles,
+  checkRoles,
   type OrgMember,
   type Organization,
   type Team,
@@ -62,20 +62,11 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './edit-team.component.html',
 })
 export class EditTeamComponent implements OnInit, OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * All NewBee keywords.
-   */
   readonly keyword = Keyword;
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
+  readonly apiRoles = apiRoles;
+  readonly checkRoles = checkRoles;
 
   /**
    * The organization the team belongs to.
@@ -83,17 +74,17 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   @Input() organization!: Organization;
 
   /**
-   * Information about the team.
+   * Information about the selected team.
    */
   @Input() team!: Team;
 
   /**
-   * Information about the user's role in the org.
+   * Information about the requester's role in the org.
    */
   @Input() orgMember!: OrgMember;
 
   /**
-   * Information about the user's role in the team.
+   * Information about the requester's role in the team.
    */
   @Input() teamMember: TeamMember | null = null;
 
@@ -228,21 +219,6 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Whether the org member is at least a moderator or the team member is an owner of the team.
-   */
-  get canAccessAdvanced(): boolean {
-    if (compareOrgRoles(this.orgMember.role, OrgRoleEnum.Moderator) >= 0) {
-      return true;
-    }
-
-    if (!this.teamMember) {
-      return false;
-    }
-
-    return this.teamMember.role === TeamRoleEnum.Owner;
-  }
-
-  /**
    * The org's duration represented as a human-readable string.
    */
   get orgDurationStr(): string {
@@ -287,17 +263,14 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * Emit the `edit` output.
    */
   emitEdit(): void {
-    const { name, upToDateDuration } = this.editTeamForm.value;
-    const updateTeamDto: BaseUpdateTeamDto = {
-      ...(name && { name }),
+    const { name } = this.editTeamForm.value;
+    this.edit.emit({
+      name: name ?? '',
       upToDateDuration:
-        upToDateDuration?.num && upToDateDuration.frequency
-          ? dayjs
-              .duration(upToDateDuration.num, upToDateDuration.frequency)
-              .toISOString()
-          : null,
-    };
-    this.edit.emit(updateTeamDto);
+        formNumAndFreqToDuration(
+          this.editTeamForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
+    });
   }
 
   /**
@@ -334,7 +307,10 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * @returns `true` if the input should display an error, `false` otherwise.
    */
   inputDisplayError(inputGroup: FormGroup, inputName: string): boolean {
-    return inputDisplayError(inputGroup.get(inputName));
+    return (
+      inputDisplayError(inputGroup.get(inputName)) ||
+      !!getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
   }
 
   /**
@@ -346,6 +322,9 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    * @returns The input's error message if it has one, an empty string otherwise.
    */
   inputErrorMessage(inputGroup: FormGroup, inputName: string): string {
-    return inputErrorMessage(inputGroup.get(inputName));
+    return (
+      inputErrorMessage(inputGroup.get(inputName)) ||
+      getHttpClientErrorMsg(this.httpClientError, inputName)
+    );
   }
 }

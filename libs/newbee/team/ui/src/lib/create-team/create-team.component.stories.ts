@@ -1,5 +1,5 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testOrganization1, testTeam1 } from '@newbee/shared/util';
+import { testOrganization1, testTeam1 } from '@newbee/shared/util';
 import {
   Meta,
   StoryObj,
@@ -54,7 +54,9 @@ export const WithErrors: Story = {
       messages: {
         name: 'Name error',
         slug: 'Slug error',
-        [Keyword.Duration]: 'Duration error',
+        num: 'Num error',
+        frequency: 'Frequency error',
+        upToDateDuration: 'Up-to-date duration error',
         misc: 'Misc error',
       },
     },

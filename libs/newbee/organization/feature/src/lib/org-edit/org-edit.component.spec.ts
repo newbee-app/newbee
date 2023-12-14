@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { initialOrganizationState as initialOrganizationModuleState } from '@newbee/newbee/organization/data-access';
 import { EditOrgComponent } from '@newbee/newbee/organization/ui';
-import { OrganizationActions } from '@newbee/newbee/shared/data-access';
+import {
+  OrganizationActions,
+  initialOrganizationState,
+} from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
+  testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
   testOrganizationRelation1,
@@ -31,8 +36,11 @@ describe('OrgEditComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
+              orgMember: testOrgMemberRelation1,
             },
+            [`${Keyword.Organization}Module`]: initialOrganizationModuleState,
           },
         }),
       ],
@@ -56,7 +64,7 @@ describe('OrgEditComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -65,7 +73,7 @@ describe('OrgEditComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testOrganization1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
     });
@@ -74,7 +82,7 @@ describe('OrgEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editOrg', () => {
       component.onEdit({ name: testOrganization2.name });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.editOrg({
           updateOrganizationDto: { name: testOrganization2.name },
         }),
@@ -85,7 +93,7 @@ describe('OrgEditComponent', () => {
   describe('onEditSlug', () => {
     it('should dispatch editOrgSlug', () => {
       component.onEditSlug({ slug: testOrganization2.slug });
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.editOrgSlug({
           updateOrganizationDto: { slug: testOrganization2.slug },
         }),
@@ -96,7 +104,9 @@ describe('OrgEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteOrg', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(OrganizationActions.deleteOrg());
+      expect(store.dispatch).toHaveBeenCalledWith(
+        OrganizationActions.deleteOrg(),
+      );
     });
   });
 });

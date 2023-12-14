@@ -1,10 +1,10 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { testUser1 } from '@newbee/shared/util';
+import { OrgRoleEnum, testOrgMember1, testUser1 } from '@newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
 import { InviteMemberComponent } from './invite-member.component';
 
@@ -14,10 +14,11 @@ export default {
   decorators: [
     moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {
+    orgMember: testOrgMember1,
     invitePending: false,
     invitedUser: '',
     httpClientError: null,
@@ -29,7 +30,15 @@ export default {
 
 type Story = StoryObj<InviteMemberComponent>;
 
-export const Primary: Story = {};
+export const Owner: Story = {};
+
+export const Moderator: Story = {
+  args: { orgMember: { ...testOrgMember1, role: OrgRoleEnum.Moderator } },
+};
+
+export const Member: Story = {
+  args: { orgMember: { ...testOrgMember1, role: OrgRoleEnum.Member } },
+};
 
 export const InvitePending: Story = { args: { invitePending: true } };
 

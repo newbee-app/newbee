@@ -78,6 +78,10 @@ export const WithErrors: Story = {
     httpClientError: {
       status: 500,
       messages: {
+        name: 'Name error',
+        num: 'Num error',
+        frequency: 'Frequency error',
+        upToDateDuration: 'Up-to-date duration error',
         [`${Keyword.Team}-${Keyword.Edit}`]: `team-edit error`,
         [`${Keyword.Team}-${Keyword.Slug}-${Keyword.Edit}`]:
           'team-slug-edit error',

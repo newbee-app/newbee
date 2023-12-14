@@ -69,8 +69,8 @@ describe('SearchEffects', () => {
       });
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.search).toBeCalledTimes(1);
-        expect(service.search).toBeCalledWith(
+        expect(service.search).toHaveBeenCalledTimes(1);
+        expect(service.search).toHaveBeenCalledWith(
           testBaseQueryDto1,
           testOrganization1.slug,
         );
@@ -86,7 +86,7 @@ describe('SearchEffects', () => {
       });
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.search).not.toBeCalled();
+        expect(service.search).not.toHaveBeenCalled();
       });
     });
 
@@ -98,7 +98,7 @@ describe('SearchEffects', () => {
       const expected$ = hot('-');
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.search).not.toBeCalled();
+        expect(service.search).not.toHaveBeenCalled();
       });
     });
   });
@@ -113,8 +113,8 @@ describe('SearchEffects', () => {
       });
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.suggest).toBeCalledTimes(1);
-        expect(service.suggest).toBeCalledWith(
+        expect(service.suggest).toHaveBeenCalledTimes(1);
+        expect(service.suggest).toHaveBeenCalledWith(
           testBaseSuggestDto1,
           testOrganization1.slug,
         );
@@ -130,7 +130,7 @@ describe('SearchEffects', () => {
       });
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.suggest).not.toBeCalled();
+        expect(service.suggest).not.toHaveBeenCalled();
       });
     });
 
@@ -142,7 +142,7 @@ describe('SearchEffects', () => {
       const expected$ = hot('-');
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.suggest).not.toBeCalled();
+        expect(service.suggest).not.toHaveBeenCalled();
       });
     });
   });

@@ -19,4 +19,14 @@ export class BaseUpdateDocDto implements Partial<BaseCreateDocDto> {
    * @inheritdoc
    */
   docMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  team?: string | null;
+
+  /**
+   * The slug of the org member to make the doc's maintainer.
+   */
+  maintainer?: string;
 }

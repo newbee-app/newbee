@@ -2,9 +2,8 @@ import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   OrgRoleEnum,
-  TeamRoleEnum,
-  testOrgMember1,
   testOrgMemberUser1,
+  testOrgMemberUser2,
   testOrganization1,
   testQnaRelation1,
   testTeam1,
@@ -30,10 +29,11 @@ export default {
   args: {
     httpClientError: null,
     qna: testQnaRelation1,
-    orgMember: testOrgMember1,
+    orgMember: testOrgMemberUser1,
     teamMember: testTeamMember1,
     teams: [testTeam1],
     organization: testOrganization1,
+    orgMembers: [testOrgMemberUser1, testOrgMemberUser2],
     editQuestionPending: false,
     editAnswerPending: false,
     upToDatePending: false,
@@ -51,31 +51,13 @@ type Story = StoryObj<EditQnaComponent>;
 
 export const Primary: Story = {};
 
-export const NoPermissions: Story = {
+export const Member: Story = {
   args: {
     qna: testQnaRelation1,
-    orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
-    teamMember: null,
-  },
-};
-
-export const OnlyAnswerPermissions: Story = {
-  args: {
-    orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
-    teamMember: { role: TeamRoleEnum.Member },
-  },
-};
-
-export const OnlyCreator: Story = {
-  args: {
-    qna: {
-      ...testQnaRelation1,
-      creator: {
-        ...testOrgMemberUser1,
-        orgMember: { slug: 'creator', role: OrgRoleEnum.Member },
-      },
+    orgMember: {
+      ...testOrgMemberUser1,
+      orgMember: { slug: 'bad', role: OrgRoleEnum.Member },
     },
-    orgMember: { slug: 'creator', role: OrgRoleEnum.Member },
     teamMember: null,
   },
 };
@@ -101,7 +83,8 @@ export const HttpClientErrors: Story = {
         [`${Keyword.Question}-${Keyword.Edit}`]: 'Question edit error',
         num: 'Num error',
         frequency: 'Frequency error',
-        duration: 'Duration error',
+        upToDateDuration: 'Up-to-date duration error',
+        maintainer: 'Maintainer error',
         [Keyword.Answer]: 'Answer error',
         [`${Keyword.Answer}-${Keyword.Edit}`]: 'Answer edit error',
       },

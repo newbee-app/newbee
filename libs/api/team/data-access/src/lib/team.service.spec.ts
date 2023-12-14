@@ -109,24 +109,24 @@ describe('TeamService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockTeamEntity).toBeCalledTimes(1);
-      expect(mockTeamEntity).toBeCalledWith(
+      expect(mockTeamEntity).toHaveBeenCalledTimes(1);
+      expect(mockTeamEntity).toHaveBeenCalledWith(
         testTeamEntity1.id,
         testBaseCreateTeamDto1.name,
         testBaseCreateTeamDto1.slug,
         testBaseCreateTeamDto1.upToDateDuration,
         testOrgMemberEntity1,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testTeamEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testTeamEntity1);
     });
 
     it('should create a new team', async () => {
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
       ).resolves.toEqual(testTeamEntity1);
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(solrCli.addDocs).toBeCalledWith(
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         testTeamDocParams1,
       );
@@ -157,16 +157,16 @@ describe('TeamService', () => {
       await expect(
         service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(solrCli.addDocs).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testTeamEntity1);
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testTeamEntity1);
     });
   });
 
   describe('hasOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(TeamEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(TeamEntity, {
         organization: testOrganizationEntity1,
         slug: testTeamEntity1.slug,
       });
@@ -195,8 +195,8 @@ describe('TeamService', () => {
 
   describe('findOneBySlug', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(TeamEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(TeamEntity, {
         organization: testOrganizationEntity1,
         slug: testTeamEntity1.slug,
       });
@@ -227,6 +227,31 @@ describe('TeamService', () => {
     });
   });
 
+  describe('findOneById', () => {
+    afterEach(() => {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
+        TeamEntity,
+        testTeamEntity1.id,
+      );
+    });
+
+    it('should find a team by ID', async () => {
+      await expect(service.findOneById(testTeamEntity1.id)).resolves.toEqual(
+        testTeamEntity1,
+      );
+    });
+
+    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
+      jest
+        .spyOn(em, 'findOneOrFail')
+        .mockRejectedValue(new Error('findOneOrFail'));
+      await expect(service.findOneById(testTeamEntity1.id)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
+    });
+  });
+
   describe('update', () => {
     beforeEach(() => {
       jest
@@ -239,22 +264,25 @@ describe('TeamService', () => {
     });
 
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testTeamEntity1, testBaseUpdateTeamDto1);
-      expect(service.changeUpToDateDuration).toBeCalledTimes(1);
-      expect(service.changeUpToDateDuration).toBeCalledWith(
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(
+        testTeamEntity1,
+        testBaseUpdateTeamDto1,
+      );
+      expect(service.changeUpToDateDuration).toHaveBeenCalledTimes(1);
+      expect(service.changeUpToDateDuration).toHaveBeenCalledWith(
         testTeamEntity1,
         testBaseUpdateTeamDto1.upToDateDuration,
       );
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update a team', async () => {
       await expect(
         service.update(testTeamEntity1, testBaseUpdateTeamDto1),
       ).resolves.toEqual(testUpdatedTeam);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         [testUpdatedTeamDocParams, testDocDocParams1, testQnaDocParams1],
       );
@@ -285,8 +313,8 @@ describe('TeamService', () => {
       await expect(
         service.update(testTeamEntity1, testBaseUpdateTeamDto1),
       ).resolves.toEqual(testUpdatedTeam);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledTimes(1);
-      expect(solrCli.getVersionAndReplaceDocs).toBeCalledWith(
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         testOrganizationEntity1.id,
         [testUpdatedTeamDocParams, testDocDocParams1, testQnaDocParams1],
       );
@@ -295,19 +323,19 @@ describe('TeamService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testTeamEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testTeamEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(testTeamEntity1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testTeamEntity1);
     });
 
     it('should delete a team', async () => {
       await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
-      expect(solrCli.deleteDocs).toBeCalledWith(testOrganizationEntity1.id, [
-        { id: testTeamEntity1.id },
-        { query: `team:${testTeamEntity1.id}` },
-      ]);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledWith(
+        testOrganizationEntity1.id,
+        [{ id: testTeamEntity1.id }, { query: `team:${testTeamEntity1.id}` }],
+      );
     });
 
     it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
@@ -324,7 +352,7 @@ describe('TeamService', () => {
         .spyOn(solrCli, 'deleteDocs')
         .mockRejectedValue(new Error('deleteDocs'));
       await expect(service.delete(testTeamEntity1)).resolves.toBeUndefined();
-      expect(solrCli.deleteDocs).toBeCalledTimes(1);
+      expect(solrCli.deleteDocs).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -340,7 +368,7 @@ describe('TeamService', () => {
     });
 
     afterEach(() => {
-      expect(em.find).toBeCalledWith(DocEntity, {
+      expect(em.find).toHaveBeenCalledWith(DocEntity, {
         team: testTeamEntity1,
         upToDateDuration: null,
       });
@@ -351,18 +379,18 @@ describe('TeamService', () => {
         service.changeUpToDateDuration(testTeamEntity1, newDurationStr),
       ).resolves.toEqual({ docs: [testDocEntity1], qnas: [testQnaEntity1] });
 
-      expect(em.find).toBeCalledTimes(2);
-      expect(em.find).toBeCalledWith(QnaEntity, {
+      expect(em.find).toHaveBeenCalledTimes(2);
+      expect(em.find).toHaveBeenCalledWith(QnaEntity, {
         team: testTeamEntity1,
         upToDateDuration: null,
       });
-      expect(em.assign).toBeCalledTimes(2);
-      expect(em.assign).toBeCalledWith(testDocEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(2);
+      expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {
         outOfDateAt: dayjs(testDocEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
       });
-      expect(em.assign).toBeCalledWith(testQnaEntity1, {
+      expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, {
         outOfDateAt: dayjs(testQnaEntity1.markedUpToDateAt)
           .add(newDuration)
           .toDate(),
@@ -374,7 +402,7 @@ describe('TeamService', () => {
       await expect(
         service.changeUpToDateDuration(testTeamEntity1, newDurationStr),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.find).toBeCalledTimes(1);
+      expect(em.find).toHaveBeenCalledTimes(1);
     });
   });
 });

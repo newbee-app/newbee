@@ -34,13 +34,13 @@ import {
   BaseOrgAndMemberDto,
   BaseSlugTakenDto,
   Keyword,
-  OrgRoleEnum,
+  apiRoles,
 } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrganizationEntity`.
  */
-@Controller({ path: Keyword.Organization, version: apiVersion.organization })
+@Controller({ path: Keyword.Organization, version: apiVersion.org })
 export class OrganizationController {
   /**
    * The logger to use when logging anything in the controller.
@@ -137,7 +137,7 @@ export class OrganizationController {
    * @returns The organization associated with the slug, if one exists.
    */
   @Get(`:${Keyword.Organization}`)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.org.get)
   async get(
     @Organization() organization: OrganizationEntity,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -148,7 +148,8 @@ export class OrganizationController {
     );
     this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
     return {
-      organization: await this.entityService.createOrgTeams(organization),
+      organization:
+        await this.entityService.createOrgTeamsMembers(organization),
       orgMember: await this.entityService.createOrgMemberNoUserOrg(orgMember),
     };
   }
@@ -165,7 +166,7 @@ export class OrganizationController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch(`:${Keyword.Organization}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.org.update)
   async update(
     @Organization() organization: OrganizationEntity,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
@@ -193,7 +194,7 @@ export class OrganizationController {
    * @param organization The organization to delete.
    */
   @Delete(`:${Keyword.Organization}`)
-  @Role(OrgRoleEnum.Owner)
+  @Role(apiRoles.org.delete)
   async delete(
     @Organization() organization: OrganizationEntity,
   ): Promise<void> {

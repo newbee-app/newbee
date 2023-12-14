@@ -40,16 +40,20 @@ describe('LoginFormComponent', () => {
 
       it('should emit the form value using emitMagicLinkLogin()', () => {
         component.emitMagicLinkLogin();
-        expect(magicLinkLoginEmitSpy).toBeCalledTimes(1);
-        expect(magicLinkLoginEmitSpy).toBeCalledWith(component.loginForm.value);
+        expect(magicLinkLoginEmitSpy).toHaveBeenCalledTimes(1);
+        expect(magicLinkLoginEmitSpy).toHaveBeenCalledWith(
+          component.loginForm.value,
+        );
       });
 
       it('should emit the form value with button click', () => {
         const magicLinkLoginElement: HTMLButtonElement | null =
           fixture.nativeElement.querySelector('#magic-link-login-button');
         magicLinkLoginElement?.click();
-        expect(magicLinkLoginEmitSpy).toBeCalledTimes(1);
-        expect(magicLinkLoginEmitSpy).toBeCalledWith(component.loginForm.value);
+        expect(magicLinkLoginEmitSpy).toHaveBeenCalledTimes(1);
+        expect(magicLinkLoginEmitSpy).toHaveBeenCalledWith(
+          component.loginForm.value,
+        );
       });
     });
 
@@ -68,16 +72,16 @@ describe('LoginFormComponent', () => {
 
       it('should emit the form value using emitWebAuthn', () => {
         component.emitWebAuthn();
-        expect(webauthnEmitSpy).toBeCalledTimes(1);
-        expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);
+        expect(webauthnEmitSpy).toHaveBeenCalledTimes(1);
+        expect(webauthnEmitSpy).toHaveBeenCalledWith(component.loginForm.value);
       });
 
       it('should emit the form value with button click', () => {
         const webauthnElement: HTMLButtonElement | null =
           fixture.nativeElement.querySelector('#webauthn-button');
         webauthnElement?.click();
-        expect(webauthnEmitSpy).toBeCalledTimes(1);
-        expect(webauthnEmitSpy).toBeCalledWith(component.loginForm.value);
+        expect(webauthnEmitSpy).toHaveBeenCalledTimes(1);
+        expect(webauthnEmitSpy).toHaveBeenCalledWith(component.loginForm.value);
       });
     });
 
@@ -97,16 +101,16 @@ describe('LoginFormComponent', () => {
 
       it('should emit true using emitNavigateToRegister()', () => {
         component.emitNavigateToRegister();
-        expect(navigateToRegisterEmitSpy).toBeCalledTimes(1);
-        expect(navigateToRegisterEmitSpy).toBeCalledWith();
+        expect(navigateToRegisterEmitSpy).toHaveBeenCalledTimes(1);
+        expect(navigateToRegisterEmitSpy).toHaveBeenCalledWith();
       });
 
       it('should emit true with link click', () => {
         const registerElement: HTMLAnchorElement | null =
           fixture.nativeElement.querySelector('#register-link');
         registerElement?.click();
-        expect(navigateToRegisterEmitSpy).toBeCalledTimes(1);
-        expect(navigateToRegisterEmitSpy).toBeCalledWith();
+        expect(navigateToRegisterEmitSpy).toHaveBeenCalledTimes(1);
+        expect(navigateToRegisterEmitSpy).toHaveBeenCalledWith();
       });
     });
   });

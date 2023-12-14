@@ -6,7 +6,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { Frequency, testOrganization1 } from '@newbee/shared/util';
+import { Frequency } from '@newbee/newbee/shared/util';
+import { testOrganization1 } from '@newbee/shared/util';
 import { CreateOrgComponent } from './create-org.component';
 
 describe('CreateOrgComponent', () => {
@@ -38,10 +39,12 @@ describe('CreateOrgComponent', () => {
     describe('name', () => {
       it('should emit whenever name changes in form', () => {
         component.createOrgForm.controls.name.setValue(testOrganization1.name);
-        expect(component.name.emit).toBeCalledTimes(1);
-        expect(component.name.emit).toBeCalledWith(testOrganization1.name);
-        expect(component.slug.emit).not.toBeCalled();
-        expect(component.formattedSlug.emit).not.toBeCalled();
+        expect(component.name.emit).toHaveBeenCalledTimes(1);
+        expect(component.name.emit).toHaveBeenCalledWith(
+          testOrganization1.name,
+        );
+        expect(component.slug.emit).not.toHaveBeenCalled();
+        expect(component.formattedSlug.emit).not.toHaveBeenCalled();
       });
     });
 
@@ -49,14 +52,16 @@ describe('CreateOrgComponent', () => {
       it('should emit whenever the user types and after the slug input directive formats', fakeAsync(() => {
         component.createOrgForm.controls.slug.setValue(testOrganization1.slug);
         tick(600);
-        expect(component.slug.emit).toBeCalledTimes(1);
-        expect(component.slug.emit).toBeCalledWith(testOrganization1.slug);
-        expect(component.formattedSlug.emit).toBeCalledTimes(1);
-        expect(component.formattedSlug.emit).toBeCalledWith(
+        expect(component.slug.emit).toHaveBeenCalledTimes(1);
+        expect(component.slug.emit).toHaveBeenCalledWith(
           testOrganization1.slug,
         );
-        expect(component.name.emit).not.toBeCalled();
-        expect(component.slug.emit).toBeCalledTimes(1);
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith(
+          testOrganization1.slug,
+        );
+        expect(component.name.emit).not.toHaveBeenCalled();
+        expect(component.slug.emit).toHaveBeenCalledTimes(1);
         discardPeriodicTasks();
       }));
     });
@@ -64,8 +69,8 @@ describe('CreateOrgComponent', () => {
     describe('create', () => {
       it('should emit create', () => {
         component.emitCreate();
-        expect(component.create.emit).toBeCalledTimes(1);
-        expect(component.create.emit).toBeCalledWith({
+        expect(component.create.emit).toHaveBeenCalledTimes(1);
+        expect(component.create.emit).toHaveBeenCalledWith({
           name: '',
           slug: '',
           upToDateDuration: 'P6M',
@@ -80,8 +85,8 @@ describe('CreateOrgComponent', () => {
           },
         });
         component.emitCreate();
-        expect(component.create.emit).toBeCalledTimes(2);
-        expect(component.create.emit).toBeCalledWith({
+        expect(component.create.emit).toHaveBeenCalledTimes(2);
+        expect(component.create.emit).toHaveBeenCalledWith({
           name: 'NewBee',
           slug: '',
           upToDateDuration: 'P1Y',
@@ -99,7 +104,7 @@ describe('CreateOrgComponent', () => {
         testOrganization1.slug,
       );
       tick(600);
-      expect(component.slug.emit).not.toBeCalled();
+      expect(component.slug.emit).not.toHaveBeenCalled();
     }));
   });
 });

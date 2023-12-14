@@ -14,21 +14,14 @@ import {
 } from '@newbee/api/doc/data-access';
 import {
   DocEntity,
+  EntityService,
   OrgMemberEntity,
   OrganizationEntity,
-  TeamEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  ConditionalRoleEnum,
-  Doc,
-  OrgMember,
-  Organization,
-  PostRoleEnum,
-  Role,
-  Team,
-} from '@newbee/api/shared/util';
+import { Doc, OrgMember, Organization, Role } from '@newbee/api/shared/util';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgRoleEnum, TeamRoleEnum } from '@newbee/shared/util';
+import { BaseDocAndMemberDto, Keyword, apiRoles } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
@@ -43,7 +36,11 @@ export class DocController {
    */
   private readonly logger = new Logger(DocController.name);
 
-  constructor(private readonly docService: DocService) {}
+  constructor(
+    private readonly docService: DocService,
+    private readonly entityService: EntityService,
+    private readonly teamMemberService: TeamMemberService,
+  ) {}
 
   /**
    * The API route for creating a doc.
@@ -59,28 +56,16 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Member,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInReq,
-  )
+  @Role(apiRoles.doc.create)
   async create(
     @Body() createDocDto: CreateDocDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity | undefined,
   ): Promise<DocEntity> {
     this.logger.log(
       `Create doc request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createDocDto.title}`,
     );
-    const doc = await this.docService.create(
-      createDocDto,
-      team ?? null,
-      orgMember,
-    );
+    const doc = await this.docService.create(createDocDto, orgMember);
     this.logger.log(
       `Doc created with ID: ${doc.id}, slug: ${doc.slug}, title: ${doc.title}`,
     );
@@ -92,16 +77,30 @@ export class DocController {
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param doc The doc we're looking for.
+   * @param orgMember The org member making the request.
    *
    * @returns The doc associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${Keyword.Doc}`)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
-  async get(@Doc() doc: DocEntity): Promise<DocEntity> {
+  @Role(apiRoles.doc.get)
+  async get(
+    @Doc() doc: DocEntity,
+    @OrgMember() orgMember: OrgMemberEntity,
+  ): Promise<BaseDocAndMemberDto> {
     this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
     this.logger.log(`Found doc, slug: ${doc.slug}, ID: ${doc.id}`);
-    return doc;
+
+    const { team } = doc;
+    return {
+      doc: await this.entityService.createDocNoOrg(doc),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**
@@ -116,25 +115,28 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${Keyword.Doc}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Member,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInDoc,
-  )
+  @Role(apiRoles.doc.update)
   async update(
     @Body() updateDocDto: UpdateDocDto,
     @Doc() doc: DocEntity,
-  ): Promise<DocEntity> {
+    @OrgMember() orgMember: OrgMemberEntity,
+  ): Promise<BaseDocAndMemberDto> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.update(doc, updateDocDto);
     this.logger.log(
       `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
     );
-    return updatedDoc;
+
+    const { team } = updatedDoc;
+    return {
+      doc: await this.entityService.createDocNoOrg(updatedDoc),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**
@@ -147,13 +149,7 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`:${Keyword.Doc}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-  )
+  @Role(apiRoles.doc.markUpToDate)
   async markUpToDate(@Doc() doc: DocEntity): Promise<DocEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.markUpToDate(doc);
@@ -172,13 +168,7 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Doc}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-  )
+  @Role(apiRoles.doc.delete)
   async delete(@Doc() doc: DocEntity): Promise<void> {
     this.logger.log(`Delete doc request received for doc slug: ${doc.slug}`);
     await this.docService.delete(doc);

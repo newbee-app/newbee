@@ -1,13 +1,10 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
-import {
-  httpFeature,
-  OrgMemberActions,
-  orgMemberFeature,
-} from '@newbee/newbee/shared/data-access';
+import { OrgMemberActions } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
+import { Observable, map, skipWhile, take } from 'rxjs';
+import { selectOrgMemberAndScreenError } from '../store';
 
 /**
  * A guard that fires the request to get an org member and only proceeds if it completes.
@@ -17,22 +14,19 @@ import { combineLatest, map, Observable, skipWhile, take } from 'rxjs';
  * @returns `true` after the org member is retrieved or an error is thrown.
  */
 export const orgMemberGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ): Observable<boolean> => {
   const store = inject(Store);
 
   const orgMemberSlug = route.paramMap.get(ShortUrl.Member) as string;
   store.dispatch(OrgMemberActions.getOrgMember({ slug: orgMemberSlug }));
 
-  return combineLatest([
-    store.select(orgMemberFeature.selectSelectedOrgMember),
-    store.select(httpFeature.selectScreenError),
-  ]).pipe(
+  return store.select(selectOrgMemberAndScreenError).pipe(
     skipWhile(
-      ([orgMember, screenError]) =>
-        orgMember?.orgMember.slug !== orgMemberSlug && !screenError
+      ({ selectedOrgMember, screenError }) =>
+        selectedOrgMember?.orgMember.slug !== orgMemberSlug && !screenError,
     ),
     take(1),
-    map(() => true)
+    map(() => true),
   );
 };

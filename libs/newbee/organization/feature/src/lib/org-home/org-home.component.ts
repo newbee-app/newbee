@@ -16,19 +16,14 @@ import { Store } from '@ngrx/store';
 })
 export class OrgHomeComponent {
   /**
-   * Whether the search action is pending.
+   * The search state.
    */
-  searchPending$ = this.store.select(searchFeature.selectPendingSearch);
-
-  /**
-   * Suggestions based on the user's search term.
-   */
-  suggestions$ = this.store.select(searchFeature.selectSuggestions);
+  searchState$ = this.store.select(searchFeature.selectSearchState);
 
   constructor(
     private readonly store: Store,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
   ) {}
 
   /**
@@ -49,7 +44,7 @@ export class OrgHomeComponent {
    */
   onSearchbar(searchTerm: string): void {
     this.store.dispatch(
-      SearchActions.suggest({ query: { query: searchTerm } })
+      SearchActions.suggest({ query: { query: searchTerm } }),
     );
   }
 }

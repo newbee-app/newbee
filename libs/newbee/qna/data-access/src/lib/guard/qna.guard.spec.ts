@@ -55,8 +55,8 @@ describe('qnaGuard', () => {
 
   it('should dispatch store and navigate', async () => {
     await expect(router.navigate([`/${testQna1.slug}`])).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(
       QnaActions.getQna({ slug: testQna1.slug }),
     );
     expect(location.path()).toEqual(`/${testQna1.slug}`);

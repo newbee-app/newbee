@@ -64,8 +64,8 @@ describe('OrgMemberInviteController', () => {
           testOrganizationEntity1,
         ),
       ).resolves.toBeUndefined();
-      expect(service.create).toBeCalledTimes(1);
-      expect(service.create).toBeCalledWith(
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testOrgMemberInviteEntity1.userInvites.email,
         testOrgMemberInviteEntity1.role,
         testOrgMemberEntity1,
@@ -79,13 +79,13 @@ describe('OrgMemberInviteController', () => {
       await expect(
         controller.accept(testBaseTokenDto1, testUserEntity1),
       ).resolves.toEqual(testOrgMemberRelation1);
-      expect(service.acceptInvite).toBeCalledTimes(1);
-      expect(service.acceptInvite).toBeCalledWith(
+      expect(service.acceptInvite).toHaveBeenCalledTimes(1);
+      expect(service.acceptInvite).toHaveBeenCalledWith(
         testBaseTokenDto1.token,
         testUserEntity1,
       );
-      expect(entityService.createOrgMemberNoUser).toBeCalledTimes(1);
-      expect(entityService.createOrgMemberNoUser).toBeCalledWith(
+      expect(entityService.createOrgMemberNoUser).toHaveBeenCalledTimes(1);
+      expect(entityService.createOrgMemberNoUser).toHaveBeenCalledWith(
         testOrgMemberEntity1,
       );
     });
@@ -96,8 +96,8 @@ describe('OrgMemberInviteController', () => {
       await expect(
         controller.decline(testBaseTokenDto1, testUserEntity1),
       ).resolves.toBeUndefined();
-      expect(service.declineInvite).toBeCalledTimes(1);
-      expect(service.declineInvite).toBeCalledWith(
+      expect(service.declineInvite).toHaveBeenCalledTimes(1);
+      expect(service.declineInvite).toHaveBeenCalledWith(
         testBaseTokenDto1.token,
         testUserEntity1,
       );

@@ -5,12 +5,12 @@ import {
   catchHttpClientError,
   catchHttpScreenError,
   organizationFeature,
-  qnaFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   answerIsNotEmpty,
+  maintainerIsNotEmpty,
   questionIsNotEmpty,
   teamIsNotEmpty,
   titleIsNotEmpty,
@@ -20,6 +20,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { QnaService } from '../qna.service';
+import { selectQnaAndOrg } from './qna.selector';
 
 @Injectable()
 export class QnaEffects {
@@ -104,15 +105,12 @@ export class QnaEffects {
   markQnaAsUpToDate$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.markQnaAsUpToDate),
-      concatLatestFrom(() => [
-        this.store.select(qnaFeature.selectSelectedQna),
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ]),
+      concatLatestFrom(() => this.store.select(selectQnaAndOrg)),
       filter(
-        ([, selectedQna, selectedOrganization]) =>
+        ([, { selectedQna, selectedOrganization }]) =>
           !!(selectedQna && selectedOrganization),
       ),
-      switchMap(([, selectedQna, selectedOrganization]) => {
+      switchMap(([, { selectedQna, selectedOrganization }]) => {
         return this.qnaService
           .markUpToDate(
             selectedQna?.qna.slug as string,
@@ -131,16 +129,13 @@ export class QnaEffects {
   editQuestion$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.editQuestion),
-      concatLatestFrom(() => [
-        this.store.select(qnaFeature.selectSelectedQna),
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ]),
+      concatLatestFrom(() => this.store.select(selectQnaAndOrg)),
       filter(
-        ([, selectedQna, selectedOrganization]) =>
+        ([, { selectedQna, selectedOrganization }]) =>
           !!(selectedQna && selectedOrganization),
       ),
       switchMap(
-        ([{ updateQuestionDto }, selectedQna, selectedOrganization]) => {
+        ([{ updateQuestionDto }, { selectedQna, selectedOrganization }]) => {
           return this.qnaService
             .editQuestion(
               selectedQna?.qna.slug as string,
@@ -148,8 +143,8 @@ export class QnaEffects {
               updateQuestionDto,
             )
             .pipe(
-              map((qna) => {
-                return QnaActions.editQnaSuccess({ qna });
+              map((qnaAndMemberDto) => {
+                return QnaActions.getQnaSuccess({ qnaAndMemberDto });
               }),
               catchError((err) =>
                 catchHttpClientError(err, (msg) => {
@@ -174,54 +169,52 @@ export class QnaEffects {
   editAnswer$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.editAnswer),
-      concatLatestFrom(() => [
-        this.store.select(qnaFeature.selectSelectedQna),
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ]),
+      concatLatestFrom(() => this.store.select(selectQnaAndOrg)),
       filter(
-        ([, selectedQna, selectedOrganization]) =>
+        ([, { selectedQna, selectedOrganization }]) =>
           !!(selectedQna && selectedOrganization),
       ),
-      switchMap(([{ updateAnswerDto }, selectedQna, selectedOrganization]) => {
-        return this.qnaService
-          .editAnswer(
-            selectedQna?.qna.slug as string,
-            selectedOrganization?.organization.slug as string,
-            updateAnswerDto,
-          )
-          .pipe(
-            map((qna) => {
-              return QnaActions.editQnaSuccess({ qna });
-            }),
-            catchError((err) =>
-              catchHttpClientError(err, (msg) => {
-                switch (msg) {
-                  case upToDateDurationMatches:
-                    return 'duration';
-                  case answerIsNotEmpty:
-                    return Keyword.Answer;
-                  default:
-                    return `${Keyword.Answer}-${Keyword.Edit}`;
-                }
+      switchMap(
+        ([{ updateAnswerDto }, { selectedQna, selectedOrganization }]) => {
+          return this.qnaService
+            .editAnswer(
+              selectedQna?.qna.slug as string,
+              selectedOrganization?.organization.slug as string,
+              updateAnswerDto,
+            )
+            .pipe(
+              map((qna) => {
+                return QnaActions.editQnaSuccess({ qna });
               }),
-            ),
-          );
-      }),
+              catchError((err) =>
+                catchHttpClientError(err, (msg) => {
+                  switch (msg) {
+                    case upToDateDurationMatches:
+                      return 'upToDateDuration';
+                    case answerIsNotEmpty:
+                      return Keyword.Answer;
+                    case maintainerIsNotEmpty:
+                      return 'maintainer';
+                    default:
+                      return `${Keyword.Answer}-${Keyword.Edit}`;
+                  }
+                }),
+              ),
+            );
+        },
+      ),
     );
   });
 
   deleteQna$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.deleteQna),
-      concatLatestFrom(() => [
-        this.store.select(qnaFeature.selectSelectedQna),
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ]),
+      concatLatestFrom(() => this.store.select(selectQnaAndOrg)),
       filter(
-        ([, selectedQna, selectedOrganization]) =>
+        ([, { selectedQna, selectedOrganization }]) =>
           !!(selectedQna && selectedOrganization),
       ),
-      switchMap(([, selectedQna, selectedOrganization]) => {
+      switchMap(([, { selectedQna, selectedOrganization }]) => {
         const qnaSlug = selectedQna?.qna.slug as string;
         return this.qnaService
           .delete(qnaSlug, selectedOrganization?.organization.slug as string)

@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  catchHttpClientError,
   catchHttpScreenError,
+  catchToastError,
   organizationFeature,
   OrgMemberActions,
-  orgMemberFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { OrgMemberService } from '../org-member.service';
+import { selectOrgMemberAndOrg } from './org-member.selector';
 
 /**
  * The effects tied to `OrgMemberActions`.
@@ -42,16 +41,16 @@ export class OrgMemberEffects {
   editOrgMember$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrgMemberActions.editOrgMember),
-      concatLatestFrom(() => [
-        this.store.select(organizationFeature.selectSelectedOrganization),
-        this.store.select(orgMemberFeature.selectSelectedOrgMember),
-      ]),
+      concatLatestFrom(() => this.store.select(selectOrgMemberAndOrg)),
       filter(
-        ([, selectedOrganization, selectedOrgMember]) =>
-          !!selectedOrganization && !!selectedOrgMember,
+        ([, { selectedOrganization, selectedOrgMember }]) =>
+          !!(selectedOrganization && selectedOrgMember),
       ),
       switchMap(
-        ([{ updateOrgMemberDto }, selectedOrganization, selectedOrgMember]) => {
+        ([
+          { updateOrgMemberDto },
+          { selectedOrganization, selectedOrgMember },
+        ]) => {
           return this.orgMemberService
             .edit(
               selectedOrganization?.organization.slug as string,
@@ -62,6 +61,7 @@ export class OrgMemberEffects {
               map((orgMember) => {
                 return OrgMemberActions.editOrgMemberSuccess({ orgMember });
               }),
+              catchError(catchToastError),
             );
         },
       ),
@@ -71,15 +71,12 @@ export class OrgMemberEffects {
   deleteOrgMember$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrgMemberActions.deleteOrgMember),
-      concatLatestFrom(() => [
-        this.store.select(organizationFeature.selectSelectedOrganization),
-        this.store.select(orgMemberFeature.selectSelectedOrgMember),
-      ]),
+      concatLatestFrom(() => this.store.select(selectOrgMemberAndOrg)),
       filter(
-        ([, selectedOrganization, selectedOrgMember]) =>
-          !!selectedOrganization && !!selectedOrgMember,
+        ([, { selectedOrganization, selectedOrgMember }]) =>
+          !!(selectedOrganization && selectedOrgMember),
       ),
-      switchMap(([, selectedOrganization, selectedOrgMember]) => {
+      switchMap(([, { selectedOrganization, selectedOrgMember }]) => {
         return this.orgMemberService
           .delete(
             selectedOrganization?.organization.slug as string,
@@ -89,12 +86,7 @@ export class OrgMemberEffects {
             map(() => {
               return OrgMemberActions.deleteOrgMemberSuccess();
             }),
-            catchError((err) =>
-              catchHttpClientError(
-                err,
-                () => `${Keyword.Member}-${Keyword.Delete}`,
-              ),
-            ),
+            catchError(catchToastError),
           );
       }),
     );

@@ -16,12 +16,12 @@
           formControlName="email"
           placeholder="Email address*"
           required
-          class="input border-neutral w-full"
+          class="input input-bordered w-full"
           [ngClass]="{ 'input-error': inputDisplayError('email') }"
         />
         <newbee-alert
-          [show]="inputDisplayError('email')"
           [type]="alertType.Error"
+          [show]="inputDisplayError('email')"
           [text]="inputErrorMessage('email')"
         ></newbee-alert>
 
@@ -32,12 +32,12 @@
           formControlName="name"
           placeholder="Name*"
           required
-          class="input border-neutral w-full"
+          class="input input-bordered w-full"
           [ngClass]="{ 'input-error': inputDisplayError('name') }"
         />
         <newbee-alert
-          [show]="inputDisplayError('name')"
           [type]="alertType.Error"
+          [show]="inputDisplayError('name')"
           [text]="inputErrorMessage('name')"
         ></newbee-alert>
 
@@ -49,15 +49,21 @@
           id="display-name-input"
           formControlName="displayName"
           placeholder="Display name"
-          class="input border-neutral w-full"
+          class="input input-bordered w-full"
+          [ngClass]="{ 'input-error': inputDisplayError('displayName') }"
         />
         <newbee-alert
-          [show]="inputDisplayError('displayName')"
           [type]="alertType.Error"
+          [show]="inputDisplayError('displayName')"
           [text]="inputErrorMessage('displayName')"
         ></newbee-alert>
 
         <newbee-phone-input formControlName="phoneNumber"></newbee-phone-input>
+        <newbee-alert
+          [type]="alertType.Error"
+          [show]="!!httpClientErrorMsg('phoneNumber')"
+          [text]="httpClientErrorMsg('phoneNumber')"
+        ></newbee-alert>
       </div>
 
       <div id="buttons" class="flex flex-col flex-nowrap gap-y-2">
@@ -72,9 +78,9 @@
         </button>
 
         <newbee-alert
-          [show]="!!miscError"
           [type]="alertType.Error"
-          [text]="miscError"
+          [show]="!!httpClientErrorMsg(keyword.Misc)"
+          [text]="httpClientErrorMsg(keyword.Misc)"
         ></newbee-alert>
       </div>
     </form>

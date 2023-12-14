@@ -5,12 +5,8 @@ import {
   AuthenticatorActions,
   catchHttpClientError,
   catchHttpScreenError,
-  ToastActions,
+  catchToastError,
 } from '@newbee/newbee/shared/data-access';
-import {
-  errToHttpClientError,
-  httpClientErrorToToast,
-} from '@newbee/newbee/shared/util';
 import {
   displayNameIsNotEmpty,
   emailIsEmail,
@@ -21,7 +17,7 @@ import {
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 /**
@@ -150,13 +146,7 @@ export class AuthEffects {
       switchMap(() => {
         return this.authService.logout().pipe(
           map(() => AuthActions.logoutSuccess()),
-          catchError((err) =>
-            of(
-              ToastActions.addToast({
-                toast: httpClientErrorToToast(errToHttpClientError(err)),
-              }),
-            ),
-          ),
+          catchError(catchToastError),
         );
       }),
     );

@@ -12,14 +12,14 @@ import {
 } from '@newbee/api/shared/data-access';
 import { OrgMember, Organization, Role, User } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgMemberNoUser, OrgRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgMemberNoUser, apiRoles } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrgMemberInviteEntity`.
  */
 @Controller({
   path: Keyword.Invite,
-  version: apiVersion.orgMemberInvite,
+  version: apiVersion['org-member-invite'],
 })
 export class OrgMemberInviteController {
   /**
@@ -43,7 +43,7 @@ export class OrgMemberInviteController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`${Keyword.Organization}/:${Keyword.Organization}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles['org-member-invite'].invite)
   async invite(
     @Body() createOrgMemberInviteDto: CreateOrgMemberInviteDto,
     @OrgMember() orgMember: OrgMemberEntity,

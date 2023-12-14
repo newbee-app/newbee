@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SelectOption } from '@newbee/newbee/shared/util';
 import {
   OrgRoleEnum,
+  ascOrgRoleEnum,
   testOrgMember1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
@@ -27,6 +28,7 @@ describe('ViewOrgMemberComponent', () => {
     component = fixture.componentInstance;
 
     component.orgMember = testOrgMemberRelation1;
+    component.userOrgMember = testOrgMember1;
 
     jest.spyOn(component.orgNavigate, 'emit');
     jest.spyOn(component.memberNavigate, 'emit');
@@ -50,90 +52,25 @@ describe('ViewOrgMemberComponent', () => {
         expect(component.totalCreatedDocs).toEqual('1 doc');
         expect(component.totalMaintainedDocs).toEqual('1 doc');
 
-        component.orgMember.teams.total = 100;
         component.orgMember.createdQnas.total = 100;
         component.orgMember.maintainedQnas.total = 100;
         component.orgMember.createdDocs.total = 100;
         component.orgMember.maintainedDocs.total = 100;
-        expect(component.totalTeams).toEqual('100 teams');
         expect(component.totalCreatedQnas).toEqual('100 QnAs');
         expect(component.totalMaintainedQnas).toEqual('100 QnAs');
         expect(component.totalCreatedDocs).toEqual('100 docs');
         expect(component.totalMaintainedDocs).toEqual('100 docs');
       });
     });
-
-    describe('roles', () => {
-      it('should vary based on org member and user org member roles', () => {
-        expect(component.canEdit).toBeFalsy();
-        expect(component.orgRoleEnumOptions).toEqual([]);
-
-        component.userOrgMember = testOrgMember1;
-        expect(component.canEdit).toBeTruthy();
-        expect(component.orgRoleEnumOptions).toEqual(
-          Object.values(OrgRoleEnum).map((role) => new SelectOption(role, role))
-        );
-
-        component.userOrgMember = {
-          ...testOrgMember1,
-          role: OrgRoleEnum.Moderator,
-        };
-        expect(component.canEdit).toBeFalsy();
-        expect(component.orgRoleEnumOptions).toEqual(
-          [OrgRoleEnum.Member, OrgRoleEnum.Moderator].map(
-            (role) => new SelectOption(role, role)
-          )
-        );
-
-        component.userOrgMember = {
-          ...testOrgMember1,
-          role: OrgRoleEnum.Member,
-        };
-        expect(component.canEdit).toBeFalsy();
-        expect(component.orgRoleEnumOptions).toEqual(
-          [OrgRoleEnum.Member].map((role) => new SelectOption(role, role))
-        );
-
-        component.orgMember = {
-          ...testOrgMemberRelation1,
-          orgMember: {
-            ...testOrgMember1,
-            role: OrgRoleEnum.Member,
-          },
-        };
-        expect(component.canEdit).toBeFalsy();
-
-        component.userOrgMember = {
-          ...testOrgMember1,
-          role: OrgRoleEnum.Moderator,
-        };
-        expect(component.canEdit).toBeTruthy();
-
-        component.orgMember = {
-          ...testOrgMemberRelation1,
-          orgMember: {
-            ...testOrgMember1,
-            role: OrgRoleEnum.Moderator,
-          },
-        };
-        expect(component.canEdit).toBeTruthy();
-
-        component.orgMember = {
-          ...testOrgMemberRelation1,
-          orgMember: {
-            ...testOrgMember1,
-            role: OrgRoleEnum.Owner,
-          },
-        };
-        expect(component.canEdit).toBeFalsy();
-      });
-    });
   });
 
   describe('init', () => {
-    it('should set changeRoleSelect', () => {
+    it('should create orgRoleEnumOptions and set changeRoleSelect', () => {
+      expect(component.orgRoleEnumOptions).toEqual(
+        ascOrgRoleEnum.map((role) => new SelectOption(role, role)),
+      );
       expect(component.changeRoleSelect.value).toEqual(
-        component.orgMember.orgMember.role
+        component.orgMember.orgMember.role,
       );
     });
   });
@@ -141,17 +78,19 @@ describe('ViewOrgMemberComponent', () => {
   describe('editOrgMemberRole', () => {
     it('should emit editRole if the select is unique', () => {
       component.editOrgMemberRole();
-      expect(component.editRole.emit).not.toBeCalled();
+      expect(component.editRole.emit).not.toHaveBeenCalled();
 
       component.changeRoleSelect.setValue(OrgRoleEnum.Moderator);
       component.editOrgMemberRole();
-      expect(component.editRole.emit).toBeCalledTimes(1);
-      expect(component.editRole.emit).toBeCalledWith(OrgRoleEnum.Moderator);
+      expect(component.editRole.emit).toHaveBeenCalledTimes(1);
+      expect(component.editRole.emit).toHaveBeenCalledWith(
+        OrgRoleEnum.Moderator,
+      );
 
       component.changeRoleSelect.setValue(OrgRoleEnum.Member);
       component.editOrgMemberRole();
-      expect(component.editRole.emit).toBeCalledTimes(2);
-      expect(component.editRole.emit).toBeCalledWith(OrgRoleEnum.Member);
+      expect(component.editRole.emit).toHaveBeenCalledTimes(2);
+      expect(component.editRole.emit).toHaveBeenCalledWith(OrgRoleEnum.Member);
     });
   });
 });

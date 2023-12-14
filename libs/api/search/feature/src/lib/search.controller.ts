@@ -11,7 +11,7 @@ import {
   BaseQueryResultDto,
   BaseSuggestResultDto,
   Keyword,
-  OrgRoleEnum,
+  apiRoles,
 } from '@newbee/shared/util';
 
 @Controller({
@@ -37,7 +37,7 @@ export class SearchController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Get()
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.search.search)
   async search(
     @Query() queryDto: QueryDto,
     @Organization() organization: OrganizationEntity,
@@ -65,7 +65,7 @@ export class SearchController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Get(Keyword.Suggest)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.search.suggest)
   async suggest(
     @Query() suggestDto: SuggestDto,
     @Organization() organization: OrganizationEntity,

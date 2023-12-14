@@ -84,7 +84,7 @@ describe('SearchResultsViewComponent', () => {
     it('should change tab value and dispatch search', () => {
       component.onTabChange(SearchTab.Doc);
       expect(component.tab).toEqual(SearchTab.Doc);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
           query: { offset: 0, type: SolrEntryEnum.Doc, query: testSearchTerm },
         }),
@@ -105,7 +105,7 @@ describe('SearchResultsViewComponent', () => {
   describe('onSearchbar', () => {
     it('should dispatch suggest', () => {
       component.onSearchbar(testSearchTerm);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.suggest({ query: { query: testSearchTerm } }),
       );
     });
@@ -121,19 +121,19 @@ describe('SearchResultsViewComponent', () => {
   describe('onScrolled', () => {
     it('should do nothing if all results are being shown', () => {
       component.onScrolled();
-      expect(store.dispatch).not.toBeCalled();
+      expect(store.dispatch).not.toHaveBeenCalled();
 
       component.searchResults = testQueryResult1;
       component.onScrolled();
-      expect(store.dispatch).not.toBeCalled();
+      expect(store.dispatch).not.toHaveBeenCalled();
 
       component.searchResults = { ...testQueryResult1, total: 10, offset: 0 };
       component.onScrolled();
-      expect(store.dispatch).not.toBeCalled();
+      expect(store.dispatch).not.toHaveBeenCalled();
 
       component.searchResults = { ...testQueryResult1, total: 100, offset: 8 };
       component.onScrolled();
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
           query: { offset: 9, query: testSearchTerm },
         }),

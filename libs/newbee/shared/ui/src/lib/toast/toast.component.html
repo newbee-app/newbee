@@ -1,8 +1,8 @@
 <div [ngClass]="toastClasses">
   <newbee-alert
-    [header]="header"
-    [text]="text"
-    [type]="type"
+    [header]="toast.header"
+    [text]="toast.text"
+    [type]="toast.type"
     [includeClearSymbol]="true"
     [show]="show"
     (showChange)="onShowChange($event)"

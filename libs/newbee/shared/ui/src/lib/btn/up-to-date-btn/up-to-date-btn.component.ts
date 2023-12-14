@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { type PostQueryResult } from '@newbee/shared/util';
+import { isUpToDate, type PostQueryResult } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { TooltipComponent } from '../../tooltip';
@@ -26,7 +26,7 @@ export class UpToDateBtnComponent {
    * Whether the input post is up-to-date.
    */
   get upToDate(): boolean {
-    return new Date() < new Date(this.post.outOfDateAt);
+    return isUpToDate(this.post.outOfDateAt);
   }
 
   /**

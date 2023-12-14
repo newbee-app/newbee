@@ -39,9 +39,7 @@
 
   <div class="flex flex-col flex-nowrap gap-y-2">
     <p>Add more details about your question below!</p>
-    <newbee-markdoc-editor
-      (textChange)="onTextChange($event)"
-    ></newbee-markdoc-editor>
+    <newbee-markdoc-editor [(text)]="questionMarkdoc"></newbee-markdoc-editor>
     <newbee-alert
       [type]="alertType.Error"
       [show]="!!httpClientErrorMsg(keyword.Question)"
@@ -57,7 +55,7 @@
       class="btn btn-primary w-fit"
     >
       <span *ngIf="createPending" class="loading loading-spinner"></span>
-      Ask Question
+      Ask question
     </button>
 
     <newbee-alert

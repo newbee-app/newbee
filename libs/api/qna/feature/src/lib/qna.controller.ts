@@ -18,26 +18,11 @@ import {
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
-  TeamEntity,
-  TeamMemberEntity,
 } from '@newbee/api/shared/data-access';
-import {
-  ConditionalRoleEnum,
-  OrgMember,
-  Organization,
-  PostRoleEnum,
-  Qna,
-  Role,
-  Team,
-  TeamMember,
-} from '@newbee/api/shared/util';
+import { OrgMember, Organization, Qna, Role } from '@newbee/api/shared/util';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import {
-  BaseQnaAndMemberDto,
-  Keyword,
-  OrgRoleEnum,
-  TeamRoleEnum,
-} from '@newbee/shared/util';
+import { BaseQnaAndMemberDto, Keyword, apiRoles } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `QnaEntity`.
@@ -55,6 +40,7 @@ export class QnaController {
   constructor(
     private readonly qnaService: QnaService,
     private readonly entityService: EntityService,
+    private readonly teamMemberService: TeamMemberService,
   ) {}
 
   /**
@@ -70,21 +56,16 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Post()
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.qna.create)
   async create(
     @Body() createQnaDto: CreateQnaDto,
     @OrgMember() orgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-    @Team() team: TeamEntity | undefined,
   ): Promise<QnaEntity> {
     this.logger.log(
       `Create qna request received from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, with title: ${createQnaDto.title}`,
     );
-    const qna = await this.qnaService.create(
-      createQnaDto,
-      team ?? null,
-      orgMember,
-    );
+    const qna = await this.qnaService.create(createQnaDto, orgMember);
     this.logger.log(
       `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`,
     );
@@ -97,21 +78,29 @@ export class QnaController {
    * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param qna The qna we're looking for.
+   * @param orgMember The org member making the request.
    *
    * @returns The qna associated with the slug, if one exists.
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Qna}`)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles.qna.get)
   async get(
     @Qna() qna: QnaEntity,
-    @TeamMember() teamMember: TeamMemberEntity | undefined,
+    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
+
+    const { team } = qna;
     return {
       qna: await this.entityService.createQnaNoOrg(qna),
-      teamMember: teamMember ?? null,
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
     };
   }
 
@@ -126,24 +115,28 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Patch(`:${Keyword.Qna}/${Keyword.Question}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Creator,
-    PostRoleEnum.Maintainer,
-  )
+  @Role(apiRoles.qna.updateQuestion)
   async updateQuestion(
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Qna() qna: QnaEntity,
-  ): Promise<QnaEntity> {
+    @OrgMember() orgMember: OrgMemberEntity,
+  ): Promise<BaseQnaAndMemberDto> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
     this.logger.log(
       `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
-    return updatedQna;
+
+    const { team } = updatedQna;
+    return {
+      qna: await this.entityService.createQnaNoOrg(updatedQna),
+      teamMember: team
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null,
+    };
   }
 
   /**
@@ -160,35 +153,16 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Patch(`:${Keyword.Qna}/${Keyword.Answer}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Member,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-    ConditionalRoleEnum.OrgMemberIfNoTeamInQna,
-  )
+  @Role(apiRoles.qna.updateAnswer)
   async updateAnswer(
     @Body() updateAnswerDto: UpdateAnswerDto,
     @Qna() qna: QnaEntity,
-    @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<QnaEntity> {
     this.logger.log(`Update answer request received for slug: ${qna.slug}`);
-    let updatedQna: QnaEntity;
-    if (qna.maintainer) {
-      updatedQna = await this.qnaService.update(qna, updateAnswerDto);
-    } else {
-      updatedQna = await this.qnaService.update(
-        qna,
-        updateAnswerDto,
-        orgMember,
-      );
-    }
+    const updatedQna = await this.qnaService.update(qna, updateAnswerDto);
     this.logger.log(
       `Updated answer, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
     );
-
     return updatedQna;
   }
 
@@ -202,13 +176,7 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`:${Keyword.Qna}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-  )
+  @Role(apiRoles.qna.markUpToDate)
   async markUpToDate(@Qna() qna: QnaEntity): Promise<QnaEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.markUpToDate(qna);
@@ -227,13 +195,7 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Qna}`)
-  @Role(
-    OrgRoleEnum.Moderator,
-    OrgRoleEnum.Owner,
-    TeamRoleEnum.Moderator,
-    TeamRoleEnum.Owner,
-    PostRoleEnum.Maintainer,
-  )
+  @Role(apiRoles.qna.delete)
   async delete(@Qna() qna: QnaEntity): Promise<void> {
     this.logger.log(`Delete qna request received for qna slug: ${qna.slug}`);
     await this.qnaService.delete(qna);

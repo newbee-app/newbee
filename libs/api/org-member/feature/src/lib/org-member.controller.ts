@@ -15,14 +15,14 @@ import {
   SubjectOrgMember,
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, OrgMemberNoOrg, OrgRoleEnum } from '@newbee/shared/util';
+import { Keyword, OrgMemberNoOrg, apiRoles } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `OrgMemberEntity`.
  */
 @Controller({
   path: `${Keyword.Organization}/:${Keyword.Organization}/${Keyword.Member}`,
-  version: apiVersion.orgMember,
+  version: apiVersion['org-member'],
 })
 export class OrgMemberController {
   /**
@@ -46,7 +46,7 @@ export class OrgMemberController {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Get(`:${Keyword.Member}`)
-  @Role(OrgRoleEnum.Member, OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles['org-member'].getBySlug)
   async getBySlug(
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
@@ -69,7 +69,7 @@ export class OrgMemberController {
    * @returns Information about the updated org member.
    */
   @Patch(`:${Keyword.Member}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles['org-member'].update)
   async update(
     @Body() updateOrgMemberDto: UpdateOrgMemberDto,
     @OrgMember() orgMember: OrgMemberEntity,
@@ -101,7 +101,7 @@ export class OrgMemberController {
    * @param organization The organization this is all happening in.
    */
   @Delete(`:${Keyword.Member}`)
-  @Role(OrgRoleEnum.Moderator, OrgRoleEnum.Owner)
+  @Role(apiRoles['org-member'].delete)
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
@@ -110,7 +110,7 @@ export class OrgMemberController {
     this.logger.log(
       `Delete org member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}`,
     );
-    await this.orgMemberService.delete(subjectOrgMember, orgMember.role);
+    await this.orgMemberService.delete(subjectOrgMember);
     this.logger.log(
       `Deleted org member with slug: ${subjectOrgMember.slug}, in organization ID: ${organization.id}`,
     );

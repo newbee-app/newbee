@@ -26,7 +26,7 @@ export class OrgMemberService {
    * @returns The base API URL for dealing with org members.
    */
   static baseApiUrl(orgSlug: string, memberSlug: string): string {
-    return `/${Keyword.Api}/v${apiVersion.orgMember}/${Keyword.Organization}/${orgSlug}/${Keyword.Member}/${memberSlug}`;
+    return `/${Keyword.Api}/v${apiVersion['org-member']}/${Keyword.Organization}/${orgSlug}/${Keyword.Member}/${memberSlug}`;
   }
 
   /**

@@ -4,14 +4,13 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { durationToNumAndFreq, Frequency } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
-  OrgRoleEnum,
   testOrganization1,
   testOrgMember1,
   testTeam1,
-  testTeamMember1,
 } from '@newbee/shared/util';
+import dayjs from 'dayjs';
 import { EditTeamComponent } from './edit-team.component';
 
 describe('EditTeamComponent', () => {
@@ -44,31 +43,47 @@ describe('EditTeamComponent', () => {
     expect(fixture).toBeDefined();
   });
 
+  describe('ngOnInit', () => {
+    it('should set form values', () => {
+      expect(component.editTeamForm.value).toEqual({
+        name: testTeam1.name,
+        upToDateDuration: testTeam1.upToDateDuration
+          ? durationToNumAndFreq(dayjs.duration(testTeam1.upToDateDuration))
+          : { num: null, frequency: null },
+      });
+      expect(component.editTeamSlugForm.value).toEqual({
+        slug: testTeam1.slug,
+      });
+    });
+  });
+
   describe('outputs', () => {
     describe('slug', () => {
       it('should emit whenever the slug input is changed', () => {
         component.editTeamSlugForm.setValue({ slug: 'newslug' });
-        expect(component.slug.emit).toBeCalledTimes(1);
-        expect(component.slug.emit).toBeCalledWith('newslug');
+        expect(component.slug.emit).toHaveBeenCalledTimes(1);
+        expect(component.slug.emit).toHaveBeenCalledWith('newslug');
       });
     });
 
     describe('formattedSlug', () => {
       it('should emit whenever the slug input is formatted', fakeAsync(() => {
-        expect(component.formattedSlug.emit).toBeCalledTimes(1);
-        expect(component.formattedSlug.emit).toBeCalledWith(testTeam1.slug);
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith(
+          testTeam1.slug,
+        );
         component.editTeamSlugForm.setValue({ slug: 'Newslug' });
         tick(600);
-        expect(component.formattedSlug.emit).toBeCalledTimes(2);
-        expect(component.formattedSlug.emit).toBeCalledWith('newslug');
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(2);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith('newslug');
       }));
     });
 
     describe('edit', () => {
       it('should emit edit', () => {
         component.emitEdit();
-        expect(component.edit.emit).toBeCalledTimes(1);
-        expect(component.edit.emit).toBeCalledWith({
+        expect(component.edit.emit).toHaveBeenCalledTimes(1);
+        expect(component.edit.emit).toHaveBeenCalledWith({
           name: testTeam1.name,
           upToDateDuration: null,
         });
@@ -78,8 +93,9 @@ describe('EditTeamComponent', () => {
           upToDateDuration: { num: 1, frequency: Frequency.Year },
         });
         component.emitEdit();
-        expect(component.edit.emit).toBeCalledTimes(2);
-        expect(component.edit.emit).toBeCalledWith({
+        expect(component.edit.emit).toHaveBeenCalledTimes(2);
+        expect(component.edit.emit).toHaveBeenCalledWith({
+          name: '',
           upToDateDuration: 'P1Y',
         });
       });
@@ -88,15 +104,15 @@ describe('EditTeamComponent', () => {
     describe('editSlug', () => {
       it('should emit editSlug', () => {
         component.emitEditSlug();
-        expect(component.editSlug.emit).toBeCalledTimes(1);
-        expect(component.editSlug.emit).toBeCalledWith(testTeam1.slug);
+        expect(component.editSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.editSlug.emit).toHaveBeenCalledWith(testTeam1.slug);
       });
     });
 
     describe('delete', () => {
       it('should emit delete', () => {
         component.emitDelete();
-        expect(component.delete.emit).toBeCalledTimes(1);
+        expect(component.delete.emit).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -129,16 +145,6 @@ describe('EditTeamComponent', () => {
         expect(component.deleteSlugMatches).toBeFalsy();
         component.deleteTeamForm.setValue({ slug: testTeam1.slug });
         expect(component.deleteSlugMatches).toBeTruthy();
-      });
-    });
-
-    describe('canAccessAdvanced', () => {
-      it('should be true if org member is an admin or team member is an owner, false otherwise', () => {
-        expect(component.canAccessAdvanced).toBeTruthy();
-        component.orgMember = { ...testOrgMember1, role: OrgRoleEnum.Member };
-        expect(component.canAccessAdvanced).toBeFalsy();
-        component.teamMember = testTeamMember1;
-        expect(component.canAccessAdvanced).toBeTruthy();
       });
     });
   });

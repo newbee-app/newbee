@@ -21,7 +21,9 @@ import {
 import {
   AlertType,
   DigitOnlyDirectiveModule,
+  Frequency,
   SlugInputDirectiveModule,
+  formNumAndFreqToDuration,
   frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
@@ -30,7 +32,6 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseCreateTeamDto,
-  Frequency,
   Keyword,
   type Organization,
 } from '@newbee/shared/util';
@@ -54,19 +55,8 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './create-team.component.html',
 })
 export class CreateTeamComponent implements OnChanges, OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
-
-  /**
-   * NewBee keywords.
-   */
   readonly keyword = Keyword;
 
   /**
@@ -195,17 +185,15 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
    * Emit the `create` output.
    */
   emitCreate(): void {
-    const { name, slug, upToDateDuration } = this.createTeamForm.value;
-    const num = upToDateDuration?.num ?? null;
-    const frequency = upToDateDuration?.frequency ?? null;
-
-    const createTeamDto: BaseCreateTeamDto = {
-      name: name as string,
-      slug: slug as string,
+    const { name, slug } = this.createTeamForm.value;
+    this.create.emit({
+      name: name ?? '',
+      slug: slug ?? '',
       upToDateDuration:
-        num && frequency ? dayjs.duration(num, frequency).toISOString() : null,
-    };
-    this.create.emit(createTeamDto);
+        formNumAndFreqToDuration(
+          this.createTeamForm.controls.upToDateDuration.value,
+        )?.toISOString() ?? null,
+    });
   }
 
   /**

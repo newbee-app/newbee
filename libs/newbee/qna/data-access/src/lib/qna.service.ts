@@ -11,6 +11,9 @@ import {
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
+/**
+ * Service for interacting with the qna portion of the API.
+ */
 @Injectable()
 export class QnaService {
   constructor(private readonly http: HttpClient) {}
@@ -81,8 +84,8 @@ export class QnaService {
     qnaSlug: string,
     orgSlug: string,
     updateQuestionDto: BaseUpdateQuestionDto,
-  ): Observable<Qna> {
-    return this.http.patch<Qna>(
+  ): Observable<BaseQnaAndMemberDto> {
+    return this.http.patch<BaseQnaAndMemberDto>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Question}`,
       updateQuestionDto,
     );

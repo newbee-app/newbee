@@ -5,8 +5,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  Frequency,
   testBaseCreateTeamDto1,
   testOrganization1,
   testTeam1,
@@ -44,8 +44,8 @@ describe('CreateTeamComponent', () => {
     describe('name', () => {
       it('should emit whenever name changes in form', () => {
         component.createTeamForm.controls.name.setValue(testTeam1.name);
-        expect(component.name.emit).toBeCalledTimes(1);
-        expect(component.name.emit).toBeCalledWith(testTeam1.name);
+        expect(component.name.emit).toHaveBeenCalledTimes(1);
+        expect(component.name.emit).toHaveBeenCalledWith(testTeam1.name);
       });
     });
 
@@ -53,18 +53,20 @@ describe('CreateTeamComponent', () => {
       it('should emit whenever the user types and after the slug input directive formats', fakeAsync(() => {
         component.createTeamForm.controls.slug.setValue(testTeam1.slug);
         tick(600);
-        expect(component.slug.emit).toBeCalledTimes(1);
-        expect(component.slug.emit).toBeCalledWith(testTeam1.slug);
-        expect(component.formattedSlug.emit).toBeCalledTimes(1);
-        expect(component.formattedSlug.emit).toBeCalledWith(testTeam1.slug);
+        expect(component.slug.emit).toHaveBeenCalledTimes(1);
+        expect(component.slug.emit).toHaveBeenCalledWith(testTeam1.slug);
+        expect(component.formattedSlug.emit).toHaveBeenCalledTimes(1);
+        expect(component.formattedSlug.emit).toHaveBeenCalledWith(
+          testTeam1.slug,
+        );
       }));
     });
 
     describe('create', () => {
       it('should emit create', () => {
         component.emitCreate();
-        expect(component.create.emit).toBeCalledTimes(1);
-        expect(component.create.emit).toBeCalledWith({
+        expect(component.create.emit).toHaveBeenCalledTimes(1);
+        expect(component.create.emit).toHaveBeenCalledWith({
           name: '',
           slug: '',
           upToDateDuration: null,
@@ -75,15 +77,17 @@ describe('CreateTeamComponent', () => {
           slug: testTeam1.slug,
         });
         component.emitCreate();
-        expect(component.create.emit).toBeCalledTimes(2);
-        expect(component.create.emit).toBeCalledWith(testBaseCreateTeamDto1);
+        expect(component.create.emit).toHaveBeenCalledTimes(2);
+        expect(component.create.emit).toHaveBeenCalledWith(
+          testBaseCreateTeamDto1,
+        );
 
         component.createTeamForm.patchValue({
           upToDateDuration: { num: 1, frequency: Frequency.Year },
         });
         component.emitCreate();
-        expect(component.create.emit).toBeCalledTimes(3);
-        expect(component.create.emit).toBeCalledWith({
+        expect(component.create.emit).toHaveBeenCalledTimes(3);
+        expect(component.create.emit).toHaveBeenCalledWith({
           ...testBaseCreateTeamDto1,
           upToDateDuration: 'P1Y',
         });
@@ -91,7 +95,7 @@ describe('CreateTeamComponent', () => {
     });
   });
 
-  describe('changes', () => {
+  describe('ngOnChanges', () => {
     it('should update form for generatedSlug changes', () => {
       component.ngOnChanges({
         generatedSlug: new SimpleChange('', testTeam1.slug, true),
@@ -99,7 +103,7 @@ describe('CreateTeamComponent', () => {
       expect(component.createTeamForm.controls.slug.value).toEqual(
         testTeam1.slug,
       );
-      expect(component.slug.emit).not.toBeCalled();
+      expect(component.slug.emit).not.toHaveBeenCalled();
     });
   });
 });

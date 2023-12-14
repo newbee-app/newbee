@@ -61,7 +61,9 @@ describe('SearchbarComponent', () => {
     it('should blur the input', () => {
       jest.spyOn(component.searchbarInput.nativeElement, 'blur');
       component.escapeEvent();
-      expect(component.searchbarInput.nativeElement.blur).toBeCalledTimes(1);
+      expect(component.searchbarInput.nativeElement.blur).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 
@@ -69,7 +71,9 @@ describe('SearchbarComponent', () => {
     it('should focus on the input', () => {
       jest.spyOn(component.searchbarInput.nativeElement, 'focus');
       component.focusOnInput();
-      expect(component.searchbarInput.nativeElement.focus).toBeCalledTimes(1);
+      expect(
+        component.searchbarInput.nativeElement.focus,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 

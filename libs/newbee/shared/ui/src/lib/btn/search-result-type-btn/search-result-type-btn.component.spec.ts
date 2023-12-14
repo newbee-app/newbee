@@ -6,7 +6,7 @@ import {
   testQnaQueryResult1,
   testTeamQueryResult1,
 } from '@newbee/shared/util';
-import { capitalize } from 'lodash';
+import { capitalize } from 'lodash-es';
 import { SearchResultTypeBtnComponent } from './search-result-type-btn.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -41,12 +41,12 @@ describe('SearchResultTypeBtnComponent', () => {
   describe('searchResultType', () => {
     it('should return the search result type as a string', () => {
       expect(component.searchResultType).toEqual(
-        capitalize(SolrEntryEnum.User)
+        capitalize(SolrEntryEnum.User),
       );
 
       component.searchResult = testTeamQueryResult1;
       expect(component.searchResultType).toEqual(
-        capitalize(SolrEntryEnum.Team)
+        capitalize(SolrEntryEnum.Team),
       );
 
       component.searchResult = testDocQueryResult1;

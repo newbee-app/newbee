@@ -18,12 +18,13 @@
           id="name-input"
           formControlName="name"
           required
-          class="input border-neutral"
+          class="input input-bordered"
+          [ngClass]="{ 'input-error': inputDisplayError(editUserForm, 'name') }"
         />
         <newbee-alert
-          [show]="inputDisplayError('editUser', 'name')"
           [type]="alertType.Error"
-          [text]="inputErrorMessage('editUser', 'name')"
+          [show]="inputDisplayError(editUserForm, 'name')"
+          [text]="inputErrorMessage(editUserForm, 'name')"
         ></newbee-alert>
       </div>
 
@@ -33,12 +34,15 @@
           type="text"
           id="display-name-input"
           formControlName="displayName"
-          class="input border-neutral"
+          class="input input-bordered"
+          [ngClass]="{
+            'input-error': inputDisplayError(editUserForm, 'displayName')
+          }"
         />
         <newbee-alert
-          [show]="inputDisplayError('editUser', 'displayName')"
           [type]="alertType.Error"
-          [text]="inputErrorMessage('editUser', 'displayName')"
+          [show]="inputDisplayError(editUserForm, 'displayName')"
+          [text]="inputErrorMessage(editUserForm, 'displayName')"
         ></newbee-alert>
       </div>
 
@@ -49,8 +53,8 @@
           formControlName="phoneNumber"
         ></newbee-phone-input>
         <newbee-alert
-          [show]="inputDisplayError('editUser', 'phoneNumber')"
-          [text]="inputErrorMessage('editUser', 'phoneNumber')"
+          [show]="inputDisplayError(editUserForm, 'phoneNumber')"
+          [text]="inputErrorMessage(editUserForm, 'phoneNumber')"
           [type]="alertType.Error"
         ></newbee-alert>
       </div>
@@ -169,7 +173,14 @@
                   <input
                     type="text"
                     [formControlName]="i"
-                    class="input input-sm border-neutral grow"
+                    class="input input-sm input-bordered grow"
+                    [ngClass]="{
+                      'input-error': !!httpClientErrorMsg(
+                        keyword.Authenticator,
+                        keyword.Edit,
+                        authenticator.id
+                      )
+                    }"
                   />
                   <div class="flex flex-row flex-nowrap">
                     <button
@@ -313,8 +324,17 @@
           formControlName="delete"
           required
           placeholder="DELETE"
-          class="input border-neutral"
+          class="input input-bordered"
+          [ngClass]="{
+            'input-error': inputDisplayError(deleteUserForm, 'delete')
+          }"
         />
+
+        <newbee-alert
+          [type]="alertType.Error"
+          [show]="inputDisplayError(deleteUserForm, 'delete')"
+          [text]="inputErrorMessage(deleteUserForm, 'delete')"
+        ></newbee-alert>
       </div>
 
       <div class="flex flex-col flex-nowrap gap-y-2">

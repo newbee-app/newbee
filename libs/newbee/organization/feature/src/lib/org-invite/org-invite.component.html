@@ -1,6 +1,7 @@
 <newbee-invite-member
-  [invitePending]="(invitePending$ | async)!"
-  [invitedUser]="(invitedUser$ | async)!"
+  [orgMember]="(orgMember$ | async)!.orgMember"
+  [invitePending]="(orgModuleState$ | async)!.pendingInvite"
+  [invitedUser]="(orgModuleState$ | async)!.invitedUser"
   [httpClientError]="(httpClientError$ | async)!"
   (invite)="onInvite($event)"
 ></newbee-invite-member>

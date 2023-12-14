@@ -80,8 +80,10 @@ describe('AuthEffects', () => {
       });
       expect(effects.sendLoginMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLoginLogin).toBeCalledTimes(1);
-        expect(service.magicLinkLoginLogin).toBeCalledWith(testBaseEmailDto1);
+        expect(service.magicLinkLoginLogin).toHaveBeenCalledTimes(1);
+        expect(service.magicLinkLoginLogin).toHaveBeenCalledWith(
+          testBaseEmailDto1,
+        );
       });
     });
   });
@@ -96,8 +98,8 @@ describe('AuthEffects', () => {
       });
       expect(effects.confirmMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.magicLinkLogin).toBeCalledTimes(1);
-        expect(service.magicLinkLogin).toBeCalledWith('1234');
+        expect(service.magicLinkLogin).toHaveBeenCalledTimes(1);
+        expect(service.magicLinkLogin).toHaveBeenCalledWith('1234');
       });
     });
   });
@@ -116,8 +118,10 @@ describe('AuthEffects', () => {
       });
       expect(effects.registerWithWebAuthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnRegister).toBeCalledTimes(1);
-        expect(service.webAuthnRegister).toBeCalledWith(testBaseCreateUserDto1);
+        expect(service.webAuthnRegister).toHaveBeenCalledTimes(1);
+        expect(service.webAuthnRegister).toHaveBeenCalledWith(
+          testBaseCreateUserDto1,
+        );
       });
     });
   });
@@ -137,8 +141,8 @@ describe('AuthEffects', () => {
       });
       expect(effects.registerWithWebAuthnSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
 
@@ -163,8 +167,10 @@ describe('AuthEffects', () => {
       });
       expect(effects.createWebAuthnLoginOptions$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLoginOptions).toBeCalledTimes(1);
-        expect(service.webAuthnLoginOptions).toBeCalledWith(testBaseEmailDto1);
+        expect(service.webAuthnLoginOptions).toHaveBeenCalledTimes(1);
+        expect(service.webAuthnLoginOptions).toHaveBeenCalledWith(
+          testBaseEmailDto1,
+        );
       });
     });
   });
@@ -184,8 +190,8 @@ describe('AuthEffects', () => {
       });
       expect(effects.loginWithWebAuthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.webAuthnLogin).toBeCalledTimes(1);
-        expect(service.webAuthnLogin).toBeCalledWith(
+        expect(service.webAuthnLogin).toHaveBeenCalledTimes(1);
+        expect(service.webAuthnLogin).toHaveBeenCalledWith(
           testBaseEmailDto1,
           testPublicKeyCredentialRequestOptions1,
         );
@@ -203,8 +209,8 @@ describe('AuthEffects', () => {
       });
       expect(effects.loginSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith(['/']);
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
     });
   });
@@ -215,8 +221,8 @@ describe('AuthEffects', () => {
       const expected$ = hot('a', { a: AuthActions.logoutSuccess() });
       expect(effects.logout$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.logout).toBeCalledTimes(1);
-        expect(service.logout).toBeCalledWith();
+        expect(service.logout).toHaveBeenCalledTimes(1);
+        expect(service.logout).toHaveBeenCalledWith();
       });
     });
   });
@@ -227,8 +233,8 @@ describe('AuthEffects', () => {
       const expected$ = hot('a', { a: AuthActions.logoutSuccess() });
       expect(effects.logoutSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(router.navigate).toBeCalledTimes(1);
-        expect(router.navigate).toBeCalledWith([
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([
           `/${Keyword.Auth}/${Keyword.Login}`,
         ]);
       });

@@ -13,6 +13,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   EntityService,
+  OrgMemberEntity,
   TeamMemberEntity,
   testOrgMemberEntity1,
   testTeamEntity1,
@@ -81,14 +82,14 @@ describe('TeamMemberService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(mockTeamMemberEntity).toBeCalledTimes(1);
-      expect(mockTeamMemberEntity).toBeCalledWith(
+      expect(mockTeamMemberEntity).toHaveBeenCalledTimes(1);
+      expect(mockTeamMemberEntity).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
         testTeamMemberEntity1.role,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testTeamMemberEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testTeamMemberEntity1);
     });
 
     it('should create a new team member', async () => {
@@ -140,8 +141,8 @@ describe('TeamMemberService', () => {
 
   describe('findOneByOrgMemberAndTeam', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(TeamMemberEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(TeamMemberEntity, {
         orgMember: testOrgMemberEntity1,
         team: testTeamEntity1,
       });
@@ -183,8 +184,8 @@ describe('TeamMemberService', () => {
 
   describe('findOneByOrgMemberAndTeamOrNull', () => {
     afterEach(() => {
-      expect(em.findOne).toBeCalledTimes(1);
-      expect(em.findOne).toBeCalledWith(TeamMemberEntity, {
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(TeamMemberEntity, {
         orgMember: testOrgMemberEntity1,
         team: testTeamEntity1,
       });
@@ -212,11 +213,11 @@ describe('TeamMemberService', () => {
 
   describe('updateRole', () => {
     afterEach(() => {
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testTeamMemberEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testTeamMemberEntity1, {
         role: testUpdatedTeamMember.role,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it(`should update an org member's role`, async () => {
@@ -245,15 +246,17 @@ describe('TeamMemberService', () => {
 
   describe('delete', () => {
     afterEach(() => {
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(testTeamMemberEntity1);
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testTeamMemberEntity1);
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
+        testTeamMemberEntity1,
+      );
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testTeamMemberEntity1);
     });
 
     it('should delete a team member', async () => {
       await expect(
-        service.delete(testTeamMemberEntity1, OrgRoleEnum.Owner, null),
+        service.delete(testTeamMemberEntity1),
       ).resolves.toBeUndefined();
     });
 
@@ -261,66 +264,78 @@ describe('TeamMemberService', () => {
       jest
         .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(
-        service.delete(testTeamMemberEntity1, OrgRoleEnum.Owner, null),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      await expect(service.delete(testTeamMemberEntity1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
     });
   });
 
-  describe('checkRequester', () => {
+  describe('checkRequesterTeamRole', () => {
     it('should pass if the org role is moderator or higher', () => {
       expect(
-        service.checkRequester(OrgRoleEnum.Owner, null, TeamRoleEnum.Owner),
+        TeamMemberService.checkRequesterTeamRole(
+          OrgRoleEnum.Owner,
+          null,
+          TeamRoleEnum.Owner,
+        ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(OrgRoleEnum.Moderator, null, TeamRoleEnum.Owner),
+        TeamMemberService.checkRequesterTeamRole(
+          OrgRoleEnum.Moderator,
+          null,
+          TeamRoleEnum.Owner,
+        ),
       ).toBeUndefined();
     });
 
     it('should fail if the org role is too low and team role is null', () => {
       expect(() =>
-        service.checkRequester(OrgRoleEnum.Member, null, TeamRoleEnum.Owner),
+        TeamMemberService.checkRequesterTeamRole(
+          OrgRoleEnum.Member,
+          null,
+          TeamRoleEnum.Owner,
+        ),
       ).toThrow(new ForbiddenException(forbiddenError));
     });
 
     it(`should pass if the requester's team role is greater than or equal to the subject's team role`, () => {
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Member,
         ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Moderator,
         ),
       ).toBeUndefined();
       expect(
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Owner,
           TeamRoleEnum.Owner,
@@ -330,26 +345,81 @@ describe('TeamMemberService', () => {
 
     it(`should fail if the requester's team role is lower than the subject's team role`, () => {
       expect(() =>
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Moderator,
         ),
       ).toThrow(new ForbiddenException(forbiddenError));
       expect(() =>
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Member,
           TeamRoleEnum.Owner,
         ),
       ).toThrow(new ForbiddenException(forbiddenError));
       expect(() =>
-        service.checkRequester(
+        TeamMemberService.checkRequesterTeamRole(
           OrgRoleEnum.Member,
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Owner,
         ),
       ).toThrow(new ForbiddenException(forbiddenError));
+    });
+  });
+
+  describe('checkOrgMemberTeam', () => {
+    const orgMember = {
+      ...testOrgMemberEntity1,
+      role: OrgRoleEnum.Member,
+    } as OrgMemberEntity;
+
+    beforeEach(() => {
+      jest.spyOn(em, 'findOne').mockResolvedValue(null);
+    });
+
+    it('should pass if org role is >= moderator or team role is >= member', async () => {
+      await expect(
+        service.findAndCheckRequesterTeamRoles(
+          testOrgMemberEntity1,
+          testTeamEntity1,
+        ),
+      ).resolves.toBeUndefined();
+      await expect(
+        service.findAndCheckRequesterTeamRoles(
+          {
+            ...testOrgMemberEntity1,
+            role: OrgRoleEnum.Moderator,
+          } as OrgMemberEntity,
+          testTeamEntity1,
+        ),
+      ).resolves.toBeUndefined();
+
+      jest.spyOn(em, 'findOne').mockResolvedValue(testTeamMemberEntity1);
+      await expect(
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
+      ).resolves.toBeUndefined();
+      jest.spyOn(em, 'findOne').mockResolvedValue({
+        ...testTeamMemberEntity1,
+        role: TeamRoleEnum.Moderator,
+      });
+      await expect(
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
+      ).resolves.toBeUndefined();
+      jest.spyOn(em, 'findOne').mockResolvedValue({
+        ...testTeamMemberEntity1,
+        role: TeamRoleEnum.Member,
+      });
+      await expect(
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
+      ).resolves.toBeUndefined();
+      expect(em.findOne).toHaveBeenCalledTimes(5);
+    });
+
+    it('should throw ForbiddenException if org role is member and team member is null', async () => {
+      await expect(
+        service.findAndCheckRequesterTeamRoles(orgMember, testTeamEntity1),
+      ).rejects.toThrow(new ForbiddenException(forbiddenError));
     });
   });
 });

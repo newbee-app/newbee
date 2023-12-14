@@ -50,7 +50,7 @@ describe('OrgInviteAcceptComponent', () => {
 
   describe('init', () => {
     it('should dispatch acceptInvite', () => {
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 }),
       );
     });

@@ -5,7 +5,8 @@ import { BaseUpdateQnaDto } from './base-update-qna.dto';
  * Suitable for use in PATCH requests.
  */
 export class BaseUpdateAnswerDto
-  implements Pick<BaseUpdateQnaDto, 'answerMarkdoc' | 'upToDateDuration'>
+  implements
+    Pick<BaseUpdateQnaDto, 'upToDateDuration' | 'answerMarkdoc' | 'maintainer'>
 {
   /**
    * @inheritdoc
@@ -16,4 +17,9 @@ export class BaseUpdateAnswerDto
    * @inheritdoc
    */
   answerMarkdoc?: string;
+
+  /**
+   * @inheritdoc
+   */
+  maintainer?: string;
 }

@@ -141,6 +141,23 @@ export class TeamService {
   }
 
   /**
+   * Finds the `TeamEntity` associated with the given ID.
+   *
+   * @param id The ID of the team to find.
+   *
+   * @returns The associated `TeamEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error. As the ID is never expoed to the frontend, not being able to find a provided ID is a serious backend issue.
+   */
+  async findOneById(id: string): Promise<TeamEntity> {
+    try {
+      return await this.em.findOneOrFail(TeamEntity, id);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Updates the given `TeamEntity` and saves the changes to the database.
    *
    * @param team The `TeamEntity` to update.

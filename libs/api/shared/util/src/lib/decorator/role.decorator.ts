@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
+import { RoleType } from '@newbee/shared/util';
 import { ROLE_KEY } from '../constant';
-import { RoleType } from '../enum';
 
 /**
  * The decorator used to mark a controller function as requiring specific roles.
@@ -9,4 +9,5 @@ import { RoleType } from '../enum';
  *
  * @param roles All of the roles that grant access to the endpoint.
  */
-export const Role = (...roles: RoleType[]) => SetMetadata(ROLE_KEY, roles);
+export const Role = (roles: RoleType | RoleType[]) =>
+  SetMetadata(ROLE_KEY, Array.isArray(roles) ? roles : [roles]);

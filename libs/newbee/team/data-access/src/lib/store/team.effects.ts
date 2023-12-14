@@ -5,7 +5,6 @@ import {
   catchHttpScreenError,
   organizationFeature,
   TeamActions,
-  teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
@@ -20,6 +19,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { TeamService } from '../team.service';
+import { selectTeamAndOrg } from './team.selector';
 
 @Injectable()
 export class TeamEffects {
@@ -65,7 +65,7 @@ export class TeamEffects {
                 case teamSlugTakenBadRequest:
                   return 'slug';
                 case upToDateDurationMatches:
-                  return Keyword.Duration;
+                  return 'upToDateDuration';
                 default:
                   return Keyword.Misc;
               }
@@ -99,16 +99,13 @@ export class TeamEffects {
   editTeam$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.editTeam, TeamActions.editTeamSlug),
-      concatLatestFrom(() => [
-        this.store.select(organizationFeature.selectSelectedOrganization),
-        this.store.select(teamFeature.selectSelectedTeam),
-      ]),
+      concatLatestFrom(() => this.store.select(selectTeamAndOrg)),
       filter(
-        ([, selectedOrganization, selectedTeam]) =>
+        ([, { selectedOrganization, selectedTeam }]) =>
           !!selectedOrganization && !!selectedTeam,
       ),
       switchMap(
-        ([{ type, updateTeamDto }, selectedOrganization, selectedTeam]) => {
+        ([{ type, updateTeamDto }, { selectedOrganization, selectedTeam }]) => {
           const oldTeamSlug = selectedTeam?.team.slug as string;
           return this.teamService
             .edit(
@@ -132,10 +129,18 @@ export class TeamEffects {
                 }
               }),
               catchError((err) =>
-                catchHttpClientError(
-                  err,
-                  () => `${Keyword.Team}-${Keyword.Edit}`,
-                ),
+                catchHttpClientError(err, (message) => {
+                  switch (message) {
+                    case nameIsNotEmpty:
+                      return 'name';
+                    case upToDateDurationMatches:
+                      return 'upToDateDuration';
+                    default:
+                      return type === TeamActions.editTeam.type
+                        ? `${Keyword.Team}-${Keyword.Edit}`
+                        : `${Keyword.Team}-${Keyword.Slug}-${Keyword.Edit}`;
+                  }
+                }),
               ),
             );
         },
@@ -166,15 +171,12 @@ export class TeamEffects {
   deleteTeam$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.deleteTeam),
-      concatLatestFrom(() => [
-        this.store.select(organizationFeature.selectSelectedOrganization),
-        this.store.select(teamFeature.selectSelectedTeam),
-      ]),
+      concatLatestFrom(() => this.store.select(selectTeamAndOrg)),
       filter(
-        ([, selectedOrganization, selectedTeam]) =>
+        ([, { selectedOrganization, selectedTeam }]) =>
           !!selectedOrganization && !!selectedTeam,
       ),
-      switchMap(([, selectedOrganization, selectedTeam]) => {
+      switchMap(([, { selectedOrganization, selectedTeam }]) => {
         const teamSlug = selectedTeam?.team.slug as string;
         return this.teamService
           .delete(selectedOrganization?.organization.slug as string, teamSlug)
@@ -219,12 +221,9 @@ export class TeamEffects {
     return this.actions$.pipe(
       ofType(TeamActions.checkSlug),
       filter(({ slug }) => !!slug),
-      concatLatestFrom(() => [
-        this.store.select(organizationFeature.selectSelectedOrganization),
-        this.store.select(teamFeature.selectSelectedTeam),
-      ]),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ slug }, selectedOrganization, selectedTeam]) => {
+      concatLatestFrom(() => this.store.select(selectTeamAndOrg)),
+      filter(([, { selectedOrganization }]) => !!selectedOrganization),
+      switchMap(([{ slug }, { selectedOrganization, selectedTeam }]) => {
         if (selectedTeam?.team.slug === slug) {
           return of(TeamActions.checkSlugSuccess({ slugTaken: false }));
         }

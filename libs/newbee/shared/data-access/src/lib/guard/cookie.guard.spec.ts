@@ -49,8 +49,8 @@ describe('cookieGuard', () => {
   it('should dispatch initCookies and then navigate', async () => {
     store.setState({ cookie: { csrfToken: 'token' } });
     await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-    expect(store.dispatch).toBeCalledTimes(1);
-    expect(store.dispatch).toBeCalledWith(CookieActions.initCookies());
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(CookieActions.initCookies());
     expect(location.path()).toEqual('/test');
   });
 });

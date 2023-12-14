@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TeamActions } from '@newbee/newbee/shared/data-access';
+import {
+  TeamActions,
+  initialOrganizationState,
+  initialTeamState,
+} from '@newbee/newbee/shared/data-access';
+import { initialTeamState as initialTeamModuleState } from '@newbee/newbee/team/data-access';
 import { EditTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
@@ -26,12 +31,15 @@ describe('TeamEditComponent', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
             },
             [Keyword.Team]: {
+              ...initialTeamState,
               selectedTeam: testTeamRelation1,
             },
+            [`${Keyword.Team}Module`]: initialTeamModuleState,
           },
         }),
       ],
@@ -55,7 +63,7 @@ describe('TeamEditComponent', () => {
   describe('onSlug', () => {
     it('should dispatch typingSlug', () => {
       component.onSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
     });
@@ -64,7 +72,7 @@ describe('TeamEditComponent', () => {
   describe('onFormattedSlug', () => {
     it('should dispatch checkSlug', () => {
       component.onFormattedSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
     });
@@ -73,7 +81,7 @@ describe('TeamEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editTeam', () => {
       component.onEdit(testBaseUpdateTeamDto1);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
       );
     });
@@ -82,7 +90,7 @@ describe('TeamEditComponent', () => {
   describe('onEditSlug', () => {
     it('should dispatch editTeamSlug', () => {
       component.onEditSlug(testTeam1.slug);
-      expect(store.dispatch).toBeCalledWith(
+      expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.editTeamSlug({ updateTeamDto: { slug: testTeam1.slug } }),
       );
     });
@@ -91,7 +99,7 @@ describe('TeamEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteTeam', () => {
       component.onDelete();
-      expect(store.dispatch).toBeCalledWith(TeamActions.deleteTeam());
+      expect(store.dispatch).toHaveBeenCalledWith(TeamActions.deleteTeam());
     });
   });
 });

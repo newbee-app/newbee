@@ -138,13 +138,13 @@ describe('AuthenticatorService', () => {
       await expect(service.generateOptions(testUserEntity1)).resolves.toEqual(
         testPublicKeyCredentialCreationOptions1,
       );
-      expect(em.find).toBeCalledTimes(1);
-      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
+      expect(em.find).toHaveBeenCalledTimes(1);
+      expect(em.find).toHaveBeenCalledWith(AuthenticatorEntity, {
         user: { email: testUserEntity1.email },
       });
-      expect(mockGenerateRegistrationOptions).toBeCalledTimes(1);
-      expect(userService.update).toBeCalledTimes(1);
-      expect(userService.update).toBeCalledWith(testUserEntity1, {
+      expect(mockGenerateRegistrationOptions).toHaveBeenCalledTimes(1);
+      expect(userService.update).toHaveBeenCalledTimes(1);
+      expect(userService.update).toHaveBeenCalledWith(testUserEntity1, {
         challenge: testPublicKeyCredentialCreationOptions1.challenge,
       });
     });
@@ -155,9 +155,9 @@ describe('AuthenticatorService', () => {
       await expect(
         service.create(testRegistrationResponse1, testUserEntity1),
       ).resolves.toEqual(testAuthenticatorEntity1);
-      expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
-      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
-      expect(mockAuthenticatorEntity).toBeCalledWith(
+      expect(mockVerifyRegistrationResponse).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticatorEntity).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticatorEntity).toHaveBeenCalledWith(
         testRegistrationInfo.credentialID.toString('base64url'),
         testRegistrationInfo.credentialPublicKey.toString('base64url'),
         testRegistrationInfo.counter,
@@ -166,8 +166,8 @@ describe('AuthenticatorService', () => {
         null,
         testUserEntity1,
       );
-      expect(em.persistAndFlush).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledWith(testAuthenticatorEntity1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledWith(testAuthenticatorEntity1);
     });
 
     it('should throw a BadRequestException if challenge is not defined', async () => {
@@ -184,7 +184,7 @@ describe('AuthenticatorService', () => {
       await expect(
         service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorVerifyBadRequest));
-      expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
+      expect(mockVerifyRegistrationResponse).toHaveBeenCalledTimes(1);
     });
 
     it('should throw a BadRequestException if challenge is verified without registrationInfo', async () => {
@@ -203,9 +203,9 @@ describe('AuthenticatorService', () => {
       await expect(
         service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new BadRequestException(authenticatorTakenBadRequest));
-      expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
-      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledTimes(1);
+      expect(mockVerifyRegistrationResponse).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticatorEntity).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -215,16 +215,16 @@ describe('AuthenticatorService', () => {
       await expect(
         service.create(testRegistrationResponse1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(mockVerifyRegistrationResponse).toBeCalledTimes(1);
-      expect(mockAuthenticatorEntity).toBeCalledTimes(1);
-      expect(em.persistAndFlush).toBeCalledTimes(1);
+      expect(mockVerifyRegistrationResponse).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticatorEntity).toHaveBeenCalledTimes(1);
+      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('findAllByUser', () => {
     afterEach(() => {
-      expect(em.find).toBeCalledTimes(1);
-      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
+      expect(em.find).toHaveBeenCalledTimes(1);
+      expect(em.find).toHaveBeenCalledWith(AuthenticatorEntity, {
         user: testUserEntity1,
       });
     });
@@ -245,8 +245,8 @@ describe('AuthenticatorService', () => {
 
   describe('findAllByEmail', () => {
     afterEach(() => {
-      expect(em.find).toBeCalledTimes(1);
-      expect(em.find).toBeCalledWith(AuthenticatorEntity, {
+      expect(em.find).toHaveBeenCalledTimes(1);
+      expect(em.find).toHaveBeenCalledWith(AuthenticatorEntity, {
         user: { email: testUserEntity1.email },
       });
     });
@@ -267,8 +267,8 @@ describe('AuthenticatorService', () => {
 
   describe('findOneById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
         AuthenticatorEntity,
         testAuthenticatorEntity1.id,
       );
@@ -301,8 +301,8 @@ describe('AuthenticatorService', () => {
 
   describe('findOneByCredentialId', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(AuthenticatorEntity, {
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(AuthenticatorEntity, {
         credentialId: testAuthenticatorEntity1.credentialId,
       });
     });
@@ -336,8 +336,8 @@ describe('AuthenticatorService', () => {
 
   describe('updateCounterById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
         AuthenticatorEntity,
         testAuthenticatorEntity1.id,
       );
@@ -351,11 +351,11 @@ describe('AuthenticatorService', () => {
           testUserEntity1.id,
         ),
       ).resolves.toEqual({ ...testAuthenticatorEntity1, counter: testCounter });
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testAuthenticatorEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testAuthenticatorEntity1, {
         counter: testCounter,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
@@ -382,8 +382,8 @@ describe('AuthenticatorService', () => {
 
   describe('updateNameById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
         AuthenticatorEntity,
         testAuthenticatorEntity1.id,
       );
@@ -400,11 +400,11 @@ describe('AuthenticatorService', () => {
           testUserEntity1.id,
         ),
       ).resolves.toEqual({ ...testAuthenticatorEntity1, name: testName });
-      expect(em.assign).toBeCalledTimes(1);
-      expect(em.assign).toBeCalledWith(testAuthenticatorEntity1, {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testAuthenticatorEntity1, {
         name: testName,
       });
-      expect(em.flush).toBeCalledTimes(1);
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
@@ -427,8 +427,8 @@ describe('AuthenticatorService', () => {
 
   describe('deleteOneById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toBeCalledTimes(1);
-      expect(em.findOneOrFail).toBeCalledWith(
+      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(em.findOneOrFail).toHaveBeenCalledWith(
         AuthenticatorEntity,
         testAuthenticatorEntity1.id,
       );
@@ -438,12 +438,12 @@ describe('AuthenticatorService', () => {
       await expect(
         service.deleteOneById(testAuthenticatorEntity1.id, testUserEntity1.id),
       ).resolves.toBeUndefined();
-      expect(entityService.safeToDelete).toBeCalledTimes(1);
-      expect(entityService.safeToDelete).toBeCalledWith(
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(
         testAuthenticatorEntity1,
       );
-      expect(em.removeAndFlush).toBeCalledTimes(1);
-      expect(em.removeAndFlush).toBeCalledWith(testAuthenticatorEntity1);
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(testAuthenticatorEntity1);
     });
 
     it(`should throw a ForbiddenException if authenticator's user ID doesn't match the provider user ID`, async () => {
