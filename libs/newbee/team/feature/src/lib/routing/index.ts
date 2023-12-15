@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  canEditTeamGuard,
   createTeamTitleResolver,
-  isTeamAdminGuard,
   teamGuard,
   teamTitleResolver,
 } from '@newbee/newbee/team/data-access';
@@ -28,7 +28,7 @@ const routes: Routes = [
       {
         path: Keyword.Edit,
         component: TeamEditComponent,
-        canActivate: [isTeamAdminGuard],
+        canActivate: [canEditTeamGuard],
       },
       {
         path: '',
