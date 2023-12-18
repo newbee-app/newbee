@@ -88,7 +88,7 @@ export class InviteMemberComponent implements OnChanges {
   }
 
   /**
-   * All possible org roles as select options.
+   * All possible org roles as select options, based on the requester.
    */
   get roleOptions(): SelectOption<OrgRoleEnum>[] {
     return generateLteOrgRoles(this.orgMember.role).map(
@@ -107,7 +107,7 @@ export class InviteMemberComponent implements OnChanges {
       return;
     }
 
-    this.inviteMemberForm.patchValue({ email: '' });
+    this.inviteMemberForm.setValue({ email: '', role: OrgRoleEnum.Member });
     this.inviteMemberForm.markAsPristine();
     this.inviteMemberForm.markAsUntouched();
   }
@@ -144,8 +144,9 @@ export class InviteMemberComponent implements OnChanges {
   /**
    * The input error message for the given form.
    *
-   * @param inputName
-   * @returns
+   * @param inputName The name of the input to look at.
+   *
+   * @returns The input's error message.
    */
   inputErrorMessage(inputName: string): string {
     return (

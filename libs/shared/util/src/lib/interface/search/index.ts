@@ -2,7 +2,6 @@ import type { QueryResultType } from '../../type';
 
 /**
  * Represents the response the frontend receives from the backend after submitting a search query.
- * Need this interface version for the DTO to implement so that the DTO can live in the `data-access` lib and this `util` lib version can be used in all other libs.
  */
 export interface QueryResult {
   /**

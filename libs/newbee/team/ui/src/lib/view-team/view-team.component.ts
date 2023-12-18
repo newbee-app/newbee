@@ -41,13 +41,6 @@ export class ViewTeamComponent {
   readonly checkRoles = checkRoles;
 
   /**
-   * The roles needed to edit the team or invite new members.
-   */
-  readonly editAndInviteRoles = new Set(
-    apiRoles.team.update.concat(apiRoles['team-member'].create),
-  );
-
-  /**
    * The organization the team is in.
    */
   @Input() organization!: Organization;

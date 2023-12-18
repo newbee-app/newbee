@@ -20,6 +20,7 @@ import {
   apiRoles,
   checkRoles,
   generateLteOrgRoles,
+  userDisplayName,
   type OrgMember,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
@@ -48,13 +49,7 @@ export class ViewOrgMemberComponent implements OnInit {
   readonly searchResultFormat = SearchResultFormat;
   readonly apiRoles = apiRoles;
   readonly checkRoles = checkRoles;
-
-  /**
-   * The roles needed to edit or delete the org member.
-   */
-  readonly editDeleteRoles = new Set(
-    apiRoles['org-member'].update.concat(apiRoles['org-member'].delete),
-  );
+  readonly userDisplayName = userDisplayName;
 
   /**
    * The roles the user can change the org member to, as select options.
