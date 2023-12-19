@@ -17,7 +17,7 @@ import { AlertType, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../../alert/alert.component';
-import { DropdownComponent } from '../../dropdown';
+import { DropdownWithArrowComponent } from '../../dropdown';
 
 /**
  * A custom `<select>` component.
@@ -35,7 +35,7 @@ import { DropdownComponent } from '../../dropdown';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
-    DropdownComponent,
+    DropdownWithArrowComponent,
   ],
   templateUrl: './searchable-select.component.html',
   providers: [

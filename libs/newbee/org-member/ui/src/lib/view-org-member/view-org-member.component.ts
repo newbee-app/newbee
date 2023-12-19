@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
-  DropdownComponent,
   SearchResultComponent,
   SearchableSelectComponent,
   ViewAllBtnComponent,
@@ -35,7 +34,6 @@ import {
     CommonModule,
     ReactiveFormsModule,
     PhoneNumberPipeModule,
-    DropdownComponent,
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,
     SearchableSelectComponent,

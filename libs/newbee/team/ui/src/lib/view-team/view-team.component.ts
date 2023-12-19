@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-  DropdownComponent,
   SearchResultComponent,
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
@@ -26,7 +25,6 @@ import dayjs from 'dayjs';
   standalone: true,
   imports: [
     CommonModule,
-    DropdownComponent,
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,
     SearchResultComponent,

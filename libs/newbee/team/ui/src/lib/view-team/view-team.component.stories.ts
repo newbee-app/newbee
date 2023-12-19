@@ -1,4 +1,3 @@
-import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   OrgRoleEnum,
   TeamRoleEnum,
@@ -10,23 +9,12 @@ import {
   testTeamMemberRelation1,
   testTeamRelation1,
 } from '@newbee/shared/util';
-import {
-  Meta,
-  StoryObj,
-  componentWrapperDecorator,
-  moduleMetadata,
-} from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { ViewTeamComponent } from './view-team.component';
 
 export default {
   title: 'ViewTeamComponent',
   component: ViewTeamComponent,
-  decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
-    componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
-    ),
-  ],
   args: {
     organization: testOrganization1,
     team: {

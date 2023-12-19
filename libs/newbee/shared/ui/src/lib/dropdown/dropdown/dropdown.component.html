@@ -1,5 +1,11 @@
 <div class="w-full">
-  <button type="button" #label (click)="labelClick()" class="w-full">
+  <button
+    type="button"
+    #label
+    (click)="labelClick()"
+    class="w-full"
+    [ngClass]="{ 'cursor-not-allowed': disabled }"
+  >
     <ng-content select="[label]"></ng-content>
   </button>
 

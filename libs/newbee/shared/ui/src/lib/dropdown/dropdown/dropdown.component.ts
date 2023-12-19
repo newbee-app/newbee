@@ -3,7 +3,6 @@ import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
-  ContentChild,
   ElementRef,
   EventEmitter,
   HostListener,
@@ -42,6 +41,11 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
+   * Whether to disable the label button.
+   */
+  @Input() disabled = false;
+
+  /**
    * Which direction the dropdown should go.
    */
   @Input() placement: Placement = 'bottom';
@@ -65,6 +69,11 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   @Input() portal = true;
 
   /**
+   * Elements that are in the dropdown that should not cause the dropdown to toggle, no matter what.
+   */
+  @Input() dropdownNoToggleElements: ElementRef<HTMLElement>[] = [];
+
+  /**
    * Whether the dropdown is showing or not.
    */
   @Input() expanded = false;
@@ -83,15 +92,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * The div associated with the dropdown.
    */
   @ViewChild('dropdown') dropdown!: ElementRef<HTMLDivElement>;
-
-  /**
-   * Any portion of the dropdown that shouldn't toggle expanded when clicked.
-   * Should be specified in the component that's using the dropdown.
-   * Should be specified as a template variable in a plain HTML element like a div, button, etc.
-   */
-  @ContentChild('dropdownNoToggle') dropdownNoToggle:
-    | ElementRef<HTMLElement>
-    | undefined;
 
   /**
    * Shrinks the dropdown if the user presses the `esc` key.
@@ -129,9 +129,12 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
       .subscribe({
         next: (target) => {
           if (
-            !elementRef.nativeElement.contains(target) ||
+            (!this.dropdown.nativeElement.contains(target) &&
+              !elementRef.nativeElement.contains(target)) ||
             (this.dropdown.nativeElement.contains(target) &&
-              !this.dropdownNoToggle?.nativeElement.contains(target))
+              this.dropdownNoToggleElements.every(
+                (element) => !element.nativeElement.contains(target),
+              ))
           ) {
             this.shrink();
           }
@@ -243,11 +246,14 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
    * What should happen when the label is clicked.
    */
   labelClick(): void {
-    if (this.expandStrategy === 'toggle') {
+    if (this.disabled) {
+      return;
+    } else if (this.expandStrategy === 'toggle') {
       this.toggleExpand();
-    } else {
-      // this.expandStrategy === 'expand'
-      this.expand();
+      return;
     }
+
+    // this.expandStrategy === 'expand'
+    this.expand();
   }
 }
