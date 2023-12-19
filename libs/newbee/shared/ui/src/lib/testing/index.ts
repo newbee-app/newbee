@@ -1,2 +1,2 @@
-export * from './click-wrapper.component';
+export * from './app-wrapper.component';
 export * from './empty.component';

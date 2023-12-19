@@ -4,16 +4,16 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../testing';
+import { AppWrapperComponent } from '../../testing';
 import { PhoneInputComponent } from './phone-input.component';
 
 export default {
   title: 'Form Control/PhoneInputComponent',
   component: PhoneInputComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   parameters: { layout: 'centered' },

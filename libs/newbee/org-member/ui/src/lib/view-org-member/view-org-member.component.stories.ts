@@ -1,4 +1,4 @@
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   OrgRoleEnum,
   testDocQueryResult1,
@@ -20,9 +20,9 @@ export default {
   title: 'ViewOrgMemberComponent',
   component: ViewOrgMemberComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

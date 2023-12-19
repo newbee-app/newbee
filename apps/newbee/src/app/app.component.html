@@ -1,3 +1,13 @@
-<div id="newbee-app-container">
-  <router-outlet></router-outlet>
-</div>
+<newbee-navbar>
+  <newbee-error-screen>
+    <newbee-store-toast></newbee-store-toast>
+
+    <ng-container *ngFor="let portal of portals$ | async">
+      <ng-template [cdkPortalOutlet]="portal"></ng-template>
+    </ng-container>
+
+    <ng-template newbeeTemplateMarker>
+      <router-outlet></router-outlet>
+    </ng-template>
+  </newbee-error-screen>
+</newbee-navbar>

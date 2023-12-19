@@ -1,3 +1,4 @@
+import { PortalModule } from '@angular/cdk/portal';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -20,7 +21,6 @@ import { StoreModule } from '@ngrx/store';
 import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { reducers } from './reducer';
-import { RootComponent } from './root';
 import { AppRoutingModule } from './routing';
 
 /**
@@ -36,6 +36,7 @@ import { AppRoutingModule } from './routing';
     // third party modules
     BrowserModule,
     HttpClientModule,
+    PortalModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -52,7 +53,7 @@ import { AppRoutingModule } from './routing';
     StoreRouterConnectingModule.forRoot(),
     extModules,
 
-    // directive/component modules for `RootComponent`
+    // directive/component modules for `AppComponent`
     TemplateMarkerDirectiveModule,
     NavbarComponent,
     ErrorScreenComponent,
@@ -72,7 +73,7 @@ import { AppRoutingModule } from './routing';
       multi: true,
     },
   ],
-  declarations: [AppComponent, RootComponent],
+  declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

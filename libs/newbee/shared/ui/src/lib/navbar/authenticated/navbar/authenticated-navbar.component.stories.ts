@@ -11,16 +11,16 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../../testing';
+import { AppWrapperComponent } from '../../../testing';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
 
 export default {
   title: 'Navbar/AuthenticatedNavbarComponent',
   component: AuthenticatedNavbarComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

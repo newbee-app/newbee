@@ -1,4 +1,4 @@
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import { Keyword, testOrganization1 } from '@newbee/shared/util';
 import {
   Meta,
@@ -12,9 +12,9 @@ export default {
   title: 'CreateOrgComponent',
   component: CreateOrgComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

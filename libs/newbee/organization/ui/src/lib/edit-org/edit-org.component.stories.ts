@@ -1,4 +1,4 @@
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   OrgRoleEnum,
@@ -17,9 +17,9 @@ export default {
   title: 'EditOrgComponent',
   component: EditOrgComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

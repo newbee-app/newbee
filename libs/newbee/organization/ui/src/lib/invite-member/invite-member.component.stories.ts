@@ -1,4 +1,4 @@
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import { OrgRoleEnum, testOrgMember1, testUser1 } from '@newbee/shared/util';
 import {
   Meta,
@@ -12,9 +12,9 @@ export default {
   title: 'InviteMemberComponent',
   component: InviteMemberComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

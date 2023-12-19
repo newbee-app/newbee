@@ -1,5 +1,5 @@
 import { SearchTab } from '@newbee/newbee/search/util';
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
+import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   testDocQueryResult1,
   testOrgMemberQueryResult1,
@@ -8,10 +8,10 @@ import {
   testTeamQueryResult1,
 } from '@newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
 import { SearchResultsComponent } from './search-results.component';
 
@@ -19,9 +19,9 @@ export default {
   title: 'SearchResultsComponent',
   component: SearchResultsComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {

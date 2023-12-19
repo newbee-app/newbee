@@ -4,16 +4,16 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../testing';
+import { AppWrapperComponent } from '../testing';
 import { DropdownComponent } from './dropdown.component';
 
 export default {
   title: 'DropdownComponent',
   component: DropdownComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   parameters: { layout: 'centered' },

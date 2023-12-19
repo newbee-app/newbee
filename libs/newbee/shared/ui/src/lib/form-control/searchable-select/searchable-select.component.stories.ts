@@ -4,21 +4,21 @@ import {
   testSelectOptionCountry2,
 } from '@newbee/newbee/shared/util';
 import {
-  componentWrapperDecorator,
   Meta,
-  moduleMetadata,
   StoryObj,
+  componentWrapperDecorator,
+  moduleMetadata,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../testing';
+import { AppWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
   title: 'Form Control/SearchableSelectComponent',
   component: SearchableSelectComponent,
   decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
+    moduleMetadata({ imports: [AppWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`
+      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
     ),
   ],
   args: {
