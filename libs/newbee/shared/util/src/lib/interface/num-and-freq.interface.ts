@@ -1,3 +1,4 @@
+import { Nullable } from '@newbee/shared/util';
 import { Frequency } from '../enum';
 
 /**
@@ -14,3 +15,8 @@ export interface NumAndFreq {
    */
   frequency: Frequency;
 }
+
+/**
+ * A nullable version of `NumAndFreq`, to be used as an input.
+ */
+export type NumAndFreqInput = Nullable<NumAndFreq>;

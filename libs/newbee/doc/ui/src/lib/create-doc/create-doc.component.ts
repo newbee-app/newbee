@@ -9,20 +9,20 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
 } from '@newbee/newbee/shared/util';
 import {
   BaseCreateDocDto,
@@ -41,6 +41,7 @@ import {
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -97,15 +98,8 @@ export class CreateDocComponent implements OnInit {
   docForm = this.fb.group({
     title: ['', [Validators.required]],
     team: [null as null | Team],
-    upToDateDuration: this.fb.group({
-      num: [null as number | null, [Validators.min(1)]],
-      frequency: [null as Frequency | null],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  readonly frequencyOptions = frequencySelectOptions(
-    this.docForm.controls.upToDateDuration.controls.num,
-  );
 
   constructor(private readonly fb: FormBuilder) {}
 
@@ -148,7 +142,7 @@ export class CreateDocComponent implements OnInit {
       team: team?.slug ?? null,
       docMarkdoc: this.docMarkdoc,
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.docForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

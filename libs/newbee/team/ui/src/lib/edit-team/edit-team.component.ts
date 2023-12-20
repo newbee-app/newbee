@@ -15,21 +15,20 @@ import {
 } from '@angular/forms';
 import {
   AlertComponent,
-  SearchableSelectComponent,
+  NumAndFreqInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
+  NumAndFreqInput,
   SlugInputDirectiveModule,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
@@ -55,7 +54,7 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
-    SearchableSelectComponent,
+    NumAndFreqInputComponent,
     SlugInputDirectiveModule,
     DigitOnlyDirectiveModule,
   ],
@@ -148,18 +147,8 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    */
   editTeamForm = this.fb.group({
     name: ['', Validators.required],
-    upToDateDuration: this.fb.group({
-      num: [null as number | null, [Validators.min(1)]],
-      frequency: [null as Frequency | null],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  /**
-   * The possible frequency values as select options.
-   */
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editTeamForm.controls.upToDateDuration.controls.num,
-  );
 
   /**
    * The internal form to edit the team's slug.
@@ -267,7 +256,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
     this.edit.emit({
       name: name ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editTeamForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

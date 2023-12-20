@@ -9,22 +9,22 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
@@ -54,6 +54,7 @@ import { isEqual } from 'lodash-es';
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -86,15 +87,8 @@ export class EditQnaComponent implements OnInit {
    */
   editAnswerForm = this.fb.group({
     maintainer: [null as null | OrgMemberUser, [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [null as null | number, [Validators.min(0)]],
-      frequency: [null as null | Frequency],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editAnswerForm.controls.upToDateDuration.controls.num,
-  );
 
   /**
    * All of the input teams as select options.
@@ -293,7 +287,7 @@ export class EditQnaComponent implements OnInit {
       answerMarkdoc: this.answerMarkdoc,
       maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editAnswerForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

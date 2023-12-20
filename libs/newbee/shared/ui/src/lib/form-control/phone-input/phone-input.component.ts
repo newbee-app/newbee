@@ -6,7 +6,6 @@ import type {
   Validator,
 } from '@angular/forms';
 import {
-  AbstractControl,
   FormBuilder,
   FormControl,
   NG_VALIDATORS,
@@ -50,7 +49,6 @@ import { SearchableSelectComponent } from '../searchable-select/searchable-selec
     PhoneNumberPipeModule,
     AlertComponent,
   ],
-  templateUrl: './phone-input.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -63,6 +61,7 @@ import { SearchableSelectComponent } from '../searchable-select/searchable-selec
       useExisting: PhoneInputComponent,
     },
   ],
+  templateUrl: './phone-input.component.html',
 })
 export class PhoneInputComponent
   implements OnDestroy, ControlValueAccessor, Validator
@@ -123,8 +122,7 @@ export class PhoneInputComponent
    * Called to trigger change detection.
    * @param _ The new value.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private _onChange: (_: Partial<PhoneInput>) => void = (_) => {
+  private _onChange: (_: Partial<PhoneInput>) => void = () => {
     this._dirty = true;
   };
 
@@ -208,14 +206,9 @@ export class PhoneInputComponent
   /**
    * Whether the control is valid.
    *
-   * @param _ The control to validate. Not necessary in this case because it's being used in the control itself.
-   *
    * @returns `null` if the control is valid, a validation error object if it's not.
    */
-  validate(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _: AbstractControl<Partial<PhoneInput>>,
-  ): ValidationErrors | null {
+  validate(): ValidationErrors | null {
     return this.phoneNumber.errors;
   }
 

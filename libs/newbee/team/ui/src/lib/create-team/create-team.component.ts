@@ -16,18 +16,17 @@ import {
 } from '@angular/forms';
 import {
   AlertComponent,
-  SearchableSelectComponent,
+  NumAndFreqInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
+  NumAndFreqInput,
   SlugInputDirectiveModule,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   type HttpClientError,
 } from '@newbee/newbee/shared/util';
 import {
@@ -48,7 +47,7 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
-    SearchableSelectComponent,
+    NumAndFreqInputComponent,
     SlugInputDirectiveModule,
     DigitOnlyDirectiveModule,
   ],
@@ -122,18 +121,8 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
   createTeamForm = this.fb.group({
     name: ['', [Validators.required]],
     slug: ['', [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [null as number | null, [Validators.min(1)]],
-      frequency: [null as Frequency | null],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  /**
-   * The possible frequency values as select options.
-   */
-  readonly frequencyOptions = frequencySelectOptions(
-    this.createTeamForm.controls.upToDateDuration.controls.num,
-  );
 
   /**
    * Emits the team name and slug whenever the value changes.
@@ -190,7 +179,7 @@ export class CreateTeamComponent implements OnChanges, OnDestroy {
       name: name ?? '',
       slug: slug ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.createTeamForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

@@ -9,22 +9,22 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
@@ -52,6 +52,7 @@ import { isEqual } from 'lodash-es';
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -71,10 +72,7 @@ export class EditDocComponent implements OnInit {
     title: ['', [Validators.required]],
     team: [null as null | Team],
     maintainer: [null as null | OrgMemberUser, [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [null as null | number, [Validators.min(0)]],
-      frequency: [null as null | Frequency],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
 
   /**
@@ -157,10 +155,6 @@ export class EditDocComponent implements OnInit {
    */
   @Output() delete = new EventEmitter<void>();
 
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editDocForm.controls.upToDateDuration.controls.num,
-  );
-
   constructor(private readonly fb: FormBuilder) {}
 
   /**
@@ -235,7 +229,7 @@ export class EditDocComponent implements OnInit {
       team: team?.slug ?? null,
       maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editDocForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
       docMarkdoc: this.docMarkdoc,

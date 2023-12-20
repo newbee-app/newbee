@@ -5,9 +5,9 @@
 >
   <div id="country-input-container" class="min-w-fit w-48 grow">
     <newbee-searchable-select
+      formControlName="country"
       [options]="countryOptions"
       optionName="Country"
-      formControlName="country"
       [valid]="!displayError('country')"
       [errorText]="errorMessage"
       (exited)="onTouched(); formatNumber()"
@@ -22,9 +22,9 @@
       >Phone number (optional)</label
     >
     <input
+      formControlName="number"
       type="tel"
       id="phone-number-input"
-      formControlName="number"
       placeholder="Phone number"
       newbeePhoneNumberInput
       [country]="value.country ?? null"

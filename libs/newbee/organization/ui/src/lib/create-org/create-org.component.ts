@@ -16,24 +16,20 @@ import {
 } from '@angular/forms';
 import {
   AlertComponent,
-  SearchableSelectComponent,
+  NumAndFreqInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
   HttpClientError,
   SlugInputDirectiveModule,
-  durationToNumAndFreq,
-  frequencySelectOptions,
+  defaultOrgNumAndFreq,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  objectRequiredValidator,
 } from '@newbee/newbee/shared/util';
-import {
-  BaseCreateOrganizationDto,
-  Keyword,
-  defaultOrgDuration,
-} from '@newbee/shared/util';
+import { BaseCreateOrganizationDto, Keyword } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -49,24 +45,13 @@ import { Subject, takeUntil } from 'rxjs';
     AlertComponent,
     SlugInputDirectiveModule,
     DigitOnlyDirectiveModule,
-    SearchableSelectComponent,
+    NumAndFreqInputComponent,
   ],
   templateUrl: './create-org.component.html',
 })
 export class CreateOrgComponent implements OnChanges, OnDestroy {
-  /**
-   * Emit to unsubscribe from all infinite observables.
-   */
   private readonly unsubscribe$ = new Subject<void>();
-
-  /**
-   * Supported alert types.
-   */
   readonly alertType = AlertType;
-
-  /**
-   * NewBee keywords.
-   */
   readonly keyword = Keyword;
 
   /**
@@ -115,36 +100,13 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
   @Output() create = new EventEmitter<BaseCreateOrganizationDto>();
 
   /**
-   * The initial value for the up-to-date duration.
-   */
-  private static readonly defaultOrgNumAndFreq =
-    durationToNumAndFreq(defaultOrgDuration);
-
-  /**
    * The internal form to create a new organization.
    */
   readonly createOrgForm = this.fb.group({
     name: ['', [Validators.required]],
     slug: ['', [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [
-        CreateOrgComponent.defaultOrgNumAndFreq.num,
-        [Validators.required, Validators.min(1)],
-      ],
-      frequency: [
-        CreateOrgComponent.defaultOrgNumAndFreq.frequency,
-        [Validators.required],
-      ],
-    }),
+    upToDateDuration: [defaultOrgNumAndFreq, [objectRequiredValidator()]],
   });
-
-  /**
-   * The possible frequency values as select options.
-   */
-  readonly frequencyOptions = frequencySelectOptions(
-    this.createOrgForm.controls.upToDateDuration.controls.num,
-  );
-
   /**
    * Emit the org name and slug whenever the value changes.
    * Changes from updates to generatedSlug should not be emitted.
@@ -196,11 +158,9 @@ export class CreateOrgComponent implements OnChanges, OnDestroy {
    */
   emitCreate(): void {
     const { name, slug, upToDateDuration } = this.createOrgForm.value;
-    const num =
-      upToDateDuration?.num ?? CreateOrgComponent.defaultOrgNumAndFreq.num;
+    const num = upToDateDuration?.num ?? defaultOrgNumAndFreq.num;
     const frequency =
-      upToDateDuration?.frequency ??
-      CreateOrgComponent.defaultOrgNumAndFreq.frequency;
+      upToDateDuration?.frequency ?? defaultOrgNumAndFreq.frequency;
 
     const createOrganizationDto: BaseCreateOrganizationDto = {
       name: name ?? '',

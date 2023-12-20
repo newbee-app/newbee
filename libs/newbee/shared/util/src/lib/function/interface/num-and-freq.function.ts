@@ -1,22 +1,22 @@
-import { Nullable } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import { Frequency } from '../../enum';
-import { NumAndFreq } from '../../interface';
+import { NumAndFreq, NumAndFreqInput } from '../../interface';
 
 /**
- * Whether the given num and frequencies are distinct, for help in dealing with form controls on the frontend.
+ * Whether the given nums and frequencies are distinct, for help in dealing with form controls on the frontend.
  *
  * @param numAndFreq The num and freq to check.
- * @param controlNumAndFreq The form control num and freq to check.
+ * @param numAndFreqInput The form control num and freq to check.
  *
- * @returns `true` if the 2 num and freqs are distinct, `false` otherwise.
+ * @returns `true` if the 2 nums and freqs are distinct, `false` otherwise.
  */
 export function numAndFreqIsDistinct(
   numAndFreq: NumAndFreq | null,
-  controlNumAndFreq: Partial<Nullable<NumAndFreq>>,
+  numAndFreqInput: NumAndFreqInput | null,
 ): boolean {
-  const { num, frequency } = controlNumAndFreq;
+  const num = numAndFreqInput?.num ?? null;
+  const frequency = numAndFreqInput?.frequency ?? null;
   return !!(
     (!numAndFreq && num && frequency) ||
     (numAndFreq &&
@@ -63,15 +63,19 @@ export function numAndFreqToDuration(numAndFreq: NumAndFreq): Duration {
 }
 
 /**
- * Converts a form NumAndFreq object to a dayjs duration. Does not allow any falsy value for number, meaning both `null` and `0` will return a null value.
+ * Converts a form NumAndFreqInput object to a dayjs duration. Does not allow any falsy value for number, meaning both `null` and `0` will return a null value.
  *
- * @param numAndFreq The nullable object to convert.
+ * @param numAndFreqInput The input to convert.
  *
  * @returns The dayjs duration associated with the object, if it's possible to make. `null` otherwise.
  */
-export function formNumAndFreqToDuration(
-  numAndFreq: Partial<Nullable<NumAndFreq>>,
+export function numAndFreqInputToDuration(
+  numAndFreqInput: NumAndFreqInput | null,
 ): Duration | null {
-  const { num, frequency } = numAndFreq;
+  if (!numAndFreqInput) {
+    return null;
+  }
+
+  const { num, frequency } = numAndFreqInput;
   return num && frequency ? dayjs.duration(num, frequency) : null;
 }

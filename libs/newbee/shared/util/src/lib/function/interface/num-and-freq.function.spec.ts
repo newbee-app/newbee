@@ -1,11 +1,10 @@
-import { Nullable } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { Frequency } from '../../enum';
-import { NumAndFreq } from '../../interface';
+import { NumAndFreq, NumAndFreqInput } from '../../interface';
 import {
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
   numAndFreqToDuration,
 } from './num-and-freq.function';
@@ -36,7 +35,7 @@ describe('NumAndFreq functions', () => {
       expect(
         numAndFreqIsDistinct(null, { num: 1, frequency: Frequency.Year }),
       ).toBeTruthy();
-      expect(numAndFreqIsDistinct(null, {})).toBeFalsy();
+      expect(numAndFreqIsDistinct(null, null)).toBeFalsy();
       expect(
         numAndFreqIsDistinct(null, { num: null, frequency: null }),
       ).toBeFalsy();
@@ -80,28 +79,28 @@ describe('NumAndFreq functions', () => {
     });
   });
 
-  describe('formNumAndFreqToDuration', () => {
+  describe('numAndFreqInputToDuration', () => {
     it('should convert accurately', () => {
-      let numAndFreq: Partial<Nullable<NumAndFreq>> = {
+      let numAndFreq: NumAndFreqInput | null = {
         num: null,
         frequency: null,
       };
-      expect(formNumAndFreqToDuration(numAndFreq)).toBeNull();
+      expect(numAndFreqInputToDuration(numAndFreq)).toBeNull();
 
-      numAndFreq = {};
-      expect(formNumAndFreqToDuration(numAndFreq)).toBeNull();
+      numAndFreq = null;
+      expect(numAndFreqInputToDuration(numAndFreq)).toBeNull();
 
       numAndFreq = { num: 0, frequency: Frequency.Year };
-      expect(formNumAndFreqToDuration(numAndFreq)).toBeNull();
+      expect(numAndFreqInputToDuration(numAndFreq)).toBeNull();
 
       numAndFreq = { num: 1, frequency: null };
-      expect(formNumAndFreqToDuration(numAndFreq)).toBeNull();
+      expect(numAndFreqInputToDuration(numAndFreq)).toBeNull();
 
-      numAndFreq = { num: 1 };
-      expect(formNumAndFreqToDuration(numAndFreq)).toBeNull();
+      numAndFreq = { num: null, frequency: Frequency.Year };
+      expect(numAndFreqInputToDuration(numAndFreq)).toBeNull();
 
       numAndFreq = { num: 1, frequency: Frequency.Year };
-      expect(formNumAndFreqToDuration(numAndFreq)).toEqual(
+      expect(numAndFreqInputToDuration(numAndFreq)).toEqual(
         dayjs.duration(1, 'year'),
       );
     });

@@ -18,56 +18,15 @@
       </div>
     </div>
 
-    <div
-      formGroupName="upToDateDuration"
-      class="flex flex-col flex-nowrap gap-y-2"
-    >
+    <div class="flex flex-col flex-nowrap gap-y-2">
       <div>
         <p>How long should this post stay relevant?</p>
         <p class="opacity-75">{{ defaultUpToDateDuration }}</p>
       </div>
 
-      <div class="flex flex-row flex-wrap gap-2 items-baseline">
-        For
-
-        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
-          <input
-            type="number"
-            step="1"
-            formControlName="num"
-            newbeeDigitOnly
-            [min]="1"
-            class="input input-bordered"
-            [ngClass]="{
-              'input-error': inputDisplayError(
-                docForm.controls.upToDateDuration,
-                'num'
-              )
-            }"
-          />
-
-          <newbee-alert
-            [type]="alertType.Error"
-            [show]="inputDisplayError(docForm.controls.upToDateDuration, 'num')"
-            [text]="inputErrorMessage(docForm.controls.upToDateDuration, 'num')"
-          ></newbee-alert>
-        </div>
-
-        <div class="w-44 flex-auto">
-          <newbee-searchable-select
-            formControlName="frequency"
-            [showSearchbar]="false"
-            [options]="frequencyOptions"
-            optionName="frequency"
-            [valid]="
-              !inputDisplayError(docForm.controls.upToDateDuration, 'frequency')
-            "
-            [errorText]="
-              inputErrorMessage(docForm.controls.upToDateDuration, 'frequency')
-            "
-          ></newbee-searchable-select>
-        </div>
-      </div>
+      <newbee-num-and-freq-input
+        formControlName="upToDateDuration"
+      ></newbee-num-and-freq-input>
 
       <newbee-alert
         [type]="alertType.Error"
