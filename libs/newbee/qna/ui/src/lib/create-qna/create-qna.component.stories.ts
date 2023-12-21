@@ -1,4 +1,4 @@
-import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import { Keyword, testTeam1 } from '@newbee/shared/util';
 import {
   Meta,
@@ -12,9 +12,9 @@ export default {
   title: 'CreateQnaComponent',
   component: CreateQnaComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

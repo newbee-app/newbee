@@ -1,4 +1,4 @@
-import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   OrgRoleEnum,
@@ -20,9 +20,9 @@ export default {
   title: 'EditTeamComponent',
   component: EditTeamComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

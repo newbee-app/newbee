@@ -8,16 +8,18 @@
     }"
     [disabled]="disabled"
     placement="bottom-start"
-    [portal]="portal"
     [expanded]="expanded"
     (expandedChange)="onExpandedChange($event)"
   >
-    <div
-      class="flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
+    <ul
+      class="menu flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
     >
-      <div #dropdownNoToggle>
+      <div
+        #dropdownNoToggle
+        class="mb-2"
+        [ngClass]="{ hidden: !showSearchbar }"
+      >
         <input
-          *ngIf="showSearchbar"
           [formControl]="searchTerm"
           type="text"
           placeholder="Search"
@@ -25,15 +27,10 @@
         />
       </div>
 
-      <button
-        type="button"
-        *ngFor="let option of optionsWithSearch"
-        (click)="selectOption(option.value)"
-        class="btn btn-ghost justify-start text-left normal-case font-normal"
-      >
-        {{ option.dropdownValue }}
-      </button>
-    </div>
+      <li *ngFor="let option of optionsWithSearch">
+        <a (click)="selectOption(option.value)">{{ option.dropdownValue }}</a>
+      </li>
+    </ul>
   </newbee-dropdown-with-arrow>
 
   <newbee-alert

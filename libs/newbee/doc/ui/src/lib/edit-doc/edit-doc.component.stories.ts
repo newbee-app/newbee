@@ -1,4 +1,4 @@
-import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   testDocRelation1,
@@ -20,9 +20,9 @@ export default {
   title: 'EditDocComponent',
   component: EditDocComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

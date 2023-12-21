@@ -1,4 +1,3 @@
-import { DomPortal } from '@angular/cdk/portal';
 import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
@@ -20,7 +19,6 @@ import {
   offset,
   shift,
 } from '@floating-ui/dom';
-import { PortalService } from '@newbee/newbee/shared/util';
 
 /**
  * A dumb UI for displaying tooltips using FloatingUI.
@@ -45,11 +43,6 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   @Input() placement!: Placement;
 
   /**
-   * Whether the tooltip should be portalled to the app component.
-   */
-  @Input() portal = true;
-
-  /**
    * The div associated with the content the tooltip should wrap.
    */
   @ViewChild('content') content!: ElementRef<HTMLDivElement>;
@@ -69,15 +62,9 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
    */
   private cleanup: (() => void) | null = null;
 
-  /**
-   * A unique ID associated with this tooltip, for use with the PortalService.
-   */
-  private id = '';
-
   constructor(
     @Inject(PLATFORM_ID) private readonly platformId: object,
     private readonly ngZone: NgZone,
-    private readonly portalService: PortalService,
   ) {}
 
   /**
@@ -138,20 +125,12 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
         },
       );
     });
-
-    if (this.portal) {
-      this.id = this.portalService.addPortal(new DomPortal(this.tooltip));
-    }
   }
 
   /**
-   * Delete the portal associated with the tooltip and clean up the floating UI tooltip.
+   * Clean up the floating UI tooltip.
    */
   ngOnDestroy(): void {
-    if (this.portal) {
-      this.portalService.deletePortal(this.id);
-    }
-
     this.cleanup?.();
   }
 }

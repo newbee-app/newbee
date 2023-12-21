@@ -9,16 +9,16 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { AppWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../testing';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {
   title: 'Form Control/SearchableSelectComponent',
   component: SearchableSelectComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

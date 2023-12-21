@@ -1,4 +1,3 @@
-import { PortalModule } from '@angular/cdk/portal';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -36,7 +35,6 @@ import { AppRoutingModule } from './routing';
     // third party modules
     BrowserModule,
     HttpClientModule,
-    PortalModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

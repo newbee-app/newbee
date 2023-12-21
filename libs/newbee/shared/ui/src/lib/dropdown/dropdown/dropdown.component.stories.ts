@@ -4,16 +4,16 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { AppWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../testing';
 import { DropdownComponent } from './dropdown.component';
 
 export default {
   title: 'Dropdown/DropdownComponent',
   component: DropdownComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   parameters: { layout: 'centered' },
@@ -22,7 +22,6 @@ export default {
     placement: 'bottom',
     offset: 10,
     expandStrategy: 'toggle',
-    portal: true,
     dropdownNoToggleElements: [],
     expanded: false,
   },
@@ -33,12 +32,12 @@ export default {
     props: args,
     template: `
     <div class="w-fit">
-      <newbee-dropdown [disabled]="disabled" [placement]="placement" [offset]="offset" [expandStrategy]="expandStrategy" [portal]="portal" [dropdownNoToggleElements]="dropdownNoToggleElements" [expanded]="expanded" (expandedChange)="expandedChange($event)">
+      <newbee-dropdown [disabled]="disabled" [placement]="placement" [offset]="offset" [expandStrategy]="expandStrategy" [dropdownNoToggleElements]="dropdownNoToggleElements" [expanded]="expanded" (expandedChange)="expandedChange($event)">
         <button label type="button" class="btn btn-primary">Click me</button>
 
-        <div dropdown class="flex flex-col flex-nowrap">
-          <button type="button" class="btn btn-ghost justify-start text-left normal-case font-normal">A somewhat long message in this button</button>
-        </div>
+        <ul dropdown class="menu flex flex-col flex-nowrap">
+          <li><a>A somewhat long message here</a></li>
+        </ul>
       </newbee-dropdown>
     </div>
     `,

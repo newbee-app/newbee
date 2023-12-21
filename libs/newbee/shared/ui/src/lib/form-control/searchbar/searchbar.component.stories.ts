@@ -5,16 +5,16 @@ import {
   StoryObj,
 } from '@storybook/angular';
 import { range } from 'lodash-es';
-import { AppWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../testing';
 import { SearchbarComponent } from './searchbar.component';
 
 export default {
   title: 'Form Control/SearchbarComponent',
   component: SearchbarComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

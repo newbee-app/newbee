@@ -4,16 +4,16 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { AppWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../testing';
 import { NumAndFreqInputComponent } from './num-and-freq-input.component';
 
 export default {
   title: 'Form Control/NumAndFreqInputComponent',
   component: NumAndFreqInputComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   parameters: { layout: 'centered' },

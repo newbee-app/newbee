@@ -1,4 +1,4 @@
-import { AppWrapperComponent } from '@newbee/newbee/shared/ui';
+import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   componentWrapperDecorator,
   Meta,
@@ -11,9 +11,9 @@ export default {
   title: 'RegisterFormComponent',
   component: RegisterFormComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   args: {

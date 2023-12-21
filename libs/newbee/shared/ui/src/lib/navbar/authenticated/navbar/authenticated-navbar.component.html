@@ -9,7 +9,9 @@
     labelClasses="btn-ghost"
     placement="bottom-start"
   >
-    <ul class="menu flex flex-col flex-nowrap min-w-44">
+    <ul
+      class="menu flex flex-col flex-nowrap min-w-44 max-h-60 overflow-y-auto overflow-x-hidden"
+    >
       <li *ngIf="checkRoles(apiRoles.org.update, { orgMember })">
         <a
           (click)="
@@ -100,7 +102,7 @@
             *ngIf="selectedOrganization && includeCenter"
             class="navbar-center"
           >
-            <newbee-tooltip placement="bottom" text="Home" [portal]="false">
+            <newbee-tooltip placement="bottom" text="Home">
               <a
                 (click)="
                   emitNavigateToLink(
@@ -129,12 +131,7 @@
                 "
                 placement="bottom-end"
               >
-                <newbee-tooltip
-                  label
-                  text="Create"
-                  placement="bottom"
-                  [portal]="false"
-                >
+                <newbee-tooltip label text="Create" placement="bottom">
                   <button type="button" class="btn btn-ghost">
                     <!-- document-plus svg -->
                     <svg
@@ -154,7 +151,10 @@
                   </button>
                 </newbee-tooltip>
 
-                <ul dropdown class="menu flex flex-col flex-nowrap min-w-44">
+                <ul
+                  dropdown
+                  class="menu flex flex-col flex-nowrap min-w-44 max-h-60 overflow-y-auto overflow-x-hidden"
+                >
                   <li *ngIf="checkRoles(apiRoles.doc.create, { orgMember })">
                     <a
                       (click)="
@@ -201,18 +201,16 @@
               </newbee-dropdown>
 
               <newbee-dropdown placement="bottom-end">
-                <newbee-tooltip
-                  label
-                  text="Account"
-                  placement="bottom"
-                  [portal]="false"
-                >
+                <newbee-tooltip label text="Account" placement="bottom">
                   <button type="button" class="btn btn-ghost">
                     {{ userDisplayName(user) }}
                   </button>
                 </newbee-tooltip>
 
-                <ul dropdown class="menu flex flex-col flex-nowrap min-w-44">
+                <ul
+                  dropdown
+                  class="menu flex flex-col flex-nowrap min-w-44 max-h-60 overflow-y-auto overflow-x-hidden"
+                >
                   <li>
                     <a (click)="emitNavigateToLink(keyword.User)" class="flex"
                       >Manage your account</a

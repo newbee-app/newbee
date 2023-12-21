@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { ClickService, PortalService } from '@newbee/newbee/shared/util';
+import { ClickService } from '@newbee/newbee/shared/util';
 
 /**
  * The global component for the app, which hosts the `<router-outlet>` to project all other UI components.
@@ -21,13 +21,5 @@ export class AppComponent {
     this.clickService.documentClickTarget$.next(target);
   }
 
-  /**
-   * All of the portals associated with the PortalService.
-   */
-  readonly portals$ = this.portalService.portals$;
-
-  constructor(
-    private readonly clickService: ClickService,
-    private readonly portalService: PortalService,
-  ) {}
+  constructor(private readonly clickService: ClickService) {}
 }

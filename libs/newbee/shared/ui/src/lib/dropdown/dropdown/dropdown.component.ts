@@ -1,4 +1,3 @@
-import { DomPortal } from '@angular/cdk/portal';
 import { CommonModule, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
@@ -23,7 +22,7 @@ import {
   size,
   type Placement,
 } from '@floating-ui/dom';
-import { ClickService, PortalService } from '@newbee/newbee/shared/util';
+import { ClickService } from '@newbee/newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -64,11 +63,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   @Input() expandStrategy: 'toggle' | 'expand' = 'toggle';
 
   /**
-   * Whether the dropdown should be portalled to the app component.
-   */
-  @Input() portal = true;
-
-  /**
    * Elements that are in the dropdown that should not cause the dropdown to toggle, no matter what.
    */
   @Input() dropdownNoToggleElements: ElementRef<HTMLElement>[] = [];
@@ -107,11 +101,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
   private cleanup: (() => void) | null = null;
 
   /**
-   * A unique ID associated with this dropdown, for use with the PortalService.
-   */
-  private id = '';
-
-  /**
    * Subscribe to the user's clicks and shrink the dropdown if the user clicks outside of the dropdown.
    *
    * @param clickService The global click service that shows where the user clicked.
@@ -122,7 +111,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
     elementRef: ElementRef<HTMLElement>,
     @Inject(PLATFORM_ID) private readonly platformId: object,
     private readonly ngZone: NgZone,
-    private readonly portalService: PortalService,
   ) {
     clickService.documentClickTarget$
       .pipe(takeUntil(this.unsubscribe$))
@@ -175,7 +163,6 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
 
   /**
    * Assign cleanup and set up floating UI's autoUpdate with the dropdown.
-   * Also portal the dropdown portion of the component to the app-level view.
    */
   ngAfterViewInit(): void {
     if (isPlatformServer(this.platformId)) {
@@ -191,22 +178,14 @@ export class DropdownComponent implements OnDestroy, AfterViewInit {
         },
       );
     });
-
-    if (this.portal) {
-      this.id = this.portalService.addPortal(new DomPortal(this.dropdown));
-    }
   }
 
   /**
-   * Unsubscribe from all infinite observables, delete the portal associated with the dropdown, and clean up floating UI.
+   * Unsubscribe from all infinite observables and clean up floating UI.
    */
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-
-    if (this.portal) {
-      this.portalService.deletePortal(this.id);
-    }
 
     this.cleanup?.();
   }

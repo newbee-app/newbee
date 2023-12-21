@@ -58,11 +58,6 @@ export class DropdownWithArrowComponent {
   @Input() expandStrategy: 'toggle' | 'expand' = 'toggle';
 
   /**
-   * Whether the dropdown should be portalled to the app component.
-   */
-  @Input() portal = true;
-
-  /**
    * Whether the dropdown is showing or not.
    */
   @Input() expanded = false;

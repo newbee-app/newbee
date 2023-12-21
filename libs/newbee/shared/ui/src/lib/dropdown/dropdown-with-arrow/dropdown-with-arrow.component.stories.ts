@@ -4,16 +4,16 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { AppWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../testing';
 import { DropdownWithArrowComponent } from './dropdown-with-arrow.component';
 
 export default {
   title: 'Dropdown/DropdownWithArrowComponent',
   component: DropdownWithArrowComponent,
   decorators: [
-    moduleMetadata({ imports: [AppWrapperComponent] }),
+    moduleMetadata({ imports: [ClickWrapperComponent] }),
     componentWrapperDecorator(
-      (story) => `<newbee-app-wrapper>${story}</newbee-app-wrapper>`,
+      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
     ),
   ],
   parameters: { layout: 'centered' },
@@ -24,7 +24,6 @@ export default {
     placement: 'bottom',
     offset: 10,
     expandStrategy: 'toggle',
-    portal: true,
     expanded: false,
   },
   argTypes: {
@@ -34,14 +33,12 @@ export default {
     props: args,
     template: `
     <div class="w-fit">
-      <newbee-dropdown-with-arrow [labelText]="labelText" [labelClasses]="labelClasses" [disabled]="disabled" [placement]="placement" [offset]="offset" [expandStrategy]="expandStrategy" [portal]="portal" [expanded]="expanded" (expandedChange)="expandedChange($event)">
-        <div class="flex flex-col flex-nowrap">
-          <button #dropdownNoToggle type="button" class="btn btn-ghost justify-start text-left normal-case font-normal">Should not shrink dropdown</button>
-
-          <button #dropdownNoToggle type="button" class="btn btn-ghost justify-start text-left normal-case font-normal">Should also not shrink dropdown</button>
-
-          <button type="button" class="btn btn-ghost justify-start text-left normal-case font-normal">A somewhat long message in this button</button>
-        </div>
+      <newbee-dropdown-with-arrow [labelText]="labelText" [labelClasses]="labelClasses" [disabled]="disabled" [placement]="placement" [offset]="offset" [expandStrategy]="expandStrategy" [expanded]="expanded" (expandedChange)="expandedChange($event)">
+        <ul class="menu flex flex-col flex-nowrap">
+          <li #dropdownNoToggle><a>Should not shrink dropdown</a></li>
+          <li #dropdownNoToggle><a>Should also not shrink dropdown</a></li>
+          <li><a>A somewhat long message in this button</a></li>
+        </ul>
       </newbee-dropdown-with-arrow>
     </div>
     `,

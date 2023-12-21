@@ -53,11 +53,6 @@ export class SearchableSelectComponent<T>
   readonly alertType = AlertType;
 
   /**
-   * Whether the select dropdown should be portalled to the app component.
-   */
-  @Input() portal = true;
-
-  /**
    * Whether to show the searchbar component.
    */
   @Input() showSearchbar = true;

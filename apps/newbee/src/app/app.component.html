@@ -2,10 +2,6 @@
   <newbee-error-screen>
     <newbee-store-toast></newbee-store-toast>
 
-    <ng-container *ngFor="let portal of portals$ | async">
-      <ng-template [cdkPortalOutlet]="portal"></ng-template>
-    </ng-container>
-
     <ng-template newbeeTemplateMarker>
       <router-outlet></router-outlet>
     </ng-template>
