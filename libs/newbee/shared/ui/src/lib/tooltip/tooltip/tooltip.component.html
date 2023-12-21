@@ -1,0 +1,14 @@
+<div class="group w-full">
+  <div #content aria-describedby="tooltip">
+    <ng-content select="[label]"></ng-content>
+  </div>
+
+  <div
+    #tooltip
+    role="tooltip"
+    class="absolute bg-neutral rounded-md px-2 py-1 text-sm hidden group-hover:block z-50"
+  >
+    <ng-content select="[tooltip]"></ng-content>
+    <div #arrow class="absolute bg-neutral w-2 h-2 rotate-45"></div>
+  </div>
+</div>

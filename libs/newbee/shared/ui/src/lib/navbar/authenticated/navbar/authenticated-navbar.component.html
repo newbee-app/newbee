@@ -102,7 +102,7 @@
             *ngIf="selectedOrganization && includeCenter"
             class="navbar-center"
           >
-            <newbee-tooltip placement="bottom" text="Home">
+            <newbee-text-tooltip placement="bottom" text="Home">
               <a
                 (click)="
                   emitNavigateToLink(
@@ -114,7 +114,7 @@
               >
                 <h4>New<span class="text-logo">Bee</span></h4>
               </a>
-            </newbee-tooltip>
+            </newbee-text-tooltip>
           </div>
 
           <div class="navbar-end">
@@ -131,7 +131,7 @@
                 "
                 placement="bottom-end"
               >
-                <newbee-tooltip label text="Create" placement="bottom">
+                <newbee-text-tooltip label text="Create" placement="bottom">
                   <button type="button" class="btn btn-ghost">
                     <!-- document-plus svg -->
                     <svg
@@ -149,7 +149,7 @@
                       />
                     </svg>
                   </button>
-                </newbee-tooltip>
+                </newbee-text-tooltip>
 
                 <ul
                   dropdown
@@ -201,11 +201,11 @@
               </newbee-dropdown>
 
               <newbee-dropdown placement="bottom-end">
-                <newbee-tooltip label text="Account" placement="bottom">
+                <newbee-text-tooltip label text="Account" placement="bottom">
                   <button type="button" class="btn btn-ghost">
                     {{ userDisplayName(user) }}
                   </button>
-                </newbee-tooltip>
+                </newbee-text-tooltip>
 
                 <ul
                   dropdown

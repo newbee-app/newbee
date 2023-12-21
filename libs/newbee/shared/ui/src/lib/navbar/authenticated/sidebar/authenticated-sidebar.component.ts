@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, Organization } from '@newbee/shared/util';
 import { isEqual } from 'lodash-es';
-import { TooltipComponent } from '../../../tooltip';
+import { TextTooltipComponent } from '../../../tooltip';
 
 /**
  * The authenticated sidebar, for selecting an organization.
@@ -11,7 +11,7 @@ import { TooltipComponent } from '../../../tooltip';
 @Component({
   selector: 'newbee-authenticated-sidebar',
   standalone: true,
-  imports: [CommonModule, TooltipComponent],
+  imports: [CommonModule, TextTooltipComponent],
   templateUrl: './authenticated-sidebar.component.html',
 })
 export class AuthenticatedSidebarComponent {

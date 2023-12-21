@@ -1,4 +1,4 @@
-<newbee-tooltip placement="top" [text]="lastMarkedUpToDate">
+<newbee-text-tooltip placement="top" [text]="lastMarkedUpToDate">
   <!-- check-circle svg -->
   <svg
     *ngIf="upToDate; else outdated"
@@ -29,4 +29,4 @@
       />
     </svg>
   </ng-template>
-</newbee-tooltip>
+</newbee-text-tooltip>

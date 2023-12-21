@@ -2,16 +2,17 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { TooltipComponent } from './tooltip.component';
 
 export default {
-  title: 'TooltipComponent',
+  title: 'Tooltip/TooltipComponent',
   component: TooltipComponent,
   parameters: { layout: 'centered' },
-  args: { text: `I'm a tooltip`, placement: 'top' },
+  args: { placement: 'top' },
   render: (args) => ({
     props: args,
     template: `
     <div class="w-fit">
-      <newbee-tooltip [text]="text" [placement]="placement">
-        <button type="button" class="btn btn-primary">Hover me</button>
+      <newbee-tooltip [placement]="placement">
+        <button label type="button" class="btn btn-primary">Hover me</button>
+        <span tooltip>I'm a tooltip</span>
       </newbee-tooltip>
     </div>
     `,

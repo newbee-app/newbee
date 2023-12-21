@@ -33,11 +33,6 @@ import {
 })
 export class TooltipComponent implements AfterViewInit, OnDestroy {
   /**
-   * The tooltip's text.
-   */
-  @Input() text!: string;
-
-  /**
    * Which direction the tooltip should go.
    */
   @Input() placement!: Placement;

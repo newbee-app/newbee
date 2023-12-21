@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import {
+  SolrEntryEnum,
   resultIsDocQueryResult,
   resultIsOrgMemberQueryResult,
   resultIsQnaQueryResult,
   resultIsTeamQueryResult,
-  SolrEntryEnum,
   type QueryResultType,
 } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
-import { TooltipComponent } from '../../tooltip';
+import { TextTooltipComponent } from '../../tooltip';
 
 /**
  * A dumb UI for showing the type of a search result in a button.
@@ -17,7 +17,7 @@ import { TooltipComponent } from '../../tooltip';
 @Component({
   selector: 'newbee-search-result-type-btn',
   standalone: true,
-  imports: [CommonModule, TooltipComponent],
+  imports: [CommonModule, TextTooltipComponent],
   templateUrl: './search-result-type-btn.component.html',
 })
 export class SearchResultTypeBtnComponent {

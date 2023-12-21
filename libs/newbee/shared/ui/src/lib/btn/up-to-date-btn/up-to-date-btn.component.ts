@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { isUpToDate, type PostQueryResult } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { TooltipComponent } from '../../tooltip';
+import { TextTooltipComponent } from '../../tooltip';
 
 dayjs.extend(relativeTime);
 
@@ -13,7 +13,7 @@ dayjs.extend(relativeTime);
 @Component({
   selector: 'newbee-up-to-date-btn',
   standalone: true,
-  imports: [CommonModule, TooltipComponent],
+  imports: [CommonModule, TextTooltipComponent],
   templateUrl: './up-to-date-btn.component.html',
 })
 export class UpToDateBtnComponent {
