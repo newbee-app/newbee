@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AlertComponent,
@@ -42,7 +35,7 @@ import {
   ],
   templateUrl: './invite-member.component.html',
 })
-export class InviteMemberComponent implements OnChanges {
+export class InviteMemberComponent {
   readonly alertType = AlertType;
 
   /**
@@ -58,7 +51,17 @@ export class InviteMemberComponent implements OnChanges {
   /**
    * The successfully invited user's email address, if a user was successfully invited.
    */
-  @Input() invitedUser = '';
+  @Input()
+  get invitedUser(): string {
+    return this._invitedUser;
+  }
+  set invitedUser(invitedUser) {
+    this._invitedUser = invitedUser;
+    this.inviteMemberForm.setValue({ email: '', role: OrgRoleEnum.Member });
+    this.inviteMemberForm.markAsPristine();
+    this.inviteMemberForm.markAsUntouched();
+  }
+  private _invitedUser = '';
 
   /**
    * An HTTP error for the component, if one exists.
@@ -94,22 +97,6 @@ export class InviteMemberComponent implements OnChanges {
     return generateLteOrgRoles(this.orgMember.role).map(
       (role) => new SelectOption(role, role),
     );
-  }
-
-  /**
-   * When the value of `invitedUser` is updated, clear the input.
-   *
-   * @param changes All of the changes to the component's inputs.
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    const invitedUser = changes['invitedUser'];
-    if (!invitedUser) {
-      return;
-    }
-
-    this.inviteMemberForm.setValue({ email: '', role: OrgRoleEnum.Member });
-    this.inviteMemberForm.markAsPristine();
-    this.inviteMemberForm.markAsUntouched();
   }
 
   /**

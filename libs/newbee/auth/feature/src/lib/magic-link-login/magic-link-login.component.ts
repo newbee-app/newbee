@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
@@ -11,23 +11,18 @@ import { Store } from '@ngrx/store';
   selector: 'newbee-magic-link-login',
   templateUrl: './magic-link-login.component.html',
 })
-export class MagicLinkLoginComponent implements OnInit {
-  constructor(
-    private readonly store: Store,
-    private readonly route: ActivatedRoute,
-  ) {}
-
+export class MagicLinkLoginComponent {
   /**
    * Make a request to confirm the magic link token.
    */
-  ngOnInit(): void {
-    const token = this.route.snapshot.paramMap.get(Keyword.MagicLinkLogin);
+  constructor(store: Store, route: ActivatedRoute) {
+    const token = route.snapshot.paramMap.get(Keyword.MagicLinkLogin);
 
     // this shouldn't happen, but keep it in for safety
     if (!token) {
       return;
     }
 
-    this.store.dispatch(AuthActions.confirmMagicLink({ token }));
+    store.dispatch(AuthActions.confirmMagicLink({ token }));
   }
 }

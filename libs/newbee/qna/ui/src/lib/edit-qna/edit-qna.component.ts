@@ -131,19 +131,35 @@ export class EditQnaComponent implements OnInit {
   @Input() teamMember: TeamMember | null = null;
 
   /**
-   * All of the teams of the org the question can be asked to.
-   */
-  @Input() teams: Team[] = [];
-
-  /**
    * The organization the qna is in.
    */
   @Input() organization!: Organization;
 
   /**
+   * All of the teams of the org the question can be asked to.
+   */
+  @Input()
+  set teams(teams: Team[]) {
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+
+  /**
    * All org members belonging to the org.
    */
-  @Input() orgMembers: OrgMemberUser[] = [];
+  @Input()
+  set orgMembers(orgMembers: OrgMemberUser[]) {
+    this.orgMemberOptions = orgMembers.map((orgMember) => {
+      const name = userDisplayName(orgMember.user);
+      return new SelectOption(
+        orgMember,
+        `${name} (${orgMember.user.email})`,
+        name,
+      );
+    });
+  }
 
   /**
    * Whether the edit question action is pending.
@@ -191,19 +207,6 @@ export class EditQnaComponent implements OnInit {
    * Initialize the values of questionMarkdoc, answerMarkdoc, and editQuestionForm with the input qna.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
-      return new SelectOption(
-        orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
-      );
-    });
-
     this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
     this.editQuestionForm.setValue(
       { title: this.qna.qna.title, team: this.qna.team },

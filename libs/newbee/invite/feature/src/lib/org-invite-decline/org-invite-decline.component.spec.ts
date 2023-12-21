@@ -45,7 +45,7 @@ describe('OrgInviteDeclineComponent', () => {
     expect(store).toBeDefined();
   });
 
-  describe('init', () => {
+  describe('constructor', () => {
     it('should dispatch declineInvite', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
         InviteActions.declineInvite({ tokenDto: testBaseTokenDto1 }),

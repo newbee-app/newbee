@@ -111,19 +111,35 @@ export class EditDocComponent implements OnInit {
   @Input() teamMember: TeamMember | null = null;
 
   /**
-   * All of the teams of the org the doc can be moved to.
-   */
-  @Input() teams: Team[] = [];
-
-  /**
    * The organization the doc is in.
    */
   @Input() organization!: Organization;
 
   /**
+   * All of the teams of the org the doc can be moved to.
+   */
+  @Input()
+  set teams(teams: Team[]) {
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+
+  /**
    * All org members belonging to the org.
    */
-  @Input() orgMembers: OrgMemberUser[] = [];
+  @Input()
+  set orgMembers(orgMembers: OrgMemberUser[]) {
+    this.orgMemberOptions = orgMembers.map((orgMember) => {
+      const name = userDisplayName(orgMember.user);
+      return new SelectOption(
+        orgMember,
+        `${name} (${orgMember.user.email})`,
+        name,
+      );
+    });
+  }
 
   /**
    * Whether the edit action is pending.
@@ -158,22 +174,9 @@ export class EditDocComponent implements OnInit {
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * Initialize the values of docMarkdoc and teamOptions with the input doc.
+   * Initialize the values of docMarkdoc and the editDocForm with the input doc.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
-      return new SelectOption(
-        orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
-      );
-    });
-
     this.docMarkdoc = this.doc.doc.docMarkdoc;
     this.editDocForm.setValue(
       {

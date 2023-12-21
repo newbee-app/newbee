@@ -70,7 +70,18 @@ export class CreateDocComponent implements OnInit {
   /**
    * All of the teams of the org the doc can be put in.
    */
-  @Input() teams: Team[] = [];
+  @Input()
+  get teams(): Team[] {
+    return this._teams;
+  }
+  set teams(teams: Team[]) {
+    this._teams = teams;
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+  _teams: Team[] = [];
 
   /**
    * The query param representing a team slug, if one is specified.
@@ -112,14 +123,9 @@ export class CreateDocComponent implements OnInit {
   }
 
   /**
-   * Initialize the team options and the team values with a value from the team slug param, if specified.
+   * Initialize the team value with a value from the team slug param, if specified.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-
     if (!this.teamSlugParam) {
       return;
     }

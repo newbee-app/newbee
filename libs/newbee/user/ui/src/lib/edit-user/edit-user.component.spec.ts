@@ -1,5 +1,5 @@
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { testPhoneInput1 } from '@newbee/newbee/shared/util';
 import { testAuthenticator1, testUser1, testUser2 } from '@newbee/shared/util';
 import { EditUserComponent } from './edit-user.component';
 
@@ -35,10 +35,6 @@ describe('EditUserComponent', () => {
     jest.spyOn(component.editAuthenticator, 'emit');
     jest.spyOn(component.deleteAuthenticator, 'emit');
 
-    component.ngOnChanges({
-      authenticators: new SimpleChange([], [testAuthenticator1], true),
-    });
-
     fixture.detectChanges();
   });
 
@@ -47,9 +43,19 @@ describe('EditUserComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should initialize authenticatorNames', () => {
+  describe('setters', () => {
+    it('should update authenticatorNames', () => {
       expect(component.editAuthenticatorForm.controls.names.length).toEqual(1);
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it(`should set the user form with the user's values`, () => {
+      expect(component.editUserForm.value).toEqual({
+        name: testUser1.name,
+        displayName: testUser1.displayName,
+        phoneNumber: testPhoneInput1,
+      });
     });
   });
 

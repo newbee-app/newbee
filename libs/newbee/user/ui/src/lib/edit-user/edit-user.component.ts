@@ -1,13 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -47,7 +39,7 @@ import parsePhoneNumber from 'libphonenumber-js';
   ],
   templateUrl: './edit-user.component.html',
 })
-export class EditUserComponent implements OnInit, OnChanges {
+export class EditUserComponent implements OnInit {
   readonly keyword = Keyword;
   readonly alertType = AlertType;
 
@@ -59,7 +51,19 @@ export class EditUserComponent implements OnInit, OnChanges {
   /**
    * The authenticators of the user.
    */
-  @Input() authenticators: Authenticator[] = [];
+  @Input()
+  get authenticators(): Authenticator[] {
+    return this._authenticators;
+  }
+  set authenticators(authenticators: Authenticator[]) {
+    this._authenticators = authenticators;
+    const authenticatorNames = this.editAuthenticatorForm.controls.names;
+    authenticatorNames.clear();
+    authenticators.forEach((authenticator) => {
+      authenticatorNames.push(this.fb.control(authenticator.name));
+    });
+  }
+  _authenticators: Authenticator[] = [];
 
   /**
    * Whether to display the spinner on the edit button.
@@ -191,26 +195,6 @@ export class EditUserComponent implements OnInit, OnChanges {
       displayName: this.user.displayName,
       ...(phoneNumber && { phoneNumber }),
     });
-  }
-
-  /**
-   * Look out for changes to authenticators and update the form array, if relevant.
-   *
-   * @param changes The changes to the input of the component.
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    const authenticators = changes['authenticators'];
-    if (!authenticators) {
-      return;
-    }
-
-    const authenticatorNames = this.editAuthenticatorForm.controls.names;
-    authenticatorNames.clear();
-    (authenticators.currentValue as Authenticator[]).forEach(
-      (authenticator) => {
-        authenticatorNames.push(this.fb.control(authenticator.name));
-      },
-    );
   }
 
   /**

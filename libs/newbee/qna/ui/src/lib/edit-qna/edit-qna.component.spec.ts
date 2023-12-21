@@ -6,6 +6,7 @@ import {
   testQna1,
   testQnaRelation1,
   testTeam1,
+  userDisplayName,
 } from '@newbee/shared/util';
 import { EditQnaComponent } from './edit-qna.component';
 
@@ -24,6 +25,7 @@ describe('EditQnaComponent', () => {
     component.qna = testQnaRelation1;
     component.orgMember = testOrgMemberUser1;
     component.teams = [testTeam1];
+    component.orgMembers = [testOrgMemberUser1];
     component.organization = testOrganization1;
 
     jest.spyOn(component.editQuestion, 'emit');
@@ -39,22 +41,36 @@ describe('EditQnaComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
-    it('should fill information with qna values if permissions are right', () => {
-      expect(component.questionMarkdoc).toEqual(testQna1.questionMarkdoc);
+  describe('setters', () => {
+    it('should set up select options', () => {
       expect(component.teamOptions).toEqual([
         new SelectOption(null, 'Entire org'),
         new SelectOption(testTeam1, testTeam1.name),
       ]);
+      expect(component.orgMemberOptions).toEqual([
+        new SelectOption(
+          testOrgMemberUser1,
+          `${userDisplayName(testOrgMemberUser1.user)} (${
+            testOrgMemberUser1.user.email
+          })`,
+          userDisplayName(testOrgMemberUser1.user),
+        ),
+      ]);
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it('should fill information with qna values if permissions are right', () => {
+      expect(component.questionMarkdoc).toEqual(testQna1.questionMarkdoc);
       expect(component.editQuestionForm.value).toEqual({
         title: testQna1.title,
         team: testQnaRelation1.team,
       });
+      expect(component.answerMarkdoc).toEqual(testQna1.answerMarkdoc);
       expect(component.editAnswerForm.value).toEqual({
         maintainer: testOrgMemberUser1,
         upToDateDuration: { num: null, frequency: null },
       });
-      expect(component.answerMarkdoc).toEqual(testQna1.answerMarkdoc);
     });
   });
 

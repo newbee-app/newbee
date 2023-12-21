@@ -33,12 +33,17 @@ describe('CreateDocComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
-    it('should initialize team options and doc form', () => {
+  describe('setters', () => {
+    it('should generate select options', () => {
       expect(component.teamOptions).toEqual([
         new SelectOption(null, 'Entire org'),
         new SelectOption(testTeam1, testTeam1.name),
       ]);
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it('should initialize doc form', () => {
       expect(component.docForm.value.team).toBeNull();
 
       component.teamSlugParam = testTeam1.slug;

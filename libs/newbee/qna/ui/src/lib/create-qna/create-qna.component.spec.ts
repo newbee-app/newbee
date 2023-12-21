@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SelectOption } from '@newbee/newbee/shared/util';
 import { testTeam1 } from '@newbee/shared/util';
 import { CreateQnaComponent } from './create-qna.component';
 
@@ -29,6 +30,16 @@ describe('CreateQnaComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
+  });
+
+  describe('setters', () => {
+    it('should set team options', () => {
+      component.teams = [testTeam1];
+      expect(component.teamOptions).toEqual([
+        new SelectOption(null, 'Entire org'),
+        new SelectOption(testTeam1, testTeam1.name),
+      ]);
+    });
   });
 
   describe('ngOnInit', () => {

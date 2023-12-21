@@ -1,4 +1,3 @@
-import { SimpleChange } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -95,11 +94,9 @@ describe('CreateOrgComponent', () => {
     });
   });
 
-  describe('changes', () => {
+  describe('setters', () => {
     it('should update form for generatedSlug changes', fakeAsync(() => {
-      component.ngOnChanges({
-        generatedSlug: new SimpleChange('', testOrganization1.slug, true),
-      });
+      component.generatedSlug = testOrganization1.slug;
       expect(component.createOrgForm.controls.slug.value).toEqual(
         testOrganization1.slug,
       );
