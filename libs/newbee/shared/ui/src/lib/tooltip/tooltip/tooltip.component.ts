@@ -38,6 +38,21 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   @Input() placement!: Placement;
 
   /**
+   * The distance (in px) there should be between the label and the tooltip, defaults to `10`.
+   */
+  @Input() offset = 10;
+
+  /**
+   * Whether to display the tail.
+   */
+  @Input() includeTail = true;
+
+  /**
+   * The classes to add to the tail.
+   */
+  @Input() tailClasses: string | string[] | { [classes: string]: boolean } = {};
+
+  /**
    * The div associated with the content the tooltip should wrap.
    */
   @ViewChild('content') content!: ElementRef<HTMLDivElement>;
@@ -50,12 +65,18 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
   /**
    * The div associated with the tooltip arrow.
    */
-  @ViewChild('arrow') arrow!: ElementRef<HTMLDivElement>;
+  @ViewChild('arrow') arrow: ElementRef<HTMLDivElement> | undefined = undefined;
 
   /**
    * A cleanup function for the FloatingUI autoUpdate function we set up for the tooltip, which can be null on the server-side.
    */
   private cleanup: (() => void) | null = null;
+
+  /**
+   * Whether the tooltip should be shown.
+   * In practical terms, whether the mouse in hovering over the label or the tooltip.
+   */
+  showTooltip = false;
 
   constructor(
     @Inject(PLATFORM_ID) private readonly platformId: object,
@@ -74,10 +95,12 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
         {
           placement: this.placement,
           middleware: [
-            offset(10),
+            offset(this.offset),
             flip(),
             shift({ padding: 6 }),
-            arrow({ element: this.arrow.nativeElement }),
+            ...(this.includeTail && this.arrow
+              ? [arrow({ element: this.arrow.nativeElement })]
+              : []),
           ],
         },
       );
@@ -87,19 +110,21 @@ export class TooltipComponent implements AfterViewInit, OnDestroy {
       });
 
       // Compute position of the arrow
-      const staticSide = {
-        top: 'bottom',
-        right: 'left',
-        bottom: 'top',
-        left: 'right',
-      }[placement.split('-')[0] as string] as string;
-      const arrowX = middlewareData.arrow?.x;
-      const arrowY = middlewareData.arrow?.y;
-      Object.assign(this.arrow.nativeElement.style, {
-        left: arrowX ? `${arrowX}px` : '',
-        top: arrowY ? `${arrowY}px` : '',
-        [staticSide]: '-4px',
-      });
+      if (this.includeTail && this.arrow) {
+        const staticSide = {
+          top: 'bottom',
+          right: 'left',
+          bottom: 'top',
+          left: 'right',
+        }[placement.split('-')[0] as string] as string;
+        const arrowX = middlewareData.arrow?.x;
+        const arrowY = middlewareData.arrow?.y;
+        Object.assign(this.arrow.nativeElement.style, {
+          left: arrowX ? `${arrowX}px` : '',
+          top: arrowY ? `${arrowY}px` : '',
+          [staticSide]: '-4px',
+        });
+      }
     });
   }
 

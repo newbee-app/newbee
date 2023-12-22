@@ -35,6 +35,7 @@ import {
   apiRoles,
   checkRoles,
   userDisplayName,
+  userDisplayNameAndEmail,
   type DocNoOrg,
   type OrgMemberUser,
   type Organization,
@@ -132,11 +133,10 @@ export class EditDocComponent implements OnInit {
   @Input()
   set orgMembers(orgMembers: OrgMemberUser[]) {
     this.orgMemberOptions = orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
       return new SelectOption(
         orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
+        userDisplayNameAndEmail(orgMember.user),
+        userDisplayName(orgMember.user),
       );
     });
   }

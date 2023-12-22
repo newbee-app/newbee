@@ -13,6 +13,17 @@ export function userDisplayName(user: User): string {
 }
 
 /**
+ * Returns a user's display name with its email in parethenses after.
+ *
+ * @param user The user in question.
+ *
+ * @returns The user's display name with its email after.
+ */
+export function userDisplayNameAndEmail(user: User): string {
+  return `${userDisplayName(user)} (${user.email})`;
+}
+
+/**
  * Whether the given post relation has the same org member as its maintainer and creator.
  *
  * @param post The post relation in question.

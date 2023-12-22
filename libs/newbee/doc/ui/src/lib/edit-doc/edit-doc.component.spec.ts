@@ -7,6 +7,7 @@ import {
   testOrganization1,
   testTeam1,
   userDisplayName,
+  userDisplayNameAndEmail,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { EditDocComponent } from './edit-doc.component';
@@ -48,9 +49,7 @@ describe('EditDocComponent', () => {
       expect(component.orgMemberOptions).toEqual([
         new SelectOption(
           testOrgMemberUser1,
-          `${userDisplayName(testOrgMemberUser1.user)} (${
-            testOrgMemberUser1.user.email
-          })`,
+          userDisplayNameAndEmail(testOrgMemberUser1.user),
           userDisplayName(testOrgMemberUser1.user),
         ),
       ]);

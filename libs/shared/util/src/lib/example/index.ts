@@ -416,6 +416,18 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
 };
 
 /**
+ * An example instance of `TeamMemberRelation`.
+ * Strictly for use in testing.
+ */
+export const testTeamMemberRelation2: TeamMemberRelation = {
+  teamMember: testTeamMember1,
+  team: testTeam1,
+  orgMember: testOrgMember1,
+  organization: testOrganization1,
+  user: testUser2,
+};
+
+/**
  * An example instance of `DocRelation`.
  * Strictly for use in testing.
  */

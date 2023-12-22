@@ -7,6 +7,7 @@ import {
   testQnaRelation1,
   testTeam1,
   userDisplayName,
+  userDisplayNameAndEmail,
 } from '@newbee/shared/util';
 import { EditQnaComponent } from './edit-qna.component';
 
@@ -50,9 +51,7 @@ describe('EditQnaComponent', () => {
       expect(component.orgMemberOptions).toEqual([
         new SelectOption(
           testOrgMemberUser1,
-          `${userDisplayName(testOrgMemberUser1.user)} (${
-            testOrgMemberUser1.user.email
-          })`,
+          userDisplayNameAndEmail(testOrgMemberUser1.user),
           userDisplayName(testOrgMemberUser1.user),
         ),
       ]);

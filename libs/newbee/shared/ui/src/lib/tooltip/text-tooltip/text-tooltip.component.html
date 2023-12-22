@@ -1,4 +1,9 @@
-<newbee-tooltip [placement]="placement">
+<newbee-tooltip
+  [placement]="placement"
+  [offset]="offset"
+  [includeTail]="includeTail"
+  tailClasses="bg-neutral"
+>
   <ng-content label></ng-content>
-  <span tooltip>{{ text }}</span>
+  <div tooltip class="bg-neutral rounded-md px-2 py-1 text-sm">{{ text }}</div>
 </newbee-tooltip>

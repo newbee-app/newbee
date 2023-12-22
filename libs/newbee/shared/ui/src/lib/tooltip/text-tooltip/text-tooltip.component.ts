@@ -19,4 +19,14 @@ export class TextTooltipComponent {
    * Which direction the tooltip should go.
    */
   @Input() placement!: Placement;
+
+  /**
+   * The distance (in px) there should be between the label and the tooltip, defaults to `10`.
+   */
+  @Input() offset = 10;
+
+  /**
+   * Whether to display the tail.
+   */
+  @Input() includeTail = true;
 }

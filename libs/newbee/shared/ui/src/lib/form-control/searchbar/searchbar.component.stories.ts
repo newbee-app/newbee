@@ -18,7 +18,7 @@ export default {
     ),
   ],
   args: {
-    placeholder: true,
+    placeholder: 'Search...',
     includeSearchSymbol: true,
     includeClearSymbol: true,
     suggestions: [],
@@ -37,7 +37,7 @@ export const Suggestions: Story = {
 };
 
 export const NoPlaceholder: Story = {
-  args: { placeholder: false },
+  args: { placeholder: '' },
 };
 
 export const NoSearchSymbol: Story = {

@@ -37,6 +37,7 @@ import {
   apiRoles,
   checkRoles,
   userDisplayName,
+  userDisplayNameAndEmail,
   type OrgMemberUser,
   type Organization,
   type QnaNoOrg,
@@ -152,11 +153,10 @@ export class EditQnaComponent implements OnInit {
   @Input()
   set orgMembers(orgMembers: OrgMemberUser[]) {
     this.orgMemberOptions = orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
       return new SelectOption(
         orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
+        userDisplayNameAndEmail(orgMember.user),
+        userDisplayName(orgMember.user),
       );
     });
   }

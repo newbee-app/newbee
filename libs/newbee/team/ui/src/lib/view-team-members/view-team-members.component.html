@@ -1,0 +1,166 @@
+<div class="flex flex-col flex-nowrap gap-y-4 mt-close">
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <button
+      *ngIf="
+        checkRoles(apiRoles['team-member'].create, {
+          orgMember,
+          teamRole: teamMember?.role,
+          team: true
+        })
+      "
+      type="button"
+      onclick="addMemberModal.showModal()"
+      class="btn btn-info w-fit"
+    >
+      <span *ngIf="addMemberPending" class="loading loading-spinner"></span>
+      Add a member
+    </button>
+
+    <newbee-alert
+      *ngIf="addedUser"
+      [type]="alertType.Success"
+      [show]="true"
+      [text]="
+        'Successfully added ' + userDisplayName(addedUser) + ' to the team'
+      "
+    ></newbee-alert>
+    <newbee-alert
+      [show]="!!httpClientErrorMsg(keyword.TeamMember, keyword.New)"
+      [text]="httpClientErrorMsg(keyword.TeamMember, keyword.New)"
+    ></newbee-alert>
+  </div>
+
+  <dialog id="addMemberModal" class="modal">
+    <form method="dialog" class="modal-box">
+      <button
+        type="submit"
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+      >
+        x
+      </button>
+
+      <form
+        id="invite-member-form"
+        [formGroup]="addMemberForm"
+        class="flex flex-col flex-nowrap gap-y-4 mt-6"
+      >
+        <h4>Add a new team member</h4>
+
+        <div class="flex flex-row flex-wrap gap-2">
+          <div class="flex-auto">
+            <newbee-searchable-select
+              formControlName="member"
+              [options]="orgMemberOptions"
+              optionName="user"
+              [valid]="!inputDisplayError('member')"
+              [errorText]="inputErrorMessage('member')"
+            ></newbee-searchable-select>
+          </div>
+
+          <div class="flex-auto">
+            <newbee-searchable-select
+              formControlName="role"
+              [showSearchbar]="false"
+              [options]="roleOptions"
+              optionName="role"
+              [valid]="!inputDisplayError('role')"
+              [errorText]="inputErrorMessage('role')"
+            ></newbee-searchable-select>
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-action mt-48">
+        <button
+          type="submit"
+          id="invite-btn"
+          [disabled]="addMemberForm.invalid || addMemberPending"
+          (click)="emitAddTeamMember()"
+          class="btn btn-primary"
+        >
+          <span *ngIf="addMemberPending" class="loading loading-spinner"></span>
+          Add
+        </button>
+        <button type="submit" class="btn">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <newbee-searchbar
+    [formControl]="searchbar"
+    [includeSearchSymbol]="false"
+    placeholder="Filter team members..."
+  ></newbee-searchbar>
+
+  <table *ngIf="teamMembers.length" class="table table-md">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Role</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+
+    <tbody *ngIf="teamMembersToShow.length">
+      <tr *ngFor="let tm of teamMembersToShow">
+        <td>
+          <div class="w-fit">
+            <newbee-tooltip
+              placement="top-start"
+              [offset]="0"
+              [includeTail]="false"
+            >
+              <a
+                label
+                (click)="emitOrgNavigate(shortUrl.Member, tm.orgMember.slug)"
+                class="link link-info"
+                >{{ userDisplayNameAndEmail(tm.user) }}</a
+              >
+              <newbee-search-result
+                tooltip
+                [searchResult]="tm"
+                [format]="searchResultFormat.Card"
+                [teamRole]="tm.teamMember.role"
+                (orgNavigate)="orgNavigate.emit($event)"
+              ></newbee-search-result>
+            </newbee-tooltip>
+          </div>
+        </td>
+
+        <td>{{ tm.teamMember.role }}</td>
+
+        <td class="flex flex-col flex-nowrap gap-y-1">
+          <a
+            *ngIf="
+              !deleteMemberPending.get(tm.orgMember.slug);
+              else deleteTmPending
+            "
+            (click)="deleteTeamMember.emit(tm.orgMember.slug)"
+            class="link link-error"
+            >DELETE</a
+          >
+          <ng-template #deleteTmPending
+            ><span class="loading loading-dots"></span
+          ></ng-template>
+
+          <newbee-alert
+            [show]="
+              !!httpClientErrorMsg(
+                keyword.TeamMember,
+                keyword.Delete,
+                tm.orgMember.slug
+              )
+            "
+            [text]="
+              httpClientErrorMsg(
+                keyword.TeamMember,
+                keyword.Delete,
+                tm.orgMember.slug
+              )
+            "
+          ></newbee-alert>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

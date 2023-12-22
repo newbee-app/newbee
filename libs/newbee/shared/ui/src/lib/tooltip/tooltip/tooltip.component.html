@@ -1,4 +1,4 @@
-<div class="group w-full">
+<div (mouseenter)="showTooltip = true" (mouseleave)="showTooltip = false">
   <div #content aria-describedby="tooltip">
     <ng-content select="[label]"></ng-content>
   </div>
@@ -6,9 +6,15 @@
   <div
     #tooltip
     role="tooltip"
-    class="absolute bg-neutral rounded-md px-2 py-1 text-sm hidden group-hover:block z-50"
+    class="absolute z-50"
+    [ngClass]="{ hidden: !showTooltip }"
   >
     <ng-content select="[tooltip]"></ng-content>
-    <div #arrow class="absolute bg-neutral w-2 h-2 rotate-45"></div>
+    <div
+      *ngIf="includeTail"
+      #arrow
+      class="absolute w-2 h-2 rotate-45"
+      [ngClass]="tailClasses"
+    ></div>
   </div>
 </div>
