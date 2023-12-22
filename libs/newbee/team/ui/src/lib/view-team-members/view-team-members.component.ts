@@ -112,7 +112,7 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.addMemberForm.setValue({ member: null, role: TeamRoleEnum.Member });
+    this.addMemberForm.setValue({ member: null, role: null });
     this.addMemberForm.markAsPristine();
     this.addMemberForm.markAsUntouched();
   }
@@ -153,7 +153,7 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    */
   addMemberForm = this.fb.group({
     member: [null as null | OrgMemberUser, [Validators.required]],
-    role: [TeamRoleEnum.Member, [Validators.required]],
+    role: [null as null | TeamRoleEnum, [Validators.required]],
   });
 
   /**

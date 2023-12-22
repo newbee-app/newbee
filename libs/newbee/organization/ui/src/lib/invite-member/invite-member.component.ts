@@ -57,7 +57,7 @@ export class InviteMemberComponent {
   }
   set invitedUser(invitedUser) {
     this._invitedUser = invitedUser;
-    this.inviteMemberForm.setValue({ email: '', role: OrgRoleEnum.Member });
+    this.inviteMemberForm.setValue({ email: '', role: null });
     this.inviteMemberForm.markAsPristine();
     this.inviteMemberForm.markAsUntouched();
   }
@@ -78,7 +78,7 @@ export class InviteMemberComponent {
    */
   inviteMemberForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    role: [OrgRoleEnum.Member, [Validators.required]],
+    role: [null as null | OrgRoleEnum, [Validators.required]],
   });
 
   constructor(private readonly fb: FormBuilder) {}
