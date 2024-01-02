@@ -39,9 +39,9 @@ import { DropdownComponent } from '../../dropdown';
 })
 export class SearchbarComponent implements OnDestroy, ControlValueAccessor {
   /**
-   * Whether to include a placeholder saying `Search...`.
+   * The placeholder for the input, defaults to `Search...`.
    */
-  @Input() placeholder = true;
+  @Input() placeholder = 'Search...';
 
   /**
    * Whether to include the magnifying glass symbol.
@@ -98,8 +98,7 @@ export class SearchbarComponent implements OnDestroy, ControlValueAccessor {
    *
    * @param _ The new value.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private _onChange: (_: string | null) => void = (_) => {
+  private _onChange: (_: string | null) => void = () => {
     return;
   };
 

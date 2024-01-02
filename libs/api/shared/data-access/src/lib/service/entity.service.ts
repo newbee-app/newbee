@@ -22,6 +22,7 @@ import type {
   OrgTeamsMembers,
   QnaNoOrg,
   QnaQueryResult,
+  TeamMemberUserOrgMember,
   TeamNoOrg,
   UserRelation,
 } from '@newbee/shared/util';
@@ -388,6 +389,8 @@ export class EntityService {
    */
   async createTeamNoOrg(team: TeamEntity): Promise<TeamNoOrg> {
     try {
+      await this.em.populate(team, ['teamMembers.orgMember.user']);
+
       const postFindAndCountOptions = {
         orderBy: { markedUpToDateAt: QueryOrder.DESC },
         limit: 3,
@@ -403,16 +406,6 @@ export class EntityService {
         { team },
         postFindAndCountOptions,
       );
-      const [teamMembers, teamMembersCount] = await this.em.findAndCount(
-        TeamMemberEntity,
-        { team },
-        {
-          orderBy: { role: QueryOrder.DESC },
-          limit: 5,
-          offset: 0,
-          populate: ['orgMember.user'],
-        },
-      );
 
       return {
         team,
@@ -424,19 +417,43 @@ export class EntityService {
           sample: await this.createQnaQueryResults(qnas),
           total: qnasCount,
         },
-        teamMembers: {
-          sample: teamMembers.map((teamMember) => ({
+        teamMembers: team.teamMembers
+          .getItems()
+          .map((teamMember) => ({
             teamMember,
             orgMember: teamMember.orgMember,
             user: teamMember.orgMember.user,
           })),
-          total: teamMembersCount,
-        },
       };
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+  }
+
+  /**
+   * Takes in a `TeamMemberEntity` and converts it to a `TeamMemberUserOrgMember`.
+   *
+   * @param teamMember The team member to convert.
+   *
+   * @returns The entity as a `TeamMemberUserOrgMember`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createTeamMemberUserOrgMember(
+    teamMember: TeamMemberEntity,
+  ): Promise<TeamMemberUserOrgMember> {
+    try {
+      await this.em.populate(teamMember, ['orgMember.user']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return {
+      teamMember,
+      orgMember: teamMember.orgMember,
+      user: teamMember.orgMember.user,
+    };
   }
 
   /**

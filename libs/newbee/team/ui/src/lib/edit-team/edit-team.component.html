@@ -1,5 +1,5 @@
 <div class="mt-close">
-  <div class="collapse collapse-arrow z-0">
+  <div class="collapse collapse-arrow overflow-visible">
     <input type="checkbox" id="edit-collapse" checked />
     <label for="edit-collapse" class="collapse-title"><h4>Edit</h4></label>
 
@@ -30,10 +30,7 @@
         ></newbee-alert>
       </div>
 
-      <div
-        formGroupName="upToDateDuration"
-        class="flex flex-col flex-nowrap gap-y-2 w-full"
-      >
+      <div class="flex flex-col flex-nowrap gap-y-2 w-full">
         <div>
           <p>How long should posts stay relevant?</p>
           <p class="opacity-75">
@@ -42,52 +39,9 @@
           </p>
         </div>
 
-        <div class="flex flex-row flex-wrap gap-2 items-baseline">
-          For
-
-          <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
-            <input
-              type="number"
-              step="1"
-              formControlName="num"
-              newbeeDigitOnly
-              [min]="1"
-              class="input input-bordered"
-              [ngClass]="{
-                'input-error': inputDisplayError(
-                  editTeamForm.controls.upToDateDuration,
-                  'num'
-                )
-              }"
-            />
-
-            <newbee-alert
-              [type]="alertType.Error"
-              [show]="
-                inputDisplayError(editTeamForm.controls.upToDateDuration, 'num')
-              "
-              [text]="
-                inputErrorMessage(editTeamForm.controls.upToDateDuration, 'num')
-              "
-            ></newbee-alert>
-          </div>
-
-          <div class="w-44 flex-auto">
-            <newbee-searchable-select
-              [showSearchbar]="false"
-              [options]="frequencyOptions"
-              optionName="frequency"
-              [valid]="
-                !inputDisplayError(
-                  editTeamForm.controls.upToDateDuration,
-                  'frequency'
-                )
-              "
-              [errorText]="inputErrorMessage(editTeamForm, 'frequency')"
-              formControlName="frequency"
-            ></newbee-searchable-select>
-          </div>
-        </div>
+        <newbee-num-and-freq-input
+          formControlName="upToDateDuration"
+        ></newbee-num-and-freq-input>
 
         <newbee-alert
           [type]="alertType.Error"
@@ -118,7 +72,7 @@
 
   <div class="divider"></div>
 
-  <div class="collapse collapse-arrow z-0">
+  <div class="collapse collapse-arrow">
     <input type="checkbox" id="advanced-collapse" checked />
     <label for="advanced-collapse" class="collapse-title"
       ><h4>Advanced</h4></label

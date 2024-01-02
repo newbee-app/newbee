@@ -20,7 +20,6 @@ import { StoreModule } from '@ngrx/store';
 import { environment, extModules } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { reducers } from './reducer';
-import { RootComponent } from './root';
 import { AppRoutingModule } from './routing';
 
 /**
@@ -52,7 +51,7 @@ import { AppRoutingModule } from './routing';
     StoreRouterConnectingModule.forRoot(),
     extModules,
 
-    // directive/component modules for `RootComponent`
+    // directive/component modules for `AppComponent`
     TemplateMarkerDirectiveModule,
     NavbarComponent,
     ErrorScreenComponent,
@@ -72,7 +71,7 @@ import { AppRoutingModule } from './routing';
       multi: true,
     },
   ],
-  declarations: [AppComponent, RootComponent],
+  declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -9,22 +9,22 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
@@ -37,6 +37,7 @@ import {
   apiRoles,
   checkRoles,
   userDisplayName,
+  userDisplayNameAndEmail,
   type OrgMemberUser,
   type Organization,
   type QnaNoOrg,
@@ -54,6 +55,7 @@ import { isEqual } from 'lodash-es';
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -86,15 +88,8 @@ export class EditQnaComponent implements OnInit {
    */
   editAnswerForm = this.fb.group({
     maintainer: [null as null | OrgMemberUser, [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [null as null | number, [Validators.min(0)]],
-      frequency: [null as null | Frequency],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editAnswerForm.controls.upToDateDuration.controls.num,
-  );
 
   /**
    * All of the input teams as select options.
@@ -137,19 +132,34 @@ export class EditQnaComponent implements OnInit {
   @Input() teamMember: TeamMember | null = null;
 
   /**
-   * All of the teams of the org the question can be asked to.
-   */
-  @Input() teams: Team[] = [];
-
-  /**
    * The organization the qna is in.
    */
   @Input() organization!: Organization;
 
   /**
+   * All of the teams of the org the question can be asked to.
+   */
+  @Input()
+  set teams(teams: Team[]) {
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+
+  /**
    * All org members belonging to the org.
    */
-  @Input() orgMembers: OrgMemberUser[] = [];
+  @Input()
+  set orgMembers(orgMembers: OrgMemberUser[]) {
+    this.orgMemberOptions = orgMembers.map((orgMember) => {
+      return new SelectOption(
+        orgMember,
+        userDisplayNameAndEmail(orgMember.user),
+        userDisplayName(orgMember.user),
+      );
+    });
+  }
 
   /**
    * Whether the edit question action is pending.
@@ -197,19 +207,6 @@ export class EditQnaComponent implements OnInit {
    * Initialize the values of questionMarkdoc, answerMarkdoc, and editQuestionForm with the input qna.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
-      return new SelectOption(
-        orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
-      );
-    });
-
     this.questionMarkdoc = this.qna.qna.questionMarkdoc ?? '';
     this.editQuestionForm.setValue(
       { title: this.qna.qna.title, team: this.qna.team },
@@ -293,7 +290,7 @@ export class EditQnaComponent implements OnInit {
       answerMarkdoc: this.answerMarkdoc,
       maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editAnswerForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

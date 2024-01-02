@@ -1,7 +1,6 @@
 import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, provideRouter } from '@angular/router';
 import {
   initialOrganizationState,
   initialTeamState,
@@ -17,18 +16,23 @@ import {
   testTeamRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { isTeamAdminGuard } from './is-team-admin.guard';
+import { canEditTeamGuard } from './can-edit-team.guard';
 
-describe('isTeamAdminGuard', () => {
+describe('canEditTeamGuard', () => {
   let store: MockStore;
   let router: Router;
   let location: Location;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        EmptyComponent,
-        RouterTestingModule.withRoutes([
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Organization]: initialOrganizationState,
+            [Keyword.Team]: initialTeamState,
+          },
+        }),
+        provideRouter([
           {
             path: `${ShortUrl.Organization}/:${ShortUrl.Organization}`,
             component: EmptyComponent,
@@ -42,17 +46,9 @@ describe('isTeamAdminGuard', () => {
           {
             path: 'test',
             component: EmptyComponent,
-            canActivate: [isTeamAdminGuard],
+            canActivate: [canEditTeamGuard],
           },
         ]),
-      ],
-      providers: [
-        provideMockStore({
-          initialState: {
-            [Keyword.Organization]: initialOrganizationState,
-            [Keyword.Team]: initialTeamState,
-          },
-        }),
       ],
     });
 
@@ -97,7 +93,7 @@ describe('isTeamAdminGuard', () => {
   describe('non-admin', () => {
     it('should navigate home if org and team are not set', async () => {
       await expect(router.navigate(['/test'])).resolves.toBeFalsy();
-      expect(location.path()).toEqual('/');
+      expect(location.path()).toEqual('');
     });
 
     it('should navigate to org if only org is set', async () => {

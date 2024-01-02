@@ -53,12 +53,71 @@ export const teamFeature = createFeature({
           ...state,
           selectedTeam: { ...selectedTeam, team: newTeam },
         };
+      },
+    ),
+    on(TeamActions.addTeamMemberSuccess, (state, { teamMember }): TeamState => {
+      const { selectedTeam } = state;
+      if (!selectedTeam) {
+        return state;
       }
+
+      return {
+        ...state,
+        selectedTeam: {
+          ...selectedTeam,
+          teamMembers: [teamMember, ...selectedTeam.teamMembers],
+        },
+      };
+    }),
+    on(
+      TeamActions.editTeamMemberSuccess,
+      (state, { orgMemberSlug, teamMember }): TeamState => {
+        const { selectedTeam } = state;
+        if (!selectedTeam) {
+          return state;
+        }
+
+        return {
+          ...state,
+          selectedTeam: {
+            ...selectedTeam,
+            teamMembers: selectedTeam.teamMembers.map((tm) =>
+              tm.orgMember.slug === orgMemberSlug ? { ...tm, teamMember } : tm,
+            ),
+          },
+        };
+      },
+    ),
+    on(
+      TeamActions.deleteTeamMemberSuccess,
+      (state, { orgMemberSlug }): TeamState => {
+        const { selectedTeam } = state;
+        if (!selectedTeam) {
+          return state;
+        }
+
+        return {
+          ...state,
+          selectedTeam: {
+            ...selectedTeam,
+            teamMembers: selectedTeam.teamMembers.filter(
+              (teamMember) => teamMember.orgMember.slug !== orgMemberSlug,
+            ),
+          },
+        };
+      },
+    ),
+    on(
+      TeamActions.editCurrentTeamMember,
+      (state, { teamMember }): TeamState => ({
+        ...state,
+        teamMember,
+      }),
     ),
     on(
       TeamActions.deleteTeamSuccess,
       TeamActions.resetSelectedTeam,
-      (): TeamState => initialTeamState
-    )
+      (): TeamState => initialTeamState,
+    ),
   ),
 });

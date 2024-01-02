@@ -6,10 +6,7 @@ import {
   authFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import {
-  AuthenticatedNavbarComponent,
-  UnauthenticatedNavbarComponent,
-} from '@newbee/newbee/shared/ui';
+import { AuthenticatedNavbarComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import type { Organization } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
@@ -22,11 +19,7 @@ import { Subject, combineLatest, takeUntil } from 'rxjs';
 @Component({
   selector: 'newbee-navbar',
   standalone: true,
-  imports: [
-    CommonModule,
-    AuthenticatedNavbarComponent,
-    UnauthenticatedNavbarComponent,
-  ],
+  imports: [CommonModule, AuthenticatedNavbarComponent],
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent implements OnDestroy {

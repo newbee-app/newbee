@@ -27,8 +27,8 @@ export default {
     authenticators: [testAuthenticator1],
     editPending: false,
     addAuthenticatorPending: false,
-    editAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
-    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, false]]),
+    editAuthenticatorPending: new Set(),
+    deleteAuthenticatorPending: new Set(),
     deletePending: false,
     httpClientError: null,
   },
@@ -67,12 +67,12 @@ export const AddAuthenticatorError: Story = {
 };
 
 export const EditAuthenticatorPending: Story = {
-  args: { editAuthenticatorPending: new Map([[testAuthenticator1.id, true]]) },
+  args: { editAuthenticatorPending: new Set([testAuthenticator1.id]) },
 };
 
 export const DeleteAuthenticatorPending: Story = {
   args: {
-    deleteAuthenticatorPending: new Map([[testAuthenticator1.id, true]]),
+    deleteAuthenticatorPending: new Set([testAuthenticator1.id]),
   },
 };
 

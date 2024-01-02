@@ -61,64 +61,11 @@
       ></newbee-alert>
     </div>
 
-    <div
-      formGroupName="upToDateDuration"
-      class="flex flex-col flex-nowrap gap-y-2 w-full"
-    >
+    <div class="flex flex-col flex-nowrap gap-y-2 w-full">
       <p>How long should posts stay relevant?</p>
-
-      <div class="flex flex-row flex-wrap gap-2 items-baseline">
-        For
-
-        <div class="flex flex-col flex-nowrap gap-y-2 flex-auto">
-          <input
-            type="number"
-            step="1"
-            formControlName="num"
-            newbeeDigitOnly
-            [min]="1"
-            class="input input-bordered"
-            [ngClass]="{
-              'input-error': inputDisplayError(
-                createOrgForm.controls.upToDateDuration,
-                'num'
-              )
-            }"
-          />
-
-          <newbee-alert
-            [type]="alertType.Error"
-            [show]="
-              inputDisplayError(createOrgForm.controls.upToDateDuration, 'num')
-            "
-            [text]="
-              inputErrorMessage(createOrgForm.controls.upToDateDuration, 'num')
-            "
-          ></newbee-alert>
-        </div>
-
-        <div class="w-32 flex-auto">
-          <newbee-searchable-select
-            [showSearchbar]="false"
-            [options]="frequencyOptions"
-            optionName="frequency"
-            [valid]="
-              !inputDisplayError(
-                createOrgForm.controls.upToDateDuration,
-                'frequency'
-              )
-            "
-            [errorText]="
-              inputErrorMessage(
-                createOrgForm.controls.upToDateDuration,
-                'frequency'
-              )
-            "
-            formControlName="frequency"
-          ></newbee-searchable-select>
-        </div>
-      </div>
-
+      <newbee-num-and-freq-input
+        formControlName="upToDateDuration"
+      ></newbee-num-and-freq-input>
       <newbee-alert
         [type]="alertType.Error"
         [show]="inputDisplayError(createOrgForm, 'upToDateDuration')"

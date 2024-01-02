@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { apiRoles, checkRoles } from '@newbee/shared/util';
+import { RoleType, apiRoles, checkRoles } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, take } from 'rxjs';
 import { selectQnaAndOrgStates } from '../store';
@@ -34,7 +34,13 @@ export const canEditQnaGuard: CanActivateFn = (): Observable<
         const orgMember = orgMemberRelation?.orgMember ?? null;
         if (
           checkRoles(
-            apiRoles.qna.updateQuestion.concat(apiRoles.qna.updateAnswer),
+            new Set(
+              (apiRoles.qna.updateQuestion as RoleType[]).concat(
+                apiRoles.qna.updateAnswer,
+                apiRoles.qna.markUpToDate,
+                apiRoles.qna.delete,
+              ),
+            ),
             {
               orgMember,
               teamRole: teamMember?.role,

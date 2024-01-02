@@ -3,12 +3,16 @@ import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseCreateTeamDto,
+  BaseCreateTeamMemberDto,
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
+  BaseUpdateTeamMemberDto,
   Keyword,
   Team,
+  TeamMember,
+  TeamMemberUserOrgMember,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -29,6 +33,18 @@ export class TeamService {
    */
   static baseApiUrl(orgSlug: string): string {
     return `/${Keyword.Api}/v${apiVersion.team}/${Keyword.Organization}/${orgSlug}/${Keyword.Team}`;
+  }
+
+  /**
+   * Get the base API URL for dealing with a team member.
+   *
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to look in.
+   *
+   * @returns The base API URL for dealing with a team member.
+   */
+  static baseTeamMemberApiUrl(orgSlug: string, teamSlug: string): string {
+    return `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}/${Keyword.Member}`;
   }
 
   /**
@@ -123,6 +139,67 @@ export class TeamService {
     return this.http.get<BaseGeneratedSlugDto>(
       `${TeamService.baseApiUrl(orgSlug)}/${Keyword.GenerateSlug}`,
       { params },
+    );
+  }
+
+  /**
+   * Send a request to the API to create a new team member.
+   *
+   * @param createTeamMemberDto The details for the new team member.
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to add to.
+   *
+   * @returns An observable containing the newly created team member.
+   */
+  createTeamMember(
+    createTeamMemberDto: BaseCreateTeamMemberDto,
+    orgSlug: string,
+    teamSlug: string,
+  ): Observable<TeamMemberUserOrgMember> {
+    return this.http.post<TeamMemberUserOrgMember>(
+      TeamService.baseTeamMemberApiUrl(orgSlug, teamSlug),
+      createTeamMemberDto,
+    );
+  }
+
+  /**
+   * Send a request to the API to edit an existing team member.
+   *
+   * @param updateTeamMemberDto The new details for the team member.
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to look in.
+   * @param orgMemberSlug The slug of the org member to edit.
+   *
+   * @returns An observable containing the edited team member.
+   */
+  editTeamMember(
+    updateTeamMemberDto: BaseUpdateTeamMemberDto,
+    orgSlug: string,
+    teamSlug: string,
+    orgMemberSlug: string,
+  ): Observable<TeamMember> {
+    return this.http.patch<TeamMember>(
+      `${TeamService.baseTeamMemberApiUrl(orgSlug, teamSlug)}/${orgMemberSlug}`,
+      updateTeamMemberDto,
+    );
+  }
+
+  /**
+   * Send a request to the API to delete an existing team member.
+   *
+   * @param orgSlug The slug of the org to look in.
+   * @param teamSlug The slug of the team to delete from.
+   * @param orgMemberSlug The slug of the team member to delete.
+   *
+   * @returns A null observable.
+   */
+  deleteTeamMember(
+    orgSlug: string,
+    teamSlug: string,
+    orgMemberSlug: string,
+  ): Observable<null> {
+    return this.http.delete<null>(
+      `${TeamService.baseTeamMemberApiUrl(orgSlug, teamSlug)}/${orgMemberSlug}`,
     );
   }
 }

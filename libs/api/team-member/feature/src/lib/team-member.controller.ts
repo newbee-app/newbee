@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Logger, Patch, Post } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   OrgMemberEntity,
   OrganizationEntity,
   TeamEntity,
@@ -21,7 +22,11 @@ import {
   UpdateTeamMemberDto,
 } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, apiRoles } from '@newbee/shared/util';
+import {
+  Keyword,
+  TeamMemberUserOrgMember,
+  apiRoles,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `TeamMemberEntity`.
@@ -39,6 +44,7 @@ export class TeamMemberController {
   constructor(
     private readonly teamMemberService: TeamMemberService,
     private readonly orgMemberService: OrgMemberService,
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -64,7 +70,7 @@ export class TeamMemberController {
     @TeamMember() teamMember: TeamMemberEntity | undefined,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
-  ): Promise<TeamMemberEntity> {
+  ): Promise<TeamMemberUserOrgMember> {
     this.logger.log(
       `Create team member request received from org member slug: ${
         orgMember.slug
@@ -87,7 +93,9 @@ export class TeamMemberController {
     );
     this.logger.log(`Team member created for org member: ${invitee.slug}`);
 
-    return newTeamMember;
+    return await this.entityService.createTeamMemberUserOrgMember(
+      newTeamMember,
+    );
   }
 
   /**

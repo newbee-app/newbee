@@ -27,10 +27,10 @@ export interface TeamRelation {
   qnas: Sample<QnaQueryResult>;
 
   /**
-   * A selection of team members that belong to the team, as well as a count of the total number of people in the team.
+   * All of the team members that belong to the team.
    * Team member information includes user-related information, the role they hold in the team, the role they hold in the org, and their org member slug.
    */
-  teamMembers: Sample<TeamMemberUserOrgMember>;
+  teamMembers: TeamMemberUserOrgMember[];
 }
 
 /**

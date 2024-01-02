@@ -1,0 +1,20 @@
+<div (mouseenter)="showTooltip = true" (mouseleave)="showTooltip = false">
+  <div #content aria-describedby="tooltip">
+    <ng-content select="[label]"></ng-content>
+  </div>
+
+  <div
+    #tooltip
+    role="tooltip"
+    class="absolute z-50"
+    [ngClass]="{ hidden: !showTooltip }"
+  >
+    <ng-content select="[tooltip]"></ng-content>
+    <div
+      *ngIf="includeTail"
+      #arrow
+      class="absolute w-2 h-2 rotate-45"
+      [ngClass]="tailClasses"
+    ></div>
+  </div>
+</div>

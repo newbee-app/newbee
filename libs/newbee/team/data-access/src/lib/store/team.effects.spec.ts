@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
+  initialTeamState,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
@@ -10,13 +11,21 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateTeamDto1,
+  testBaseCreateTeamMemberDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
+  testBaseUpdateTeamMemberDto1,
   testOrganization1,
   testOrganizationRelation1,
+  testOrgMember1,
+  testOrgMember2,
+  testOrgMemberRelation1,
   testTeam1,
+  testTeamMember1,
+  testTeamMemberRelation1,
+  testTeamMemberRelation2,
   testTeamRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -41,9 +50,12 @@ describe('TeamEffects', () => {
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
+              ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
+              orgMember: testOrgMemberRelation1,
             },
             [Keyword.Team]: {
+              ...initialTeamState,
               selectedTeam: testTeamRelation1,
             },
           },
@@ -61,6 +73,11 @@ describe('TeamEffects', () => {
             generateSlug: jest
               .fn()
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
+            createTeamMember: jest
+              .fn()
+              .mockReturnValue(of(testTeamMemberRelation1)),
+            editTeamMember: jest.fn().mockReturnValue(of(testTeamMember1)),
+            deleteTeamMember: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -321,6 +338,7 @@ describe('TeamEffects', () => {
     it('should fire checkSlugSuccess if successful', () => {
       store.setState({
         [Keyword.Organization]: {
+          ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
       });
@@ -417,6 +435,208 @@ describe('TeamEffects', () => {
       expect(effects.generateSlug$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.generateSlug).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('addTeamMember$', () => {
+    it('should fire addTeamMemberSuccess if successful', () => {
+      jest
+        .spyOn(service, 'createTeamMember')
+        .mockReturnValue(of(testTeamMemberRelation2));
+      actions$ = hot('a', {
+        a: TeamActions.addTeamMember({
+          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.addTeamMemberSuccess({
+          teamMember: testTeamMemberRelation2,
+        }),
+      });
+      expect(effects.addTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.createTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.createTeamMember).toHaveBeenCalledWith(
+          testBaseCreateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+        );
+      });
+    });
+
+    it('should fire editCurrentTeamMember if current org member was just added to the team', () => {
+      actions$ = hot('a', {
+        a: TeamActions.addTeamMember({
+          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('(ab)', {
+        a: TeamActions.addTeamMemberSuccess({
+          teamMember: testTeamMemberRelation1,
+        }),
+        b: TeamActions.editCurrentTeamMember({ teamMember: testTeamMember1 }),
+      });
+      expect(effects.addTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.createTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.createTeamMember).toHaveBeenCalledWith(
+          testBaseCreateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedTeam isn't set`, () => {
+      store.setState({
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Team]: initialTeamState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.addTeamMember({
+          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.addTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.createTeamMember).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('editTeamMember$', () => {
+    it('should fire editTeamMemberSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: TeamActions.editTeamMember({
+          orgMemberSlug: testOrgMember2.slug,
+          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.editTeamMemberSuccess({
+          teamMember: testTeamMember1,
+          orgMemberSlug: testOrgMember2.slug,
+        }),
+      });
+      expect(effects.editTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.editTeamMember).toHaveBeenCalledWith(
+          testBaseUpdateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember2.slug,
+        );
+      });
+    });
+
+    it('should fire editCurrentTeamMember if current org member was just edited in the team', () => {
+      actions$ = hot('a', {
+        a: TeamActions.editTeamMember({
+          orgMemberSlug: testOrgMember1.slug,
+          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('(ab)', {
+        a: TeamActions.editTeamMemberSuccess({
+          orgMemberSlug: testOrgMember1.slug,
+          teamMember: testTeamMember1,
+        }),
+        b: TeamActions.editCurrentTeamMember({ teamMember: testTeamMember1 }),
+      });
+      expect(effects.editTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.editTeamMember).toHaveBeenCalledWith(
+          testBaseUpdateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedTeam isn't set`, () => {
+      store.setState({
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Team]: initialTeamState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.editTeamMember({
+          orgMemberSlug: testOrgMember1.slug,
+          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.editTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.editTeamMember).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('deleteTeamMember$', () => {
+    it('should fire deleteTeamMemberSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamMember({
+          orgMemberSlug: testOrgMember2.slug,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.deleteTeamMemberSuccess({
+          orgMemberSlug: testOrgMember2.slug,
+        }),
+      });
+      expect(effects.deleteTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.deleteTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.deleteTeamMember).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember2.slug,
+        );
+      });
+    });
+
+    it('should fire editCurrentTeamMember if current org member was just deleted from the team', () => {
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamMember({
+          orgMemberSlug: testOrgMember1.slug,
+        }),
+      });
+      const expected$ = hot('(ab)', {
+        a: TeamActions.deleteTeamMemberSuccess({
+          orgMemberSlug: testOrgMember1.slug,
+        }),
+        b: TeamActions.editCurrentTeamMember({ teamMember: null }),
+      });
+      expect(effects.deleteTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.deleteTeamMember).toHaveBeenCalledTimes(1);
+        expect(service.deleteTeamMember).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember1.slug,
+        );
+      });
+    });
+
+    it(`should do nothing if selectedOrganization or selectedTeam isn't set`, () => {
+      store.setState({
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Team]: initialTeamState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.deleteTeamMember({
+          orgMemberSlug: testOrgMember1.slug,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.deleteTeamMember$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.deleteTeamMember).not.toHaveBeenCalled();
       });
     });
   });

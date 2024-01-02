@@ -11,12 +11,12 @@ export class ClickService implements OnDestroy {
   /**
    * The Subject which provides the document's click targets.
    */
-  documentClickTarget = new Subject<HTMLElement>();
+  documentClickTarget$ = new Subject<HTMLElement>();
 
   /**
-   * Unsubscribe from all infinite observables.
+   * Complete all infinite observables.
    */
   ngOnDestroy(): void {
-    this.documentClickTarget.complete();
+    this.documentClickTarget$.complete();
   }
 }

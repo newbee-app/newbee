@@ -12,14 +12,15 @@ import {
   nameIsNotEmpty,
   Organization,
   slugIsNotEmpty,
+  teamRoleIsEnum,
   teamSlugTakenBadRequest,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { TeamService } from '../team.service';
-import { selectTeamAndOrg } from './team.selector';
+import { selectTeamAndOrg, selectTeamAndOrgStates } from './team.selector';
 
 @Injectable()
 export class TeamEffects {
@@ -257,6 +258,180 @@ export class TeamEffects {
             }),
           );
       }),
+    );
+  });
+
+  addTeamMember$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.addTeamMember),
+      concatLatestFrom(() => this.store.select(selectTeamAndOrgStates)),
+      filter(
+        ([
+          ,
+          {
+            orgState: { selectedOrganization },
+            teamState: { selectedTeam },
+          },
+        ]) => !!(selectedOrganization && selectedTeam),
+      ),
+      switchMap(
+        ([
+          { createTeamMemberDto },
+          {
+            orgState: { selectedOrganization, orgMember },
+            teamState: { selectedTeam },
+          },
+        ]) => {
+          const orgSlug = selectedOrganization?.organization.slug as string;
+          const teamSlug = selectedTeam?.team.slug as string;
+          const selectedOrgMemberSlug = orgMember?.orgMember.slug;
+
+          return this.teamService
+            .createTeamMember(createTeamMemberDto, orgSlug, teamSlug)
+            .pipe(
+              switchMap((teamMember) => {
+                const toReturn: Action[] = [
+                  TeamActions.addTeamMemberSuccess({ teamMember }),
+                ];
+                if (selectedOrgMemberSlug === teamMember.orgMember.slug) {
+                  toReturn.push(
+                    TeamActions.editCurrentTeamMember({
+                      teamMember: teamMember.teamMember,
+                    }),
+                  );
+                }
+
+                return toReturn;
+              }),
+              catchError((err) =>
+                catchHttpClientError(err, (message) => {
+                  switch (message) {
+                    case teamRoleIsEnum:
+                      return 'role';
+                    case slugIsNotEmpty:
+                      return 'member';
+                    default:
+                      return `${Keyword.TeamMember}-${Keyword.New}`;
+                  }
+                }),
+              ),
+            );
+        },
+      ),
+    );
+  });
+
+  editTeamMember$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.editTeamMember),
+      concatLatestFrom(() => this.store.select(selectTeamAndOrgStates)),
+      filter(
+        ([
+          ,
+          {
+            orgState: { selectedOrganization },
+            teamState: { selectedTeam },
+          },
+        ]) => !!(selectedOrganization && selectedTeam),
+      ),
+      switchMap(
+        ([
+          { orgMemberSlug, updateTeamMemberDto },
+          {
+            orgState: { selectedOrganization, orgMember },
+            teamState: { selectedTeam },
+          },
+        ]) => {
+          const orgSlug = selectedOrganization?.organization.slug as string;
+          const teamSlug = selectedTeam?.team.slug as string;
+          const selectedOrgMemberSlug = orgMember?.orgMember.slug;
+
+          return this.teamService
+            .editTeamMember(
+              updateTeamMemberDto,
+              orgSlug,
+              teamSlug,
+              orgMemberSlug,
+            )
+            .pipe(
+              switchMap((teamMember) => {
+                const toReturn: Action[] = [
+                  TeamActions.editTeamMemberSuccess({
+                    teamMember,
+                    orgMemberSlug,
+                  }),
+                ];
+                if (orgMemberSlug === selectedOrgMemberSlug) {
+                  toReturn.push(
+                    TeamActions.editCurrentTeamMember({ teamMember }),
+                  );
+                }
+
+                return toReturn;
+              }),
+              catchError((err) =>
+                catchHttpClientError(
+                  err,
+                  () =>
+                    `${Keyword.TeamMember}-${Keyword.Edit}-${orgMemberSlug}`,
+                ),
+              ),
+            );
+        },
+      ),
+    );
+  });
+
+  deleteTeamMember$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.deleteTeamMember),
+      concatLatestFrom(() => this.store.select(selectTeamAndOrgStates)),
+      filter(
+        ([
+          ,
+          {
+            orgState: { selectedOrganization },
+            teamState: { selectedTeam },
+          },
+        ]) => !!(selectedOrganization && selectedTeam),
+      ),
+      switchMap(
+        ([
+          { orgMemberSlug },
+          {
+            orgState: { selectedOrganization, orgMember },
+            teamState: { selectedTeam },
+          },
+        ]) => {
+          const orgSlug = selectedOrganization?.organization.slug as string;
+          const teamSlug = selectedTeam?.team.slug as string;
+          const selectedOrgMemberSlug = orgMember?.orgMember.slug;
+
+          return this.teamService
+            .deleteTeamMember(orgSlug, teamSlug, orgMemberSlug)
+            .pipe(
+              switchMap(() => {
+                const toReturn: Action[] = [
+                  TeamActions.deleteTeamMemberSuccess({ orgMemberSlug }),
+                ];
+                if (orgMemberSlug === selectedOrgMemberSlug) {
+                  toReturn.push(
+                    TeamActions.editCurrentTeamMember({ teamMember: null }),
+                  );
+                }
+
+                return toReturn;
+              }),
+              catchError((err) =>
+                catchHttpClientError(
+                  err,
+                  () =>
+                    `${Keyword.TeamMember}-${Keyword.Delete}-${orgMemberSlug}`,
+                ),
+              ),
+            );
+        },
+      ),
     );
   });
 

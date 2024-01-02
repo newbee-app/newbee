@@ -39,12 +39,8 @@ describe('UserEditComponent', () => {
             [`${Keyword.User}Module`]: {
               ...initialUserState,
               authenticators: [testAuthenticator1],
-              pendingEditAuthenticator: new Map([
-                [testAuthenticator1.id, false],
-              ]),
-              pendingDeleteAuthenticator: new Map([
-                [testAuthenticator1.id, false],
-              ]),
+              pendingEditAuthenticator: new Set(),
+              pendingDeleteAuthenticator: new Set(),
             },
           },
         }),

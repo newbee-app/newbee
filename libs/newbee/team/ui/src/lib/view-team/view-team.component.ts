@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-  DropdownComponent,
   SearchResultComponent,
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
@@ -26,7 +25,6 @@ import dayjs from 'dayjs';
   standalone: true,
   imports: [
     CommonModule,
-    DropdownComponent,
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,
     SearchResultComponent,
@@ -39,13 +37,6 @@ export class ViewTeamComponent {
   readonly searchResultFormat = SearchResultFormat;
   readonly apiRoles = apiRoles;
   readonly checkRoles = checkRoles;
-
-  /**
-   * The roles needed to edit the team or invite new members.
-   */
-  readonly editAndInviteRoles = new Set(
-    apiRoles.team.update.concat(apiRoles['team-member'].create),
-  );
 
   /**
    * The organization the team is in.
@@ -92,8 +83,8 @@ export class ViewTeamComponent {
    * A string detailing how many users are members of the team.
    */
   get totalMembers(): string {
-    return `${this.team.teamMembers.total} ${
-      this.team.teamMembers.total === 1 ? 'member' : 'members'
+    return `${this.team.teamMembers.length} ${
+      this.team.teamMembers.length === 1 ? 'member' : 'members'
     }`;
   }
 

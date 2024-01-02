@@ -7,12 +7,18 @@ import {
 import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  OrgMemberUser,
+  OrgRoleEnum,
+  testOrgMemberUser1,
+  testOrgMemberUser2,
   testOrganizationRelation1,
   testTeamRelation1,
+  testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import {
+  selectNonTeamOrgMembers,
   selectTeamAndOrg,
   selectTeamAndOrgStates,
   selectTeamAndScreenError,
@@ -104,6 +110,34 @@ describe('TeamSelector', () => {
         },
       });
       expect(store.select(selectTeamAndOrgStates)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectNonTeamOrgMembers', () => {
+    it('should select all of the org members who are not in the team', () => {
+      const testOrgMemberUser3: OrgMemberUser = {
+        orgMember: { slug: 'different', role: OrgRoleEnum.Member },
+        user: testUser1,
+      };
+      store.setState({
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: {
+            ...testOrganizationRelation1,
+            members: [
+              testOrgMemberUser1,
+              testOrgMemberUser2,
+              testOrgMemberUser3,
+            ],
+          },
+        },
+      });
+      const expected$ = hot('a', { a: [testOrgMemberUser3] });
+      expect(store.select(selectNonTeamOrgMembers)).toBeObservable(expected$);
     });
   });
 });

@@ -36,6 +36,21 @@ export interface TeamState {
   pendingCheck: boolean;
 
   /**
+   * Whether the user is waiting for a response for adding a new team member to the team.
+   */
+  pendingAddTeamMember: boolean;
+
+  /**
+   * Whether the user is waiting for a response for editing a team member in the team.
+   */
+  pendingEditTeamMember: Set<string>;
+
+  /**
+   * Whether the user is waiting for a response for deleting a team member from the team.
+   */
+  pendingDeleteTeamMember: Set<string>;
+
+  /**
    * Whether a team slug is taken for creating a team.
    */
   slugTaken: boolean;
@@ -55,6 +70,9 @@ export const initialTeamState: TeamState = {
   pendingEditSlug: false,
   pendingDelete: false,
   pendingCheck: false,
+  pendingAddTeamMember: false,
+  pendingEditTeamMember: new Set(),
+  pendingDeleteTeamMember: new Set(),
   slugTaken: false,
   generatedSlug: '',
 };
@@ -71,28 +89,28 @@ export const teamFeature = createFeature({
       (state): TeamState => ({
         ...state,
         pendingCreate: true,
-      })
+      }),
     ),
     on(
       TeamActions.editTeam,
       (state): TeamState => ({
         ...state,
         pendingEdit: true,
-      })
+      }),
     ),
     on(
       TeamActions.editTeamSlug,
       (state): TeamState => ({
         ...state,
         pendingEditSlug: true,
-      })
+      }),
     ),
     on(
       TeamActions.deleteTeam,
       (state): TeamState => ({
         ...state,
         pendingDelete: true,
-      })
+      }),
     ),
     on(
       TeamActions.typingSlug,
@@ -101,7 +119,7 @@ export const teamFeature = createFeature({
         ...state,
         pendingCheck: !!slug,
         slugTaken: false,
-      })
+      }),
     ),
     on(
       TeamActions.checkSlugSuccess,
@@ -109,7 +127,7 @@ export const teamFeature = createFeature({
         ...state,
         slugTaken,
         pendingCheck: false,
-      })
+      }),
     ),
     on(
       TeamActions.generateSlugSuccess,
@@ -118,16 +136,36 @@ export const teamFeature = createFeature({
         generatedSlug: slug,
         pendingCheck: false,
         slugTaken: false,
-      })
+      }),
     ),
+    on(
+      TeamActions.addTeamMember,
+      (state): TeamState => ({
+        ...state,
+        pendingAddTeamMember: true,
+      }),
+    ),
+    on(TeamActions.editTeamMember, (state, { orgMemberSlug }): TeamState => {
+      const pendingEditTeamMember = new Set(state.pendingEditTeamMember);
+      pendingEditTeamMember.add(orgMemberSlug);
+      return { ...state, pendingEditTeamMember };
+    }),
+    on(TeamActions.deleteTeamMember, (state, { orgMemberSlug }): TeamState => {
+      const pendingDeleteTeamMember = new Set(state.pendingDeleteTeamMember);
+      pendingDeleteTeamMember.add(orgMemberSlug);
+      return { ...state, pendingDeleteTeamMember };
+    }),
     on(
       TeamActions.createTeamSuccess,
       TeamActions.editTeamSuccess,
       TeamActions.editTeamSlugSuccess,
       TeamActions.deleteTeamSuccess,
+      TeamActions.addTeamMemberSuccess,
+      TeamActions.editTeamMemberSuccess,
+      TeamActions.deleteTeamMemberSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
-      (): TeamState => initialTeamState
-    )
+      (): TeamState => initialTeamState,
+    ),
   ),
 });

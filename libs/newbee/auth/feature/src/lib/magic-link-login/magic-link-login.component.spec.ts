@@ -40,7 +40,7 @@ describe('MagicLinkLoginComponent', () => {
     expect(route).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
+  describe('constructor', () => {
     it('should dispatch confirmMagicLink', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
         AuthActions.confirmMagicLink({ token: '1234' }),

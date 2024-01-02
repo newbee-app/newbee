@@ -15,22 +15,22 @@ import {
 } from '@angular/forms';
 import {
   AlertComponent,
-  SearchableSelectComponent,
+  NumAndFreqInputComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
   SlugInputDirectiveModule,
+  defaultOrgNumAndFreq,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
+  objectRequiredValidator,
 } from '@newbee/newbee/shared/util';
 import {
   BaseUpdateOrganizationDto,
@@ -54,7 +54,7 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
-    SearchableSelectComponent,
+    NumAndFreqInputComponent,
     SlugInputDirectiveModule,
     DigitOnlyDirectiveModule,
   ],
@@ -137,10 +137,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   editOrgForm = this.fb.group({
     name: ['', [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [0, [Validators.required, Validators.min(1)]],
-      frequency: [Frequency.Month, [Validators.required]],
-    }),
+    upToDateDuration: [defaultOrgNumAndFreq, [objectRequiredValidator()]],
   });
 
   /**
@@ -156,13 +153,6 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   deleteOrgForm = this.fb.group({
     slug: ['', [Validators.required]],
   });
-
-  /**
-   * The possible frequency values as select options.
-   */
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editOrgForm.controls.upToDateDuration.controls.num,
-  );
 
   /**
    * Set up `slug` to emit whenever the `editOrgSlugForm` changes.
@@ -250,7 +240,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
     this.edit.emit({
       name: name ?? '',
       upToDateDuration: (
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editOrgForm.controls.upToDateDuration.value,
         ) ?? defaultOrgDuration
       ).toISOString(),

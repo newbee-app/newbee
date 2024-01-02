@@ -1,4 +1,5 @@
 <newbee-dropdown
+  [disabled]="searchbar.disabled"
   placement="bottom"
   [offset]="5"
   expandStrategy="expand"
@@ -32,7 +33,7 @@
       #searchbarInput
       type="text"
       [formControl]="searchbar"
-      [placeholder]="placeholder ? 'Search' : ''"
+      [placeholder]="placeholder"
       (blur)="onTouched()"
       class="input input-bordered w-full join-item"
     />
@@ -40,11 +41,10 @@
     <!-- x-mark svg -->
     <button
       type="button"
-      *ngIf="includeClearSymbol"
+      *ngIf="includeClearSymbol && searchbar.value"
       (click)="clear()"
       (mousedown)="ignoreMouseEvent($event)"
       class="btn join-item"
-      [ngClass]="{ hidden: !searchbar.value }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

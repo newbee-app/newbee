@@ -9,22 +9,22 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
   NumAndFreq,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
   durationToNumAndFreq,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
@@ -35,6 +35,7 @@ import {
   apiRoles,
   checkRoles,
   userDisplayName,
+  userDisplayNameAndEmail,
   type DocNoOrg,
   type OrgMemberUser,
   type Organization,
@@ -52,6 +53,7 @@ import { isEqual } from 'lodash-es';
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -71,10 +73,7 @@ export class EditDocComponent implements OnInit {
     title: ['', [Validators.required]],
     team: [null as null | Team],
     maintainer: [null as null | OrgMemberUser, [Validators.required]],
-    upToDateDuration: this.fb.group({
-      num: [null as null | number, [Validators.min(0)]],
-      frequency: [null as null | Frequency],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
 
   /**
@@ -113,19 +112,34 @@ export class EditDocComponent implements OnInit {
   @Input() teamMember: TeamMember | null = null;
 
   /**
-   * All of the teams of the org the doc can be moved to.
-   */
-  @Input() teams: Team[] = [];
-
-  /**
    * The organization the doc is in.
    */
   @Input() organization!: Organization;
 
   /**
+   * All of the teams of the org the doc can be moved to.
+   */
+  @Input()
+  set teams(teams: Team[]) {
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+
+  /**
    * All org members belonging to the org.
    */
-  @Input() orgMembers: OrgMemberUser[] = [];
+  @Input()
+  set orgMembers(orgMembers: OrgMemberUser[]) {
+    this.orgMemberOptions = orgMembers.map((orgMember) => {
+      return new SelectOption(
+        orgMember,
+        userDisplayNameAndEmail(orgMember.user),
+        userDisplayName(orgMember.user),
+      );
+    });
+  }
 
   /**
    * Whether the edit action is pending.
@@ -157,29 +171,12 @@ export class EditDocComponent implements OnInit {
    */
   @Output() delete = new EventEmitter<void>();
 
-  readonly frequencyOptions = frequencySelectOptions(
-    this.editDocForm.controls.upToDateDuration.controls.num,
-  );
-
   constructor(private readonly fb: FormBuilder) {}
 
   /**
-   * Initialize the values of docMarkdoc and teamOptions with the input doc.
+   * Initialize the values of docMarkdoc and the editDocForm with the input doc.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-    this.orgMemberOptions = this.orgMembers.map((orgMember) => {
-      const name = userDisplayName(orgMember.user);
-      return new SelectOption(
-        orgMember,
-        `${name} (${orgMember.user.email})`,
-        name,
-      );
-    });
-
     this.docMarkdoc = this.doc.doc.docMarkdoc;
     this.editDocForm.setValue(
       {
@@ -235,7 +232,7 @@ export class EditDocComponent implements OnInit {
       team: team?.slug ?? null,
       maintainer: maintainer?.orgMember.slug ?? '',
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.editDocForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
       docMarkdoc: this.docMarkdoc,

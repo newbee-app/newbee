@@ -1,7 +1,11 @@
 import {
   testBaseTeamAndMemberDto1,
+  testOrgMember1,
   testTeam1,
   testTeamMember1,
+  testTeamMember2,
+  testTeamMemberRelation1,
+  testTeamMemberRelation2,
   testTeamRelation1,
 } from '@newbee/shared/util';
 import { TeamActions } from './team.actions';
@@ -62,6 +66,72 @@ describe('TeamReducer', () => {
         }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamSuccess);
+    });
+
+    it('should update state for addTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetTeamSuccess,
+        TeamActions.addTeamMemberSuccess({
+          teamMember: testTeamMemberRelation1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetTeamSuccess,
+        selectedTeam: {
+          ...testTeamRelation1,
+          teamMembers: [
+            testTeamMemberRelation1,
+            ...testTeamRelation1.teamMembers,
+          ],
+        },
+      });
+    });
+
+    it('should update state for editTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetTeamSuccess,
+        TeamActions.editTeamMemberSuccess({
+          orgMemberSlug: testOrgMember1.slug,
+          teamMember: testTeamMember2,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetTeamSuccess,
+        selectedTeam: {
+          ...testTeamRelation1,
+          teamMembers: [
+            { ...testTeamMemberRelation1, teamMember: testTeamMember2 },
+            testTeamMemberRelation2,
+          ],
+        },
+      });
+    });
+
+    it('should update state for deleteTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetTeamSuccess,
+        TeamActions.deleteTeamMemberSuccess({
+          orgMemberSlug: testOrgMember1.slug,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetTeamSuccess,
+        selectedTeam: {
+          ...testTeamRelation1,
+          teamMembers: [testTeamMemberRelation2],
+        },
+      });
+    });
+
+    it('should update state for editCurrentTeamMember', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetTeamSuccess,
+        TeamActions.editCurrentTeamMember({ teamMember: testTeamMember2 }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetTeamSuccess,
+        teamMember: testTeamMember2,
+      });
     });
 
     it('should update state for deleteTeamSuccess', () => {

@@ -4,7 +4,7 @@ import { testCountry1 } from '../example';
 import { PhoneInput } from '../interface';
 import { phoneNumberValidator } from './phone-number.validator';
 
-describe('PhoneNumberValidator', () => {
+describe('phoneNumberValidator', () => {
   const validator = phoneNumberValidator();
   let control: AbstractControl<Partial<PhoneInput>>;
 

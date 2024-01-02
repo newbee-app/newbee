@@ -9,20 +9,20 @@ import {
 import {
   AlertComponent,
   MarkdocEditorComponent,
+  NumAndFreqInputComponent,
   SearchableSelectComponent,
 } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   DigitOnlyDirectiveModule,
-  Frequency,
   HttpClientError,
+  NumAndFreqInput,
   SelectOption,
   defaultUpToDateDuration,
-  formNumAndFreqToDuration,
-  frequencySelectOptions,
   getHttpClientErrorMsg,
   inputDisplayError,
   inputErrorMessage,
+  numAndFreqInputToDuration,
 } from '@newbee/newbee/shared/util';
 import {
   BaseCreateDocDto,
@@ -41,6 +41,7 @@ import {
     CommonModule,
     ReactiveFormsModule,
     SearchableSelectComponent,
+    NumAndFreqInputComponent,
     AlertComponent,
     MarkdocEditorComponent,
     DigitOnlyDirectiveModule,
@@ -69,7 +70,18 @@ export class CreateDocComponent implements OnInit {
   /**
    * All of the teams of the org the doc can be put in.
    */
-  @Input() teams: Team[] = [];
+  @Input()
+  get teams(): Team[] {
+    return this._teams;
+  }
+  set teams(teams: Team[]) {
+    this._teams = teams;
+    this.teamOptions = [
+      new SelectOption(null, 'Entire org'),
+      ...teams.map((team) => new SelectOption(team, team.name)),
+    ];
+  }
+  _teams: Team[] = [];
 
   /**
    * The query param representing a team slug, if one is specified.
@@ -97,15 +109,8 @@ export class CreateDocComponent implements OnInit {
   docForm = this.fb.group({
     title: ['', [Validators.required]],
     team: [null as null | Team],
-    upToDateDuration: this.fb.group({
-      num: [null as number | null, [Validators.min(1)]],
-      frequency: [null as Frequency | null],
-    }),
+    upToDateDuration: [{ num: null, frequency: null } as NumAndFreqInput],
   });
-
-  readonly frequencyOptions = frequencySelectOptions(
-    this.docForm.controls.upToDateDuration.controls.num,
-  );
 
   constructor(private readonly fb: FormBuilder) {}
 
@@ -118,14 +123,9 @@ export class CreateDocComponent implements OnInit {
   }
 
   /**
-   * Initialize the team options and the team values with a value from the team slug param, if specified.
+   * Initialize the team value with a value from the team slug param, if specified.
    */
   ngOnInit(): void {
-    this.teamOptions = [
-      new SelectOption(null, 'Entire org'),
-      ...this.teams.map((team) => new SelectOption(team, team.name)),
-    ];
-
     if (!this.teamSlugParam) {
       return;
     }
@@ -148,7 +148,7 @@ export class CreateDocComponent implements OnInit {
       team: team?.slug ?? null,
       docMarkdoc: this.docMarkdoc,
       upToDateDuration:
-        formNumAndFreqToDuration(
+        numAndFreqInputToDuration(
           this.docForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
     });

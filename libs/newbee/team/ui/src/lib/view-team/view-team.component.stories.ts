@@ -1,4 +1,3 @@
-import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   OrgRoleEnum,
   TeamRoleEnum,
@@ -10,37 +9,23 @@ import {
   testTeamMemberRelation1,
   testTeamRelation1,
 } from '@newbee/shared/util';
-import {
-  Meta,
-  StoryObj,
-  componentWrapperDecorator,
-  moduleMetadata,
-} from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { ViewTeamComponent } from './view-team.component';
 
 export default {
   title: 'ViewTeamComponent',
   component: ViewTeamComponent,
-  decorators: [
-    moduleMetadata({ imports: [ClickWrapperComponent] }),
-    componentWrapperDecorator(
-      (story) => `<newbee-click-wrapper>${story}</newbee-click-wrapper>`,
-    ),
-  ],
   args: {
     organization: testOrganization1,
     team: {
       ...testTeamRelation1,
-      teamMembers: {
-        sample: [
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-        ],
-        total: 100,
-      },
+      teamMembers: [
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+      ],
       qnas: {
         sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
         total: 100,

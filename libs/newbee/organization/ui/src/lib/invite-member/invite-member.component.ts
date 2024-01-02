@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AlertComponent,
@@ -42,7 +35,7 @@ import {
   ],
   templateUrl: './invite-member.component.html',
 })
-export class InviteMemberComponent implements OnChanges {
+export class InviteMemberComponent {
   readonly alertType = AlertType;
 
   /**
@@ -58,7 +51,17 @@ export class InviteMemberComponent implements OnChanges {
   /**
    * The successfully invited user's email address, if a user was successfully invited.
    */
-  @Input() invitedUser = '';
+  @Input()
+  get invitedUser(): string {
+    return this._invitedUser;
+  }
+  set invitedUser(invitedUser) {
+    this._invitedUser = invitedUser;
+    this.inviteMemberForm.setValue({ email: '', role: null });
+    this.inviteMemberForm.markAsPristine();
+    this.inviteMemberForm.markAsUntouched();
+  }
+  private _invitedUser = '';
 
   /**
    * An HTTP error for the component, if one exists.
@@ -75,7 +78,7 @@ export class InviteMemberComponent implements OnChanges {
    */
   inviteMemberForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    role: [OrgRoleEnum.Member, [Validators.required]],
+    role: [null as null | OrgRoleEnum, [Validators.required]],
   });
 
   constructor(private readonly fb: FormBuilder) {}
@@ -88,28 +91,12 @@ export class InviteMemberComponent implements OnChanges {
   }
 
   /**
-   * All possible org roles as select options.
+   * All possible org roles as select options, based on the requester.
    */
   get roleOptions(): SelectOption<OrgRoleEnum>[] {
     return generateLteOrgRoles(this.orgMember.role).map(
       (role) => new SelectOption(role, role),
     );
-  }
-
-  /**
-   * When the value of `invitedUser` is updated, clear the input.
-   *
-   * @param changes All of the changes to the component's inputs.
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    const invitedUser = changes['invitedUser'];
-    if (!invitedUser) {
-      return;
-    }
-
-    this.inviteMemberForm.patchValue({ email: '' });
-    this.inviteMemberForm.markAsPristine();
-    this.inviteMemberForm.markAsUntouched();
   }
 
   /**
@@ -144,8 +131,9 @@ export class InviteMemberComponent implements OnChanges {
   /**
    * The input error message for the given form.
    *
-   * @param inputName
-   * @returns
+   * @param inputName The name of the input to look at.
+   *
+   * @returns The input's error message.
    */
   inputErrorMessage(inputName: string): string {
     return (

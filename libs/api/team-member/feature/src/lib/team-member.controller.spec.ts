@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  EntityService,
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testTeamEntity1,
@@ -11,6 +12,7 @@ import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateTeamMemberDto1,
   testBaseUpdateTeamMemberDto1,
+  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import { TeamMemberController } from './team-member.controller';
 
@@ -18,6 +20,7 @@ describe('TeamMemberController', () => {
   let controller: TeamMemberController;
   let service: TeamMemberService;
   let orgMemberService: OrgMemberService;
+  let entityService: EntityService;
 
   const testUpdatedTeamMember = {
     ...testTeamMemberEntity1,
@@ -43,18 +46,28 @@ describe('TeamMemberController', () => {
               .mockResolvedValue(testOrgMemberEntity1),
           }),
         },
+        {
+          provide: EntityService,
+          useValue: createMock<EntityService>({
+            createTeamMemberUserOrgMember: jest
+              .fn()
+              .mockResolvedValue(testTeamMemberRelation1),
+          }),
+        },
       ],
     }).compile();
 
     controller = module.get<TeamMemberController>(TeamMemberController);
     service = module.get<TeamMemberService>(TeamMemberService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
+    entityService = module.get<EntityService>(EntityService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
     expect(orgMemberService).toBeDefined();
+    expect(entityService).toBeDefined();
   });
 
   describe('create', () => {
@@ -67,7 +80,7 @@ describe('TeamMemberController', () => {
           testOrganizationEntity1,
           testTeamEntity1,
         ),
-      ).resolves.toEqual(testTeamMemberEntity1);
+      ).resolves.toEqual(testTeamMemberRelation1);
       expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
       expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
@@ -80,6 +93,12 @@ describe('TeamMemberController', () => {
         testBaseCreateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
         testTeamMemberEntity1.role,
+      );
+      expect(entityService.createTeamMemberUserOrgMember).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(entityService.createTeamMemberUserOrgMember).toHaveBeenCalledWith(
+        testTeamMemberEntity1,
       );
     });
   });

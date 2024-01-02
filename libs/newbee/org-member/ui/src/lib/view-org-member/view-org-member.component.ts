@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
-  DropdownComponent,
   SearchResultComponent,
   SearchableSelectComponent,
   ViewAllBtnComponent,
@@ -20,6 +19,7 @@ import {
   apiRoles,
   checkRoles,
   generateLteOrgRoles,
+  userDisplayName,
   type OrgMember,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
@@ -34,7 +34,6 @@ import {
     CommonModule,
     ReactiveFormsModule,
     PhoneNumberPipeModule,
-    DropdownComponent,
     ViewAllBtnComponent,
     ViewAllCardBtnComponent,
     SearchableSelectComponent,
@@ -42,19 +41,13 @@ import {
   ],
   templateUrl: './view-org-member.component.html',
 })
-export class ViewOrgMemberComponent implements OnInit {
+export class ViewOrgMemberComponent {
   readonly keyword = Keyword;
   readonly shortUrl = ShortUrl;
   readonly searchResultFormat = SearchResultFormat;
   readonly apiRoles = apiRoles;
   readonly checkRoles = checkRoles;
-
-  /**
-   * The roles needed to edit or delete the org member.
-   */
-  readonly editDeleteRoles = new Set(
-    apiRoles['org-member'].update.concat(apiRoles['org-member'].delete),
-  );
+  readonly userDisplayName = userDisplayName;
 
   /**
    * The roles the user can change the org member to, as select options.
@@ -70,12 +63,32 @@ export class ViewOrgMemberComponent implements OnInit {
   /**
    * The org member we're looking at.
    */
-  @Input() orgMember!: OrgMemberNoOrg;
+  @Input()
+  get orgMember(): OrgMemberNoOrg {
+    return this._orgMember;
+  }
+  set orgMember(orgMember: OrgMemberNoOrg) {
+    this._orgMember = orgMember;
+    this.changeRoleSelect.setValue(this.orgMember.orgMember.role, {
+      emitEvent: false,
+    });
+  }
+  _orgMember!: OrgMemberNoOrg;
 
   /**
    * The org member information of the user who's looking at the page.
    */
-  @Input() userOrgMember!: OrgMember;
+  @Input()
+  get userOrgMember(): OrgMember {
+    return this._userOrgMember;
+  }
+  set userOrgMember(userOrgMember: OrgMember) {
+    this._userOrgMember = userOrgMember;
+    this.orgRoleEnumOptions = generateLteOrgRoles(this.userOrgMember.role).map(
+      (role) => new SelectOption(role, role),
+    );
+  }
+  _userOrgMember!: OrgMember;
 
   /**
    * Whether to display a loader for the org member's role.
@@ -153,18 +166,6 @@ export class ViewOrgMemberComponent implements OnInit {
   }
 
   constructor(private readonly fb: FormBuilder) {}
-
-  /**
-   * Set the change role select with an initial value that matches the org member's role.
-   */
-  ngOnInit(): void {
-    this.orgRoleEnumOptions = generateLteOrgRoles(this.userOrgMember?.role).map(
-      (role) => new SelectOption(role, role),
-    );
-    this.changeRoleSelect.setValue(this.orgMember.orgMember.role, {
-      emitEvent: false,
-    });
-  }
 
   /**
    * Emit `editRole` with the current value of the change role select, so long as it's not null nor the same value.

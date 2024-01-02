@@ -1,2 +1,2 @@
-export * from './is-team-admin.guard';
+export * from './can-edit-team.guard';
 export * from './team.guard';

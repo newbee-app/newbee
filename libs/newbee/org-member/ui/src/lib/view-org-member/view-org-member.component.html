@@ -10,160 +10,9 @@
 
 <div *ngIf="!deletePending; else isDeletePending" class="mt-close">
   <div class="flex flex-col flex-nowrap gap-y-2">
-    <div
-      *ngIf="
-        checkRoles(editDeleteRoles, {
-          orgMember: userOrgMember,
-          subjectOrgRole: orgMember.orgMember.role
-        });
-        else displayName
-      "
-      class="w-fit"
-    >
-      <newbee-dropdown placement="bottom-start">
-        <h2
-          label
-          class="flex flex-row flex-nowrap items-center underline text-left"
-        >
-          {{ orgMember.user.displayName }}
-
-          <!-- chevron-down svg -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-            />
-          </svg>
-        </h2>
-
-        <ul dropdown class="menu flex flex-col flex-nowrap">
-          <li
-            *ngIf="
-              checkRoles(apiRoles['org-member'].update, {
-                orgMember: userOrgMember,
-                subjectOrgRole: orgMember.orgMember.role
-              })
-            "
-          >
-            <a onclick="changeRoleModal.showModal()" class="flex"
-              >Change role</a
-            >
-          </li>
-          <li
-            *ngIf="
-              checkRoles(apiRoles['org-member'].delete, {
-                orgMember: userOrgMember,
-                subjectOrgRole: orgMember.orgMember.role
-              })
-            "
-          >
-            <a onclick="deleteModal.showModal()" class="flex"
-              >Remove from org</a
-            >
-          </li>
-        </ul>
-      </newbee-dropdown>
-
-      <dialog id="changeRoleModal" class="modal">
-        <form method="dialog" class="modal-box">
-          <button
-            type="submit"
-            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          >
-            x
-          </button>
-
-          <div class="flex flex-col flex-nowrap gap-y-3 h-40 mt-2">
-            <h4>Change org member role</h4>
-            <newbee-searchable-select
-              [formControl]="changeRoleSelect"
-              [showSearchbar]="false"
-              [options]="orgRoleEnumOptions"
-              optionName="role"
-            ></newbee-searchable-select>
-          </div>
-
-          <div class="modal-action">
-            <button
-              type="submit"
-              [disabled]="editPending"
-              (click)="editOrgMemberRole()"
-              class="btn btn-primary"
-            >
-              <span *ngIf="editPending" class="loading loading-spinner"></span>
-              Update
-            </button>
-            <button type="submit" class="btn">Close</button>
-          </div>
-        </form>
-      </dialog>
-
-      <dialog id="deleteModal" class="modal">
-        <form method="dialog" class="modal-box">
-          <button
-            type="submit"
-            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          >
-            x
-          </button>
-
-          <div class="flex flex-col flex-nowrap gap-y-3 mt-2">
-            <h3>Are you sure you want to delete this org member?</h3>
-
-            <div>
-              <p>Once you delete this org member:</p>
-              <ul class="list-outside list-disc ml-5">
-                <li>
-                  All of their maintained posts will no longer have a
-                  maintainer.
-                </li>
-                <li>
-                  All of the posts they created will be shown as being created
-                  by a "Deleted User."
-                </li>
-              </ul>
-            </div>
-
-            <p>
-              Although the user can be invited to join the org again, the side
-              effects of the deletion are permanent and cannot be undone.
-            </p>
-            <p>If you are sure you want to proceed, please confirm.</p>
-          </div>
-
-          <div class="modal-action">
-            <button
-              type="submit"
-              [disabled]="deletePending"
-              (click)="delete.emit()"
-              class="btn btn-error"
-            >
-              <span
-                *ngIf="deletePending"
-                class="loading loading-spinner"
-              ></span>
-              Delete
-            </button>
-            <button type="submit" class="btn">Close</button>
-          </div>
-        </form>
-      </dialog>
-    </div>
-
-    <ng-template #displayName>
-      <h2>{{ orgMember.user.displayName }}</h2>
-    </ng-template>
+    <h2>{{ userDisplayName(orgMember.user) }}</h2>
 
     <div>
-      <p>{{ orgMember.user.name }}</p>
       <a [href]="'mailto:' + orgMember.user.email" class="link link-info">{{
         orgMember.user.email
       }}</a>
@@ -177,10 +26,120 @@
       <p *ngIf="!editPending; else pendingDots" class="opacity-50">
         {{ orgMember.orgMember.role }}
       </p>
-
-      <div class="divider"></div>
     </div>
+
+    <div class="flex flex-row flex-wrap gap-2">
+      <button
+        *ngIf="
+          checkRoles(apiRoles['org-member'].update, {
+            orgMember: userOrgMember,
+            subjectOrgRole: orgMember.orgMember.role
+          })
+        "
+        type="button"
+        onclick="changeRoleModal.showModal()"
+        class="btn btn-xs btn-info"
+      >
+        Change role
+      </button>
+      <button
+        *ngIf="
+          checkRoles(apiRoles['org-member'].delete, {
+            orgMember: userOrgMember,
+            subjectOrgRole: orgMember.orgMember.role
+          })
+        "
+        type="button"
+        onclick="deleteModal.showModal()"
+        class="btn btn-xs btn-error"
+      >
+        Delete
+      </button>
+    </div>
+
+    <dialog id="changeRoleModal" class="modal">
+      <form method="dialog" class="modal-box">
+        <button
+          type="submit"
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          x
+        </button>
+
+        <div class="flex flex-col flex-nowrap gap-y-3 mt-6">
+          <h4>Change org member role</h4>
+          <newbee-searchable-select
+            [formControl]="changeRoleSelect"
+            [showSearchbar]="false"
+            [options]="orgRoleEnumOptions"
+            optionName="role"
+          ></newbee-searchable-select>
+        </div>
+
+        <div class="modal-action mt-16">
+          <button
+            type="submit"
+            [disabled]="editPending"
+            (click)="editOrgMemberRole()"
+            class="btn btn-primary"
+          >
+            <span *ngIf="editPending" class="loading loading-spinner"></span>
+            Update
+          </button>
+          <button type="submit" class="btn">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="deleteModal" class="modal">
+      <form method="dialog" class="modal-box">
+        <button
+          type="submit"
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          x
+        </button>
+
+        <div class="flex flex-col flex-nowrap gap-y-3 mt-2">
+          <h3>Are you sure you want to delete this org member?</h3>
+
+          <div>
+            <p>Once you delete this org member:</p>
+            <ul class="list-outside list-disc ml-5">
+              <li>
+                All of their maintained posts will no longer have a maintainer.
+              </li>
+              <li>
+                All of the posts they created will be shown as being created by
+                a "Deleted User."
+              </li>
+            </ul>
+          </div>
+
+          <p>
+            Although the user can be invited to join the org again, the side
+            effects of the deletion are permanent and cannot be undone.
+          </p>
+          <p>If you are sure you want to proceed, please confirm.</p>
+        </div>
+
+        <div class="modal-action">
+          <button
+            type="submit"
+            [disabled]="deletePending"
+            (click)="delete.emit()"
+            class="btn btn-error"
+          >
+            <span *ngIf="deletePending" class="loading loading-spinner"></span>
+            Delete
+          </button>
+          <button type="submit" class="btn">Close</button>
+        </div>
+      </form>
+    </dialog>
   </div>
+
+  <div class="divider"></div>
 
   <div>
     <h4>Teams</h4>

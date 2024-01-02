@@ -64,7 +64,7 @@ describe('ViewOrgMemberComponent', () => {
     });
   });
 
-  describe('init', () => {
+  describe('setters', () => {
     it('should create orgRoleEnumOptions and set changeRoleSelect', () => {
       expect(component.orgRoleEnumOptions).toEqual(
         ascOrgRoleEnum.map((role) => new SelectOption(role, role)),

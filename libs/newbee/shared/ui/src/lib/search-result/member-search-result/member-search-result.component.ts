@@ -22,9 +22,6 @@ import { SearchResultHeaderComponent } from '../header';
   templateUrl: './member-search-result.component.html',
 })
 export class MemberSearchResultComponent {
-  /**
-   * Helper function to get user's display name.
-   */
   readonly userDisplayName = userDisplayName;
 
   /**
@@ -62,7 +59,7 @@ export class MemberSearchResultComponent {
    */
   orgMemberNavigate(): void {
     this.orgNavigate.emit(
-      `/${ShortUrl.Member}/${this.orgMember.orgMember.slug}`
+      `/${ShortUrl.Member}/${this.orgMember.orgMember.slug}`,
     );
   }
 }

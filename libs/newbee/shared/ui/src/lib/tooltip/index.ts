@@ -1,1 +1,2 @@
-export * from './tooltip.component';
+export * from './text-tooltip';
+export * from './tooltip';

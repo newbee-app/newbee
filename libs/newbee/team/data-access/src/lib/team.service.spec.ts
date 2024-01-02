@@ -8,12 +8,17 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testBaseCreateTeamDto1,
+  testBaseCreateTeamMemberDto1,
   testBaseGeneratedSlugDto1,
   testBaseSlugTakenDto1,
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
+  testBaseUpdateTeamMemberDto1,
+  testOrgMember1,
   testOrganization1,
   testTeam1,
+  testTeamMember1,
+  testTeamMemberRelation1,
 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
@@ -188,6 +193,105 @@ describe('TeamService', () => {
       expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseGeneratedSlugDto1);
+    });
+  });
+
+  describe('createTeamMember', () => {
+    it('should send out a post request', (done) => {
+      service
+        .createTeamMember(
+          testBaseCreateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+        )
+        .subscribe({
+          next: (teamMember) => {
+            try {
+              expect(teamMember).toEqual(testTeamMemberRelation1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        TeamService.baseTeamMemberApiUrl(
+          testOrganization1.slug,
+          testTeam1.slug,
+        ),
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseCreateTeamMemberDto1);
+
+      req.flush(testTeamMemberRelation1);
+    });
+  });
+
+  describe('editTeamMember', () => {
+    it('should send out a patch request', (done) => {
+      service
+        .editTeamMember(
+          testBaseUpdateTeamMemberDto1,
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember1.slug,
+        )
+        .subscribe({
+          next: (teamMember) => {
+            try {
+              expect(teamMember).toEqual(testTeamMember1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${TeamService.baseTeamMemberApiUrl(
+          testOrganization1.slug,
+          testTeam1.slug,
+        )}/${testOrgMember1.slug}`,
+      );
+      expect(req.request.method).toEqual('PATCH');
+      expect(req.request.body).toEqual(testBaseUpdateTeamMemberDto1);
+
+      req.flush(testTeamMember1);
+    });
+  });
+
+  describe('deleteTeamMember', () => {
+    it('should send out a delete request', (done) => {
+      service
+        .deleteTeamMember(
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOrgMember1.slug,
+        )
+        .subscribe({
+          next: (signal) => {
+            try {
+              expect(signal).toBeNull();
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${TeamService.baseTeamMemberApiUrl(
+          testOrganization1.slug,
+          testTeam1.slug,
+        )}/${testOrgMember1.slug}`,
+      );
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
     });
   });
 });

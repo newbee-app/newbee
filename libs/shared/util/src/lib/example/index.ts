@@ -180,12 +180,29 @@ export const testTeamMember1: TeamMember = {
 };
 
 /**
+ * An example instance of TeamMember.
+ * Strictly for use in testing.
+ */
+export const testTeamMember2: TeamMember = {
+  role: TeamRoleEnum.Member,
+};
+
+/**
  * An example instance of OrgMember.
  * Strictly for use in testing.
  */
 export const testOrgMember1: OrgMember = {
   role: OrgRoleEnum.Owner,
   slug: 'test-org-member-1-slug',
+};
+
+/**
+ * An example instance of OrgMember.
+ * STrictly for use in testing.
+ */
+export const testOrgMember2: OrgMember = {
+  role: OrgRoleEnum.Member,
+  slug: 'test-org-member-2-slug',
 };
 
 /**
@@ -322,7 +339,7 @@ export const testOrgMemberUser1: OrgMemberUser = {
  * Strictly for use in testing.
  */
 export const testOrgMemberUser2: OrgMemberUser = {
-  orgMember: testOrgMember1,
+  orgMember: testOrgMember2,
   user: testUser2,
 };
 
@@ -386,7 +403,7 @@ export const testQueryResult1: QueryResult = {
 export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
-  members: [testOrgMemberUser1],
+  members: [testOrgMemberUser1, testOrgMemberUser2],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
 };
@@ -398,7 +415,7 @@ export const testOrganizationRelation1: OrganizationRelation = {
 export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
-  members: [testOrgMemberUser1],
+  members: [testOrgMemberUser1, testOrgMemberUser2],
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
 };
@@ -413,6 +430,18 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
   user: testUser1,
+};
+
+/**
+ * An example instance of `TeamMemberRelation`.
+ * Strictly for use in testing.
+ */
+export const testTeamMemberRelation2: TeamMemberRelation = {
+  teamMember: testTeamMember2,
+  team: testTeam1,
+  orgMember: testOrgMember2,
+  organization: testOrganization1,
+  user: testUser2,
 };
 
 /**
@@ -463,7 +492,7 @@ export const testTeamRelation1: TeamRelation = {
   organization: testOrganization1,
   docs: { sample: [testDocQueryResult1], total: 1 },
   qnas: { sample: [testQnaQueryResult1], total: 1 },
-  teamMembers: { sample: [testTeamMemberRelation1], total: 1 },
+  teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
 };
 
 /**

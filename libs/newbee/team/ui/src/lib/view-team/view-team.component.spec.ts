@@ -37,14 +37,12 @@ describe('ViewTeamComponent', () => {
 
   describe('getters', () => {
     it('should output correctly based on totals', () => {
-      expect(component.totalMembers).toEqual('1 member');
+      expect(component.totalMembers).toEqual('2 members');
       expect(component.totalQnas).toEqual('1 QnA');
       expect(component.totalDocs).toEqual('1 doc');
 
-      component.team.teamMembers.total = 100;
       component.team.qnas.total = 100;
       component.team.docs.total = 100;
-      expect(component.totalMembers).toEqual('100 members');
       expect(component.totalQnas).toEqual('100 QnAs');
       expect(component.totalDocs).toEqual('100 docs');
     });

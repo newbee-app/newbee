@@ -48,7 +48,7 @@ describe('OrgInviteAcceptComponent', () => {
     expect(route).toBeDefined();
   });
 
-  describe('init', () => {
+  describe('constructor', () => {
     it('should dispatch acceptInvite', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
         InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 }),

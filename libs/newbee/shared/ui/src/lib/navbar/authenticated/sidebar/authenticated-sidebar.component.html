@@ -1,7 +1,7 @@
 <div
   class="flex flex-col flex-nowrap gap-y-2 p-4 h-screen w-fit bg-base-300 overflow-y-auto"
 >
-  <newbee-tooltip text="Create an org" placement="right">
+  <newbee-text-tooltip text="Create an org" placement="right">
     <button
       type="button"
       (click)="emitNavigateToLink(shortUrl.Organization, keyword.New)"
@@ -23,11 +23,11 @@
         />
       </svg>
     </button>
-  </newbee-tooltip>
+  </newbee-text-tooltip>
 
   <div class="divider"></div>
 
-  <newbee-tooltip
+  <newbee-text-tooltip
     *ngFor="let organization of organizations"
     [text]="organization.name"
     placement="right"
@@ -46,5 +46,5 @@
       ></span>
       {{ shortenOrgName(organization.name) }}
     </button>
-  </newbee-tooltip>
+  </newbee-text-tooltip>
 </div>

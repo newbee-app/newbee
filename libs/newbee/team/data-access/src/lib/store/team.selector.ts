@@ -3,6 +3,7 @@ import {
   organizationFeature,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
+import { OrgMemberUser } from '@newbee/shared/util';
 import { createSelector } from '@ngrx/store';
 
 /**
@@ -36,4 +37,24 @@ export const selectTeamAndOrgStates = createSelector(
   teamFeature.selectTeamState,
   organizationFeature.selectOrgState,
   (teamState, orgState) => ({ teamState, orgState }),
+);
+
+/**
+ * A selector for selecting all of the org members in the currently selected org who are not team members of the currently selected team.
+ */
+export const selectNonTeamOrgMembers = createSelector(
+  teamFeature.selectSelectedTeam,
+  organizationFeature.selectSelectedOrganization,
+  (selectedTeam, selectedOrganization): OrgMemberUser[] => {
+    if (!selectedOrganization || !selectedTeam) {
+      return [];
+    }
+
+    const orgMembersInTeam = new Set(
+      selectedTeam.teamMembers.map((teamMember) => teamMember.orgMember.slug),
+    );
+    return selectedOrganization.members.filter(
+      (orgMember) => !orgMembersInTeam.has(orgMember.orgMember.slug),
+    );
+  },
 );

@@ -1,4 +1,3 @@
-import { SimpleChange } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -95,11 +94,9 @@ describe('CreateTeamComponent', () => {
     });
   });
 
-  describe('ngOnChanges', () => {
+  describe('setters', () => {
     it('should update form for generatedSlug changes', () => {
-      component.ngOnChanges({
-        generatedSlug: new SimpleChange('', testTeam1.slug, true),
-      });
+      component.generatedSlug = testTeam1.slug;
       expect(component.createTeamForm.controls.slug.value).toEqual(
         testTeam1.slug,
       );

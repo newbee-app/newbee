@@ -41,17 +41,10 @@ describe('SearchableSelectComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('init', () => {
-    it('should initialize with expected values', () => {
-      expect(component.valid).toBeTruthy();
-      expect(component.errorText).toEqual('');
-      expect(component.expanded).toBeFalsy();
-      expect(component.value).toBeNull();
-      expect(component.disabled).toBeFalsy();
-      expect(component.onChange).toBeDefined();
-      expect(component.onTouched).toBeDefined();
-      expect(component.selectedText).toEqual(`Select ${component.optionName}`);
-      expect(component.optionsWithSearch).toEqual(component.options);
+  describe('setters', () => {
+    it('should update options to show', () => {
+      component.options = [testSelectOptionCountry1];
+      expect(component.optionsWithSearch).toEqual([testSelectOptionCountry1]);
     });
   });
 

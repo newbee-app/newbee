@@ -7,6 +7,7 @@ import {
   testOrganization1,
   testTeam1,
   userDisplayName,
+  userDisplayNameAndEmail,
 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { EditDocComponent } from './edit-doc.component';
@@ -39,9 +40,8 @@ describe('EditDocComponent', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
-    it('should fill information with doc values', () => {
-      expect(component.docMarkdoc).toEqual(testDoc1.docMarkdoc);
+  describe('setters', () => {
+    it('should generate select options', () => {
       expect(component.teamOptions).toEqual([
         new SelectOption(null, 'Entire org'),
         new SelectOption(testTeam1, testTeam1.name),
@@ -49,12 +49,16 @@ describe('EditDocComponent', () => {
       expect(component.orgMemberOptions).toEqual([
         new SelectOption(
           testOrgMemberUser1,
-          `${userDisplayName(testOrgMemberUser1.user)} (${
-            testOrgMemberUser1.user.email
-          })`,
+          userDisplayNameAndEmail(testOrgMemberUser1.user),
           userDisplayName(testOrgMemberUser1.user),
         ),
       ]);
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it('should fill information with doc values', () => {
+      expect(component.docMarkdoc).toEqual(testDoc1.docMarkdoc);
       expect(component.editDocForm.value).toEqual({
         title: testDoc1.title,
         team: testDocRelation1.team,

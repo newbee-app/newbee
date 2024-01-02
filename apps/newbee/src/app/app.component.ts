@@ -18,7 +18,7 @@ export class AppComponent {
    */
   @HostListener('document:click', ['$event.target'])
   clickEvent(target: HTMLElement): void {
-    this.clickService.documentClickTarget.next(target);
+    this.clickService.documentClickTarget$.next(target);
   }
 
   constructor(private readonly clickService: ClickService) {}

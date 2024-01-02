@@ -3,8 +3,13 @@ import {
   RouterActions,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { testTeam1 } from '@newbee/shared/util';
-import { initialTeamState, teamFeature, TeamState } from './team.reducer';
+import {
+  testBaseCreateTeamMemberDto1,
+  testBaseUpdateTeamMemberDto1,
+  testOrgMember1,
+  testTeam1,
+} from '@newbee/shared/util';
+import { TeamState, initialTeamState, teamFeature } from './team.reducer';
 
 describe('TeamReducer', () => {
   const stateAfterCreateTeam: TeamState = {
@@ -27,12 +32,24 @@ describe('TeamReducer', () => {
     ...initialTeamState,
     pendingCheck: true,
   };
+  const stateAfterAddTeamMember: TeamState = {
+    ...initialTeamState,
+    pendingAddTeamMember: true,
+  };
+  const stateAfterEditTeamMember: TeamState = {
+    ...initialTeamState,
+    pendingEditTeamMember: new Set([testOrgMember1.slug]),
+  };
+  const stateAfterDeleteTeamMember: TeamState = {
+    ...initialTeamState,
+    pendingDeleteTeamMember: new Set([testOrgMember1.slug]),
+  };
 
   describe('from initial state', () => {
     it('should update state for createTeam', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.createTeam
+        TeamActions.createTeam,
       );
       expect(updatedState).toEqual(stateAfterCreateTeam);
     });
@@ -40,7 +57,7 @@ describe('TeamReducer', () => {
     it('should update state for editTeam', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.editTeam
+        TeamActions.editTeam,
       );
       expect(updatedState).toEqual(stateAfterEditTeam);
     });
@@ -48,7 +65,7 @@ describe('TeamReducer', () => {
     it('should update state for editTeamSlug', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.editTeamSlug
+        TeamActions.editTeamSlug,
       );
       expect(updatedState).toEqual(stateAfterEditTeamSlug);
     });
@@ -56,7 +73,7 @@ describe('TeamReducer', () => {
     it('should update state for deleteTeam', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.deleteTeam
+        TeamActions.deleteTeam,
       );
       expect(updatedState).toEqual(stateAfterDeleteTeam);
     });
@@ -64,13 +81,13 @@ describe('TeamReducer', () => {
     it('should update state for typingSlug if slug is not empty string, not update if slug is empty', () => {
       let updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.typingSlug({ slug: testTeam1.slug })
+        TeamActions.typingSlug({ slug: testTeam1.slug }),
       );
       expect(updatedState).toEqual(stateAfterCheckSlug);
 
       updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.typingSlug({ slug: '' })
+        TeamActions.typingSlug({ slug: '' }),
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -78,15 +95,44 @@ describe('TeamReducer', () => {
     it('should update state for checkSlug if slug is not empty string, not update if slug is empty', () => {
       let updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.checkSlug({ slug: testTeam1.slug })
+        TeamActions.checkSlug({ slug: testTeam1.slug }),
       );
       expect(updatedState).toEqual(stateAfterCheckSlug);
 
       updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.checkSlug({ slug: '' })
+        TeamActions.checkSlug({ slug: '' }),
       );
       expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for addTeamMember', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.addTeamMember({
+          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+        }),
+      );
+      expect(updatedState).toEqual(stateAfterAddTeamMember);
+    });
+
+    it('should update state for editTeamMember', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.editTeamMember({
+          orgMemberSlug: testOrgMember1.slug,
+          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+        }),
+      );
+      expect(updatedState).toEqual(stateAfterEditTeamMember);
+    });
+
+    it('should update state for deleteTeamMember', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.deleteTeamMember({ orgMemberSlug: testOrgMember1.slug }),
+      );
+      expect(updatedState).toEqual(stateAfterDeleteTeamMember);
     });
   });
 
@@ -94,7 +140,7 @@ describe('TeamReducer', () => {
     it('should update state for checkSlugSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCheckSlug,
-        TeamActions.checkSlugSuccess({ slugTaken: false })
+        TeamActions.checkSlugSuccess({ slugTaken: false }),
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -102,7 +148,7 @@ describe('TeamReducer', () => {
     it('should update state for generateSlugSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCheckSlug,
-        TeamActions.generateSlugSuccess({ slug: testTeam1.slug })
+        TeamActions.generateSlugSuccess({ slug: testTeam1.slug }),
       );
       expect(updatedState).toEqual({
         ...initialTeamState,
@@ -113,7 +159,7 @@ describe('TeamReducer', () => {
     it('should update state for createTeamSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCreateTeam,
-        TeamActions.createTeamSuccess
+        TeamActions.createTeamSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -121,7 +167,7 @@ describe('TeamReducer', () => {
     it('should update state for editTeamSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterEditTeam,
-        TeamActions.editTeamSuccess
+        TeamActions.editTeamSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -129,7 +175,7 @@ describe('TeamReducer', () => {
     it('should update state for editTeamSlugSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterEditTeamSlug,
-        TeamActions.editTeamSlugSuccess
+        TeamActions.editTeamSlugSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -137,7 +183,31 @@ describe('TeamReducer', () => {
     it('should update state for deleteTeamSuccess', () => {
       const updatedState = teamFeature.reducer(
         stateAfterDeleteTeam,
-        TeamActions.deleteTeamSuccess
+        TeamActions.deleteTeamSuccess,
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for addTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterAddTeamMember,
+        TeamActions.addTeamMemberSuccess,
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for editTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterEditTeamMember,
+        TeamActions.editTeamMemberSuccess,
+      );
+      expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for deleteTeamMemberSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterDeleteTeamMember,
+        TeamActions.deleteTeamMemberSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -145,7 +215,7 @@ describe('TeamReducer', () => {
     it('should update state for clientError', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCreateTeam,
-        HttpActions.clientError
+        HttpActions.clientError,
       );
       expect(updatedState).toEqual(initialTeamState);
     });
@@ -153,7 +223,7 @@ describe('TeamReducer', () => {
     it('should update state for routerRequest', () => {
       const updatedState = teamFeature.reducer(
         stateAfterCreateTeam,
-        RouterActions.routerRequest
+        RouterActions.routerRequest,
       );
       expect(updatedState).toEqual(initialTeamState);
     });

@@ -17,8 +17,7 @@
 >
   <ng-container *ngTemplateOutlet="content"></ng-container>
 </newbee-authenticated-navbar>
+
 <ng-template #unauthenticated>
-  <newbee-unauthenticated-navbar (navigateToLink)="navigateToLink($event)">
-    <ng-container *ngTemplateOutlet="content"></ng-container>
-  </newbee-unauthenticated-navbar>
+  <ng-container *ngTemplateOutlet="content"></ng-container>
 </ng-template>

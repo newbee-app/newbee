@@ -1,12 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import {
-  OrgRoleEnum,
-  TeamRoleEnum,
-  compareOrgRoles,
-  compareTeamRoles,
-} from '@newbee/shared/util';
+import { apiRoles, checkRoles } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, take } from 'rxjs';
 import { selectTeamAndOrgStates } from '../store';
@@ -16,7 +11,7 @@ import { selectTeamAndOrgStates } from '../store';
  *
  * @returns `true` if access is allowed, a `UrlTree` to redirect the user otherwise.
  */
-export const isTeamAdminGuard: CanActivateFn = (): Observable<
+export const canEditTeamGuard: CanActivateFn = (): Observable<
   boolean | UrlTree
 > => {
   const store = inject(Store);
@@ -30,20 +25,14 @@ export const isTeamAdminGuard: CanActivateFn = (): Observable<
         orgState: { orgMember, selectedOrganization },
       }) => {
         if (
-          orgMember &&
-          compareOrgRoles(orgMember.orgMember.role, OrgRoleEnum.Moderator) >= 0
+          checkRoles(apiRoles.team.update, {
+            orgMember: orgMember?.orgMember,
+            teamRole: teamMember?.role,
+            team: false,
+          })
         ) {
           return true;
-        }
-
-        if (
-          teamMember &&
-          compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0
-        ) {
-          return true;
-        }
-
-        if (selectedOrganization) {
+        } else if (selectedOrganization) {
           if (selectedTeam) {
             return router.createUrlTree([
               `/${ShortUrl.Organization}/${selectedOrganization.organization.slug}/${ShortUrl.Team}/${selectedTeam.team.slug}`,

@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -17,7 +16,7 @@ import { AlertType, SelectOption } from '@newbee/newbee/shared/util';
 import { isEqual } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../../alert/alert.component';
-import { DropdownComponent } from '../../dropdown';
+import { DropdownWithArrowComponent } from '../../dropdown';
 
 /**
  * A custom `<select>` component.
@@ -35,7 +34,7 @@ import { DropdownComponent } from '../../dropdown';
     CommonModule,
     ReactiveFormsModule,
     AlertComponent,
-    DropdownComponent,
+    DropdownWithArrowComponent,
   ],
   templateUrl: './searchable-select.component.html',
   providers: [
@@ -47,7 +46,7 @@ import { DropdownComponent } from '../../dropdown';
   ],
 })
 export class SearchableSelectComponent<T>
-  implements ControlValueAccessor, OnInit, OnDestroy
+  implements ControlValueAccessor, OnDestroy
 {
   private readonly unsubscribe$ = new Subject<void>();
   readonly alertType = AlertType;
@@ -60,7 +59,15 @@ export class SearchableSelectComponent<T>
   /**
    * All of the possible options for the select.
    */
-  @Input() options!: SelectOption<T>[];
+  @Input()
+  get options(): SelectOption<T>[] {
+    return this._options;
+  }
+  set options(options: SelectOption<T>[]) {
+    this._options = options;
+    this.updateOptionsToShow();
+  }
+  _options!: SelectOption<T>[];
 
   /**
    * What the options represent, for use when no option is selected.
@@ -124,18 +131,10 @@ export class SearchableSelectComponent<T>
   /**
    * Set up options with search based on the search term.
    */
-  ngOnInit(): void {
-    this.optionsWithSearch = this.options;
+  constructor() {
     this.searchTerm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (value) => {
-        if (!value) {
-          this.optionsWithSearch = this.options;
-          return;
-        }
-
-        this.optionsWithSearch = this.options.filter((option) =>
-          option.dropdownValue.toLowerCase().includes(value.toLowerCase()),
-        );
+      next: () => {
+        this.updateOptionsToShow();
       },
     });
   }
@@ -153,15 +152,14 @@ export class SearchableSelectComponent<T>
    *
    * @param _ The new value.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private _onChange: (_: T) => void = (_) => {
+  private _onChange: (_: T | null) => void = () => {
     return;
   };
 
   /**
    * Called to trigger change detection.
    */
-  get onChange(): (_: T) => void {
+  get onChange(): (_: T | null) => void {
     return this._onChange;
   }
 
@@ -185,7 +183,7 @@ export class SearchableSelectComponent<T>
    *
    * @param val The value of the option we wish to select.
    */
-  writeValue(val: T): void {
+  writeValue(val: T | null): void {
     this.selectOption(val, false);
   }
 
@@ -194,7 +192,7 @@ export class SearchableSelectComponent<T>
    *
    * @param fn The function to assign.
    */
-  registerOnChange(fn: (_: T) => void): void {
+  registerOnChange(fn: (_: T | null) => void): void {
     this._onChange = fn;
   }
 
@@ -239,13 +237,13 @@ export class SearchableSelectComponent<T>
    * @param option The option to select.
    * @param emitEvent Whether to trigger change detection.
    */
-  selectOption(option: T, emitEvent = true): void {
+  selectOption(option: T | null, emitEvent = true): void {
     const foundOption = this.options.find((val) => isEqual(val.value, option));
-    if (!foundOption) {
+    if (option !== null && !foundOption) {
       return;
     }
 
-    this.selectedOption = foundOption;
+    this.selectedOption = foundOption ?? null;
     if (emitEvent) {
       this._onChange(option);
     }
@@ -291,5 +289,20 @@ export class SearchableSelectComponent<T>
     } else {
       this.shrink();
     }
+  }
+
+  /**
+   * Update `optionsWithSearch` to filter using the given search term.
+   */
+  private updateOptionsToShow(): void {
+    const searchTerm = this.searchTerm.value;
+    if (!searchTerm) {
+      this.optionsWithSearch = this._options;
+      return;
+    }
+
+    this.optionsWithSearch = this._options.filter((option) =>
+      option.dropdownValue.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
   }
 }

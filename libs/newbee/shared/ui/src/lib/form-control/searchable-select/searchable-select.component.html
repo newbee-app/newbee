@@ -1,47 +1,25 @@
 <div class="flex flex-col flex-nowrap gap-y-2 w-full">
-  <newbee-dropdown
+  <newbee-dropdown-with-arrow
+    [labelText]="selectedText"
+    [labelClasses]="{
+      'bg-base-100': true,
+      'border-neutral hover:border-neutral': valid,
+      'border-error hover:border-error': !valid
+    }"
+    [disabled]="disabled"
     placement="bottom-start"
     [expanded]="expanded"
     (expandedChange)="onExpandedChange($event)"
   >
-    <button
-      label
-      type="button"
-      [disabled]="disabled"
-      class="btn flex flex-row flex-nowrap gap-x-1 justify-between w-full"
-      [ngClass]="{ 'border-neutral': valid, 'border-error': !valid }"
+    <ul
+      class="menu flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
     >
-      <span class="truncate">{{ selectedText }}</span>
-
-      <span
-        class="transition-all duration-100 ease-in-out"
-        [ngClass]="{ 'rotate-180': expanded }"
+      <div
+        #dropdownNoToggle
+        class="mb-2"
+        [ngClass]="{ hidden: !showSearchbar }"
       >
-        <!-- chevron-down svg -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-          />
-        </svg>
-      </span>
-    </button>
-
-    <div
-      dropdown
-      class="flex flex-col flex-nowrap w-full max-h-60 overflow-y-auto overflow-x-hidden"
-    >
-      <div #dropdownNoToggle>
         <input
-          *ngIf="showSearchbar"
           [formControl]="searchTerm"
           type="text"
           placeholder="Search"
@@ -49,16 +27,11 @@
         />
       </div>
 
-      <button
-        type="button"
-        *ngFor="let option of optionsWithSearch"
-        (click)="selectOption(option.value)"
-        class="btn btn-ghost justify-start text-left normal-case font-normal"
-      >
-        {{ option.dropdownValue }}
-      </button>
-    </div>
-  </newbee-dropdown>
+      <li *ngFor="let option of optionsWithSearch">
+        <a (click)="selectOption(option.value)">{{ option.dropdownValue }}</a>
+      </li>
+    </ul>
+  </newbee-dropdown-with-arrow>
 
   <newbee-alert
     [type]="alertType.Error"

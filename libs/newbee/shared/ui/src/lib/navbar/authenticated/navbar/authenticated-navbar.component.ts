@@ -10,8 +10,11 @@ import {
   userDisplayName,
   type User,
 } from '@newbee/shared/util';
-import { DropdownComponent } from '../../../dropdown';
-import { TooltipComponent } from '../../../tooltip';
+import {
+  DropdownComponent,
+  DropdownWithArrowComponent,
+} from '../../../dropdown';
+import { TextTooltipComponent } from '../../../tooltip';
 import { AuthenticatedSidebarComponent } from '../sidebar';
 
 /**
@@ -22,8 +25,9 @@ import { AuthenticatedSidebarComponent } from '../sidebar';
   standalone: true,
   imports: [
     CommonModule,
-    TooltipComponent,
+    TextTooltipComponent,
     DropdownComponent,
+    DropdownWithArrowComponent,
     AuthenticatedSidebarComponent,
   ],
   templateUrl: './authenticated-navbar.component.html',
