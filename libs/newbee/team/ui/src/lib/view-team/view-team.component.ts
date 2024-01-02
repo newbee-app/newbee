@@ -83,8 +83,8 @@ export class ViewTeamComponent {
    * A string detailing how many users are members of the team.
    */
   get totalMembers(): string {
-    return `${this.team.teamMembers.total} ${
-      this.team.teamMembers.total === 1 ? 'member' : 'members'
+    return `${this.team.teamMembers.length} ${
+      this.team.teamMembers.length === 1 ? 'member' : 'members'
     }`;
   }
 

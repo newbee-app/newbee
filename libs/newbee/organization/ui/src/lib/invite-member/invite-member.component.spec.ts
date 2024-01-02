@@ -39,6 +39,17 @@ describe('InviteMemberComponent', () => {
       expect(component.invite.emit).toHaveBeenCalledTimes(1);
       expect(component.invite.emit).toHaveBeenCalledWith({
         email: '',
+        role: null,
+      });
+
+      component.inviteMemberForm.setValue({
+        email: testUser1.email,
+        role: OrgRoleEnum.Member,
+      });
+      component.emitInvite();
+      expect(component.invite.emit).toHaveBeenCalledTimes(2);
+      expect(component.invite.emit).toHaveBeenCalledWith({
+        email: testUser1.email,
         role: OrgRoleEnum.Member,
       });
     });
@@ -49,7 +60,7 @@ describe('InviteMemberComponent', () => {
       component.invitedUser = testUser1.email;
       expect(component.inviteMemberForm.value).toEqual({
         email: '',
-        role: OrgRoleEnum.Member,
+        role: null,
       });
       expect(component.inviteMemberForm.pristine).toBeTruthy();
       expect(component.inviteMemberForm.untouched).toBeTruthy();

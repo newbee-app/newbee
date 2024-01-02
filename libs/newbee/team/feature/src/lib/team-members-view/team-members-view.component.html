@@ -1,0 +1,16 @@
+<newbee-view-team-members
+  [orgMember]="(orgState$ | async)!.orgMember!.orgMember"
+  [teamMember]="(teamState$ | async)!.teamMember"
+  [teamMembers]="(teamState$ | async)!.selectedTeam!.teamMembers"
+  [orgMembers]="(nonTeamOrgMembers$ | async)!"
+  [addTeamMemberPending]="(teamModuleState$ | async)!.pendingAddTeamMember"
+  [editTeamMemberPending]="(teamModuleState$ | async)!.pendingEditTeamMember"
+  [deleteTeamMemberPending]="
+    (teamModuleState$ | async)!.pendingDeleteTeamMember
+  "
+  [httpClientError]="httpClientError$ | async"
+  (addTeamMember)="onAddTeamMember($event)"
+  (editTeamMember)="onEditTeamMember($event)"
+  (deleteTeamMember)="onDeleteTeamMember($event)"
+  (orgNavigate)="onOrgNavigate($event)"
+></newbee-view-team-members>

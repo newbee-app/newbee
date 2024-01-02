@@ -19,16 +19,13 @@ export default {
     organization: testOrganization1,
     team: {
       ...testTeamRelation1,
-      teamMembers: {
-        sample: [
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-          testTeamMemberRelation1,
-        ],
-        total: 100,
-      },
+      teamMembers: [
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+        testTeamMemberRelation1,
+      ],
       qnas: {
         sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
         total: 100,

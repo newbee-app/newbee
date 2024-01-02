@@ -5,7 +5,7 @@ import {
   UserActions,
 } from '@newbee/newbee/shared/data-access';
 import { testAuthenticator1 } from '@newbee/shared/util';
-import { initialUserState, userFeature, UserState } from './user.reducer';
+import { UserState, initialUserState, userFeature } from './user.reducer';
 
 describe('UserReducer', () => {
   const stateAfterEditUser: UserState = {
@@ -19,8 +19,8 @@ describe('UserReducer', () => {
   const stateAfterGetAuthenticatorsSuccess: UserState = {
     ...initialUserState,
     authenticators: [testAuthenticator1],
-    pendingEditAuthenticator: new Map([[testAuthenticator1.id, false]]),
-    pendingDeleteAuthenticator: new Map([[testAuthenticator1.id, false]]),
+    pendingEditAuthenticator: new Set(),
+    pendingDeleteAuthenticator: new Set(),
   };
   const stateAfterCreateRegistrationOptions: UserState = {
     ...initialUserState,
@@ -28,18 +28,18 @@ describe('UserReducer', () => {
   };
   const stateAfterEditAuthenticatorName: UserState = {
     ...stateAfterGetAuthenticatorsSuccess,
-    pendingEditAuthenticator: new Map([[testAuthenticator1.id, true]]),
+    pendingEditAuthenticator: new Set([testAuthenticator1.id]),
   };
   const stateAfterDeleteAuthenticator: UserState = {
     ...stateAfterGetAuthenticatorsSuccess,
-    pendingDeleteAuthenticator: new Map([[testAuthenticator1.id, true]]),
+    pendingDeleteAuthenticator: new Set([testAuthenticator1.id]),
   };
 
   describe('from initial state', () => {
     it('should update state for editUser', () => {
       const updatedState = userFeature.reducer(
         initialUserState,
-        UserActions.editUser
+        UserActions.editUser,
       );
       expect(updatedState).toEqual(stateAfterEditUser);
     });
@@ -47,7 +47,7 @@ describe('UserReducer', () => {
     it('should update state for deleteUser', () => {
       const updatedState = userFeature.reducer(
         initialUserState,
-        UserActions.deleteUser
+        UserActions.deleteUser,
       );
       expect(updatedState).toEqual(stateAfterDeleteUser);
     });
@@ -57,7 +57,7 @@ describe('UserReducer', () => {
         initialUserState,
         AuthenticatorActions.getAuthenticatorsSuccess({
           authenticators: [testAuthenticator1],
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGetAuthenticatorsSuccess);
     });
@@ -65,7 +65,7 @@ describe('UserReducer', () => {
     it('should update state for createRegistrationOptions', () => {
       const updatedState = userFeature.reducer(
         initialUserState,
-        AuthenticatorActions.createRegistrationOptions
+        AuthenticatorActions.createRegistrationOptions,
       );
       expect(updatedState).toEqual(stateAfterCreateRegistrationOptions);
     });
@@ -77,7 +77,7 @@ describe('UserReducer', () => {
         stateAfterCreateRegistrationOptions,
         AuthenticatorActions.createAuthenticatorSuccess({
           authenticator: testAuthenticator1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGetAuthenticatorsSuccess);
     });
@@ -85,13 +85,13 @@ describe('UserReducer', () => {
     it('should update for editUserSuccess', () => {
       let updatedState = userFeature.reducer(
         stateAfterEditUser,
-        UserActions.editUserSuccess
+        UserActions.editUserSuccess,
       );
       expect(updatedState).toEqual(initialUserState);
 
       updatedState = userFeature.reducer(
         stateAfterGetAuthenticatorsSuccess,
-        UserActions.editUserSuccess
+        UserActions.editUserSuccess,
       );
       expect(updatedState).toEqual(stateAfterGetAuthenticatorsSuccess);
     });
@@ -102,7 +102,7 @@ describe('UserReducer', () => {
         AuthenticatorActions.editAuthenticatorName({
           id: testAuthenticator1.id,
           name: testAuthenticator1.name,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterEditAuthenticatorName);
     });
@@ -112,7 +112,7 @@ describe('UserReducer', () => {
         stateAfterEditAuthenticatorName,
         AuthenticatorActions.editAuthenticatorNameSuccess({
           authenticator: { ...testAuthenticator1, name: 'new' },
-        })
+        }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetAuthenticatorsSuccess,
@@ -123,7 +123,7 @@ describe('UserReducer', () => {
     it('should update state for deleteAuthenticator', () => {
       const updatedState = userFeature.reducer(
         stateAfterGetAuthenticatorsSuccess,
-        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id })
+        AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id }),
       );
       expect(updatedState).toEqual(stateAfterDeleteAuthenticator);
     });
@@ -133,7 +133,7 @@ describe('UserReducer', () => {
         stateAfterDeleteAuthenticator,
         AuthenticatorActions.deleteAuthenticatorSuccess({
           id: testAuthenticator1.id,
-        })
+        }),
       );
       expect(updatedState).toEqual({ ...initialUserState, authenticators: [] });
     });
@@ -141,13 +141,13 @@ describe('UserReducer', () => {
     it('should update state for clientError', () => {
       let updatedState = userFeature.reducer(
         stateAfterEditUser,
-        HttpActions.clientError
+        HttpActions.clientError,
       );
       expect(updatedState).toEqual(initialUserState);
 
       updatedState = userFeature.reducer(
         stateAfterGetAuthenticatorsSuccess,
-        HttpActions.clientError
+        HttpActions.clientError,
       );
       expect(updatedState).toEqual(stateAfterGetAuthenticatorsSuccess);
     });
@@ -155,7 +155,7 @@ describe('UserReducer', () => {
     it('should update state for deleteUserSuccess', () => {
       const updatedState = userFeature.reducer(
         stateAfterEditUser,
-        UserActions.deleteUserSuccess
+        UserActions.deleteUserSuccess,
       );
       expect(updatedState).toEqual(initialUserState);
     });
@@ -163,7 +163,7 @@ describe('UserReducer', () => {
     it('should update state for routerRequest', () => {
       const updatedState = userFeature.reducer(
         stateAfterEditUser,
-        RouterActions.routerRequest
+        RouterActions.routerRequest,
       );
       expect(updatedState).toEqual(initialUserState);
     });

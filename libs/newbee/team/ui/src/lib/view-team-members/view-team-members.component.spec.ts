@@ -28,6 +28,7 @@ describe('ViewTeamMembers', () => {
     component.orgMembers = [testOrgMemberUser1, testOrgMemberUser2];
 
     jest.spyOn(component.addTeamMember, 'emit');
+    jest.spyOn(component.editTeamMember, 'emit');
     jest.spyOn(component.orgNavigate, 'emit');
 
     fixture.detectChanges();
@@ -38,7 +39,7 @@ describe('ViewTeamMembers', () => {
     expect(fixture).toBeDefined();
   });
 
-  describe('ngOnInit', () => {
+  describe('setters', () => {
     it('should generate team roles', () => {
       expect(component.roleOptions).toEqual(
         ascTeamRoleEnum.map((role) => new SelectOption(role, role)),
@@ -48,23 +49,76 @@ describe('ViewTeamMembers', () => {
         testTeamMemberRelation2,
       ]);
     });
-  });
 
-  describe('emitAddTeamMember', () => {
-    it('should emit addTeamMember', () => {
-      component.emitAddTeamMember();
-      expect(component.addTeamMember.emit).not.toHaveBeenCalled();
+    it('should generate team member controls', () => {
+      expect(component.editTeamMemberForm.controls.roles.length).toEqual(
+        component.teamMembers.length,
+      );
+      expect(component.orgMemberSlugToIndex.size).toEqual(
+        component.teamMembers.length,
+      );
+    });
 
-      component.addMemberForm.setValue({
+    it('should generate org members', () => {
+      expect(component.orgMemberOptions.length).toEqual(2);
+    });
+
+    it('should reset form control if addMemberPending is switched to true', () => {
+      component.addTeamMemberForm.setValue({
         member: testOrgMemberUser1,
         role: TeamRoleEnum.Member,
       });
+      component.addTeamMemberForm.markAsTouched();
+      component.addTeamMemberForm.markAsDirty();
+      component.addTeamMemberPending = true;
+      expect(component.addTeamMemberForm.value).toEqual({
+        member: null,
+        role: null,
+      });
+      expect(component.addTeamMemberForm.pristine).toBeTruthy();
+      expect(component.addTeamMemberForm.untouched).toBeTruthy();
+    });
+  });
+
+  describe('emitAddTeamMember', () => {
+    it('should emit addTeamMember and remove from editingTeamMembers', () => {
+      component.emitAddTeamMember();
+      expect(component.addTeamMember.emit).not.toHaveBeenCalled();
+
+      component.addTeamMemberForm.setValue({
+        member: testOrgMemberUser1,
+        role: TeamRoleEnum.Member,
+      });
+      component.editingTeamMembers.add(testOrgMemberUser1.orgMember.slug);
       component.emitAddTeamMember();
       expect(component.addTeamMember.emit).toHaveBeenCalledTimes(1);
       expect(component.addTeamMember.emit).toHaveBeenCalledWith({
         orgMemberSlug: testOrgMember1.slug,
         role: TeamRoleEnum.Member,
       });
+      expect(
+        component.editingTeamMembers.has(testOrgMemberUser1.orgMember.slug),
+      ).toBeFalsy();
+    });
+  });
+
+  describe('emitEditTeamMember', () => {
+    it('should emit editTeamMember', () => {
+      component.editTeamMemberForm.controls.roles
+        .at(0)
+        .setValue(TeamRoleEnum.Member);
+      component.editingTeamMembers.add(testTeamMemberRelation1.orgMember.slug);
+      component.emitEditTeamMember(testTeamMemberRelation1.orgMember.slug);
+      expect(component.editTeamMember.emit).toHaveBeenCalledTimes(1);
+      expect(component.editTeamMember.emit).toHaveBeenCalledWith({
+        orgMemberSlug: testTeamMemberRelation1.orgMember.slug,
+        updateTeamMemberDto: { role: TeamRoleEnum.Member },
+      });
+      expect(
+        component.editingTeamMembers.has(
+          testTeamMemberRelation1.orgMember.slug,
+        ),
+      ).toBeFalsy();
     });
   });
 
@@ -74,6 +128,27 @@ describe('ViewTeamMembers', () => {
       expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
       expect(component.orgNavigate.emit).toHaveBeenCalledWith(
         `/${ShortUrl.Member}/${testOrgMember1.slug}`,
+      );
+    });
+  });
+
+  describe('roleIsUnique', () => {
+    it('should return true only if form role is unique', () => {
+      expect(
+        component.roleIsUnique(
+          testTeamMemberRelation1.orgMember.slug,
+          testTeamMemberRelation1.teamMember.role,
+        ),
+      ).toBeFalsy();
+
+      component.editTeamMemberForm.controls.roles
+        .at(0)
+        .setValue(TeamRoleEnum.Member);
+      expect(
+        component.roleIsUnique(
+          testTeamMemberRelation1.orgMember.slug,
+          TeamRoleEnum.Owner,
+        ),
       );
     });
   });

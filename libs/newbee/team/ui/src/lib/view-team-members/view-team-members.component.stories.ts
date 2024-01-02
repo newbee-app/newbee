@@ -1,5 +1,6 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
+  Keyword,
   testOrgMember1,
   testOrgMemberUser1,
   testOrgMemberUser2,
@@ -29,13 +30,14 @@ export default {
     teamMember: testTeamMember1,
     teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
     orgMembers: [testOrgMemberUser1, testOrgMemberUser2],
-    addedUser: null,
-    addMemberPending: false,
-    deleteMemberPending: new Map<string, boolean>(),
+    addTeamMemberPending: false,
+    editTeamMemberPending: new Set(),
+    deleteTeamMemberPending: new Set(),
     httpClientError: null,
   },
   argTypes: {
     addTeamMember: { action: 'invite' },
+    editTeamMember: { action: 'editTeamMember' },
     deleteTeamMember: { action: 'deleteTeamMember' },
     orgNavigate: { action: 'orgNavigate' },
   },
@@ -96,5 +98,27 @@ export const LotsOfTeamMembers: Story = {
       testTeamMemberRelation1,
       testTeamMemberRelation1,
     ],
+  },
+};
+
+export const Pending: Story = {
+  args: {
+    editTeamMemberPending: new Set([testTeamMemberRelation1.orgMember.slug]),
+    deleteTeamMemberPending: new Set([testTeamMemberRelation1.orgMember.slug]),
+  },
+};
+
+export const Errors: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: {
+        [`${Keyword.TeamMember}-${Keyword.New}`]: 'new team member error',
+        [`${Keyword.TeamMember}-${Keyword.Edit}-${testTeamMemberRelation1.orgMember.slug}`]:
+          'org member 1 team member edit error',
+        [`${Keyword.TeamMember}-${Keyword.Delete}-${testTeamMemberRelation1.orgMember.slug}`]:
+          'org member 1 team member delete error',
+      },
+    },
   },
 };

@@ -137,18 +137,18 @@
                 >
                   <span
                     *ngIf="
-                      !editAuthenticatorPending.get(authenticator.id);
+                      !editAuthenticatorPending.has(authenticator.id);
                       else editAuthenticatorLoading
                     "
                     >{{ authenticator.name }}</span
                   >
-                  <ng-template #editAuthenticatorLoading
-                    ><span class="loading loading-dots"></span
+                  <ng-template #editAuthenticatorLoading>
+                    <span class="loading loading-dots"></span
                   ></ng-template>
 
                   <button
                     type="button"
-                    [disabled]="editAuthenticatorPending.get(authenticator.id)"
+                    [disabled]="editAuthenticatorPending.has(authenticator.id)"
                     (click)="startEditAuthenticator(authenticator.id)"
                     class="btn btn-ghost btn-xs rounded-md"
                   >
@@ -255,7 +255,7 @@
             <td class="flex flex-col flex-nowrap gap-y-1">
               <a
                 *ngIf="
-                  !deleteAuthenticatorPending.get(authenticator.id);
+                  !deleteAuthenticatorPending.has(authenticator.id);
                   else deleteAuthenticatorLoading
                 "
                 (click)="deleteAuthenticator.emit(authenticator.id)"

@@ -24,12 +24,8 @@ describe('EditUserComponent', () => {
 
     component.user = testUser1;
     component.authenticators = [testAuthenticator1];
-    component.editAuthenticatorPending = new Map([
-      [testAuthenticator1.id, false],
-    ]);
-    component.deleteAuthenticatorPending = new Map([
-      [testAuthenticator1.id, false],
-    ]);
+    component.editAuthenticatorPending = new Set([testAuthenticator1.id]);
+    component.deleteAuthenticatorPending = new Set([testAuthenticator1.id]);
 
     jest.spyOn(component.edit, 'emit');
     jest.spyOn(component.editAuthenticator, 'emit');

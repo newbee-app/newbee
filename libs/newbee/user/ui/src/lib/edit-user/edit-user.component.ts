@@ -78,12 +78,12 @@ export class EditUserComponent implements OnInit {
   /**
    * Whether to display the loader on an authenticator.
    */
-  @Input() editAuthenticatorPending: Map<string, boolean> = new Map();
+  @Input() editAuthenticatorPending = new Set<string>();
 
   /**
    * Whether to display the loader on an authenticator.
    */
-  @Input() deleteAuthenticatorPending: Map<string, boolean> = new Map();
+  @Input() deleteAuthenticatorPending = new Set<string>();
 
   /**
    * Whether to display the spinner on the delete button.

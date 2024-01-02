@@ -12,18 +12,10 @@
       onclick="addMemberModal.showModal()"
       class="btn btn-info w-fit"
     >
-      <span *ngIf="addMemberPending" class="loading loading-spinner"></span>
+      <span *ngIf="addTeamMemberPending" class="loading loading-spinner"></span>
       Add a member
     </button>
 
-    <newbee-alert
-      *ngIf="addedUser"
-      [type]="alertType.Success"
-      [show]="true"
-      [text]="
-        'Successfully added ' + userDisplayName(addedUser) + ' to the team'
-      "
-    ></newbee-alert>
     <newbee-alert
       [show]="!!httpClientErrorMsg(keyword.TeamMember, keyword.New)"
       [text]="httpClientErrorMsg(keyword.TeamMember, keyword.New)"
@@ -41,7 +33,7 @@
 
       <form
         id="invite-member-form"
-        [formGroup]="addMemberForm"
+        [formGroup]="addTeamMemberForm"
         class="flex flex-col flex-nowrap gap-y-4 mt-6"
       >
         <h4>Add a new team member</h4>
@@ -74,11 +66,14 @@
         <button
           type="submit"
           id="invite-btn"
-          [disabled]="addMemberForm.invalid || addMemberPending"
+          [disabled]="addTeamMemberForm.invalid || addTeamMemberPending"
           (click)="emitAddTeamMember()"
           class="btn btn-primary"
         >
-          <span *ngIf="addMemberPending" class="loading loading-spinner"></span>
+          <span
+            *ngIf="addTeamMemberPending"
+            class="loading loading-spinner"
+          ></span>
           Add
         </button>
         <button type="submit" class="btn">Close</button>
@@ -92,7 +87,11 @@
     placeholder="Filter team members..."
   ></newbee-searchbar>
 
-  <table *ngIf="teamMembers.length" class="table table-md">
+  <table
+    *ngIf="teamMembers.length"
+    [formGroup]="editTeamMemberForm"
+    class="table table-md"
+  >
     <thead>
       <tr>
         <th>User</th>
@@ -101,8 +100,8 @@
       </tr>
     </thead>
 
-    <tbody *ngIf="teamMembersToShow.length">
-      <tr *ngFor="let tm of teamMembersToShow">
+    <tbody *ngIf="teamMembersToShow.length" formArrayName="roles">
+      <tr *ngFor="let tm of teamMembersToShow" class="hover">
         <td>
           <div class="w-fit">
             <newbee-tooltip
@@ -127,12 +126,136 @@
           </div>
         </td>
 
-        <td>{{ tm.teamMember.role }}</td>
+        <td>
+          <div class="flex flex-row gap-x-1 justify-between items-center">
+            <ng-container
+              *ngIf="
+                !editingTeamMembers.has(tm.orgMember.slug);
+                else editingTeamMembersHas
+              "
+            >
+              <ng-container
+                *ngIf="
+                  !editTeamMemberPending.has(tm.orgMember.slug);
+                  else editMemberLoading
+                "
+              >
+                {{ tm.teamMember.role }}
+              </ng-container>
+              <ng-template #editMemberLoading>
+                <span class="loading loading-dots"></span>
+              </ng-template>
+
+              <button
+                *ngIf="
+                  checkRoles(apiRoles['team-member'].update, {
+                    orgMember,
+                    teamRole: teamMember?.role,
+                    team: true,
+                    subjectOrgRole: tm.orgMember.role,
+                    subjectTeamRole: tm.teamMember.role
+                  })
+                "
+                type="button"
+                [disabled]="editTeamMemberPending.has(tm.orgMember.slug)"
+                (click)="editingTeamMembers.add(tm.orgMember.slug)"
+                class="btn btn-ghost btn-xs rounded-md"
+              >
+                <!-- pencil svg -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+                  />
+                </svg>
+              </button>
+            </ng-container>
+            <ng-template #editingTeamMembersHas>
+              <newbee-searchable-select
+                [formControlName]="orgMemberSlugToIndex.get(tm.orgMember.slug)!"
+                [showSearchbar]="false"
+                [options]="roleOptions"
+                optionName="role"
+                [valid]="
+                  !httpClientErrorMsg(
+                    keyword.TeamMember,
+                    keyword.Edit,
+                    tm.orgMember.slug
+                  )
+                "
+                [errorText]="
+                  httpClientErrorMsg(
+                    keyword.TeamMember,
+                    keyword.Edit,
+                    tm.orgMember.slug
+                  )
+                "
+              ></newbee-searchable-select>
+
+              <div class="flex flex-row flex-nowrap">
+                <button
+                  type="button"
+                  [disabled]="
+                    !roleIsUnique(tm.orgMember.slug, tm.teamMember.role)
+                  "
+                  (click)="emitEditTeamMember(tm.orgMember.slug)"
+                  class="btn btn-ghost btn-xs rounded-md"
+                >
+                  <!-- check svg -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="editingTeamMembers.delete(tm.orgMember.slug)"
+                  class="btn btn-ghost btn-xs rounded-md"
+                >
+                  <!-- x-mark svg -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </td>
 
         <td class="flex flex-col flex-nowrap gap-y-1">
           <a
             *ngIf="
-              !deleteMemberPending.get(tm.orgMember.slug);
+              !deleteTeamMemberPending.has(tm.orgMember.slug);
               else deleteTmPending
             "
             (click)="deleteTeamMember.emit(tm.orgMember.slug)"

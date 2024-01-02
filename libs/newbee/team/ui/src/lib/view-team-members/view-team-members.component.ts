@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -16,7 +15,6 @@ import {
   TooltipComponent,
 } from '@newbee/newbee/shared/ui';
 import {
-  AlertType,
   HttpClientError,
   SearchResultFormat,
   SelectOption,
@@ -27,12 +25,12 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   BaseCreateTeamMemberDto,
+  BaseUpdateTeamMemberDto,
   Keyword,
   OrgMemberUser,
   TeamMember,
   TeamMemberUserOrgMember,
   TeamRoleEnum,
-  User,
   apiRoles,
   checkRoles,
   generateLteTeamRoles,
@@ -59,31 +57,59 @@ import { Subject, takeUntil } from 'rxjs';
   ],
   templateUrl: './view-team-members.component.html',
 })
-export class ViewTeamMembersComponent implements OnInit, OnDestroy {
+export class ViewTeamMembersComponent implements OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
-  readonly alertType = AlertType;
   readonly keyword = Keyword;
   readonly shortUrl = ShortUrl;
   readonly searchResultFormat = SearchResultFormat;
   readonly apiRoles = apiRoles;
   readonly checkRoles = checkRoles;
-  readonly userDisplayName = userDisplayName;
   readonly userDisplayNameAndEmail = userDisplayNameAndEmail;
 
   /**
    * The org member looking at the screen.
    */
-  @Input() orgMember!: OrgMember;
+  @Input()
+  get orgMember(): OrgMember {
+    return this._orgMember;
+  }
+  set orgMember(orgMember: OrgMember) {
+    this._orgMember = orgMember;
+    this.generateRoleOptions();
+  }
+  _orgMember!: OrgMember;
 
   /**
    * The team member looking at the screen, if applicable.
    */
-  @Input() teamMember: TeamMember | null = null;
+  @Input()
+  get teamMember(): TeamMember | null {
+    return this._teamMember;
+  }
+  set teamMember(teamMember: TeamMember | null) {
+    this._teamMember = teamMember;
+    this.generateRoleOptions();
+  }
+  _teamMember: TeamMember | null = null;
 
   /**
    * All of the team members that currently belong to the team.
    */
-  @Input() teamMembers: TeamMemberUserOrgMember[] = [];
+  @Input()
+  get teamMembers(): TeamMemberUserOrgMember[] {
+    return this._teamMembers;
+  }
+  set teamMembers(teamMembers: TeamMemberUserOrgMember[]) {
+    this._teamMembers = teamMembers;
+
+    const teamMemberRoles = this.editTeamMemberForm.controls.roles;
+    teamMemberRoles.clear();
+    teamMembers.forEach((teamMember) => {
+      teamMemberRoles.push(this.fb.control(teamMember.teamMember.role));
+    });
+    this.updateTeamMembersToShow();
+  }
+  _teamMembers: TeamMemberUserOrgMember[] = [];
 
   /**
    * All of the org members eligible to be added to the team (the ones that don't already belong to the team).
@@ -100,33 +126,31 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * The successfully added user, if a user was successfully added.
-   */
-  @Input()
-  get addedUser(): User | null {
-    return this._addedUser;
-  }
-  set addedUser(addedUser: User | null) {
-    this._addedUser = addedUser;
-    if (!addedUser) {
-      return;
-    }
-
-    this.addMemberForm.setValue({ member: null, role: null });
-    this.addMemberForm.markAsPristine();
-    this.addMemberForm.markAsUntouched();
-  }
-  private _addedUser: User | null = null;
-
-  /**
    * Whether to display the spinner on the add member button.
    */
-  @Input() addMemberPending = false;
+  @Input()
+  get addTeamMemberPending(): boolean {
+    return this._addTeamMemberPending;
+  }
+  set addTeamMemberPending(addTeamMemberPending: boolean) {
+    this._addTeamMemberPending = addTeamMemberPending;
+    if (addTeamMemberPending) {
+      this.addTeamMemberForm.setValue({ member: null, role: null });
+      this.addTeamMemberForm.markAsPristine();
+      this.addTeamMemberForm.markAsUntouched();
+    }
+  }
+  _addTeamMemberPending = false;
+
+  /**
+   * Whether to display the loader on a team member.
+   */
+  @Input() editTeamMemberPending = new Set<string>();
 
   /**
    * Whether to display a loading symbol for deleting a team member.
    */
-  @Input() deleteMemberPending = new Map<string, boolean>();
+  @Input() deleteTeamMemberPending = new Set<string>();
 
   /**
    * An HTTP error for the component, if one exists.
@@ -137,6 +161,14 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    * The information necessary for the smart UI parent to create a team member.
    */
   @Output() addTeamMember = new EventEmitter<BaseCreateTeamMemberDto>();
+
+  /**
+   * The information necessary for the smart UI parent to edit a team member.
+   */
+  @Output() editTeamMember = new EventEmitter<{
+    orgMemberSlug: string;
+    updateTeamMemberDto: BaseUpdateTeamMemberDto;
+  }>();
 
   /**
    * The org member slug of the team member to delete, for use in the smart UI parent.
@@ -151,9 +183,17 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
   /**
    * The form containing the org member and role for the user wants to add to the team.
    */
-  addMemberForm = this.fb.group({
+  addTeamMemberForm = this.fb.group({
     member: [null as null | OrgMemberUser, [Validators.required]],
     role: [null as null | TeamRoleEnum, [Validators.required]],
+  });
+
+  /**
+   * A form array containing form controls for each team member.
+   * Wrapped in a redundant form group because Angular requires it (idk why).
+   */
+  editTeamMemberForm = this.fb.group({
+    roles: this.fb.array<TeamRoleEnum>([]),
   });
 
   /**
@@ -176,34 +216,25 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    */
   teamMembersToShow: TeamMemberUserOrgMember[] = [];
 
-  constructor(private readonly fb: FormBuilder) {
-    this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (searchTerm) => {
-        if (!searchTerm) {
-          this.teamMembersToShow = this.teamMembers;
-          return;
-        }
-
-        const lcSearchTerm = searchTerm.toLowerCase();
-        this.teamMembersToShow = this.teamMembers.filter((teamMember) => {
-          return userDisplayNameAndEmail(teamMember.user)
-            .toLowerCase()
-            .includes(lcSearchTerm);
-        });
-      },
-    });
-  }
+  /**
+   * The org member slugs of the team members that are currently being edited.
+   */
+  editingTeamMembers = new Set<string>();
 
   /**
-   * Set up `orgMemberOptions`.
+   * A map mapping an org member's slug to its index in the editMemberForm's form array, in case its differnt due to search filtering.
    */
-  ngOnInit(): void {
-    this.roleOptions = generateLteTeamRoles(
-      this.orgMember.role,
-      this.teamMember?.role ?? null,
-    ).map((role) => new SelectOption(role, role));
+  orgMemberSlugToIndex = new Map<string, number>();
 
-    this.teamMembersToShow = this.teamMembers;
+  /**
+   * Set up the searchbar to update `teamMembersToShow` whenever its value changes.
+   */
+  constructor(private readonly fb: FormBuilder) {
+    this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: () => {
+        this.updateTeamMembersToShow();
+      },
+    });
   }
 
   /**
@@ -218,15 +249,35 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    * Tell the parent UI to add the given member to the team.
    */
   emitAddTeamMember(): void {
-    const { member, role } = this.addMemberForm.value;
+    const { member, role } = this.addTeamMemberForm.value;
     if (!member || !role) {
       return;
     }
 
     this.addTeamMember.emit({
-      orgMemberSlug: member.orgMember.slug ?? '',
+      orgMemberSlug: member.orgMember.slug,
       role: role,
     });
+    this.editingTeamMembers.delete(member.orgMember.slug);
+  }
+
+  /**
+   * Edit the team member using its form value given its org member slug.
+   * @param orgMemberSlug The team member to edit.
+   */
+  emitEditTeamMember(orgMemberSlug: string): void {
+    const index = this.orgMemberSlugToIndex.get(orgMemberSlug);
+    if (index === undefined) {
+      return;
+    }
+
+    const role = this.editTeamMemberForm.controls.roles.at(index).value;
+    if (!role) {
+      return;
+    }
+
+    this.editTeamMember.emit({ orgMemberSlug, updateTeamMemberDto: { role } });
+    this.editingTeamMembers.delete(orgMemberSlug);
   }
 
   /**
@@ -257,7 +308,7 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    */
   inputDisplayError(inputName: string): boolean {
     return (
-      inputDisplayError(this.addMemberForm.get(inputName)) ||
+      inputDisplayError(this.addTeamMemberForm.get(inputName)) ||
       !!getHttpClientErrorMsg(this.httpClientError, inputName)
     );
   }
@@ -271,8 +322,62 @@ export class ViewTeamMembersComponent implements OnInit, OnDestroy {
    */
   inputErrorMessage(inputName: string): string {
     return (
-      inputErrorMessage(this.addMemberForm.get(inputName)) ||
+      inputErrorMessage(this.addTeamMemberForm.get(inputName)) ||
       getHttpClientErrorMsg(this.httpClientError, inputName)
     );
+  }
+
+  /**
+   * Whether the form value for the given org member slug is unique from the given role.
+   *
+   * @param orgMemberSlug The org member slug to look for in the form.
+   * @param role The role value to compare.
+   *
+   * @returns `true` if the form value role is truthy and distinct from the given role, `false` otherwise.
+   */
+  roleIsUnique(orgMemberSlug: string, role: TeamRoleEnum): boolean {
+    const index = this.orgMemberSlugToIndex.get(orgMemberSlug);
+    if (index === undefined) {
+      return false;
+    }
+
+    const formRole = this.editTeamMemberForm.controls.roles.at(index).value;
+    if (!formRole) {
+      return false;
+    }
+
+    return formRole !== role;
+  }
+
+  /**
+   * Update `teamMembersToShow` to filter using the given search term and map the new values to `orgMemberSlugToIndex`.
+   */
+  private updateTeamMembersToShow(): void {
+    const searchTerm = this.searchbar.value;
+    if (!searchTerm) {
+      this.teamMembersToShow = this._teamMembers;
+    } else {
+      const lcSearchTerm = searchTerm.toLowerCase();
+      this.teamMembersToShow = this._teamMembers.filter((teamMember) => {
+        return userDisplayNameAndEmail(teamMember.user)
+          .toLowerCase()
+          .includes(lcSearchTerm);
+      });
+    }
+
+    this.orgMemberSlugToIndex.clear();
+    this.teamMembersToShow.forEach((teamMember, index) => {
+      this.orgMemberSlugToIndex.set(teamMember.orgMember.slug, index);
+    });
+  }
+
+  /**
+   * Generate the value for `roleOptions` based on the current value of `orgMember` and `teamMember`.
+   */
+  private generateRoleOptions(): void {
+    this.roleOptions = generateLteTeamRoles(
+      this.orgMember.role,
+      this.teamMember?.role ?? null,
+    ).map((role) => new SelectOption(role, role));
   }
 }

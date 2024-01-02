@@ -1,10 +1,14 @@
 import {
   BaseCreateTeamDto,
+  BaseCreateTeamMemberDto,
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
+  BaseUpdateTeamMemberDto,
   Keyword,
   Organization,
   Team,
+  TeamMember,
+  TeamMemberUserOrgMember,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -88,6 +92,49 @@ export const TeamActions = createActionGroup({
      * Indicates that a slug was successfully generated.
      */
     'Generate Slug Success': props<{ slug: string }>(),
+
+    /**
+     * Add a new team member to the team.
+     */
+    'Add Team Member': props<{
+      createTeamMemberDto: BaseCreateTeamMemberDto;
+    }>(),
+
+    /**
+     * Indicates that a team member was successfully added to the team.
+     */
+    'Add Team Member Success': props<{ teamMember: TeamMemberUserOrgMember }>(),
+
+    /**
+     * Edit an existing team member.
+     */
+    'Edit Team Member': props<{
+      orgMemberSlug: string;
+      updateTeamMemberDto: BaseUpdateTeamMemberDto;
+    }>(),
+
+    /**
+     * Indicates that an existing team member was successfully edited.
+     */
+    'Edit Team Member Success': props<{
+      orgMemberSlug: string;
+      teamMember: TeamMember;
+    }>(),
+
+    /**
+     * Delete an existing team member.
+     */
+    'Delete Team Member': props<{ orgMemberSlug: string }>(),
+
+    /**
+     * Indicates that a team member was successfully removed from the team.
+     */
+    'Delete Team Member Success': props<{ orgMemberSlug: string }>(),
+
+    /**
+     * Change the value for the current `teamMember`.
+     */
+    'Edit Current Team Member': props<{ teamMember: TeamMember | null }>(),
 
     /**
      * Reset the value for the selected team.
