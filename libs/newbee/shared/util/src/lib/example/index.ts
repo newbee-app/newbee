@@ -1,11 +1,10 @@
 import { forbiddenError, testUser1 } from '@newbee/shared/util';
-import { Country, SelectOption } from '../class';
+import { Country, SelectOption, Toast } from '../class';
 import { AlertType, ToastXPosition, ToastYPosition } from '../enum';
 import type {
   HttpClientError,
   HttpScreenError,
   PhoneInput,
-  Toast,
 } from '../interface';
 
 /**

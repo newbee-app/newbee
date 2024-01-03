@@ -3,11 +3,11 @@ import {
   OrganizationActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testOrganization1, testUser1 } from '@newbee/shared/util';
+import { testOrganization1 } from '@newbee/shared/util';
 import {
+  OrganizationState,
   initialOrganizationState,
   organizationFeature,
-  OrganizationState,
 } from './organization.reducer';
 
 describe('OrganizationReducer', () => {
@@ -39,16 +39,12 @@ describe('OrganizationReducer', () => {
     ...initialOrganizationState,
     generatedSlug: testOrganization1.slug,
   };
-  const stateAfterInviteUser: OrganizationState = {
-    ...initialOrganizationState,
-    pendingInvite: true,
-  };
 
   describe('start from initial state', () => {
     it('should update state for createOrg', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.createOrg
+        OrganizationActions.createOrg,
       );
       expect(updatedState).toEqual(stateAfterCreateOrg);
     });
@@ -56,7 +52,7 @@ describe('OrganizationReducer', () => {
     it('should update state for editOrg', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.editOrg
+        OrganizationActions.editOrg,
       );
       expect(updatedState).toEqual(stateAfterEditOrg);
     });
@@ -64,7 +60,7 @@ describe('OrganizationReducer', () => {
     it('should update state for editOrgSlug', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.editOrgSlug
+        OrganizationActions.editOrgSlug,
       );
       expect(updatedState).toEqual(stateAfterEditOrgSlug);
     });
@@ -72,7 +68,7 @@ describe('OrganizationReducer', () => {
     it('should update state for deleteOrg', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.deleteOrg
+        OrganizationActions.deleteOrg,
       );
       expect(updatedState).toEqual(stateAfterDeleteOrg);
     });
@@ -80,7 +76,7 @@ describe('OrganizationReducer', () => {
     it('should update state for typingSlug if slug is not empty string', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.typingSlug({ slug: testOrganization1.slug })
+        OrganizationActions.typingSlug({ slug: testOrganization1.slug }),
       );
       expect(updatedState).toEqual(stateAfterCheckSlug);
     });
@@ -88,7 +84,7 @@ describe('OrganizationReducer', () => {
     it('should update state for checkSlug if slug is not empty string', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.checkSlug({ slug: testOrganization1.slug })
+        OrganizationActions.checkSlug({ slug: testOrganization1.slug }),
       );
       expect(updatedState).toEqual(stateAfterCheckSlug);
     });
@@ -96,7 +92,7 @@ describe('OrganizationReducer', () => {
     it('should not update state for checkSlug if slug is empty string', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
-        OrganizationActions.checkSlug({ slug: '' })
+        OrganizationActions.checkSlug({ slug: '' }),
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -106,17 +102,9 @@ describe('OrganizationReducer', () => {
         initialOrganizationState,
         OrganizationActions.generateSlugSuccess({
           slug: testOrganization1.slug,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGenerateSlugSuccess);
-    });
-
-    it('should update state for inviteUser', () => {
-      const updatedState = organizationFeature.reducer(
-        initialOrganizationState,
-        OrganizationActions.inviteUser
-      );
-      expect(updatedState).toEqual(stateAfterInviteUser);
     });
   });
 
@@ -124,7 +112,7 @@ describe('OrganizationReducer', () => {
     it('should update state for createOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
-        OrganizationActions.createOrgSuccess
+        OrganizationActions.createOrgSuccess,
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -132,7 +120,7 @@ describe('OrganizationReducer', () => {
     it('should update state for clientError', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
-        HttpActions.clientError
+        HttpActions.clientError,
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -140,7 +128,7 @@ describe('OrganizationReducer', () => {
     it('should update state for routerRequest', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCreateOrg,
-        RouterActions.routerRequest()
+        RouterActions.routerRequest(),
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -148,7 +136,7 @@ describe('OrganizationReducer', () => {
     it('should update state for editOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterEditOrg,
-        OrganizationActions.editOrgSuccess
+        OrganizationActions.editOrgSuccess,
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -156,7 +144,7 @@ describe('OrganizationReducer', () => {
     it('should update state for deleteOrgSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterDeleteOrg,
-        OrganizationActions.deleteOrgSuccess
+        OrganizationActions.deleteOrgSuccess,
       );
       expect(updatedState).toEqual(initialOrganizationState);
     });
@@ -164,20 +152,9 @@ describe('OrganizationReducer', () => {
     it('should update state for checkSlugSuccess', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterCheckSlug,
-        OrganizationActions.checkSlugSuccess({ slugTaken: true })
+        OrganizationActions.checkSlugSuccess({ slugTaken: true }),
       );
       expect(updatedState).toEqual(stateAfterCheckSlugSuccess);
-    });
-
-    it('should update state for inviteUserSuccess', () => {
-      const updatedState = organizationFeature.reducer(
-        stateAfterInviteUser,
-        OrganizationActions.inviteUserSuccess({ email: testUser1.email })
-      );
-      expect(updatedState).toEqual({
-        ...initialOrganizationState,
-        invitedUser: testUser1.email,
-      });
     });
   });
 });

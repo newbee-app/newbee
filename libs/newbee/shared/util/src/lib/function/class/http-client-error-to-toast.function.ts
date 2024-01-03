@@ -1,6 +1,6 @@
-import { v4 } from 'uuid';
+import { Toast } from '../../class';
 import { AlertType, ToastXPosition, ToastYPosition } from '../../enum';
-import type { HttpClientError, Toast } from '../../interface';
+import type { HttpClientError } from '../../interface';
 
 /**
  * Converts an `HttpClientError` to a toast object or an array of toasts, depending on the contents of the error.
@@ -34,12 +34,11 @@ export function httpClientErrorToToast(err: HttpClientError): Toast | Toast[] {
  * @returns A `Toast` object.
  */
 function makeToast(text: string): Toast {
-  return {
-    id: v4(),
-    header: '',
+  return new Toast(
+    '',
     text,
-    type: AlertType.Error,
-    position: [ToastXPosition.Center, ToastYPosition.Bottom],
-    duration: 5000,
-  };
+    AlertType.Error,
+    [ToastXPosition.Center, ToastYPosition.Bottom],
+    5000,
+  );
 }

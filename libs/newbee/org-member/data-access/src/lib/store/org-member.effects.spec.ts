@@ -5,24 +5,40 @@ import {
   initialOrganizationState,
   initialOrgMemberState,
   OrgMemberActions,
+  ToastActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  AlertType,
+  ShortUrl,
+  Toast,
+  ToastXPosition,
+  ToastYPosition,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  testBaseCreateOrgMemberInviteDto1,
   testBaseUpdateOrgMemberDto1,
   testOrganization1,
   testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
+  testUser1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
+import { v4 } from 'uuid';
 import { OrgMemberService } from '../org-member.service';
 import { OrgMemberEffects } from './org-member.effects';
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('OrgMemberEffects', () => {
   let actions$ = new Observable<Action>();
@@ -55,6 +71,7 @@ describe('OrgMemberEffects', () => {
             get: jest.fn().mockReturnValue(of(testOrgMemberRelation1)),
             edit: jest.fn().mockReturnValue(of(testOrgMember1)),
             delete: jest.fn().mockReturnValue(of(null)),
+            inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -66,6 +83,9 @@ describe('OrgMemberEffects', () => {
     router = TestBed.inject(Router);
 
     jest.spyOn(router, 'navigate');
+
+    jest.clearAllMocks();
+    mockV4.mockReturnValue('1');
   });
 
   it('should be defined', () => {
@@ -165,6 +185,65 @@ describe('OrgMemberEffects', () => {
         expect(router.navigate).toHaveBeenCalledTimes(1);
         expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
+    });
+  });
+
+  describe('inviteUser$', () => {
+    it('should fire inviteUserSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.inviteUser({
+          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.inviteUserSuccess({
+          email: testBaseCreateOrgMemberInviteDto1.email,
+        }),
+      });
+      expect(effects.inviteUser$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.inviteUser).toHaveBeenCalledTimes(1);
+        expect(service.inviteUser).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testBaseCreateOrgMemberInviteDto1,
+        );
+      });
+    });
+
+    it('should do nothing if selectedOrganization is null', () => {
+      store.setState({});
+      actions$ = hot('a', {
+        a: OrgMemberActions.inviteUser({
+          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.inviteUser$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.inviteUser).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('inviteUserSuccess$', () => {
+    it('should fire addToast if successful', () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.inviteUserSuccess({
+          email: testUser1.email,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: ToastActions.addToast({
+          toast: new Toast(
+            'Your invitation has been sent!',
+            `An invitation was successfully sent to ${testUser1.email} to join your org.`,
+            AlertType.Success,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+          ),
+        }),
+      });
+      expect(effects.inviteUserSuccess$).toBeObservable(expected$);
     });
   });
 });

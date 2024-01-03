@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AlertType,
+  Toast,
   ToastXPosition,
   ToastYPosition,
 } from '@newbee/newbee/shared/util';
@@ -29,14 +30,13 @@ describe('catchToastError', () => {
     ).toBeObservable(
       cold('(a|)', {
         a: ToastActions.addToast({
-          toast: {
-            id: '1',
-            header: '',
-            text: 'error',
-            type: AlertType.Error,
-            position: [ToastXPosition.Center, ToastYPosition.Bottom],
-            duration: 5000,
-          },
+          toast: new Toast(
+            '',
+            'error',
+            AlertType.Error,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            5000,
+          ),
         }),
       }),
     );

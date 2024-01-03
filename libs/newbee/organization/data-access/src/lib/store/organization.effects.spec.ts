@@ -7,7 +7,6 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateOrganizationDto1,
-  testBaseCreateOrgMemberInviteDto1,
   testBaseGeneratedSlugDto1,
   testBaseOrgAndMemberDto1,
   testBaseSlugTakenDto1,
@@ -54,7 +53,6 @@ describe('OrganizationEffects', () => {
             generateSlug: jest
               .fn()
               .mockReturnValue(of(testBaseGeneratedSlugDto1)),
-            inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -328,43 +326,6 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.generateSlug$).toBeObservable(expected$);
-    });
-  });
-
-  describe('inviteUser$', () => {
-    it('should fire inviteUserSuccess if successful', () => {
-      actions$ = hot('a', {
-        a: OrganizationActions.inviteUser({
-          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
-        }),
-      });
-      const expected$ = hot('a', {
-        a: OrganizationActions.inviteUserSuccess({
-          email: testBaseCreateOrgMemberInviteDto1.email,
-        }),
-      });
-      expect(effects.inviteUser$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.inviteUser).toHaveBeenCalledTimes(1);
-        expect(service.inviteUser).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testBaseCreateOrgMemberInviteDto1,
-        );
-      });
-    });
-
-    it('should do nothing if selectedOrganization is null', () => {
-      store.setState({});
-      actions$ = hot('a', {
-        a: OrganizationActions.inviteUser({
-          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
-        }),
-      });
-      const expected$ = hot('-');
-      expect(effects.inviteUser$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.inviteUser).not.toHaveBeenCalled();
-      });
     });
   });
 });

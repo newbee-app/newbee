@@ -1,18 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { ViewOrgMembersComponent } from '@newbee/newbee/org-member/ui';
 import { initialOrganizationState as initialOrganizationModuleState } from '@newbee/newbee/organization/data-access';
-import { InviteMemberComponent } from '@newbee/newbee/organization/ui';
 import {
-  OrganizationActions,
+  OrgMemberActions,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateOrgMemberInviteDto1,
+  testOrgMember1,
   testOrgMemberRelation1,
+  testOrganization1,
+  testOrganizationRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { OrgInviteComponent } from './org-invite.component';
+import { OrgMembersViewComponent } from './org-members-view.component';
 
 jest.mock('@floating-ui/dom', () => ({
   __esModule: true,
@@ -21,50 +27,66 @@ jest.mock('@floating-ui/dom', () => ({
   }),
 }));
 
-describe('OrgInviteComponent', () => {
-  let component: OrgInviteComponent;
-  let fixture: ComponentFixture<OrgInviteComponent>;
+describe('OrgMembersViewComponent', () => {
+  let component: OrgMembersViewComponent;
   let store: MockStore;
+  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, InviteMemberComponent],
-      declarations: [OrgInviteComponent],
+      imports: [CommonModule, ViewOrgMembersComponent],
+      declarations: [OrgMembersViewComponent],
       providers: [
         provideMockStore({
           initialState: {
             [Keyword.Organization]: {
               ...initialOrganizationState,
+              selectedOrganization: testOrganizationRelation1,
               orgMember: testOrgMemberRelation1,
             },
             [`${Keyword.Organization}Module`]: initialOrganizationModuleState,
           },
         }),
+        provideRouter([{ path: '**', component: OrgMembersViewComponent }]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrgInviteComponent);
-    component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    router = TestBed.inject(Router);
 
     jest.spyOn(store, 'dispatch');
 
-    fixture.detectChanges();
+    const harness = await RouterTestingHarness.create();
+    component = await harness.navigateByUrl(
+      `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Member}`,
+      OrgMembersViewComponent,
+    );
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
-    expect(fixture).toBeDefined();
     expect(store).toBeDefined();
+    expect(router).toBeDefined();
   });
 
   describe('onInvite', () => {
     it('should dispatch inviteUser', () => {
       component.onInvite(testBaseCreateOrgMemberInviteDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        OrganizationActions.inviteUser({
+        OrgMemberActions.inviteUser({
           createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
         }),
+      );
+    });
+  });
+
+  describe('onOrgNavigate', () => {
+    it('should navigate to path', async () => {
+      await component.onOrgNavigate(
+        `/${ShortUrl.Member}/${testOrgMember1.slug}`,
+      );
+      expect(router.url).toEqual(
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Member}/${testOrgMember1.slug}`,
       );
     });
   });

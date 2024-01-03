@@ -197,7 +197,7 @@ export class ViewTeamMembersComponent implements OnDestroy {
   });
 
   /**
-   * The form representing the searchbar.
+   * The form control representing the searchbar.
    */
   searchbar = this.fb.control('');
 
@@ -357,11 +357,10 @@ export class ViewTeamMembersComponent implements OnDestroy {
     if (!searchTerm) {
       this.teamMembersToShow = this._teamMembers;
     } else {
-      const lcSearchTerm = searchTerm.toLowerCase();
       this.teamMembersToShow = this._teamMembers.filter((teamMember) => {
         return userDisplayNameAndEmail(teamMember.user)
           .toLowerCase()
-          .includes(lcSearchTerm);
+          .includes(searchTerm.toLowerCase());
       });
     }
 

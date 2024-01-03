@@ -25,19 +25,17 @@
           >Edit org</a
         >
       </li>
-      <li
-        *ngIf="checkRoles(apiRoles['org-member-invite'].invite, { orgMember })"
-      >
+      <li>
         <a
           (click)="
             emitNavigateToLink(
               shortUrl.Organization,
               selectedOrganization.slug,
-              keyword.Invite
+              shortUrl.Member
             )
           "
           class="flex"
-          >Invite members</a
+          >View org members</a
         >
       </li>
     </ul>
@@ -160,12 +158,11 @@
                       (click)="
                         emitNavigateToLink(
                           shortUrl.Organization,
-                          selectedOrganization!.slug,
+                          selectedOrganization.slug,
                           shortUrl.Doc,
                           keyword.New
                         )
                       "
-                      class="flex"
                       >Create doc</a
                     >
                   </li>
@@ -174,12 +171,11 @@
                       (click)="
                         emitNavigateToLink(
                           shortUrl.Organization,
-                          selectedOrganization!.slug,
+                          selectedOrganization.slug,
                           shortUrl.Qna,
                           keyword.New
                         )
                       "
-                      class="flex"
                       >Create qna</a
                     >
                   </li>
@@ -188,13 +184,30 @@
                       (click)="
                         emitNavigateToLink(
                           shortUrl.Organization,
-                          selectedOrganization!.slug,
+                          selectedOrganization.slug,
                           shortUrl.Team,
                           keyword.New
                         )
                       "
-                      class="flex"
                       >Create team</a
+                    >
+                  </li>
+                  <li
+                    *ngIf="
+                      checkRoles(apiRoles['org-member-invite'].invite, {
+                        orgMember
+                      })
+                    "
+                  >
+                    <a
+                      (click)="
+                        emitNavigateToLink(
+                          shortUrl.Organization,
+                          selectedOrganization.slug,
+                          shortUrl.Member
+                        )
+                      "
+                      >Invite new org members</a
                     >
                   </li>
                 </ul>
@@ -270,18 +283,15 @@
               >Edit org</a
             >
             <a
-              *ngIf="
-                checkRoles(apiRoles['org-member-invite'].invite, { orgMember })
-              "
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
                   selectedOrganization.slug,
-                  keyword.Invite
+                  shortUrl.Member
                 )
               "
               class="link link-hover"
-              >Invite members</a
+              >View org members</a
             >
           </div>
         </div>
@@ -302,7 +312,7 @@
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
-                  selectedOrganization!.slug,
+                  selectedOrganization.slug,
                   shortUrl.Doc,
                   keyword.New
                 )
@@ -315,7 +325,7 @@
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
-                  selectedOrganization!.slug,
+                  selectedOrganization.slug,
                   shortUrl.Qna,
                   keyword.New
                 )
@@ -328,13 +338,27 @@
               (click)="
                 emitNavigateToLink(
                   shortUrl.Organization,
-                  selectedOrganization!.slug,
+                  selectedOrganization.slug,
                   shortUrl.Team,
                   keyword.New
                 )
               "
               class="link link-hover"
               >Create team</a
+            >
+            <a
+              *ngIf="
+                checkRoles(apiRoles['org-member-invite'].invite, { orgMember })
+              "
+              (click)="
+                emitNavigateToLink(
+                  shortUrl.Organization,
+                  selectedOrganization.slug,
+                  shortUrl.Member
+                )
+              "
+              class="link link-hover"
+              >Invite new org members</a
             >
           </div>
         </div>

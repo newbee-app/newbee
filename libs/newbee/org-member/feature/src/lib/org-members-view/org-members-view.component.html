@@ -1,0 +1,8 @@
+<newbee-view-org-members
+  [orgMember]="(orgState$ | async)!.orgMember!.orgMember"
+  [orgMembers]="(orgState$ | async)!.selectedOrganization!.members"
+  [invitePending]="(pendingInvite$ | async) ?? false"
+  [httpClientError]="httpClientError$ | async"
+  (invite)="onInvite($event)"
+  (orgNavigate)="onOrgNavigate($event)"
+></newbee-view-org-members>

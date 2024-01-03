@@ -44,16 +44,6 @@ export interface OrganizationState {
    * A generated value for an org's slug for creating an org.
    */
   generatedSlug: string;
-
-  /**
-   * Whether the user is waiting for a response for inviting a user.
-   */
-  pendingInvite: boolean;
-
-  /**
-   * The successfully invited user's email address.
-   */
-  invitedUser: string;
 }
 
 /**
@@ -67,8 +57,6 @@ export const initialOrganizationState: OrganizationState = {
   pendingCheck: false,
   slugTaken: false,
   generatedSlug: '',
-  pendingInvite: false,
-  invitedUser: '',
 };
 
 /**
@@ -83,28 +71,28 @@ export const organizationFeature = createFeature({
       (state): OrganizationState => ({
         ...state,
         pendingCreate: true,
-      })
+      }),
     ),
     on(
       OrganizationActions.editOrg,
       (state): OrganizationState => ({
         ...state,
         pendingEdit: true,
-      })
+      }),
     ),
     on(
       OrganizationActions.editOrgSlug,
       (state): OrganizationState => ({
         ...state,
         pendingEditSlug: true,
-      })
+      }),
     ),
     on(
       OrganizationActions.deleteOrg,
       (state): OrganizationState => ({
         ...state,
         pendingDelete: true,
-      })
+      }),
     ),
     on(
       OrganizationActions.typingSlug,
@@ -113,7 +101,7 @@ export const organizationFeature = createFeature({
         ...state,
         pendingCheck: !!slug,
         slugTaken: false,
-      })
+      }),
     ),
     on(
       OrganizationActions.checkSlugSuccess,
@@ -121,7 +109,7 @@ export const organizationFeature = createFeature({
         ...state,
         slugTaken,
         pendingCheck: false,
-      })
+      }),
     ),
     on(
       OrganizationActions.generateSlugSuccess,
@@ -130,22 +118,7 @@ export const organizationFeature = createFeature({
         generatedSlug: slug,
         pendingCheck: false,
         slugTaken: false,
-      })
-    ),
-    on(
-      OrganizationActions.inviteUser,
-      (state): OrganizationState => ({
-        ...state,
-        pendingInvite: true,
-      })
-    ),
-    on(
-      OrganizationActions.inviteUserSuccess,
-      (state, { email }): OrganizationState => ({
-        ...state,
-        pendingInvite: false,
-        invitedUser: email,
-      })
+      }),
     ),
     on(
       OrganizationActions.createOrgSuccess,
@@ -154,7 +127,7 @@ export const organizationFeature = createFeature({
       OrganizationActions.deleteOrgSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
-      (): OrganizationState => initialOrganizationState
-    )
+      (): OrganizationState => initialOrganizationState,
+    ),
   ),
 });

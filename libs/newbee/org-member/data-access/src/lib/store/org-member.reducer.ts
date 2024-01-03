@@ -19,6 +19,11 @@ export interface OrgMemberState {
    * Whether the user is waiting for a response for deleting an org member.
    */
   pendingDelete: boolean;
+
+  /**
+   * Whether the user is waiting for a response for inviting a user.
+   */
+  pendingInvite: boolean;
 }
 
 /**
@@ -27,6 +32,7 @@ export interface OrgMemberState {
 export const initialOrgMemberState: OrgMemberState = {
   pendingEdit: false,
   pendingDelete: false,
+  pendingInvite: false,
 };
 
 /**
@@ -38,18 +44,23 @@ export const orgMemberFeature = createFeature({
     initialOrgMemberState,
     on(
       OrgMemberActions.editOrgMember,
-      (state): OrgMemberState => ({ ...state, pendingEdit: true })
+      (state): OrgMemberState => ({ ...state, pendingEdit: true }),
     ),
     on(
       OrgMemberActions.deleteOrgMember,
-      (state): OrgMemberState => ({ ...state, pendingDelete: true })
+      (state): OrgMemberState => ({ ...state, pendingDelete: true }),
+    ),
+    on(
+      OrgMemberActions.inviteUser,
+      (state): OrgMemberState => ({ ...state, pendingInvite: true }),
     ),
     on(
       OrgMemberActions.editOrgMemberSuccess,
       OrgMemberActions.deleteOrgMemberSuccess,
+      OrgMemberActions.inviteUserSuccess,
       HttpActions.clientError,
       RouterActions.routerRequest,
-      (): OrgMemberState => initialOrgMemberState
-    )
+      (): OrgMemberState => initialOrgMemberState,
+    ),
   ),
 });

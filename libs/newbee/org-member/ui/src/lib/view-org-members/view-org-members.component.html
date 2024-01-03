@@ -1,0 +1,136 @@
+<div class="flex flex-col flex-nowrap gap-y-4 mt-close">
+  <div class="flex flex-col flex-nowrap gap-y-2">
+    <button
+      *ngIf="checkRoles(apiRoles['org-member-invite'].invite, { orgMember })"
+      type="button"
+      onclick="inviteMemberModal.showModal()"
+      [disabled]="invitePending"
+      class="btn btn-info w-fit"
+    >
+      <span *ngIf="invitePending" class="loading loading-spinner"></span>
+      Invite a member
+    </button>
+
+    <newbee-alert
+      [show]="!!httpClientErrorMsg(keyword.Misc)"
+      [text]="httpClientErrorMsg(keyword.Misc)"
+    ></newbee-alert>
+  </div>
+
+  <dialog id="inviteMemberModal" class="modal">
+    <form method="dialog" class="modal-box">
+      <button
+        type="submit"
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+      >
+        x
+      </button>
+
+      <form
+        id="invite-member-form"
+        [formGroup]="inviteOrgMemberForm"
+        (ngSubmit)="emitInvite()"
+        class="flex flex-col flex-nowrap gap-y-4 mt-6"
+      >
+        <h4>Invite a new org member</h4>
+
+        <div class="flex flex-row flex-wrap gap-2">
+          <div class="flex-auto flex flex-col flex-nowrap gap-y-2">
+            <input
+              type="text"
+              id="email-input"
+              formControlName="email"
+              placeholder="johndoe@example.com"
+              class="input input-bordered w-full"
+              [ngClass]="{ 'input-error': inputDisplayError('email') }"
+            />
+
+            <newbee-alert
+              [show]="inputDisplayError('email')"
+              [text]="inputErrorMessage('email')"
+            ></newbee-alert>
+          </div>
+
+          <div class="flex-auto">
+            <newbee-searchable-select
+              formControlName="role"
+              [showSearchbar]="false"
+              [options]="roleOptions"
+              optionName="role"
+              [valid]="!inputDisplayError('role')"
+              [errorText]="inputErrorMessage('role')"
+            ></newbee-searchable-select>
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-action mt-16">
+        <button
+          type="submit"
+          [disabled]="inviteOrgMemberForm.invalid || invitePending"
+          (click)="emitInvite()"
+          class="btn btn-primary"
+        >
+          <span *ngIf="invitePending" class="loading loading-spinner"></span>
+          Invite
+        </button>
+        <button type="submit" class="btn">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <newbee-searchbar
+    [formControl]="searchbar"
+    [includeSearchSymbol]="false"
+    placeholder="Filter org members..."
+  ></newbee-searchbar>
+
+  <table
+    *ngIf="orgMembers.length"
+    [formGroup]="inviteOrgMemberForm"
+    class="table table-md"
+  >
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+
+    <tbody *ngIf="orgMembersToShow.length">
+      <tr *ngFor="let om of orgMembersToShow" class="hover">
+        <td>
+          <div class="w-fit">
+            <newbee-tooltip
+              placement="top-start"
+              [offset]="0"
+              [includeTail]="false"
+            >
+              <a
+                label
+                (click)="emitOrgNavigate(shortUrl.Member, om.orgMember.slug)"
+                class="link link-info"
+                >{{ userDisplayNameAndEmail(om.user) }}</a
+              >
+
+              <newbee-search-result
+                tooltip
+                [searchResult]="om"
+                [format]="searchResultFormat.Card"
+                (orgNavigate)="orgNavigate.emit($event)"
+              ></newbee-search-result>
+            </newbee-tooltip>
+          </div>
+        </td>
+
+        <td>
+          <a
+            (click)="emitOrgNavigate(shortUrl.Member, om.orgMember.slug)"
+            class="link link-accent"
+            >EDIT</a
+          >
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -37,7 +37,7 @@ describe('ToastComponent', () => {
     it('should get toast classes', () => {
       for (const x of Object.values(ToastXPosition)) {
         for (const y of Object.values(ToastYPosition)) {
-          component.toast.position = [x, y];
+          component.toast = { ...testToast1, position: [x, y] };
           expect(component.toastClasses).toEqual([
             'toast',
             `toast-${x}`,

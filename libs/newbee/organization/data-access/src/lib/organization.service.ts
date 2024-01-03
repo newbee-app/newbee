@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateOrgMemberInviteDto,
   BaseCreateOrganizationDto,
   BaseGeneratedSlugDto,
   BaseOrgAndMemberDto,
@@ -112,24 +111,6 @@ export class OrganizationService {
     return this.http.get<BaseGeneratedSlugDto>(
       `${OrganizationService.baseApiUrl}/${Keyword.GenerateSlug}`,
       { params },
-    );
-  }
-
-  /**
-   * Send a request to the API to invite a user to the org.
-   *
-   * @param orgSlug The org to invite the user to.
-   * @param createOrgMemberInviteDto The email address and role the invited user should have.
-   *
-   * @returns A null observable.
-   */
-  inviteUser(
-    orgSlug: string,
-    createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto,
-  ): Observable<null> {
-    return this.http.post<null>(
-      `${OrganizationService.baseApiUrl}/${orgSlug}`,
-      createOrgMemberInviteDto,
     );
   }
 }

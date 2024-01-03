@@ -7,7 +7,6 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateOrgMemberInviteDto1,
   testBaseCreateOrganizationDto1,
   testBaseGenerateSlugDto1,
   testBaseGeneratedSlugDto1,
@@ -193,32 +192,6 @@ describe('OrganizationService', () => {
       expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseGeneratedSlugDto1);
-    });
-  });
-
-  describe('inviteUser', () => {
-    it('should send out a post request', (done) => {
-      service
-        .inviteUser(testOrganization1.slug, testBaseCreateOrgMemberInviteDto1)
-        .subscribe({
-          next: (signal) => {
-            try {
-              expect(signal).toBeNull();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          },
-          error: done.fail,
-        });
-
-      const req = httpController.expectOne(
-        `${OrganizationService.baseApiUrl}/${testOrganization1.slug}`,
-      );
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateOrgMemberInviteDto1);
-
-      req.flush(null);
     });
   });
 });

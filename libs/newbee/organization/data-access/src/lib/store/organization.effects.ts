@@ -8,11 +8,9 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  emailIsEmail,
   Keyword,
   nameIsNotEmpty,
   organizationSlugTakenBadRequest,
-  orgRoleIsEnum,
   slugIsNotEmpty,
   upToDateDurationMatches,
 } from '@newbee/shared/util';
@@ -211,42 +209,6 @@ export class OrganizationEffects {
             });
           }),
         );
-      }),
-    );
-  });
-
-  inviteUser$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(OrganizationActions.inviteUser),
-      concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
-        const { email } = createOrgMemberInviteDto;
-
-        return this.organizationService
-          .inviteUser(
-            selectedOrganization?.organization.slug as string,
-            createOrgMemberInviteDto,
-          )
-          .pipe(
-            map(() => {
-              return OrganizationActions.inviteUserSuccess({ email });
-            }),
-            catchError((err) =>
-              catchHttpClientError(err, (msg) => {
-                switch (msg) {
-                  case emailIsEmail:
-                    return 'email';
-                  case orgRoleIsEnum:
-                    return 'role';
-                  default:
-                    return Keyword.Misc;
-                }
-              }),
-            ),
-          );
       }),
     );
   });
