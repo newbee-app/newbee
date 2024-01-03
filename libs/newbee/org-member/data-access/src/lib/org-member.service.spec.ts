@@ -3,9 +3,11 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { OrganizationService } from '@newbee/newbee/organization/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseCreateOrgMemberInviteDto1,
   testBaseUpdateOrgMemberDto1,
   testOrgMember1,
   testOrgMemberRelation1,
@@ -124,6 +126,32 @@ describe('OrgMemberService', () => {
         ),
       );
       expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
+    });
+  });
+
+  describe('inviteUser', () => {
+    it('should send out a post request', (done) => {
+      service
+        .inviteUser(testOrganization1.slug, testBaseCreateOrgMemberInviteDto1)
+        .subscribe({
+          next: (signal) => {
+            try {
+              expect(signal).toBeNull();
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const req = httpController.expectOne(
+        `${OrganizationService.baseApiUrl}/${testOrganization1.slug}`,
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseCreateOrgMemberInviteDto1);
 
       req.flush(null);
     });

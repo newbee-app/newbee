@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  catchHttpClientError,
   catchHttpScreenError,
   catchToastError,
   organizationFeature,
   OrgMemberActions,
+  ToastActions,
 } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  AlertType,
+  ShortUrl,
+  Toast,
+  ToastXPosition,
+  ToastYPosition,
+} from '@newbee/newbee/shared/util';
+import { emailIsEmail, Keyword, orgRoleIsEnum } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
@@ -113,6 +122,59 @@ export class OrgMemberEffects {
     },
     { dispatch: false },
   );
+
+  inviteUser$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.inviteUser),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ),
+      filter(([, selectedOrganization]) => !!selectedOrganization),
+      switchMap(([{ createOrgMemberInviteDto }, selectedOrganization]) => {
+        const { email } = createOrgMemberInviteDto;
+
+        return this.orgMemberService
+          .inviteUser(
+            selectedOrganization?.organization.slug as string,
+            createOrgMemberInviteDto,
+          )
+          .pipe(
+            map(() => {
+              return OrgMemberActions.inviteUserSuccess({ email });
+            }),
+            catchError((err) =>
+              catchHttpClientError(err, (msg) => {
+                switch (msg) {
+                  case emailIsEmail:
+                    return 'email';
+                  case orgRoleIsEnum:
+                    return 'role';
+                  default:
+                    return Keyword.Misc;
+                }
+              }),
+            ),
+          );
+      }),
+    );
+  });
+
+  inviteUserSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.inviteUserSuccess),
+      map(({ email }) => {
+        return ToastActions.addToast({
+          toast: new Toast(
+            'Your invitation has been sent!',
+            `An invitation was successfully sent to ${email} to join your org.`,
+            AlertType.Success,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+          ),
+        });
+      }),
+    );
+  });
 
   constructor(
     private readonly actions$: Actions,

@@ -1,4 +1,5 @@
 import {
+  BaseCreateOrgMemberInviteDto,
   BaseUpdateOrgMemberDto,
   Keyword,
   OrgMember,
@@ -44,6 +45,18 @@ export const OrgMemberActions = createActionGroup({
      * Indicates that the selected org member was successfully deleted.
      */
     'Delete Org Member Success': emptyProps(),
+
+    /**
+     * Invite a user to an org.
+     */
+    'Invite User': props<{
+      createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto;
+    }>(),
+
+    /**
+     * Indicates that an invite was successfully sent to the given email.
+     */
+    'Invite User Success': props<{ email: string }>(),
 
     /**
      * Set the selected org member to be null.

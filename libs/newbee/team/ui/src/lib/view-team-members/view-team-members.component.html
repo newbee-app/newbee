@@ -10,6 +10,7 @@
       "
       type="button"
       onclick="addMemberModal.showModal()"
+      [disabled]="addTeamMemberPending"
       class="btn btn-info w-fit"
     >
       <span *ngIf="addTeamMemberPending" class="loading loading-spinner"></span>
@@ -32,7 +33,7 @@
       </button>
 
       <form
-        id="invite-member-form"
+        id="add-member-form"
         [formGroup]="addTeamMemberForm"
         class="flex flex-col flex-nowrap gap-y-4 mt-6"
       >

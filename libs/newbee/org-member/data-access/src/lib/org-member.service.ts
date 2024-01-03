@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { OrganizationService } from '@newbee/newbee/organization/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
+  BaseCreateOrgMemberInviteDto,
   BaseUpdateOrgMemberDto,
   Keyword,
   OrgMember,
@@ -74,6 +76,24 @@ export class OrgMemberService {
   delete(orgSlug: string, memberSlug: string): Observable<null> {
     return this.http.delete<null>(
       OrgMemberService.baseApiUrl(orgSlug, memberSlug),
+    );
+  }
+
+  /**
+   * Send a request to the API to invite a user to the org.
+   *
+   * @param orgSlug The org to invite the user to.
+   * @param createOrgMemberInviteDto The email address and role the invited user should have.
+   *
+   * @returns A null observable.
+   */
+  inviteUser(
+    orgSlug: string,
+    createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto,
+  ): Observable<null> {
+    return this.http.post<null>(
+      `${OrganizationService.baseApiUrl}/${orgSlug}`,
+      createOrgMemberInviteDto,
     );
   }
 }

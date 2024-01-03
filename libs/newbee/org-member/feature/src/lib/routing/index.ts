@@ -7,6 +7,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { OrgMemberRootComponent } from '../org-member-root';
 import { OrgMemberViewComponent } from '../org-member-view';
+import { OrgMembersViewComponent } from '../org-members-view';
 
 const routes: Routes = [
   {
@@ -20,6 +21,10 @@ const routes: Routes = [
         component: OrgMemberViewComponent,
       },
     ],
+  },
+  {
+    path: '',
+    component: OrgMembersViewComponent,
   },
 ];
 

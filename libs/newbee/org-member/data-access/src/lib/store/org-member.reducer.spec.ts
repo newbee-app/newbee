@@ -3,10 +3,11 @@ import {
   OrgMemberActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { testUser1 } from '@newbee/shared/util';
 import {
+  OrgMemberState,
   initialOrgMemberState,
   orgMemberFeature,
-  OrgMemberState,
 } from './org-member.reducer';
 
 describe('OrgMemberReducer', () => {
@@ -18,12 +19,16 @@ describe('OrgMemberReducer', () => {
     ...initialOrgMemberState,
     pendingDelete: true,
   };
+  const stateAfterInviteUser: OrgMemberState = {
+    ...initialOrgMemberState,
+    pendingInvite: true,
+  };
 
   describe('from initial state', () => {
     it('should update state for editOrgMember', () => {
       const updatedState = orgMemberFeature.reducer(
         initialOrgMemberState,
-        OrgMemberActions.editOrgMember
+        OrgMemberActions.editOrgMember,
       );
       expect(updatedState).toEqual(stateAfterEditOrgMember);
     });
@@ -31,9 +36,17 @@ describe('OrgMemberReducer', () => {
     it('should update state for deleteOrgMember', () => {
       const updatedState = orgMemberFeature.reducer(
         initialOrgMemberState,
-        OrgMemberActions.deleteOrgMember
+        OrgMemberActions.deleteOrgMember,
       );
       expect(updatedState).toEqual(stateAfterDeleteOrgMember);
+    });
+
+    it('should update state for inviteUser', () => {
+      const updatedState = orgMemberFeature.reducer(
+        initialOrgMemberState,
+        OrgMemberActions.inviteUser,
+      );
+      expect(updatedState).toEqual(stateAfterInviteUser);
     });
   });
 
@@ -41,7 +54,7 @@ describe('OrgMemberReducer', () => {
     it('should update state for editOrgMemberSuccess', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterEditOrgMember,
-        OrgMemberActions.editOrgMemberSuccess
+        OrgMemberActions.editOrgMemberSuccess,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });
@@ -49,7 +62,15 @@ describe('OrgMemberReducer', () => {
     it('should update state for deleteOrgMemberSuccess', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterDeleteOrgMember,
-        OrgMemberActions.deleteOrgMemberSuccess
+        OrgMemberActions.deleteOrgMemberSuccess,
+      );
+      expect(updatedState).toEqual(initialOrgMemberState);
+    });
+
+    it('should update state for inviteUserSuccess', () => {
+      const updatedState = orgMemberFeature.reducer(
+        stateAfterInviteUser,
+        OrgMemberActions.inviteUserSuccess({ email: testUser1.email }),
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });
@@ -57,7 +78,7 @@ describe('OrgMemberReducer', () => {
     it('should update state for clientError', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterEditOrgMember,
-        HttpActions.clientError
+        HttpActions.clientError,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });
@@ -65,7 +86,7 @@ describe('OrgMemberReducer', () => {
     it('should update state for routerRequest', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterEditOrgMember,
-        RouterActions.routerRequest
+        RouterActions.routerRequest,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });

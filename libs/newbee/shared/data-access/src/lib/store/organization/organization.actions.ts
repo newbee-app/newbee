@@ -1,6 +1,5 @@
 import {
   BaseCreateOrganizationDto,
-  BaseCreateOrgMemberInviteDto,
   BaseOrgAndMemberDto,
   BaseUpdateOrganizationDto,
   Keyword,
@@ -91,18 +90,6 @@ export const OrganizationActions = createActionGroup({
      * Indicates that a slug was successfully generated.
      */
     'Generate Slug Success': props<{ slug: string }>(),
-
-    /**
-     * Invite a user to an org.
-     */
-    'Invite User': props<{
-      createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto;
-    }>(),
-
-    /**
-     * Indicates that an invite was successfully sent to the given email.
-     */
-    'Invite User Success': props<{ email: string }>(),
 
     /**
      * Set the selected org to be null.

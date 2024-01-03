@@ -5,11 +5,15 @@ import {
   orgMemberFeature,
   OrgMemberService,
 } from '@newbee/newbee/org-member/data-access';
-import { ViewOrgMemberComponent } from '@newbee/newbee/org-member/ui';
+import {
+  ViewOrgMemberComponent,
+  ViewOrgMembersComponent,
+} from '@newbee/newbee/org-member/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrgMemberRootComponent } from './org-member-root';
 import { OrgMemberViewComponent } from './org-member-view';
+import { OrgMembersViewComponent } from './org-members-view';
 import { OrgMemberRoutingModule } from './routing';
 
 @NgModule({
@@ -18,13 +22,14 @@ import { OrgMemberRoutingModule } from './routing';
     StoreModule.forFeature(orgMemberFeature),
     EffectsModule.forFeature([OrgMemberEffects]),
     ViewOrgMemberComponent,
+    ViewOrgMembersComponent,
     OrgMemberRoutingModule,
   ],
   providers: [OrgMemberService],
   declarations: [
     OrgMemberRootComponent,
     OrgMemberViewComponent,
-    OrgMemberRootComponent,
+    OrgMembersViewComponent,
   ],
 })
 export class OrgMemberModule {}

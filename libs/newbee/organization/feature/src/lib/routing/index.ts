@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   canEditOrgGuard,
-  canInviteUserGuard,
   orgGuard,
   orgTitleResolver,
 } from '@newbee/newbee/organization/data-access';
@@ -12,7 +11,6 @@ import { Keyword } from '@newbee/shared/util';
 import { OrgCreateComponent } from '../org-create';
 import { OrgEditComponent } from '../org-edit';
 import { OrgHomeComponent } from '../org-home';
-import { OrgInviteComponent } from '../org-invite';
 import { OrgRootComponent } from '../org-root';
 
 const routes: Routes = [
@@ -66,11 +64,6 @@ const routes: Routes = [
         path: Keyword.Edit,
         component: OrgEditComponent,
         canActivate: [canEditOrgGuard],
-      },
-      {
-        path: Keyword.Invite,
-        component: OrgInviteComponent,
-        canActivate: [canInviteUserGuard],
       },
       {
         path: '',
