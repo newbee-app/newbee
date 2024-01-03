@@ -1,10 +1,6 @@
 <ng-template #orgDropdown>
   <newbee-dropdown-with-arrow
-    *ngIf="
-      selectedOrganization &&
-      orgMember &&
-      checkRoles(orgDropdownRoles, { orgMember })
-    "
+    *ngIf="selectedOrganization && orgMember"
     [labelText]="selectedOrganization.name"
     labelClasses="btn-ghost"
     placement="bottom-start"
@@ -21,8 +17,19 @@
               keyword.Edit
             )
           "
-          class="flex"
           >Edit org</a
+        >
+      </li>
+      <li>
+        <a
+          (click)="
+            emitNavigateToLink(
+              shortUrl.Organization,
+              selectedOrganization.slug,
+              shortUrl.Team
+            )
+          "
+          >View teams</a
         >
       </li>
       <li>
@@ -34,23 +41,11 @@
               shortUrl.Member
             )
           "
-          class="flex"
           >View org members</a
         >
       </li>
     </ul>
   </newbee-dropdown-with-arrow>
-
-  <p
-    *ngIf="
-      selectedOrganization &&
-      (!orgMember ||
-        (orgMember && !checkRoles(orgDropdownRoles, { orgMember })))
-    "
-    class="uppercase font-semibold text-sm mx-4"
-  >
-    {{ selectedOrganization.name }}
-  </p>
 </ng-template>
 
 <div class="drawer">
@@ -207,7 +202,7 @@
                           shortUrl.Member
                         )
                       "
-                      >Invite new org members</a
+                      >Invite users to org</a
                     >
                   </li>
                 </ul>
@@ -258,11 +253,7 @@
         class="flex flex-col flex-nowrap p-4 h-screen bg-base-200 w-full overflow-y-auto"
       >
         <div
-          *ngIf="
-            selectedOrganization &&
-            orgMember &&
-            checkRoles(orgDropdownRoles, { orgMember })
-          "
+          *ngIf="selectedOrganization && orgMember"
           class="collapse collapse-arrow"
         >
           <input type="checkbox" id="org-collapse" />
@@ -281,6 +272,17 @@
               "
               class="link link-hover"
               >Edit org</a
+            >
+            <a
+              (click)="
+                emitNavigateToLink(
+                  shortUrl.Organization,
+                  selectedOrganization.slug,
+                  shortUrl.Team
+                )
+              "
+              class="link link-hover"
+              >View teams</a
             >
             <a
               (click)="
@@ -358,7 +360,7 @@
                 )
               "
               class="link link-hover"
-              >Invite new org members</a
+              >Invite users to org</a
             >
           </div>
         </div>

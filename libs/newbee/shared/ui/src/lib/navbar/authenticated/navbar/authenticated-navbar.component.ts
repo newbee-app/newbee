@@ -40,17 +40,14 @@ export class AuthenticatedNavbarComponent {
   readonly userDisplayName = userDisplayName;
 
   /**
-   * Any of the roles needed to display the org dropdown.
-   */
-  readonly orgDropdownRoles = new Set(
-    apiRoles.org.update.concat(apiRoles['org-member-invite'].invite),
-  );
-
-  /**
    * Any of the roles needed to display the create dropdown.
    */
   readonly createDropdownRoles = new Set(
-    apiRoles.doc.create.concat(apiRoles.qna.create, apiRoles.team.create),
+    apiRoles.doc.create.concat(
+      apiRoles.qna.create,
+      apiRoles.team.create,
+      apiRoles['org-member-invite'].invite,
+    ),
   );
 
   /**

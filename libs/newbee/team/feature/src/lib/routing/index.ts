@@ -13,6 +13,7 @@ import { TeamEditComponent } from '../team-edit';
 import { TeamMembersViewComponent } from '../team-members-view';
 import { TeamRootComponent } from '../team-root';
 import { TeamViewComponent } from '../team-view';
+import { TeamsViewComponent } from '../teams-view';
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
         component: TeamViewComponent,
       },
     ],
+  },
+  {
+    path: '',
+    component: TeamsViewComponent,
   },
 ];
 
