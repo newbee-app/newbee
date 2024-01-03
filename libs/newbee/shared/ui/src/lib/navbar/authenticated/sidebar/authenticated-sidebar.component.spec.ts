@@ -46,6 +46,9 @@ describe('AuthenticatedSidebarComponent', () => {
       expect(shorten('NewBee')).toEqual('N');
       expect(shorten('Hello World')).toEqual('HW');
       expect(shorten('My cool Org')).toEqual('McO');
+      expect(shorten('Some really really really really long org name')).toEqual(
+        'Srrr',
+      );
     });
   });
 

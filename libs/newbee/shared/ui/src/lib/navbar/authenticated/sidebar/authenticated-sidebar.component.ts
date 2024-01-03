@@ -62,7 +62,8 @@ export class AuthenticatedSidebarComponent {
     return orgName
       .split(' ')
       .map((word) => word[0])
-      .join('');
+      .join('')
+      .slice(0, 4);
   }
 
   /**
