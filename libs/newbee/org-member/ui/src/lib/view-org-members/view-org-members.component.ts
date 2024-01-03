@@ -71,7 +71,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
   }
   set orgMember(orgMember: OrgMember) {
     this._orgMember = orgMember;
-    this.roleOptions = generateLteOrgRoles(this.orgMember.role).map(
+    this._roleOptions = generateLteOrgRoles(this.orgMember.role).map(
       (role) => new SelectOption(role, role),
     );
   }
@@ -139,12 +139,18 @@ export class ViewOrgMembersComponent implements OnDestroy {
   /**
    * All possible org roles as select options, based on the requester.
    */
-  roleOptions: SelectOption<OrgRoleEnum>[] = [];
+  get roleOptions(): SelectOption<OrgRoleEnum>[] {
+    return this._roleOptions;
+  }
+  _roleOptions: SelectOption<OrgRoleEnum>[] = [];
 
   /**
    * All of the org members filtered by the search term.
    */
-  orgMembersToShow: OrgMemberUser[] = [];
+  get orgMembersToShow(): OrgMemberUser[] {
+    return this._orgMembersToShow;
+  }
+  _orgMembersToShow: OrgMemberUser[] = [];
 
   /**
    * Set up the searchbar to update `orgMembersToShow` whenever its value changes.
@@ -231,11 +237,11 @@ export class ViewOrgMembersComponent implements OnDestroy {
   private updateOrgMembersToShow(): void {
     const searchTerm = this.searchbar.value;
     if (!searchTerm) {
-      this.orgMembersToShow = this._orgMembers;
+      this._orgMembersToShow = this._orgMembers;
       return;
     }
 
-    this.orgMembersToShow = this._orgMembers.filter((orgMember) => {
+    this._orgMembersToShow = this._orgMembers.filter((orgMember) => {
       return userDisplayNameAndEmail(orgMember.user)
         .toLowerCase()
         .includes(searchTerm.toLowerCase());

@@ -1,11 +1,14 @@
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
 import { TeamRoleEnum, testOrgMemberQueryResult1 } from '@newbee/shared/util';
-import { Meta, StoryObj } from '@storybook/angular';
+import { Meta, StoryObj, componentWrapperDecorator } from '@storybook/angular';
 import { MemberSearchResultComponent } from './member-search-result.component';
 
 export default {
   title: 'Search Result/MemberSearchResultComponent',
   component: MemberSearchResultComponent,
+  decorators: [
+    componentWrapperDecorator((story) => `<div class="w-card">${story}</div>`),
+  ],
   args: {
     format: SearchResultFormat.Card,
     orgMember: testOrgMemberQueryResult1,
