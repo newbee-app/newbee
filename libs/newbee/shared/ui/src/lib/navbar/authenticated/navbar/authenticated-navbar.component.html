@@ -25,19 +25,17 @@
           >Edit org</a
         >
       </li>
-      <li
-        *ngIf="checkRoles(apiRoles['org-member-invite'].invite, { orgMember })"
-      >
+      <li>
         <a
           (click)="
             emitNavigateToLink(
               shortUrl.Organization,
               selectedOrganization.slug,
-              keyword.Invite
+              shortUrl.Member
             )
           "
           class="flex"
-          >Invite members</a
+          >View & invite members</a
         >
       </li>
     </ul>

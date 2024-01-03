@@ -3,12 +3,12 @@
     <button
       *ngIf="checkRoles(apiRoles['org-member-invite'].invite, { orgMember })"
       type="button"
-      onclick="addMemberModal.showModal()"
+      onclick="inviteMemberModal.showModal()"
       [disabled]="invitePending"
       class="btn btn-info w-fit"
     >
       <span *ngIf="invitePending" class="loading loading-spinner"></span>
-      Add a member
+      Invite a member
     </button>
 
     <newbee-alert
@@ -17,7 +17,7 @@
     ></newbee-alert>
   </div>
 
-  <dialog id="addMemberModal" class="modal">
+  <dialog id="inviteMemberModal" class="modal">
     <form method="dialog" class="modal-box">
       <button
         type="submit"
@@ -32,7 +32,7 @@
         (ngSubmit)="emitInvite()"
         class="flex flex-col flex-nowrap gap-y-4 mt-6"
       >
-        <h4>Add a new org member</h4>
+        <h4>Invite a new org member</h4>
 
         <div class="flex flex-row flex-wrap gap-2">
           <div class="flex-auto flex flex-col flex-nowrap gap-y-2">
