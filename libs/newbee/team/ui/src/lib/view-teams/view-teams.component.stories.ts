@@ -1,4 +1,9 @@
-import { testOrgMember1, testTeam1, testTeam2 } from '@newbee/shared/util';
+import {
+  testOrgMember1,
+  testTeam1,
+  testTeam2,
+  testTeamMemberRelation1,
+} from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { ViewTeamsComponent } from './view-teams.component';
 
@@ -7,6 +12,7 @@ export default {
   component: ViewTeamsComponent,
   args: {
     teams: [testTeam1, testTeam2],
+    orgMemberTeams: [testTeamMemberRelation1],
     orgMember: testOrgMember1,
   },
   argTypes: {

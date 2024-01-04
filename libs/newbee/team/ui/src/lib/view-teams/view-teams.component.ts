@@ -15,6 +15,8 @@ import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   Team,
+  TeamMemberAndTeam,
+  TeamRoleEnum,
   apiRoles,
   checkRoles,
   type OrgMember,
@@ -57,6 +59,17 @@ export class ViewTeamsComponent implements OnDestroy {
   _teams: Team[] = [];
 
   /**
+   * All of the teams the org member is in and their roles in them.
+   */
+  @Input()
+  set orgMemberTeams(orgMemberTeams: TeamMemberAndTeam[]) {
+    this._teamSlugToRole.clear();
+    orgMemberTeams.forEach((tm) => {
+      this._teamSlugToRole.set(tm.team.slug, tm.teamMember.role);
+    });
+  }
+
+  /**
    * The org member looking at the screen.
    */
   @Input() orgMember!: OrgMember;
@@ -78,6 +91,14 @@ export class ViewTeamsComponent implements OnDestroy {
     return this._teamsToShow;
   }
   _teamsToShow: Team[] = [];
+
+  /**
+   * A map mapping team slugs to the org member's role in the team.
+   */
+  get teamSlugToRole(): Map<string, TeamRoleEnum> {
+    return this._teamSlugToRole;
+  }
+  _teamSlugToRole = new Map<string, TeamRoleEnum>();
 
   constructor(private readonly fb: FormBuilder) {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({

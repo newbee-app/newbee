@@ -21,6 +21,7 @@
     <newbee-search-result
       *ngFor="let team of teamsToShow"
       [searchResult]="team"
+      [teamRole]="teamSlugToRole.get(team.slug) ?? null"
       [format]="searchResultFormat.Card"
       (orgNavigate)="orgNavigate.emit($event)"
     ></newbee-search-result>
