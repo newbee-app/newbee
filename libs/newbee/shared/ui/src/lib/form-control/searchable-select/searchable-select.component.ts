@@ -67,7 +67,7 @@ export class SearchableSelectComponent<T>
     this._options = options;
     this.updateOptionsToShow();
   }
-  _options!: SelectOption<T>[];
+  private _options!: SelectOption<T>[];
 
   /**
    * What the options represent, for use when no option is selected.

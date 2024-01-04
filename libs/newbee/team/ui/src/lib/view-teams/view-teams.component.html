@@ -1,0 +1,29 @@
+<div class="flex flex-col flex-nowrap gap-y-4 mt-close">
+  <button
+    *ngIf="checkRoles(apiRoles.team.create, { orgMember })"
+    type="button"
+    (click)="emitOrgNavigate(shortUrl.Team, keyword.New)"
+    class="btn btn-info w-fit"
+  >
+    Create a team
+  </button>
+
+  <newbee-searchbar
+    [formControl]="searchbar"
+    [includeSearchSymbol]="false"
+    placeholder="Filter teams..."
+  ></newbee-searchbar>
+
+  <div
+    *ngIf="teamsToShow.length"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+  >
+    <newbee-search-result
+      *ngFor="let team of teamsToShow"
+      [searchResult]="team"
+      [teamRole]="teamSlugToRole.get(team.slug) ?? null"
+      [format]="searchResultFormat.Card"
+      (orgNavigate)="orgNavigate.emit($event)"
+    ></newbee-search-result>
+  </div>
+</div>

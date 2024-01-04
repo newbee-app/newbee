@@ -11,9 +11,13 @@ module.exports = {
         logo: colors.yellow['500'],
       },
       spacing: {
+        // used to add space between body content and headers
         close: '1rem',
         mid: '2.5rem',
         far: '6rem',
+
+        // used to determine the width of search result cards
+        card: '14rem',
       },
     },
   },

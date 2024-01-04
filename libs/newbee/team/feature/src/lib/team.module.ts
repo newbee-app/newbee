@@ -10,6 +10,7 @@ import {
   EditTeamComponent,
   ViewTeamComponent,
   ViewTeamMembersComponent,
+  ViewTeamsComponent,
 } from '@newbee/newbee/team/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -19,6 +20,7 @@ import { TeamEditComponent } from './team-edit';
 import { TeamMembersViewComponent } from './team-members-view';
 import { TeamRootComponent } from './team-root';
 import { TeamViewComponent } from './team-view';
+import { TeamsViewComponent } from './teams-view';
 
 @NgModule({
   imports: [
@@ -29,6 +31,7 @@ import { TeamViewComponent } from './team-view';
     ViewTeamComponent,
     EditTeamComponent,
     ViewTeamMembersComponent,
+    ViewTeamsComponent,
     TeamRoutingModule,
   ],
   providers: [TeamService],
@@ -38,6 +41,7 @@ import { TeamViewComponent } from './team-view';
     TeamViewComponent,
     TeamEditComponent,
     TeamMembersViewComponent,
+    TeamsViewComponent,
   ],
 })
 export class TeamModule {}

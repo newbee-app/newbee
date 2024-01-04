@@ -6,6 +6,7 @@ import {
 } from '@newbee/newbee/org-member/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { OrgMemberRootComponent } from '../org-member-root';
+import { OrgMemberTeamsViewComponent } from '../org-member-teams-view';
 import { OrgMemberViewComponent } from '../org-member-view';
 import { OrgMembersViewComponent } from '../org-members-view';
 
@@ -16,6 +17,10 @@ const routes: Routes = [
     title: orgMemberTitleResolver,
     canActivate: [orgMemberGuard],
     children: [
+      {
+        path: ShortUrl.Team,
+        component: OrgMemberTeamsViewComponent,
+      },
       {
         path: '',
         component: OrgMemberViewComponent,

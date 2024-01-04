@@ -148,17 +148,23 @@
     }}</a>
 
     <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
-      <newbee-search-result
+      <div
         *ngFor="let team of orgMember.teams.slice(0, 5)"
-        [format]="searchResultFormat.Card"
-        [searchResult]="team.team"
-        [teamRole]="team.teamMember.role"
-        (orgNavigate)="orgNavigate.emit($event)"
-      ></newbee-search-result>
+        class="w-card flex-none"
+      >
+        <newbee-search-result
+          [format]="searchResultFormat.Card"
+          [searchResult]="team.team"
+          [teamRole]="team.teamMember.role"
+          (orgNavigate)="orgNavigate.emit($event)"
+        ></newbee-search-result>
+      </div>
 
-      <newbee-view-all-card-btn
-        (clicked)="memberNavigate.emit(shortUrl.Team)"
-      ></newbee-view-all-card-btn>
+      <div class="w-card flex-none">
+        <newbee-view-all-card-btn
+          (clicked)="memberNavigate.emit(shortUrl.Team)"
+        ></newbee-view-all-card-btn>
+      </div>
     </div>
 
     <div class="divider">

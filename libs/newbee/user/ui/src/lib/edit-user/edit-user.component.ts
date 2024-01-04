@@ -63,7 +63,7 @@ export class EditUserComponent implements OnInit {
       authenticatorNames.push(this.fb.control(authenticator.name));
     });
   }
-  _authenticators: Authenticator[] = [];
+  private _authenticators: Authenticator[] = [];
 
   /**
    * Whether to display the spinner on the edit button.

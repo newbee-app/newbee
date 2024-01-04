@@ -77,7 +77,7 @@ export class ViewTeamMembersComponent implements OnDestroy {
     this._orgMember = orgMember;
     this.generateRoleOptions();
   }
-  _orgMember!: OrgMember;
+  private _orgMember!: OrgMember;
 
   /**
    * The team member looking at the screen, if applicable.
@@ -90,7 +90,7 @@ export class ViewTeamMembersComponent implements OnDestroy {
     this._teamMember = teamMember;
     this.generateRoleOptions();
   }
-  _teamMember: TeamMember | null = null;
+  private _teamMember: TeamMember | null = null;
 
   /**
    * All of the team members that currently belong to the team.
@@ -109,7 +109,7 @@ export class ViewTeamMembersComponent implements OnDestroy {
     });
     this.updateTeamMembersToShow();
   }
-  _teamMembers: TeamMemberUserOrgMember[] = [];
+  private _teamMembers: TeamMemberUserOrgMember[] = [];
 
   /**
    * All of the org members eligible to be added to the team (the ones that don't already belong to the team).

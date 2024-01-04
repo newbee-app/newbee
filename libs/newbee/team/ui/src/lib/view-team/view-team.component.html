@@ -35,7 +35,7 @@
       (click)="teamNavigate.emit(shortUrl.Member)"
       class="btn btn-xs btn-success"
     >
-      Add members
+      Add/edit/delete members
     </button>
   </div>
 </div>
@@ -49,17 +49,23 @@
   }}</a>
 
   <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
-    <newbee-search-result
+    <div
       *ngFor="let member of team.teamMembers.slice(0, 5)"
-      [format]="searchResultFormat.Card"
-      [searchResult]="member"
-      [teamRole]="member.teamMember.role"
-      (orgNavigate)="orgNavigate.emit($event)"
-    ></newbee-search-result>
+      class="w-card flex-none"
+    >
+      <newbee-search-result
+        [format]="searchResultFormat.Card"
+        [searchResult]="member"
+        [teamRole]="member.teamMember.role"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-search-result>
+    </div>
 
-    <newbee-view-all-card-btn
-      (clicked)="teamNavigate.emit(shortUrl.Member)"
-    ></newbee-view-all-card-btn>
+    <div class="w-card flex-none">
+      <newbee-view-all-card-btn
+        (clicked)="teamNavigate.emit(shortUrl.Member)"
+      ></newbee-view-all-card-btn>
+    </div>
   </div>
 
   <div class="divider">
