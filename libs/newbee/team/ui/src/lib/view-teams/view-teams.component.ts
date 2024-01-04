@@ -56,7 +56,7 @@ export class ViewTeamsComponent implements OnDestroy {
     this._teams = teams;
     this.updateTeamsToShow();
   }
-  _teams: Team[] = [];
+  private _teams: Team[] = [];
 
   /**
    * All of the teams the org member is in and their roles in them.
@@ -90,7 +90,7 @@ export class ViewTeamsComponent implements OnDestroy {
   get teamsToShow(): Team[] {
     return this._teamsToShow;
   }
-  _teamsToShow: Team[] = [];
+  private _teamsToShow: Team[] = [];
 
   /**
    * A map mapping team slugs to the org member's role in the team.
@@ -100,6 +100,9 @@ export class ViewTeamsComponent implements OnDestroy {
   }
   _teamSlugToRole = new Map<string, TeamRoleEnum>();
 
+  /**
+   * Update the teams to show when the searchbar changes.
+   */
   constructor(private readonly fb: FormBuilder) {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: () => {

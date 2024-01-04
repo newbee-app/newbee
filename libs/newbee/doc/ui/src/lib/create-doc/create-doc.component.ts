@@ -81,7 +81,7 @@ export class CreateDocComponent implements OnInit {
       ...teams.map((team) => new SelectOption(team, team.name)),
     ];
   }
-  _teams: Team[] = [];
+  private _teams: Team[] = [];
 
   /**
    * The query param representing a team slug, if one is specified.

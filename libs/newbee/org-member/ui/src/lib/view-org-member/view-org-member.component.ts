@@ -73,7 +73,7 @@ export class ViewOrgMemberComponent {
       emitEvent: false,
     });
   }
-  _orgMember!: OrgMemberNoOrg;
+  private _orgMember!: OrgMemberNoOrg;
 
   /**
    * The org member information of the user who's looking at the page.
@@ -88,7 +88,7 @@ export class ViewOrgMemberComponent {
       (role) => new SelectOption(role, role),
     );
   }
-  _userOrgMember!: OrgMember;
+  private _userOrgMember!: OrgMember;
 
   /**
    * Whether to display a loader for the org member's role.

@@ -41,7 +41,7 @@ describe('ViewTeamsComponent', () => {
 
   describe('constructor', () => {
     it('should filter teams to show by searchbar', () => {
-      component.searchbar.setValue(testTeam1.name.toLowerCase());
+      component.searchbar.setValue(testTeam1.name.toUpperCase());
       expect(component.teamsToShow).toEqual([testTeam1]);
     });
   });

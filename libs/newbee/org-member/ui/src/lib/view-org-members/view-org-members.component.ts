@@ -75,7 +75,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
       (role) => new SelectOption(role, role),
     );
   }
-  _orgMember!: OrgMember;
+  private _orgMember!: OrgMember;
 
   /**
    * The org members making up the org.
@@ -88,7 +88,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
     this._orgMembers = orgMembers;
     this.updateOrgMembersToShow();
   }
-  _orgMembers: OrgMemberUser[] = [];
+  private _orgMembers: OrgMemberUser[] = [];
 
   /**
    * Whether to display the spinner on the invite button.
@@ -106,7 +106,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
       this.inviteOrgMemberForm.markAsUntouched();
     }
   }
-  _invitePending = false;
+  private _invitePending = false;
 
   /**
    * An HTTP error for the component, if one exists.
@@ -142,7 +142,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
   get roleOptions(): SelectOption<OrgRoleEnum>[] {
     return this._roleOptions;
   }
-  _roleOptions: SelectOption<OrgRoleEnum>[] = [];
+  private _roleOptions: SelectOption<OrgRoleEnum>[] = [];
 
   /**
    * All of the org members filtered by the search term.
@@ -150,7 +150,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
   get orgMembersToShow(): OrgMemberUser[] {
     return this._orgMembersToShow;
   }
-  _orgMembersToShow: OrgMemberUser[] = [];
+  private _orgMembersToShow: OrgMemberUser[] = [];
 
   /**
    * Set up the searchbar to update `orgMembersToShow` whenever its value changes.
