@@ -181,7 +181,7 @@
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
         <newbee-search-result
-          *ngFor="let qna of orgMember.createdQnas.sample"
+          *ngFor="let qna of orgMember.createdQnas.results"
           [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
         ></newbee-search-result>
@@ -210,7 +210,7 @@
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
         <newbee-search-result
-          *ngFor="let qna of orgMember.maintainedQnas.sample"
+          *ngFor="let qna of orgMember.maintainedQnas.results"
           [searchResult]="qna"
           (orgNavigate)="orgNavigate.emit($event)"
         ></newbee-search-result>
@@ -239,7 +239,7 @@
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
         <newbee-search-result
-          *ngFor="let doc of orgMember.createdDocs.sample"
+          *ngFor="let doc of orgMember.createdDocs.results"
           [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
         ></newbee-search-result>
@@ -268,7 +268,7 @@
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
         <newbee-search-result
-          *ngFor="let doc of orgMember.maintainedDocs.sample"
+          *ngFor="let doc of orgMember.maintainedDocs.results"
           [searchResult]="doc"
           (orgNavigate)="orgNavigate.emit($event)"
         ></newbee-search-result>

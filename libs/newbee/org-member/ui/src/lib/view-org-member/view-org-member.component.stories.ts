@@ -36,20 +36,40 @@ export default {
         testTeamMemberRelation1,
       ],
       createdQnas: {
-        sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
+        results: [
+          testQnaQueryResult1,
+          testQnaQueryResult1,
+          testQnaQueryResult1,
+        ],
         total: 100,
+        offset: 0,
       },
       maintainedQnas: {
-        sample: [testQnaQueryResult1, testQnaQueryResult1, testQnaQueryResult1],
+        results: [
+          testQnaQueryResult1,
+          testQnaQueryResult1,
+          testQnaQueryResult1,
+        ],
         total: 100,
+        offset: 0,
       },
       createdDocs: {
-        sample: [testDocQueryResult1, testDocQueryResult1, testDocQueryResult1],
+        results: [
+          testDocQueryResult1,
+          testDocQueryResult1,
+          testDocQueryResult1,
+        ],
         total: 100,
+        offset: 0,
       },
       maintainedDocs: {
-        sample: [testDocQueryResult1, testDocQueryResult1, testDocQueryResult1],
+        results: [
+          testDocQueryResult1,
+          testDocQueryResult1,
+          testDocQueryResult1,
+        ],
         total: 100,
+        offset: 0,
       },
     },
     userOrgMember: testOrgMember1,

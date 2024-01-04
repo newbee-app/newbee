@@ -404,8 +404,8 @@ export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
+  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
 };
 
 /**
@@ -416,8 +416,8 @@ export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
+  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
 };
 
 /**
@@ -477,10 +477,10 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   organization: testOrganization1,
   user: testUser1,
   teams: [testTeamMemberRelation1],
-  createdDocs: { sample: [testDocQueryResult1], total: 1 },
-  maintainedDocs: { sample: [testDocQueryResult1], total: 1 },
-  createdQnas: { sample: [testQnaQueryResult1], total: 1 },
-  maintainedQnas: { sample: [testQnaQueryResult1], total: 1 },
+  createdDocs: { results: [testDocQueryResult1], total: 1, offset: 0 },
+  maintainedDocs: { results: [testDocQueryResult1], total: 1, offset: 0 },
+  createdQnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
+  maintainedQnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
 };
 
 /**
@@ -490,8 +490,8 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
 export const testTeamRelation1: TeamRelation = {
   team: testTeam1,
   organization: testOrganization1,
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
+  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
   teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
 };
 

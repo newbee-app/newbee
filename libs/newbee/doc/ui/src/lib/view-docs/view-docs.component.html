@@ -1,0 +1,44 @@
+<div infiniteScroll (scrolled)="scrolled.emit()">
+  <div id="top-elements" class="sticky top-0 bg-base-100 z-10">
+    <form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
+      <newbee-searchbar
+        formControlName="searchbar"
+        [suggestions]="searchSuggestions"
+        (selectSuggestion)="selectSuggestion($event)"
+      ></newbee-searchbar>
+    </form>
+
+    <div class="divider my-0"></div>
+  </div>
+
+  <div *ngIf="searchPending; else displayDocs" class="flex justify-center mt-2">
+    <span class="loading loading-spinner"></span>
+  </div>
+
+  <ng-template #displayDocs>
+    <ng-container *ngIf="docs">
+      <p class="text-sm opacity-50 mt-2">
+        {{ docsFound }}
+      </p>
+
+      <p *ngIf="docs.suggestion" class="text-error mt-2">
+        Did you mean
+        <a (click)="selectSuggestion(docs.suggestion)" class="link link-info">{{
+          docs.suggestion
+        }}</a>
+      </p>
+
+      <div
+        *ngIf="docs.results.length"
+        class="flex flex-col flex-nowrap gap-y-8 mt-6"
+      >
+        <newbee-search-result
+          *ngFor="let doc of docs.results"
+          [searchResult]="doc"
+          [format]="searchResultFormat.List"
+          (orgNavigate)="orgNavigate.emit($event)"
+        ></newbee-search-result>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

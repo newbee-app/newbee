@@ -410,20 +410,20 @@ export class EntityService {
       return {
         team,
         docs: {
-          sample: await this.createDocQueryResults(docs),
+          results: await this.createDocQueryResults(docs),
           total: docsCount,
+          offset: 0,
         },
         qnas: {
-          sample: await this.createQnaQueryResults(qnas),
+          results: await this.createQnaQueryResults(qnas),
           total: qnasCount,
+          offset: 0,
         },
-        teamMembers: team.teamMembers
-          .getItems()
-          .map((teamMember) => ({
-            teamMember,
-            orgMember: teamMember.orgMember,
-            user: teamMember.orgMember.user,
-          })),
+        teamMembers: team.teamMembers.getItems().map((teamMember) => ({
+          teamMember,
+          orgMember: teamMember.orgMember,
+          user: teamMember.orgMember.user,
+        })),
       };
     } catch (err) {
       this.logger.error(err);
@@ -615,20 +615,24 @@ export class EntityService {
           team: teamMember.team,
         })),
         createdDocs: {
-          sample: await this.createDocQueryResults(createdDocs),
+          results: await this.createDocQueryResults(createdDocs),
           total: createdDocsCount,
+          offset: 0,
         },
         maintainedDocs: {
-          sample: await this.createDocQueryResults(maintainedDocs),
+          results: await this.createDocQueryResults(maintainedDocs),
           total: maintainedDocsCount,
+          offset: 0,
         },
         createdQnas: {
-          sample: await this.createQnaQueryResults(createdQnas),
+          results: await this.createQnaQueryResults(createdQnas),
           total: createdQnasCount,
+          offset: 0,
         },
         maintainedQnas: {
-          sample: await this.createQnaQueryResults(maintainedQnas),
+          results: await this.createQnaQueryResults(maintainedQnas),
           total: maintainedQnasCount,
+          offset: 0,
         },
       };
     } catch (err) {

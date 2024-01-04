@@ -89,12 +89,12 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Output() scrolled = new EventEmitter<void>();
 
   /**
-   * The search term coming from the searchbar.
+   * The search term containing the searchbar.
    */
   searchTerm = this.fb.group({ searchbar: ['', [Validators.required]] });
 
   /**
-   * Emits the suggest event with the current searchbar value.
+   * Emits the searchbar output with the current searchbar value.
    */
   constructor(private readonly fb: FormBuilder) {
     this.searchTerm.controls.searchbar.valueChanges
@@ -129,7 +129,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    */
   get resultsFound(): string {
     if (!this.searchResults) {
-      return '';
+      return 'No results found';
     }
 
     return `${this.searchResults.total} ${
@@ -162,7 +162,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Emits the search event with the current search value.
+   * Emits the search event with the current searchbar value.
    */
   emitSearch(): void {
     const searchVal = this.searchTerm.controls.searchbar.value;

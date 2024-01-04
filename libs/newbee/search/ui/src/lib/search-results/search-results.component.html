@@ -44,35 +44,40 @@
     <div class="divider my-0"></div>
   </div>
 
-  <div *ngIf="searchPending" class="flex justify-center mt-2">
+  <div
+    *ngIf="searchPending; else displayResults"
+    class="flex justify-center mt-2"
+  >
     <span class="loading loading-spinner"></span>
   </div>
 
-  <ng-container *ngIf="searchResults">
-    <p class="text-sm opacity-50 mt-2">
-      {{ resultsFound }}
-    </p>
+  <ng-template #displayResults>
+    <ng-container *ngIf="searchResults">
+      <p class="text-sm opacity-50 mt-2">
+        {{ resultsFound }}
+      </p>
 
-    <p *ngIf="searchResults.suggestion" class="text-error mt-2">
-      Did you mean
-      <a
-        (click)="selectSuggestion(searchResults.suggestion)"
-        class="link link-info"
-        >{{ searchResults.suggestion }}</a
-      >
-    </p>
+      <p *ngIf="searchResults.suggestion" class="text-error mt-2">
+        Did you mean
+        <a
+          (click)="selectSuggestion(searchResults.suggestion)"
+          class="link link-info"
+          >{{ searchResults.suggestion }}</a
+        >
+      </p>
 
-    <div
-      *ngIf="searchResults.results.length"
-      class="flex flex-col flex-nowrap gap-y-8 mt-6"
-    >
-      <newbee-search-result
-        *ngFor="let searchResult of searchResults.results"
-        [searchResult]="searchResult"
-        [format]="searchResultFormat.List"
-        (orgNavigate)="orgNavigate.emit($event)"
+      <div
+        *ngIf="searchResults.results.length"
+        class="flex flex-col flex-nowrap gap-y-8 mt-6"
       >
-      </newbee-search-result>
-    </div>
-  </ng-container>
+        <newbee-search-result
+          *ngFor="let searchResult of searchResults.results"
+          [searchResult]="searchResult"
+          [format]="searchResultFormat.List"
+          (orgNavigate)="orgNavigate.emit($event)"
+        >
+        </newbee-search-result>
+      </div>
+    </ng-container>
+  </ng-template>
 </div>

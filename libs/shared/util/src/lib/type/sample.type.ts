@@ -6,10 +6,15 @@ export type Sample<Type> = {
   /**
    * A few sample instances of the type.
    */
-  sample: Type[];
+  results: Type[];
 
   /**
    * The toal number of instances that exist.
    */
   total: number;
+
+  /**
+   * The page set from which to start listing results.
+   */
+  offset: number;
 };

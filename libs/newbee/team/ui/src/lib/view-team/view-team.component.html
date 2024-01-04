@@ -82,7 +82,7 @@
   <div class="flex flex-row flex-nowrap">
     <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
       <newbee-search-result
-        *ngFor="let qna of team.qnas.sample"
+        *ngFor="let qna of team.qnas.results"
         [searchResult]="qna"
         (orgNavigate)="orgNavigate.emit($event)"
       ></newbee-search-result>
@@ -111,7 +111,7 @@
   <div class="flex flex-row flex-nowrap">
     <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
       <newbee-search-result
-        *ngFor="let doc of team.docs.sample"
+        *ngFor="let doc of team.docs.results"
         [searchResult]="doc"
         (orgNavigate)="orgNavigate.emit($event)"
       ></newbee-search-result>
