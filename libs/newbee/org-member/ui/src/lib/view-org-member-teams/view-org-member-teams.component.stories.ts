@@ -1,4 +1,5 @@
 import {
+  testTeam2,
   testTeamMemberRelation1,
   testTeamMemberRelation2,
 } from '@newbee/shared/util';
@@ -9,7 +10,10 @@ export default {
   title: 'ViewOrgMemberTeamsComponent',
   component: ViewOrgMemberTeamsComponent,
   args: {
-    teams: [testTeamMemberRelation1, testTeamMemberRelation2],
+    teams: [
+      testTeamMemberRelation1,
+      { ...testTeamMemberRelation2, team: testTeam2 },
+    ],
   },
   argTypes: {
     orgNavigate: { action: 'orgNavigate' },

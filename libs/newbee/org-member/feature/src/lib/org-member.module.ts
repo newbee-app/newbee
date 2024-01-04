@@ -8,10 +8,12 @@ import {
 import {
   ViewOrgMemberComponent,
   ViewOrgMembersComponent,
+  ViewOrgMemberTeamsComponent,
 } from '@newbee/newbee/org-member/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrgMemberRootComponent } from './org-member-root';
+import { OrgMemberTeamsViewComponent } from './org-member-teams-view';
 import { OrgMemberViewComponent } from './org-member-view';
 import { OrgMembersViewComponent } from './org-members-view';
 import { OrgMemberRoutingModule } from './routing';
@@ -23,6 +25,7 @@ import { OrgMemberRoutingModule } from './routing';
     EffectsModule.forFeature([OrgMemberEffects]),
     ViewOrgMemberComponent,
     ViewOrgMembersComponent,
+    ViewOrgMemberTeamsComponent,
     OrgMemberRoutingModule,
   ],
   providers: [OrgMemberService],
@@ -30,6 +33,7 @@ import { OrgMemberRoutingModule } from './routing';
     OrgMemberRootComponent,
     OrgMemberViewComponent,
     OrgMembersViewComponent,
+    OrgMemberTeamsViewComponent,
   ],
 })
 export class OrgMemberModule {}
