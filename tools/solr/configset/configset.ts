@@ -1,13 +1,13 @@
 // Creates the base Solr configset that will be used by NewBee to store an organization's docs and qnas
 
-import type { OptionValues } from 'commander';
-import { Command } from 'commander';
 import {
   solrDefaultHighlightedFields,
   solrDictionaries,
   solrFields,
-} from '../../../libs/api/shared/util/src';
-import { SolrCli } from '../../../libs/publishable/solr-cli/src';
+} from '@newbee/api/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
+import type { OptionValues } from 'commander';
+import { Command } from 'commander';
 import { execute, prettyJson } from '../util';
 
 /**
@@ -442,7 +442,7 @@ async function create(options: OptionValues): Promise<void> {
         },
         {
           ...suggestParams,
-          name: solrDictionaries.all,
+          name: solrDictionaries.User,
           field: suggestUser,
         },
       ],
