@@ -6,6 +6,7 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   CreateDocDto,
@@ -15,13 +16,20 @@ import {
 import {
   DocEntity,
   EntityService,
+  OffsetDto,
   OrgMemberEntity,
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import { Doc, OrgMember, Organization, Role } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseDocAndMemberDto, Keyword, apiRoles } from '@newbee/shared/util';
+import {
+  BaseDocAndMemberDto,
+  DocQueryResult,
+  Keyword,
+  Result,
+  apiRoles,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `DocEntity`.
@@ -43,9 +51,42 @@ export class DocController {
   ) {}
 
   /**
+   * The API route for getting paginated results of all of the docs in an org.
+   *
+   * @param offsetDto The offset for the pagination.
+   * @param organization The organization to look in.
+   *
+   * @returns The result containing the retrieved docs, the total number of docs in the org, and the offset we retrieved.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
+   */
+  @Get()
+  @Role(apiRoles.doc.getAllPaginated)
+  async getAllPaginated(
+    @Query() offsetDto: OffsetDto,
+    @Organization() organization: OrganizationEntity,
+  ): Promise<Result<DocQueryResult>> {
+    this.logger.log(
+      `Get docs and count request received for organization: ${organization.slug}`,
+    );
+
+    const { offset } = offsetDto;
+    const [docs, total] = await this.docService.findByOrgAndCount(
+      organization,
+      offset,
+    );
+    this.logger.log(
+      `Got docs for organization: ${organization.slug}, total count: ${total}`,
+    );
+
+    return {
+      total,
+      offset,
+      results: await this.entityService.createDocQueryResults(docs),
+    };
+  }
+
+  /**
    * The API route for creating a doc.
-   * Org moderators and owners; and team members, moderators, and owners should be allowed to access the endpoint.
-   * Org members should be allowed to access the endpoint if no team was specified in the request's query or body.
    *
    * @param createDocDto The information necessary to create a doc.
    * @param user The user that sent the request and will become the owner of the doc.
@@ -53,7 +94,8 @@ export class DocController {
    * @param teamSlugDto The DTO containing the slug of the team the doc will go in, if applicable.
    *
    * @returns The newly created doc.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post()
   @Role(apiRoles.doc.create)
@@ -74,13 +116,12 @@ export class DocController {
 
   /**
    * The API route for getting a doc.
-   * Organization members, moderators, and owners should be allowed to access the endpoint.
    *
    * @param doc The doc we're looking for.
    * @param orgMember The org member making the request.
    *
    * @returns The doc associated with the slug, if one exists.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Doc}`)
   @Role(apiRoles.doc.get)
@@ -105,14 +146,12 @@ export class DocController {
 
   /**
    * The API route for updating a doc.
-   * Organization moderators and owners; team members, moderators and owners; and post maintainers should be allowed to access the endpoint.
-   * Organization members should be allowed to access the endpoint if the doc is not associated with a team.
    *
    * @param updateDocDto The new values for the doc.
    * @param doc The doc we're looking for.
    *
    * @returns The updated doc, if it was updated successfully.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Patch(`:${Keyword.Doc}`)
   @Role(apiRoles.doc.update)
@@ -141,12 +180,11 @@ export class DocController {
 
   /**
    * The API route for marking a doc as up-to-date.
-   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param doc The doc we're looking for.
    *
    * @returns The updated doc, if it was updated successfully.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Post(`:${Keyword.Doc}`)
   @Role(apiRoles.doc.markUpToDate)
@@ -161,11 +199,10 @@ export class DocController {
 
   /**
    * The API route for deleting a doc.
-   * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param doc The doc we're looking for.
    *
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Delete(`:${Keyword.Doc}`)
   @Role(apiRoles.doc.delete)

@@ -1,13 +1,12 @@
-import { BaseQueryDto, offsetIsInt, offsetMin0 } from '@newbee/shared/util';
+import { BaseOffsetDto, offsetIsInt, offsetMin0 } from '@newbee/shared/util';
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
-import { SuggestDto } from './suggest.dto';
 
 /**
- * The verifiable DTO sent from the frontend to the backend to execute a query.
+ * The verifiable DTO sent from the frontend to the backend containing an offset value.
  * Suitable for use in GET requests.
  */
-export class QueryDto extends SuggestDto implements BaseQueryDto {
+export class OffsetDto implements BaseOffsetDto {
   /**
    * @inheritdoc
    */

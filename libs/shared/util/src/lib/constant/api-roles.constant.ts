@@ -16,6 +16,7 @@ import {
  */
 export const apiRoles = {
   [Keyword.Doc]: {
+    getAllPaginated: anyOrgMember,
     create: anyOrgMember,
     get: anyOrgMember,
     update: anyOrgMember,

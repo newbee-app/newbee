@@ -11,7 +11,9 @@ import {
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateDocDto1,
+  testBaseOffsetDto1,
   testBaseUpdateDocDto1,
+  testDocQueryResult1,
   testDocRelation1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
@@ -34,6 +36,9 @@ describe('DocController', () => {
           provide: DocService,
           useValue: createMock<DocService>({
             create: jest.fn().mockResolvedValue(testDocEntity1),
+            findByOrgAndCount: jest
+              .fn()
+              .mockResolvedValue([[testDocEntity1], 1]),
             update: jest.fn().mockResolvedValue(testUpdatedDocEntity),
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedDocEntity),
           }),
@@ -42,6 +47,9 @@ describe('DocController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createDocNoOrg: jest.fn().mockResolvedValue(testDocRelation1),
+            createDocQueryResults: jest
+              .fn()
+              .mockResolvedValue([testDocQueryResult1]),
           }),
         },
         {
@@ -68,19 +76,33 @@ describe('DocController', () => {
     expect(teamMemberService).toBeDefined();
   });
 
-  it('create should create a doc', async () => {
-    await expect(
-      controller.create(
+  describe('getAllPaginated', () => {
+    it('should get doc results', async () => {
+      await expect(
+        controller.getAllPaginated(testBaseOffsetDto1, testOrganizationEntity1),
+      ).resolves.toEqual({
+        total: 1,
+        offset: 0,
+        results: [testDocQueryResult1],
+      });
+    });
+  });
+
+  describe('create', () => {
+    it('should create a doc', async () => {
+      await expect(
+        controller.create(
+          testBaseCreateDocDto1,
+          testOrgMemberEntity1,
+          testOrganizationEntity1,
+        ),
+      ).resolves.toEqual(testDocEntity1);
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testBaseCreateDocDto1,
         testOrgMemberEntity1,
-        testOrganizationEntity1,
-      ),
-    ).resolves.toEqual(testDocEntity1);
-    expect(service.create).toHaveBeenCalledTimes(1);
-    expect(service.create).toHaveBeenCalledWith(
-      testBaseCreateDocDto1,
-      testOrgMemberEntity1,
-    );
+      );
+    });
   });
 
   describe('get & update', () => {
@@ -125,17 +147,21 @@ describe('DocController', () => {
     });
   });
 
-  it('markUpToDate should mark a doc as up-to-date', async () => {
-    await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
-      testUpdatedDocEntity,
-    );
-    expect(service.markUpToDate).toHaveBeenCalledTimes(1);
-    expect(service.markUpToDate).toHaveBeenCalledWith(testDocEntity1);
+  describe('markUpToDate', () => {
+    it('should mark a doc as up-to-date', async () => {
+      await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
+        testUpdatedDocEntity,
+      );
+      expect(service.markUpToDate).toHaveBeenCalledTimes(1);
+      expect(service.markUpToDate).toHaveBeenCalledWith(testDocEntity1);
+    });
   });
 
-  it('delete should delete a doc', async () => {
-    await expect(controller.delete(testDocEntity1)).resolves.toBeUndefined();
-    expect(service.delete).toHaveBeenCalledTimes(1);
-    expect(service.delete).toHaveBeenCalledWith(testDocEntity1);
+  describe('delete', () => {
+    it('should delete a doc', async () => {
+      await expect(controller.delete(testDocEntity1)).resolves.toBeUndefined();
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testDocEntity1);
+    });
   });
 });

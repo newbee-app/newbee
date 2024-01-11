@@ -23,6 +23,7 @@ import {
   BaseGeneratedSlugDto,
   BaseMagicLinkLoginDto,
   BaseNameDto,
+  BaseOffsetDto,
   BaseOrgAndMemberDto,
   BaseQnaAndMemberDto,
   BaseQueryDto,
@@ -844,4 +845,12 @@ export const testBaseGenerateSlugDto1: BaseGenerateSlugDto = {
  */
 export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
   generatedSlug: testOrganization1.slug,
+};
+
+/**
+ * An example instance of BaseOffsetDto.
+ * Strictly for use in testing.
+ */
+export const testBaseOffsetDto1: BaseOffsetDto = {
+  offset: 0,
 };

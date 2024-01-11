@@ -1,9 +1,4 @@
-import {
-  DocDocParams,
-  OrgMemberDocParams,
-  QnaDocParams,
-  TeamDocParams,
-} from '@newbee/api/shared/util';
+import { solrDictionaries } from '@newbee/api/shared/util';
 import {
   SolrEntryEnum,
   TeamRoleEnum,
@@ -28,6 +23,12 @@ import type {
   ResponseHeader,
 } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
+import {
+  DocDocParams,
+  OrgMemberDocParams,
+  QnaDocParams,
+  TeamDocParams,
+} from '../class';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -157,64 +158,29 @@ export const testQnaEntity1 = {
 } as QnaEntity;
 
 /**
- * An example instance of `OrgMemberDocParams`.
- * Strictly for use in testing.
- */
-export const testOrgMemberDocParams1 = new OrgMemberDocParams(
-  testOrgMemberEntity1.id,
-  testOrgMemberEntity1.slug,
-  testUserEntity1.email,
-  testUserEntity1.name,
-  testUserEntity1.displayName,
-  testUserEntity1.phoneNumber,
-  testOrgMemberEntity1.role,
-);
-
-/**
- * An example instance of `TeamDocParams`.
- * Strictly for use in testing.
- */
-export const testTeamDocParams1 = new TeamDocParams(
-  testTeamEntity1.id,
-  testTeamEntity1.slug,
-  testTeamEntity1.name,
-);
-
-/**
  * An example instance of `DocDocParams`.
  * Strictly for use in testing.
  */
-export const testDocDocParams1 = new DocDocParams(
-  testDocEntity1.id,
-  testDocEntity1.slug,
-  testDocEntity1.team?.id ?? null,
-  testDocEntity1.createdAt,
-  testDocEntity1.updatedAt,
-  testDocEntity1.markedUpToDateAt,
-  testDocEntity1.outOfDateAt,
-  testDocEntity1.title,
-  testDocEntity1.creator?.id ?? null,
-  testDocEntity1.maintainer?.id ?? null,
-  testDocEntity1.docTxt,
-);
+export const testDocDocParams1 = new DocDocParams(testDocEntity1);
 
 /**
  * An example instance of `QnaDocParams`.
  * Strictly for use in testing.
  */
-export const testQnaDocParams1 = new QnaDocParams(
-  testQnaEntity1.id,
-  testQnaEntity1.slug,
-  testQnaEntity1.team?.id ?? null,
-  testQnaEntity1.createdAt,
-  testQnaEntity1.updatedAt,
-  testQnaEntity1.markedUpToDateAt,
-  testQnaEntity1.outOfDateAt,
-  testQnaEntity1.title,
-  testQnaEntity1.creator?.id ?? null,
-  testQnaEntity1.maintainer?.id ?? null,
-  testQnaEntity1.questionTxt,
-  testQnaEntity1.answerTxt,
+export const testQnaDocParams1 = new QnaDocParams(testQnaEntity1);
+
+/**
+ * An example instance of `TeamDocParams`.
+ * Strictly for use in testing.
+ */
+export const testTeamDocParams1 = new TeamDocParams(testTeamEntity1);
+
+/**
+ * An example instance of `OrgMemberDocParams`.
+ * Strictly for use in testing.
+ */
+export const testOrgMemberDocParams1 = new OrgMemberDocParams(
+  testOrgMemberEntity1,
 );
 
 /**
@@ -309,7 +275,7 @@ export const testQueryResponse2: QueryResponse = {
 export const testQueryResponse3: QueryResponse = {
   responseHeader: testResponseHeader1,
   suggest: {
-    default: {
+    [solrDictionaries.all]: {
       [testBaseSuggestDto1.query]: {
         numFound: 1,
         suggestions: [

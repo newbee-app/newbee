@@ -7,6 +7,7 @@ import {
   testQueryResponse2,
   testQueryResponse3,
 } from '@newbee/api/shared/data-access';
+import { solrDictionaries } from '@newbee/api/shared/util';
 import {
   internalServerError,
   testBaseQueryDto1,
@@ -51,7 +52,10 @@ describe('SearchService', () => {
         expect(solrCli.suggest).toHaveBeenCalledWith(
           testOrganizationEntity1.id,
           {
-            params: { 'suggest.q': testBaseSuggestDto1.query },
+            params: {
+              'suggest.q': testBaseSuggestDto1.query,
+              'suggest.dictionary': solrDictionaries.all,
+            },
           },
         );
       });
@@ -111,14 +115,21 @@ describe('SearchService', () => {
     });
   });
 
-  describe('buildSuggester', () => {
+  describe('buildSuggesters', () => {
     it('should call suggest with build parameter', async () => {
       await expect(
-        service.buildSuggester(testOrganizationEntity1),
+        service.buildSuggesters(testOrganizationEntity1),
       ).resolves.toBeUndefined();
-      expect(solrCli.suggest).toHaveBeenCalledTimes(1);
-      expect(solrCli.suggest).toHaveBeenCalledWith(testOrganizationEntity1.id, {
-        params: { 'suggest.build': true },
+      expect(solrCli.suggest).toHaveBeenCalledTimes(
+        Object.values(solrDictionaries).length,
+      );
+      Object.values(solrDictionaries).forEach((dictionary) => {
+        expect(solrCli.suggest).toHaveBeenCalledWith(
+          testOrganizationEntity1.id,
+          {
+            params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
+          },
+        );
       });
     });
   });

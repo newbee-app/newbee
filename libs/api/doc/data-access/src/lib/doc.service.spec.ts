@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import Markdoc from '@markdoc/markdoc';
-import { NotFoundError } from '@mikro-orm/core';
+import { NotFoundError, QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   InternalServerErrorException,
@@ -9,6 +9,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  DocDocParams,
   DocEntity,
   EntityService,
   testDocDocParams1,
@@ -17,7 +18,7 @@ import {
   testOrganizationEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { DocDocParams, elongateUuid } from '@newbee/api/shared/util';
+import { elongateUuid } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
@@ -68,11 +69,7 @@ describe('DocService', () => {
     team: testTeamEntity1,
     maintainer: testOrgMemberEntity1,
   });
-  const testUpdatedDocDocParams: DocDocParams = {
-    ...testDocDocParams1,
-    doc_title: testUpdatedDoc.title,
-    doc_txt: testUpdatedDoc.docTxt,
-  };
+  const testUpdatedDocDocParams = new DocDocParams(testUpdatedDoc);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -82,15 +79,13 @@ describe('DocService', () => {
           provide: EntityManager,
           useValue: createMock<EntityManager>({
             findOneOrFail: jest.fn().mockResolvedValue(testDocEntity1),
-            find: jest.fn().mockResolvedValue([testDocEntity1]),
+            findAndCount: jest.fn().mockResolvedValue([[testDocEntity1], 1]),
             assign: jest.fn().mockReturnValue(testUpdatedDoc),
           }),
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>({
-            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
-          }),
+          useValue: createMock<EntityService>(),
         },
         {
           provide: SolrCli,
@@ -221,13 +216,37 @@ describe('DocService', () => {
     });
   });
 
-  describe('update', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entityService, 'createDocDocParams')
-        .mockReturnValue(testUpdatedDocDocParams);
+  describe('findByOrgAndCount', () => {
+    afterEach(() => {
+      expect(em.findAndCount).toHaveBeenCalledTimes(1);
+      expect(em.findAndCount).toHaveBeenCalledWith(
+        DocEntity,
+        { organization: testOrganizationEntity1 },
+        {
+          orderBy: { markedUpToDateAt: QueryOrder.DESC },
+          limit: 20,
+          offset: 0,
+        },
+      );
     });
 
+    it('should find doc entities and count', async () => {
+      await expect(
+        service.findByOrgAndCount(testOrganizationEntity1, 0),
+      ).resolves.toEqual([[testDocEntity1], 1]);
+    });
+
+    it('should throw an InternalServerErrorException if findAndCount throws an error', async () => {
+      jest
+        .spyOn(em, 'findAndCount')
+        .mockRejectedValue(new Error('findAndCount'));
+      await expect(
+        service.findByOrgAndCount(testOrganizationEntity1, 0),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('update', () => {
     afterEach(() => {
       expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
       expect(teamService.findOneBySlug).toHaveBeenCalledWith(
@@ -291,12 +310,6 @@ describe('DocService', () => {
   });
 
   describe('markUpToDate', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entityService, 'createDocDocParams')
-        .mockReturnValue(testUpdatedDocDocParams);
-    });
-
     afterEach(async () => {
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(testDocEntity1, {

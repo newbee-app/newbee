@@ -21,6 +21,8 @@ import {
   TeamEntity,
   testDocDocParams1,
   testDocEntity1,
+  testOrgMemberDocParams1,
+  testOrgMemberEntity1,
   testOrganizationEntity1,
   testQnaDocParams1,
   testQnaEntity1,
@@ -65,7 +67,9 @@ describe('OrganizationService', () => {
 
   const testOrganizationEntity = createMock<OrganizationEntity>({
     ...testOrganizationEntity1,
-    members: createMock<Collection<OrgMemberEntity>>(),
+    members: createMock<Collection<OrgMemberEntity>>({
+      getItems: jest.fn().mockReturnValue([testOrgMemberEntity1]),
+    }),
   });
   const testUpdatedOrganization = {
     ...testOrganizationEntity,
@@ -86,17 +90,14 @@ describe('OrganizationService', () => {
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>({
-            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
-            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
-          }),
+          useValue: createMock<EntityService>(),
         },
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
             changeUpToDateDuration: jest.fn().mockResolvedValue({
               docs: [testDocEntity1],
-              qnas: testQnaEntity1,
+              qnas: [testQnaEntity1],
             }),
           }),
         },
@@ -158,6 +159,10 @@ describe('OrganizationService', () => {
         numShards: 1,
         config: newOrgConfigset,
       });
+      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.addDocs).toHaveBeenCalledWith(testOrganizationEntity.id, [
+        testOrgMemberDocParams1,
+      ]);
     });
 
     it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
@@ -229,7 +234,7 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggester).not.toHaveBeenCalled();
+      expect(searchService.buildSuggesters).not.toHaveBeenCalled();
     });
 
     it(`should build the suggester if it's been at least a day since last build`, async () => {
@@ -245,8 +250,8 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggester).toHaveBeenCalledTimes(1);
-      expect(searchService.buildSuggester).toHaveBeenCalledWith(
+      expect(searchService.buildSuggesters).toHaveBeenCalledTimes(1);
+      expect(searchService.buildSuggesters).toHaveBeenCalledWith(
         testOrganizationEntity,
       );
       expect(em.assign).toHaveBeenCalledTimes(1);

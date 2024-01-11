@@ -11,11 +11,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  DocDocParams,
   DocEntity,
   EntityService,
   OrgMemberEntity,
   OrganizationEntity,
+  QnaDocParams,
   QnaEntity,
+  TeamDocParams,
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -76,10 +79,7 @@ export class TeamService {
     }
 
     try {
-      await this.solrCli.addDocs(
-        organization.id,
-        this.entityService.createTeamDocParams(team),
-      );
+      await this.solrCli.addDocs(organization.id, new TeamDocParams(team));
     } catch (err) {
       this.logger.error(err);
       await this.em.removeAndFlush(team);
@@ -194,9 +194,9 @@ export class TeamService {
     const collectionName = team.organization.id;
     try {
       await this.solrCli.getVersionAndReplaceDocs(collectionName, [
-        this.entityService.createTeamDocParams(updatedTeam),
-        ...docs.map((doc) => this.entityService.createDocDocParams(doc)),
-        ...qnas.map((qna) => this.entityService.createQnaDocParams(qna)),
+        new TeamDocParams(updatedTeam),
+        ...docs.map((doc) => new DocDocParams(doc)),
+        ...qnas.map((qna) => new QnaDocParams(qna)),
       ]);
     } catch (err) {
       this.logger.error(err);

@@ -2,6 +2,11 @@
 
 import type { OptionValues } from 'commander';
 import { Command } from 'commander';
+import {
+  solrDefaultHighlightedFields,
+  solrDictionaries,
+  solrFields,
+} from '../../../libs/api/shared/util/src';
 import { SolrCli } from '../../../libs/publishable/solr-cli/src';
 import { execute, prettyJson } from '../util';
 
@@ -93,13 +98,12 @@ async function main(): Promise<void> {
  * @param options The CLI options for creating a SolrCli instance.
  */
 async function create(options: OptionValues): Promise<void> {
-  // Create all of the constants I'll reuse in the method to avoid typos
+  // START: Create all of the constants I'll reuse in the method to avoid typos
 
   // Related to outside files
   const enumsConfigXml = 'enumsConfig.xml';
 
   // Related to field types
-  const entryType = 'entry_type';
   const orgRoleType = 'org_role_type';
   const solrEnumFieldType = 'solr.EnumFieldType';
   const entryEnumName = 'entry';
@@ -115,35 +119,41 @@ async function create(options: OptionValues): Promise<void> {
 
   // Related to fields
   const textField = '_text_';
-  const spellcheckText = '_spellcheck_text_';
-  const suggestText = '_suggest_text_';
-  const slug = 'slug';
-  const userName = 'user_name';
-  const userDisplayName = 'user_display_name';
-  const userEmail = 'user_email';
-  const userPhoneNumber = 'user_phone_number';
-  const userOrgRole = 'org_role';
-  const teamName = 'team_name';
-  const team = 'team';
-  const createdAt = 'created_at';
-  const updatedAt = 'updated_at';
-  const markedUpToDateAt = 'marked_up_to_date_at';
-  const outOfDateAt = 'out_of_date_at';
-  const title = 'title';
-  const creator = 'creator';
-  const maintainer = 'maintainer';
-  const docTxt = 'doc_txt';
-  const questionTxt = 'question_txt';
-  const answerTxt = 'answer_txt';
-  const commonCopyFields = [textField, spellcheckText];
-  const suggestCopyFields = [...commonCopyFields, suggestText];
+  const spellcheckAll = '_spellcheck_all_';
+  const spellcheckDoc = '_spellcheck_doc_';
+  const spellcheckQna = '_spellcheck_qna_';
+  const spellcheckTeam = '_spellcheck_team_';
+  const spellcheckUser = '_spellcheck_user_';
+  const suggestAll = 'suggest_all';
+  const suggestDoc = 'suggest_doc';
+  const suggestQna = 'suggest_qna';
+  const suggestTeam = 'suggest_team';
+  const suggestUser = 'suggest_user';
+  const commonCopyFields = [textField, spellcheckAll];
+  const suggestCopyFields = [...commonCopyFields, suggestAll];
 
   // Related to request handlers
-  const defaultName = 'default';
   const suggest = 'suggest';
   const spellcheck = 'spellcheck';
-  const solrSpellCheckComponent = 'solr.SpellCheckComponent';
+  const suggestParams = {
+    lookupImpl: 'BlendedInfixLookupFactory',
+    dictionaryImpl: 'DocumentDictionaryFactory',
+    suggestAnalyzerFieldType: basicText,
+    contextField: solrFields.out_of_date_at,
+  };
+  const spellcheckParams = {
+    classname: 'solr.DirectSolrSpellChecker',
+    distanceMeasure: 'internal',
+    accuracy: 0.5,
+    maxEdits: 2,
+    minPrefix: 1,
+    maxInspections: 5,
+    minQueryLength: 4,
+    maxQueryFrequency: 0.01,
+  };
   const solrSearchHandler = 'solr.SearchHandler';
+
+  // END: Create all of the constants I'll reuse in the method to avoid typos
 
   const solrCli = createSolrCli(options);
 
@@ -186,7 +196,7 @@ async function create(options: OptionValues): Promise<void> {
     'add-field-type': [
       // An enum describing the type of the entry
       {
-        name: entryType,
+        name: solrFields.entry_type,
         class: solrEnumFieldType,
         enumsConfig: enumsConfigXml,
         enumName: entryEnumName,
@@ -241,66 +251,153 @@ async function create(options: OptionValues): Promise<void> {
     'add-field': [
       // Required for spellchecking
       {
-        name: spellcheckText,
+        name: spellcheckAll,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckDoc,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckQna,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckTeam,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckUser,
         type: basicText,
         multiValued: true,
         stored: false,
       },
 
       // Required for auto-complete suggestions
-      // Includes all queryable fields
       {
-        name: suggestText,
+        name: suggestAll,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestDoc,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestQna,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestTeam,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestUser,
         type: basicText,
         multiValued: true,
         stored: true,
       },
 
       // Required on all entries to distinguish them
-      { name: entryType, type: entryType, required: true },
+      {
+        name: solrFields.entry_type,
+        type: solrFields.entry_type,
+        required: true,
+      },
 
       // Applicable for all entries
-      { name: slug, type: stringFieldType, required: true },
+      { name: solrFields.slug, type: stringFieldType, required: true },
 
       // Applicable for user
-      { name: userEmail, type: stringFieldType },
-      { name: userName, type: textGeneral, multiValued: false },
-      { name: userDisplayName, type: textGeneral, multiValued: false },
-      { name: userPhoneNumber, type: stringFieldType },
-      { name: userOrgRole, type: orgRoleType },
+      { name: solrFields.user_email, type: stringFieldType },
+      { name: solrFields.user_name, type: textGeneral, multiValued: false },
+      {
+        name: solrFields.user_display_name,
+        type: textGeneral,
+        multiValued: false,
+      },
+      { name: solrFields.user_phone_number, type: stringFieldType },
+      { name: solrFields.user_org_role, type: orgRoleType },
 
       // Applicable for team
-      { name: teamName, type: textGeneral, multiValued: false },
+      { name: solrFields.team_name, type: textGeneral, multiValued: false },
 
       // Applicable for doc and qna
-      { name: team, type: stringFieldType },
-      { name: createdAt, type: pdate },
-      { name: updatedAt, type: pdate },
-      { name: markedUpToDateAt, type: pdate },
-      { name: outOfDateAt, type: pdate },
-      { name: title, type: stringFieldType },
-      { name: creator, type: stringFieldType },
-      { name: maintainer, type: stringFieldType },
+      { name: solrFields.team_id, type: stringFieldType },
+      { name: solrFields.created_at, type: pdate },
+      { name: solrFields.updated_at, type: pdate },
+      { name: solrFields.marked_up_to_date_at, type: pdate },
+      { name: solrFields.out_of_date_at, type: pdate },
+      { name: solrFields.creator_id, type: stringFieldType },
+      { name: solrFields.maintainer_id, type: stringFieldType },
 
       // Applicable for doc
-      { name: docTxt, type: textGeneral, multiValued: false },
+      { name: solrFields.doc_title, type: textGeneral, multiValued: false },
+      { name: solrFields.doc_txt, type: textGeneral, multiValued: false },
 
       // Applicable for qna
-      { name: questionTxt, type: textGeneral, multiValued: false },
-      { name: answerTxt, type: textGeneral, multiValued: false },
+      { name: solrFields.qna_title, type: textGeneral, multiValued: false },
+      { name: solrFields.question_txt, type: textGeneral, multiValued: false },
+      { name: solrFields.answer_txt, type: textGeneral, multiValued: false },
     ],
 
     // Create all of the needed copy fields
     'add-copy-field': [
-      { source: userEmail, dest: suggestCopyFields },
-      { source: userName, dest: suggestCopyFields },
-      { source: userDisplayName, dest: suggestCopyFields },
-      { source: userPhoneNumber, dest: suggestCopyFields },
-      { source: teamName, dest: suggestCopyFields },
-      { source: title, dest: suggestCopyFields },
-      { source: docTxt, dest: commonCopyFields },
-      { source: questionTxt, dest: commonCopyFields },
-      { source: answerTxt, dest: commonCopyFields },
+      {
+        source: solrFields.user_email,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrFields.user_name,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrFields.user_display_name,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrFields.user_phone_number,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrFields.team_name,
+        dest: [...suggestCopyFields, spellcheckTeam, suggestTeam],
+      },
+      {
+        source: solrFields.doc_title,
+        dest: [...suggestCopyFields, spellcheckDoc, suggestDoc],
+      },
+      {
+        source: solrFields.doc_txt,
+        dest: [...commonCopyFields, spellcheckDoc],
+      },
+      {
+        source: solrFields.qna_title,
+        dest: [...suggestCopyFields, spellcheckQna, suggestQna],
+      },
+      {
+        source: solrFields.question_txt,
+        dest: [...commonCopyFields, spellcheckQna],
+      },
+      {
+        source: solrFields.answer_txt,
+        dest: [...commonCopyFields, spellcheckQna],
+      },
     ],
   });
   console.log(`Creating schema with bulk request: ${prettyJson(res)}\n`);
@@ -322,33 +419,67 @@ async function create(options: OptionValues): Promise<void> {
     'add-searchcomponent': {
       name: suggest,
       class: 'solr.SuggestComponent',
-      suggester: {
-        name: defaultName,
-        lookupImpl: 'BlendedInfixLookupFactory',
-        dictionaryImpl: 'DocumentDictionaryFactory',
-        field: suggestText,
-        suggestAnalyzerFieldType: basicText,
-        contextField: outOfDateAt,
-      },
+      suggester: [
+        {
+          ...suggestParams,
+          name: solrDictionaries.all,
+          field: suggestAll,
+        },
+        {
+          ...suggestParams,
+          name: solrDictionaries.Doc,
+          field: suggestDoc,
+        },
+        {
+          ...suggestParams,
+          name: solrDictionaries.Qna,
+          field: suggestQna,
+        },
+        {
+          ...suggestParams,
+          name: solrDictionaries.Team,
+          field: suggestTeam,
+        },
+        {
+          ...suggestParams,
+          name: solrDictionaries.all,
+          field: suggestUser,
+        },
+      ],
     },
 
-    // Modify spellcheck to use _basic_text_ and basic_text instead of _text_ and text_general
+    // Modify spellcheck to use basic_text and _spellcheck_text_ instead of text_general and _text_
     'update-searchcomponent': {
       name: spellcheck,
-      class: solrSpellCheckComponent,
+      class: 'solr.SpellCheckComponent',
       queryAnalyzerFieldType: basicText,
-      spellchecker: {
-        name: defaultName,
-        field: spellcheckText,
-        classname: 'solr.DirectSolrSpellChecker',
-        distanceMeasure: 'internal',
-        accuracy: 0.5,
-        maxEdits: 2,
-        minPrefix: 1,
-        maxInspections: 5,
-        minQueryLength: 4,
-        maxQueryFrequency: 0.01,
-      },
+      spellchecker: [
+        {
+          ...spellcheckParams,
+          name: solrDictionaries.all,
+          field: spellcheckAll,
+        },
+        {
+          ...spellcheckParams,
+          name: solrDictionaries.Doc,
+          field: spellcheckDoc,
+        },
+        {
+          ...spellcheckParams,
+          name: solrDictionaries.Qna,
+          field: spellcheckQna,
+        },
+        {
+          ...spellcheckParams,
+          name: solrDictionaries.Team,
+          field: spellcheckTeam,
+        },
+        {
+          ...spellcheckParams,
+          name: solrDictionaries.User,
+          field: spellcheckUser,
+        },
+      ],
     },
 
     // Add spellcheck and highlighting functionality to the /query request handler
@@ -359,6 +490,7 @@ async function create(options: OptionValues): Promise<void> {
         wt: 'json',
         indent: 'true',
         defType: 'edismax',
+        qf: textField,
         spellcheck: 'true',
         'spellcheck.count': '1',
         'spellcheck.alternativeTermCount': '5',
@@ -368,9 +500,9 @@ async function create(options: OptionValues): Promise<void> {
         'spellcheck.maxCollationTries': '10',
         'spellcheck.collateExtendedResults': 'true',
         'spellcheck.maxResultsForSuggest': '3',
-        'spellcheck.dictionary': defaultName,
+        'spellcheck.dictionary': solrDictionaries.all,
         hl: 'true',
-        'hl.fl': [docTxt, questionTxt, answerTxt],
+        'hl.fl': Object.values(solrDefaultHighlightedFields),
         'hl.tag.pre': '<strong>',
         'hl.tag.post': '</strong>',
         'hl.defaultSummary': 'true',
@@ -380,12 +512,12 @@ async function create(options: OptionValues): Promise<void> {
 
     // Add a request handler to generate suggestions based on the suggest copy fields
     'add-requesthandler': {
-      name: '/suggest',
+      name: `/${suggest}`,
       class: solrSearchHandler,
       defaults: {
         suggest: 'true',
         'suggest.count': '10',
-        'suggest.dictionary': defaultName,
+        'suggest.dictionary': solrDictionaries.all,
       },
       components: [suggest],
     },

@@ -14,6 +14,7 @@ import {
   DocEntity,
   EntityService,
   QnaEntity,
+  TeamDocParams,
   TeamEntity,
   testDocDocParams1,
   testDocEntity1,
@@ -24,7 +25,6 @@ import {
   testTeamDocParams1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { TeamDocParams } from '@newbee/api/shared/util';
 import {
   internalServerError,
   teamSlugNotFound,
@@ -57,11 +57,7 @@ describe('TeamService', () => {
   let solrCli: SolrCli;
 
   const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
-  const testUpdatedTeamDocParams: TeamDocParams = {
-    ...testTeamDocParams1,
-    slug: testUpdatedTeam.slug,
-    team_name: testUpdatedTeam.name,
-  };
+  const testUpdatedTeamDocParams = new TeamDocParams(testUpdatedTeam);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -78,11 +74,7 @@ describe('TeamService', () => {
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>({
-            createTeamDocParams: jest.fn().mockReturnValue(testTeamDocParams1),
-            createDocDocParams: jest.fn().mockReturnValue(testDocDocParams1),
-            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
-          }),
+          useValue: createMock<EntityService>(),
         },
         {
           provide: SolrCli,
@@ -105,6 +97,7 @@ describe('TeamService', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
     expect(entityService).toBeDefined();
+    expect(solrCli).toBeDefined();
   });
 
   describe('create', () => {
@@ -254,9 +247,6 @@ describe('TeamService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      jest
-        .spyOn(entityService, 'createTeamDocParams')
-        .mockReturnValue(testUpdatedTeamDocParams);
       jest.spyOn(service, 'changeUpToDateDuration').mockResolvedValueOnce({
         docs: [testDocEntity1],
         qnas: [testQnaEntity1],

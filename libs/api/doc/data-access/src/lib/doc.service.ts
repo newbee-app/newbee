@@ -1,4 +1,4 @@
-import { NotFoundError } from '@mikro-orm/core';
+import { NotFoundError, QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
@@ -8,9 +8,11 @@ import {
 } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  DocDocParams,
   DocEntity,
   EntityService,
   OrgMemberEntity,
+  OrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
@@ -46,7 +48,6 @@ export class DocService {
    *
    * @returns A new `DocEntity` instance.
    * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
-   * @throws {ForbiddenException} `forbiddenError`. If the creator does not have the adequate permissions to make a doc in the team they want to put it in.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async create(
@@ -83,10 +84,7 @@ export class DocService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(
-        collectionName,
-        this.entityService.createDocDocParams(doc),
-      );
+      await this.solrCli.addDocs(collectionName, new DocDocParams(doc));
     } catch (err) {
       this.logger.error(err);
       await this.em.removeAndFlush(doc);
@@ -121,6 +119,31 @@ export class DocService {
   }
 
   /**
+   * Finds all of the `DocEntity` associated with the given org.
+   *
+   * @param organization The organization whose docs to look for.
+   * @param offset The offset to look for.
+   *
+   * @returns A tuple containing the found doc entities and a count of the total number of docs in the org.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async findByOrgAndCount(
+    organization: OrganizationEntity,
+    offset: number,
+  ): Promise<[DocEntity[], number]> {
+    try {
+      return await this.em.findAndCount(
+        DocEntity,
+        { organization },
+        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, limit: 20, offset },
+      );
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
    * Updates the given `DocEntity` and saves the changes.
    *
    * @param doc The `DocEntity` to update.
@@ -129,7 +152,6 @@ export class DocService {
    *
    * @returns The updated `DocEntity` instance.
    * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
-   * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the permissions to change the doc's teams.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
@@ -193,7 +215,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createDocDocParams(updatedDoc),
+        new DocDocParams(updatedDoc),
       );
     } catch (err) {
       this.logger.error(err);
@@ -230,7 +252,7 @@ export class DocService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createDocDocParams(updatedDoc),
+        new DocDocParams(updatedDoc),
       );
     } catch (err) {
       this.logger.error(err);

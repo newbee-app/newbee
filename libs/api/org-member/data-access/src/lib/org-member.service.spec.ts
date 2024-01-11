@@ -62,11 +62,7 @@ describe('OrgMemberService', () => {
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>({
-            createOrgMemberDocParams: jest
-              .fn()
-              .mockResolvedValue(testOrgMemberDocParams1),
-          }),
+          useValue: createMock<EntityService>(),
         },
         {
           provide: SolrCli,

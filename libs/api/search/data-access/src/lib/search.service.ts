@@ -4,13 +4,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
-import type {
+import {
   DocSolrDoc,
   OrgMemberSolrDoc,
   QnaSolrDoc,
   SolrDoc,
-  SolrHighlightedFields,
   TeamSolrDoc,
+  solrDefaultHighlightedFields,
+  solrDictionaries,
 } from '@newbee/api/shared/util';
 import {
   BaseQueryResultDto,
@@ -22,7 +23,12 @@ import {
   TeamQueryResult,
   internalServerError,
 } from '@newbee/shared/util';
-import { QueryResponse, SolrCli, Spellcheck } from '@newbee/solr-cli';
+import {
+  HighlightedFields,
+  QueryResponse,
+  SolrCli,
+  Spellcheck,
+} from '@newbee/solr-cli';
 import { QueryDto, SuggestDto } from './dto';
 
 @Injectable()
@@ -47,16 +53,18 @@ export class SearchService {
     organization: OrganizationEntity,
     suggestDto: SuggestDto,
   ): Promise<BaseSuggestResultDto> {
-    const { query } = suggestDto;
+    const { query, type } = suggestDto;
+    const dictionary = type ?? solrDictionaries.all;
     try {
       // Execute the query
       const solrRes = await this.solrCli.suggest(organization.id, {
-        params: { 'suggest.q': query },
+        params: { 'suggest.q': query, 'suggest.dictionary': dictionary },
       });
 
       // Go through all of the result docs and generate suggestions based on the parts of the doc that matched
+
       const suggestionObjects =
-        solrRes.suggest?.['default']?.[query]?.suggestions ?? [];
+        solrRes.suggest?.[dictionary]?.[query]?.suggestions ?? [];
       const suggestions = suggestionObjects.map(
         (suggestion) => suggestion.term,
       );
@@ -114,7 +122,7 @@ export class SearchService {
     }
 
     // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
-    const docs = response.docs as SolrDoc[];
+    const docs = response.docs.map((doc) => new SolrDoc(doc));
     const queryIds = Array.from(
       new Set(
         docs
@@ -123,7 +131,7 @@ export class SearchService {
           )
           .flatMap(
             (doc) =>
-              [doc.team, doc.creator, doc.maintainer].filter(
+              [doc.team_id, doc.creator_id, doc.maintainer_id].filter(
                 Boolean,
               ) as string[],
           ),
@@ -135,7 +143,9 @@ export class SearchService {
       ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
       : null;
     const idsResDocs =
-      idsRes && idsRes.response ? (idsRes.response.docs as SolrDoc[]) : [];
+      idsRes && idsRes.response
+        ? idsRes.response.docs.map((doc) => new SolrDoc(doc))
+        : [];
 
     // Take the org members resulting from the additional query and map them from their IDs to the information we care about
     const orgMemberMap = new Map(
@@ -155,10 +165,8 @@ export class SearchService {
     );
 
     // Construct a map from the highlighting portion of the original response
-    const highlightMap = new Map<string, SolrHighlightedFields>(
-      Object.entries(solrRes.highlighting ?? {}).filter(
-        ([, highlightedFields]) => Object.keys(highlightedFields).length,
-      ),
+    const highlightMap = new Map<string, HighlightedFields>(
+      Object.entries(solrRes.highlighting ?? {}),
     );
 
     // Iterate through the responses to construct the result
@@ -205,16 +213,18 @@ export class SearchService {
   }
 
   /**
-   * Send a request to build an organization's suggester.
+   * Send a request to build an organization's suggesters.
    *
    * @param organization The organization to build.
    * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
    */
-  async buildSuggester(organization: OrganizationEntity): Promise<void> {
+  async buildSuggesters(organization: OrganizationEntity): Promise<void> {
     try {
-      await this.solrCli.suggest(organization.id, {
-        params: { 'suggest.build': true },
-      });
+      for (const dictionary of Object.values(solrDictionaries)) {
+        await this.solrCli.suggest(organization.id, {
+          params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
+        });
+      }
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -243,6 +253,7 @@ export class SearchService {
         params: {
           'hl.q': query,
           'spellcheck.q': query,
+          ...(type && { 'spellcheck.dictionary': type }),
         },
       });
     } catch (err) {
@@ -266,45 +277,6 @@ export class SearchService {
   }
 
   /**
-   * A helper function that takes in an org member doc response and converts it to an `OrgMemberQueryResult`.
-   *
-   * @param doc The doc response to convert.
-   *
-   * @returns The `OrgMemberQueryResult` resulting from the doc.
-   */
-  private static handleOrgMember(doc: OrgMemberSolrDoc): OrgMemberQueryResult {
-    const {
-      slug,
-      org_role,
-      user_email,
-      user_name,
-      user_display_name,
-      user_phone_number,
-    } = doc;
-    return {
-      orgMember: { slug, role: org_role },
-      user: {
-        email: user_email,
-        name: user_name,
-        displayName: user_display_name ?? null,
-        phoneNumber: user_phone_number ?? null,
-      },
-    };
-  }
-
-  /**
-   * A helper function that takes in a team doc response and converts it to a `TeamQueryResult`.
-   *
-   * @param doc The doc response to convert.
-   *
-   * @returns The `TeamQueryResult` resulting from the doc.
-   */
-  private static handleTeam(doc: TeamSolrDoc): TeamQueryResult {
-    const { slug, team_name } = doc;
-    return { slug, name: team_name };
-  }
-
-  /**
    * A helper function that takes in a doc doc response and converts it to a `DocQueryResult`.
    *
    * @param doc The doc response to convert.
@@ -318,33 +290,35 @@ export class SearchService {
     doc: DocSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {},
+    highlightedFields: HighlightedFields = {},
   ): DocQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
       out_of_date_at,
-      title,
       slug,
-      team,
-      creator,
-      maintainer,
+      team_id,
+      creator_id,
+      maintainer_id,
+      doc_title,
       doc_txt,
     } = doc;
     return {
       doc: {
-        createdAt: new Date(created_at),
-        updatedAt: new Date(updated_at),
-        markedUpToDateAt: new Date(marked_up_to_date_at),
-        outOfDateAt: new Date(out_of_date_at),
-        title,
+        createdAt: created_at,
+        updatedAt: updated_at,
+        markedUpToDateAt: marked_up_to_date_at,
+        outOfDateAt: out_of_date_at,
+        title: doc_title,
         slug,
-        docSnippet: highlightedFields.doc_txt?.[0] ?? doc_txt.slice(0, 100),
+        docSnippet:
+          highlightedFields[solrDefaultHighlightedFields.doc_txt]?.[0] ??
+          doc_txt.slice(0, 100),
       },
-      creator: orgMemberMap.get(creator ?? '') ?? null,
-      maintainer: orgMemberMap.get(maintainer ?? '') ?? null,
-      team: teamMap.get(team ?? '') ?? null,
+      creator: orgMemberMap.get(creator_id ?? '') ?? null,
+      maintainer: orgMemberMap.get(maintainer_id ?? '') ?? null,
+      team: teamMap.get(team_id ?? '') ?? null,
     };
   }
 
@@ -364,41 +338,80 @@ export class SearchService {
     doc: QnaSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
-    highlightedFields: SolrHighlightedFields = {},
+    highlightedFields: HighlightedFields = {},
   ): QnaQueryResult {
     const {
       created_at,
       updated_at,
       marked_up_to_date_at,
       out_of_date_at,
-      title,
       slug,
-      team,
-      creator,
-      maintainer,
+      team_id,
+      creator_id,
+      maintainer_id,
+      qna_title,
       question_txt,
       answer_txt,
     } = doc;
     return {
       qna: {
-        createdAt: new Date(created_at),
-        updatedAt: new Date(updated_at),
-        markedUpToDateAt: new Date(marked_up_to_date_at),
-        outOfDateAt: new Date(out_of_date_at),
-        title,
+        createdAt: created_at,
+        updatedAt: updated_at,
+        markedUpToDateAt: marked_up_to_date_at,
+        outOfDateAt: out_of_date_at,
+        title: qna_title,
         slug,
         questionSnippet:
-          highlightedFields.question_txt?.[0] ??
+          highlightedFields[solrDefaultHighlightedFields.question_txt]?.[0] ??
           question_txt?.slice(0, 100) ??
           null,
         answerSnippet:
-          highlightedFields.answer_txt?.[0] ??
+          highlightedFields[solrDefaultHighlightedFields.answer_txt]?.[0] ??
           answer_txt?.slice(0, 100) ??
           null,
       },
-      team: teamMap.get(team ?? '') ?? null,
-      creator: orgMemberMap.get(creator ?? '') ?? null,
-      maintainer: orgMemberMap.get(maintainer ?? '') ?? null,
+      team: teamMap.get(team_id ?? '') ?? null,
+      creator: orgMemberMap.get(creator_id ?? '') ?? null,
+      maintainer: orgMemberMap.get(maintainer_id ?? '') ?? null,
+    };
+  }
+
+  /**
+   * A helper function that takes in a team doc response and converts it to a `TeamQueryResult`.
+   *
+   * @param doc The doc response to convert.
+   *
+   * @returns The `TeamQueryResult` resulting from the doc.
+   */
+  private static handleTeam(doc: TeamSolrDoc): TeamQueryResult {
+    const { slug, team_name } = doc;
+    return { slug, name: team_name };
+  }
+
+  /**
+   * A helper function that takes in an org member doc response and converts it to an `OrgMemberQueryResult`.
+   *
+   * @param doc The doc response to convert.
+   *
+   * @returns The `OrgMemberQueryResult` resulting from the doc.
+   */
+  private static handleOrgMember(doc: OrgMemberSolrDoc): OrgMemberQueryResult {
+    const {
+      slug,
+      user_email,
+      user_name,
+      user_display_name,
+      user_phone_number,
+      user_org_role,
+    } = doc;
+    return {
+      orgMember: { slug, role: user_org_role },
+      user: {
+        email: user_email,
+        name: user_name,
+        displayName: user_display_name ?? null,
+        phoneNumber: user_phone_number ?? null,
+      },
     };
   }
 }
