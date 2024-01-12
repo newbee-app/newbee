@@ -14,7 +14,7 @@ import {
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import type { QueryResult } from '@newbee/shared/util';
+import type { QueryResults } from '@newbee/shared/util';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -61,7 +61,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * The search results themselves.
    */
-  @Input() searchResults: QueryResult | null = null;
+  @Input() searchResults: QueryResults | null = null;
 
   /**
    * Whether to display a loader to indicate a search is occurring.

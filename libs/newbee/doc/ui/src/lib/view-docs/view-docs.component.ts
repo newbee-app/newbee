@@ -12,7 +12,7 @@ import {
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import { QueryResult } from '@newbee/shared/util';
+import { QueryResults } from '@newbee/shared/util';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -38,7 +38,7 @@ export class ViewDocsComponent implements OnDestroy {
   /**
    * The docs to display.
    */
-  @Input() docs: QueryResult | null = null;
+  @Input() docs: QueryResults | null = null;
 
   /**
    * Suggestions for the searchbar based on its current value.
@@ -54,7 +54,7 @@ export class ViewDocsComponent implements OnDestroy {
   }
   set searchParam(searchParam: string | null) {
     this._searchParam = searchParam;
-    this.searchTerm.setValue({ searchbar: searchParam });
+    this.searchForm.setValue({ searchbar: searchParam });
   }
   private _searchParam: string | null = null;
 
@@ -86,13 +86,13 @@ export class ViewDocsComponent implements OnDestroy {
   /**
    * The search term containing the searchbar.
    */
-  searchTerm = this.fb.group({ searchbar: '' });
+  searchForm = this.fb.group({ searchbar: '' });
 
   /**
    * Emits the searchbar output with the current searchbar value.
    */
   constructor(private readonly fb: FormBuilder) {
-    this.searchTerm.controls.searchbar.valueChanges
+    this.searchForm.controls.searchbar.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (value) => {
@@ -124,7 +124,7 @@ export class ViewDocsComponent implements OnDestroy {
    * Emits the search event with the current searchbar value.
    */
   emitSearch(): void {
-    const searchVal = this.searchTerm.controls.searchbar.value;
+    const searchVal = this.searchForm.controls.searchbar.value;
     if (!searchVal) {
       return;
     }
@@ -138,7 +138,7 @@ export class ViewDocsComponent implements OnDestroy {
    * @param suggestion The suggestion to use.
    */
   selectSuggestion(suggestion: string): void {
-    this.searchTerm.setValue({ searchbar: suggestion });
+    this.searchForm.setValue({ searchbar: suggestion });
     this.emitSearch();
   }
 }

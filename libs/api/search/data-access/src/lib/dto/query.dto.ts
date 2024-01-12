@@ -1,4 +1,11 @@
-import { BaseQueryDto, offsetIsInt, offsetMin0 } from '@newbee/shared/util';
+import {
+  BaseQueryDto,
+  defaultLimit,
+  limitIsInt,
+  limitMin1,
+  offsetIsInt,
+  offsetMin0,
+} from '@newbee/shared/util';
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
 import { SuggestDto } from './suggest.dto';
@@ -15,4 +22,12 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
   @IsInt({ message: offsetIsInt })
   @Min(0, { message: offsetMin0 })
   offset = 0;
+
+  /**
+   * @inheritdoc
+   */
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt({ message: limitIsInt })
+  @Min(1, { message: limitMin1 })
+  limit = defaultLimit;
 }

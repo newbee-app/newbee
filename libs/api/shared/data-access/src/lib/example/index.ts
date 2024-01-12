@@ -4,7 +4,7 @@ import {
   TeamRoleEnum,
   testAuthenticator1,
   testBaseSuggestDto1,
-  testBaseSuggestResultDto1,
+  testBaseSuggestResultsDto1,
   testChallenge1,
   testDoc1,
   testNow1,
@@ -280,7 +280,7 @@ export const testQueryResponse3: QueryResponse = {
         numFound: 1,
         suggestions: [
           {
-            term: testBaseSuggestResultDto1.suggestions[0] as string,
+            term: testBaseSuggestResultsDto1.suggestions[0] as string,
             weight: 5,
             payload: '',
           },

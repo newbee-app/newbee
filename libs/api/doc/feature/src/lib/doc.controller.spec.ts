@@ -11,10 +11,10 @@ import {
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateDocDto1,
-  testBaseOffsetDto1,
   testBaseUpdateDocDto1,
   testDocQueryResult1,
   testDocRelation1,
+  testOffsetAndLimit1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
 
@@ -79,10 +79,13 @@ describe('DocController', () => {
   describe('getAllPaginated', () => {
     it('should get doc results', async () => {
       await expect(
-        controller.getAllPaginated(testBaseOffsetDto1, testOrganizationEntity1),
+        controller.getAllPaginated(
+          testOffsetAndLimit1,
+          testOrganizationEntity1,
+        ),
       ).resolves.toEqual({
+        ...testOffsetAndLimit1,
         total: 1,
-        offset: 0,
         results: [testDocQueryResult1],
       });
     });

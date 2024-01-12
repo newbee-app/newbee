@@ -1,6 +1,6 @@
 import type { DocQueryResult, QnaQueryResult } from '../../type';
 import type { Organization, Team } from '../entity';
-import { Result } from '../util';
+import { PaginatedResults } from '../util';
 import type { TeamMemberUserOrgMember } from './team-member-relation.interface';
 
 /**
@@ -20,12 +20,12 @@ export interface TeamRelation {
   /**
    * A selection of docs that belong to the team, as well as a count of the total number of docs in the team.
    */
-  docs: Result<DocQueryResult>;
+  docs: PaginatedResults<DocQueryResult>;
 
   /**
    * A selection of qnas that belong to the team, as well as a count of the total number of qnas in the team.
    */
-  qnas: Result<QnaQueryResult>;
+  qnas: PaginatedResults<QnaQueryResult>;
 
   /**
    * All of the team members that belong to the team.

@@ -8,10 +8,10 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testBaseQueryDto1,
-  testBaseQueryResultDto1,
   testBaseSuggestDto1,
-  testBaseSuggestResultDto1,
+  testBaseSuggestResultsDto1,
   testOrganization1,
+  testQueryResults1,
 } from '@newbee/shared/util';
 import { SearchService } from './search.service';
 
@@ -46,7 +46,7 @@ describe('SearchService', () => {
       service.search(testBaseQueryDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
-            expect(result).toEqual(testBaseQueryResultDto1);
+            expect(result).toEqual(testQueryResults1);
             done();
           } catch (err) {
             done(err);
@@ -63,7 +63,7 @@ describe('SearchService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseQueryResultDto1);
+      req.flush(testQueryResults1);
     });
   });
 
@@ -72,7 +72,7 @@ describe('SearchService', () => {
       service.suggest(testBaseSuggestDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
-            expect(result).toEqual(testBaseSuggestResultDto1);
+            expect(result).toEqual(testBaseSuggestResultsDto1);
             done();
           } catch (err) {
             done(err);
@@ -89,7 +89,7 @@ describe('SearchService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseSuggestResultDto1);
+      req.flush(testBaseSuggestResultsDto1);
     });
   });
 });

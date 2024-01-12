@@ -29,6 +29,7 @@ import {
   testBaseUpdateDocDto1,
   testNow1,
   testNowDayjs1,
+  testOffsetAndLimit1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -223,16 +224,15 @@ describe('DocService', () => {
         DocEntity,
         { organization: testOrganizationEntity1 },
         {
+          ...testOffsetAndLimit1,
           orderBy: { markedUpToDateAt: QueryOrder.DESC },
-          limit: 20,
-          offset: 0,
         },
       );
     });
 
     it('should find doc entities and count', async () => {
       await expect(
-        service.findByOrgAndCount(testOrganizationEntity1, 0),
+        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
       ).resolves.toEqual([[testDocEntity1], 1]);
     });
 
@@ -241,7 +241,7 @@ describe('DocService', () => {
         .spyOn(em, 'findAndCount')
         .mockRejectedValue(new Error('findAndCount'));
       await expect(
-        service.findByOrgAndCount(testOrganizationEntity1, 0),
+        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });

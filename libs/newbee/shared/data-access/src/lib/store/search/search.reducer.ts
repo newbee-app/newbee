@@ -1,4 +1,4 @@
-import { Keyword, QueryResult } from '@newbee/shared/util';
+import { Keyword, QueryResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -10,7 +10,7 @@ export interface SearchState {
   /**
    * The results of a search request.
    */
-  searchResult: QueryResult | null;
+  searchResults: QueryResults | null;
 
   /**
    * The results of a suggest request.
@@ -27,7 +27,7 @@ export interface SearchState {
  * The initial value for `SearchState`.
  */
 export const initialSearchState: SearchState = {
-  searchResult: null,
+  searchResults: null,
   suggestions: [],
   pendingSearch: false,
 };
@@ -43,25 +43,25 @@ export const searchFeature = createFeature({
       SearchActions.search,
       (state): SearchState => ({
         ...state,
-        searchResult: null,
+        searchResults: null,
         pendingSearch: true,
-      })
+      }),
     ),
     on(
       SearchActions.searchSuccess,
-      (state, { result }): SearchState => ({
+      (state, { results }): SearchState => ({
         ...state,
-        searchResult: result,
+        searchResults: results,
         pendingSearch: false,
-      })
+      }),
     ),
-    on(SearchActions.suggestSuccess, (state, { result }): SearchState => {
-      const { suggestions } = result;
+    on(SearchActions.suggestSuccess, (state, { results }): SearchState => {
+      const { suggestions } = results;
       return {
         ...state,
         suggestions,
       };
     }),
-    on(RouterActions.routerRequest, (): SearchState => initialSearchState)
+    on(RouterActions.routerRequest, (): SearchState => initialSearchState),
   ),
 });

@@ -5,7 +5,12 @@ import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword, QueryResult, SolrEntryEnum } from '@newbee/shared/util';
+import {
+  Keyword,
+  QueryResults,
+  SolrEntryEnum,
+  defaultLimit,
+} from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -42,7 +47,7 @@ export class SearchResultsViewComponent implements OnDestroy {
   /**
    * The results of the search query.
    */
-  searchResults: QueryResult | null = null;
+  searchResults: QueryResults | null = null;
 
   /**
    * Subscribe to the route's search param and the store's value for the search results.
@@ -59,11 +64,11 @@ export class SearchResultsViewComponent implements OnDestroy {
     });
 
     store
-      .select(searchFeature.selectSearchResult)
+      .select(searchFeature.selectSearchResults)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
-        next: (result) => {
-          this.searchResults = result;
+        next: (results) => {
+          this.searchResults = results;
         },
       });
   }
@@ -94,6 +99,7 @@ export class SearchResultsViewComponent implements OnDestroy {
       SearchActions.search({
         query: {
           offset: 0,
+          limit: defaultLimit,
           query: this.searchTerm,
           ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },
@@ -136,7 +142,7 @@ export class SearchResultsViewComponent implements OnDestroy {
       return;
     } else if (
       this.searchResults.total <=
-      10 * (this.searchResults.offset + 1)
+      this.searchResults.limit * (this.searchResults.offset + 1)
     ) {
       return;
     }
@@ -145,6 +151,7 @@ export class SearchResultsViewComponent implements OnDestroy {
       SearchActions.search({
         query: {
           offset: this.searchResults.offset + 1,
+          limit: this.searchResults.limit,
           query: this.searchTerm,
           ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
         },

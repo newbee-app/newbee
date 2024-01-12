@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseQueryDto,
-  BaseQueryResultDto,
   BaseSuggestDto,
-  BaseSuggestResultDto,
+  BaseSuggestResultsDto,
   Keyword,
+  QueryResults,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -37,12 +37,11 @@ export class SearchService {
    *
    * @returns An observable containing the results of the search.
    */
-  search(query: BaseQueryDto, orgSlug: string): Observable<BaseQueryResultDto> {
+  search(query: BaseQueryDto, orgSlug: string): Observable<QueryResults> {
     const params = new HttpParams({ fromObject: { ...query } });
-    return this.http.get<BaseQueryResultDto>(
-      SearchService.baseApiUrl(orgSlug),
-      { params },
-    );
+    return this.http.get<QueryResults>(SearchService.baseApiUrl(orgSlug), {
+      params,
+    });
   }
 
   /**
@@ -56,9 +55,9 @@ export class SearchService {
   suggest(
     query: BaseSuggestDto,
     orgSlug: string,
-  ): Observable<BaseSuggestResultDto> {
+  ): Observable<BaseSuggestResultsDto> {
     const params = new HttpParams({ fromObject: { ...query } });
-    return this.http.get<BaseSuggestResultDto>(
+    return this.http.get<BaseSuggestResultsDto>(
       `${SearchService.baseApiUrl(orgSlug)}/${Keyword.Suggest}`,
       { params },
     );

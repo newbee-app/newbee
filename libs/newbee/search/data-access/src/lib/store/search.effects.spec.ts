@@ -5,13 +5,14 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  BaseQueryResultDto,
+  defaultLimit,
+  Keyword,
   testBaseQueryDto1,
-  testBaseQueryResultDto1,
   testBaseSuggestDto1,
-  testBaseSuggestResultDto1,
+  testBaseSuggestResultsDto1,
   testOrganization1,
   testOrganizationRelation1,
+  testQueryResults1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -32,7 +33,10 @@ describe('SearchEffects', () => {
       providers: [
         provideMockStore({
           initialState: {
-            org: { selectedOrganization: testOrganizationRelation1 },
+            [Keyword.Organization]: {
+              ...initialOrganizationState,
+              selectedOrganization: testOrganizationRelation1,
+            },
           },
         }),
         provideMockActions(() => actions$),
@@ -40,8 +44,8 @@ describe('SearchEffects', () => {
         {
           provide: SearchService,
           useValue: createMock<SearchService>({
-            search: jest.fn().mockReturnValue(of(testBaseQueryResultDto1)),
-            suggest: jest.fn().mockReturnValue(of(testBaseSuggestResultDto1)),
+            search: jest.fn().mockReturnValue(of(testQueryResults1)),
+            suggest: jest.fn().mockReturnValue(of(testBaseSuggestResultsDto1)),
           }),
         },
       ],
@@ -65,7 +69,7 @@ describe('SearchEffects', () => {
         a: SearchActions.search({ query: testBaseQueryDto1 }),
       });
       const expected$ = hot('a', {
-        a: SearchActions.searchSuccess({ result: testBaseQueryResultDto1 }),
+        a: SearchActions.searchSuccess({ results: testQueryResults1 }),
       });
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -79,10 +83,20 @@ describe('SearchEffects', () => {
 
     it('should fire searchSuccess and not contact API if query is empty', () => {
       actions$ = hot('a', {
-        a: SearchActions.search({ query: { query: '', offset: 0 } }),
+        a: SearchActions.search({
+          query: { query: '', offset: 0, limit: defaultLimit },
+        }),
       });
       const expected$ = hot('a', {
-        a: SearchActions.searchSuccess({ result: new BaseQueryResultDto(0) }),
+        a: SearchActions.searchSuccess({
+          results: {
+            results: [],
+            total: 0,
+            offset: 0,
+            limit: defaultLimit,
+            suggestion: null,
+          },
+        }),
       });
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -109,7 +123,9 @@ describe('SearchEffects', () => {
         a: SearchActions.suggest({ query: testBaseSuggestDto1 }),
       });
       const expected$ = hot('a', {
-        a: SearchActions.suggestSuccess({ result: testBaseSuggestResultDto1 }),
+        a: SearchActions.suggestSuccess({
+          results: testBaseSuggestResultsDto1,
+        }),
       });
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
@@ -126,7 +142,7 @@ describe('SearchEffects', () => {
         a: SearchActions.suggest({ query: { query: '' } }),
       });
       const expected$ = hot('a', {
-        a: SearchActions.suggestSuccess({ result: { suggestions: [] } }),
+        a: SearchActions.suggestSuccess({ results: { suggestions: [] } }),
       });
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

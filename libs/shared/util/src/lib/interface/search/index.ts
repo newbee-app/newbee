@@ -1,1 +1,1 @@
-export * from './query-result.interface';
+export * from './query-results.interface';

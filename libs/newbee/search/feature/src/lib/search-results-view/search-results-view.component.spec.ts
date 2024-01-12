@@ -8,7 +8,12 @@ import {
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, SolrEntryEnum, testQueryResult1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  SolrEntryEnum,
+  defaultLimit,
+  testQueryResults1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SearchResultsViewComponent } from './search-results-view.component';
 
@@ -36,7 +41,7 @@ describe('SearchResultsViewComponent', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResult: testQueryResult1,
+              searchResults: testQueryResults1,
             },
           },
         }),
@@ -76,7 +81,7 @@ describe('SearchResultsViewComponent', () => {
   describe('constructor', () => {
     it('should initialize search term and search results', () => {
       expect(component.searchTerm).toEqual(testSearchTerm);
-      expect(component.searchResults).toEqual(testQueryResult1);
+      expect(component.searchResults).toEqual(testQueryResults1);
     });
   });
 
@@ -86,7 +91,12 @@ describe('SearchResultsViewComponent', () => {
       expect(component.tab).toEqual(SearchTab.Doc);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
-          query: { offset: 0, type: SolrEntryEnum.Doc, query: testSearchTerm },
+          query: {
+            offset: 0,
+            limit: defaultLimit,
+            type: SolrEntryEnum.Doc,
+            query: testSearchTerm,
+          },
         }),
       );
     });
@@ -123,19 +133,19 @@ describe('SearchResultsViewComponent', () => {
       component.onScrolled();
       expect(store.dispatch).not.toHaveBeenCalled();
 
-      component.searchResults = testQueryResult1;
+      component.searchResults = testQueryResults1;
       component.onScrolled();
       expect(store.dispatch).not.toHaveBeenCalled();
 
-      component.searchResults = { ...testQueryResult1, total: 10, offset: 0 };
+      component.searchResults = { ...testQueryResults1, total: 10, offset: 0 };
       component.onScrolled();
       expect(store.dispatch).not.toHaveBeenCalled();
 
-      component.searchResults = { ...testQueryResult1, total: 100, offset: 8 };
+      component.searchResults = { ...testQueryResults1, total: 100, offset: 8 };
       component.onScrolled();
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
-          query: { offset: 9, query: testSearchTerm },
+          query: { offset: 9, limit: defaultLimit, query: testSearchTerm },
         }),
       );
     });

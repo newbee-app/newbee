@@ -10,7 +10,7 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
   testBaseQueryDto1,
-  testQueryResult1,
+  testQueryResults1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { searchGuard } from './search.guard';
@@ -41,7 +41,7 @@ describe('searchGuard', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResult: testQueryResult1,
+              searchResults: testQueryResults1,
             },
           },
         }),

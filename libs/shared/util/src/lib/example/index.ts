@@ -8,6 +8,7 @@ import type {
 } from '@simplewebauthn/typescript-types';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { defaultLimit } from '../constant';
 import {
   BaseCreateDocDto,
   BaseCreateOrgMemberInviteDto,
@@ -23,16 +24,14 @@ import {
   BaseGeneratedSlugDto,
   BaseMagicLinkLoginDto,
   BaseNameDto,
-  BaseOffsetDto,
   BaseOrgAndMemberDto,
   BaseQnaAndMemberDto,
   BaseQueryDto,
-  BaseQueryResultDto,
   BaseRegistrationResponseDto,
   BaseSlugDto,
   BaseSlugTakenDto,
   BaseSuggestDto,
-  BaseSuggestResultDto,
+  BaseSuggestResultsDto,
   BaseTeamAndMemberDto,
   BaseTokenDto,
   BaseUpdateAnswerDto,
@@ -52,6 +51,7 @@ import type {
   Authenticator,
   Doc,
   DocRelation,
+  OffsetAndLimit,
   OrgMember,
   OrgMemberInvite,
   OrgMemberInviteRelation,
@@ -62,7 +62,7 @@ import type {
   Post,
   Qna,
   QnaRelation,
-  QueryResult,
+  QueryResults,
   Team,
   TeamMember,
   TeamMemberRelation,
@@ -387,12 +387,13 @@ export const testQnaQueryResult1: QnaQueryResult = {
 };
 
 /**
- * An example instance of QueryResult.
+ * An example instance of QueryResults.
  * Strictly for use in testing.
  */
-export const testQueryResult1: QueryResult = {
+export const testQueryResults1: QueryResults = {
   total: 1,
   offset: 0,
+  limit: defaultLimit,
   results: [testTeamQueryResult1],
   suggestion: null,
 };
@@ -405,8 +406,18 @@ export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
-  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -417,8 +428,18 @@ export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
-  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -478,10 +499,30 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   organization: testOrganization1,
   user: testUser1,
   teams: [testTeamMemberRelation1],
-  createdDocs: { results: [testDocQueryResult1], total: 1, offset: 0 },
-  maintainedDocs: { results: [testDocQueryResult1], total: 1, offset: 0 },
-  createdQnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
-  maintainedQnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
+  createdDocs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  maintainedDocs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  createdQnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  maintainedQnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -491,8 +532,18 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
 export const testTeamRelation1: TeamRelation = {
   team: testTeam1,
   organization: testOrganization1,
-  docs: { results: [testDocQueryResult1], total: 1, offset: 0 },
-  qnas: { results: [testQnaQueryResult1], total: 1, offset: 0 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
   teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
 };
 
@@ -531,6 +582,15 @@ export const testBaseEmailDto1: BaseEmailDto = {
 export const testBaseMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
   jwtId: '1234',
   email: testUser1.email,
+};
+
+/**
+ * An example instance of OffsetAndLimit.
+ * Strictly for use in testing.
+ */
+export const testOffsetAndLimit1: OffsetAndLimit = {
+  offset: 0,
+  limit: defaultLimit,
 };
 
 /**
@@ -788,23 +848,15 @@ export const testBaseSuggestDto1: BaseSuggestDto = {
 export const testBaseQueryDto1: BaseQueryDto = {
   ...testBaseSuggestDto1,
   offset: 0,
+  limit: defaultLimit,
 };
 
 /**
- * An example instance of BaseSuggestResultDto.
+ * An example instance of BaseSuggestResultsDto.
  * Strictly for use in testing.
  */
-export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
+export const testBaseSuggestResultsDto1: BaseSuggestResultsDto = {
   suggestions: [testTeamQueryResult1.name],
-};
-
-/**
- * An example instance of BaseQueryResultDto.
- * Strictly for use in testing.
- */
-export const testBaseQueryResultDto1: BaseQueryResultDto = {
-  ...testQueryResult1,
-  offset: testBaseQueryDto1.offset,
 };
 
 /**
@@ -845,12 +897,4 @@ export const testBaseGenerateSlugDto1: BaseGenerateSlugDto = {
  */
 export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
   generatedSlug: testOrganization1.slug,
-};
-
-/**
- * An example instance of BaseOffsetDto.
- * Strictly for use in testing.
- */
-export const testBaseOffsetDto1: BaseOffsetDto = {
-  offset: 0,
 };

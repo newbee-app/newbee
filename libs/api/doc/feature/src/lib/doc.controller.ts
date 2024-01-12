@@ -16,7 +16,7 @@ import {
 import {
   DocEntity,
   EntityService,
-  OffsetDto,
+  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
@@ -27,7 +27,7 @@ import {
   BaseDocAndMemberDto,
   DocQueryResult,
   Keyword,
-  Result,
+  PaginatedResults,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -53,7 +53,7 @@ export class DocController {
   /**
    * The API route for getting paginated results of all of the docs in an org.
    *
-   * @param offsetDto The offset for the pagination.
+   * @param offsetAndLimitDto The offset and limit for the pagination.
    * @param organization The organization to look in.
    *
    * @returns The result containing the retrieved docs, the total number of docs in the org, and the offset we retrieved.
@@ -62,25 +62,24 @@ export class DocController {
   @Get()
   @Role(apiRoles.doc.getAllPaginated)
   async getAllPaginated(
-    @Query() offsetDto: OffsetDto,
+    @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<Result<DocQueryResult>> {
+  ): Promise<PaginatedResults<DocQueryResult>> {
     this.logger.log(
-      `Get docs and count request received for organization: ${organization.slug}`,
+      `Get all paginated docs request received for organization: ${organization.slug}`,
     );
 
-    const { offset } = offsetDto;
     const [docs, total] = await this.docService.findByOrgAndCount(
       organization,
-      offset,
+      offsetAndLimitDto,
     );
     this.logger.log(
       `Got docs for organization: ${organization.slug}, total count: ${total}`,
     );
 
     return {
+      ...offsetAndLimitDto,
       total,
-      offset,
       results: await this.entityService.createDocQueryResults(docs),
     };
   }

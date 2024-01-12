@@ -4,10 +4,10 @@ import {
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
 import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
-import { Keyword, testDocQueryResult1 } from '@newbee/shared/util';
+import { Keyword, testQueryResults1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
-import { selectSearchResultAndScreenError } from './search.selector';
+import { selectSearchResultsAndScreenError } from './search.selector';
 
 describe('SearchSelector', () => {
   let store: MockStore;
@@ -24,12 +24,12 @@ describe('SearchSelector', () => {
     expect(store).toBeDefined();
   });
 
-  describe('selectSearchResultAndScreenError', () => {
-    it('should select search result and screen error', () => {
+  describe('selectSearchResultsAndScreenError', () => {
+    it('should select search results and screen error', () => {
       store.setState({
         [Keyword.Search]: {
           ...initialSearchState,
-          searchResult: testDocQueryResult1,
+          searchResults: testQueryResults1,
         },
         [Keyword.Http]: {
           ...initialHttpState,
@@ -38,11 +38,11 @@ describe('SearchSelector', () => {
       });
       const expected$ = hot('a', {
         a: {
-          searchResult: testDocQueryResult1,
+          searchResults: testQueryResults1,
           screenError: testHttpScreenError1,
         },
       });
-      expect(store.select(selectSearchResultAndScreenError)).toBeObservable(
+      expect(store.select(selectSearchResultsAndScreenError)).toBeObservable(
         expected$,
       );
     });

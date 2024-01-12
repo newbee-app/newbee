@@ -14,11 +14,11 @@ import {
   solrDictionaries,
 } from '@newbee/api/shared/util';
 import {
-  BaseQueryResultDto,
-  BaseSuggestResultDto,
+  BaseSuggestResultsDto,
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,
+  QueryResults,
   SolrEntryEnum,
   TeamQueryResult,
   internalServerError,
@@ -52,7 +52,7 @@ export class SearchService {
   async suggest(
     organization: OrganizationEntity,
     suggestDto: SuggestDto,
-  ): Promise<BaseSuggestResultDto> {
+  ): Promise<BaseSuggestResultsDto> {
     const { query, type } = suggestDto;
     const dictionary = type ?? solrDictionaries.all;
     try {
@@ -88,13 +88,19 @@ export class SearchService {
   async query(
     organization: OrganizationEntity,
     queryDto: QueryDto,
-  ): Promise<BaseQueryResultDto> {
-    const { query, offset } = queryDto;
-    const result = new BaseQueryResultDto(offset);
+  ): Promise<QueryResults> {
+    const { query, offset, limit } = queryDto;
+    const results: QueryResults = {
+      results: [],
+      total: 0,
+      offset,
+      limit,
+      suggestion: null,
+    };
 
     // This should never happen, but leave it for safety
     if (!query) {
-      return result;
+      return results;
     }
 
     // Execute the query
@@ -103,12 +109,12 @@ export class SearchService {
     // This shouldn't happen, but needed for type safety
     const { response } = solrRes;
     if (!response) {
-      return result;
+      return results;
     }
 
     // Record how many results were found
     const numFound = response.numFound;
-    result.total = numFound;
+    results.total = numFound;
 
     // No results found, suggest an alternative spelling
     if (!numFound) {
@@ -116,9 +122,9 @@ export class SearchService {
         ? SearchService.getSpellcheckSuggestion(solrRes.spellcheck)
         : null;
       if (suggestion) {
-        result.suggestion = suggestion;
+        results.suggestion = suggestion;
       }
-      return result;
+      return results;
     }
 
     // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
@@ -142,10 +148,14 @@ export class SearchService {
     const idsRes = queryIds.length
       ? await this.solrCli.realTimeGetByIds(organization.id, queryIds)
       : null;
-    const idsResDocs =
-      idsRes && idsRes.response
-        ? idsRes.response.docs.map((doc) => new SolrDoc(doc))
-        : [];
+    const idsResDocs: SolrDoc[] = [];
+    if (idsRes) {
+      if (idsRes.doc) {
+        idsResDocs.push(new SolrDoc(idsRes.doc));
+      } else if (idsRes.response) {
+        idsResDocs.push(...idsRes.response.docs.map((doc) => new SolrDoc(doc)));
+      }
+    }
 
     // Take the org members resulting from the additional query and map them from their IDs to the information we care about
     const orgMemberMap = new Map(
@@ -175,17 +185,17 @@ export class SearchService {
       const highlightedFields = highlightMap.get(id) ?? {};
       switch (entryType) {
         case SolrEntryEnum.User: {
-          result.results.push(
+          results.results.push(
             SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
           );
           break;
         }
         case SolrEntryEnum.Team: {
-          result.results.push(SearchService.handleTeam(doc as TeamSolrDoc));
+          results.results.push(SearchService.handleTeam(doc as TeamSolrDoc));
           break;
         }
         case SolrEntryEnum.Doc: {
-          result.results.push(
+          results.results.push(
             SearchService.handleDoc(
               doc as DocSolrDoc,
               orgMemberMap,
@@ -196,7 +206,7 @@ export class SearchService {
           break;
         }
         case SolrEntryEnum.Qna: {
-          result.results.push(
+          results.results.push(
             SearchService.handleQna(
               doc as QnaSolrDoc,
               orgMemberMap,
@@ -209,7 +219,7 @@ export class SearchService {
       }
     });
 
-    return result;
+    return results;
   }
 
   /**
@@ -244,16 +254,18 @@ export class SearchService {
     organization: OrganizationEntity,
     queryDto: QueryDto,
   ): Promise<QueryResponse> {
-    const { query, offset, type } = queryDto;
+    const { query, type, offset, limit } = queryDto;
+    const dictionary = type ?? solrDictionaries.all;
     try {
       return await this.solrCli.query(organization.id, {
         query,
         offset,
+        limit,
         ...(type && { filter: `entry_type:${type}` }),
         params: {
           'hl.q': query,
           'spellcheck.q': query,
-          ...(type && { 'spellcheck.dictionary': type }),
+          'spellcheck.dictionary': dictionary,
         },
       });
     } catch (err) {

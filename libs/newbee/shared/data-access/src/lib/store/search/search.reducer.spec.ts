@@ -1,7 +1,6 @@
 import {
-  testBaseQueryResultDto1,
-  testBaseSuggestResultDto1,
-  testQueryResult1,
+  testBaseSuggestResultsDto1,
+  testQueryResults1,
 } from '@newbee/shared/util';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -15,7 +14,7 @@ describe('SearchReducer', () => {
   };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
-    suggestions: testBaseSuggestResultDto1.suggestions,
+    suggestions: testBaseSuggestResultsDto1.suggestions,
   };
 
   describe('from initial state', () => {
@@ -32,27 +31,27 @@ describe('SearchReducer', () => {
     it('should update state for searchSuccess', () => {
       let updatedState = searchFeature.reducer(
         stateAfterSearch,
-        SearchActions.searchSuccess({ result: testBaseQueryResultDto1 }),
+        SearchActions.searchSuccess({ results: testQueryResults1 }),
       );
       expect(updatedState).toEqual({
         ...initialSearchState,
-        searchResult: testQueryResult1,
+        searchResults: testQueryResults1,
       });
 
       updatedState = searchFeature.reducer(
         stateAfterSuggestSuccess,
-        SearchActions.searchSuccess({ result: testBaseQueryResultDto1 }),
+        SearchActions.searchSuccess({ results: testQueryResults1 }),
       );
       expect(updatedState).toEqual({
         ...stateAfterSuggestSuccess,
-        searchResult: testQueryResult1,
+        searchResults: testQueryResults1,
       });
     });
 
     it('should update state for suggestSuccess', () => {
       const updatedState = searchFeature.reducer(
         initialSearchState,
-        SearchActions.suggestSuccess({ result: testBaseSuggestResultDto1 }),
+        SearchActions.suggestSuccess({ results: testBaseSuggestResultsDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSuggestSuccess);
     });

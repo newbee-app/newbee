@@ -1,2 +1,2 @@
-export * from './result.interface';
-export * from './total-and-offset.interface';
+export * from './offset-and-limit.interface';
+export * from './paginated-results.interface';

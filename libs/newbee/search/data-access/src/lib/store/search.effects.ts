@@ -4,7 +4,7 @@ import {
   organizationFeature,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
-import { BaseQueryResultDto } from '@newbee/shared/util';
+import { defaultLimit } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap } from 'rxjs';
@@ -25,15 +25,23 @@ export class SearchEffects {
       switchMap(([{ query }, selectedOrganization]) => {
         if (!query.query) {
           return of(
-            SearchActions.searchSuccess({ result: new BaseQueryResultDto(0) }),
+            SearchActions.searchSuccess({
+              results: {
+                results: [],
+                total: 0,
+                offset: 0,
+                limit: defaultLimit,
+                suggestion: null,
+              },
+            }),
           );
         }
 
         return this.searchService
           .search(query, selectedOrganization?.organization.slug as string)
           .pipe(
-            map((result) => {
-              return SearchActions.searchSuccess({ result });
+            map((results) => {
+              return SearchActions.searchSuccess({ results });
             }),
             catchError(catchHttpScreenError),
           );
@@ -51,15 +59,15 @@ export class SearchEffects {
       switchMap(([{ query }, selectedOrganization]) => {
         if (!query.query) {
           return of(
-            SearchActions.suggestSuccess({ result: { suggestions: [] } }),
+            SearchActions.suggestSuccess({ results: { suggestions: [] } }),
           );
         }
 
         return this.searchService
           .suggest(query, selectedOrganization?.organization.slug as string)
           .pipe(
-            map((result) => {
-              return SearchActions.suggestSuccess({ result });
+            map((results) => {
+              return SearchActions.suggestSuccess({ results });
             }),
           );
       }),

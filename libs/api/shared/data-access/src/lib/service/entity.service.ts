@@ -9,6 +9,7 @@ import {
 import type {
   DocNoOrg,
   DocQueryResult,
+  OffsetAndLimit,
   OrgMemberNoOrg,
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
@@ -264,10 +265,13 @@ export class EntityService {
     try {
       await this.em.populate(team, ['teamMembers.orgMember.user']);
 
-      const postFindAndCountOptions = {
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        limit: 3,
+      const postOffsetAndLimit: OffsetAndLimit = {
         offset: 0,
+        limit: 3,
+      };
+      const postFindAndCountOptions = {
+        ...postOffsetAndLimit,
+        orderBy: { markedUpToDateAt: QueryOrder.DESC },
       };
       const [docs, docsCount] = await this.em.findAndCount(
         DocEntity,
@@ -285,12 +289,12 @@ export class EntityService {
         docs: {
           results: await this.createDocQueryResults(docs),
           total: docsCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
         qnas: {
           results: await this.createQnaQueryResults(qnas),
           total: qnasCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
         teamMembers: team.teamMembers.getItems().map((teamMember) => ({
           teamMember,
@@ -456,10 +460,13 @@ export class EntityService {
         { populate: ['team'] },
       );
 
-      const postFindAndCountOptions = {
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        limit: 3,
+      const postOffsetAndLimit: OffsetAndLimit = {
         offset: 0,
+        limit: 3,
+      };
+      const postFindAndCountOptions = {
+        ...postOffsetAndLimit,
+        orderBy: { markedUpToDateAt: QueryOrder.DESC },
       };
       const [createdDocs, createdDocsCount] = await this.em.findAndCount(
         DocEntity,
@@ -490,22 +497,22 @@ export class EntityService {
         createdDocs: {
           results: await this.createDocQueryResults(createdDocs),
           total: createdDocsCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
         maintainedDocs: {
           results: await this.createDocQueryResults(maintainedDocs),
           total: maintainedDocsCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
         createdQnas: {
           results: await this.createQnaQueryResults(createdQnas),
           total: createdQnasCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
         maintainedQnas: {
           results: await this.createQnaQueryResults(maintainedQnas),
           total: maintainedQnasCount,
-          offset: 0,
+          ...postOffsetAndLimit,
         },
       };
     } catch (err) {

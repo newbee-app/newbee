@@ -1,10 +1,10 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import { SearchActions } from '@newbee/newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, skipWhile, take } from 'rxjs';
-import { selectSearchResultAndScreenError } from '../store';
+import { selectSearchResultsAndScreenError } from '../store';
 
 /**
  * A guard that fires the search request and only proceeds if it completes.
@@ -19,11 +19,15 @@ export const searchGuard: CanActivateFn = (
   const store = inject(Store);
 
   const query = route.paramMap.get(Keyword.Search) ?? '';
-  store.dispatch(SearchActions.search({ query: { offset: 0, query } }));
+  store.dispatch(
+    SearchActions.search({ query: { offset: 0, limit: defaultLimit, query } }),
+  );
   store.dispatch(SearchActions.suggest({ query: { query } }));
 
-  return store.select(selectSearchResultAndScreenError).pipe(
-    skipWhile(({ searchResult, screenError }) => !searchResult && !screenError),
+  return store.select(selectSearchResultsAndScreenError).pipe(
+    skipWhile(
+      ({ searchResults, screenError }) => !searchResults && !screenError,
+    ),
     take(1),
     map(() => true),
   );

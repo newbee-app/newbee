@@ -1,8 +1,9 @@
 <div infiniteScroll (scrolled)="scrolled.emit()">
-  <div id="top-elements" class="sticky top-0 bg-base-100 z-10">
-    <form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
+  <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
+    <form [formGroup]="searchForm" (ngSubmit)="emitSearch()">
       <newbee-searchbar
         formControlName="searchbar"
+        placeholder="Search all docs..."
         [suggestions]="searchSuggestions"
         (selectSuggestion)="selectSuggestion($event)"
       ></newbee-searchbar>

@@ -11,6 +11,7 @@ import {
   DocDocParams,
   DocEntity,
   EntityService,
+  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
@@ -129,13 +130,14 @@ export class DocService {
    */
   async findByOrgAndCount(
     organization: OrganizationEntity,
-    offset: number,
+    offsetAndLimitDto: OffsetAndLimitDto,
   ): Promise<[DocEntity[], number]> {
+    const { offset, limit } = offsetAndLimitDto;
     try {
       return await this.em.findAndCount(
         DocEntity,
         { organization },
-        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, limit: 20, offset },
+        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
       );
     } catch (err) {
       this.logger.error(err);
