@@ -3,8 +3,8 @@
  */
 export enum SearchTab {
   All = 'all',
-  Qna = 'qna',
   Doc = 'doc',
+  Qna = 'qna',
   Team = 'team',
   People = 'people',
 }

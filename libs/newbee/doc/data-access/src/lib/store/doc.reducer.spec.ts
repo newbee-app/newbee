@@ -3,9 +3,14 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
+  const stateAfterGetDocs: DocState = {
+    ...initialDocState,
+    pendingGetDocs: true,
+  };
   const stateAfterCreateDoc: DocState = {
     ...initialDocState,
     pendingCreate: true,
@@ -24,6 +29,14 @@ describe('DocReducer', () => {
   };
 
   describe('from initial state', () => {
+    it('should update state for getDocs', () => {
+      const updatedState = docFeature.reducer(
+        initialDocState,
+        DocActions.getDocs,
+      );
+      expect(updatedState).toEqual(stateAfterGetDocs);
+    });
+
     it('should update state for createDoc', () => {
       const updatedState = docFeature.reducer(
         initialDocState,
@@ -58,6 +71,19 @@ describe('DocReducer', () => {
   });
 
   describe('from altered state', () => {
+    it('should update state for getDocsSuccess', () => {
+      const updatedState = docFeature.reducer(
+        stateAfterGetDocs,
+        DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialDocState,
+        docs: testPaginatedResultsDocQueryResult1,
+      });
+    });
+
     it('should update state for createDocSuccess', () => {
       const updatedState = docFeature.reducer(
         stateAfterCreateDoc,

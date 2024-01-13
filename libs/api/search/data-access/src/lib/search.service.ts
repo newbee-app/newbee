@@ -89,12 +89,14 @@ export class SearchService {
     organization: OrganizationEntity,
     queryDto: QueryDto,
   ): Promise<QueryResults> {
-    const { query, offset, limit } = queryDto;
+    const { query, type, offset, limit } = queryDto;
     const results: QueryResults = {
       results: [],
       total: 0,
       offset,
       limit,
+      query,
+      type: type ?? null,
       suggestion: null,
     };
 

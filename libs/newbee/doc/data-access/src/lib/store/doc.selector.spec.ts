@@ -9,13 +9,16 @@ import {
   Keyword,
   testDocRelation1,
   testOrganizationRelation1,
+  testPaginatedResultsDocQueryResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
+import { initialDocState as initialDocModuleState } from './doc.reducer';
 import {
   selectDocAndOrg,
   selectDocAndOrgStates,
   selectDocAndScreenError,
+  selectDocsAndOrg,
 } from './doc.selector';
 
 describe('DocSelector', () => {
@@ -28,6 +31,7 @@ describe('DocSelector', () => {
           initialState: {
             [Keyword.Organization]: initialOrganizationState,
             [Keyword.Doc]: initialDocState,
+            [`${Keyword.Doc}Module`]: initialDocModuleState,
           },
         }),
       ],
@@ -66,6 +70,35 @@ describe('DocSelector', () => {
         },
       });
       expect(store.select(selectDocAndOrg)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectDocsAndOrg', () => {
+    it('should handle null values', () => {
+      const expected$ = hot('a', {
+        a: { docs: null, selectedOrganization: null },
+      });
+      expect(store.select(selectDocsAndOrg)).toBeObservable(expected$);
+    });
+
+    it('should return docs and org', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: testPaginatedResultsDocQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          docs: testPaginatedResultsDocQueryResult1,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      expect(store.select(selectDocsAndOrg)).toBeObservable(expected$);
     });
   });
 

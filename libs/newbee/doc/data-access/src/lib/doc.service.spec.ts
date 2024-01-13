@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -10,7 +11,9 @@ import {
   testBaseDocAndMemberDto1,
   testBaseUpdateDocDto1,
   testDoc1,
+  testOffsetAndLimit1,
   testOrganization1,
+  testPaginatedResultsDocQueryResult1,
 } from '@newbee/shared/util';
 import { DocService } from './doc.service';
 
@@ -37,6 +40,32 @@ describe('DocService', () => {
       expect(DocService.baseApiUrl(testOrganization1.slug)).toEqual(
         `/${Keyword.Api}/v${apiVersion.doc}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Doc}`,
       );
+    });
+  });
+
+  describe('getAllPaginated', () => {
+    it('should send out a get request', (done) => {
+      service
+        .getAllPaginated(testOrganization1.slug, testOffsetAndLimit1)
+        .subscribe({
+          next: (results) => {
+            try {
+              expect(results).toEqual(testPaginatedResultsDocQueryResult1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const params = new HttpParams({ fromObject: { ...testOffsetAndLimit1 } });
+      const req = httpController.expectOne(
+        `${DocService.baseApiUrl(testOrganization1.slug)}?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsDocQueryResult1);
     });
   });
 

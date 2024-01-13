@@ -1,5 +1,10 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
-import { testDocQueryResult1, testQueryResult1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testDocQueryResult1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
+} from '@newbee/shared/util';
 import {
   Meta,
   StoryObj,
@@ -18,8 +23,25 @@ export default {
     ),
   ],
   args: {
+    httpClientError: null,
+    docs: testPaginatedResultsDocQueryResult1,
+    getDocsPending: false,
+  },
+  argTypes: {
+    orgNavigate: { action: 'orgNavigate' },
+    search: { action: 'search' },
+    scrolled: { action: 'scrolled' },
+  },
+} as Meta<ViewDocsComponent>;
+
+type Story = StoryObj<ViewDocsComponent>;
+
+export const Primary: Story = {};
+
+export const LotsOfDocs: Story = {
+  args: {
     docs: {
-      ...testQueryResult1,
+      ...testPaginatedResultsQnaQueryResult1,
       total: 100,
       results: [
         testDocQueryResult1,
@@ -34,46 +56,20 @@ export default {
         testDocQueryResult1,
       ],
     },
-    searchSuggestions: [],
-    searchParam: null,
-    searchPending: false,
   },
-  argTypes: {
-    search: { action: 'search' },
-    searchbar: { action: 'searchbar' },
-    orgNavigate: { action: 'orgNavigate' },
-    scrolled: { action: 'scrolled' },
-  },
-} as Meta<ViewDocsComponent>;
+};
 
-type Story = StoryObj<ViewDocsComponent>;
-
-export const Primary: Story = {};
-
-export const SpellcheckSuggestion: Story = {
+export const GetDocsPending: Story = {
   args: {
-    docs: {
-      ...testQueryResult1,
-      suggestion: 'this thing',
-      results: [testDocQueryResult1],
+    getDocsPending: true,
+  },
+};
+
+export const WithErrors: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: { [Keyword.Misc]: 'Misc error' },
     },
-  },
-};
-
-export const Suggestions: Story = {
-  args: {
-    searchSuggestions: ['searching this', 'searching that'],
-  },
-};
-
-export const SearchParam: Story = {
-  args: {
-    searchParam: 'search param',
-  },
-};
-
-export const SearchPending: Story = {
-  args: {
-    searchPending: true,
   },
 };

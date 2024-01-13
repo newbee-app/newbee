@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import { SearchActions } from '@newbee/newbee/shared/data-access';
-import { Keyword, defaultLimit } from '@newbee/shared/util';
+import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, skipWhile, take } from 'rxjs';
 import { selectSearchResultsAndScreenError } from '../store';
@@ -19,10 +19,22 @@ export const searchGuard: CanActivateFn = (
   const store = inject(Store);
 
   const query = route.paramMap.get(Keyword.Search) ?? '';
+  const type = route.queryParamMap.get(Keyword.Type);
+  const solrType =
+    type && Object.values<string>(SolrEntryEnum).includes(type)
+      ? (type as SolrEntryEnum)
+      : null;
+
   store.dispatch(
-    SearchActions.search({ query: { offset: 0, limit: defaultLimit, query } }),
+    SearchActions.search({
+      query: {
+        offset: 0,
+        limit: defaultLimit,
+        query,
+        ...(solrType && { type: solrType }),
+      },
+    }),
   );
-  store.dispatch(SearchActions.suggest({ query: { query } }));
 
   return store.select(selectSearchResultsAndScreenError).pipe(
     skipWhile(

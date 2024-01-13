@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   orgMemberGuard,
   orgMemberTitleResolver,
+  orgMembersTitleResolver,
 } from '@newbee/newbee/org-member/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { OrgMemberRootComponent } from '../org-member-root';
@@ -30,6 +31,7 @@ const routes: Routes = [
   {
     path: '',
     component: OrgMembersViewComponent,
+    title: orgMembersTitleResolver,
   },
 ];
 

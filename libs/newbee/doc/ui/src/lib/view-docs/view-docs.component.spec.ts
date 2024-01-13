@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { testDocQueryResult1, testQueryResults1 } from '@newbee/shared/util';
+import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { ViewDocsComponent } from './view-docs.component';
 
 describe('ViewDocsComponent', () => {
@@ -14,10 +14,9 @@ describe('ViewDocsComponent', () => {
     fixture = TestBed.createComponent(ViewDocsComponent);
     component = fixture.componentInstance;
 
-    component.docs = { ...testQueryResults1, results: [testDocQueryResult1] };
+    component.docs = testPaginatedResultsDocQueryResult1;
 
     jest.spyOn(component.search, 'emit');
-    jest.spyOn(component.searchbar, 'emit');
 
     fixture.detectChanges();
   });
@@ -28,17 +27,17 @@ describe('ViewDocsComponent', () => {
   });
 
   describe('setters', () => {
-    it(`should set the searchbar's value`, () => {
-      component.searchParam = 'search param';
-      expect(component.searchForm.value).toEqual({ searchbar: 'search param' });
+    it('should update docs to show', () => {
+      expect(component.docsToShow).toEqual(
+        testPaginatedResultsDocQueryResult1.results,
+      );
     });
   });
 
   describe('constructor', () => {
-    it('should emit searchbar', () => {
+    it('should update docs to show', () => {
       component.searchForm.setValue({ searchbar: 'searchbar' });
-      expect(component.searchbar.emit).toHaveBeenCalledTimes(1);
-      expect(component.searchbar.emit).toHaveBeenCalledWith('searchbar');
+      expect(component.docsToShow.length).toEqual(0);
     });
   });
 
@@ -51,15 +50,6 @@ describe('ViewDocsComponent', () => {
       component.emitSearch();
       expect(component.search.emit).toHaveBeenCalledTimes(1);
       expect(component.search.emit).toHaveBeenCalledWith('searching');
-    });
-  });
-
-  describe('selectSuggestion', () => {
-    it('should set searchbar and emit search', () => {
-      component.selectSuggestion('suggestion');
-      expect(component.searchForm.value).toEqual({ searchbar: 'suggestion' });
-      expect(component.search.emit).toHaveBeenCalledTimes(1);
-      expect(component.search.emit).toHaveBeenCalledWith('suggestion');
     });
   });
 });

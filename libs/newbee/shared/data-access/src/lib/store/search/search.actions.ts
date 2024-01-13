@@ -5,7 +5,7 @@ import {
   Keyword,
   QueryResults,
 } from '@newbee/shared/util';
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
  * All actions tied to `SearchState`.
@@ -34,5 +34,16 @@ export const SearchActions = createActionGroup({
      * Indicates that the results of a suggest query were successfully retrieved.
      */
     'Suggest Success': props<{ results: BaseSuggestResultsDto }>(),
+
+    /**
+     * Send a search request to the API, which should be a continuation of a previous search request.
+     * Should call `Continue Search Success` with the result.
+     */
+    'Continue Search': emptyProps(),
+
+    /**
+     * Indicates that more results of a previous search query were successfully retrieved.
+     */
+    'Continue Search Success': props<{ results: QueryResults }>(),
   },
 });

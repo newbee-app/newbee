@@ -101,6 +101,8 @@ describe('SearchService', () => {
         offset: testBaseQueryDto1.offset,
         limit: testBaseQueryDto1.limit,
         results: [],
+        query: testBaseQueryDto1.query,
+        type: null,
         suggestion:
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });

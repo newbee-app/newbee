@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { createMock } from '@golevelup/ts-jest';
 import {
   initialOrganizationState,
+  initialSearchState,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
@@ -37,6 +38,10 @@ describe('SearchEffects', () => {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
             },
+            [Keyword.Search]: {
+              ...initialSearchState,
+              searchResults: testQueryResults1,
+            },
           },
         }),
         provideMockActions(() => actions$),
@@ -64,43 +69,94 @@ describe('SearchEffects', () => {
   });
 
   describe('search$', () => {
-    it('should fire searchSuccess and contact API if successful', () => {
-      actions$ = hot('a', {
-        a: SearchActions.search({ query: testBaseQueryDto1 }),
+    describe('search', () => {
+      it('should fire searchSuccess and contact API if successful', () => {
+        actions$ = hot('a', {
+          a: SearchActions.search({ query: testBaseQueryDto1 }),
+        });
+        const expected$ = hot('a', {
+          a: SearchActions.searchSuccess({ results: testQueryResults1 }),
+        });
+        expect(effects.search$).toBeObservable(expected$);
+        expect(expected$).toSatisfyOnFlush(() => {
+          expect(service.search).toHaveBeenCalledTimes(1);
+          expect(service.search).toHaveBeenCalledWith(
+            testBaseQueryDto1,
+            testOrganization1.slug,
+          );
+        });
       });
-      const expected$ = hot('a', {
-        a: SearchActions.searchSuccess({ results: testQueryResults1 }),
-      });
-      expect(effects.search$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.search).toHaveBeenCalledTimes(1);
-        expect(service.search).toHaveBeenCalledWith(
-          testBaseQueryDto1,
-          testOrganization1.slug,
-        );
+
+      it('should not fire if query is empty', () => {
+        actions$ = hot('a', {
+          a: SearchActions.search({
+            query: { query: '', offset: 0, limit: defaultLimit },
+          }),
+        });
+        const expected$ = hot('-');
+        expect(effects.search$).toBeObservable(expected$);
+        expect(expected$).toSatisfyOnFlush(() => {
+          expect(service.search).not.toHaveBeenCalled();
+        });
       });
     });
 
-    it('should fire searchSuccess and not contact API if query is empty', () => {
-      actions$ = hot('a', {
-        a: SearchActions.search({
-          query: { query: '', offset: 0, limit: defaultLimit },
-        }),
-      });
-      const expected$ = hot('a', {
-        a: SearchActions.searchSuccess({
-          results: {
-            results: [],
-            total: 0,
-            offset: 0,
-            limit: defaultLimit,
-            suggestion: null,
+    describe('continueSearch', () => {
+      it('should fire conitnueSearchSuccess and contact API if continueSearch', () => {
+        store.setState({
+          [Keyword.Organization]: {
+            ...initialOrganizationState,
+            selectedOrganization: testOrganizationRelation1,
           },
-        }),
+          [Keyword.Search]: {
+            ...initialSearchState,
+            searchResults: { ...testQueryResults1, total: 100 },
+          },
+        });
+        actions$ = hot('a', {
+          a: SearchActions.continueSearch(),
+        });
+        const expected$ = hot('a', {
+          a: SearchActions.continueSearchSuccess({
+            results: testQueryResults1,
+          }),
+        });
+        expect(effects.search$).toBeObservable(expected$);
+        expect(expected$).toSatisfyOnFlush(() => {
+          expect(service.search).toHaveBeenCalledTimes(1);
+          expect(service.search).toHaveBeenCalledWith(
+            {
+              ...testBaseQueryDto1,
+              offset: 1,
+            },
+            testOrganization1.slug,
+          );
+        });
       });
-      expect(effects.search$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.search).not.toHaveBeenCalled();
+
+      it('should not fire if total is <= limit * (offset + 1)', () => {
+        actions$ = hot('a', { a: SearchActions.continueSearch() });
+        const expected$ = hot('-');
+        expect(effects.search$).toBeObservable(expected$);
+        expect(expected$).toSatisfyOnFlush(() => {
+          expect(service.search).not.toHaveBeenCalled();
+        });
+      });
+
+      it('should not fire if searchResults is null', () => {
+        store.setState({
+          [Keyword.Organization]: {
+            ...initialOrganizationState,
+            selectedOrganization: testOrganizationRelation1,
+          },
+          [Keyword.Search]: initialSearchState,
+        });
+        actions$ = hot('a', { a: SearchActions.continueSearch() });
+        const expected$ = hot('-');
+        expect(effects.search$).toBeObservable(expected$);
+        expect(expected$).toSatisfyOnFlush(() => {
+          expect(service.search).not.toHaveBeenCalled();
+        });
       });
     });
 
@@ -118,7 +174,7 @@ describe('SearchEffects', () => {
   });
 
   describe('suggest$', () => {
-    it('should fire suggestSuccess and contact API if successful', () => {
+    it('should fire suggestSuccess and contact API if suggest', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: testBaseSuggestDto1 }),
       });
@@ -137,13 +193,30 @@ describe('SearchEffects', () => {
       });
     });
 
-    it('should fire suggestSuccess and not contact API if query is empty', () => {
+    it('should fire suggestSuccess and contact API if search', () => {
+      actions$ = hot('a', {
+        a: SearchActions.search({ query: testBaseQueryDto1 }),
+      });
+      const expected$ = hot('a', {
+        a: SearchActions.suggestSuccess({
+          results: testBaseSuggestResultsDto1,
+        }),
+      });
+      expect(effects.suggest$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.suggest).toHaveBeenCalledTimes(1);
+        expect(service.suggest).toHaveBeenCalledWith(
+          testBaseQueryDto1,
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it('should do nothing if query is empty', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: { query: '' } }),
       });
-      const expected$ = hot('a', {
-        a: SearchActions.suggestSuccess({ results: { suggestions: [] } }),
-      });
+      const expected$ = hot('-');
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.suggest).not.toHaveBeenCalled();

@@ -1,5 +1,7 @@
 import {
   testBaseSuggestResultsDto1,
+  testDocQueryResult1,
+  testQnaQueryResult1,
   testQueryResults1,
 } from '@newbee/shared/util';
 import { RouterActions } from '../router';
@@ -12,9 +14,17 @@ describe('SearchReducer', () => {
     ...initialSearchState,
     pendingSearch: true,
   };
+  const stateAfterSearchSuccess: SearchState = {
+    ...initialSearchState,
+    searchResults: testQueryResults1,
+  };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
     suggestions: testBaseSuggestResultsDto1.suggestions,
+  };
+  const stateAfterContinueSearch: SearchState = {
+    ...stateAfterSearchSuccess,
+    pendingContinueSearch: true,
   };
 
   describe('from initial state', () => {
@@ -33,10 +43,7 @@ describe('SearchReducer', () => {
         stateAfterSearch,
         SearchActions.searchSuccess({ results: testQueryResults1 }),
       );
-      expect(updatedState).toEqual({
-        ...initialSearchState,
-        searchResults: testQueryResults1,
-      });
+      expect(updatedState).toEqual(stateAfterSearchSuccess);
 
       updatedState = searchFeature.reducer(
         stateAfterSuggestSuccess,
@@ -55,19 +62,52 @@ describe('SearchReducer', () => {
       );
       expect(updatedState).toEqual(stateAfterSuggestSuccess);
     });
-  });
 
-  it('should udpate state for routerRequest', () => {
-    let updatedState = searchFeature.reducer(
-      stateAfterSearch,
-      RouterActions.routerRequest,
-    );
-    expect(updatedState).toEqual(initialSearchState);
+    it('should update state for continueSearch', () => {
+      const updatedState = searchFeature.reducer(
+        stateAfterSearchSuccess,
+        SearchActions.continueSearch,
+      );
+      expect(updatedState).toEqual(stateAfterContinueSearch);
+    });
 
-    updatedState = searchFeature.reducer(
-      stateAfterSuggestSuccess,
-      RouterActions.routerRequest,
-    );
-    expect(updatedState).toEqual(initialSearchState);
+    it('should update state for continueSearchSuccess', () => {
+      const updatedState = searchFeature.reducer(
+        stateAfterContinueSearch,
+        SearchActions.continueSearchSuccess({
+          results: {
+            ...testQueryResults1,
+            offset: 1,
+            results: [testDocQueryResult1, testQnaQueryResult1],
+          },
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialSearchState,
+        searchResults: {
+          ...testQueryResults1,
+          offset: 1,
+          results: [
+            ...testQueryResults1.results,
+            testDocQueryResult1,
+            testQnaQueryResult1,
+          ],
+        },
+      });
+    });
+
+    it('should udpate state for routerRequest', () => {
+      let updatedState = searchFeature.reducer(
+        stateAfterSearch,
+        RouterActions.routerRequest,
+      );
+      expect(updatedState).toEqual(initialSearchState);
+
+      updatedState = searchFeature.reducer(
+        stateAfterSuggestSuccess,
+        RouterActions.routerRequest,
+      );
+      expect(updatedState).toEqual(initialSearchState);
+    });
   });
 });

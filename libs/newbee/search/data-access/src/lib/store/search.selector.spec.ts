@@ -1,20 +1,45 @@
 import { TestBed } from '@angular/core/testing';
 import {
   initialHttpState,
+  initialOrganizationState,
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
 import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
-import { Keyword, testQueryResults1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrganizationRelation1,
+  testQueryResults1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
-import { selectSearchResultsAndScreenError } from './search.selector';
+import {
+  selectSearchResultsAndOrg,
+  selectSearchResultsAndScreenError,
+} from './search.selector';
 
 describe('SearchSelector', () => {
   let store: MockStore;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Search]: {
+              ...initialSearchState,
+              searchResults: testQueryResults1,
+            },
+            [Keyword.Organization]: {
+              ...initialOrganizationState,
+              selectedOrganization: testOrganizationRelation1,
+            },
+            [Keyword.Http]: {
+              ...initialHttpState,
+              screenError: testHttpScreenError1,
+            },
+          },
+        }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
@@ -26,16 +51,6 @@ describe('SearchSelector', () => {
 
   describe('selectSearchResultsAndScreenError', () => {
     it('should select search results and screen error', () => {
-      store.setState({
-        [Keyword.Search]: {
-          ...initialSearchState,
-          searchResults: testQueryResults1,
-        },
-        [Keyword.Http]: {
-          ...initialHttpState,
-          screenError: testHttpScreenError1,
-        },
-      });
       const expected$ = hot('a', {
         a: {
           searchResults: testQueryResults1,
@@ -45,6 +60,18 @@ describe('SearchSelector', () => {
       expect(store.select(selectSearchResultsAndScreenError)).toBeObservable(
         expected$,
       );
+    });
+  });
+
+  describe('selectSeachResultsAndOrg', () => {
+    it('should select seach results and currently selected org', () => {
+      const expected$ = hot('a', {
+        a: {
+          searchResults: testQueryResults1,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      expect(store.select(selectSearchResultsAndOrg)).toBeObservable(expected$);
     });
   });
 });

@@ -15,8 +15,10 @@ import {
   testBaseUpdateDocDto1,
   testDoc1,
   testDocRelation1,
+  testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
+  testPaginatedResultsDocQueryResult1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -25,6 +27,7 @@ import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
 import { DocService } from '../doc.service';
 import { DocEffects } from './doc.effects';
+import { initialDocState as initialDocModuleState } from './doc.reducer';
 
 describe('DocEffects', () => {
   let actions$ = new Observable<Action>();
@@ -47,6 +50,10 @@ describe('DocEffects', () => {
               ...initialDocState,
               selectedDoc: testDocRelation1,
             },
+            [`${Keyword.Doc}Module`]: {
+              ...initialDocModuleState,
+              docs: testPaginatedResultsDocQueryResult1,
+            },
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -54,6 +61,9 @@ describe('DocEffects', () => {
         {
           provide: DocService,
           useValue: createMock<DocService>({
+            getAllPaginated: jest
+              .fn()
+              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
             create: jest.fn().mockReturnValue(of(testDoc1)),
             get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
@@ -78,6 +88,90 @@ describe('DocEffects', () => {
     expect(service).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
+  });
+
+  describe('getDocs$', () => {
+    it('should fire getDocsSuccess if this is the first request and selected organization is set', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: DocActions.getDocs(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
+        expect(service.getAllPaginated).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOffsetAndLimit1,
+        );
+      });
+    });
+
+    it('should fire getDocsSuccess if this is a follow-up request, selected organization is set, and there are more results to fetch', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: DocActions.getDocs(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
+        expect(service.getAllPaginated).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          { ...testOffsetAndLimit1, offset: 1 },
+        );
+      });
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).not.toHaveBeenCalled();
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+      });
+      actions$ = hot('a', {
+        a: DocActions.getDocs(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('createDoc$', () => {

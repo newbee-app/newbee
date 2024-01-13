@@ -1,45 +1,48 @@
 <div infiniteScroll (scrolled)="scrolled.emit()">
   <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
-    <form [formGroup]="searchForm" (ngSubmit)="emitSearch()">
+    <form
+      [formGroup]="searchForm"
+      (ngSubmit)="emitSearch()"
+      class="flex flex-col flex-nowrap gap-y-2"
+    >
       <newbee-searchbar
+        id="searchbar"
         formControlName="searchbar"
-        placeholder="Search all docs..."
-        [suggestions]="searchSuggestions"
-        (selectSuggestion)="selectSuggestion($event)"
+        placeholder="Type to filter, 'Enter' to search"
       ></newbee-searchbar>
+
+      <p class="opacity-50">
+        Type to filter the displayed docs, press 'Enter' to search all of the
+        docs of the org
+      </p>
     </form>
 
     <div class="divider my-0"></div>
   </div>
 
-  <div *ngIf="searchPending; else displayDocs" class="flex justify-center mt-2">
+  <ng-container *ngIf="docs">
+    <p class="text-sm opacity-50 mt-2">
+      {{ docsFound }}
+    </p>
+
+    <div
+      *ngIf="docsToShow.length"
+      class="flex flex-col flex-nowrap gap-y-8 mt-6"
+    >
+      <newbee-search-result
+        *ngFor="let doc of docsToShow"
+        [searchResult]="doc"
+        [format]="searchResultFormat.List"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-search-result>
+    </div>
+  </ng-container>
+
+  <div *ngIf="getDocsPending" class="flex justify-center mt-2">
     <span class="loading loading-spinner"></span>
   </div>
 
-  <ng-template #displayDocs>
-    <ng-container *ngIf="docs">
-      <p class="text-sm opacity-50 mt-2">
-        {{ docsFound }}
-      </p>
-
-      <p *ngIf="docs.suggestion" class="text-error mt-2">
-        Did you mean
-        <a (click)="selectSuggestion(docs.suggestion)" class="link link-info">{{
-          docs.suggestion
-        }}</a>
-      </p>
-
-      <div
-        *ngIf="docs.results.length"
-        class="flex flex-col flex-nowrap gap-y-8 mt-6"
-      >
-        <newbee-search-result
-          *ngFor="let doc of docs.results"
-          [searchResult]="doc"
-          [format]="searchResultFormat.List"
-          (orgNavigate)="orgNavigate.emit($event)"
-        ></newbee-search-result>
-      </div>
-    </ng-container>
-  </ng-template>
+  <div *ngIf="!!miscError" class="mt-6">
+    <newbee-alert [show]="!!miscError" [text]="miscError"></newbee-alert>
+  </div>
 </div>

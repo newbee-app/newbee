@@ -26,6 +26,30 @@
             emitNavigateToLink(
               shortUrl.Organization,
               selectedOrganization.slug,
+              shortUrl.Doc
+            )
+          "
+          >View docs</a
+        >
+      </li>
+      <li>
+        <a
+          (click)="
+            emitNavigateToLink(
+              shortUrl.Organization,
+              selectedOrganization.slug,
+              shortUrl.Qna
+            )
+          "
+          >View QnAs</a
+        >
+      </li>
+      <li>
+        <a
+          (click)="
+            emitNavigateToLink(
+              shortUrl.Organization,
+              selectedOrganization.slug,
               shortUrl.Team
             )
           "
@@ -272,6 +296,28 @@
               "
               class="link link-hover"
               >Edit org</a
+            >
+            <a
+              (click)="
+                emitNavigateToLink(
+                  shortUrl.Organization,
+                  selectedOrganization.slug,
+                  shortUrl.Doc
+                )
+              "
+              class="link link-hover"
+              >View docs</a
+            >
+            <a
+              (click)="
+                emitNavigateToLink(
+                  shortUrl.Organization,
+                  selectedOrganization.slug,
+                  shortUrl.Qna
+                )
+              "
+              class="link link-hover"
+              >View QnAs</a
             >
             <a
               (click)="

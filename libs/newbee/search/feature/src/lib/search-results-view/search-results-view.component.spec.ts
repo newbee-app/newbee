@@ -31,6 +31,7 @@ describe('SearchResultsViewComponent', () => {
   let router: Router;
 
   const testSearchTerm = 'search term';
+  const testSearchTermUrl = encodeURIComponent(testSearchTerm);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -66,7 +67,7 @@ describe('SearchResultsViewComponent', () => {
 
     const harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl(
-      `${Keyword.Search}/${testSearchTerm}`,
+      `${Keyword.Search}/${testSearchTerm}?${Keyword.Type}=${SolrEntryEnum.Team}`,
       SearchResultsViewComponent,
     );
   });
@@ -81,21 +82,24 @@ describe('SearchResultsViewComponent', () => {
   describe('constructor', () => {
     it('should initialize search term and search results', () => {
       expect(component.searchTerm).toEqual(testSearchTerm);
-      expect(component.searchResults).toEqual(testQueryResults1);
+      expect(component.tab).toEqual(SearchTab.Team);
     });
   });
 
   describe('onTabChange', () => {
-    it('should change tab value and dispatch search', () => {
-      component.onTabChange(SearchTab.Doc);
-      expect(component.tab).toEqual(SearchTab.Doc);
+    it('should change tab value and dispatch search', async () => {
+      await component.onTabChange(SearchTab.Doc);
+      expect(router.url).toEqual(
+        `/${Keyword.Search}/${testSearchTermUrl}?${Keyword.Type}=${SolrEntryEnum.Doc}`,
+      );
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
           query: {
             offset: 0,
             limit: defaultLimit,
-            type: SolrEntryEnum.Doc,
             query: testSearchTerm,
+            type: SolrEntryEnum.Doc,
           },
         }),
       );
@@ -107,7 +111,9 @@ describe('SearchResultsViewComponent', () => {
       const newSearchTerm = 'new search term';
       await component.onSearch(newSearchTerm);
       expect(router.url).toEqual(
-        `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}`,
+        `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}?${
+          Keyword.Type
+        }=${SolrEntryEnum.Team}`,
       );
     });
   });
@@ -115,8 +121,11 @@ describe('SearchResultsViewComponent', () => {
   describe('onSearchbar', () => {
     it('should dispatch suggest', () => {
       component.onSearchbar(testSearchTerm);
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        SearchActions.suggest({ query: { query: testSearchTerm } }),
+        SearchActions.suggest({
+          query: { query: testSearchTerm, type: SolrEntryEnum.Team },
+        }),
       );
     });
   });
@@ -125,29 +134,6 @@ describe('SearchResultsViewComponent', () => {
     it('should navigate relative to org', async () => {
       await component.onOrgNavigate('test');
       expect(router.url).toEqual('/test');
-    });
-  });
-
-  describe('onScrolled', () => {
-    it('should do nothing if all results are being shown', () => {
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = testQueryResults1;
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = { ...testQueryResults1, total: 10, offset: 0 };
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = { ...testQueryResults1, total: 100, offset: 8 };
-      component.onScrolled();
-      expect(store.dispatch).toHaveBeenCalledWith(
-        SearchActions.search({
-          query: { offset: 9, limit: defaultLimit, query: testSearchTerm },
-        }),
-      );
     });
   });
 });

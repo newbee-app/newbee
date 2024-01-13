@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
@@ -6,7 +6,10 @@ import {
   BaseDocAndMemberDto,
   BaseUpdateDocDto,
   Doc,
+  DocQueryResult,
   Keyword,
+  OffsetAndLimit,
+  PaginatedResults,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -26,6 +29,24 @@ export class DocService {
    */
   static baseApiUrl(orgSlug: string): string {
     return `/${Keyword.Api}/v${apiVersion.doc}/${Keyword.Organization}/${orgSlug}/${Keyword.Doc}`;
+  }
+
+  /**
+   * Sends a request to the API to get all of the docs in the given organization in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   *
+   * @returns An observable containing the paginated docs.
+   */
+  getAllPaginated(
+    orgSlug: string,
+    offsetAndLimit: OffsetAndLimit,
+  ): Observable<PaginatedResults<DocQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
+    return this.http.get<PaginatedResults<DocQueryResult>>(
+      DocService.baseApiUrl(orgSlug),
+      { params },
+    );
   }
 
   /**

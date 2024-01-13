@@ -13,6 +13,7 @@ export class BaseSuggestDto {
   /**
    * The type of entry to look for.
    * Don't specify to search in all.
+   * Needs to be a partial instead of a nullable because it will be used in GET requests.
    */
   type?: SolrEntryEnum;
 }

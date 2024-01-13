@@ -45,6 +45,7 @@ export enum Keyword {
   // search keywords
   Search = 'search',
   Suggest = 'suggest',
+  Type = 'type',
 
   // org member invite keywords
   OrgMemberInvite = 'org-member-invite',

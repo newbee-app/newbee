@@ -1,16 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SearchTab, serachTabToSolrEntry } from '@newbee/newbee/search/util';
+import {
+  SearchTab,
+  searchTabToSolrEntry,
+  solrEntryToSearchTab,
+} from '@newbee/newbee/search/util';
 import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
-import {
-  Keyword,
-  QueryResults,
-  SolrEntryEnum,
-  defaultLimit,
-} from '@newbee/shared/util';
+import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -25,32 +24,35 @@ export class SearchResultsViewComponent implements OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
 
   /**
-   * Suggestions for the searchbar.
+   * The search state.
    */
-  searchSuggestions$ = this.store.select(searchFeature.selectSuggestions);
-
-  /**
-   * Whether the search action is currently pending.
-   */
-  searchPending$ = this.store.select(searchFeature.selectPendingSearch);
+  searchState$ = this.store.select(searchFeature.selectSearchState);
 
   /**
    * The search tab the user has selected.
    */
-  tab = SearchTab.All;
+  get tab(): SearchTab {
+    return this._tab;
+  }
+  private _tab = SearchTab.All;
+
+  /**
+   * The current value of `_tab` as a Solr entry enum.
+   */
+  get type(): SolrEntryEnum | null {
+    return searchTabToSolrEntry(this._tab);
+  }
 
   /**
    * The search term the search results are about.
    */
-  searchTerm = '';
+  get searchTerm(): string {
+    return this._searchTerm;
+  }
+  private _searchTerm = '';
 
   /**
-   * The results of the search query.
-   */
-  searchResults: QueryResults | null = null;
-
-  /**
-   * Subscribe to the route's search param and the store's value for the search results.
+   * Subscribe to the route's search param and type query param.
    */
   constructor(
     private readonly store: Store,
@@ -59,18 +61,19 @@ export class SearchResultsViewComponent implements OnDestroy {
   ) {
     route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (paramMap) => {
-        this.searchTerm = paramMap.get(Keyword.Search) ?? '';
+        this._searchTerm = paramMap.get(Keyword.Search) ?? '';
       },
     });
 
-    store
-      .select(searchFeature.selectSearchResults)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (results) => {
-          this.searchResults = results;
-        },
-      });
+    route.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: (queryParamMap) => {
+        const entryType = queryParamMap.get(Keyword.Type);
+        this._tab =
+          entryType && Object.values<string>(SolrEntryEnum).includes(entryType)
+            ? solrEntryToSearchTab(entryType as SolrEntryEnum | null)
+            : SearchTab.All;
+      },
+    });
   }
 
   /**
@@ -82,38 +85,39 @@ export class SearchResultsViewComponent implements OnDestroy {
   }
 
   /**
-   * Get the component's `tab` as a `SolrEntryEnum`, or `null` if `tab` is on `All`.
-   */
-  get tabAsSolrEntry(): SolrEntryEnum | null {
-    return serachTabToSolrEntry(this.tab);
-  }
-
-  /**
-   * When the user changes the search tab, dispatch a new search request.
+   * When the user changes the search tab, add the corresponding entry type to the query params of the current route.
+   * Because only the query params change, this does not trigger actual navigation, so we have to dispatch a new search action.
    *
    * @param tab The new value for the search tab.
    */
-  onTabChange(tab: SearchTab): void {
-    this.tab = tab;
+  async onTabChange(tab: SearchTab): Promise<void> {
+    const type = searchTabToSolrEntry(tab);
     this.store.dispatch(
       SearchActions.search({
         query: {
           offset: 0,
           limit: defaultLimit,
-          query: this.searchTerm,
-          ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
+          query: this._searchTerm,
+          ...(type && { type }),
         },
       }),
     );
+    await this.router.navigate(['.'], {
+      relativeTo: this.route,
+      ...(type && { queryParams: { [Keyword.Type]: type } }),
+    });
   }
 
   /**
-   * If the user submits a new search request, navigate to the route associated with the request.
+   * If the user submits a new search request, navigate to the corresponding route.
    *
    * @param query The search term.
    */
   async onSearch(query: string): Promise<void> {
-    await this.router.navigate([`../${query}`], { relativeTo: this.route });
+    await this.router.navigate([`../${query}`], {
+      relativeTo: this.route,
+      ...(this.type && { queryParams: { [Keyword.Type]: this.type } }),
+    });
   }
 
   /**
@@ -122,7 +126,11 @@ export class SearchResultsViewComponent implements OnDestroy {
    * @param query The new value of the searchbar.
    */
   onSearchbar(query: string): void {
-    this.store.dispatch(SearchActions.suggest({ query: { query } }));
+    this.store.dispatch(
+      SearchActions.suggest({
+        query: { query, ...(this.type && { type: this.type }) },
+      }),
+    );
   }
 
   /**
@@ -138,24 +146,6 @@ export class SearchResultsViewComponent implements OnDestroy {
    * When the user navigates to the bottom of the search results, fetch more.
    */
   onScrolled(): void {
-    if (!this.searchResults) {
-      return;
-    } else if (
-      this.searchResults.total <=
-      this.searchResults.limit * (this.searchResults.offset + 1)
-    ) {
-      return;
-    }
-
-    this.store.dispatch(
-      SearchActions.search({
-        query: {
-          offset: this.searchResults.offset + 1,
-          limit: this.searchResults.limit,
-          query: this.searchTerm,
-          ...(this.tabAsSolrEntry && { type: this.tabAsSolrEntry }),
-        },
-      }),
-    );
+    this.store.dispatch(SearchActions.continueSearch());
   }
 }

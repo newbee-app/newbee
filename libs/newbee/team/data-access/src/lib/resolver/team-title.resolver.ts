@@ -15,9 +15,7 @@ export const teamTitleResolver: ResolveFn<string> = (
   route: ActivatedRouteSnapshot,
 ): Observable<string> => {
   const store = inject(Store);
-
   const teamSlug = route.paramMap.get(ShortUrl.Team) as string;
-
   return store.select(selectTeamAndScreenError).pipe(
     skipWhile(
       ({ selectedTeam, screenError }) =>

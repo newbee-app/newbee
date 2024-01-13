@@ -21,6 +21,11 @@ export interface SearchState {
    * Whether the user is waiting for a search request.
    */
   pendingSearch: boolean;
+
+  /**
+   * Whether the user is waiting for a paginated fetch of the current search query.
+   */
+  pendingContinueSearch: boolean;
 }
 
 /**
@@ -30,6 +35,7 @@ export const initialSearchState: SearchState = {
   searchResults: null,
   suggestions: [],
   pendingSearch: false,
+  pendingContinueSearch: false,
 };
 
 /**
@@ -62,6 +68,27 @@ export const searchFeature = createFeature({
         suggestions,
       };
     }),
+    on(
+      SearchActions.continueSearch,
+      (state): SearchState => ({ ...state, pendingContinueSearch: true }),
+    ),
+    on(
+      SearchActions.continueSearchSuccess,
+      (state, { results }): SearchState => {
+        const { searchResults } = state;
+
+        return {
+          ...state,
+          pendingContinueSearch: false,
+          searchResults: searchResults
+            ? {
+                ...results,
+                results: searchResults.results.concat(results.results),
+              }
+            : results,
+        };
+      },
+    ),
     on(RouterActions.routerRequest, (): SearchState => initialSearchState),
   ),
 });

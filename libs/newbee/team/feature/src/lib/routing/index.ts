@@ -6,6 +6,7 @@ import {
   createTeamTitleResolver,
   teamGuard,
   teamTitleResolver,
+  teamsTitleResolver,
 } from '@newbee/newbee/team/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { TeamCreateComponent } from '../team-create';
@@ -45,6 +46,7 @@ const routes: Routes = [
   {
     path: '',
     component: TeamsViewComponent,
+    title: teamsTitleResolver,
   },
 ];
 

@@ -16,9 +16,7 @@ export const orgMemberTitleResolver: ResolveFn<string> = (
   route: ActivatedRouteSnapshot,
 ): Observable<string> => {
   const store = inject(Store);
-
   const orgMemberSlug = route.paramMap.get(ShortUrl.Member) as string;
-
   return store.select(selectOrgMemberAndScreenError).pipe(
     skipWhile(
       ({ selectedOrgMember, screenError }) =>

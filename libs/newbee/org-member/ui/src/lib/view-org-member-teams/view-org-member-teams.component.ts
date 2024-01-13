@@ -64,6 +64,9 @@ export class ViewOrgMemberTeamsComponent implements OnDestroy {
   }
   private _teamsToShow: TeamMemberAndTeam[] = [];
 
+  /**
+   * Update the teams to show using the current searchbar value.
+   */
   constructor(private readonly fb: FormBuilder) {
     this.searchbar.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: () => {

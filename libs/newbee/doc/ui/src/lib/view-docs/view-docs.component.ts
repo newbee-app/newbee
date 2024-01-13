@@ -8,11 +8,21 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
+  AlertComponent,
   SearchResultComponent,
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import { QueryResults } from '@newbee/shared/util';
+import {
+  HttpClientError,
+  SearchResultFormat,
+  getHttpClientErrorMsg,
+} from '@newbee/newbee/shared/util';
+import {
+  DocQueryResult,
+  Keyword,
+  userDisplayName,
+  type PaginatedResults,
+} from '@newbee/shared/util';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -28,6 +38,7 @@ import { Subject, takeUntil } from 'rxjs';
     InfiniteScrollModule,
     SearchbarComponent,
     SearchResultComponent,
+    AlertComponent,
   ],
   templateUrl: './view-docs.component.html',
 })
@@ -36,47 +47,37 @@ export class ViewDocsComponent implements OnDestroy {
   readonly searchResultFormat = SearchResultFormat;
 
   /**
-   * The docs to display.
+   * The HTTP client error.
    */
-  @Input() docs: QueryResults | null = null;
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
-   * Suggestions for the searchbar based on its current value.
-   */
-  @Input() searchSuggestions: string[] = [];
-
-  /**
-   * The query param containing a search query, if any.
+   * The docs of the org.
    */
   @Input()
-  get searchParam(): string | null {
-    return this._searchParam;
+  get docs(): PaginatedResults<DocQueryResult> | null {
+    return this._docs;
   }
-  set searchParam(searchParam: string | null) {
-    this._searchParam = searchParam;
-    this.searchForm.setValue({ searchbar: searchParam });
+  set docs(docs: PaginatedResults<DocQueryResult> | null) {
+    this._docs = docs;
+    this.updateDocsToShow();
   }
-  private _searchParam: string | null = null;
+  private _docs: PaginatedResults<DocQueryResult> | null = null;
 
   /**
-   * Whether to display a spinner on search results.
+   * Whether more docs are being fetched.
    */
-  @Input() searchPending = false;
-
-  /**
-   * Tells the parent component when a search has been fired off.
-   */
-  @Output() search = new EventEmitter<string>();
-
-  /**
-   * Tells the parent component when the user has typed into the searchbar, so suggestions can be fetched.
-   */
-  @Output() searchbar = new EventEmitter<string>();
+  @Input() getDocsPending = false;
 
   /**
    * The path to navigate to, relative to the currently selected org.
    */
   @Output() orgNavigate = new EventEmitter<string>();
+
+  /**
+   * Emits whenver the user fires a search request.
+   */
+  @Output() search = new EventEmitter<string>();
 
   /**
    * Indicates that the user has scrolled to the bottom of the results.
@@ -89,14 +90,22 @@ export class ViewDocsComponent implements OnDestroy {
   searchForm = this.fb.group({ searchbar: '' });
 
   /**
-   * Emits the searchbar output with the current searchbar value.
+   * The subset of the docs to show to the user.
+   */
+  get docsToShow(): DocQueryResult[] {
+    return this._docsToShow;
+  }
+  private _docsToShow: DocQueryResult[] = [];
+
+  /**
+   * Update the docs to show using the current searchbar value.
    */
   constructor(private readonly fb: FormBuilder) {
     this.searchForm.controls.searchbar.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
-        next: (value) => {
-          this.searchbar.emit(value ?? '');
+        next: () => {
+          this.updateDocsToShow();
         },
       });
   }
@@ -113,11 +122,20 @@ export class ViewDocsComponent implements OnDestroy {
    * The number of docs that were found, expressed as a string.
    */
   get docsFound(): string {
-    if (!this.docs) {
+    if (!this._docs) {
       return 'No docs found';
     }
 
-    return `${this.docs.total} ${this.docs.total === 1 ? 'doc' : 'docs'} found`;
+    return `${this._docs.total} ${
+      this._docs.total === 1 ? 'doc' : 'docs'
+    } found`;
+  }
+
+  /**
+   * The misc error in the HTTP client error.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 
   /**
@@ -129,16 +147,36 @@ export class ViewDocsComponent implements OnDestroy {
       return;
     }
 
-    return this.search.emit(searchVal);
+    this.search.emit(searchVal);
   }
 
   /**
-   * When the user clicks on a searchbar suggestion, fire off a search request with that value.
-   *
-   * @param suggestion The suggestion to use.
+   * Update `docsToShow` to filter using the given search term.
    */
-  selectSuggestion(suggestion: string): void {
-    this.searchForm.setValue({ searchbar: suggestion });
-    this.emitSearch();
+  private updateDocsToShow(): void {
+    if (!this._docs) {
+      this._docsToShow = [];
+      return;
+    }
+
+    const searchTerm = this.searchForm.controls.searchbar.value;
+    if (!searchTerm) {
+      this._docsToShow = this._docs.results;
+      return;
+    }
+
+    this._docsToShow = this._docs.results.filter((doc) =>
+      [
+        ...new Set(
+          [
+            doc.doc.title,
+            doc.doc.docSnippet,
+            doc.team?.name ?? null,
+            doc.creator ? userDisplayName(doc.creator.user) : null,
+            doc.maintainer ? userDisplayName(doc.maintainer.user) : null,
+          ].filter(Boolean) as string[],
+        ),
+      ].some((field) => field.toLowerCase().includes(searchTerm.toLowerCase())),
+    );
   }
 }

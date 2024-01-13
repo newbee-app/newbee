@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
+  catchHttpClientError,
   catchHttpScreenError,
   organizationFeature,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
-import { defaultLimit } from '@newbee/shared/util';
+import { BaseQueryDto, Keyword, QueryResults } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, of, switchMap } from 'rxjs';
+import { catchError, filter, map, switchMap } from 'rxjs';
 import { SearchService } from '../search.service';
+import { selectSearchResultsAndOrg } from './search.selector';
 
 /**
  * The effects tied to `SearchActions`.
@@ -17,33 +19,58 @@ import { SearchService } from '../search.service';
 export class SearchEffects {
   search$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(SearchActions.search),
-      concatLatestFrom(() =>
-        this.store.select(organizationFeature.selectSelectedOrganization),
-      ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
-      switchMap(([{ query }, selectedOrganization]) => {
-        if (!query.query) {
-          return of(
-            SearchActions.searchSuccess({
-              results: {
-                results: [],
-                total: 0,
-                offset: 0,
-                limit: defaultLimit,
-                suggestion: null,
-              },
-            }),
-          );
+      ofType(SearchActions.search, SearchActions.continueSearch),
+      concatLatestFrom(() => this.store.select(selectSearchResultsAndOrg)),
+      filter(([action, { searchResults, selectedOrganization }]) => {
+        const { type } = action;
+        return !!(
+          selectedOrganization &&
+          ((type === SearchActions.search.type && action.query.query) ||
+            (type === SearchActions.continueSearch.type &&
+              searchResults &&
+              searchResults.total >
+                searchResults.limit * (searchResults.offset + 1)))
+        );
+      }),
+      switchMap(([action, { searchResults, selectedOrganization }]) => {
+        const { type } = action;
+        let queryDto: BaseQueryDto;
+        switch (type) {
+          case SearchActions.search.type:
+            queryDto = action.query;
+            break;
+          case SearchActions.continueSearch.type: {
+            const { offset, limit, query, type } =
+              searchResults as QueryResults;
+            queryDto = {
+              offset: offset + 1,
+              limit,
+              query,
+              ...(type && { type }),
+            };
+            break;
+          }
         }
 
         return this.searchService
-          .search(query, selectedOrganization?.organization.slug as string)
+          .search(queryDto, selectedOrganization?.organization.slug as string)
           .pipe(
             map((results) => {
-              return SearchActions.searchSuccess({ results });
+              switch (type) {
+                case SearchActions.search.type:
+                  return SearchActions.searchSuccess({ results });
+                case SearchActions.continueSearch.type:
+                  return SearchActions.continueSearchSuccess({ results });
+              }
             }),
-            catchError(catchHttpScreenError),
+            catchError((err) => {
+              switch (type) {
+                case SearchActions.search.type:
+                  return catchHttpScreenError(err);
+                case SearchActions.continueSearch.type:
+                  return catchHttpClientError(err, () => Keyword.Misc);
+              }
+            }),
           );
       }),
     );
@@ -51,18 +78,17 @@ export class SearchEffects {
 
   suggest$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(SearchActions.suggest),
+      ofType(SearchActions.suggest, SearchActions.search),
       concatLatestFrom(() =>
         this.store.select(organizationFeature.selectSelectedOrganization),
       ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
+      filter(
+        ([{ query }, selectedOrganization]) =>
+          !!(selectedOrganization && query.query),
+      ),
       switchMap(([{ query }, selectedOrganization]) => {
-        if (!query.query) {
-          return of(
-            SearchActions.suggestSuccess({ results: { suggestions: [] } }),
-          );
-        }
-
+        // Doesn't matter that we're potentially sending extra fields in the request in the case of search
+        // because the backend automatically strips fields that weren't specified in the DTO
         return this.searchService
           .suggest(query, selectedOrganization?.organization.slug as string)
           .pipe(

@@ -1,10 +1,11 @@
 import { SearchTab } from '@newbee/newbee/search/util';
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
+  Keyword,
   testDocQueryResult1,
   testOrgMemberQueryResult1,
   testQnaQueryResult1,
-  testQueryResult1,
+  testQueryResults1,
   testTeamQueryResult1,
 } from '@newbee/shared/util';
 import {
@@ -25,11 +26,12 @@ export default {
     ),
   ],
   args: {
+    httpClientError: null,
     initialSearchTerm: '',
     tab: SearchTab.All,
     searchSuggestions: [],
     searchResults: {
-      ...testQueryResult1,
+      ...testQueryResults1,
       total: 100,
       results: [
         testTeamQueryResult1,
@@ -43,6 +45,7 @@ export default {
       ],
     },
     searchPending: false,
+    continueSearchPending: false,
   },
   argTypes: {
     tabChange: { action: 'tabChange' },
@@ -58,7 +61,7 @@ type Story = StoryObj<SearchResultsComponent>;
 export const Primary: Story = {};
 
 export const SpellcheckSuggestion: Story = {
-  args: { searchResults: { ...testQueryResult1, suggestion: 'this thing' } },
+  args: { searchResults: { ...testQueryResults1, suggestion: 'this thing' } },
 };
 
 export const InitialSearchTerm: Story = {
@@ -73,5 +76,18 @@ export const Suggestions: Story = {
 };
 
 export const SearchPending: Story = {
-  args: { searchResults: null, searchPending: true },
+  args: { searchPending: true },
+};
+
+export const ContinueSearchPending: Story = {
+  args: { continueSearchPending: true },
+};
+
+export const WithErrors: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: { [Keyword.Misc]: 'Misc error' },
+    },
+  },
 };

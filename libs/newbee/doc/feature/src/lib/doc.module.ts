@@ -9,6 +9,7 @@ import {
   CreateDocComponent,
   EditDocComponent,
   ViewDocComponent,
+  ViewDocsComponent,
 } from '@newbee/newbee/doc/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -16,6 +17,7 @@ import { DocCreateComponent } from './doc-create';
 import { DocEditComponent } from './doc-edit';
 import { DocRootComponent } from './doc-root';
 import { DocViewComponent } from './doc-view';
+import { DocsViewComponent } from './docs-view';
 import { DocRoutingModule } from './routing';
 
 @NgModule({
@@ -26,6 +28,7 @@ import { DocRoutingModule } from './routing';
     CreateDocComponent,
     ViewDocComponent,
     EditDocComponent,
+    ViewDocsComponent,
     DocRoutingModule,
   ],
   providers: [DocService],
@@ -34,6 +37,7 @@ import { DocRoutingModule } from './routing';
     DocRootComponent,
     DocViewComponent,
     DocEditComponent,
+    DocsViewComponent,
   ],
 })
 export class DocModule {}

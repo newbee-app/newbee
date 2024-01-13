@@ -16,16 +16,16 @@
         >All</a
       >
       <a
-        (click)="changeTab(searchTab.Qna)"
-        class="tab text-base"
-        [ngClass]="{ 'tab-active': tab === searchTab.Qna }"
-        >QnAs</a
-      >
-      <a
         (click)="changeTab(searchTab.Doc)"
         class="tab text-base"
         [ngClass]="{ 'tab-active': tab === searchTab.Doc }"
         >Docs</a
+      >
+      <a
+        (click)="changeTab(searchTab.Qna)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': tab === searchTab.Qna }"
+        >QnAs</a
       >
       <a
         (click)="changeTab(searchTab.Team)"
@@ -50,7 +50,6 @@
   >
     <span class="loading loading-spinner"></span>
   </div>
-
   <ng-template #displayResults>
     <ng-container *ngIf="searchResults">
       <p class="text-sm opacity-50 mt-2">
@@ -78,6 +77,14 @@
         >
         </newbee-search-result>
       </div>
+
+      <div *ngIf="continueSearchPending" class="flex justify-center mt-2">
+        <span class="loading loading-spinner"></span>
+      </div>
     </ng-container>
   </ng-template>
+
+  <div *ngIf="!!miscError" class="mt-6">
+    <newbee-alert [show]="!!miscError" [text]="miscError"></newbee-alert>
+  </div>
 </div>

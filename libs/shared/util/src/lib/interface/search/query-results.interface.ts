@@ -1,3 +1,4 @@
+import { SolrEntryEnum } from '../../enum';
 import type { QueryResultType } from '../../type';
 import { PaginatedResults } from '../util';
 
@@ -5,6 +6,16 @@ import { PaginatedResults } from '../util';
  * A specialized type of `PaginatedResults` related to fetching and displaying search queries.
  */
 export interface QueryResults extends PaginatedResults<QueryResultType> {
+  /**
+   * The original query value.
+   */
+  query: string;
+
+  /**
+   * The original type of the query, use `null` if the search was across all types.
+   */
+  type: SolrEntryEnum | null;
+
   /**
    * An alternative query the user might have meant, if the original query found little to no results.
    * `null` if there are no suggestions or several results were found.

@@ -10,11 +10,16 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchTab } from '@newbee/newbee/search/util';
 import {
+  AlertComponent,
   SearchResultComponent,
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import type { QueryResults } from '@newbee/shared/util';
+import {
+  HttpClientError,
+  SearchResultFormat,
+  getHttpClientErrorMsg,
+} from '@newbee/newbee/shared/util';
+import { Keyword, type QueryResults } from '@newbee/shared/util';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -30,6 +35,7 @@ import { Subject, takeUntil } from 'rxjs';
     InfiniteScrollModule,
     SearchbarComponent,
     SearchResultComponent,
+    AlertComponent,
   ],
   templateUrl: './search-results.component.html',
 })
@@ -37,6 +43,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
   readonly searchTab = SearchTab;
   readonly searchResultFormat = SearchResultFormat;
+
+  /**
+   * The HTTP client error.
+   */
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
    * The initial value for the searchbar.
@@ -67,6 +78,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * Whether to display a loader to indicate a search is occurring.
    */
   @Input() searchPending = false;
+
+  /**
+   * Whether to display a loader to indicate that more search results are being fetched.
+   */
+  @Input() continueSearchPending = false;
 
   /**
    * The event emitter that tells the parent component when a search has been fired off.
@@ -135,6 +151,13 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     return `${this.searchResults.total} ${
       this.searchResults.total === 1 ? 'result' : 'results'
     } found`;
+  }
+
+  /**
+   * Get the misc error in the HTTP client error.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 
   /**

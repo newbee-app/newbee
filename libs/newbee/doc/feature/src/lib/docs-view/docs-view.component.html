@@ -1,0 +1,8 @@
+<newbee-view-docs
+  [httpClientError]="httpClientError$ | async"
+  [docs]="docs"
+  [getDocsPending]="(pendingGetDocs$ | async) ?? false"
+  (orgNavigate)="onOrgNavigate($event)"
+  (search)="onSearch($event)"
+  (scrolled)="onScrolled()"
+></newbee-view-docs>
