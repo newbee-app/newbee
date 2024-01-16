@@ -8,14 +8,17 @@ import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testOrganizationRelation1,
+  testPaginatedResultsQnaQueryResult1,
   testQnaRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
+import { initialQnaState as initialQnaModuleState } from './qna.reducer';
 import {
   selectQnaAndOrg,
   selectQnaAndOrgStates,
   selectQnaAndScreenError,
+  selectQnasAndOrg,
 } from './qna.selector';
 
 describe('QnaSelector', () => {
@@ -28,6 +31,7 @@ describe('QnaSelector', () => {
           initialState: {
             [Keyword.Organization]: initialOrganizationState,
             [Keyword.Qna]: initialQnaState,
+            [`${Keyword.Qna}Module`]: initialQnaModuleState,
           },
         }),
       ],
@@ -66,6 +70,35 @@ describe('QnaSelector', () => {
         },
       });
       expect(store.select(selectQnaAndOrg)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectQnasAndOrg', () => {
+    it('should handle null values', () => {
+      const expected$ = hot('a', {
+        a: { qnas: null, selectedOrganization: null },
+      });
+      expect(store.select(selectQnasAndOrg)).toBeObservable(expected$);
+    });
+
+    it('should return qnas and org', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: {
+          ...initialQnaModuleState,
+          qnas: testPaginatedResultsQnaQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          qnas: testPaginatedResultsQnaQueryResult1,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      expect(store.select(selectQnasAndOrg)).toBeObservable(expected$);
     });
   });
 

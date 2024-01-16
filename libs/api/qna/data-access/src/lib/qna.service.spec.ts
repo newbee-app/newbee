@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import Markdoc from '@markdoc/markdoc';
-import { NotFoundError } from '@mikro-orm/core';
+import { NotFoundError, QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
@@ -29,6 +29,7 @@ import {
   testBaseUpdateQnaDto1,
   testNow1,
   testNowDayjs1,
+  testOffsetAndLimit1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -79,7 +80,7 @@ describe('QnaService', () => {
           provide: EntityManager,
           useValue: createMock<EntityManager>({
             findOneOrFail: jest.fn().mockResolvedValue(testQnaEntity1),
-            find: jest.fn().mockResolvedValue([testQnaEntity1]),
+            findAndCount: jest.fn().mockResolvedValue([[testQnaEntity1], 1]),
             assign: jest.fn().mockReturnValue(testUpdatedQna),
           }),
         },
@@ -215,6 +216,35 @@ describe('QnaService', () => {
       await expect(service.findOneBySlug(testQnaEntity1.slug)).rejects.toThrow(
         new BadRequestException(qnaSlugNotFound),
       );
+    });
+  });
+
+  describe('findByOrgAndCount', () => {
+    afterEach(() => {
+      expect(em.findAndCount).toHaveBeenCalledTimes(1);
+      expect(em.findAndCount).toHaveBeenCalledWith(
+        QnaEntity,
+        { organization: testOrganizationEntity1 },
+        {
+          ...testOffsetAndLimit1,
+          orderBy: { markedUpToDateAt: QueryOrder.DESC },
+        },
+      );
+    });
+
+    it('should find qna entities and count', async () => {
+      await expect(
+        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
+      ).resolves.toEqual([[testQnaEntity1], 1]);
+    });
+
+    it('should throw an InternalServerErrorException if findAndCount throws an error', async () => {
+      jest
+        .spyOn(em, 'findAndCount')
+        .mockRejectedValue(new Error('findAndCount'));
+      await expect(
+        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 

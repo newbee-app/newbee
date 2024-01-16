@@ -41,6 +41,7 @@ export const apiRoles = {
     delete: [OrgRoleEnum.Owner],
   },
   [Keyword.Qna]: {
+    getAllPaginated: anyOrgMember,
     create: anyOrgMember,
     get: anyOrgMember,
     updateQuestion: anyOrgMember,

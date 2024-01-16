@@ -11,7 +11,6 @@ import {
   Keyword,
   SolrEntryEnum,
   testBaseQueryDto1,
-  testBaseSuggestDto1,
   testQueryResults1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -72,9 +71,6 @@ describe('searchGuard', () => {
     expect(store.dispatch).toHaveBeenCalledWith(
       SearchActions.search({ query: testBaseQueryDto1 }),
     );
-    expect(store.dispatch).toHaveBeenCalledWith(
-      SearchActions.suggest({ query: testBaseSuggestDto1 }),
-    );
     expect(location.path()).toEqual(
       `/${encodeURIComponent(testBaseQueryDto1.query)}`,
     );
@@ -89,11 +85,6 @@ describe('searchGuard', () => {
     expect(store.dispatch).toHaveBeenCalledWith(
       SearchActions.search({
         query: { ...testBaseQueryDto1, type: SolrEntryEnum.Doc },
-      }),
-    );
-    expect(store.dispatch).toHaveBeenCalledWith(
-      SearchActions.suggest({
-        query: { ...testBaseSuggestDto1, type: SolrEntryEnum.Doc },
       }),
     );
     expect(location.path()).toEqual(

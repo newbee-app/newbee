@@ -14,8 +14,10 @@ import {
   testBaseQnaAndMemberDto1,
   testBaseUpdateAnswerDto1,
   testBaseUpdateQuestionDto1,
+  testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
+  testPaginatedResultsQnaQueryResult1,
   testQna1,
   testQnaRelation1,
   testTeamRelation1,
@@ -27,6 +29,7 @@ import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
 import { QnaService } from '../qna.service';
 import { QnaEffects } from './qna.effects';
+import { initialQnaState as initialQnaModuleState } from './qna.reducer';
 
 describe('QnaEffects', () => {
   let actions$ = new Observable<Action>();
@@ -53,6 +56,10 @@ describe('QnaEffects', () => {
               ...initialQnaState,
               selectedQna: testQnaRelation1,
             },
+            [`${Keyword.Qna}Module`]: {
+              ...initialQnaModuleState,
+              qnas: testPaginatedResultsQnaQueryResult1,
+            },
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -60,6 +67,9 @@ describe('QnaEffects', () => {
         {
           provide: QnaService,
           useValue: createMock<QnaService>({
+            getAllPaginated: jest
+              .fn()
+              .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
             create: jest.fn().mockReturnValue(of(testQna1)),
             get: jest.fn().mockReturnValue(of(testBaseQnaAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
@@ -87,6 +97,90 @@ describe('QnaEffects', () => {
     expect(service).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
+  });
+
+  describe('getQnas$', () => {
+    it('should fire getQnasSuccess if this is the first request and selected organization is set', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: initialQnaModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnas(),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
+        expect(service.getAllPaginated).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOffsetAndLimit1,
+        );
+      });
+    });
+
+    it('should fire getQnasSuccess if this is a follow-up request, selected organization is set, and there are more results to fetch', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: {
+          ...initialQnaModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnas(),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
+        expect(service.getAllPaginated).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          { ...testOffsetAndLimit1, offset: 1 },
+        );
+      });
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: QnaActions.getQnas() });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).not.toHaveBeenCalled();
+      });
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: initialQnaModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnas(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllPaginated).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('createQna$', () => {

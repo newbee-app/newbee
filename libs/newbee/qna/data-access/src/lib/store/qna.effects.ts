@@ -9,7 +9,9 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  OffsetAndLimit,
   answerIsNotEmpty,
+  defaultLimit,
   maintainerIsNotEmpty,
   questionIsNotEmpty,
   teamIsNotEmpty,
@@ -20,10 +22,40 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { QnaService } from '../qna.service';
-import { selectQnaAndOrg } from './qna.selector';
+import { selectQnaAndOrg, selectQnasAndOrg } from './qna.selector';
 
 @Injectable()
 export class QnaEffects {
+  getQnas$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.getQnas),
+      concatLatestFrom(() => this.store.select(selectQnasAndOrg)),
+      filter(([, { qnas, selectedOrganization }]) => {
+        return !!(
+          selectedOrganization &&
+          (!qnas || (qnas && qnas.total > qnas.limit * (qnas.offset + 1)))
+        );
+      }),
+      switchMap(([, { qnas, selectedOrganization }]) => {
+        const offsetAndLimit: OffsetAndLimit = {
+          offset: qnas ? qnas.offset + 1 : 0,
+          limit: qnas ? qnas.limit : defaultLimit,
+        };
+        return this.qnaService
+          .getAllPaginated(
+            selectedOrganization?.organization.slug as string,
+            offsetAndLimit,
+          )
+          .pipe(
+            map((qnas) => {
+              return QnaActions.getQnasSuccess({ qnas });
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
+          );
+      }),
+    );
+  });
+
   createQna$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.createQna),

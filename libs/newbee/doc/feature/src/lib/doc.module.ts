@@ -9,8 +9,8 @@ import {
   CreateDocComponent,
   EditDocComponent,
   ViewDocComponent,
-  ViewDocsComponent,
 } from '@newbee/newbee/doc/ui';
+import { ViewPostsComponent } from '@newbee/newbee/shared/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { DocCreateComponent } from './doc-create';
@@ -25,10 +25,10 @@ import { DocRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(docFeature),
     EffectsModule.forFeature([DocEffects]),
+    ViewPostsComponent,
     CreateDocComponent,
     ViewDocComponent,
     EditDocComponent,
-    ViewDocsComponent,
     DocRoutingModule,
   ],
   providers: [DocService],

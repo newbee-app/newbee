@@ -12,33 +12,33 @@
       ></newbee-searchbar>
 
       <p class="opacity-50">
-        Type to filter the displayed docs, press 'Enter' to search all of the
-        docs of the org
+        Type to filter the displayed {{ formattedPostType }}s, press 'Enter' to
+        search all of the {{ formattedPostType }}s of the org
       </p>
     </form>
 
     <div class="divider my-0"></div>
   </div>
 
-  <ng-container *ngIf="docs">
+  <ng-container *ngIf="posts">
     <p class="text-sm opacity-50 mt-2">
-      {{ docsFound }}
+      {{ postsFound }}
     </p>
 
     <div
-      *ngIf="docsToShow.length"
+      *ngIf="postsToShow.length"
       class="flex flex-col flex-nowrap gap-y-8 mt-6"
     >
       <newbee-search-result
-        *ngFor="let doc of docsToShow"
-        [searchResult]="doc"
+        *ngFor="let post of postsToShow"
+        [searchResult]="post"
         [format]="searchResultFormat.List"
         (orgNavigate)="orgNavigate.emit($event)"
       ></newbee-search-result>
     </div>
   </ng-container>
 
-  <div *ngIf="getDocsPending" class="flex justify-center mt-2">
+  <div *ngIf="getPostsPending" class="flex justify-center mt-2">
     <span class="loading loading-spinner"></span>
   </div>
 

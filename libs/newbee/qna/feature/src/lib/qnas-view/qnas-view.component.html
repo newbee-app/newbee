@@ -1,8 +1,8 @@
 <newbee-view-posts
   [httpClientError]="httpClientError$ | async"
-  postType="doc"
-  [posts]="(docModuleState$ | async)!.docs"
-  [getPostsPending]="(docModuleState$ | async)!.pendingGetDocs"
+  postType="qna"
+  [posts]="(qnaModuleState$ | async)!.qnas"
+  [getPostsPending]="(qnaModuleState$ | async)!.pendingGetQnas"
   (orgNavigate)="onOrgNavigate($event)"
   (search)="onSearch($event)"
   (scrolled)="onScrolled()"

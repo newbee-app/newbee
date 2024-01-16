@@ -31,7 +31,7 @@ export class DocEffects {
       filter(([, { docs, selectedOrganization }]) => {
         return !!(
           selectedOrganization &&
-          (!docs || (docs && docs.total > docs.limit * (docs.offset + 2)))
+          (!docs || (docs && docs.total > docs.limit * (docs.offset + 1)))
         );
       }),
       switchMap(([, { selectedOrganization, docs }]) => {

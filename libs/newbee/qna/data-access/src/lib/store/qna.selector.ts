@@ -4,6 +4,7 @@ import {
   qnaFeature,
 } from '@newbee/newbee/shared/data-access';
 import { createSelector } from '@ngrx/store';
+import { qnaFeature as qnaModuleFeature } from './qna.reducer';
 
 /**
  * A selector for selecting the currently selected qna and organization.
@@ -13,6 +14,18 @@ export const selectQnaAndOrg = createSelector(
   organizationFeature.selectSelectedOrganization,
   (selectedQna, selectedOrganization) => ({
     selectedQna,
+    selectedOrganization,
+  }),
+);
+
+/**
+ * A selector for selecting the loaded qnas and currently selected organization.
+ */
+export const selectQnasAndOrg = createSelector(
+  qnaModuleFeature.selectQnas,
+  organizationFeature.selectSelectedOrganization,
+  (qnas, selectedOrganization) => ({
+    qnas,
     selectedOrganization,
   }),
 );

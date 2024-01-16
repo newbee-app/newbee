@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
-import { ViewDocsComponent } from './view-docs.component';
+import { ViewPostsComponent } from './view-posts.component';
 
-describe('ViewDocsComponent', () => {
-  let component: ViewDocsComponent;
-  let fixture: ComponentFixture<ViewDocsComponent>;
+describe('ViewPostsComponent', () => {
+  let component: ViewPostsComponent;
+  let fixture: ComponentFixture<ViewPostsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViewDocsComponent],
+      imports: [ViewPostsComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ViewDocsComponent);
+    fixture = TestBed.createComponent(ViewPostsComponent);
     component = fixture.componentInstance;
 
-    component.docs = testPaginatedResultsDocQueryResult1;
+    component.posts = testPaginatedResultsDocQueryResult1;
 
     jest.spyOn(component.search, 'emit');
 
@@ -27,17 +27,17 @@ describe('ViewDocsComponent', () => {
   });
 
   describe('setters', () => {
-    it('should update docs to show', () => {
-      expect(component.docsToShow).toEqual(
+    it('should update posts to show', () => {
+      expect(component.postsToShow).toEqual(
         testPaginatedResultsDocQueryResult1.results,
       );
     });
   });
 
   describe('constructor', () => {
-    it('should update docs to show', () => {
+    it('should update posts to show', () => {
       component.searchForm.setValue({ searchbar: 'searchbar' });
-      expect(component.docsToShow.length).toEqual(0);
+      expect(component.postsToShow.length).toEqual(0);
     });
   });
 

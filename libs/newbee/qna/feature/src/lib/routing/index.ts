@@ -5,6 +5,7 @@ import {
   createQnaTitleResolver,
   qnaGuard,
   qnaTitleResolver,
+  qnasTitleResolver,
 } from '@newbee/newbee/qna/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
@@ -12,6 +13,7 @@ import { QnaCreateComponent } from '../qna-create';
 import { QnaEditComponent } from '../qna-edit';
 import { QnaRootComponent } from '../qna-root';
 import { QnaViewComponent } from '../qna-view';
+import { QnasViewComponent } from '../qnas-view';
 
 const routes: Routes = [
   {
@@ -35,6 +37,11 @@ const routes: Routes = [
         component: QnaViewComponent,
       },
     ],
+  },
+  {
+    path: '',
+    component: QnasViewComponent,
+    title: qnasTitleResolver,
   },
 ];
 

@@ -35,6 +35,7 @@ export class DocService {
    * Sends a request to the API to get all of the docs in the given organization in a paginated format.
    *
    * @param orgSlug The org to look in.
+   * @param offsetAndLimit The offset and limit for the request.
    *
    * @returns An observable containing the paginated docs.
    */
