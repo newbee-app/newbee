@@ -11,6 +11,7 @@ import {
 import {
   EntityService,
   GenerateSlugDto,
+  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
   SlugDto,
@@ -37,7 +38,10 @@ import {
   BaseGeneratedSlugDto,
   BaseSlugTakenDto,
   BaseTeamAndMemberDto,
+  DocQueryResult,
   Keyword,
+  PaginatedResults,
+  QnaQueryResult,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -234,5 +238,81 @@ export class TeamController {
     );
     await this.teamService.delete(team);
     this.logger.log(`Deleted team, slug: ${team.slug}, ID: ${team.id}`);
+  }
+
+  /**
+   * The API route for getting paginated results of all the docs in a team.
+   *
+   * @param offsetAndLimitDto The offset and limit for the pagination.
+   * @param organization The organization to look in.
+   * @param team The team to look in.
+   *
+   * @returns The result containing the retrieved docs, the total number of docs in the team, and the offset we retrieved.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
+   */
+  @Get(`:${Keyword.Team}/${Keyword.Doc}`)
+  @Role(apiRoles.team.getAllDocs)
+  async getAllDocs(
+    @Query() offsetAndLimitDto: OffsetAndLimitDto,
+    @Organization() organization: OrganizationEntity,
+    @Team() team: TeamEntity,
+  ): Promise<PaginatedResults<DocQueryResult>> {
+    const { offset, limit } = offsetAndLimitDto;
+    this.logger.log(
+      `Get all docs request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
+    );
+
+    const [docs, total] = await this.entityService.findDocsByOrgAndCount(
+      offsetAndLimitDto,
+      organization,
+      team,
+    );
+    this.logger.log(
+      `Got docs for team slug: ${team.slug}, in organization ID: ${organization.id}, total count: ${total}`,
+    );
+
+    return {
+      ...offsetAndLimitDto,
+      total,
+      results: await this.entityService.createDocQueryResults(docs),
+    };
+  }
+
+  /**
+   * The API route for getting paginated results of all the qnas in a team.
+   *
+   * @param offsetAndLimitDto The offset and limit for the pagination.
+   * @param organization The organization to look in.
+   * @param team The team to look in.
+   *
+   * @returns The result containing the retrieved qnas, the total number of qnas in the team, and the offset we retrieved.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
+   */
+  @Get(`:${Keyword.Team}/${Keyword.Qna}`)
+  @Role(apiRoles.team.getAllQnas)
+  async getAllQnas(
+    @Query() offsetAndLimitDto: OffsetAndLimitDto,
+    @Organization() organization: OrganizationEntity,
+    @Team() team: TeamEntity,
+  ): Promise<PaginatedResults<QnaQueryResult>> {
+    const { offset, limit } = offsetAndLimitDto;
+    this.logger.log(
+      `Get all qnas request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
+    );
+
+    const [qnas, total] = await this.entityService.findQnasByOrgAndCount(
+      offsetAndLimitDto,
+      organization,
+      team,
+    );
+    this.logger.log(
+      `Got qnas for team slug: ${team.slug}, in organization ID: ${organization.id}, total count: ${total}`,
+    );
+
+    return {
+      ...offsetAndLimitDto,
+      total,
+      results: await this.entityService.createQnaQueryResults(qnas),
+    };
   }
 }

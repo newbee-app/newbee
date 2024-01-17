@@ -523,6 +523,8 @@ export class EntityService {
 
   // END: Entity relations
 
+  // START: Misc
+
   /**
    * Check whether the given entity is safe to delete and throw a `BadRequestException` if it's not.
    *
@@ -649,4 +651,62 @@ export class EntityService {
         post.organization.upToDateDuration,
     );
   }
+
+  /**
+   * Finds all of the `DocEntity` associated with the given org and possibly team.
+   *
+   * @param offsetAndLimit The offset and limit to look for.
+   * @param organization The organization whose docs to look for.
+   * @param team The team whose docs to look for within the org, if applicable.
+   *
+   * @returns A tuple containing the found doc entities and a count of the total number of docs in the org.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async findDocsByOrgAndCount(
+    offsetAndLimit: OffsetAndLimit,
+    organization: OrganizationEntity,
+    team?: TeamEntity,
+  ): Promise<[DocEntity[], number]> {
+    const { offset, limit } = offsetAndLimit;
+    try {
+      return await this.em.findAndCount(
+        DocEntity,
+        { organization, ...(team && { team }) },
+        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
+      );
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * Finds all of the `QnaEntity` associated with the given org and possibly team.
+   *
+   * @param offsetAndLimit The offset and limit to look for.
+   * @param organization The organization whose qnas to look for.
+   * @param team The team whose qnas to look for within the org, if applicable.
+   *
+   * @returns A tuple containing the found qna entities and a count of the total number of qnas in the org.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async findQnasByOrgAndCount(
+    offsetAndLimit: OffsetAndLimit,
+    organization: OrganizationEntity,
+    team?: TeamEntity,
+  ): Promise<[QnaEntity[], number]> {
+    const { offset, limit } = offsetAndLimit;
+    try {
+      return await this.em.findAndCount(
+        QnaEntity,
+        { organization, ...(team && { team }) },
+        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
+      );
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  // END: Misc
 }

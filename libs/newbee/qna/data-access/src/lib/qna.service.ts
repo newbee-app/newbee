@@ -40,7 +40,7 @@ export class QnaService {
    *
    * @returns An observable containing the paginated qnas.
    */
-  getAllPaginated(
+  getAll(
     orgSlug: string,
     offsetAndLimit: OffsetAndLimit,
   ): Observable<PaginatedResults<QnaQueryResult>> {

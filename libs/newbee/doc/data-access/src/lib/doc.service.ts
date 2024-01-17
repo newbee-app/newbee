@@ -39,7 +39,7 @@ export class DocService {
    *
    * @returns An observable containing the paginated docs.
    */
-  getAllPaginated(
+  getAll(
     orgSlug: string,
     offsetAndLimit: OffsetAndLimit,
   ): Observable<PaginatedResults<DocQueryResult>> {

@@ -60,18 +60,19 @@ export class DocController {
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get()
-  @Role(apiRoles.doc.getAllPaginated)
-  async getAllPaginated(
+  @Role(apiRoles.doc.getAll)
+  async getAll(
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
   ): Promise<PaginatedResults<DocQueryResult>> {
+    const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
-      `Get all paginated docs request received for organization: ${organization.slug}`,
+      `Get all docs request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [docs, total] = await this.docService.findByOrgAndCount(
-      organization,
+    const [docs, total] = await this.entityService.findDocsByOrgAndCount(
       offsetAndLimitDto,
+      organization,
     );
     this.logger.log(
       `Got docs for organization: ${organization.slug}, total count: ${total}`,

@@ -61,18 +61,19 @@ export class QnaController {
    * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get()
-  @Role(apiRoles.qna.getAllPaginated)
-  async getAllPaginated(
+  @Role(apiRoles.qna.getAll)
+  async getAll(
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
   ): Promise<PaginatedResults<QnaQueryResult>> {
+    const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
-      `Get all paginated qnas request received for organization: ${organization.slug}`,
+      `Get all qnas request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [qnas, total] = await this.qnaService.findByOrgAndCount(
-      organization,
+    const [qnas, total] = await this.entityService.findQnasByOrgAndCount(
       offsetAndLimitDto,
+      organization,
     );
     this.logger.log(
       `Got qnas for organization: ${organization.slug}, total count: ${total}`,

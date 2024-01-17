@@ -1,4 +1,4 @@
-import { NotFoundError, QueryOrder } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
@@ -9,9 +9,7 @@ import {
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
-  OffsetAndLimitDto,
   OrgMemberEntity,
-  OrganizationEntity,
   QnaDocParams,
   QnaEntity,
 } from '@newbee/api/shared/data-access';
@@ -114,32 +112,6 @@ export class QnaService {
         throw new NotFoundException(qnaSlugNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
-   * Finds all of the `QnaEntity` associated with the given org.
-   *
-   * @param organization The organization whose qnas to look for.
-   * @param offset The offset to look for.
-   *
-   * @returns A tuple containing the found qna entities and a count of the total number of qnas in the org.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async findByOrgAndCount(
-    organization: OrganizationEntity,
-    offsetAndLimitDto: OffsetAndLimitDto,
-  ): Promise<[QnaEntity[], number]> {
-    const { offset, limit } = offsetAndLimitDto;
-    try {
-      return await this.em.findAndCount(
-        QnaEntity,
-        { organization },
-        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
-      );
-    } catch (err) {
-      this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
   }

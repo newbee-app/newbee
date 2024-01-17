@@ -36,9 +36,6 @@ describe('DocController', () => {
           provide: DocService,
           useValue: createMock<DocService>({
             create: jest.fn().mockResolvedValue(testDocEntity1),
-            findByOrgAndCount: jest
-              .fn()
-              .mockResolvedValue([[testDocEntity1], 1]),
             update: jest.fn().mockResolvedValue(testUpdatedDocEntity),
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedDocEntity),
           }),
@@ -50,6 +47,9 @@ describe('DocController', () => {
             createDocQueryResults: jest
               .fn()
               .mockResolvedValue([testDocQueryResult1]),
+            findDocsByOrgAndCount: jest
+              .fn()
+              .mockResolvedValue([[testDocEntity1], 1]),
           }),
         },
         {
@@ -76,18 +76,24 @@ describe('DocController', () => {
     expect(teamMemberService).toBeDefined();
   });
 
-  describe('getAllPaginated', () => {
+  describe('getAll', () => {
     it('should get doc results', async () => {
       await expect(
-        controller.getAllPaginated(
-          testOffsetAndLimit1,
-          testOrganizationEntity1,
-        ),
+        controller.getAll(testOffsetAndLimit1, testOrganizationEntity1),
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
         results: [testDocQueryResult1],
       });
+      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledWith(
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+      );
+      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+        testDocEntity1,
+      ]);
     });
   });
 

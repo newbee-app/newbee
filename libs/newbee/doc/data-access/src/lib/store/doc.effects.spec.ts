@@ -61,7 +61,7 @@ describe('DocEffects', () => {
         {
           provide: DocService,
           useValue: createMock<DocService>({
-            getAllPaginated: jest
+            getAll: jest
               .fn()
               .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
             create: jest.fn().mockReturnValue(of(testDoc1)),
@@ -109,8 +109,8 @@ describe('DocEffects', () => {
       });
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
-        expect(service.getAllPaginated).toHaveBeenCalledWith(
+        expect(service.getAll).toHaveBeenCalledTimes(1);
+        expect(service.getAll).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOffsetAndLimit1,
         );
@@ -141,11 +141,11 @@ describe('DocEffects', () => {
       });
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllPaginated).toHaveBeenCalledTimes(1);
-        expect(service.getAllPaginated).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          { ...testOffsetAndLimit1, offset: 1 },
-        );
+        expect(service.getAll).toHaveBeenCalledTimes(1);
+        expect(service.getAll).toHaveBeenCalledWith(testOrganization1.slug, {
+          ...testOffsetAndLimit1,
+          offset: 1,
+        });
       });
     });
 
@@ -154,7 +154,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllPaginated).not.toHaveBeenCalled();
+        expect(service.getAll).not.toHaveBeenCalled();
       });
     });
 
@@ -169,7 +169,7 @@ describe('DocEffects', () => {
       const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllPaginated).not.toHaveBeenCalled();
+        expect(service.getAll).not.toHaveBeenCalled();
       });
     });
   });

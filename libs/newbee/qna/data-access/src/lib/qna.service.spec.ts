@@ -44,21 +44,19 @@ describe('QnaService', () => {
     });
   });
 
-  describe('getAllPaginated', () => {
+  describe('getAll', () => {
     it('should send out a get request', (done) => {
-      service
-        .getAllPaginated(testOrganization1.slug, testOffsetAndLimit1)
-        .subscribe({
-          next: (results) => {
-            try {
-              expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
-              done();
-            } catch (err) {
-              done(err);
-            }
-          },
-          error: done.fail,
-        });
+      service.getAll(testOrganization1.slug, testOffsetAndLimit1).subscribe({
+        next: (results) => {
+          try {
+            expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
 
       const params = new HttpParams({ fromObject: { ...testOffsetAndLimit1 } });
       const req = httpController.expectOne(

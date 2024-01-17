@@ -42,7 +42,7 @@ export class QnaEffects {
           limit: qnas ? qnas.limit : defaultLimit,
         };
         return this.qnaService
-          .getAllPaginated(
+          .getAll(
             selectedOrganization?.organization.slug as string,
             offsetAndLimit,
           )

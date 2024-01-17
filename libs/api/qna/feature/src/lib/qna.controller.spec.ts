@@ -38,9 +38,6 @@ describe('QnaController', () => {
           provide: QnaService,
           useValue: createMock<QnaService>({
             create: jest.fn().mockResolvedValue(testQnaEntity1),
-            findByOrgAndCount: jest
-              .fn()
-              .mockResolvedValue([[testQnaEntity1], 1]),
             update: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
           }),
@@ -49,6 +46,12 @@ describe('QnaController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createQnaNoOrg: jest.fn().mockResolvedValue(testQnaRelation1),
+            createQnaQueryResults: jest
+              .fn()
+              .mockResolvedValue([testQnaQueryResult1]),
+            findQnasByOrgAndCount: jest
+              .fn()
+              .mockResolvedValue([[testQnaEntity1], 1]),
           }),
         },
         {
@@ -75,18 +78,24 @@ describe('QnaController', () => {
     expect(teamMemberService).toBeDefined();
   });
 
-  describe('getAllPaginated', () => {
+  describe('getAll', () => {
     it('should get qna results', async () => {
       await expect(
-        controller.getAllPaginated(
-          testOffsetAndLimit1,
-          testOrganizationEntity1,
-        ),
+        controller.getAll(testOffsetAndLimit1, testOrganizationEntity1),
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
         results: [testQnaQueryResult1],
       });
+      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledWith(
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+      );
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+        testQnaEntity1,
+      ]);
     });
   });
 

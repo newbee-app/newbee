@@ -40,7 +40,7 @@ export class DocEffects {
           limit: docs ? docs.limit : defaultLimit,
         };
         return this.docService
-          .getAllPaginated(
+          .getAll(
             selectedOrganization?.organization.slug as string,
             offsetAndLimit,
           )

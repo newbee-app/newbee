@@ -1,4 +1,4 @@
-import { NotFoundError, QueryOrder } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Injectable,
@@ -11,9 +11,7 @@ import {
   DocDocParams,
   DocEntity,
   EntityService,
-  OffsetAndLimitDto,
   OrgMemberEntity,
-  OrganizationEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
@@ -115,32 +113,6 @@ export class DocService {
         throw new NotFoundException(docSlugNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
-   * Finds all of the `DocEntity` associated with the given org.
-   *
-   * @param organization The organization whose docs to look for.
-   * @param offset The offset to look for.
-   *
-   * @returns A tuple containing the found doc entities and a count of the total number of docs in the org.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async findByOrgAndCount(
-    organization: OrganizationEntity,
-    offsetAndLimitDto: OffsetAndLimitDto,
-  ): Promise<[DocEntity[], number]> {
-    const { offset, limit } = offsetAndLimitDto;
-    try {
-      return await this.em.findAndCount(
-        DocEntity,
-        { organization },
-        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
-      );
-    } catch (err) {
-      this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
   }

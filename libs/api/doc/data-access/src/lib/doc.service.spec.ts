@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import Markdoc from '@markdoc/markdoc';
-import { NotFoundError, QueryOrder } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   InternalServerErrorException,
@@ -29,7 +29,6 @@ import {
   testBaseUpdateDocDto1,
   testNow1,
   testNowDayjs1,
-  testOffsetAndLimit1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -214,35 +213,6 @@ describe('DocService', () => {
       await expect(service.findOneBySlug(testDocEntity1.slug)).rejects.toThrow(
         new NotFoundException(docSlugNotFound),
       );
-    });
-  });
-
-  describe('findByOrgAndCount', () => {
-    afterEach(() => {
-      expect(em.findAndCount).toHaveBeenCalledTimes(1);
-      expect(em.findAndCount).toHaveBeenCalledWith(
-        DocEntity,
-        { organization: testOrganizationEntity1 },
-        {
-          ...testOffsetAndLimit1,
-          orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        },
-      );
-    });
-
-    it('should find doc entities and count', async () => {
-      await expect(
-        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
-      ).resolves.toEqual([[testDocEntity1], 1]);
-    });
-
-    it('should throw an InternalServerErrorException if findAndCount throws an error', async () => {
-      jest
-        .spyOn(em, 'findAndCount')
-        .mockRejectedValue(new Error('findAndCount'));
-      await expect(
-        service.findByOrgAndCount(testOrganizationEntity1, testOffsetAndLimit1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
