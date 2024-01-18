@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   SearchTab,
   searchTabToSolrEntry,
@@ -12,7 +12,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, map, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for displaying search results.
@@ -66,34 +66,44 @@ export class SearchResultsViewComponent implements OnDestroy {
       },
     });
 
-    route.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (queryParamMap) => {
-        // deal with type query param
-        const typeQueryParam = queryParamMap.get(Keyword.Type);
-        const type =
-          typeQueryParam &&
-          Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
-            ? (typeQueryParam as SolrEntryEnum)
-            : null;
-        this._tab = solrEntryToSearchTab(type);
+    route.queryParamMap
+      .pipe(
+        map((queryParamMap, index): [ParamMap, number] => [
+          queryParamMap,
+          index,
+        ]),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe({
+        next: ([queryParamMap, index]) => {
+          // deal with type query param
+          const typeQueryParam = queryParamMap.get(Keyword.Type);
+          const type =
+            typeQueryParam &&
+            Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
+              ? (typeQueryParam as SolrEntryEnum)
+              : null;
+          this._tab = solrEntryToSearchTab(type);
 
-        // deal with team query param
-        const teamSlug = queryParamMap.get(ShortUrl.Team);
+          // deal with team query param
+          const teamSlug = queryParamMap.get(ShortUrl.Team);
 
-        // fire a new search request based on the changed query params
-        this.store.dispatch(
-          SearchActions.search({
-            query: {
-              offset: 0,
-              limit: defaultLimit,
-              query: this._searchTerm,
-              ...(type && { type }),
-              ...(teamSlug && { team: teamSlug }),
-            },
-          }),
-        );
-      },
-    });
+          // fire a new search request based on the changed query params, but only if it's not the initial value
+          if (index !== 0) {
+            this.store.dispatch(
+              SearchActions.search({
+                query: {
+                  offset: 0,
+                  limit: defaultLimit,
+                  query: this._searchTerm,
+                  ...(type && { type }),
+                  ...(teamSlug && { team: teamSlug }),
+                },
+              }),
+            );
+          }
+        },
+      });
   }
 
   /**
@@ -168,6 +178,7 @@ export class SearchResultsViewComponent implements OnDestroy {
    * When the user navigates to the bottom of the search results, fetch more.
    */
   onScrolled(): void {
+    console.log('scrolled');
     this.store.dispatch(SearchActions.continueSearch());
   }
 }
