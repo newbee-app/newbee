@@ -4,8 +4,11 @@ import {
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
   BaseUpdateTeamMemberDto,
+  DocQueryResult,
   Keyword,
   Organization,
+  PaginatedResults,
+  QnaQueryResult,
   Team,
   TeamMember,
   TeamMemberUserOrgMember,
@@ -92,6 +95,26 @@ export const TeamActions = createActionGroup({
      * Indicates that a slug was successfully generated.
      */
     'Generate Slug Success': props<{ slug: string }>(),
+
+    /**
+     * Gets all of the paginated docs of the selected team.
+     */
+    'Get Docs': emptyProps(),
+
+    /**
+     * Indicates that the paginated docs were successfully retrieved.
+     */
+    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+
+    /**
+     * Gets all of the paginated qnas of the selected team.
+     */
+    'Get Qnas': emptyProps(),
+
+    /**
+     * Indicates that the paginated qnas were successfully retrieved.
+     */
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
 
     /**
      * Add a new team member to the team.

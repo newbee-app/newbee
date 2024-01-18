@@ -3,7 +3,12 @@ import {
   RouterActions,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import {
+  DocQueryResult,
+  Keyword,
+  PaginatedResults,
+  QnaQueryResult,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -59,12 +64,36 @@ export interface TeamState {
    * A generated value for a team's slug for creating a team.
    */
   generatedSlug: string;
+
+  /**
+   * All of the docs of the team as paginated results.
+   */
+  docs: PaginatedResults<DocQueryResult> | null;
+
+  /**
+   * All of the qnas of the team as paginated results.
+   */
+  qnas: PaginatedResults<QnaQueryResult> | null;
+
+  /**
+   * Whether the user is waiting for a response for getting all paginated docs.
+   */
+  pendingGetDocs: boolean;
+
+  /**
+   * Whether the user is waiting for a response for getting all paginated qnas.
+   */
+  pendingGetQnas: boolean;
 }
 
 /**
  * The initial value for `TeamState`.
  */
 export const initialTeamState: TeamState = {
+  docs: null,
+  qnas: null,
+  pendingGetDocs: false,
+  pendingGetQnas: false,
   pendingCreate: false,
   pendingEdit: false,
   pendingEditSlug: false,
@@ -136,6 +165,36 @@ export const teamFeature = createFeature({
         generatedSlug: slug,
         pendingCheck: false,
         slugTaken: false,
+      }),
+    ),
+    on(
+      TeamActions.getDocs,
+      (state): TeamState => ({
+        ...state,
+        pendingGetDocs: true,
+      }),
+    ),
+    on(
+      TeamActions.getDocsSuccess,
+      (state, { docs }): TeamState => ({
+        ...state,
+        pendingGetDocs: false,
+        docs,
+      }),
+    ),
+    on(
+      TeamActions.getQnas,
+      (state): TeamState => ({
+        ...state,
+        pendingGetQnas: true,
+      }),
+    ),
+    on(
+      TeamActions.getQnasSuccess,
+      (state, { qnas }): TeamState => ({
+        ...state,
+        pendingGetQnas: false,
+        qnas,
       }),
     ),
     on(

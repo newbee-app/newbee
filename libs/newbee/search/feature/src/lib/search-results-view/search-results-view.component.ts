@@ -9,6 +9,7 @@ import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
@@ -67,11 +68,30 @@ export class SearchResultsViewComponent implements OnDestroy {
 
     route.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (queryParamMap) => {
-        const entryType = queryParamMap.get(Keyword.Type);
-        this._tab =
-          entryType && Object.values<string>(SolrEntryEnum).includes(entryType)
-            ? solrEntryToSearchTab(entryType as SolrEntryEnum | null)
-            : SearchTab.All;
+        // deal with type query param
+        const typeQueryParam = queryParamMap.get(Keyword.Type);
+        const type =
+          typeQueryParam &&
+          Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
+            ? (typeQueryParam as SolrEntryEnum)
+            : null;
+        this._tab = solrEntryToSearchTab(type);
+
+        // deal with team query param
+        const teamSlug = queryParamMap.get(ShortUrl.Team);
+
+        // fire a new search request based on the changed query params
+        this.store.dispatch(
+          SearchActions.search({
+            query: {
+              offset: 0,
+              limit: defaultLimit,
+              query: this._searchTerm,
+              ...(type && { type }),
+              ...(teamSlug && { team: teamSlug }),
+            },
+          }),
+        );
       },
     });
   }
@@ -91,20 +111,22 @@ export class SearchResultsViewComponent implements OnDestroy {
    * @param tab The new value for the search tab.
    */
   async onTabChange(tab: SearchTab): Promise<void> {
-    const type = searchTabToSolrEntry(tab);
-    this.store.dispatch(
-      SearchActions.search({
-        query: {
-          offset: 0,
-          limit: defaultLimit,
-          query: this._searchTerm,
-          ...(type && { type }),
-        },
-      }),
+    const entryType = searchTabToSolrEntry(tab);
+
+    const queryParamsToFilter = new Set<string>([Keyword.Type]);
+    const queryParams = Object.assign(
+      {},
+      ...Object.entries(this.route.snapshot.queryParams)
+        .filter(([key]) => !queryParamsToFilter.has(key))
+        .map(([key, value]) => ({ [key]: value })),
     );
+
     await this.router.navigate(['.'], {
       relativeTo: this.route,
-      ...(type && { queryParams: { [Keyword.Type]: type } }),
+      queryParams: {
+        ...queryParams,
+        ...(entryType && { [Keyword.Type]: entryType }),
+      },
     });
   }
 

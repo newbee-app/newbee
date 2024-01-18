@@ -961,6 +961,5 @@ export const testQueryResults1: QueryResults = {
   total: 1,
   results: [testTeamQueryResult1],
   query: testBaseQueryDto1.query,
-  type: null,
   suggestion: null,
 };

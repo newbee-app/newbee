@@ -40,13 +40,14 @@ export class SearchEffects {
             queryDto = action.query;
             break;
           case SearchActions.continueSearch.type: {
-            const { offset, limit, query, type } =
+            const { offset, limit, query, type, team } =
               searchResults as QueryResults;
             queryDto = {
               offset: offset + 1,
               limit,
               query,
               ...(type && { type }),
+              ...(team && { team }),
             };
             break;
           }

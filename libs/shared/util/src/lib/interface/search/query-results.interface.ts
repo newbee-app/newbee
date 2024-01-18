@@ -12,13 +12,18 @@ export interface QueryResults extends PaginatedResults<QueryResultType> {
   query: string;
 
   /**
-   * The original type of the query, use `null` if the search was across all types.
-   */
-  type: SolrEntryEnum | null;
-
-  /**
    * An alternative query the user might have meant, if the original query found little to no results.
    * `null` if there are no suggestions or several results were found.
    */
   suggestion: string | null;
+
+  /**
+   * The original type of the query, leave undefined if the search was across all types.
+   */
+  type?: SolrEntryEnum;
+
+  /**
+   * The slug of the team to narrow the search to, leave undefined if the search was across all types.
+   */
+  team?: string;
 }

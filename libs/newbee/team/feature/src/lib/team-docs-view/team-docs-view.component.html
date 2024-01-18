@@ -1,0 +1,9 @@
+<newbee-view-posts
+  [httpClientError]="httpClientError$ | async"
+  postType="doc"
+  [posts]="(teamModuleState$ | async)!.docs"
+  [getPostsPending]="(teamModuleState$ | async)!.pendingGetDocs"
+  (orgNavigate)="onOrgNavigate($event)"
+  (search)="onSearch($event)"
+  (scrolled)="onScrolled()"
+></newbee-view-posts>

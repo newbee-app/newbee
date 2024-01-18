@@ -12,7 +12,9 @@ import {
   TeamSolrDoc,
   solrDefaultHighlightedFields,
   solrDictionaries,
+  solrFields,
 } from '@newbee/api/shared/util';
+import { TeamService } from '@newbee/api/team/data-access';
 import {
   BaseSuggestResultsDto,
   DocQueryResult,
@@ -38,7 +40,10 @@ export class SearchService {
    */
   private readonly logger = new Logger(SearchService.name);
 
-  constructor(private readonly solrCli: SolrCli) {}
+  constructor(
+    private readonly solrCli: SolrCli,
+    private readonly teamService: TeamService,
+  ) {}
 
   /**
    * Handles a suggest request for all cases.
@@ -89,15 +94,16 @@ export class SearchService {
     organization: OrganizationEntity,
     queryDto: QueryDto,
   ): Promise<QueryResults> {
-    const { query, type, offset, limit } = queryDto;
+    const { query, offset, limit, type, team } = queryDto;
     const results: QueryResults = {
       results: [],
       total: 0,
       offset,
       limit,
       query,
-      type: type ?? null,
       suggestion: null,
+      ...(type && { type }),
+      ...(team && { team }),
     };
 
     // This should never happen, but leave it for safety
@@ -256,14 +262,23 @@ export class SearchService {
     organization: OrganizationEntity,
     queryDto: QueryDto,
   ): Promise<QueryResponse> {
-    const { query, type, offset, limit } = queryDto;
+    const { query, offset, limit, type, team: teamSlug } = queryDto;
     const dictionary = type ?? solrDictionaries.all;
+
+    const team = teamSlug
+      ? await this.teamService.findOneBySlug(organization, teamSlug)
+      : null;
+    const filter: string[] = [
+      ...(type ? [`${solrFields.entry_type}:${type}`] : []),
+      ...(team ? [`${solrFields.team_id}:${team.id}`] : []),
+    ];
+
     try {
       return await this.solrCli.query(organization.id, {
         query,
         offset,
         limit,
-        ...(type && { filter: `entry_type:${type}` }),
+        filter,
         params: {
           'hl.q': query,
           'spellcheck.q': query,

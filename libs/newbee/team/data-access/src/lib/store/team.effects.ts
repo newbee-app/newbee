@@ -8,8 +8,10 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
+  defaultLimit,
   Keyword,
   nameIsNotEmpty,
+  OffsetAndLimit,
   Organization,
   slugIsNotEmpty,
   teamRoleIsEnum,
@@ -20,7 +22,11 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { TeamService } from '../team.service';
-import { selectTeamAndOrg, selectTeamAndOrgStates } from './team.selector';
+import {
+  selectTeamAndOrg,
+  selectTeamAndOrgStates,
+  selectTeamPostsAndOrg,
+} from './team.selector';
 
 @Injectable()
 export class TeamEffects {
@@ -256,6 +262,72 @@ export class TeamEffects {
               const { generatedSlug } = generatedSlugDto;
               return TeamActions.generateSlugSuccess({ slug: generatedSlug });
             }),
+          );
+      }),
+    );
+  });
+
+  getDocs$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getDocs),
+      concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
+      filter(
+        ([, { docs, selectedTeam, selectedOrganization }]) =>
+          !!(
+            selectedOrganization &&
+            selectedTeam &&
+            (!docs || (docs && docs.total > docs.limit * (docs.offset + 1)))
+          ),
+      ),
+      switchMap(([, { docs, selectedTeam, selectedOrganization }]) => {
+        const offsetAndLimit: OffsetAndLimit = {
+          offset: docs ? docs.offset + 1 : 0,
+          limit: docs ? docs.limit : defaultLimit,
+        };
+        return this.teamService
+          .getAllDocs(
+            selectedOrganization?.organization.slug as string,
+            selectedTeam?.team.slug as string,
+            offsetAndLimit,
+          )
+          .pipe(
+            map((docs) => {
+              return TeamActions.getDocsSuccess({ docs });
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
+          );
+      }),
+    );
+  });
+
+  getQnas$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getQnas),
+      concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
+      filter(
+        ([, { qnas, selectedTeam, selectedOrganization }]) =>
+          !!(
+            selectedOrganization &&
+            selectedTeam &&
+            (!qnas || (qnas && qnas.total > qnas.limit * (qnas.offset + 1)))
+          ),
+      ),
+      switchMap(([, { qnas, selectedTeam, selectedOrganization }]) => {
+        const offsetAndLimit: OffsetAndLimit = {
+          offset: qnas ? qnas.offset + 1 : 0,
+          limit: qnas ? qnas.limit : defaultLimit,
+        };
+        return this.teamService
+          .getAllQnas(
+            selectedOrganization?.organization.slug as string,
+            selectedTeam?.team.slug as string,
+            offsetAndLimit,
+          )
+          .pipe(
+            map((qnas) => {
+              return TeamActions.getQnasSuccess({ qnas });
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
           );
       }),
     );

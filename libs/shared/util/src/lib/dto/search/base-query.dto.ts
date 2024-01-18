@@ -16,4 +16,11 @@ export class BaseQueryDto extends BaseSuggestDto implements OffsetAndLimit {
    * @inheritdoc
    */
   limit = defaultLimit;
+
+  /**
+   * The slug of the team to limit the search to.
+   * Don't specify to search across the entire org.
+   * Needs to be a partial instead of a nullable because it will be used in GET requests.
+   */
+  team?: string;
 }

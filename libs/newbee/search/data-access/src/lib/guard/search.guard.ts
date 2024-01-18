@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import { SearchActions } from '@newbee/newbee/shared/data-access';
+import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Observable, map, skipWhile, take } from 'rxjs';
@@ -24,6 +25,7 @@ export const searchGuard: CanActivateFn = (
     type && Object.values<string>(SolrEntryEnum).includes(type)
       ? (type as SolrEntryEnum)
       : null;
+  const teamSlug = route.queryParamMap.get(ShortUrl.Team);
 
   store.dispatch(
     SearchActions.search({
@@ -32,6 +34,7 @@ export const searchGuard: CanActivateFn = (
         limit: defaultLimit,
         query,
         ...(solrType && { type: solrType }),
+        ...(teamSlug && { team: teamSlug }),
       },
     }),
   );

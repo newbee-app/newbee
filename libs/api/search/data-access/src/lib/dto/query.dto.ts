@@ -5,9 +5,10 @@ import {
   limitMin1,
   offsetIsInt,
   offsetMin0,
+  teamIsNotEmpty,
 } from '@newbee/shared/util';
 import { Transform } from 'class-transformer';
-import { IsInt, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { SuggestDto } from './suggest.dto';
 
 /**
@@ -30,4 +31,11 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
   @IsInt({ message: limitIsInt })
   @Min(1, { message: limitMin1 })
   limit = defaultLimit;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team?: string;
 }

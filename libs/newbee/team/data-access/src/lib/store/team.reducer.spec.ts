@@ -7,6 +7,8 @@ import {
   testBaseCreateTeamMemberDto1,
   testBaseUpdateTeamMemberDto1,
   testOrgMember1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
   testTeam1,
 } from '@newbee/shared/util';
 import { TeamState, initialTeamState, teamFeature } from './team.reducer';
@@ -31,6 +33,14 @@ describe('TeamReducer', () => {
   const stateAfterCheckSlug: TeamState = {
     ...initialTeamState,
     pendingCheck: true,
+  };
+  const stateAfterGetDocs: TeamState = {
+    ...initialTeamState,
+    pendingGetDocs: true,
+  };
+  const stateAfterGetQnas: TeamState = {
+    ...initialTeamState,
+    pendingGetQnas: true,
   };
   const stateAfterAddTeamMember: TeamState = {
     ...initialTeamState,
@@ -104,6 +114,22 @@ describe('TeamReducer', () => {
         TeamActions.checkSlug({ slug: '' }),
       );
       expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for getDocs', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.getDocs,
+      );
+      expect(updatedState).toEqual(stateAfterGetDocs);
+    });
+
+    it('should update state for getQnas', () => {
+      const updatedState = teamFeature.reducer(
+        initialTeamState,
+        TeamActions.getQnas,
+      );
+      expect(updatedState).toEqual(stateAfterGetQnas);
     });
 
     it('should update state for addTeamMember', () => {
@@ -186,6 +212,32 @@ describe('TeamReducer', () => {
         TeamActions.deleteTeamSuccess,
       );
       expect(updatedState).toEqual(initialTeamState);
+    });
+
+    it('should update state for getDocsSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetDocs,
+        TeamActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialTeamState,
+        docs: testPaginatedResultsDocQueryResult1,
+      });
+    });
+
+    it('should update state for getQnasSuccess', () => {
+      const updatedState = teamFeature.reducer(
+        stateAfterGetQnas,
+        TeamActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialTeamState,
+        qnas: testPaginatedResultsQnaQueryResult1,
+      });
     });
 
     it('should update state for addTeamMemberSuccess', () => {

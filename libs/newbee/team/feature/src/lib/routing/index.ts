@@ -10,8 +10,10 @@ import {
 } from '@newbee/newbee/team/data-access';
 import { Keyword } from '@newbee/shared/util';
 import { TeamCreateComponent } from '../team-create';
+import { TeamDocsViewComponent } from '../team-docs-view';
 import { TeamEditComponent } from '../team-edit';
 import { TeamMembersViewComponent } from '../team-members-view';
+import { TeamQnasViewComponent } from '../team-qnas-view';
 import { TeamRootComponent } from '../team-root';
 import { TeamViewComponent } from '../team-view';
 import { TeamsViewComponent } from '../teams-view';
@@ -36,6 +38,14 @@ const routes: Routes = [
       {
         path: ShortUrl.Member,
         component: TeamMembersViewComponent,
+      },
+      {
+        path: ShortUrl.Doc,
+        component: TeamDocsViewComponent,
+      },
+      {
+        path: ShortUrl.Qna,
+        component: TeamQnasViewComponent,
       },
       {
         path: '',

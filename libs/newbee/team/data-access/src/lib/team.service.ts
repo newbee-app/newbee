@@ -9,7 +9,11 @@ import {
   BaseTeamAndMemberDto,
   BaseUpdateTeamDto,
   BaseUpdateTeamMemberDto,
+  DocQueryResult,
   Keyword,
+  OffsetAndLimit,
+  PaginatedResults,
+  QnaQueryResult,
   Team,
   TeamMember,
   TeamMemberUserOrgMember,
@@ -138,6 +142,48 @@ export class TeamService {
     const params = new HttpParams({ fromObject: { base: name } });
     return this.http.get<BaseGeneratedSlugDto>(
       `${TeamService.baseApiUrl(orgSlug)}/${Keyword.GenerateSlug}`,
+      { params },
+    );
+  }
+
+  /**
+   * Sends a request to the API to get all of the docs in the given org and team in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   * @param teamSlug The team to look in.
+   * @param offsetAndLimit The offset and limit for the request.
+   *
+   * @returns An observable containing the paginated docs.
+   */
+  getAllDocs(
+    orgSlug: string,
+    teamSlug: string,
+    offsetAndLimit: OffsetAndLimit,
+  ): Observable<PaginatedResults<DocQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
+    return this.http.get<PaginatedResults<DocQueryResult>>(
+      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}/${Keyword.Doc}`,
+      { params },
+    );
+  }
+
+  /**
+   * Sends a request to the API to get all of the qnas in the given org and team in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   * @param teamSlug The team to look in.
+   * @param offsetAndLimit The offset and limit for the request.
+   *
+   * @returns An observable containing the paginated qnas.
+   */
+  getAllQnas(
+    orgSlug: string,
+    teamSlug: string,
+    offsetAndLimit: OffsetAndLimit,
+  ): Observable<PaginatedResults<QnaQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
+    return this.http.get<PaginatedResults<QnaQueryResult>>(
+      `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}/${Keyword.Qna}`,
       { params },
     );
   }

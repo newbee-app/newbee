@@ -6,8 +6,10 @@ import {
   testQueryResponse1,
   testQueryResponse2,
   testQueryResponse3,
+  testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { solrDictionaries } from '@newbee/api/shared/util';
+import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
   testBaseQueryDto1,
@@ -20,12 +22,19 @@ import { SearchService } from './search.service';
 
 describe('SearchService', () => {
   let service: SearchService;
+  let teamService: TeamService;
   let solrCli: SolrCli;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SearchService,
+        {
+          provide: TeamService,
+          useValue: createMock<TeamService>({
+            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+          }),
+        },
         {
           provide: SolrCli,
           useValue: createMock<SolrCli>({
@@ -37,11 +46,13 @@ describe('SearchService', () => {
     }).compile();
 
     service = module.get<SearchService>(SearchService);
+    teamService = module.get<TeamService>(TeamService);
     solrCli = module.get<SolrCli>(SolrCli);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(teamService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -78,6 +89,7 @@ describe('SearchService', () => {
         query,
         offset: testBaseQueryDto1.offset,
         limit: testBaseQueryDto1.limit,
+        filter: [],
         params: {
           'hl.q': query,
           'spellcheck.q': query,
@@ -102,7 +114,6 @@ describe('SearchService', () => {
         limit: testBaseQueryDto1.limit,
         results: [],
         query: testBaseQueryDto1.query,
-        type: null,
         suggestion:
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });

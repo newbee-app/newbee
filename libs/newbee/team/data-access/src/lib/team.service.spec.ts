@@ -14,8 +14,11 @@ import {
   testBaseTeamAndMemberDto1,
   testBaseUpdateTeamDto1,
   testBaseUpdateTeamMemberDto1,
+  testOffsetAndLimit1,
   testOrgMember1,
   testOrganization1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
   testTeam1,
   testTeamMember1,
   testTeamMemberRelation1,
@@ -193,6 +196,62 @@ describe('TeamService', () => {
       expect(req.request.method).toEqual('GET');
 
       req.flush(testBaseGeneratedSlugDto1);
+    });
+  });
+
+  describe('getAllDocs', () => {
+    it('should send out a get request', (done) => {
+      service
+        .getAllDocs(testOrganization1.slug, testTeam1.slug, testOffsetAndLimit1)
+        .subscribe({
+          next: (results) => {
+            try {
+              expect(results).toEqual(testPaginatedResultsDocQueryResult1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const params = new HttpParams({ fromObject: { ...testOffsetAndLimit1 } });
+      const req = httpController.expectOne(
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}/${
+          Keyword.Doc
+        }?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsDocQueryResult1);
+    });
+  });
+
+  describe('getAllQnas', () => {
+    it('should send out a get request', (done) => {
+      service
+        .getAllQnas(testOrganization1.slug, testTeam1.slug, testOffsetAndLimit1)
+        .subscribe({
+          next: (results) => {
+            try {
+              expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const params = new HttpParams({ fromObject: { ...testOffsetAndLimit1 } });
+      const req = httpController.expectOne(
+        `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}/${
+          Keyword.Qna
+        }?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsQnaQueryResult1);
     });
   });
 
