@@ -1,4 +1,4 @@
-<div infiniteScroll (scrolled)="scrolled.emit()">
+<div>
   <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
     <form
       [formGroup]="searchForm"
@@ -38,9 +38,15 @@
     </div>
   </ng-container>
 
-  <div *ngIf="getPostsPending" class="flex justify-center mt-2">
+  <div
+    *ngIf="getPostsPending; else notPending"
+    class="flex justify-center mt-2"
+  >
     <span class="loading loading-spinner"></span>
   </div>
+  <ng-template #notPending>
+    <div newbeeIsVisible (visible)="continueSearch.emit()"></div>
+  </ng-template>
 
   <div *ngIf="!!miscError" class="mt-6">
     <newbee-alert [show]="!!miscError" [text]="miscError"></newbee-alert>

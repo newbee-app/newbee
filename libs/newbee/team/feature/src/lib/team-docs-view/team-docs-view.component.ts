@@ -87,9 +87,9 @@ export class TeamDocsViewComponent implements OnDestroy {
   }
 
   /**
-   * Fetch more docs once the user has scrolled to the bottom.
+   * Fetch more docs once the user has hit the bottom.
    */
-  onScrolled(): void {
+  onContinueSearch(): void {
     this.store.dispatch(TeamActions.getDocs());
   }
 }

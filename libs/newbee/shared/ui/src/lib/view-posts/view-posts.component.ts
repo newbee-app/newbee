@@ -9,6 +9,7 @@ import {
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   HttpClientError,
+  IsVisibleDirectiveModule,
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
@@ -20,7 +21,6 @@ import {
   resultIsDocQueryResult,
   userDisplayName,
 } from '@newbee/shared/util';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../alert';
 import { SearchbarComponent } from '../form-control';
@@ -35,7 +35,7 @@ import { SearchResultComponent } from '../search-result';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InfiniteScrollModule,
+    IsVisibleDirectiveModule,
     SearchbarComponent,
     SearchResultComponent,
     AlertComponent,
@@ -93,9 +93,9 @@ export class ViewPostsComponent implements OnDestroy {
   @Output() search = new EventEmitter<string>();
 
   /**
-   * Indicates that the user has scrolled to the bottom of the results.
+   * Indicates that more posts should be fetched.
    */
-  @Output() scrolled = new EventEmitter<void>();
+  @Output() continueSearch = new EventEmitter<void>();
 
   /**
    * The form containing the searchbar.

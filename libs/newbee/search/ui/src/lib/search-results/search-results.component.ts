@@ -16,11 +16,11 @@ import {
 } from '@newbee/newbee/shared/ui';
 import {
   HttpClientError,
+  IsVisibleDirectiveModule,
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
 import { Keyword, type QueryResults } from '@newbee/shared/util';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -32,7 +32,7 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InfiniteScrollModule,
+    IsVisibleDirectiveModule,
     SearchbarComponent,
     SearchResultComponent,
     AlertComponent,
@@ -100,9 +100,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Output() orgNavigate = new EventEmitter<string>();
 
   /**
-   * Indicates that the user has scrolled to the bottom of the search results.
+   * Indicates that more search results should be fetched.
    */
-  @Output() scrolled = new EventEmitter<void>();
+  @Output() continueSearch = new EventEmitter<void>();
 
   /**
    * The search term containing the searchbar.

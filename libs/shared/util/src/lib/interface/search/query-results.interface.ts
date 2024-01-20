@@ -1,3 +1,4 @@
+import { defaultLimit } from '../../constant';
 import { SolrEntryEnum } from '../../enum';
 import type { QueryResultType } from '../../type';
 import { PaginatedResults } from '../util';
@@ -27,3 +28,15 @@ export interface QueryResults extends PaginatedResults<QueryResultType> {
    */
   team?: string;
 }
+
+/**
+ * Empty query results, for when there is something seriously wrong with the user's query.
+ */
+export const emptyQueryResults: QueryResults = {
+  offset: 0,
+  limit: defaultLimit,
+  results: [],
+  total: 0,
+  query: '',
+  suggestion: null,
+};

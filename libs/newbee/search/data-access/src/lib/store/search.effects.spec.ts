@@ -6,7 +6,7 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  defaultLimit,
+  emptyQueryResults,
   Keyword,
   testBaseQueryDto1,
   testBaseSuggestDto1,
@@ -87,13 +87,15 @@ describe('SearchEffects', () => {
         });
       });
 
-      it('should not fire if query is empty', () => {
+      it('should fire searchSuccess with empty results if query is empty', () => {
         actions$ = hot('a', {
           a: SearchActions.search({
-            query: { query: '', offset: 0, limit: defaultLimit },
+            query: emptyQueryResults,
           }),
         });
-        const expected$ = hot('-');
+        const expected$ = hot('a', {
+          a: SearchActions.searchSuccess({ results: emptyQueryResults }),
+        });
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
@@ -134,16 +136,20 @@ describe('SearchEffects', () => {
         });
       });
 
-      it('should not fire if total is <= limit * (offset + 1)', () => {
+      it('should fire continueSearchSuccess with the same results if there are no more results to fetch', () => {
         actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('-');
+        const expected$ = hot('a', {
+          a: SearchActions.continueSearchSuccess({
+            results: testQueryResults1,
+          }),
+        });
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
         });
       });
 
-      it('should not fire if searchResults is null', () => {
+      it('should fire continueSearchSuccess with empty results if searchResults is null', () => {
         store.setState({
           [Keyword.Organization]: {
             ...initialOrganizationState,
@@ -152,7 +158,11 @@ describe('SearchEffects', () => {
           [Keyword.Search]: initialSearchState,
         });
         actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('-');
+        const expected$ = hot('a', {
+          a: SearchActions.continueSearchSuccess({
+            results: emptyQueryResults,
+          }),
+        });
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
@@ -174,7 +184,7 @@ describe('SearchEffects', () => {
   });
 
   describe('suggest$', () => {
-    it('should fire suggestSuccess and contact API if suggest', () => {
+    it('should fire suggestSuccess if suggest', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: testBaseSuggestDto1 }),
       });
@@ -193,7 +203,7 @@ describe('SearchEffects', () => {
       });
     });
 
-    it('should fire suggestSuccess and contact API if search', () => {
+    it('should fire suggestSuccess if search', () => {
       actions$ = hot('a', {
         a: SearchActions.search({ query: testBaseQueryDto1 }),
       });
@@ -212,11 +222,13 @@ describe('SearchEffects', () => {
       });
     });
 
-    it('should do nothing if query is empty', () => {
+    it('should fire suggestSuccess with empty suggestions if query is empty', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: { query: '' } }),
       });
-      const expected$ = hot('-');
+      const expected$ = hot('a', {
+        a: SearchActions.suggestSuccess({ results: { suggestions: [] } }),
+      });
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.suggest).not.toHaveBeenCalled();

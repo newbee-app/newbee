@@ -175,10 +175,9 @@ export class SearchResultsViewComponent implements OnDestroy {
   }
 
   /**
-   * When the user navigates to the bottom of the search results, fetch more.
+   * Fetch more search results once the user has hit the bottom.
    */
-  onScrolled(): void {
-    console.log('scrolled');
+  onContinueSearch(): void {
     this.store.dispatch(SearchActions.continueSearch());
   }
 }

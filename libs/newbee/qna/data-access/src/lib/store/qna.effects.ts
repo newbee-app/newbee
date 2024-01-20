@@ -20,7 +20,7 @@ import {
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { QnaService } from '../qna.service';
 import { selectQnaAndOrg, selectQnasAndOrg } from './qna.selector';
 
@@ -30,13 +30,12 @@ export class QnaEffects {
     return this.actions$.pipe(
       ofType(QnaActions.getQnas),
       concatLatestFrom(() => this.store.select(selectQnasAndOrg)),
-      filter(([, { qnas, selectedOrganization }]) => {
-        return !!(
-          selectedOrganization &&
-          (!qnas || (qnas && qnas.total > qnas.limit * (qnas.offset + 1)))
-        );
-      }),
+      filter(([, { selectedOrganization }]) => !!selectedOrganization),
       switchMap(([, { qnas, selectedOrganization }]) => {
+        if (qnas && qnas.total <= qnas.limit * (qnas.offset + 1)) {
+          return of(QnaActions.getQnasSuccess({ qnas }));
+        }
+
         const offsetAndLimit: OffsetAndLimit = {
           offset: qnas ? qnas.offset + 1 : 0,
           limit: qnas ? qnas.limit : defaultLimit,

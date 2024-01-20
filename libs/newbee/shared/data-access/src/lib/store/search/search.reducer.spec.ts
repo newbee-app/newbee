@@ -72,7 +72,7 @@ describe('SearchReducer', () => {
     });
 
     it('should update state for continueSearchSuccess', () => {
-      const updatedState = searchFeature.reducer(
+      let updatedState = searchFeature.reducer(
         stateAfterContinueSearch,
         SearchActions.continueSearchSuccess({
           results: {
@@ -94,6 +94,12 @@ describe('SearchReducer', () => {
           ],
         },
       });
+
+      updatedState = searchFeature.reducer(
+        stateAfterContinueSearch,
+        SearchActions.continueSearchSuccess({ results: testQueryResults1 }),
+      );
+      expect(updatedState).toEqual(stateAfterSearchSuccess);
     });
 
     it('should udpate state for routerRequest', () => {

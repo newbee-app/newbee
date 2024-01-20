@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -24,6 +25,10 @@ describe('QnasViewComponent', () => {
       imports: [ViewPostsComponent],
       declarations: [QnasViewComponent],
       providers: [
+        {
+          provide: PLATFORM_ID,
+          useValue: 'server',
+        },
         provideMockStore({
           initialState: {
             [`${Keyword.Qna}Module`]: {
@@ -84,9 +89,9 @@ describe('QnasViewComponent', () => {
     });
   });
 
-  describe('onScrolled', () => {
+  describe('onContinueSearch', () => {
     it('should dispatch getDocs', () => {
-      component.onScrolled();
+      component.onContinueSearch();
       expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(QnaActions.getQnas());
     });

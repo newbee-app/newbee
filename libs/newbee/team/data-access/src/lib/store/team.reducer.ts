@@ -10,6 +10,7 @@ import {
   QnaQueryResult,
 } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 
 /**
  * Module-specific piece of state related to team.
@@ -179,7 +180,12 @@ export const teamFeature = createFeature({
       (state, { docs }): TeamState => ({
         ...state,
         pendingGetDocs: false,
-        docs,
+        docs: isEqual(docs, state.docs)
+          ? docs
+          : {
+              ...docs,
+              results: [...(state.docs?.results ?? []), ...docs.results],
+            },
       }),
     ),
     on(
@@ -194,7 +200,12 @@ export const teamFeature = createFeature({
       (state, { qnas }): TeamState => ({
         ...state,
         pendingGetQnas: false,
-        qnas,
+        qnas: isEqual(qnas, state.qnas)
+          ? qnas
+          : {
+              ...qnas,
+              results: [...(state.qnas?.results ?? []), ...qnas.results],
+            },
       }),
     ),
     on(

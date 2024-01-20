@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -25,6 +26,10 @@ describe('TeamDocsViewComponent', () => {
       imports: [ViewPostsComponent],
       declarations: [TeamDocsViewComponent],
       providers: [
+        {
+          provide: PLATFORM_ID,
+          useValue: 'server',
+        },
         provideMockStore({
           initialState: {
             [`${Keyword.Team}Module`]: {
@@ -91,9 +96,9 @@ describe('TeamDocsViewComponent', () => {
     });
   });
 
-  describe('onScrolled', () => {
+  describe('onContinueSearch', () => {
     it('should dispatch getDocs', () => {
-      component.onScrolled();
+      component.onContinueSearch();
       expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(TeamActions.getDocs());
     });

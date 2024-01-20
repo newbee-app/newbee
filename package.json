@@ -94,7 +94,6 @@
     "lodash": "~4.17.21",
     "lodash-es": "~4.17.21",
     "nest-winston": "~1.9.4",
-    "ngx-infinite-scroll": "~16.0.0",
     "nodemailer": "^6.9.0",
     "passport": "~0.6.0",
     "passport-jwt": "~4.0.1",

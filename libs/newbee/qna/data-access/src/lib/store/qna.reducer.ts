@@ -5,6 +5,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { Keyword, PaginatedResults, QnaQueryResult } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 
 /**
  * Module-specific piece of state related to QnAs.
@@ -78,7 +79,12 @@ export const qnaFeature = createFeature({
       (state, { qnas }): QnaState => ({
         ...state,
         pendingGetQnas: false,
-        qnas,
+        qnas: isEqual(qnas, state.qnas)
+          ? qnas
+          : {
+              ...qnas,
+              results: [...(state.qnas?.results ?? []), ...qnas.results],
+            },
       }),
     ),
     on(

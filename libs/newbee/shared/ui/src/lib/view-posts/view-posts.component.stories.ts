@@ -18,7 +18,7 @@ export default {
   argTypes: {
     orgNavigate: { action: 'orgNavigate' },
     search: { action: 'search' },
-    scrolled: { action: 'scrolled' },
+    continueSearch: { action: 'continueSearch' },
   },
 } as Meta<ViewPostsComponent>;
 

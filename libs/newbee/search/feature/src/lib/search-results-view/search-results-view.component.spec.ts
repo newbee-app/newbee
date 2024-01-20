@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -38,6 +39,10 @@ describe('SearchResultsViewComponent', () => {
       imports: [SearchResultsComponent],
       declarations: [SearchResultsViewComponent],
       providers: [
+        {
+          provide: PLATFORM_ID,
+          useValue: 'server',
+        },
         provideMockStore({
           initialState: {
             [Keyword.Search]: {

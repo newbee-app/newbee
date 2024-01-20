@@ -52,7 +52,7 @@ export default {
     search: { action: 'search' },
     searchbar: { action: 'searchbar' },
     orgNavigate: { action: 'orgNavigate' },
-    scrolled: { action: 'scrolled' },
+    continueSearch: { action: 'continueSearch' },
   },
 } as Meta<SearchResultsComponent>;
 

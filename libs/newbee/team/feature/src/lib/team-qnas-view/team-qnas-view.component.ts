@@ -84,9 +84,9 @@ export class TeamQnasViewComponent implements OnDestroy {
   }
 
   /**
-   * Fetch more qnas once the user has scrolled to the bottom.
+   * Fetch more qnas once the user has hit the bottom.
    */
-  onScrolled(): void {
+  onContinueSearch(): void {
     this.store.dispatch(TeamActions.getQnas());
   }
 }

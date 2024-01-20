@@ -272,14 +272,14 @@ export class TeamEffects {
       ofType(TeamActions.getDocs),
       concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
       filter(
-        ([, { docs, selectedTeam, selectedOrganization }]) =>
-          !!(
-            selectedOrganization &&
-            selectedTeam &&
-            (!docs || (docs && docs.total > docs.limit * (docs.offset + 1)))
-          ),
+        ([, { selectedTeam, selectedOrganization }]) =>
+          !!(selectedOrganization && selectedTeam),
       ),
       switchMap(([, { docs, selectedTeam, selectedOrganization }]) => {
+        if (docs && docs.total <= docs.limit * (docs.offset + 1)) {
+          return of(TeamActions.getDocsSuccess({ docs }));
+        }
+
         const offsetAndLimit: OffsetAndLimit = {
           offset: docs ? docs.offset + 1 : 0,
           limit: docs ? docs.limit : defaultLimit,
@@ -305,14 +305,14 @@ export class TeamEffects {
       ofType(TeamActions.getQnas),
       concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
       filter(
-        ([, { qnas, selectedTeam, selectedOrganization }]) =>
-          !!(
-            selectedOrganization &&
-            selectedTeam &&
-            (!qnas || (qnas && qnas.total > qnas.limit * (qnas.offset + 1)))
-          ),
+        ([, { selectedTeam, selectedOrganization }]) =>
+          !!(selectedOrganization && selectedTeam),
       ),
       switchMap(([, { qnas, selectedTeam, selectedOrganization }]) => {
+        if (qnas && qnas.total <= qnas.limit * (qnas.offset + 1)) {
+          return of(TeamActions.getQnasSuccess({ qnas }));
+        }
+
         const offsetAndLimit: OffsetAndLimit = {
           offset: qnas ? qnas.offset + 1 : 0,
           limit: qnas ? qnas.limit : defaultLimit,

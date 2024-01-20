@@ -5,6 +5,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { DocQueryResult, Keyword, PaginatedResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 
 /**
  * Module-specific piece of state related to docs.
@@ -72,7 +73,12 @@ export const docFeature = createFeature({
       (state, { docs }): DocState => ({
         ...state,
         pendingGetDocs: false,
-        docs,
+        docs: isEqual(docs, state.docs)
+          ? docs
+          : {
+              ...docs,
+              results: [...(state.docs?.results ?? []), ...docs.results],
+            },
       }),
     ),
     on(

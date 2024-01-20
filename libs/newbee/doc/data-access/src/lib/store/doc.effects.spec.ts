@@ -149,9 +149,13 @@ describe('DocEffects', () => {
       });
     });
 
-    it('should do nothing if there are no more results to fetch', () => {
+    it('should fire getDocsSuccess with the same docs if there are no more results to fetch', () => {
       actions$ = hot('a', { a: DocActions.getDocs() });
-      const expected$ = hot('-');
+      const expected$ = hot('a', {
+        a: DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAll).not.toHaveBeenCalled();

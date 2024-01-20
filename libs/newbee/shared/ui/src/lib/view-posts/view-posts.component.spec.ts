@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { ViewPostsComponent } from './view-posts.component';
@@ -9,6 +10,7 @@ describe('ViewPostsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ViewPostsComponent],
+      providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ViewPostsComponent);

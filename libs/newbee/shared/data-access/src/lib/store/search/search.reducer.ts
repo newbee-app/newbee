@@ -1,5 +1,6 @@
 import { Keyword, QueryResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash-es';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
 
@@ -74,20 +75,19 @@ export const searchFeature = createFeature({
     ),
     on(
       SearchActions.continueSearchSuccess,
-      (state, { results }): SearchState => {
-        const { searchResults } = state;
-
-        return {
-          ...state,
-          pendingContinueSearch: false,
-          searchResults: searchResults
-            ? {
-                ...results,
-                results: searchResults.results.concat(results.results),
-              }
-            : results,
-        };
-      },
+      (state, { results }): SearchState => ({
+        ...state,
+        pendingContinueSearch: false,
+        searchResults: isEqual(results, state.searchResults)
+          ? results
+          : {
+              ...results,
+              results: [
+                ...(state.searchResults?.results ?? []),
+                ...results.results,
+              ],
+            },
+      }),
     ),
     on(RouterActions.routerRequest, (): SearchState => initialSearchState),
   ),
