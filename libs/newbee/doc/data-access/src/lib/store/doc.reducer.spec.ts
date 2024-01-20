@@ -3,16 +3,17 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import {
-  testDocQueryResult1,
-  testPaginatedResultsDocQueryResult1,
-} from '@newbee/shared/util';
+import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
   const stateAfterGetDocs: DocState = {
     ...initialDocState,
     pendingGetDocs: true,
+  };
+  const stateAfterGetDocsSuccess: DocState = {
+    ...initialDocState,
+    docs: testPaginatedResultsDocQueryResult1,
   };
   const stateAfterCreateDoc: DocState = {
     ...initialDocState,
@@ -33,11 +34,17 @@ describe('DocReducer', () => {
 
   describe('from initial state', () => {
     it('should update state for getDocs', () => {
-      const updatedState = docFeature.reducer(
+      let updatedState = docFeature.reducer(
         initialDocState,
         DocActions.getDocs,
       );
       expect(updatedState).toEqual(stateAfterGetDocs);
+
+      updatedState = docFeature.reducer(
+        stateAfterGetDocsSuccess,
+        DocActions.getDocs,
+      );
+      expect(updatedState).toEqual(stateAfterGetDocsSuccess);
     });
 
     it('should update state for createDoc', () => {
@@ -87,34 +94,18 @@ describe('DocReducer', () => {
       });
 
       updatedState = docFeature.reducer(
-        { ...stateAfterGetDocs, docs: testPaginatedResultsDocQueryResult1 },
+        stateAfterGetDocsSuccess,
         DocActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
       );
       expect(updatedState).toEqual({
-        ...initialDocState,
-        docs: testPaginatedResultsDocQueryResult1,
-      });
-
-      updatedState = docFeature.reducer(
-        { ...stateAfterGetDocs, docs: testPaginatedResultsDocQueryResult1 },
-        DocActions.getDocsSuccess({
-          docs: {
-            ...testPaginatedResultsDocQueryResult1,
-            total: testPaginatedResultsDocQueryResult1.total + 1,
-            results: [testDocQueryResult1],
-          },
-        }),
-      );
-      expect(updatedState).toEqual({
-        ...initialDocState,
+        ...stateAfterGetDocsSuccess,
         docs: {
           ...testPaginatedResultsDocQueryResult1,
-          total: testPaginatedResultsDocQueryResult1.total + 1,
           results: [
             ...testPaginatedResultsDocQueryResult1.results,
-            testDocQueryResult1,
+            ...testPaginatedResultsDocQueryResult1.results,
           ],
         },
       });

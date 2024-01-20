@@ -3,9 +3,9 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import { DocQueryResult, Keyword, PaginatedResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { isEqual } from 'lodash-es';
 
 /**
  * Module-specific piece of state related to docs.
@@ -65,7 +65,7 @@ export const docFeature = createFeature({
       DocActions.getDocs,
       (state): DocState => ({
         ...state,
-        pendingGetDocs: true,
+        pendingGetDocs: canGetMoreResults(state.docs),
       }),
     ),
     on(
@@ -73,12 +73,10 @@ export const docFeature = createFeature({
       (state, { docs }): DocState => ({
         ...state,
         pendingGetDocs: false,
-        docs: isEqual(docs, state.docs)
-          ? docs
-          : {
-              ...docs,
-              results: [...(state.docs?.results ?? []), ...docs.results],
-            },
+        docs: {
+          ...docs,
+          results: [...(state.docs?.results ?? []), ...docs.results],
+        },
       }),
     ),
     on(

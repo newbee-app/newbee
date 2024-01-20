@@ -1,6 +1,6 @@
+import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import { Keyword, QueryResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { isEqual } from 'lodash-es';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
 
@@ -48,10 +48,10 @@ export const searchFeature = createFeature({
     initialSearchState,
     on(
       SearchActions.search,
-      (state): SearchState => ({
+      (state, { query }): SearchState => ({
         ...state,
         searchResults: null,
-        pendingSearch: true,
+        pendingSearch: !!query.query,
       }),
     ),
     on(
@@ -71,22 +71,25 @@ export const searchFeature = createFeature({
     }),
     on(
       SearchActions.continueSearch,
-      (state): SearchState => ({ ...state, pendingContinueSearch: true }),
+      (state): SearchState => ({
+        ...state,
+        pendingContinueSearch: !!(
+          state.searchResults && canGetMoreResults(state.searchResults)
+        ),
+      }),
     ),
     on(
       SearchActions.continueSearchSuccess,
       (state, { results }): SearchState => ({
         ...state,
         pendingContinueSearch: false,
-        searchResults: isEqual(results, state.searchResults)
-          ? results
-          : {
-              ...results,
-              results: [
-                ...(state.searchResults?.results ?? []),
-                ...results.results,
-              ],
-            },
+        searchResults: {
+          ...results,
+          results: [
+            ...(state.searchResults?.results ?? []),
+            ...results.results,
+          ],
+        },
       }),
     ),
     on(RouterActions.routerRequest, (): SearchState => initialSearchState),

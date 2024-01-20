@@ -1,4 +1,5 @@
 import {
+  testBaseQueryDto1,
   testBaseSuggestResultsDto1,
   testDocQueryResult1,
   testQnaQueryResult1,
@@ -23,7 +24,8 @@ describe('SearchReducer', () => {
     suggestions: testBaseSuggestResultsDto1.suggestions,
   };
   const stateAfterContinueSearch: SearchState = {
-    ...stateAfterSearchSuccess,
+    ...initialSearchState,
+    searchResults: { ...testQueryResults1, total: 100 },
     pendingContinueSearch: true,
   };
 
@@ -31,7 +33,7 @@ describe('SearchReducer', () => {
     it('should update state for search', () => {
       const updatedState = searchFeature.reducer(
         initialSearchState,
-        SearchActions.search,
+        SearchActions.search({ query: testBaseQueryDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearch);
     });
@@ -64,15 +66,24 @@ describe('SearchReducer', () => {
     });
 
     it('should update state for continueSearch', () => {
-      const updatedState = searchFeature.reducer(
+      let updatedState = searchFeature.reducer(
         stateAfterSearchSuccess,
+        SearchActions.continueSearch,
+      );
+      expect(updatedState).toEqual(stateAfterSearchSuccess);
+
+      updatedState = searchFeature.reducer(
+        {
+          ...stateAfterSearchSuccess,
+          searchResults: { ...testQueryResults1, total: 100 },
+        },
         SearchActions.continueSearch,
       );
       expect(updatedState).toEqual(stateAfterContinueSearch);
     });
 
     it('should update state for continueSearchSuccess', () => {
-      let updatedState = searchFeature.reducer(
+      const updatedState = searchFeature.reducer(
         stateAfterContinueSearch,
         SearchActions.continueSearchSuccess({
           results: {
@@ -94,12 +105,6 @@ describe('SearchReducer', () => {
           ],
         },
       });
-
-      updatedState = searchFeature.reducer(
-        stateAfterContinueSearch,
-        SearchActions.continueSearchSuccess({ results: testQueryResults1 }),
-      );
-      expect(updatedState).toEqual(stateAfterSearchSuccess);
     });
 
     it('should udpate state for routerRequest', () => {

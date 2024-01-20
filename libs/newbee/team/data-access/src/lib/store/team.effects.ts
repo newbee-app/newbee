@@ -6,7 +6,7 @@ import {
   organizationFeature,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { canGetMoreResults, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   defaultLimit,
   Keyword,
@@ -272,14 +272,10 @@ export class TeamEffects {
       ofType(TeamActions.getDocs),
       concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
       filter(
-        ([, { selectedTeam, selectedOrganization }]) =>
-          !!(selectedOrganization && selectedTeam),
+        ([, { docs, selectedTeam, selectedOrganization }]) =>
+          !!(selectedOrganization && selectedTeam && canGetMoreResults(docs)),
       ),
       switchMap(([, { docs, selectedTeam, selectedOrganization }]) => {
-        if (docs && docs.total <= docs.limit * (docs.offset + 1)) {
-          return of(TeamActions.getDocsSuccess({ docs }));
-        }
-
         const offsetAndLimit: OffsetAndLimit = {
           offset: docs ? docs.offset + 1 : 0,
           limit: docs ? docs.limit : defaultLimit,
@@ -305,14 +301,10 @@ export class TeamEffects {
       ofType(TeamActions.getQnas),
       concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
       filter(
-        ([, { selectedTeam, selectedOrganization }]) =>
-          !!(selectedOrganization && selectedTeam),
+        ([, { qnas, selectedTeam, selectedOrganization }]) =>
+          !!(selectedOrganization && selectedTeam && canGetMoreResults(qnas)),
       ),
       switchMap(([, { qnas, selectedTeam, selectedOrganization }]) => {
-        if (qnas && qnas.total <= qnas.limit * (qnas.offset + 1)) {
-          return of(TeamActions.getQnasSuccess({ qnas }));
-        }
-
         const offsetAndLimit: OffsetAndLimit = {
           offset: qnas ? qnas.offset + 1 : 0,
           limit: qnas ? qnas.limit : defaultLimit,

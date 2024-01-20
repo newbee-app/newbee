@@ -6,7 +6,7 @@ import {
   catchHttpScreenError,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, canGetMoreResults } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OffsetAndLimit,
@@ -18,7 +18,7 @@ import {
 } from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, of, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { DocService } from '../doc.service';
 import { selectDocAndOrg, selectDocsAndOrg } from './doc.selector';
 
@@ -28,12 +28,11 @@ export class DocEffects {
     return this.actions$.pipe(
       ofType(DocActions.getDocs),
       concatLatestFrom(() => this.store.select(selectDocsAndOrg)),
-      filter(([, { selectedOrganization }]) => !!selectedOrganization),
+      filter(
+        ([, { selectedOrganization, docs }]) =>
+          !!(selectedOrganization && canGetMoreResults(docs)),
+      ),
       switchMap(([, { selectedOrganization, docs }]) => {
-        if (docs && docs.total <= docs.limit * (docs.offset + 1)) {
-          return of(DocActions.getDocsSuccess({ docs }));
-        }
-
         const offsetAndLimit: OffsetAndLimit = {
           offset: docs ? docs.offset + 1 : 0,
           limit: docs ? docs.limit : defaultLimit,

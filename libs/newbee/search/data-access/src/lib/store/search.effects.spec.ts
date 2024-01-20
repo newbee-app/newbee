@@ -87,15 +87,13 @@ describe('SearchEffects', () => {
         });
       });
 
-      it('should fire searchSuccess with empty results if query is empty', () => {
+      it('should do nothing if query is empty', () => {
         actions$ = hot('a', {
           a: SearchActions.search({
             query: emptyQueryResults,
           }),
         });
-        const expected$ = hot('a', {
-          a: SearchActions.searchSuccess({ results: emptyQueryResults }),
-        });
+        const expected$ = hot('-');
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
@@ -136,20 +134,16 @@ describe('SearchEffects', () => {
         });
       });
 
-      it('should fire continueSearchSuccess with the same results if there are no more results to fetch', () => {
+      it('should do nothing if there are no more results to fetch', () => {
         actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('a', {
-          a: SearchActions.continueSearchSuccess({
-            results: testQueryResults1,
-          }),
-        });
+        const expected$ = hot('-');
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
         });
       });
 
-      it('should fire continueSearchSuccess with empty results if searchResults is null', () => {
+      it('should do nothing if searchResults is null', () => {
         store.setState({
           [Keyword.Organization]: {
             ...initialOrganizationState,
@@ -158,11 +152,7 @@ describe('SearchEffects', () => {
           [Keyword.Search]: initialSearchState,
         });
         actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('a', {
-          a: SearchActions.continueSearchSuccess({
-            results: emptyQueryResults,
-          }),
-        });
+        const expected$ = hot('-');
         expect(effects.search$).toBeObservable(expected$);
         expect(expected$).toSatisfyOnFlush(() => {
           expect(service.search).not.toHaveBeenCalled();
@@ -222,13 +212,11 @@ describe('SearchEffects', () => {
       });
     });
 
-    it('should fire suggestSuccess with empty suggestions if query is empty', () => {
+    it('should do nothing if query is empty', () => {
       actions$ = hot('a', {
         a: SearchActions.suggest({ query: { query: '' } }),
       });
-      const expected$ = hot('a', {
-        a: SearchActions.suggestSuccess({ results: { suggestions: [] } }),
-      });
+      const expected$ = hot('-');
       expect(effects.suggest$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.suggest).not.toHaveBeenCalled();

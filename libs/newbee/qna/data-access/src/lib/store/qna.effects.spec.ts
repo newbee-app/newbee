@@ -158,13 +158,9 @@ describe('QnaEffects', () => {
       });
     });
 
-    it('should fire getQnasSuccess with the same qnas if there are no more results to fetch', () => {
+    it('should do nothing if there are no more results to fetch', () => {
       actions$ = hot('a', { a: QnaActions.getQnas() });
-      const expected$ = hot('a', {
-        a: QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
-        }),
-      });
+      const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAll).not.toHaveBeenCalled();

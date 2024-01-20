@@ -3,16 +3,17 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import {
-  testPaginatedResultsQnaQueryResult1,
-  testQnaQueryResult1,
-} from '@newbee/shared/util';
+import { testPaginatedResultsQnaQueryResult1 } from '@newbee/shared/util';
 import { QnaState, initialQnaState, qnaFeature } from './qna.reducer';
 
 describe('QnaReducer', () => {
   const stateAfterGetQnas: QnaState = {
     ...initialQnaState,
     pendingGetQnas: true,
+  };
+  const stateAfterGetQnasSuccess: QnaState = {
+    ...initialQnaState,
+    qnas: testPaginatedResultsQnaQueryResult1,
   };
   const stateAfterCreateQna: QnaState = {
     ...initialQnaState,
@@ -37,11 +38,17 @@ describe('QnaReducer', () => {
 
   describe('from initial state', () => {
     it('should update state for getQnas', () => {
-      const updatedState = qnaFeature.reducer(
+      let updatedState = qnaFeature.reducer(
         initialQnaState,
         QnaActions.getQnas,
       );
       expect(updatedState).toEqual(stateAfterGetQnas);
+
+      updatedState = qnaFeature.reducer(
+        stateAfterGetQnasSuccess,
+        QnaActions.getQnas,
+      );
+      expect(updatedState).toEqual(stateAfterGetQnasSuccess);
     });
 
     it('should update state for createQna', () => {
@@ -99,34 +106,18 @@ describe('QnaReducer', () => {
       });
 
       updatedState = qnaFeature.reducer(
-        { ...stateAfterGetQnas, qnas: testPaginatedResultsQnaQueryResult1 },
+        stateAfterGetQnasSuccess,
         QnaActions.getQnasSuccess({
           qnas: testPaginatedResultsQnaQueryResult1,
         }),
       );
       expect(updatedState).toEqual({
-        ...initialQnaState,
-        qnas: testPaginatedResultsQnaQueryResult1,
-      });
-
-      updatedState = qnaFeature.reducer(
-        { ...stateAfterGetQnas, qnas: testPaginatedResultsQnaQueryResult1 },
-        QnaActions.getQnasSuccess({
-          qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
-            total: testPaginatedResultsQnaQueryResult1.total + 1,
-            results: [testQnaQueryResult1],
-          },
-        }),
-      );
-      expect(updatedState).toEqual({
-        ...initialQnaState,
+        ...stateAfterGetQnasSuccess,
         qnas: {
           ...testPaginatedResultsQnaQueryResult1,
-          total: testPaginatedResultsQnaQueryResult1.total + 1,
           results: [
             ...testPaginatedResultsQnaQueryResult1.results,
-            testQnaQueryResult1,
+            ...testPaginatedResultsQnaQueryResult1.results,
           ],
         },
       });

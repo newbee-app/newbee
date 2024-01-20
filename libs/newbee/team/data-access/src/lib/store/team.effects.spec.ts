@@ -511,7 +511,7 @@ describe('TeamEffects', () => {
       });
     });
 
-    it('should fire getDocsSuccess with the same docs if there are no more results to fetch', () => {
+    it('should do nothing if there are no more results to fetch', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -527,11 +527,7 @@ describe('TeamEffects', () => {
         },
       });
       actions$ = hot('a', { a: TeamActions.getDocs() });
-      const expected$ = hot('a', {
-        a: TeamActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
-        }),
-      });
+      const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAllDocs).not.toHaveBeenCalled();
@@ -638,7 +634,7 @@ describe('TeamEffects', () => {
       });
     });
 
-    it('should fire getQnasSuccess with same qnas if there are no more results to fetch', () => {
+    it('should do nothing if there are no more results to fetch', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -654,11 +650,7 @@ describe('TeamEffects', () => {
         },
       });
       actions$ = hot('a', { a: TeamActions.getQnas() });
-      const expected$ = hot('a', {
-        a: TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
-        }),
-      });
+      const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAllQnas).not.toHaveBeenCalled();
