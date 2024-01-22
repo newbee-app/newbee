@@ -31,6 +31,8 @@ export const apiRoles = {
     getBySlug: anyOrgMember,
     update: [...atLeastOrgModerator, ConditionalRoleEnum.OrgRoleGteSubject],
     delete: [...atLeastOrgModerator, ConditionalRoleEnum.OrgRoleGteSubject],
+    getAllDocs: anyOrgMember,
+    getAllQnas: anyOrgMember,
   },
   [Keyword.OrgMemberInvite]: {
     invite: anyOrgMember,

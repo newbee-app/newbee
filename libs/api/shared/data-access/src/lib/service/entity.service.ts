@@ -659,7 +659,7 @@ export class EntityService {
    * @param postType The post type to fetch.
    * @param offsetAndLimit The offset and limit to look for.
    * @param organization The organization whose posts to look for.
-   * @param team The team whose posts to look for within the org, if applicable.
+   * @param optionalParams All of the optional params for fetching posts.
    *
    * @returns A tuple containing the found post entities and a count of the total number of posts in the org.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
@@ -668,13 +668,17 @@ export class EntityService {
     postType: ClassConstructor<PostType>,
     offsetAndLimit: OffsetAndLimit,
     organization: OrganizationEntity,
-    team?: TeamEntity,
+    optionalParams?: {
+      team?: TeamEntity;
+      creator?: OrgMemberEntity;
+      maintainer?: OrgMemberEntity;
+    },
   ): Promise<[PostType[], number]> {
     const { offset, limit } = offsetAndLimit;
     try {
       return await this.em.findAndCount(
         postType,
-        { organization, ...(team && { team }) },
+        { organization, ...(optionalParams && optionalParams) },
         { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
       );
     } catch (err) {

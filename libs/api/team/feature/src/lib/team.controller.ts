@@ -268,7 +268,7 @@ export class TeamController {
       DocEntity,
       offsetAndLimitDto,
       organization,
-      team,
+      { team },
     );
     this.logger.log(
       `Got docs for team slug: ${team.slug}, in organization ID: ${organization.id}, total count: ${total}`,
@@ -307,7 +307,7 @@ export class TeamController {
       QnaEntity,
       offsetAndLimitDto,
       organization,
-      team,
+      { team },
     );
     this.logger.log(
       `Got qnas for team slug: ${team.slug}, in organization ID: ${organization.id}, total count: ${total}`,

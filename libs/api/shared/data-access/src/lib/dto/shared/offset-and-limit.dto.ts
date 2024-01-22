@@ -10,7 +10,7 @@ import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
 
 /**
- * The verifiable DTO sent from the frontend to the backend containing an offset value.
+ * The verifiable DTO sent from the frontend to the backend containing an offset and limit value.
  * Suitable for use in GET requests.
  */
 export class OffsetAndLimitDto implements OffsetAndLimit {

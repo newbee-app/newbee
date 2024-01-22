@@ -117,7 +117,7 @@ describe('EntityService', () => {
       });
     });
 
-    describe('org and team', () => {
+    describe('org and optional params', () => {
       afterEach(() => {
         expect(em.findAndCount).toHaveBeenCalledWith(
           DocEntity,
@@ -135,7 +135,7 @@ describe('EntityService', () => {
             DocEntity,
             testOffsetAndLimit1,
             testOrganizationEntity1,
-            testTeamEntity1,
+            { team: testTeamEntity1 },
           ),
         ).resolves.toEqual([[testDocEntity1], 1]);
       });

@@ -22,6 +22,7 @@ import {
   BaseEmailDto,
   BaseGenerateSlugDto,
   BaseGeneratedSlugDto,
+  BaseGetOrgMemberPostsDto,
   BaseMagicLinkLoginDto,
   BaseNameDto,
   BaseOrgAndMemberDto,
@@ -928,6 +929,15 @@ export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
 export const testOffsetAndLimit1: OffsetAndLimit = {
   offset: 0,
   limit: defaultLimit,
+};
+
+/**
+ * An example instance of BaseGetOrgMemberPostsDto.
+ * Strictly for use in testing.
+ */
+export const testBaseGetOrgMemberPostsDto1: BaseGetOrgMemberPostsDto = {
+  ...testOffsetAndLimit1,
+  role: 'maintainer',
 };
 
 /**

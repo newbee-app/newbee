@@ -216,7 +216,7 @@ describe('TeamController', () => {
         DocEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
-        testTeamEntity1,
+        { team: testTeamEntity1 },
       );
       expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
       expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
@@ -246,7 +246,7 @@ describe('TeamController', () => {
         QnaEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
-        testTeamEntity1,
+        { team: testTeamEntity1 },
       );
       expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
       expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([

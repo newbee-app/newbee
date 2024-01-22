@@ -79,6 +79,11 @@ export const baseIsNotEmpty = 'Base cannot be an empty string.';
 export const maintainerIsNotEmpty = 'Maintainer cannot be an empty string';
 
 /**
+ * Constant to say that role cannot be an empty string.
+ */
+export const roleIsNotEmpty = 'Role cannot be an empty string.';
+
+/**
  * Constant to say that up-to-date duration must be an ISO 8601 string.
  */
 export const upToDateDurationMatches =
