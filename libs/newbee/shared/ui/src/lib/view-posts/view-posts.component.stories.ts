@@ -1,3 +1,4 @@
+import { OrgMemberPostTab } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testPaginatedResultsDocQueryResult1,
@@ -12,10 +13,12 @@ export default {
   args: {
     httpClientError: null,
     postType: 'doc',
+    orgMemberTab: null,
     posts: testPaginatedResultsDocQueryResult1,
     getPostsPending: false,
   },
   argTypes: {
+    orgMemberTabChange: { action: 'orgMemberTabChange' },
     orgNavigate: { action: 'orgNavigate' },
     search: { action: 'search' },
     continueSearch: { action: 'continueSearch' },
@@ -30,6 +33,12 @@ export const Qnas: Story = {
   args: {
     postType: 'qna',
     posts: testPaginatedResultsQnaQueryResult1,
+  },
+};
+
+export const OrgMemberPosts: Story = {
+  args: {
+    orgMemberTab: OrgMemberPostTab.All,
   },
 };
 

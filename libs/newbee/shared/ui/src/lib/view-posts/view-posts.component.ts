@@ -10,6 +10,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   HttpClientError,
   IsVisibleDirectiveModule,
+  OrgMemberPostTab,
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
@@ -45,6 +46,7 @@ import { SearchResultComponent } from '../search-result';
 export class ViewPostsComponent implements OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
   readonly searchResultFormat = SearchResultFormat;
+  readonly orgMemberPostTabs = Object.entries(OrgMemberPostTab);
 
   /**
    * The HTTP client error.
@@ -62,6 +64,16 @@ export class ViewPostsComponent implements OnDestroy {
   get formattedPostType(): string {
     return this.postType === 'doc' ? 'doc' : 'QnA';
   }
+
+  /**
+   * The tab the user is looking at, if this page is displaying an org member's posts.
+   */
+  @Input() orgMemberTab: OrgMemberPostTab | null = null;
+
+  /**
+   * Emits whenever the org member tab value changes.
+   */
+  @Output() orgMemberTabChange = new EventEmitter<OrgMemberPostTab | null>();
 
   /**
    * The posts of the org.
@@ -161,6 +173,20 @@ export class ViewPostsComponent implements OnDestroy {
     }
 
     this.search.emit(searchVal);
+  }
+
+  /**
+   * Change the current org member tab to the new value.
+   *
+   * @param tab The new value for the org member tab.
+   */
+  changeOrgMemberTab(tab: OrgMemberPostTab): void {
+    if (this.orgMemberTab === tab) {
+      return;
+    }
+
+    this.orgMemberTab = tab;
+    this.orgMemberTabChange.emit(tab);
   }
 
   /**

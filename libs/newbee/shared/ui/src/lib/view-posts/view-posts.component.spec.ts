@@ -1,5 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { OrgMemberPostTab } from '@newbee/newbee/shared/util';
 import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { ViewPostsComponent } from './view-posts.component';
 
@@ -18,6 +19,7 @@ describe('ViewPostsComponent', () => {
 
     component.posts = testPaginatedResultsDocQueryResult1;
 
+    jest.spyOn(component.orgMemberTabChange, 'emit');
     jest.spyOn(component.search, 'emit');
 
     fixture.detectChanges();
@@ -52,6 +54,17 @@ describe('ViewPostsComponent', () => {
       component.emitSearch();
       expect(component.search.emit).toHaveBeenCalledTimes(1);
       expect(component.search.emit).toHaveBeenCalledWith('searching');
+    });
+  });
+
+  describe('changeOrgMemberTab', () => {
+    it('should change orgMemberTab and emit', () => {
+      component.changeOrgMemberTab(OrgMemberPostTab.All);
+      expect(component.orgMemberTab).toEqual(OrgMemberPostTab.All);
+      expect(component.orgMemberTabChange.emit).toHaveBeenCalledTimes(1);
+      expect(component.orgMemberTabChange.emit).toHaveBeenCalledWith(
+        OrgMemberPostTab.All,
+      );
     });
   });
 });

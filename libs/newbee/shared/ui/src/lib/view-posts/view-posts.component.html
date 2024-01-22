@@ -17,6 +17,16 @@
       </p>
     </form>
 
+    <div *ngIf="orgMemberTab" class="tabs tabs-boxed mt-4 w-fit">
+      <a
+        *ngFor="let tab of orgMemberPostTabs"
+        (click)="changeOrgMemberTab(tab[1])"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': orgMemberTab === tab[1] }"
+        >{{ tab[0] }}</a
+      >
+    </div>
+
     <div class="divider my-0"></div>
   </div>
 
