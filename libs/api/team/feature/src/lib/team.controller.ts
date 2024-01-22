@@ -9,11 +9,13 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  DocEntity,
   EntityService,
   GenerateSlugDto,
   OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
+  QnaEntity,
   SlugDto,
   TeamEntity,
   TeamMemberEntity,
@@ -262,7 +264,8 @@ export class TeamController {
       `Get all docs request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [docs, total] = await this.entityService.findDocsByOrgAndCount(
+    const [docs, total] = await this.entityService.findPostsByOrgAndCount(
+      DocEntity,
       offsetAndLimitDto,
       organization,
       team,
@@ -300,7 +303,8 @@ export class TeamController {
       `Get all qnas request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [qnas, total] = await this.entityService.findQnasByOrgAndCount(
+    const [qnas, total] = await this.entityService.findPostsByOrgAndCount(
+      QnaEntity,
       offsetAndLimitDto,
       organization,
       team,

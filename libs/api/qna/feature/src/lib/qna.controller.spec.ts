@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
   EntityService,
+  QnaEntity,
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testQnaEntity1,
@@ -49,7 +50,7 @@ describe('QnaController', () => {
             createQnaQueryResults: jest
               .fn()
               .mockResolvedValue([testQnaQueryResult1]),
-            findQnasByOrgAndCount: jest
+            findPostsByOrgAndCount: jest
               .fn()
               .mockResolvedValue([[testQnaEntity1], 1]),
           }),
@@ -87,8 +88,9 @@ describe('QnaController', () => {
         total: 1,
         results: [testQnaQueryResult1],
       });
-      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledTimes(1);
-      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledWith(
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        QnaEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
       );

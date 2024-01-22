@@ -1,7 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  DocEntity,
   EntityService,
+  QnaEntity,
   testDocEntity1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
@@ -58,12 +60,6 @@ describe('TeamController', () => {
             createQnaQueryResults: jest
               .fn()
               .mockResolvedValue([testQnaQueryResult1]),
-            findDocsByOrgAndCount: jest
-              .fn()
-              .mockResolvedValue([[testDocEntity1], 1]),
-            findQnasByOrgAndCount: jest
-              .fn()
-              .mockResolvedValue([[testQnaEntity1], 1]),
           }),
         },
       ],
@@ -201,6 +197,9 @@ describe('TeamController', () => {
 
   describe('getAllDocs', () => {
     it('should get doc results', async () => {
+      jest
+        .spyOn(entityService, 'findPostsByOrgAndCount')
+        .mockResolvedValue([[testDocEntity1], 1]);
       await expect(
         controller.getAllDocs(
           testOffsetAndLimit1,
@@ -212,8 +211,9 @@ describe('TeamController', () => {
         total: 1,
         results: [testDocQueryResult1],
       });
-      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledTimes(1);
-      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledWith(
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        DocEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
         testTeamEntity1,
@@ -227,6 +227,9 @@ describe('TeamController', () => {
 
   describe('getAllQnas', () => {
     it('should get qna results', async () => {
+      jest
+        .spyOn(entityService, 'findPostsByOrgAndCount')
+        .mockResolvedValue([[testQnaEntity1], 1]);
       await expect(
         controller.getAllQnas(
           testOffsetAndLimit1,
@@ -238,8 +241,9 @@ describe('TeamController', () => {
         total: 1,
         results: [testQnaQueryResult1],
       });
-      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledTimes(1);
-      expect(entityService.findQnasByOrgAndCount).toHaveBeenCalledWith(
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        QnaEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
         testTeamEntity1,

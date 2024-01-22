@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocService } from '@newbee/api/doc/data-access';
 import {
+  DocEntity,
   EntityService,
   testDocEntity1,
   testOrgMemberEntity1,
@@ -47,7 +48,7 @@ describe('DocController', () => {
             createDocQueryResults: jest
               .fn()
               .mockResolvedValue([testDocQueryResult1]),
-            findDocsByOrgAndCount: jest
+            findPostsByOrgAndCount: jest
               .fn()
               .mockResolvedValue([[testDocEntity1], 1]),
           }),
@@ -85,8 +86,9 @@ describe('DocController', () => {
         total: 1,
         results: [testDocQueryResult1],
       });
-      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledTimes(1);
-      expect(entityService.findDocsByOrgAndCount).toHaveBeenCalledWith(
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        DocEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
       );

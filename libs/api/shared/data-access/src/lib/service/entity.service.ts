@@ -29,6 +29,7 @@ import {
   cannotDeleteOnlyTeamOwnerBadRequest,
   internalServerError,
 } from '@newbee/shared/util';
+import { ClassConstructor } from 'class-transformer';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import {
@@ -653,52 +654,26 @@ export class EntityService {
   }
 
   /**
-   * Finds all of the `DocEntity` associated with the given org and possibly team.
+   * Finds all of a given post type associated with the given org, and possibly a team.
    *
+   * @param postType The post type to fetch.
    * @param offsetAndLimit The offset and limit to look for.
-   * @param organization The organization whose docs to look for.
-   * @param team The team whose docs to look for within the org, if applicable.
+   * @param organization The organization whose posts to look for.
+   * @param team The team whose posts to look for within the org, if applicable.
    *
-   * @returns A tuple containing the found doc entities and a count of the total number of docs in the org.
+   * @returns A tuple containing the found post entities and a count of the total number of posts in the org.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async findDocsByOrgAndCount(
+  async findPostsByOrgAndCount<PostType extends PostEntity>(
+    postType: ClassConstructor<PostType>,
     offsetAndLimit: OffsetAndLimit,
     organization: OrganizationEntity,
     team?: TeamEntity,
-  ): Promise<[DocEntity[], number]> {
+  ): Promise<[PostType[], number]> {
     const { offset, limit } = offsetAndLimit;
     try {
       return await this.em.findAndCount(
-        DocEntity,
-        { organization, ...(team && { team }) },
-        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
-   * Finds all of the `QnaEntity` associated with the given org and possibly team.
-   *
-   * @param offsetAndLimit The offset and limit to look for.
-   * @param organization The organization whose qnas to look for.
-   * @param team The team whose qnas to look for within the org, if applicable.
-   *
-   * @returns A tuple containing the found qna entities and a count of the total number of qnas in the org.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async findQnasByOrgAndCount(
-    offsetAndLimit: OffsetAndLimit,
-    organization: OrganizationEntity,
-    team?: TeamEntity,
-  ): Promise<[QnaEntity[], number]> {
-    const { offset, limit } = offsetAndLimit;
-    try {
-      return await this.em.findAndCount(
-        QnaEntity,
+        postType,
         { organization, ...(team && { team }) },
         { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
       );

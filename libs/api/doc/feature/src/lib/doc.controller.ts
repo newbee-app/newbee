@@ -70,7 +70,8 @@ export class DocController {
       `Get all docs request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [docs, total] = await this.entityService.findDocsByOrgAndCount(
+    const [docs, total] = await this.entityService.findPostsByOrgAndCount(
+      DocEntity,
       offsetAndLimitDto,
       organization,
     );

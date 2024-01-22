@@ -71,7 +71,8 @@ export class QnaController {
       `Get all qnas request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
     );
 
-    const [qnas, total] = await this.entityService.findQnasByOrgAndCount(
+    const [qnas, total] = await this.entityService.findPostsByOrgAndCount(
+      QnaEntity,
       offsetAndLimitDto,
       organization,
     );
