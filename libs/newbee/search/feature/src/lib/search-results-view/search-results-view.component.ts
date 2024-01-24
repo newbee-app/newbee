@@ -12,7 +12,7 @@ import {
 import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for displaying search results.
@@ -60,45 +60,44 @@ export class SearchResultsViewComponent implements OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {
-    route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (paramMap) => {
-        this._searchTerm = paramMap.get(Keyword.Search) ?? '';
-      },
-    });
+    combineLatest([route.paramMap, route.queryParamMap])
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: ([paramMap, queryParamMap]) => {
+          // deal with route param
+          this._searchTerm = paramMap.get(Keyword.Search) ?? '';
 
-    route.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
-      next: (queryParamMap) => {
-        // deal with type query param
-        const typeQueryParam = queryParamMap.get(Keyword.Type);
-        const type =
-          typeQueryParam &&
-          Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
-            ? (typeQueryParam as SolrEntryEnum)
-            : null;
-        this._tab = solrEntryToSearchTab(type);
+          // deal with type query param
+          const typeQueryParam = queryParamMap.get(Keyword.Type);
+          const type =
+            typeQueryParam &&
+            Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
+              ? (typeQueryParam as SolrEntryEnum)
+              : null;
+          this._tab = solrEntryToSearchTab(type);
 
-        // deal with team query param
-        const teamSlug = queryParamMap.get(ShortUrl.Team);
-        const memberSlug = queryParamMap.get(ShortUrl.Member);
-        const creatorSlug = queryParamMap.get(Keyword.Creator);
-        const maintainerSlug = queryParamMap.get(Keyword.Maintainer);
+          // deal with query params
+          const teamSlug = queryParamMap.get(ShortUrl.Team);
+          const memberSlug = queryParamMap.get(ShortUrl.Member);
+          const creatorSlug = queryParamMap.get(Keyword.Creator);
+          const maintainerSlug = queryParamMap.get(Keyword.Maintainer);
 
-        this.store.dispatch(
-          SearchActions.search({
-            query: {
-              offset: 0,
-              limit: defaultLimit,
-              query: this._searchTerm,
-              ...(type && { type }),
-              ...(teamSlug && { team: teamSlug }),
-              ...(memberSlug && { member: memberSlug }),
-              ...(creatorSlug && { creator: creatorSlug }),
-              ...(maintainerSlug && { maintainer: maintainerSlug }),
-            },
-          }),
-        );
-      },
-    });
+          this.store.dispatch(
+            SearchActions.search({
+              query: {
+                offset: 0,
+                limit: defaultLimit,
+                query: this._searchTerm,
+                ...(type && { type }),
+                ...(teamSlug && { team: teamSlug }),
+                ...(memberSlug && { member: memberSlug }),
+                ...(creatorSlug && { creator: creatorSlug }),
+                ...(maintainerSlug && { maintainer: maintainerSlug }),
+              },
+            }),
+          );
+        },
+      });
   }
 
   /**
