@@ -17,10 +17,11 @@ import {
 import {
   HttpClientError,
   IsVisibleDirectiveModule,
+  RouteAndQueryParams,
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
-import { Keyword, type QueryResults } from '@newbee/shared/util';
+import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -72,7 +73,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * The search results themselves.
    */
-  @Input() searchResults: QueryResults | null = null;
+  @Input() searchResults: BaseQueryResultsDto | null = null;
 
   /**
    * Whether to display a loader to indicate a search is occurring.
@@ -97,7 +98,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Indicates that more search results should be fetched.

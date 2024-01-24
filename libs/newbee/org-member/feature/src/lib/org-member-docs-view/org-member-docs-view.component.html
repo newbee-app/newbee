@@ -1,0 +1,11 @@
+<newbee-view-posts
+  [httpClientError]="httpClientError$ | async"
+  postType="doc"
+  [orgMemberTab]="orgMemberTab"
+  (orgMemberTabChange)="onOrgMemberTabChange($event)"
+  [posts]="(memberModuleState$ | async)!.docs"
+  [getPostsPending]="(memberModuleState$ | async)!.pendingGetDocs"
+  (orgNavigate)="onOrgNavigate($event)"
+  (search)="onSearch($event)"
+  (continueSearch)="getDocs()"
+></newbee-view-posts>

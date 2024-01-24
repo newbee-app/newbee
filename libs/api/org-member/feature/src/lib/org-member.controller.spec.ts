@@ -134,7 +134,7 @@ describe('OrgMemberController', () => {
         DocEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
-        { maintainer: testOrgMemberEntity1 },
+        { orgMember: testOrgMemberEntity1 },
       );
       expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
       expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
@@ -164,7 +164,7 @@ describe('OrgMemberController', () => {
         QnaEntity,
         testOffsetAndLimit1,
         testOrganizationEntity1,
-        { maintainer: testOrgMemberEntity1 },
+        { orgMember: testOrgMemberEntity1 },
       );
       expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
       expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([

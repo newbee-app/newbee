@@ -68,18 +68,18 @@ describe('NavbarComponent', () => {
     });
   });
 
-  describe('selectOrganization', () => {
+  describe('onSelectedOrganizationChange', () => {
     it('should navigate to org', async () => {
-      await component.selectOrganization(testOrganization1);
+      await component.onSelectedOrganizationChange(testOrganization1);
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}`,
       );
     });
   });
 
-  describe('navigateToLink', () => {
+  describe('onNavigateToLink', () => {
     it('should navigate', async () => {
-      await component.navigateToLink('test');
+      await component.onNavigateToLink({ route: 'test' });
       expect(router.url).toEqual('/test');
     });
   });

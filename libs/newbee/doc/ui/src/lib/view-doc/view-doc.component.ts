@@ -4,6 +4,7 @@ import { AlertComponent, UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   HttpClientError,
+  RouteAndQueryParams,
   ShortUrl,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
@@ -76,12 +77,12 @@ export class ViewDocComponent {
   /**
    * Where to navigate relative to the selected org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Where to navigate relative to the current doc.
    */
-  @Output() docNavigate = new EventEmitter<string>();
+  @Output() docNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Mark the current doc as up-to-date.
@@ -111,23 +112,5 @@ export class ViewDocComponent {
    */
   httpClientErrorMsg(...keys: string[]): string {
     return getHttpClientErrorMsg(this.httpClientError, keys.join('-'));
-  }
-
-  /**
-   * Emit orgNavigate using the given path.
-   *
-   * @param paths The paths to join before emitting.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
-  }
-
-  /**
-   * Emit docNavigate using the given path.
-   *
-   * @param paths The paths to join before emitting.
-   */
-  emitDocNavigate(...paths: string[]): void {
-    this.docNavigate.emit(`/${paths.join('/')}`);
   }
 }

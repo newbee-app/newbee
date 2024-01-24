@@ -11,7 +11,11 @@ import {
   SearchResultComponent,
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  SearchResultFormat,
+  ShortUrl,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   Team,
@@ -77,7 +81,7 @@ export class ViewTeamsComponent implements OnDestroy {
   /**
    * The path to navigate to, relative to the currently selected org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The form control for the searchbar.
@@ -117,14 +121,6 @@ export class ViewTeamsComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-  }
-
-  /**
-   * Emit `orgNavigate` with the given paths.
-   * @param paths The path to navigate to, joined by `/`.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
   }
 
   /**

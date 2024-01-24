@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   SearchTab,
   searchTabToSolrEntry,
@@ -9,10 +9,10 @@ import {
   SearchActions,
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
-import { Subject, map, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * The smart UI for displaying search results.
@@ -66,44 +66,39 @@ export class SearchResultsViewComponent implements OnDestroy {
       },
     });
 
-    route.queryParamMap
-      .pipe(
-        map((queryParamMap, index): [ParamMap, number] => [
-          queryParamMap,
-          index,
-        ]),
-        takeUntil(this.unsubscribe$),
-      )
-      .subscribe({
-        next: ([queryParamMap, index]) => {
-          // deal with type query param
-          const typeQueryParam = queryParamMap.get(Keyword.Type);
-          const type =
-            typeQueryParam &&
-            Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
-              ? (typeQueryParam as SolrEntryEnum)
-              : null;
-          this._tab = solrEntryToSearchTab(type);
+    route.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
+      next: (queryParamMap) => {
+        // deal with type query param
+        const typeQueryParam = queryParamMap.get(Keyword.Type);
+        const type =
+          typeQueryParam &&
+          Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
+            ? (typeQueryParam as SolrEntryEnum)
+            : null;
+        this._tab = solrEntryToSearchTab(type);
 
-          // deal with team query param
-          const teamSlug = queryParamMap.get(ShortUrl.Team);
+        // deal with team query param
+        const teamSlug = queryParamMap.get(ShortUrl.Team);
+        const memberSlug = queryParamMap.get(ShortUrl.Member);
+        const creatorSlug = queryParamMap.get(Keyword.Creator);
+        const maintainerSlug = queryParamMap.get(Keyword.Maintainer);
 
-          // fire a new search request based on the changed query params, but only if it's not the initial value
-          if (index !== 0) {
-            this.store.dispatch(
-              SearchActions.search({
-                query: {
-                  offset: 0,
-                  limit: defaultLimit,
-                  query: this._searchTerm,
-                  ...(type && { type }),
-                  ...(teamSlug && { team: teamSlug }),
-                },
-              }),
-            );
-          }
-        },
-      });
+        this.store.dispatch(
+          SearchActions.search({
+            query: {
+              offset: 0,
+              limit: defaultLimit,
+              query: this._searchTerm,
+              ...(type && { type }),
+              ...(teamSlug && { team: teamSlug }),
+              ...(memberSlug && { member: memberSlug }),
+              ...(creatorSlug && { creator: creatorSlug }),
+              ...(maintainerSlug && { maintainer: maintainerSlug }),
+            },
+          }),
+        );
+      },
+    });
   }
 
   /**
@@ -168,10 +163,14 @@ export class SearchResultsViewComponent implements OnDestroy {
   /**
    * Navigate to the given path, relative to the current org.
    *
-   * @param path The path to navigate to, relative to the current org.
+   * @param routeAndQueryParams The route and query params to navigate to, relative to the current org.
    */
-  async onOrgNavigate(path: string): Promise<void> {
-    await this.router.navigate([`../../${path}`], { relativeTo: this.route });
+  async onOrgNavigate(routeAndQueryParams: RouteAndQueryParams): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
+    await this.router.navigate([`../../${route}`], {
+      relativeTo: this.route,
+      ...(queryParams && { queryParams }),
+    });
   }
 
   /**

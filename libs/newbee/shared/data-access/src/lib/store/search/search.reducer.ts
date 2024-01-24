@@ -1,5 +1,5 @@
 import { canGetMoreResults } from '@newbee/newbee/shared/util';
-import { Keyword, QueryResults } from '@newbee/shared/util';
+import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -11,7 +11,7 @@ export interface SearchState {
   /**
    * The results of a search request.
    */
-  searchResults: QueryResults | null;
+  searchResults: BaseQueryResultsDto | null;
 
   /**
    * The results of a suggest request.

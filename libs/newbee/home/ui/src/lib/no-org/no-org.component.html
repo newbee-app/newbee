@@ -3,7 +3,11 @@
   <button
     type="button"
     id="create-org-btn"
-    (click)="emitNavigateToLink(shortUrl.Organization, keyword.New)"
+    (click)="
+      navigateToLink.emit({
+        route: [shortUrl.Organization, keyword.New].join('/')
+      })
+    "
     class="btn w-fit"
   >
     Create one

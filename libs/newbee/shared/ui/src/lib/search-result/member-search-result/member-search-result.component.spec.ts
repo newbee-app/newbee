@@ -55,9 +55,9 @@ describe('MemberSearchResultComponent', () => {
     it('should navigate to the given org member', () => {
       component.orgMemberNavigate();
       expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
-      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
-        `/${ShortUrl.Member}/${testOrgMember1.slug}`,
-      );
+      expect(component.orgNavigate.emit).toHaveBeenCalledWith({
+        route: `${ShortUrl.Member}/${testOrgMember1.slug}`,
+      });
     });
   });
 });

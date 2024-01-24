@@ -11,7 +11,10 @@ import {
   SearchResultComponent,
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  SearchResultFormat,
+} from '@newbee/newbee/shared/util';
 import { TeamMemberAndTeam } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -49,7 +52,7 @@ export class ViewOrgMemberTeamsComponent implements OnDestroy {
   /**
    * The path to navigate to, relative to the currently selected org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The form control for the serachbar.

@@ -1,11 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShortUrl } from '@newbee/newbee/shared/util';
-import {
-  Keyword,
-  testOrgMember1,
-  testTeam1,
-  testTeam2,
-} from '@newbee/shared/util';
+import { testOrgMember1, testTeam1, testTeam2 } from '@newbee/shared/util';
 import { ViewTeamsComponent } from './view-teams.component';
 
 describe('ViewTeamsComponent', () => {
@@ -43,16 +37,6 @@ describe('ViewTeamsComponent', () => {
     it('should filter teams to show by searchbar', () => {
       component.searchbar.setValue(testTeam1.name.toUpperCase());
       expect(component.teamsToShow).toEqual([testTeam1]);
-    });
-  });
-
-  describe('emitOrgNavigate', () => {
-    it('should emit joined paths', () => {
-      component.emitOrgNavigate(ShortUrl.Team, Keyword.New);
-      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
-      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
-        `/${ShortUrl.Team}/${Keyword.New}`,
-      );
     });
   });
 });

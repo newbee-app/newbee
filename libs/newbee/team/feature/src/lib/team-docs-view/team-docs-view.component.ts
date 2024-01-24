@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamActions, httpFeature } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import { teamFeature } from '@newbee/newbee/team/data-access';
 import { Keyword, SolrEntryEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
@@ -63,11 +63,13 @@ export class TeamDocsViewComponent implements OnDestroy {
   /**
    * Navigate to a path relative to the currently selected org.
    *
-   * @param path The path to navigate to.
+   * @param routeAndQueryParams The route and query params to navigate to.
    */
-  async onOrgNavigate(path: string): Promise<void> {
-    await this.router.navigate([`../../../${path}`], {
+  async onOrgNavigate(routeAndQueryParams: RouteAndQueryParams): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
+    await this.router.navigate([`../../../${route}`], {
       relativeTo: this.route,
+      ...(queryParams && { queryParams }),
     });
   }
 

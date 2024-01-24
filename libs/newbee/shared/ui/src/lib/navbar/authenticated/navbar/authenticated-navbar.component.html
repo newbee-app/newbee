@@ -11,11 +11,13 @@
       <li *ngIf="checkRoles(apiRoles.org.update, { orgMember })">
         <a
           (click)="
-            emitNavigateToLink(
-              shortUrl.Organization,
-              selectedOrganization.slug,
-              keyword.Edit
-            )
+            navigateToLink.emit({
+              route: [
+                shortUrl.Organization,
+                selectedOrganization.slug,
+                keyword.Edit
+              ].join('/')
+            })
           "
           >Edit org</a
         >
@@ -23,11 +25,13 @@
       <li>
         <a
           (click)="
-            emitNavigateToLink(
-              shortUrl.Organization,
-              selectedOrganization.slug,
-              shortUrl.Doc
-            )
+            navigateToLink.emit({
+              route: [
+                shortUrl.Organization,
+                selectedOrganization.slug,
+                shortUrl.Doc
+              ].join('/')
+            })
           "
           >View docs</a
         >
@@ -35,11 +39,13 @@
       <li>
         <a
           (click)="
-            emitNavigateToLink(
-              shortUrl.Organization,
-              selectedOrganization.slug,
-              shortUrl.Qna
-            )
+            navigateToLink.emit({
+              route: [
+                shortUrl.Organization,
+                selectedOrganization.slug,
+                shortUrl.Qna
+              ].join('/')
+            })
           "
           >View QnAs</a
         >
@@ -47,11 +53,13 @@
       <li>
         <a
           (click)="
-            emitNavigateToLink(
-              shortUrl.Organization,
-              selectedOrganization.slug,
-              shortUrl.Team
-            )
+            navigateToLink.emit({
+              route: [
+                shortUrl.Organization,
+                selectedOrganization.slug,
+                shortUrl.Team
+              ].join('/')
+            })
           "
           >View teams</a
         >
@@ -59,11 +67,13 @@
       <li>
         <a
           (click)="
-            emitNavigateToLink(
-              shortUrl.Organization,
-              selectedOrganization.slug,
-              shortUrl.Member
-            )
+            navigateToLink.emit({
+              route: [
+                shortUrl.Organization,
+                selectedOrganization.slug,
+                shortUrl.Member
+              ].join('/')
+            })
           "
           >View org members</a
         >
@@ -122,10 +132,12 @@
             <newbee-text-tooltip placement="bottom" text="Home">
               <a
                 (click)="
-                  emitNavigateToLink(
-                    shortUrl.Organization,
-                    selectedOrganization.slug
-                  )
+                  navigateToLink.emit({
+                    route: [
+                      shortUrl.Organization,
+                      selectedOrganization.slug
+                    ].join('/')
+                  })
                 "
                 class="font-semibold link link-hover"
               >
@@ -175,12 +187,14 @@
                   <li *ngIf="checkRoles(apiRoles.doc.create, { orgMember })">
                     <a
                       (click)="
-                        emitNavigateToLink(
-                          shortUrl.Organization,
-                          selectedOrganization.slug,
-                          shortUrl.Doc,
-                          keyword.New
-                        )
+                        navigateToLink.emit({
+                          route: [
+                            shortUrl.Organization,
+                            selectedOrganization.slug,
+                            shortUrl.Doc,
+                            keyword.New
+                          ].join('/')
+                        })
                       "
                       >Create doc</a
                     >
@@ -188,12 +202,14 @@
                   <li *ngIf="checkRoles(apiRoles.qna.create, { orgMember })">
                     <a
                       (click)="
-                        emitNavigateToLink(
-                          shortUrl.Organization,
-                          selectedOrganization.slug,
-                          shortUrl.Qna,
-                          keyword.New
-                        )
+                        navigateToLink.emit({
+                          route: [
+                            shortUrl.Organization,
+                            selectedOrganization.slug,
+                            shortUrl.Qna,
+                            keyword.New
+                          ].join('/')
+                        })
                       "
                       >Create qna</a
                     >
@@ -201,12 +217,14 @@
                   <li *ngIf="checkRoles(apiRoles.team.create, { orgMember })">
                     <a
                       (click)="
-                        emitNavigateToLink(
-                          shortUrl.Organization,
-                          selectedOrganization.slug,
-                          shortUrl.Team,
-                          keyword.New
-                        )
+                        navigateToLink.emit({
+                          route: [
+                            shortUrl.Organization,
+                            selectedOrganization.slug,
+                            shortUrl.Team,
+                            keyword.New
+                          ].join('/')
+                        })
                       "
                       >Create team</a
                     >
@@ -220,11 +238,13 @@
                   >
                     <a
                       (click)="
-                        emitNavigateToLink(
-                          shortUrl.Organization,
-                          selectedOrganization.slug,
-                          shortUrl.Member
-                        )
+                        navigateToLink.emit({
+                          route: [
+                            shortUrl.Organization,
+                            selectedOrganization.slug,
+                            shortUrl.Member
+                          ].join('/')
+                        })
                       "
                       >Invite users to org</a
                     >
@@ -244,7 +264,9 @@
                   class="menu flex flex-col flex-nowrap min-w-44 max-h-60 overflow-y-auto overflow-x-hidden"
                 >
                   <li>
-                    <a (click)="emitNavigateToLink(keyword.User)" class="flex"
+                    <a
+                      (click)="navigateToLink.emit({ route: keyword.User })"
+                      class="flex"
                       >Manage your account</a
                     >
                   </li>
@@ -288,55 +310,65 @@
             <a
               *ngIf="checkRoles(apiRoles.org.update, { orgMember })"
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  keyword.Edit
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    keyword.Edit
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >Edit org</a
             >
             <a
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Doc
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Doc
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >View docs</a
             >
             <a
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Qna
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Qna
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >View QnAs</a
             >
             <a
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Team
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Team
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >View teams</a
             >
             <a
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Member
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Member
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >View org members</a
@@ -358,12 +390,14 @@
             <a
               *ngIf="checkRoles(apiRoles.doc.create, { orgMember })"
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Doc,
-                  keyword.New
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Doc,
+                    keyword.New
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >Create doc</a
@@ -371,12 +405,14 @@
             <a
               *ngIf="checkRoles(apiRoles.qna.create, { orgMember })"
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Qna,
-                  keyword.New
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Qna,
+                    keyword.New
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >Create question</a
@@ -384,12 +420,14 @@
             <a
               *ngIf="checkRoles(apiRoles.team.create, { orgMember })"
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Team,
-                  keyword.New
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Team,
+                    keyword.New
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >Create team</a
@@ -399,11 +437,13 @@
                 checkRoles(apiRoles['org-member-invite'].invite, { orgMember })
               "
               (click)="
-                emitNavigateToLink(
-                  shortUrl.Organization,
-                  selectedOrganization.slug,
-                  shortUrl.Member
-                )
+                navigateToLink.emit({
+                  route: [
+                    shortUrl.Organization,
+                    selectedOrganization.slug,
+                    shortUrl.Member
+                  ].join('/')
+                })
               "
               class="link link-hover"
               >Invite users to org</a
@@ -416,7 +456,7 @@
           <label for="account-collapse" class="collapse-title">Account</label>
           <div class="collapse-content flex flex-col flex-nowrap gap-y-2">
             <a
-              (click)="emitNavigateToLink(keyword.User)"
+              (click)="navigateToLink.emit({ route: keyword.User })"
               class="link link-hover"
               >Manage your account</a
             >

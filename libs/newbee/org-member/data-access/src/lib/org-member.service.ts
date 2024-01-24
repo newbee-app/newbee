@@ -1,13 +1,17 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OrganizationService } from '@newbee/newbee/organization/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   BaseCreateOrgMemberInviteDto,
+  BaseGetOrgMemberPostsDto,
   BaseUpdateOrgMemberDto,
+  DocQueryResult,
   Keyword,
   OrgMember,
   OrgMemberNoOrg,
+  PaginatedResults,
+  QnaQueryResult,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -76,6 +80,48 @@ export class OrgMemberService {
   delete(orgSlug: string, memberSlug: string): Observable<null> {
     return this.http.delete<null>(
       OrgMemberService.baseApiUrl(orgSlug, memberSlug),
+    );
+  }
+
+  /**
+   * Sends a request to the API to get all of the docs of the given org member in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   * @param memberSlug The org member whose docs to get.
+   * @param getOrgMemberPostsDto The information needed to request the org member's docs.
+   *
+   * @returns An observable containing the paginated docs.
+   */
+  getAllDocs(
+    orgSlug: string,
+    memberSlug: string,
+    getOrgMemberPostsDto: BaseGetOrgMemberPostsDto,
+  ): Observable<PaginatedResults<DocQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...getOrgMemberPostsDto } });
+    return this.http.get<PaginatedResults<DocQueryResult>>(
+      `${OrgMemberService.baseApiUrl(orgSlug, memberSlug)}/${Keyword.Doc}`,
+      { params },
+    );
+  }
+
+  /**
+   * Sends a request to the API to get all of the qnas of the given org member in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   * @param memberSlug The org member whose qnas to get.
+   * @param getOrgMemberPostsDto The information needed to request the org member's qnas.
+   *
+   * @returns An observable containing the paginated qnas.
+   */
+  getAllQnas(
+    orgSlug: string,
+    memberSlug: string,
+    getOrgMemberPostsDto: BaseGetOrgMemberPostsDto,
+  ): Observable<PaginatedResults<QnaQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...getOrgMemberPostsDto } });
+    return this.http.get<PaginatedResults<QnaQueryResult>>(
+      `${OrgMemberService.baseApiUrl(orgSlug, memberSlug)}/${Keyword.Qna}`,
+      { params },
     );
   }
 

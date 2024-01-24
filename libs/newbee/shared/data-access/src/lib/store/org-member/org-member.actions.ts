@@ -1,8 +1,12 @@
 import {
   BaseCreateOrgMemberInviteDto,
   BaseUpdateOrgMemberDto,
+  CreatorOrMaintainer,
+  DocQueryResult,
   Keyword,
   OrgMember,
+  PaginatedResults,
+  QnaQueryResult,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
@@ -45,6 +49,26 @@ export const OrgMemberActions = createActionGroup({
      * Indicates that the selected org member was successfully deleted.
      */
     'Delete Org Member Success': emptyProps(),
+
+    /**
+     * Gets all of the paginated docs of the selected org member.
+     */
+    'Get Docs': props<{ role: CreatorOrMaintainer | null }>(),
+
+    /**
+     * Indicates that the paginated docs were successfully retrieved.
+     */
+    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+
+    /**
+     * Gets all of the paginated qnas of the selected org member.
+     */
+    'Get Qnas': props<{ role: CreatorOrMaintainer | null }>(),
+
+    /**
+     * Indicates that the paginated qnas were successfully retrieved.
+     */
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
 
     /**
      * Invite a user to an org.

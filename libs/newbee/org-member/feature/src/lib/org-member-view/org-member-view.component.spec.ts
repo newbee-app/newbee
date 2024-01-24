@@ -77,7 +77,7 @@ describe('OrgMemberViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
-      await component.onOrgNavigate('test');
+      await component.onOrgNavigate({ route: 'test' });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/test`,
       );
@@ -86,7 +86,7 @@ describe('OrgMemberViewComponent', () => {
 
   describe('onMemberNavigate', () => {
     it('should navigate relative to org member', async () => {
-      await component.onMemberNavigate('test');
+      await component.onMemberNavigate({ route: 'test' });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Member}/${testOrgMember1.slug}/test`,
       );

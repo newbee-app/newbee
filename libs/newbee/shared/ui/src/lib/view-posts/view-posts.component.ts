@@ -11,6 +11,7 @@ import {
   HttpClientError,
   IsVisibleDirectiveModule,
   OrgMemberPostTab,
+  RouteAndQueryParams,
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
@@ -73,7 +74,7 @@ export class ViewPostsComponent implements OnDestroy {
   /**
    * Emits whenever the org member tab value changes.
    */
-  @Output() orgMemberTabChange = new EventEmitter<OrgMemberPostTab | null>();
+  @Output() orgMemberTabChange = new EventEmitter<OrgMemberPostTab>();
 
   /**
    * The posts of the org.
@@ -97,7 +98,7 @@ export class ViewPostsComponent implements OnDestroy {
   /**
    * The path to navigate to, relative to the currently selected org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Emits whenver the user fires a search request.

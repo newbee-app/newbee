@@ -23,4 +23,25 @@ export class BaseQueryDto extends BaseSuggestDto implements OffsetAndLimit {
    * Needs to be a partial instead of a nullable because it will be used in GET requests.
    */
   team?: string;
+
+  /**
+   * The slug of the org member to limit the search to.
+   * Don't specify to search across all creators and maintainers.
+   * Needs to be a partial instead of a nullable because it will be used in GET requests.
+   */
+  member?: string;
+
+  /**
+   * The slug of the org member creator to limit the search to.
+   * Don't specify to search across all creators.
+   * Needs to be a partial instead of a nullable because it will be used in GET requests.
+   */
+  creator?: string;
+
+  /**
+   * The slug of the org member maintainer to limit the search to.
+   * Don't specify to search across all maintainers.
+   * Needs to be a partial instead of a nullable because it will be used in GET requests.
+   */
+  maintainer?: string;
 }

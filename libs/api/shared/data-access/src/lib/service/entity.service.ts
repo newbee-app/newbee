@@ -670,15 +670,24 @@ export class EntityService {
     organization: OrganizationEntity,
     optionalParams?: {
       team?: TeamEntity;
+      orgMember?: OrgMemberEntity;
       creator?: OrgMemberEntity;
       maintainer?: OrgMemberEntity;
     },
   ): Promise<[PostType[], number]> {
     const { offset, limit } = offsetAndLimit;
+    const params = optionalParams ?? {};
+    const { orgMember, ...restParams } = params;
     try {
       return await this.em.findAndCount(
         postType,
-        { organization, ...(optionalParams && optionalParams) },
+        {
+          organization,
+          ...(orgMember && {
+            $or: [{ creator: orgMember }, { maintainer: orgMember }],
+          }),
+          ...(restParams && restParams),
+        },
         { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
       );
     } catch (err) {

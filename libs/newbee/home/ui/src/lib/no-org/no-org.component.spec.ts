@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword } from '@newbee/shared/util';
 import { NoOrgComponent } from './no-org.component';
 
 describe('NoOrgComponent', () => {
@@ -21,14 +19,5 @@ describe('NoOrgComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
-  });
-
-  it('emitNavigateToLink should emit navigateToLink', () => {
-    jest.spyOn(component.navigateToLink, 'emit');
-    component.emitNavigateToLink(ShortUrl.Organization, Keyword.New);
-    expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
-    expect(component.navigateToLink.emit).toHaveBeenCalledWith(
-      `/${ShortUrl.Organization}/${Keyword.New}`,
-    );
   });
 });

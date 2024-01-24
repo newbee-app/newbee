@@ -11,7 +11,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { SearchService } from '@newbee/api/search/data-access';
 import {
   DocEntity,
   EntityService,
@@ -29,7 +28,7 @@ import {
   testTeamEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { newOrgConfigset } from '@newbee/api/shared/util';
+import { newOrgConfigset, solrDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
@@ -62,7 +61,6 @@ describe('OrganizationService', () => {
   let em: EntityManager;
   let entityService: EntityService;
   let teamService: TeamService;
-  let searchService: SearchService;
   let solrCli: SolrCli;
 
   const testOrganizationEntity = createMock<OrganizationEntity>({
@@ -102,10 +100,6 @@ describe('OrganizationService', () => {
           }),
         },
         {
-          provide: SearchService,
-          useValue: createMock<SearchService>(),
-        },
-        {
           provide: SolrCli,
           useValue: createMock<SolrCli>(),
         },
@@ -116,7 +110,6 @@ describe('OrganizationService', () => {
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     teamService = module.get<TeamService>(TeamService);
-    searchService = module.get<SearchService>(SearchService);
     solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
@@ -131,7 +124,6 @@ describe('OrganizationService', () => {
     expect(em).toBeDefined();
     expect(entityService).toBeDefined();
     expect(teamService).toBeDefined();
-    expect(searchService).toBeDefined();
     expect(solrCli).toBeDefined();
   });
 
@@ -223,6 +215,10 @@ describe('OrganizationService', () => {
   });
 
   describe('findOneBySlug', () => {
+    beforeEach(() => {
+      jest.spyOn(service, 'buildSuggesters');
+    });
+
     afterEach(() => {
       expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
       expect(em.findOneOrFail).toHaveBeenCalledWith(OrganizationEntity, {
@@ -234,7 +230,7 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggesters).not.toHaveBeenCalled();
+      expect(service.buildSuggesters).not.toHaveBeenCalled();
     });
 
     it(`should build the suggester if it's been at least a day since last build`, async () => {
@@ -250,8 +246,8 @@ describe('OrganizationService', () => {
       await expect(
         service.findOneBySlug(testOrganizationEntity.slug),
       ).resolves.toEqual(testOrganizationEntity);
-      expect(searchService.buildSuggesters).toHaveBeenCalledTimes(1);
-      expect(searchService.buildSuggesters).toHaveBeenCalledWith(
+      expect(service.buildSuggesters).toHaveBeenCalledTimes(1);
+      expect(service.buildSuggesters).toHaveBeenCalledWith(
         testOrganizationEntity,
       );
       expect(em.assign).toHaveBeenCalledTimes(1);
@@ -453,6 +449,25 @@ describe('OrganizationService', () => {
         service.changeUpToDateDuration(testOrganizationEntity, newDurationStr),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(em.find).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('buildSuggesters', () => {
+    it('should call suggest with build parameter', async () => {
+      await expect(
+        service.buildSuggesters(testOrganizationEntity1),
+      ).resolves.toBeUndefined();
+      expect(solrCli.suggest).toHaveBeenCalledTimes(
+        Object.values(solrDictionaries).length,
+      );
+      Object.values(solrDictionaries).forEach((dictionary) => {
+        expect(solrCli.suggest).toHaveBeenCalledWith(
+          testOrganizationEntity1.id,
+          {
+            params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
+          },
+        );
+      });
     });
   });
 });

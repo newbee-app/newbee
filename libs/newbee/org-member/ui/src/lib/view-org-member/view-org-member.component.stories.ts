@@ -1,6 +1,7 @@
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   OrgRoleEnum,
+  defaultLimit,
   testDocQueryResult1,
   testOrgMember1,
   testOrgMemberRelation1,
@@ -43,6 +44,7 @@ export default {
         ],
         total: 100,
         offset: 0,
+        limit: defaultLimit,
       },
       maintainedQnas: {
         results: [
@@ -52,6 +54,7 @@ export default {
         ],
         total: 100,
         offset: 0,
+        limit: defaultLimit,
       },
       createdDocs: {
         results: [
@@ -61,6 +64,7 @@ export default {
         ],
         total: 100,
         offset: 0,
+        limit: defaultLimit,
       },
       maintainedDocs: {
         results: [
@@ -70,6 +74,7 @@ export default {
         ],
         total: 100,
         offset: 0,
+        limit: defaultLimit,
       },
     },
     userOrgMember: testOrgMember1,

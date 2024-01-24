@@ -1,6 +1,10 @@
 import { OffsetAndLimitDto } from '@newbee/api/shared/data-access';
-import { BaseGetOrgMemberPostsDto, roleIsNotEmpty } from '@newbee/shared/util';
-import { IsNotEmpty } from 'class-validator';
+import {
+  BaseGetOrgMemberPostsDto,
+  CreatorOrMaintainer,
+  roleIsNotEmpty,
+} from '@newbee/shared/util';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
  * The verifiable DTO sent from the frontend to the backend to get an org member's posts.
@@ -13,6 +17,7 @@ export class GetOrgMemberPostsDto
   /**
    * @inheritdoc
    */
+  @IsOptional()
   @IsNotEmpty({ message: roleIsNotEmpty })
-  readonly role!: 'creator' | 'maintainer';
+  readonly role?: CreatorOrMaintainer;
 }

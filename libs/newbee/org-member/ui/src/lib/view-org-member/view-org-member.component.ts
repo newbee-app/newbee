@@ -9,6 +9,7 @@ import {
 } from '@newbee/newbee/shared/ui';
 import {
   PhoneNumberPipeModule,
+  RouteAndQueryParams,
   SearchResultFormat,
   SelectOption,
   ShortUrl,
@@ -103,12 +104,12 @@ export class ViewOrgMemberComponent {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Where to navigate to, relative to the current org member.
    */
-  @Output() memberNavigate = new EventEmitter<string>();
+  @Output() memberNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Edit the role of the org member to the new value.

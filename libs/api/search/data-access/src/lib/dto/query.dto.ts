@@ -1,10 +1,13 @@
 import {
   BaseQueryDto,
+  creatorIsNotEmpty,
   defaultLimit,
   limitIsInt,
   limitMin1,
+  maintainerIsNotEmpty,
   offsetIsInt,
   offsetMin0,
+  orgMemberIsNotEmpty,
   teamIsNotEmpty,
 } from '@newbee/shared/util';
 import { Transform } from 'class-transformer';
@@ -38,4 +41,25 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
   @IsOptional()
   @IsNotEmpty({ message: teamIsNotEmpty })
   team?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: orgMemberIsNotEmpty })
+  member?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: creatorIsNotEmpty })
+  creator?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: maintainerIsNotEmpty })
+  maintainer?: string;
 }

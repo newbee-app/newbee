@@ -41,11 +41,14 @@ export enum Keyword {
   Member = 'member',
   OrgMember = 'org-member',
   TeamMember = 'team-member',
+  Role = 'role',
 
   // search keywords
   Search = 'search',
   Suggest = 'suggest',
   Type = 'type',
+  Creator = 'creator',
+  Maintainer = 'maintainer',
 
   // org member invite keywords
   OrgMemberInvite = 'org-member-invite',

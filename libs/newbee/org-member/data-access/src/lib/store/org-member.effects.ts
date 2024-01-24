@@ -10,17 +10,27 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import {
   AlertType,
+  canGetMoreResults,
   ShortUrl,
   Toast,
   ToastXPosition,
   ToastYPosition,
 } from '@newbee/newbee/shared/util';
-import { emailIsEmail, Keyword, orgRoleIsEnum } from '@newbee/shared/util';
+import {
+  BaseGetOrgMemberPostsDto,
+  defaultLimit,
+  emailIsEmail,
+  Keyword,
+  orgRoleIsEnum,
+} from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { OrgMemberService } from '../org-member.service';
-import { selectOrgMemberAndOrg } from './org-member.selector';
+import {
+  selectOrgMemberAndOrg,
+  selectOrgMemberPostsAndOrg,
+} from './org-member.selector';
 
 /**
  * The effects tied to `OrgMemberActions`.
@@ -122,6 +132,82 @@ export class OrgMemberEffects {
     },
     { dispatch: false },
   );
+
+  getDocs$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.getDocs),
+      concatLatestFrom(() => this.store.select(selectOrgMemberPostsAndOrg)),
+      filter(
+        ([, { docs, selectedOrgMember, selectedOrganization }]) =>
+          !!(
+            selectedOrganization &&
+            selectedOrgMember &&
+            canGetMoreResults(docs)
+          ),
+      ),
+      switchMap(
+        ([{ role }, { docs, selectedOrgMember, selectedOrganization }]) => {
+          const getOrgMemberPostsDto: BaseGetOrgMemberPostsDto = {
+            offset: docs ? docs.offset + 1 : 0,
+            limit: docs ? docs.limit : defaultLimit,
+            ...(role && { role }),
+          };
+          return this.orgMemberService
+            .getAllDocs(
+              selectedOrganization?.organization.slug as string,
+              selectedOrgMember?.orgMember.slug as string,
+              getOrgMemberPostsDto,
+            )
+            .pipe(
+              map((docs) => {
+                return OrgMemberActions.getDocsSuccess({ docs });
+              }),
+              catchError((err) =>
+                catchHttpClientError(err, () => Keyword.Misc),
+              ),
+            );
+        },
+      ),
+    );
+  });
+
+  getQnas$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.getQnas),
+      concatLatestFrom(() => this.store.select(selectOrgMemberPostsAndOrg)),
+      filter(
+        ([, { qnas, selectedOrgMember, selectedOrganization }]) =>
+          !!(
+            selectedOrganization &&
+            selectedOrgMember &&
+            canGetMoreResults(qnas)
+          ),
+      ),
+      switchMap(
+        ([{ role }, { qnas, selectedOrgMember, selectedOrganization }]) => {
+          const getOrgMemberPostsDto: BaseGetOrgMemberPostsDto = {
+            offset: qnas ? qnas.offset + 1 : 0,
+            limit: qnas ? qnas.limit : defaultLimit,
+            ...(role && { role }),
+          };
+          return this.orgMemberService
+            .getAllQnas(
+              selectedOrganization?.organization.slug as string,
+              selectedOrgMember?.orgMember.slug as string,
+              getOrgMemberPostsDto,
+            )
+            .pipe(
+              map((qnas) => {
+                return OrgMemberActions.getQnasSuccess({ qnas });
+              }),
+              catchError((err) =>
+                catchHttpClientError(err, () => Keyword.Misc),
+              ),
+            );
+        },
+      ),
+    );
+  });
 
   inviteUser$ = createEffect(() => {
     return this.actions$.pipe(

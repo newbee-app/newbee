@@ -143,9 +143,11 @@
 
   <div>
     <h4>Teams</h4>
-    <a (click)="memberNavigate.emit(shortUrl.Team)" class="link opacity-50">{{
-      totalTeams
-    }}</a>
+    <a
+      (click)="memberNavigate.emit({ route: shortUrl.Team })"
+      class="link opacity-50"
+      >{{ totalTeams }}</a
+    >
 
     <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
       <div
@@ -162,21 +164,30 @@
 
       <div class="w-card flex-none">
         <newbee-view-all-card-btn
-          (clicked)="memberNavigate.emit(shortUrl.Team)"
+          (clicked)="memberNavigate.emit({ route: shortUrl.Team })"
         ></newbee-view-all-card-btn>
       </div>
     </div>
 
     <div class="divider">
-      <a (click)="memberNavigate.emit(shortUrl.Team)" class="link">View all</a>
+      <a (click)="memberNavigate.emit({ route: shortUrl.Team })" class="link"
+        >View all</a
+      >
     </div>
   </div>
 
   <div *ngIf="orgMember.createdQnas.total">
     <h4>Top created questions</h4>
-    <a (click)="memberNavigate.emit(shortUrl.Qna)" class="link opacity-50">{{
-      totalCreatedQnas
-    }}</a>
+    <a
+      (click)="
+        memberNavigate.emit({
+          route: shortUrl.Qna,
+          queryParams: { role: 'creator' }
+        })
+      "
+      class="link opacity-50"
+      >{{ totalCreatedQnas }}</a
+    >
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
@@ -191,21 +202,42 @@
         class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
       >
         <newbee-view-all-btn
-          (clicked)="memberNavigate.emit(shortUrl.Qna)"
+          (clicked)="
+            memberNavigate.emit({
+              route: shortUrl.Qna,
+              queryParams: { role: 'creator' }
+            })
+          "
         ></newbee-view-all-btn>
       </div>
     </div>
 
     <div class="divider">
-      <a (click)="memberNavigate.emit(shortUrl.Qna)" class="link">View all</a>
+      <a
+        (click)="
+          memberNavigate.emit({
+            route: shortUrl.Qna,
+            queryParams: { role: 'creator' }
+          })
+        "
+        class="link"
+        >View all</a
+      >
     </div>
   </div>
 
   <div *ngIf="orgMember.maintainedQnas.total">
     <h4>Top maintained questions</h4>
-    <a (click)="memberNavigate.emit(shortUrl.Qna)" class="link opacity-50">{{
-      totalMaintainedQnas
-    }}</a>
+    <a
+      (click)="
+        memberNavigate.emit({
+          route: shortUrl.Qna,
+          queryParams: { role: 'maintainer' }
+        })
+      "
+      class="link opacity-50"
+      >{{ totalMaintainedQnas }}</a
+    >
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
@@ -220,21 +252,42 @@
         class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
       >
         <newbee-view-all-btn
-          (clicked)="memberNavigate.emit(shortUrl.Qna)"
+          (clicked)="
+            memberNavigate.emit({
+              route: shortUrl.Qna,
+              queryParams: { role: 'maintainer' }
+            })
+          "
         ></newbee-view-all-btn>
       </div>
     </div>
 
     <div class="divider">
-      <a (click)="memberNavigate.emit(shortUrl.Qna)" class="link">View all</a>
+      <a
+        (click)="
+          memberNavigate.emit({
+            route: shortUrl.Qna,
+            queryParams: { role: 'maintainer' }
+          })
+        "
+        class="link"
+        >View all</a
+      >
     </div>
   </div>
 
   <div *ngIf="orgMember.createdDocs.total">
     <h4>Top created docs</h4>
-    <a (click)="memberNavigate.emit(shortUrl.Doc)" class="link opacity-50">{{
-      totalCreatedDocs
-    }}</a>
+    <a
+      (click)="
+        memberNavigate.emit({
+          route: shortUrl.Doc,
+          queryParams: { role: 'creator' }
+        })
+      "
+      class="link opacity-50"
+      >{{ totalCreatedDocs }}</a
+    >
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
@@ -249,21 +302,42 @@
         class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
       >
         <newbee-view-all-btn
-          (clicked)="memberNavigate.emit(shortUrl.Doc)"
+          (clicked)="
+            memberNavigate.emit({
+              route: shortUrl.Doc,
+              queryParams: { role: 'creator' }
+            })
+          "
         ></newbee-view-all-btn>
       </div>
     </div>
 
     <div class="divider">
-      <a (click)="memberNavigate.emit(shortUrl.Doc)" class="link">View all</a>
+      <a
+        (click)="
+          memberNavigate.emit({
+            route: shortUrl.Doc,
+            queryParams: { role: 'creator' }
+          })
+        "
+        class="link"
+        >View all</a
+      >
     </div>
   </div>
 
   <div *ngIf="orgMember.maintainedDocs.total">
     <h4>Top maintained docs</h4>
-    <a (click)="memberNavigate.emit(shortUrl.Doc)" class="link opacity-50">{{
-      totalMaintainedDocs
-    }}</a>
+    <a
+      (click)="
+        memberNavigate.emit({
+          route: shortUrl.Doc,
+          queryParams: { role: 'maintainer' }
+        })
+      "
+      class="link opacity-50"
+      >{{ totalMaintainedDocs }}</a
+    >
 
     <div class="flex flex-row flex-nowrap">
       <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
@@ -278,13 +352,27 @@
         class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
       >
         <newbee-view-all-btn
-          (clicked)="memberNavigate.emit(shortUrl.Doc)"
+          (clicked)="
+            memberNavigate.emit({
+              route: shortUrl.Doc,
+              queryParams: { role: 'maintainer' }
+            })
+          "
         ></newbee-view-all-btn>
       </div>
     </div>
 
     <div class="divider">
-      <a (click)="memberNavigate.emit(shortUrl.Doc)" class="link">View all</a>
+      <a
+        (click)="
+          memberNavigate.emit({
+            route: shortUrl.Doc,
+            queryParams: { role: 'maintainer' }
+          })
+        "
+        class="link"
+        >View all</a
+      >
     </div>
   </div>
 </div>

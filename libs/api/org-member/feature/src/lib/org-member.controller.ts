@@ -161,7 +161,9 @@ export class OrgMemberController {
       { offset, limit },
       organization,
       {
-        ...(role === 'creator'
+        ...(!role
+          ? { orgMember: subjectOrgMember }
+          : role === 'creator'
           ? { creator: subjectOrgMember }
           : { maintainer: subjectOrgMember }),
       },
@@ -205,7 +207,9 @@ export class OrgMemberController {
       { offset, limit },
       organization,
       {
-        ...(role === 'creator'
+        ...(!role
+          ? { orgMember: subjectOrgMember }
+          : role === 'creator'
           ? { creator: subjectOrgMember }
           : { maintainer: subjectOrgMember }),
       },

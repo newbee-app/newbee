@@ -1,9 +1,9 @@
 import {
   testBaseQueryDto1,
+  testBaseQueryResultsDto1,
   testBaseSuggestResultsDto1,
   testDocQueryResult1,
   testQnaQueryResult1,
-  testQueryResults1,
 } from '@newbee/shared/util';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -17,7 +17,7 @@ describe('SearchReducer', () => {
   };
   const stateAfterSearchSuccess: SearchState = {
     ...initialSearchState,
-    searchResults: testQueryResults1,
+    searchResults: testBaseQueryResultsDto1,
   };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
@@ -25,7 +25,7 @@ describe('SearchReducer', () => {
   };
   const stateAfterContinueSearch: SearchState = {
     ...initialSearchState,
-    searchResults: { ...testQueryResults1, total: 100 },
+    searchResults: { ...testBaseQueryResultsDto1, total: 100 },
     pendingContinueSearch: true,
   };
 
@@ -43,17 +43,17 @@ describe('SearchReducer', () => {
     it('should update state for searchSuccess', () => {
       let updatedState = searchFeature.reducer(
         stateAfterSearch,
-        SearchActions.searchSuccess({ results: testQueryResults1 }),
+        SearchActions.searchSuccess({ results: testBaseQueryResultsDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearchSuccess);
 
       updatedState = searchFeature.reducer(
         stateAfterSuggestSuccess,
-        SearchActions.searchSuccess({ results: testQueryResults1 }),
+        SearchActions.searchSuccess({ results: testBaseQueryResultsDto1 }),
       );
       expect(updatedState).toEqual({
         ...stateAfterSuggestSuccess,
-        searchResults: testQueryResults1,
+        searchResults: testBaseQueryResultsDto1,
       });
     });
 
@@ -75,7 +75,7 @@ describe('SearchReducer', () => {
       updatedState = searchFeature.reducer(
         {
           ...stateAfterSearchSuccess,
-          searchResults: { ...testQueryResults1, total: 100 },
+          searchResults: { ...testBaseQueryResultsDto1, total: 100 },
         },
         SearchActions.continueSearch,
       );
@@ -87,7 +87,7 @@ describe('SearchReducer', () => {
         stateAfterContinueSearch,
         SearchActions.continueSearchSuccess({
           results: {
-            ...testQueryResults1,
+            ...testBaseQueryResultsDto1,
             offset: 1,
             results: [testDocQueryResult1, testQnaQueryResult1],
           },
@@ -96,10 +96,10 @@ describe('SearchReducer', () => {
       expect(updatedState).toEqual({
         ...initialSearchState,
         searchResults: {
-          ...testQueryResults1,
+          ...testBaseQueryResultsDto1,
           offset: 1,
           results: [
-            ...testQueryResults1.results,
+            ...testBaseQueryResultsDto1.results,
             testDocQueryResult1,
             testQnaQueryResult1,
           ],

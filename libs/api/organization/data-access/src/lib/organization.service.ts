@@ -11,7 +11,6 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { SearchService } from '@newbee/api/search/data-access';
 import {
   DocDocParams,
   DocEntity,
@@ -23,7 +22,7 @@ import {
   TeamEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { newOrgConfigset } from '@newbee/api/shared/util';
+import { newOrgConfigset, solrDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
@@ -51,7 +50,6 @@ export class OrganizationService {
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly teamService: TeamService,
-    private readonly searchService: SearchService,
     private readonly solrCli: SolrCli,
   ) {}
 
@@ -153,7 +151,7 @@ export class OrganizationService {
         now.getTime() - organization.suggesterBuiltAt.getTime() >=
         86400000 /* 1 day in ms */
       ) {
-        await this.searchService.buildSuggesters(organization);
+        await this.buildSuggesters(organization);
         organization = this.em.assign(organization, { suggesterBuiltAt: now });
         await this.em.flush();
       }
@@ -314,6 +312,25 @@ export class OrganizationService {
         throw err;
       }
 
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * Send a request to build an organization's suggesters.
+   *
+   * @param organization The organization to build.
+   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
+   */
+  async buildSuggesters(organization: OrganizationEntity): Promise<void> {
+    try {
+      for (const dictionary of Object.values(solrDictionaries)) {
+        await this.solrCli.suggest(organization.id, {
+          params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
+        });
+      }
+    } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }

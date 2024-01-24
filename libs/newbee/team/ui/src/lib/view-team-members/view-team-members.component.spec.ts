@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SelectOption, ShortUrl } from '@newbee/newbee/shared/util';
+import { SelectOption } from '@newbee/newbee/shared/util';
 import {
   TeamRoleEnum,
   ascTeamRoleEnum,
@@ -119,16 +119,6 @@ describe('ViewTeamMembers', () => {
           testTeamMemberRelation1.orgMember.slug,
         ),
       ).toBeFalsy();
-    });
-  });
-
-  describe('emitOrgNavigate', () => {
-    it('should emit orgNavigate', () => {
-      component.emitOrgNavigate(ShortUrl.Member, testOrgMember1.slug);
-      expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
-      expect(component.orgNavigate.emit).toHaveBeenCalledWith(
-        `/${ShortUrl.Member}/${testOrgMember1.slug}`,
-      );
     });
   });
 

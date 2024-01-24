@@ -6,14 +6,14 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  emptyQueryResults,
+  BaseQueryResultsDto,
   Keyword,
   testBaseQueryDto1,
+  testBaseQueryResultsDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultsDto1,
   testOrganization1,
   testOrganizationRelation1,
-  testQueryResults1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -40,7 +40,7 @@ describe('SearchEffects', () => {
             },
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResults1,
+              searchResults: testBaseQueryResultsDto1,
             },
           },
         }),
@@ -49,7 +49,7 @@ describe('SearchEffects', () => {
         {
           provide: SearchService,
           useValue: createMock<SearchService>({
-            search: jest.fn().mockReturnValue(of(testQueryResults1)),
+            search: jest.fn().mockReturnValue(of(testBaseQueryResultsDto1)),
             suggest: jest.fn().mockReturnValue(of(testBaseSuggestResultsDto1)),
           }),
         },
@@ -69,94 +69,33 @@ describe('SearchEffects', () => {
   });
 
   describe('search$', () => {
-    describe('search', () => {
-      it('should fire searchSuccess and contact API if successful', () => {
-        actions$ = hot('a', {
-          a: SearchActions.search({ query: testBaseQueryDto1 }),
-        });
-        const expected$ = hot('a', {
-          a: SearchActions.searchSuccess({ results: testQueryResults1 }),
-        });
-        expect(effects.search$).toBeObservable(expected$);
-        expect(expected$).toSatisfyOnFlush(() => {
-          expect(service.search).toHaveBeenCalledTimes(1);
-          expect(service.search).toHaveBeenCalledWith(
-            testBaseQueryDto1,
-            testOrganization1.slug,
-          );
-        });
+    it('should fire searchSuccess and contact API if successful', () => {
+      actions$ = hot('a', {
+        a: SearchActions.search({ query: testBaseQueryDto1 }),
       });
-
-      it('should do nothing if query is empty', () => {
-        actions$ = hot('a', {
-          a: SearchActions.search({
-            query: emptyQueryResults,
-          }),
-        });
-        const expected$ = hot('-');
-        expect(effects.search$).toBeObservable(expected$);
-        expect(expected$).toSatisfyOnFlush(() => {
-          expect(service.search).not.toHaveBeenCalled();
-        });
+      const expected$ = hot('a', {
+        a: SearchActions.searchSuccess({ results: testBaseQueryResultsDto1 }),
+      });
+      expect(effects.search$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).toHaveBeenCalledTimes(1);
+        expect(service.search).toHaveBeenCalledWith(
+          testBaseQueryDto1,
+          testOrganization1.slug,
+        );
       });
     });
 
-    describe('continueSearch', () => {
-      it('should fire conitnueSearchSuccess and contact API if continueSearch', () => {
-        store.setState({
-          [Keyword.Organization]: {
-            ...initialOrganizationState,
-            selectedOrganization: testOrganizationRelation1,
-          },
-          [Keyword.Search]: {
-            ...initialSearchState,
-            searchResults: { ...testQueryResults1, total: 100 },
-          },
-        });
-        actions$ = hot('a', {
-          a: SearchActions.continueSearch(),
-        });
-        const expected$ = hot('a', {
-          a: SearchActions.continueSearchSuccess({
-            results: testQueryResults1,
-          }),
-        });
-        expect(effects.search$).toBeObservable(expected$);
-        expect(expected$).toSatisfyOnFlush(() => {
-          expect(service.search).toHaveBeenCalledTimes(1);
-          expect(service.search).toHaveBeenCalledWith(
-            {
-              ...testBaseQueryDto1,
-              offset: 1,
-            },
-            testOrganization1.slug,
-          );
-        });
+    it('should do nothing if query is empty', () => {
+      actions$ = hot('a', {
+        a: SearchActions.search({
+          query: new BaseQueryResultsDto(),
+        }),
       });
-
-      it('should do nothing if there are no more results to fetch', () => {
-        actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('-');
-        expect(effects.search$).toBeObservable(expected$);
-        expect(expected$).toSatisfyOnFlush(() => {
-          expect(service.search).not.toHaveBeenCalled();
-        });
-      });
-
-      it('should do nothing if searchResults is null', () => {
-        store.setState({
-          [Keyword.Organization]: {
-            ...initialOrganizationState,
-            selectedOrganization: testOrganizationRelation1,
-          },
-          [Keyword.Search]: initialSearchState,
-        });
-        actions$ = hot('a', { a: SearchActions.continueSearch() });
-        const expected$ = hot('-');
-        expect(effects.search$).toBeObservable(expected$);
-        expect(expected$).toSatisfyOnFlush(() => {
-          expect(service.search).not.toHaveBeenCalled();
-        });
+      const expected$ = hot('-');
+      expect(effects.search$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).not.toHaveBeenCalled();
       });
     });
 
@@ -167,6 +106,76 @@ describe('SearchEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.search$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('continueSearch$', () => {
+    it('should fire conitnueSearchSuccess and contact API if continueSearch', () => {
+      store.setState({
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Search]: {
+          ...initialSearchState,
+          searchResults: { ...testBaseQueryResultsDto1, total: 100 },
+        },
+      });
+      actions$ = hot('a', {
+        a: SearchActions.continueSearch(),
+      });
+      const expected$ = hot('a', {
+        a: SearchActions.continueSearchSuccess({
+          results: testBaseQueryResultsDto1,
+        }),
+      });
+      expect(effects.continueSearch$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).toHaveBeenCalledTimes(1);
+        expect(service.search).toHaveBeenCalledWith(
+          {
+            ...testBaseQueryResultsDto1,
+            total: 100,
+            offset: 1,
+          },
+          testOrganization1.slug,
+        );
+      });
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: SearchActions.continueSearch() });
+      const expected$ = hot('-');
+      expect(effects.continueSearch$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should do nothing if searchResults is null', () => {
+      store.setState({
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Search]: initialSearchState,
+      });
+      actions$ = hot('a', { a: SearchActions.continueSearch() });
+      const expected$ = hot('-');
+      expect(effects.continueSearch$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.search).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should not fire if selectedOrganization is null', () => {
+      store.setState({ org: initialOrganizationState });
+      actions$ = hot('a', { a: SearchActions.continueSearch() });
+      const expected$ = hot('-');
+      expect(effects.continueSearch$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.search).not.toHaveBeenCalled();
       });

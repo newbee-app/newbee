@@ -1,40 +1,35 @@
 import { createMock } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   testOrganizationEntity1,
   testQueryResponse1,
   testQueryResponse2,
   testQueryResponse3,
-  testTeamEntity1,
 } from '@newbee/api/shared/data-access';
 import { solrDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
   testBaseQueryDto1,
+  testBaseQueryResultsDto1,
   testBaseSuggestDto1,
   testBaseSuggestResultsDto1,
-  testQueryResults1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { SearchService } from './search.service';
 
 describe('SearchService', () => {
   let service: SearchService;
-  let teamService: TeamService;
   let solrCli: SolrCli;
+  let teamService: TeamService;
+  let orgMemberService: OrgMemberService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SearchService,
-        {
-          provide: TeamService,
-          useValue: createMock<TeamService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
-          }),
-        },
         {
           provide: SolrCli,
           useValue: createMock<SolrCli>({
@@ -42,18 +37,28 @@ describe('SearchService', () => {
             suggest: jest.fn().mockResolvedValue(testQueryResponse3),
           }),
         },
+        {
+          provide: TeamService,
+          useValue: createMock<TeamService>(),
+        },
+        {
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>(),
+        },
       ],
     }).compile();
 
     service = module.get<SearchService>(SearchService);
     teamService = module.get<TeamService>(TeamService);
+    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
     solrCli = module.get<SolrCli>(SolrCli);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(teamService).toBeDefined();
     expect(solrCli).toBeDefined();
+    expect(teamService).toBeDefined();
+    expect(orgMemberService).toBeDefined();
   });
 
   describe('suggest', () => {
@@ -101,7 +106,7 @@ describe('SearchService', () => {
     it('should generate results', async () => {
       await expect(
         service.query(testOrganizationEntity1, testBaseQueryDto1),
-      ).resolves.toEqual(testQueryResults1);
+      ).resolves.toEqual(testBaseQueryResultsDto1);
     });
 
     it('should offer spellcheck suggestions if no results', async () => {
@@ -124,25 +129,6 @@ describe('SearchService', () => {
       await expect(
         service.query(testOrganizationEntity1, testBaseQueryDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
-  });
-
-  describe('buildSuggesters', () => {
-    it('should call suggest with build parameter', async () => {
-      await expect(
-        service.buildSuggesters(testOrganizationEntity1),
-      ).resolves.toBeUndefined();
-      expect(solrCli.suggest).toHaveBeenCalledTimes(
-        Object.values(solrDictionaries).length,
-      );
-      Object.values(solrDictionaries).forEach((dictionary) => {
-        expect(solrCli.suggest).toHaveBeenCalledWith(
-          testOrganizationEntity1.id,
-          {
-            params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
-          },
-        );
-      });
     });
   });
 });

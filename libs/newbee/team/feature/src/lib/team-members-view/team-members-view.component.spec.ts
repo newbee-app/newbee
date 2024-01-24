@@ -109,7 +109,7 @@ describe('TeamMembersViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to route', async () => {
-      await component.onOrgNavigate('/test');
+      await component.onOrgNavigate({ route: '/test' });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/test`,
       );

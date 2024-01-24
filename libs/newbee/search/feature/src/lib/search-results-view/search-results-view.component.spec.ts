@@ -13,7 +13,7 @@ import {
   Keyword,
   SolrEntryEnum,
   defaultLimit,
-  testQueryResults1,
+  testBaseQueryResultsDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SearchResultsViewComponent } from './search-results-view.component';
@@ -47,7 +47,7 @@ describe('SearchResultsViewComponent', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResults1,
+              searchResults: testBaseQueryResultsDto1,
             },
           },
         }),
@@ -85,9 +85,20 @@ describe('SearchResultsViewComponent', () => {
   });
 
   describe('constructor', () => {
-    it('should initialize search term and search results', () => {
+    it('should initialize search term, tab, and fire search request', () => {
       expect(component.searchTerm).toEqual(testSearchTerm);
       expect(component.tab).toEqual(SearchTab.Team);
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        SearchActions.search({
+          query: {
+            offset: 0,
+            limit: defaultLimit,
+            query: testSearchTerm,
+            type: SolrEntryEnum.Team,
+          },
+        }),
+      );
     });
   });
 
@@ -97,7 +108,7 @@ describe('SearchResultsViewComponent', () => {
       expect(router.url).toEqual(
         `/${Keyword.Search}/${testSearchTermUrl}?${Keyword.Type}=${SolrEntryEnum.Doc}`,
       );
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
           query: {
@@ -126,7 +137,7 @@ describe('SearchResultsViewComponent', () => {
   describe('onSearchbar', () => {
     it('should dispatch suggest', () => {
       component.onSearchbar(testSearchTerm);
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.suggest({
           query: { query: testSearchTerm, type: SolrEntryEnum.Team },
@@ -137,7 +148,7 @@ describe('SearchResultsViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
-      await component.onOrgNavigate('test');
+      await component.onOrgNavigate({ route: 'test' });
       expect(router.url).toEqual('/test');
     });
   });

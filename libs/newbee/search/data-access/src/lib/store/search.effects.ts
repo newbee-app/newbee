@@ -6,7 +6,11 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import { canGetMoreResults } from '@newbee/newbee/shared/util';
-import { BaseQueryDto, Keyword, QueryResults } from '@newbee/shared/util';
+import {
+  BaseQueryDto,
+  BaseQueryResultsDto,
+  Keyword,
+} from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap } from 'rxjs';
@@ -20,59 +24,55 @@ import { selectSearchResultsAndOrg } from './search.selector';
 export class SearchEffects {
   search$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(SearchActions.search, SearchActions.continueSearch),
+      ofType(SearchActions.search),
+      concatLatestFrom(() =>
+        this.store.select(organizationFeature.selectSelectedOrganization),
+      ),
+      filter(
+        ([{ query }, selectedOrganization]) =>
+          !!(selectedOrganization && query.query),
+      ),
+      switchMap(([{ query }, selectedOrganization]) => {
+        return this.searchService
+          .search(query, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map((results) => {
+              return SearchActions.searchSuccess({ results });
+            }),
+            catchError((err) => catchHttpScreenError(err)),
+          );
+      }),
+    );
+  });
+
+  continueSearch$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(SearchActions.continueSearch),
       concatLatestFrom(() => this.store.select(selectSearchResultsAndOrg)),
       filter(
-        ([action, { searchResults, selectedOrganization }]) =>
+        ([, { searchResults, selectedOrganization }]) =>
           !!(
             selectedOrganization &&
-            ((action.type === SearchActions.search.type &&
-              action.query.query) ||
-              (action.type === SearchActions.continueSearch.type &&
-                searchResults &&
-                canGetMoreResults(searchResults)))
+            searchResults &&
+            canGetMoreResults(searchResults)
           ),
       ),
-      switchMap(([action, { searchResults, selectedOrganization }]) => {
-        const { type } = action;
-        let queryDto: BaseQueryDto;
-        switch (type) {
-          case SearchActions.search.type:
-            queryDto = action.query;
-            break;
-          case SearchActions.continueSearch.type: {
-            const { offset, limit, query, type, team } =
-              searchResults as QueryResults;
-            queryDto = {
-              offset: offset + 1,
-              limit,
-              query,
-              ...(type && { type }),
-              ...(team && { team }),
-            };
-            break;
-          }
-        }
+      switchMap(([, { searchResults, selectedOrganization }]) => {
+        const { offset } = searchResults as BaseQueryResultsDto;
+
+        // The backend will strip all of the fields that aren't actually in the DTO
+        const queryDto: BaseQueryDto = {
+          ...(searchResults as BaseQueryResultsDto),
+          offset: offset + 1,
+        };
 
         return this.searchService
           .search(queryDto, selectedOrganization?.organization.slug as string)
           .pipe(
             map((results) => {
-              switch (type) {
-                case SearchActions.search.type:
-                  return SearchActions.searchSuccess({ results });
-                case SearchActions.continueSearch.type:
-                  return SearchActions.continueSearchSuccess({ results });
-              }
+              return SearchActions.continueSearchSuccess({ results });
             }),
-            catchError((err) => {
-              switch (type) {
-                case SearchActions.search.type:
-                  return catchHttpScreenError(err);
-                case SearchActions.continueSearch.type:
-                  return catchHttpClientError(err, () => Keyword.Misc);
-              }
-            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
           );
       }),
     );

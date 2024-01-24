@@ -8,9 +8,9 @@ import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
+  BaseQueryResultsDto,
   BaseSuggestResultsDto,
   Keyword,
-  QueryResults,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -41,7 +41,7 @@ export class SearchController {
   async search(
     @Query() queryDto: QueryDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<QueryResults> {
+  ): Promise<BaseQueryResultsDto> {
     this.logger.log(
       `Search request received for organization ID ${
         organization.id

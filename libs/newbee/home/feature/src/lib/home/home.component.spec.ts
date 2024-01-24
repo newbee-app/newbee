@@ -47,9 +47,9 @@ describe('HomeComponent', () => {
 
   describe('navigateToLink', () => {
     it('should call navigate', async () => {
-      await component.navigateToLink(
-        `/${ShortUrl.Organization}/${Keyword.New}`,
-      );
+      await component.navigateToLink({
+        route: `/${ShortUrl.Organization}/${Keyword.New}`,
+      });
       expect(router.url).toEqual(`/${ShortUrl.Organization}/${Keyword.New}`);
     });
   });

@@ -1,9 +1,9 @@
 import {
   BaseQueryDto,
+  BaseQueryResultsDto,
   BaseSuggestDto,
   BaseSuggestResultsDto,
   Keyword,
-  QueryResults,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -22,7 +22,7 @@ export const SearchActions = createActionGroup({
     /**
      * Indicates that the results of a search query were successfully retrieved.
      */
-    'Search Success': props<{ results: QueryResults }>(),
+    'Search Success': props<{ results: BaseQueryResultsDto }>(),
 
     /**
      * Send a request to the API asking for query suggestions based on the query thus far.
@@ -44,6 +44,6 @@ export const SearchActions = createActionGroup({
     /**
      * Indicates that more results of a previous search query were successfully retrieved.
      */
-    'Continue Search Success': props<{ results: QueryResults }>(),
+    'Continue Search Success': props<{ results: BaseQueryResultsDto }>(),
   },
 });

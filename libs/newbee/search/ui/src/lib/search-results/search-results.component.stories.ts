@@ -2,10 +2,10 @@ import { SearchTab } from '@newbee/newbee/search/util';
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
+  testBaseQueryResultsDto1,
   testDocQueryResult1,
   testOrgMemberQueryResult1,
   testQnaQueryResult1,
-  testQueryResults1,
   testTeamQueryResult1,
 } from '@newbee/shared/util';
 import {
@@ -31,7 +31,7 @@ export default {
     tab: SearchTab.All,
     searchSuggestions: [],
     searchResults: {
-      ...testQueryResults1,
+      ...testBaseQueryResultsDto1,
       total: 100,
       results: [
         testTeamQueryResult1,
@@ -61,7 +61,9 @@ type Story = StoryObj<SearchResultsComponent>;
 export const Primary: Story = {};
 
 export const SpellcheckSuggestion: Story = {
-  args: { searchResults: { ...testQueryResults1, suggestion: 'this thing' } },
+  args: {
+    searchResults: { ...testBaseQueryResultsDto1, suggestion: 'this thing' },
+  },
 };
 
 export const InitialSearchTerm: Story = {

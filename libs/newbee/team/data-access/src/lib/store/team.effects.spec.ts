@@ -451,7 +451,7 @@ describe('TeamEffects', () => {
   });
 
   describe('getDocs$', () => {
-    it('should fire getDocsSuccess if this is the first request and selected organization and selected team is set', () => {
+    it('should fire getDocsSuccess if this is the first request and selected organization and selected team are set', () => {
       actions$ = hot('a', {
         a: TeamActions.getDocs(),
       });
@@ -471,7 +471,7 @@ describe('TeamEffects', () => {
       });
     });
 
-    it('should fire getDocsSuccess if this is a follow-up request, selected organization and slected team is set, and there are more results to fetch', () => {
+    it('should fire getDocsSuccess if this is a follow-up request, selected organization and slected team are set, and there are more results to fetch', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -574,7 +574,7 @@ describe('TeamEffects', () => {
   });
 
   describe('getQnas$', () => {
-    it('should fire getQnasSuccess if this is the first request and selected organization and selected team is set', () => {
+    it('should fire getQnasSuccess if this is the first request and selected organization and selected team are set', () => {
       actions$ = hot('a', {
         a: TeamActions.getQnas(),
       });
@@ -594,7 +594,7 @@ describe('TeamEffects', () => {
       });
     });
 
-    it('should fire getQnasSuccess if this is a follow-up request, selected organization and slected team is set, and there are more results to fetch', () => {
+    it('should fire getQnasSuccess if this is a follow-up request, selected organization and slected team are set, and there are more results to fetch', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,

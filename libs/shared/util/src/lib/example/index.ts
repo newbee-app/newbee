@@ -28,6 +28,7 @@ import {
   BaseOrgAndMemberDto,
   BaseQnaAndMemberDto,
   BaseQueryDto,
+  BaseQueryResultsDto,
   BaseRegistrationResponseDto,
   BaseSlugDto,
   BaseSlugTakenDto,
@@ -64,7 +65,6 @@ import type {
   Post,
   Qna,
   QnaRelation,
-  QueryResults,
   Team,
   TeamMember,
   TeamMemberRelation,
@@ -935,10 +935,8 @@ export const testOffsetAndLimit1: OffsetAndLimit = {
  * An example instance of BaseGetOrgMemberPostsDto.
  * Strictly for use in testing.
  */
-export const testBaseGetOrgMemberPostsDto1: BaseGetOrgMemberPostsDto = {
-  ...testOffsetAndLimit1,
-  role: 'maintainer',
-};
+export const testBaseGetOrgMemberPostsDto1: BaseGetOrgMemberPostsDto =
+  testOffsetAndLimit1;
 
 /**
  * An example instance of PaginatedResults with DocQueryResult.
@@ -963,13 +961,13 @@ export const testPaginatedResultsQnaQueryResult1: PaginatedResults<QnaQueryResul
   };
 
 /**
- * An example instance of QueryResults.
+ * An example instance of BaseQueryResultsDto.
  * Strictly for use in testing.
  */
-export const testQueryResults1: QueryResults = {
+export const testBaseQueryResultsDto1: BaseQueryResultsDto = {
   ...testOffsetAndLimit1,
-  total: 1,
+  ...testBaseQueryDto1,
   results: [testTeamQueryResult1],
-  query: testBaseQueryDto1.query,
+  total: 1,
   suggestion: null,
 };

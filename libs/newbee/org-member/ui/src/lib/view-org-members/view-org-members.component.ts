@@ -16,6 +16,7 @@ import {
 } from '@newbee/newbee/shared/ui';
 import {
   HttpClientError,
+  RouteAndQueryParams,
   SearchResultFormat,
   SelectOption,
   ShortUrl,
@@ -121,7 +122,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
   /**
    * The path to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The internal form to invite a user to an org.
@@ -181,15 +182,6 @@ export class ViewOrgMembersComponent implements OnDestroy {
     }
 
     this.invite.emit({ email: email, role: role });
-  }
-
-  /**
-   * Tells the parent UI to navigate to the given path relative to the currently selected org.
-   *
-   * @param paths The path to navigate to, joined by `/`.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
   }
 
   /**

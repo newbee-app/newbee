@@ -70,7 +70,7 @@ describe('TeamViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
-      await component.onOrgNavigate('path');
+      await component.onOrgNavigate({ route: 'path' });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/path`,
       );
@@ -79,7 +79,7 @@ describe('TeamViewComponent', () => {
 
   describe('onTeamNavigate', () => {
     it('should navigate relative to team', async () => {
-      await component.onTeamNavigate('path');
+      await component.onTeamNavigate({ route: 'path' });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${testTeam1.slug}/path`,
       );

@@ -63,14 +63,14 @@ describe('QnaViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to the current org', async () => {
-      await component.onOrgNavigate('test');
+      await component.onOrgNavigate({ route: 'test' });
       expect(router.url).toEqual('/test');
     });
   });
 
   describe('onQnaNavigate', () => {
     it('should navigate relative to the current qna', async () => {
-      await component.onQnaNavigate(Keyword.Edit);
+      await component.onQnaNavigate({ route: Keyword.Edit });
       expect(router.url).toEqual(
         `/${ShortUrl.Qna}/${testQna1.slug}/${Keyword.Edit}`,
       );

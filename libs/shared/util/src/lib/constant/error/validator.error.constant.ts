@@ -74,6 +74,16 @@ export const tokenIsNotEmpty = 'Token cannot be an empty string.';
 export const baseIsNotEmpty = 'Base cannot be an empty string.';
 
 /**
+ * Constant to say that org member cannot be an empty string.
+ */
+export const orgMemberIsNotEmpty = 'Org member cannot be an empty string.';
+
+/**
+ * Constant to say that creator cannot be an empty string.
+ */
+export const creatorIsNotEmpty = 'Creator cannot be an empty string.';
+
+/**
  * Constant to say that maintainer cannot be an empty string.
  */
 export const maintainerIsNotEmpty = 'Maintainer cannot be an empty string';

@@ -59,11 +59,11 @@ describe('ViewPostsComponent', () => {
 
   describe('changeOrgMemberTab', () => {
     it('should change orgMemberTab and emit', () => {
-      component.changeOrgMemberTab(OrgMemberPostTab.All);
-      expect(component.orgMemberTab).toEqual(OrgMemberPostTab.All);
+      component.changeOrgMemberTab(OrgMemberPostTab.Maintained);
+      expect(component.orgMemberTab).toEqual(OrgMemberPostTab.Maintained);
       expect(component.orgMemberTabChange.emit).toHaveBeenCalledTimes(1);
       expect(component.orgMemberTabChange.emit).toHaveBeenCalledWith(
-        OrgMemberPostTab.All,
+        OrgMemberPostTab.Maintained,
       );
     });
   });

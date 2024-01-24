@@ -9,7 +9,11 @@
       Asked by
       <a
         *ngIf="qna.creator; else noCreator"
-        (click)="emitOrgNavigate(shortUrl.Member, qna.creator.orgMember.slug)"
+        (click)="
+          orgNavigate.emit({
+            route: [shortUrl.Member, qna.creator.orgMember.slug].join('/')
+          })
+        "
         class="link"
         >{{ userDisplayName(qna.creator.user) }}</a
       >
@@ -18,7 +22,9 @@
       to
       <a
         *ngIf="qna.team; else noTeam"
-        (click)="emitOrgNavigate(shortUrl.Team, qna.team.slug)"
+        (click)="
+          orgNavigate.emit({ route: [shortUrl.Team, qna.team.slug].join('/') })
+        "
         class="link"
         >{{ qna.team.name }}</a
       >
@@ -66,7 +72,7 @@
               postMaintainer: qna.maintainer?.orgMember
             })
           "
-          (click)="emitQnaNavigate(keyword.Edit)"
+          (click)="qnaNavigate.emit({ route: keyword.Edit })"
           class="btn btn-sm btn-info"
         >
           Edit
@@ -133,7 +139,11 @@
           Maintained by
           <a
             (click)="
-              emitOrgNavigate(shortUrl.Member, qna.maintainer.orgMember.slug)
+              orgNavigate.emit({
+                route: [shortUrl.Member, qna.maintainer.orgMember.slug].join(
+                  '/'
+                )
+              })
             "
             class="link"
             >{{ userDisplayName(qna.maintainer.user) }}</a
@@ -162,7 +172,7 @@
               postMaintainer: qna.maintainer?.orgMember
             })
           "
-          (click)="emitQnaNavigate(keyword.Edit)"
+          (click)="qnaNavigate.emit({ route: keyword.Edit })"
           class="btn btn-sm btn-info mt-1"
         >
           Edit
@@ -191,7 +201,9 @@
 
           <p class="prose max-w-full">
             Would you like to
-            <a (click)="emitQnaNavigate(keyword.Edit)" class="link link-info"
+            <a
+              (click)="qnaNavigate.emit({ route: keyword.Edit })"
+              class="link link-info"
               >provide one?</a
             >
           </p>

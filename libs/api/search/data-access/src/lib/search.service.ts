@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import {
   DocSolrDoc,
@@ -16,11 +17,11 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
+  BaseQueryResultsDto,
   BaseSuggestResultsDto,
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,
-  QueryResults,
   SolrEntryEnum,
   TeamQueryResult,
   internalServerError,
@@ -43,6 +44,7 @@ export class SearchService {
   constructor(
     private readonly solrCli: SolrCli,
     private readonly teamService: TeamService,
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
@@ -88,23 +90,16 @@ export class SearchService {
    * @param queryDto The parameters for the query itself.
    *
    * @returns The matches that fulfill the query.
+   * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the Solr Cli or services throw an error.
    */
   async query(
     organization: OrganizationEntity,
     queryDto: QueryDto,
-  ): Promise<QueryResults> {
-    const { query, offset, limit, type, team } = queryDto;
-    const results: QueryResults = {
-      results: [],
-      total: 0,
-      offset,
-      limit,
-      query,
-      suggestion: null,
-      ...(type && { type }),
-      ...(team && { team }),
-    };
+  ): Promise<BaseQueryResultsDto> {
+    const { query } = queryDto;
+    const results = new BaseQueryResultsDto();
+    Object.assign(results, queryDto);
 
     // This should never happen, but leave it for safety
     if (!query) {
@@ -231,46 +226,62 @@ export class SearchService {
   }
 
   /**
-   * Send a request to build an organization's suggesters.
-   *
-   * @param organization The organization to build.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
-   */
-  async buildSuggesters(organization: OrganizationEntity): Promise<void> {
-    try {
-      for (const dictionary of Object.values(solrDictionaries)) {
-        await this.solrCli.suggest(organization.id, {
-          params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
-        });
-      }
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
    * A helper function for making a Solr query.
    *
    * @param organization The organization to query.
    * @param queryDto The parameters for the query itself.
    *
    * @returns The query response from Solr.
+   * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
    */
   private async makeQuery(
     organization: OrganizationEntity,
     queryDto: QueryDto,
   ): Promise<QueryResponse> {
-    const { query, offset, limit, type, team: teamSlug } = queryDto;
-    const dictionary = type ?? solrDictionaries.all;
+    const {
+      query,
+      offset,
+      limit,
+      type,
+      team: teamSlug,
+      member: orgMemberSlug,
+      creator: creatorSlug,
+      maintainer: maintainerSlug,
+    } = queryDto;
 
+    const dictionary = type ?? solrDictionaries.all;
     const team = teamSlug
       ? await this.teamService.findOneBySlug(organization, teamSlug)
+      : null;
+    const orgMember = orgMemberSlug
+      ? await this.orgMemberService.findOneByOrgAndSlug(
+          organization,
+          orgMemberSlug,
+        )
+      : null;
+    const creator = creatorSlug
+      ? await this.orgMemberService.findOneByOrgAndSlug(
+          organization,
+          creatorSlug,
+        )
+      : null;
+    const maintainer = maintainerSlug
+      ? await this.orgMemberService.findOneByOrgAndSlug(
+          organization,
+          maintainerSlug,
+        )
       : null;
     const filter: string[] = [
       ...(type ? [`${solrFields.entry_type}:${type}`] : []),
       ...(team ? [`${solrFields.team_id}:${team.id}`] : []),
+      ...(orgMember
+        ? [
+            `${solrFields.creator_id}:${orgMember.id} OR ${solrFields.maintainer_id}:${orgMember.id}`,
+          ]
+        : []),
+      ...(creator ? [`${solrFields.creator_id}:${creator.id}`] : []),
+      ...(maintainer ? [`${solrFields.maintainer_id}:${maintainer.id}`] : []),
     ];
 
     try {

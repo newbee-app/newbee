@@ -7,8 +7,8 @@ import {
 import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  testBaseQueryResultsDto1,
   testOrganizationRelation1,
-  testQueryResults1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
@@ -27,7 +27,7 @@ describe('SearchSelector', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResults1,
+              searchResults: testBaseQueryResultsDto1,
             },
             [Keyword.Organization]: {
               ...initialOrganizationState,
@@ -53,7 +53,7 @@ describe('SearchSelector', () => {
     it('should select search results and screen error', () => {
       const expected$ = hot('a', {
         a: {
-          searchResults: testQueryResults1,
+          searchResults: testBaseQueryResultsDto1,
           screenError: testHttpScreenError1,
         },
       });
@@ -67,7 +67,7 @@ describe('SearchSelector', () => {
     it('should select seach results and currently selected org', () => {
       const expected$ = hot('a', {
         a: {
-          searchResults: testQueryResults1,
+          searchResults: testBaseQueryResultsDto1,
           selectedOrganization: testOrganizationRelation1,
         },
       });

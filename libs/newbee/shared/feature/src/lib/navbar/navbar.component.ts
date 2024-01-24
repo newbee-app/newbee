@@ -7,7 +7,7 @@ import {
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { AuthenticatedNavbarComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import type { Organization } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
@@ -88,7 +88,9 @@ export class NavbarComponent implements OnDestroy {
    *
    * @param organization The organization to select.
    */
-  async selectOrganization(organization: Organization): Promise<void> {
+  async onSelectedOrganizationChange(
+    organization: Organization,
+  ): Promise<void> {
     await this.router.navigate([
       `/${ShortUrl.Organization}/${organization.slug}`,
     ]);
@@ -97,10 +99,15 @@ export class NavbarComponent implements OnDestroy {
   /**
    * When the dumb UI emits a `navigateToLink` event, pass it to the router.
    *
-   * @param link The link to navigate to.
+   * @param routeAndQueryParams The route and query params to navigate to.
    */
-  async navigateToLink(link: string): Promise<void> {
-    await this.router.navigate([link]);
+  async onNavigateToLink(
+    routeAndQueryParams: RouteAndQueryParams,
+  ): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
+    await this.router.navigate([route], {
+      ...(queryParams && { queryParams }),
+    });
   }
 
   /**

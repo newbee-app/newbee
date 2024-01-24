@@ -8,7 +8,7 @@ export class BaseSuggestDto {
   /**
    * The query itself.
    */
-  query!: string;
+  query = '';
 
   /**
    * The type of entry to look for.
