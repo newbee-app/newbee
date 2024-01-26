@@ -7,7 +7,21 @@ import {
   Routes,
   TitleStrategy,
 } from '@angular/router';
-import { cookieGuard } from '@newbee/newbee/shared/data-access';
+import {
+  canEditOrgGuard,
+  orgGuard,
+  orgTitleResolver,
+} from '@newbee/newbee/organization/data-access';
+import {
+  OrgCreateComponent,
+  OrgEditComponent,
+  OrgHomeComponent,
+  OrgRootComponent,
+} from '@newbee/newbee/organization/feature';
+import {
+  authenticatedGuard,
+  cookieGuard,
+} from '@newbee/newbee/shared/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 
@@ -33,18 +47,82 @@ export class AppTitleStrategy extends TitleStrategy {
   }
 }
 
+// TODO: set up a 404 not found page with a wildcard route
 /**
  * All of the routes of the app.
- * Some important notes:
- *
- * - Favor lazy loading routes whenever possible.
  */
-// TODO: set up a 404 not found page with a wildcard route
 const routes: Routes = [
   {
     path: '',
     canActivate: [cookieGuard],
     children: [
+      {
+        path: ShortUrl.Organization,
+        children: [
+          {
+            path: Keyword.New,
+            component: OrgCreateComponent,
+            title: 'Create org',
+          },
+          {
+            path: `:${ShortUrl.Organization}`,
+            component: OrgRootComponent,
+            title: orgTitleResolver,
+            canActivate: [authenticatedGuard, orgGuard],
+            children: [
+              {
+                path: ShortUrl.Team,
+                loadChildren: async () => {
+                  const m = await import('@newbee/newbee/team/feature');
+                  return m.TeamModule;
+                },
+              },
+              {
+                path: ShortUrl.Member,
+                loadChildren: async () => {
+                  const m = await import('@newbee/newbee/org-member/feature');
+                  return m.OrgMemberModule;
+                },
+              },
+              {
+                path: ShortUrl.Qna,
+                loadChildren: async () => {
+                  const m = await import('@newbee/newbee/qna/feature');
+                  return m.QnaModule;
+                },
+              },
+              {
+                path: ShortUrl.Doc,
+                loadChildren: async () => {
+                  const m = await import('@newbee/newbee/doc/feature');
+                  return m.DocModule;
+                },
+              },
+              {
+                path: Keyword.Search,
+                loadChildren: async () => {
+                  const m = await import('@newbee/newbee/search/feature');
+                  return m.SearchModule;
+                },
+              },
+              {
+                path: Keyword.Edit,
+                component: OrgEditComponent,
+                canActivate: [canEditOrgGuard],
+              },
+              {
+                path: '',
+                component: OrgHomeComponent,
+              },
+            ],
+          },
+          {
+            path: '',
+            redirectTo: Keyword.New,
+            pathMatch: 'full',
+          },
+        ],
+      },
       {
         path: Keyword.Auth,
         loadChildren: async () => {
@@ -57,13 +135,6 @@ const routes: Routes = [
         loadChildren: async () => {
           const m = await import('@newbee/newbee/user/feature');
           return m.UserModule;
-        },
-      },
-      {
-        path: ShortUrl.Organization,
-        loadChildren: async () => {
-          const m = await import('@newbee/newbee/organization/feature');
-          return m.OrganizationModule;
         },
       },
       {
