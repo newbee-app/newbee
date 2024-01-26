@@ -2,6 +2,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { OrganizationModule } from '@newbee/newbee/organization/feature';
 import {
   AuthenticatorEffects,
   CookieEffects,
@@ -50,6 +51,9 @@ import { AppRoutingModule } from './routing';
     EffectsModule.forRoot([AuthenticatorEffects, CookieEffects, RouterEffects]),
     StoreRouterConnectingModule.forRoot(),
     extModules,
+
+    // eagerly loaded modules
+    OrganizationModule,
 
     // directive/component modules for `AppComponent`
     TemplateMarkerDirectiveModule,

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import {
   OrganizationEffects,
   organizationFeature,
@@ -16,20 +17,25 @@ import { OrgCreateComponent } from './org-create';
 import { OrgEditComponent } from './org-edit';
 import { OrgHomeComponent } from './org-home/org-home.component';
 import { OrgRootComponent } from './org-root';
-import { OrganizationRoutingModule } from './routing';
 
 @NgModule({
   imports: [
     CommonModule,
+    RouterModule,
     StoreModule.forFeature(organizationFeature),
     EffectsModule.forFeature([OrganizationEffects]),
     CreateOrgComponent,
     OrgSearchbarComponent,
     EditOrgComponent,
-    OrganizationRoutingModule,
   ],
   providers: [OrganizationService],
   declarations: [
+    OrgRootComponent,
+    OrgCreateComponent,
+    OrgHomeComponent,
+    OrgEditComponent,
+  ],
+  exports: [
     OrgRootComponent,
     OrgCreateComponent,
     OrgHomeComponent,
