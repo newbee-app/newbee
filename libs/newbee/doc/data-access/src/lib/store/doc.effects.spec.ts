@@ -4,10 +4,11 @@ import { createMock } from '@golevelup/ts-jest';
 import {
   DocActions,
   initialDocState,
+  initialHttpState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateDocDto1,
@@ -42,6 +43,7 @@ describe('DocEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -91,23 +93,88 @@ describe('DocEffects', () => {
   });
 
   describe('getDocs$', () => {
-    it('should fire getDocsSuccess if this is the first request and selected organization is set', () => {
+    it(`should fire getDocsPending if this is the first request, selected organization is set, and there's no error`, () => {
       store.setState({
         [`${Keyword.Doc}Module`]: initialDocModuleState,
         [Keyword.Organization]: {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('a', { a: DocActions.getDocsPending() });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should fire getDocsPending if this is a follow-up request, selected organization is set, there are more results to fetch, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: { ...testPaginatedResultsDocQueryResult1, total: 100 },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('a', { a: DocActions.getDocsPending() });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selected organization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getDocsPending$', () => {
+    it('should fire getDocsSuccess if this is the first request', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
-        a: DocActions.getDocs(),
+        a: DocActions.getDocsPending(),
       });
       const expected$ = hot('a', {
         a: DocActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
       });
-      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(effects.getDocsPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAll).toHaveBeenCalledTimes(1);
         expect(service.getAll).toHaveBeenCalledWith(
@@ -117,7 +184,7 @@ describe('DocEffects', () => {
       });
     });
 
-    it('should fire getDocsSuccess if this is a follow-up request, selected organization is set, and there are more results to fetch', () => {
+    it('should fire getDocsSuccess if this is a follow-up request', () => {
       store.setState({
         [`${Keyword.Doc}Module`]: {
           ...initialDocModuleState,
@@ -130,46 +197,23 @@ describe('DocEffects', () => {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
-        a: DocActions.getDocs(),
+        a: DocActions.getDocsPending(),
       });
       const expected$ = hot('a', {
         a: DocActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
       });
-      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(effects.getDocsPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAll).toHaveBeenCalledTimes(1);
         expect(service.getAll).toHaveBeenCalledWith(testOrganization1.slug, {
           ...testOffsetAndLimit1,
           offset: 1,
         });
-      });
-    });
-
-    it('should do nothing if there are no more results to fetch', () => {
-      actions$ = hot('a', { a: DocActions.getDocs() });
-      const expected$ = hot('-');
-      expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAll).not.toHaveBeenCalled();
-      });
-    });
-
-    it(`should do nothing if selectedOrganization isn't set`, () => {
-      store.setState({
-        [`${Keyword.Doc}Module`]: initialDocModuleState,
-        [Keyword.Organization]: initialOrganizationState,
-      });
-      actions$ = hot('a', {
-        a: DocActions.getDocs(),
-      });
-      const expected$ = hot('-');
-      expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAll).not.toHaveBeenCalled();
       });
     });
   });

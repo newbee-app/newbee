@@ -4,7 +4,10 @@ import {
   initialOrgMemberState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testOrgMemberRelation1,
@@ -18,7 +21,7 @@ import { initialOrgMemberState as initialOrgMemberModuleState } from './org-memb
 import {
   selectOrgMemberAndOrg,
   selectOrgMemberAndScreenError,
-  selectOrgMemberPostsAndOrg,
+  selectOrgMemberPostsOrgAndError,
 } from './org-member.selector';
 
 describe('OrgMemberSelector', () => {
@@ -82,8 +85,8 @@ describe('OrgMemberSelector', () => {
     });
   });
 
-  describe('selectOrgMemberPostsAndOrg', () => {
-    it(`should select the org member's posts, selected org member, and selected org`, () => {
+  describe('selectOrgMemberPostsOrgAndError', () => {
+    it(`should select the org member's posts, selected org member, selected org, and error`, () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
@@ -98,6 +101,7 @@ describe('OrgMemberSelector', () => {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
       });
       const expected$ = hot('a', {
         a: {
@@ -105,9 +109,10 @@ describe('OrgMemberSelector', () => {
           qnas: testPaginatedResultsQnaQueryResult1,
           selectedOrgMember: testOrgMemberRelation1,
           selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
         },
       });
-      expect(store.select(selectOrgMemberPostsAndOrg)).toBeObservable(
+      expect(store.select(selectOrgMemberPostsOrgAndError)).toBeObservable(
         expected$,
       );
     });

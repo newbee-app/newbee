@@ -7,7 +7,7 @@ import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
-  const stateAfterGetDocs: DocState = {
+  const stateAfterGetDocsPending: DocState = {
     ...initialDocState,
     pendingGetDocs: true,
   };
@@ -33,18 +33,12 @@ describe('DocReducer', () => {
   };
 
   describe('from initial state', () => {
-    it('should update state for getDocs', () => {
-      let updatedState = docFeature.reducer(
+    it('should update state for getDocsPending', () => {
+      const updatedState = docFeature.reducer(
         initialDocState,
-        DocActions.getDocs,
+        DocActions.getDocsPending,
       );
-      expect(updatedState).toEqual(stateAfterGetDocs);
-
-      updatedState = docFeature.reducer(
-        stateAfterGetDocsSuccess,
-        DocActions.getDocs,
-      );
-      expect(updatedState).toEqual(stateAfterGetDocsSuccess);
+      expect(updatedState).toEqual(stateAfterGetDocsPending);
     });
 
     it('should update state for createDoc', () => {
@@ -83,7 +77,7 @@ describe('DocReducer', () => {
   describe('from altered state', () => {
     it('should update state for getDocsSuccess', () => {
       let updatedState = docFeature.reducer(
-        stateAfterGetDocs,
+        stateAfterGetDocsPending,
         DocActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),

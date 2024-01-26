@@ -21,6 +21,11 @@ export const DocActions = createActionGroup({
     'Get Docs': emptyProps(),
 
     /**
+     * Indicates that the get docs action is pending.
+     */
+    'Get Docs Pending': emptyProps(),
+
+    /**
      * Indicates that the paginated docs were successfully retrieved.
      */
     'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
@@ -74,5 +79,10 @@ export const DocActions = createActionGroup({
      * Reset the selected doc.
      */
     'Reset Selected Doc': emptyProps(),
+
+    /**
+     * Reset pending state fields.
+     */
+    'Reset Pending': emptyProps(),
   },
 });

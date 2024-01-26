@@ -15,7 +15,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap } from 'rxjs';
 import { SearchService } from '../search.service';
-import { selectSearchResultsAndOrg } from './search.selector';
+import { selectSearchResultsOrgAndError } from './search.selector';
 
 /**
  * The effects tied to `SearchActions`.
@@ -48,15 +48,24 @@ export class SearchEffects {
   continueSearch$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(SearchActions.continueSearch),
-      concatLatestFrom(() => this.store.select(selectSearchResultsAndOrg)),
+      concatLatestFrom(() => this.store.select(selectSearchResultsOrgAndError)),
       filter(
-        ([, { searchResults, selectedOrganization }]) =>
+        ([, { searchResults, selectedOrganization, error }]) =>
           !!(
             selectedOrganization &&
             searchResults &&
-            canGetMoreResults(searchResults)
+            canGetMoreResults(searchResults) &&
+            !error
           ),
       ),
+      map(() => SearchActions.continueSearchPending()),
+    );
+  });
+
+  continueSearchPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(SearchActions.continueSearchPending),
+      concatLatestFrom(() => this.store.select(selectSearchResultsOrgAndError)),
       switchMap(([, { searchResults, selectedOrganization }]) => {
         const { offset } = searchResults as BaseQueryResultsDto;
 

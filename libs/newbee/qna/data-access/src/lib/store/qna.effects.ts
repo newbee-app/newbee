@@ -22,18 +22,26 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { QnaService } from '../qna.service';
-import { selectQnaAndOrg, selectQnasAndOrg } from './qna.selector';
+import { selectQnaAndOrg, selectQnasOrgAndError } from './qna.selector';
 
 @Injectable()
 export class QnaEffects {
   getQnas$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.getQnas),
-      concatLatestFrom(() => this.store.select(selectQnasAndOrg)),
+      concatLatestFrom(() => this.store.select(selectQnasOrgAndError)),
       filter(
-        ([, { qnas, selectedOrganization }]) =>
-          !!(selectedOrganization && canGetMoreResults(qnas)),
+        ([, { qnas, selectedOrganization, error }]) =>
+          !!(selectedOrganization && canGetMoreResults(qnas) && !error),
       ),
+      map(() => QnaActions.getQnasPending()),
+    );
+  });
+
+  getQnasPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.getQnasPending),
+      concatLatestFrom(() => this.store.select(selectQnasOrgAndError)),
       switchMap(([, { qnas, selectedOrganization }]) => {
         const offsetAndLimit: OffsetAndLimit = {
           offset: qnas ? qnas.offset + 1 : 0,

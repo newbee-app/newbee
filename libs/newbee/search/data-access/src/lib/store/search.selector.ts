@@ -18,13 +18,15 @@ export const selectSearchResultsAndScreenError = createSelector(
 );
 
 /**
- * Selector for selecting the search results and currently selected org.
+ * Selector for selecting the search results, currently selected org, and error.
  */
-export const selectSearchResultsAndOrg = createSelector(
+export const selectSearchResultsOrgAndError = createSelector(
   searchFeature.selectSearchResults,
   organizationFeature.selectSelectedOrganization,
-  (searchResults, selectedOrganization) => ({
+  httpFeature.selectError,
+  (searchResults, selectedOrganization, error) => ({
     searchResults,
     selectedOrganization,
+    error,
   }),
 );

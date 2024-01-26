@@ -3,11 +3,12 @@ import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
   QnaActions,
+  initialHttpState,
   initialOrganizationState,
   initialQnaState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateQnaDto1,
@@ -44,6 +45,7 @@ describe('QnaEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -100,33 +102,25 @@ describe('QnaEffects', () => {
   });
 
   describe('getQnas$', () => {
-    it('should fire getQnasSuccess if this is the first request and selected organization is set', () => {
+    it(`should fire getQnasPending if this is the first request, selected organization is set, and there's no error`, () => {
       store.setState({
         [`${Keyword.Qna}Module`]: initialQnaModuleState,
         [Keyword.Organization]: {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: QnaActions.getQnas(),
       });
       const expected$ = hot('a', {
-        a: QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
-        }),
+        a: QnaActions.getQnasPending(),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAll).toHaveBeenCalledTimes(1);
-        expect(service.getAll).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testOffsetAndLimit1,
-        );
-      });
     });
 
-    it('should fire getQnasSuccess if this is a follow-up request, selected organization is set, and there are more results to fetch', () => {
+    it(`should fire getQnasPending if this is a follow-up request, selected organization is set, there are more results to fetch, and there's no error`, () => {
       store.setState({
         [`${Keyword.Qna}Module`]: {
           ...initialQnaModuleState,
@@ -139,16 +133,102 @@ describe('QnaEffects', () => {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: QnaActions.getQnas(),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.getQnasPending(),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: QnaActions.getQnas() });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: initialQnaModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnas(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: initialQnaModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', { a: QnaActions.getQnas() });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getQnasPending$', () => {
+    it('should fire getQnasSuccess if this is the first request', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: initialQnaModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnasPending(),
       });
       const expected$ = hot('a', {
         a: QnaActions.getQnasSuccess({
           qnas: testPaginatedResultsQnaQueryResult1,
         }),
       });
-      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(effects.getQnasPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAll).toHaveBeenCalledTimes(1);
+        expect(service.getAll).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOffsetAndLimit1,
+        );
+      });
+    });
+
+    it('should fire getQnasSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: {
+          ...initialQnaModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: QnaActions.getQnasPending(),
+      });
+      const expected$ = hot('a', {
+        a: QnaActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAll).toHaveBeenCalledTimes(1);
         expect(service.getAll).toHaveBeenCalledWith(testOrganization1.slug, {

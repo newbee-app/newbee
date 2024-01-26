@@ -4,7 +4,10 @@ import {
   initialHttpState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testDocRelation1,
@@ -18,7 +21,7 @@ import {
   selectDocAndOrg,
   selectDocAndOrgStates,
   selectDocAndScreenError,
-  selectDocsAndOrg,
+  selectDocsOrgAndError,
 } from './doc.selector';
 
 describe('DocSelector', () => {
@@ -29,6 +32,7 @@ describe('DocSelector', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: initialOrganizationState,
             [Keyword.Doc]: initialDocState,
             [`${Keyword.Doc}Module`]: initialDocModuleState,
@@ -73,12 +77,12 @@ describe('DocSelector', () => {
     });
   });
 
-  describe('selectDocsAndOrg', () => {
+  describe('selectDocsOrgAndError', () => {
     it('should handle null values', () => {
       const expected$ = hot('a', {
-        a: { docs: null, selectedOrganization: null },
+        a: { docs: null, selectedOrganization: null, error: null },
       });
-      expect(store.select(selectDocsAndOrg)).toBeObservable(expected$);
+      expect(store.select(selectDocsOrgAndError)).toBeObservable(expected$);
     });
 
     it('should return docs and org', () => {
@@ -91,14 +95,19 @@ describe('DocSelector', () => {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: {
+          ...initialHttpState,
+          error: testHttpClientError1,
+        },
       });
       const expected$ = hot('a', {
         a: {
           docs: testPaginatedResultsDocQueryResult1,
           selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
         },
       });
-      expect(store.select(selectDocsAndOrg)).toBeObservable(expected$);
+      expect(store.select(selectDocsOrgAndError)).toBeObservable(expected$);
     });
   });
 

@@ -3,7 +3,6 @@ import {
   OrgMemberActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import {
   DocQueryResult,
   Keyword,
@@ -81,10 +80,10 @@ export const orgMemberFeature = createFeature({
       (state): OrgMemberState => ({ ...state, pendingDelete: true }),
     ),
     on(
-      OrgMemberActions.getDocs,
+      OrgMemberActions.getDocsPending,
       (state): OrgMemberState => ({
         ...state,
-        pendingGetDocs: canGetMoreResults(state.docs),
+        pendingGetDocs: true,
       }),
     ),
     on(
@@ -99,10 +98,10 @@ export const orgMemberFeature = createFeature({
       }),
     ),
     on(
-      OrgMemberActions.getQnas,
+      OrgMemberActions.getQnasPending,
       (state): OrgMemberState => ({
         ...state,
-        pendingGetQnas: canGetMoreResults(state.qnas),
+        pendingGetQnas: true,
       }),
     ),
     on(

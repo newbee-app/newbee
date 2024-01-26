@@ -25,7 +25,7 @@ import { TeamService } from '../team.service';
 import {
   selectTeamAndOrg,
   selectTeamAndOrgStates,
-  selectTeamPostsAndOrg,
+  selectTeamPostsOrgAndError,
 } from './team.selector';
 
 @Injectable()
@@ -270,11 +270,24 @@ export class TeamEffects {
   getDocs$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.getDocs),
-      concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
+      concatLatestFrom(() => this.store.select(selectTeamPostsOrgAndError)),
       filter(
-        ([, { docs, selectedTeam, selectedOrganization }]) =>
-          !!(selectedOrganization && selectedTeam && canGetMoreResults(docs)),
+        ([, { docs, selectedTeam, selectedOrganization, error }]) =>
+          !!(
+            selectedOrganization &&
+            selectedTeam &&
+            canGetMoreResults(docs) &&
+            !error
+          ),
       ),
+      map(() => TeamActions.getDocsPending()),
+    );
+  });
+
+  getDocsPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getDocsPending),
+      concatLatestFrom(() => this.store.select(selectTeamPostsOrgAndError)),
       switchMap(([, { docs, selectedTeam, selectedOrganization }]) => {
         const offsetAndLimit: OffsetAndLimit = {
           offset: docs ? docs.offset + 1 : 0,
@@ -299,11 +312,24 @@ export class TeamEffects {
   getQnas$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TeamActions.getQnas),
-      concatLatestFrom(() => this.store.select(selectTeamPostsAndOrg)),
+      concatLatestFrom(() => this.store.select(selectTeamPostsOrgAndError)),
       filter(
-        ([, { qnas, selectedTeam, selectedOrganization }]) =>
-          !!(selectedOrganization && selectedTeam && canGetMoreResults(qnas)),
+        ([, { qnas, selectedTeam, selectedOrganization, error }]) =>
+          !!(
+            selectedOrganization &&
+            selectedTeam &&
+            canGetMoreResults(qnas) &&
+            !error
+          ),
       ),
+      map(() => TeamActions.getQnasPending()),
+    );
+  });
+
+  getQnasPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TeamActions.getQnasPending),
+      concatLatestFrom(() => this.store.select(selectTeamPostsOrgAndError)),
       switchMap(([, { qnas, selectedTeam, selectedOrganization }]) => {
         const offsetAndLimit: OffsetAndLimit = {
           offset: qnas ? qnas.offset + 1 : 0,

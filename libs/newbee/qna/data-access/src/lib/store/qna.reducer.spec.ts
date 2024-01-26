@@ -7,7 +7,7 @@ import { testPaginatedResultsQnaQueryResult1 } from '@newbee/shared/util';
 import { QnaState, initialQnaState, qnaFeature } from './qna.reducer';
 
 describe('QnaReducer', () => {
-  const stateAfterGetQnas: QnaState = {
+  const stateAfterGetQnasPending: QnaState = {
     ...initialQnaState,
     pendingGetQnas: true,
   };
@@ -37,18 +37,12 @@ describe('QnaReducer', () => {
   };
 
   describe('from initial state', () => {
-    it('should update state for getQnas', () => {
-      let updatedState = qnaFeature.reducer(
+    it('should update state for getQnasPending', () => {
+      const updatedState = qnaFeature.reducer(
         initialQnaState,
-        QnaActions.getQnas,
+        QnaActions.getQnasPending,
       );
-      expect(updatedState).toEqual(stateAfterGetQnas);
-
-      updatedState = qnaFeature.reducer(
-        stateAfterGetQnasSuccess,
-        QnaActions.getQnas,
-      );
-      expect(updatedState).toEqual(stateAfterGetQnasSuccess);
+      expect(updatedState).toEqual(stateAfterGetQnasPending);
     });
 
     it('should update state for createQna', () => {
@@ -95,7 +89,7 @@ describe('QnaReducer', () => {
   describe('from altered state', () => {
     it('should update state for getQnasSuccess', () => {
       let updatedState = qnaFeature.reducer(
-        stateAfterGetQnas,
+        stateAfterGetQnasPending,
         QnaActions.getQnasSuccess({
           qnas: testPaginatedResultsQnaQueryResult1,
         }),

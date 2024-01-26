@@ -34,7 +34,7 @@ describe('TeamReducer', () => {
     ...initialTeamState,
     pendingCheck: true,
   };
-  const stateAfterGetDocs: TeamState = {
+  const stateAfterGetDocsPending: TeamState = {
     ...initialTeamState,
     pendingGetDocs: true,
   };
@@ -42,7 +42,7 @@ describe('TeamReducer', () => {
     ...initialTeamState,
     docs: testPaginatedResultsDocQueryResult1,
   };
-  const stateAfterGetQnas: TeamState = {
+  const stateAfterGetQnasPending: TeamState = {
     ...initialTeamState,
     pendingGetQnas: true,
   };
@@ -124,32 +124,20 @@ describe('TeamReducer', () => {
       expect(updatedState).toEqual(initialTeamState);
     });
 
-    it('should update state for getDocs', () => {
-      let updatedState = teamFeature.reducer(
+    it('should update state for getDocsPending', () => {
+      const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.getDocs,
+        TeamActions.getDocsPending,
       );
-      expect(updatedState).toEqual(stateAfterGetDocs);
-
-      updatedState = teamFeature.reducer(
-        stateAfterGetDocsSuccess,
-        TeamActions.getDocs,
-      );
-      expect(updatedState).toEqual(stateAfterGetDocsSuccess);
+      expect(updatedState).toEqual(stateAfterGetDocsPending);
     });
 
-    it('should update state for getQnas', () => {
-      let updatedState = teamFeature.reducer(
+    it('should update state for getQnasPending', () => {
+      const updatedState = teamFeature.reducer(
         initialTeamState,
-        TeamActions.getQnas,
+        TeamActions.getQnasPending,
       );
-      expect(updatedState).toEqual(stateAfterGetQnas);
-
-      updatedState = teamFeature.reducer(
-        stateAfterGetQnasSuccess,
-        TeamActions.getQnas,
-      );
-      expect(updatedState).toEqual(stateAfterGetQnasSuccess);
+      expect(updatedState).toEqual(stateAfterGetQnasPending);
     });
 
     it('should update state for addTeamMember', () => {
@@ -236,7 +224,7 @@ describe('TeamReducer', () => {
 
     it('should update state for getDocsSuccess', () => {
       let updatedState = teamFeature.reducer(
-        stateAfterGetDocs,
+        stateAfterGetDocsPending,
         TeamActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
@@ -266,7 +254,7 @@ describe('TeamReducer', () => {
 
     it('should update state for getQnasSuccess', () => {
       let updatedState = teamFeature.reducer(
-        stateAfterGetQnas,
+        stateAfterGetQnasPending,
         TeamActions.getQnasSuccess({
           qnas: testPaginatedResultsQnaQueryResult1,
         }),

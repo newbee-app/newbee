@@ -2,12 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  initialHttpState,
   initialOrganizationState,
   initialTeamState,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateTeamDto1,
@@ -53,6 +54,7 @@ describe('TeamEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -451,16 +453,131 @@ describe('TeamEffects', () => {
   });
 
   describe('getDocs$', () => {
-    it('should fire getDocsSuccess if this is the first request and selected organization and selected team are set', () => {
+    it(`should fire getDocsPending if this is the first request, selected organization and selected team are set, and there's no error`, () => {
       actions$ = hot('a', {
         a: TeamActions.getDocs(),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.getDocsPending(),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should fire getDocsPending if this is a follow-up request, selected organization and slected team are set, there are more results to fetch, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: {
+          ...initialTeamModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.getDocs(),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.getDocsPending(),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: {
+          ...initialTeamModuleState,
+          docs: testPaginatedResultsDocQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: TeamActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: initialTeamModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.getDocs(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedTeam isn't set`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: initialTeamModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: initialTeamState,
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.getDocs(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: initialTeamModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', {
+        a: TeamActions.getDocs(),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getDocsPending$', () => {
+    it(`should fire getDocsSuccess if this is the first request`, () => {
+      actions$ = hot('a', {
+        a: TeamActions.getDocsPending(),
       });
       const expected$ = hot('a', {
         a: TeamActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
       });
-      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(effects.getDocsPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAllDocs).toHaveBeenCalledTimes(1);
         expect(service.getAllDocs).toHaveBeenCalledWith(
@@ -471,7 +588,7 @@ describe('TeamEffects', () => {
       });
     });
 
-    it('should fire getDocsSuccess if this is a follow-up request, selected organization and slected team are set, and there are more results to fetch', () => {
+    it('should fire getDocsSuccess if this is a follow-up request', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -490,14 +607,14 @@ describe('TeamEffects', () => {
         },
       });
       actions$ = hot('a', {
-        a: TeamActions.getDocs(),
+        a: TeamActions.getDocsPending(),
       });
       const expected$ = hot('a', {
         a: TeamActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
       });
-      expect(effects.getDocs$).toBeObservable(expected$);
+      expect(effects.getDocsPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.getAllDocs).toHaveBeenCalledTimes(1);
         expect(service.getAllDocs).toHaveBeenCalledWith(
@@ -510,91 +627,20 @@ describe('TeamEffects', () => {
         );
       });
     });
-
-    it('should do nothing if there are no more results to fetch', () => {
-      store.setState({
-        [`${Keyword.Team}Module`]: {
-          ...initialTeamModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
-        },
-        [Keyword.Organization]: {
-          ...initialOrganizationState,
-          selectedOrganization: testOrganizationRelation1,
-        },
-        [Keyword.Team]: {
-          ...initialTeamState,
-          selectedTeam: testTeamRelation1,
-        },
-      });
-      actions$ = hot('a', { a: TeamActions.getDocs() });
-      const expected$ = hot('-');
-      expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
-      });
-    });
-
-    it(`should do nothing if selectedOrganization isn't set`, () => {
-      store.setState({
-        [`${Keyword.Team}Module`]: initialTeamModuleState,
-        [Keyword.Organization]: initialOrganizationState,
-        [Keyword.Team]: {
-          ...initialTeamState,
-          selectedTeam: testTeamRelation1,
-        },
-      });
-      actions$ = hot('a', {
-        a: TeamActions.getDocs(),
-      });
-      const expected$ = hot('-');
-      expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
-      });
-    });
-
-    it(`should do nothing if selectedTeam isn't set`, () => {
-      store.setState({
-        [`${Keyword.Team}Module`]: initialTeamModuleState,
-        [Keyword.Organization]: {
-          ...initialOrganizationState,
-          selectedOrganization: testOrganizationRelation1,
-        },
-        [Keyword.Team]: initialTeamState,
-      });
-      actions$ = hot('a', {
-        a: TeamActions.getDocs(),
-      });
-      const expected$ = hot('-');
-      expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
-      });
-    });
   });
 
   describe('getQnas$', () => {
-    it('should fire getQnasSuccess if this is the first request and selected organization and selected team are set', () => {
+    it(`should fire getQnasPending if this is the first request, selected organization and selected team are set, and there's no error`, () => {
       actions$ = hot('a', {
         a: TeamActions.getQnas(),
       });
       const expected$ = hot('a', {
-        a: TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
-        }),
+        a: TeamActions.getQnasPending(),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
-        expect(service.getAllQnas).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testTeam1.slug,
-          testOffsetAndLimit1,
-        );
-      });
     });
 
-    it('should fire getQnasSuccess if this is a follow-up request, selected organization and slected team are set, and there are more results to fetch', () => {
+    it(`should fire getQnasPending if this is a follow-up request, selected organization and slected team are set, there are more results to fetch, and there's no error`, () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -611,27 +657,15 @@ describe('TeamEffects', () => {
           ...initialTeamState,
           selectedTeam: testTeamRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: TeamActions.getQnas(),
       });
       const expected$ = hot('a', {
-        a: TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
-        }),
+        a: TeamActions.getQnasPending(),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
-        expect(service.getAllQnas).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testTeam1.slug,
-          {
-            ...testOffsetAndLimit1,
-            offset: 1,
-          },
-        );
-      });
     });
 
     it('should do nothing if there are no more results to fetch', () => {
@@ -648,13 +682,11 @@ describe('TeamEffects', () => {
           ...initialTeamState,
           selectedTeam: testTeamRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', { a: TeamActions.getQnas() });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedOrganization isn't set`, () => {
@@ -665,15 +697,13 @@ describe('TeamEffects', () => {
           ...initialTeamState,
           selectedTeam: testTeamRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: TeamActions.getQnas(),
       });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedTeam isn't set`, () => {
@@ -684,14 +714,96 @@ describe('TeamEffects', () => {
           selectedOrganization: testOrganizationRelation1,
         },
         [Keyword.Team]: initialTeamState,
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: TeamActions.getQnas(),
       });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: initialTeamModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: {
+          ...initialHttpState,
+          error: testHttpClientError1,
+        },
+      });
+      actions$ = hot('a', { a: TeamActions.getQnas() });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getQnasPending$', () => {
+    it(`should fire getQnasSuccess if this is the first request`, () => {
+      actions$ = hot('a', {
+        a: TeamActions.getQnasPending(),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testTeam1.slug,
+          testOffsetAndLimit1,
+        );
+      });
+    });
+
+    it('should fire getQnasSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: {
+          ...initialTeamModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: TeamActions.getQnasPending(),
+      });
+      const expected$ = hot('a', {
+        a: TeamActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testTeam1.slug,
+          {
+            ...testOffsetAndLimit1,
+            offset: 1,
+          },
+        );
       });
     });
   });

@@ -61,17 +61,19 @@ export const selectNonTeamOrgMembers = createSelector(
 );
 
 /**
- * A selector for selecting the team's posts, currently selected team, and currently selected org.
+ * A selector for selecting the team's posts, currently selected team, currently selected org, and error.
  */
-export const selectTeamPostsAndOrg = createSelector(
+export const selectTeamPostsOrgAndError = createSelector(
   teamModuleFeature.selectDocs,
   teamModuleFeature.selectQnas,
   teamFeature.selectSelectedTeam,
   organizationFeature.selectSelectedOrganization,
-  (docs, qnas, selectedTeam, selectedOrganization) => ({
+  httpFeature.selectError,
+  (docs, qnas, selectedTeam, selectedOrganization, error) => ({
     docs,
     qnas,
     selectedTeam,
     selectedOrganization,
+    error,
   }),
 );

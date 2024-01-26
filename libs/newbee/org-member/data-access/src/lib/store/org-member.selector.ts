@@ -28,17 +28,19 @@ export const selectOrgMemberAndScreenError = createSelector(
 );
 
 /**
- * A selector for the org member's posts, currently selected org member, and currently selected org.
+ * A selector for the org member's posts, currently selected org member, currently selected org, and error.
  */
-export const selectOrgMemberPostsAndOrg = createSelector(
+export const selectOrgMemberPostsOrgAndError = createSelector(
   orgMemberModuleFeature.selectDocs,
   orgMemberModuleFeature.selectQnas,
   orgMemberFeature.selectSelectedOrgMember,
   organizationFeature.selectSelectedOrganization,
-  (docs, qnas, selectedOrgMember, selectedOrganization) => ({
+  httpFeature.selectError,
+  (docs, qnas, selectedOrgMember, selectedOrganization, error) => ({
     docs,
     qnas,
     selectedOrgMember,
     selectedOrganization,
+    error,
   }),
 );

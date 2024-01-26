@@ -56,6 +56,11 @@ export const OrgMemberActions = createActionGroup({
     'Get Docs': props<{ role: CreatorOrMaintainer | null }>(),
 
     /**
+     * Indicates that the get docs action is pending.
+     */
+    'Get Docs Pending': props<{ role: CreatorOrMaintainer | null }>(),
+
+    /**
      * Indicates that the paginated docs were successfully retrieved.
      */
     'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
@@ -64,6 +69,11 @@ export const OrgMemberActions = createActionGroup({
      * Gets all of the paginated qnas of the selected org member.
      */
     'Get Qnas': props<{ role: CreatorOrMaintainer | null }>(),
+
+    /**
+     * Indicates that the get qnas action is pending.
+     */
+    'Get Qnas Pending': props<{ role: CreatorOrMaintainer | null }>(),
 
     /**
      * Indicates that the paginated qnas were successfully retrieved.

@@ -19,14 +19,16 @@ export const selectDocAndOrg = createSelector(
 );
 
 /**
- * A selector for selecting the loaded docs and currently selected organization.
+ * A selector for selecting the loaded docs, currently selected organization, and error.
  */
-export const selectDocsAndOrg = createSelector(
+export const selectDocsOrgAndError = createSelector(
   docModuleFeature.selectDocs,
   organizationFeature.selectSelectedOrganization,
-  (docs, selectedOrganization) => ({
+  httpFeature.selectError,
+  (docs, selectedOrganization, error) => ({
     docs,
     selectedOrganization,
+    error,
   }),
 );
 

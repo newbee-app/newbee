@@ -23,9 +23,8 @@ describe('SearchReducer', () => {
     ...initialSearchState,
     suggestions: testBaseSuggestResultsDto1.suggestions,
   };
-  const stateAfterContinueSearch: SearchState = {
-    ...initialSearchState,
-    searchResults: { ...testBaseQueryResultsDto1, total: 100 },
+  const stateAfterContinueSearchPending: SearchState = {
+    ...stateAfterSearchSuccess,
     pendingContinueSearch: true,
   };
 
@@ -65,26 +64,17 @@ describe('SearchReducer', () => {
       expect(updatedState).toEqual(stateAfterSuggestSuccess);
     });
 
-    it('should update state for continueSearch', () => {
-      let updatedState = searchFeature.reducer(
+    it('should update state for continueSearchPending', () => {
+      const updatedState = searchFeature.reducer(
         stateAfterSearchSuccess,
-        SearchActions.continueSearch,
+        SearchActions.continueSearchPending,
       );
-      expect(updatedState).toEqual(stateAfterSearchSuccess);
-
-      updatedState = searchFeature.reducer(
-        {
-          ...stateAfterSearchSuccess,
-          searchResults: { ...testBaseQueryResultsDto1, total: 100 },
-        },
-        SearchActions.continueSearch,
-      );
-      expect(updatedState).toEqual(stateAfterContinueSearch);
+      expect(updatedState).toEqual(stateAfterContinueSearchPending);
     });
 
     it('should update state for continueSearchSuccess', () => {
       const updatedState = searchFeature.reducer(
-        stateAfterContinueSearch,
+        stateAfterContinueSearchPending,
         SearchActions.continueSearchSuccess({
           results: {
             ...testBaseQueryResultsDto1,

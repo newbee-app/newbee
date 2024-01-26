@@ -22,6 +22,11 @@ export const QnaActions = createActionGroup({
     'Get Qnas': emptyProps(),
 
     /**
+     * Indicates that the get qnas action is pending.
+     */
+    'Get Qnas Pending': emptyProps(),
+
+    /**
      * Indicates that the paginated qnas were successfully retrieved.
      */
     'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),

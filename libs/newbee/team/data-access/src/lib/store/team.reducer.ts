@@ -3,7 +3,6 @@ import {
   RouterActions,
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
-import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import {
   DocQueryResult,
   Keyword,
@@ -169,10 +168,10 @@ export const teamFeature = createFeature({
       }),
     ),
     on(
-      TeamActions.getDocs,
+      TeamActions.getDocsPending,
       (state): TeamState => ({
         ...state,
-        pendingGetDocs: canGetMoreResults(state.docs),
+        pendingGetDocs: true,
       }),
     ),
     on(
@@ -187,10 +186,10 @@ export const teamFeature = createFeature({
       }),
     ),
     on(
-      TeamActions.getQnas,
+      TeamActions.getQnasPending,
       (state): TeamState => ({
         ...state,
-        pendingGetQnas: canGetMoreResults(state.qnas),
+        pendingGetQnas: true,
       }),
     ),
     on(

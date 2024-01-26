@@ -4,7 +4,10 @@ import {
   initialOrganizationState,
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseQueryResultsDto1,
@@ -13,8 +16,8 @@ import {
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import {
-  selectSearchResultsAndOrg,
   selectSearchResultsAndScreenError,
+  selectSearchResultsOrgAndError,
 } from './search.selector';
 
 describe('SearchSelector', () => {
@@ -35,6 +38,7 @@ describe('SearchSelector', () => {
             },
             [Keyword.Http]: {
               ...initialHttpState,
+              error: testHttpClientError1,
               screenError: testHttpScreenError1,
             },
           },
@@ -63,15 +67,18 @@ describe('SearchSelector', () => {
     });
   });
 
-  describe('selectSeachResultsAndOrg', () => {
-    it('should select seach results and currently selected org', () => {
+  describe('selectSeachResultsOrgAndError', () => {
+    it('should select seach results, currently selected org, and error', () => {
       const expected$ = hot('a', {
         a: {
           searchResults: testBaseQueryResultsDto1,
           selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
         },
       });
-      expect(store.select(selectSearchResultsAndOrg)).toBeObservable(expected$);
+      expect(store.select(selectSearchResultsOrgAndError)).toBeObservable(
+        expected$,
+      );
     });
   });
 });

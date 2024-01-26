@@ -29,7 +29,7 @@ import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { OrgMemberService } from '../org-member.service';
 import {
   selectOrgMemberAndOrg,
-  selectOrgMemberPostsAndOrg,
+  selectOrgMemberPostsOrgAndError,
 } from './org-member.selector';
 
 /**
@@ -136,14 +136,27 @@ export class OrgMemberEffects {
   getDocs$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrgMemberActions.getDocs),
-      concatLatestFrom(() => this.store.select(selectOrgMemberPostsAndOrg)),
+      concatLatestFrom(() =>
+        this.store.select(selectOrgMemberPostsOrgAndError),
+      ),
       filter(
-        ([, { docs, selectedOrgMember, selectedOrganization }]) =>
+        ([, { docs, selectedOrgMember, selectedOrganization, error }]) =>
           !!(
             selectedOrganization &&
             selectedOrgMember &&
-            canGetMoreResults(docs)
+            canGetMoreResults(docs) &&
+            !error
           ),
+      ),
+      map(([{ role }]) => OrgMemberActions.getDocsPending({ role })),
+    );
+  });
+
+  getDocsPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.getDocsPending),
+      concatLatestFrom(() =>
+        this.store.select(selectOrgMemberPostsOrgAndError),
       ),
       switchMap(
         ([{ role }, { docs, selectedOrgMember, selectedOrganization }]) => {
@@ -174,14 +187,27 @@ export class OrgMemberEffects {
   getQnas$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OrgMemberActions.getQnas),
-      concatLatestFrom(() => this.store.select(selectOrgMemberPostsAndOrg)),
+      concatLatestFrom(() =>
+        this.store.select(selectOrgMemberPostsOrgAndError),
+      ),
       filter(
-        ([, { qnas, selectedOrgMember, selectedOrganization }]) =>
+        ([, { qnas, selectedOrgMember, selectedOrganization, error }]) =>
           !!(
             selectedOrganization &&
             selectedOrgMember &&
-            canGetMoreResults(qnas)
+            canGetMoreResults(qnas) &&
+            !error
           ),
+      ),
+      map(([{ role }]) => OrgMemberActions.getQnasPending({ role })),
+    );
+  });
+
+  getQnasPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(OrgMemberActions.getQnasPending),
+      concatLatestFrom(() =>
+        this.store.select(selectOrgMemberPostsOrgAndError),
       ),
       switchMap(
         ([{ role }, { qnas, selectedOrgMember, selectedOrganization }]) => {

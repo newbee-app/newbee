@@ -23,7 +23,7 @@ describe('OrgMemberReducer', () => {
     ...initialOrgMemberState,
     pendingDelete: true,
   };
-  const stateAfterGetDocs: OrgMemberState = {
+  const stateAfterGetDocsPending: OrgMemberState = {
     ...initialOrgMemberState,
     pendingGetDocs: true,
   };
@@ -31,7 +31,7 @@ describe('OrgMemberReducer', () => {
     ...initialOrgMemberState,
     docs: testPaginatedResultsDocQueryResult1,
   };
-  const stateAfterGetQnas: OrgMemberState = {
+  const stateAfterGetQnasPending: OrgMemberState = {
     ...initialOrgMemberState,
     pendingGetQnas: true,
   };
@@ -61,32 +61,20 @@ describe('OrgMemberReducer', () => {
       expect(updatedState).toEqual(stateAfterDeleteOrgMember);
     });
 
-    it('should update state for getDocs', () => {
-      let updatedState = orgMemberFeature.reducer(
+    it('should update state for getDocsPending', () => {
+      const updatedState = orgMemberFeature.reducer(
         initialOrgMemberState,
-        OrgMemberActions.getDocs,
+        OrgMemberActions.getDocsPending,
       );
-      expect(updatedState).toEqual(stateAfterGetDocs);
-
-      updatedState = orgMemberFeature.reducer(
-        stateAfterGetDocsSuccess,
-        OrgMemberActions.getDocs,
-      );
-      expect(updatedState).toEqual(stateAfterGetDocsSuccess);
+      expect(updatedState).toEqual(stateAfterGetDocsPending);
     });
 
-    it('should update state for getQnas', () => {
-      let updatedState = orgMemberFeature.reducer(
+    it('should update state for getQnasPending', () => {
+      const updatedState = orgMemberFeature.reducer(
         initialOrgMemberState,
-        OrgMemberActions.getQnas,
+        OrgMemberActions.getQnasPending,
       );
-      expect(updatedState).toEqual(stateAfterGetQnas);
-
-      updatedState = orgMemberFeature.reducer(
-        stateAfterGetQnasSuccess,
-        OrgMemberActions.getQnas,
-      );
-      expect(updatedState).toEqual(stateAfterGetQnasSuccess);
+      expect(updatedState).toEqual(stateAfterGetQnasPending);
     });
 
     it('should update state for inviteUser', () => {
@@ -117,7 +105,7 @@ describe('OrgMemberReducer', () => {
 
     it('should update state for getDocsSuccess', () => {
       let updatedState = orgMemberFeature.reducer(
-        stateAfterGetDocs,
+        stateAfterGetDocsPending,
         OrgMemberActions.getDocsSuccess({
           docs: testPaginatedResultsDocQueryResult1,
         }),
@@ -147,7 +135,7 @@ describe('OrgMemberReducer', () => {
 
     it('should update state for getQnasSuccess', () => {
       let updatedState = orgMemberFeature.reducer(
-        stateAfterGetQnas,
+        stateAfterGetQnasPending,
         OrgMemberActions.getQnasSuccess({
           qnas: testPaginatedResultsQnaQueryResult1,
         }),

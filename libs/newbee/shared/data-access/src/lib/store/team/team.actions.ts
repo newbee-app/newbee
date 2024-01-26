@@ -102,6 +102,11 @@ export const TeamActions = createActionGroup({
     'Get Docs': emptyProps(),
 
     /**
+     * Indicates that the get docs action is pending.
+     */
+    'Get Docs Pending': emptyProps(),
+
+    /**
      * Indicates that the paginated docs were successfully retrieved.
      */
     'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
@@ -110,6 +115,11 @@ export const TeamActions = createActionGroup({
      * Gets all of the paginated qnas of the selected team.
      */
     'Get Qnas': emptyProps(),
+
+    /**
+     * Indicates that the get qnas action is pending.
+     */
+    'Get Qnas Pending': emptyProps(),
 
     /**
      * Indicates that the paginated qnas were successfully retrieved.

@@ -3,7 +3,6 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import { DocQueryResult, Keyword, PaginatedResults } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
@@ -62,10 +61,10 @@ export const docFeature = createFeature({
   reducer: createReducer(
     initialDocState,
     on(
-      DocActions.getDocs,
+      DocActions.getDocsPending,
       (state): DocState => ({
         ...state,
-        pendingGetDocs: canGetMoreResults(state.docs),
+        pendingGetDocs: true,
       }),
     ),
     on(

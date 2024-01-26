@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  initialHttpState,
   initialOrganizationState,
   initialOrgMemberState,
   OrgMemberActions,
@@ -11,6 +12,7 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   ShortUrl,
+  testHttpClientError1,
   Toast,
   ToastXPosition,
   ToastYPosition,
@@ -57,6 +59,7 @@ describe('OrgMemberEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -200,29 +203,21 @@ describe('OrgMemberEffects', () => {
   });
 
   describe('getDocs$', () => {
-    it('should fire getDocsSuccess if this is the first request and selected organization and selected org member are set', () => {
+    it(`should fire getDocsPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
           role: testBaseGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
-        a: OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
-        expect(service.getAllDocs).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testOrgMember1.slug,
-          testBaseGetOrgMemberPostsDto1,
-        );
-      });
     });
 
-    it('should fire getDocsSuccess if this is a follow-up request, selected organization and slected org member are set, and there are more results to fetch', () => {
+    it(`should fire getDocsPending if this is a follow-up request, selected organization and slected org member are set, there are more results to fetch, and there's no error`, () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
@@ -239,6 +234,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
@@ -246,22 +242,11 @@ describe('OrgMemberEffects', () => {
         }),
       });
       const expected$ = hot('a', {
-        a: OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
-        expect(service.getAllDocs).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testOrgMember1.slug,
-          {
-            ...testBaseGetOrgMemberPostsDto1,
-            offset: 1,
-          },
-        );
-      });
     });
 
     it('should do nothing if there are no more results to fetch', () => {
@@ -278,6 +263,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
@@ -286,9 +272,6 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedOrganization isn't set`, () => {
@@ -299,6 +282,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
@@ -307,9 +291,6 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedOrgMember isn't set`, () => {
@@ -320,6 +301,7 @@ describe('OrgMemberEffects', () => {
           selectedOrganization: testOrganizationRelation1,
         },
         [Keyword.Member]: initialOrgMemberState,
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
@@ -328,28 +310,47 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getDocs$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllDocs).not.toHaveBeenCalled();
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
       });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
     });
   });
 
-  describe('getQnas$', () => {
-    it('should fire getQnasSuccess if this is the first request and selected organization and selected org member are set', () => {
+  describe('getDocsPending$', () => {
+    it('should fire getDocsSuccess if this is the first request', () => {
       actions$ = hot('a', {
-        a: OrgMemberActions.getQnas({
+        a: OrgMemberActions.getDocsPending({
           role: testBaseGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
-        a: OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+        a: OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
         }),
       });
-      expect(effects.getQnas$).toBeObservable(expected$);
+      expect(effects.getDocsPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
-        expect(service.getAllQnas).toHaveBeenCalledWith(
+        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
+        expect(service.getAllDocs).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
           testBaseGetOrgMemberPostsDto1,
@@ -357,7 +358,66 @@ describe('OrgMemberEffects', () => {
       });
     });
 
-    it('should fire getQnasSuccess if this is a follow-up request, selected organization and slected org member are set, and there are more results to fetch', () => {
+    it('should fire getDocsSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocsPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
+        expect(service.getAllDocs).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          {
+            ...testBaseGetOrgMemberPostsDto1,
+            offset: 1,
+          },
+        );
+      });
+    });
+  });
+
+  describe('getQnas$', () => {
+    it(`should fire getQnasPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should fire getQnasPending if this is a follow-up request, selected organization and slected org member are set, there are more results to fetch, and there's no error`, () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
@@ -374,6 +434,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
@@ -381,22 +442,11 @@ describe('OrgMemberEffects', () => {
         }),
       });
       const expected$ = hot('a', {
-        a: OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
-        expect(service.getAllQnas).toHaveBeenCalledWith(
-          testOrganization1.slug,
-          testOrgMember1.slug,
-          {
-            ...testBaseGetOrgMemberPostsDto1,
-            offset: 1,
-          },
-        );
-      });
     });
 
     it('should do nothing if there are no more results to fetch', () => {
@@ -413,6 +463,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
@@ -421,9 +472,6 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedOrganization isn't set`, () => {
@@ -434,6 +482,7 @@ describe('OrgMemberEffects', () => {
           ...initialOrgMemberState,
           selectedOrgMember: testOrgMemberRelation1,
         },
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
@@ -442,9 +491,6 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
-      expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
-      });
     });
 
     it(`should do nothing if selectedOrgMember isn't set`, () => {
@@ -455,6 +501,7 @@ describe('OrgMemberEffects', () => {
           selectedOrganization: testOrganizationRelation1,
         },
         [Keyword.Member]: initialOrgMemberState,
+        [Keyword.Http]: initialHttpState,
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
@@ -463,8 +510,94 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('-');
       expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getQnasPending$', () => {
+    it('should fire getQnasSuccess if this is the first request', () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
-        expect(service.getAllQnas).not.toHaveBeenCalled();
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          testBaseGetOrgMemberPostsDto1,
+        );
+      });
+    });
+
+    it('should fire getQnasSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          {
+            ...testBaseGetOrgMemberPostsDto1,
+            offset: 1,
+          },
+        );
       });
     });
   });

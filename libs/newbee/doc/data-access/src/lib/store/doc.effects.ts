@@ -20,19 +20,27 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { DocService } from '../doc.service';
-import { selectDocAndOrg, selectDocsAndOrg } from './doc.selector';
+import { selectDocAndOrg, selectDocsOrgAndError } from './doc.selector';
 
 @Injectable()
 export class DocEffects {
   getDocs$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DocActions.getDocs),
-      concatLatestFrom(() => this.store.select(selectDocsAndOrg)),
+      concatLatestFrom(() => this.store.select(selectDocsOrgAndError)),
       filter(
-        ([, { selectedOrganization, docs }]) =>
-          !!(selectedOrganization && canGetMoreResults(docs)),
+        ([, { docs, selectedOrganization, error }]) =>
+          !!(selectedOrganization && canGetMoreResults(docs) && !error),
       ),
-      switchMap(([, { selectedOrganization, docs }]) => {
+      map(() => DocActions.getDocsPending()),
+    );
+  });
+
+  getDocsPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DocActions.getDocsPending),
+      concatLatestFrom(() => this.store.select(selectDocsOrgAndError)),
+      switchMap(([, { docs, selectedOrganization }]) => {
         const offsetAndLimit: OffsetAndLimit = {
           offset: docs ? docs.offset + 1 : 0,
           limit: docs ? docs.limit : defaultLimit,

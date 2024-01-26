@@ -4,7 +4,10 @@ import {
   initialOrganizationState,
   initialTeamState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgMemberUser,
@@ -25,7 +28,7 @@ import {
   selectTeamAndOrg,
   selectTeamAndOrgStates,
   selectTeamAndScreenError,
-  selectTeamPostsAndOrg,
+  selectTeamPostsOrgAndError,
 } from './team.selector';
 
 describe('TeamSelector', () => {
@@ -146,8 +149,8 @@ describe('TeamSelector', () => {
     });
   });
 
-  describe('selectTeamPostsAndOrg', () => {
-    it(`should select the team's posts, selected team, and selected org`, () => {
+  describe('selectTeamPostsOrgAndError', () => {
+    it(`should select the team's posts, selected team, selected org, and error`, () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
@@ -162,6 +165,7 @@ describe('TeamSelector', () => {
           ...initialOrganizationState,
           selectedOrganization: testOrganizationRelation1,
         },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
       });
       const expected$ = hot('a', {
         a: {
@@ -169,9 +173,12 @@ describe('TeamSelector', () => {
           qnas: testPaginatedResultsQnaQueryResult1,
           selectedTeam: testTeamRelation1,
           selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
         },
       });
-      expect(store.select(selectTeamPostsAndOrg)).toBeObservable(expected$);
+      expect(store.select(selectTeamPostsOrgAndError)).toBeObservable(
+        expected$,
+      );
     });
   });
 });

@@ -1,4 +1,3 @@
-import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
@@ -70,12 +69,10 @@ export const searchFeature = createFeature({
       };
     }),
     on(
-      SearchActions.continueSearch,
+      SearchActions.continueSearchPending,
       (state): SearchState => ({
         ...state,
-        pendingContinueSearch: !!(
-          state.searchResults && canGetMoreResults(state.searchResults)
-        ),
+        pendingContinueSearch: true,
       }),
     ),
     on(

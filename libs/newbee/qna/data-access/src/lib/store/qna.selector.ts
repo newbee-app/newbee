@@ -19,14 +19,16 @@ export const selectQnaAndOrg = createSelector(
 );
 
 /**
- * A selector for selecting the loaded qnas and currently selected organization.
+ * A selector for selecting the loaded qnas, currently selected organization, and error.
  */
-export const selectQnasAndOrg = createSelector(
+export const selectQnasOrgAndError = createSelector(
   qnaModuleFeature.selectQnas,
   organizationFeature.selectSelectedOrganization,
-  (qnas, selectedOrganization) => ({
+  httpFeature.selectError,
+  (qnas, selectedOrganization, error) => ({
     qnas,
     selectedOrganization,
+    error,
   }),
 );
 

@@ -3,7 +3,6 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { canGetMoreResults } from '@newbee/newbee/shared/util';
 import { Keyword, PaginatedResults, QnaQueryResult } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
@@ -68,10 +67,10 @@ export const qnaFeature = createFeature({
   reducer: createReducer(
     initialQnaState,
     on(
-      QnaActions.getQnas,
+      QnaActions.getQnasPending,
       (state): QnaState => ({
         ...state,
-        pendingGetQnas: canGetMoreResults(state.qnas),
+        pendingGetQnas: true,
       }),
     ),
     on(
