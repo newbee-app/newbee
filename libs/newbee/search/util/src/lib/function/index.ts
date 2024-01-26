@@ -1,1 +1,1 @@
-export * from './search-tab-to-solr-entry.function';
+export * from './search-tab.function';

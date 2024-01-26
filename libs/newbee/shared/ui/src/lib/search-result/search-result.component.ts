@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SearchResultFormat } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  SearchResultFormat,
+} from '@newbee/newbee/shared/util';
 import {
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,
+  TeamQueryResult,
+  TeamRoleEnum,
   resultIsDocQueryResult,
   resultIsOrgMemberQueryResult,
   resultIsQnaQueryResult,
   resultIsTeamQueryResult,
-  TeamQueryResult,
-  TeamRoleEnum,
   type QueryResultType,
 } from '@newbee/shared/util';
 import { DocSearchResultComponent } from './doc-search-result';
@@ -53,7 +56,7 @@ export class SearchResultComponent {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The search result as an `OrgMemberQueryResult` if applicable, `null` otherwise.

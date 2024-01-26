@@ -10,12 +10,18 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchTab } from '@newbee/newbee/search/util';
 import {
+  AlertComponent,
   SearchResultComponent,
   SearchbarComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import type { QueryResult } from '@newbee/shared/util';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import {
+  HttpClientError,
+  IsVisibleDirectiveModule,
+  RouteAndQueryParams,
+  SearchResultFormat,
+  getHttpClientErrorMsg,
+} from '@newbee/newbee/shared/util';
+import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -27,9 +33,10 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InfiniteScrollModule,
+    IsVisibleDirectiveModule,
     SearchbarComponent,
     SearchResultComponent,
+    AlertComponent,
   ],
   templateUrl: './search-results.component.html',
 })
@@ -37,6 +44,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
   readonly searchTab = SearchTab;
   readonly searchResultFormat = SearchResultFormat;
+
+  /**
+   * The HTTP client error.
+   */
+  @Input() httpClientError: HttpClientError | null = null;
 
   /**
    * The initial value for the searchbar.
@@ -61,12 +73,17 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * The search results themselves.
    */
-  @Input() searchResults: QueryResult | null = null;
+  @Input() searchResults: BaseQueryResultsDto | null = null;
 
   /**
    * Whether to display a loader to indicate a search is occurring.
    */
   @Input() searchPending = false;
+
+  /**
+   * Whether to display a loader to indicate that more search results are being fetched.
+   */
+  @Input() continueSearchPending = false;
 
   /**
    * The event emitter that tells the parent component when a search has been fired off.
@@ -81,20 +98,20 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
-   * Indicates that the user has scrolled to the bottom of the search results.
+   * Indicates that more search results should be fetched.
    */
-  @Output() scrolled = new EventEmitter<void>();
+  @Output() continueSearch = new EventEmitter<void>();
 
   /**
-   * The search term coming from the searchbar.
+   * The search term containing the searchbar.
    */
   searchTerm = this.fb.group({ searchbar: ['', [Validators.required]] });
 
   /**
-   * Emits the suggest event with the current searchbar value.
+   * Emits the searchbar output with the current searchbar value.
    */
   constructor(private readonly fb: FormBuilder) {
     this.searchTerm.controls.searchbar.valueChanges
@@ -129,12 +146,19 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    */
   get resultsFound(): string {
     if (!this.searchResults) {
-      return '';
+      return 'No results found';
     }
 
     return `${this.searchResults.total} ${
       this.searchResults.total === 1 ? 'result' : 'results'
     } found`;
+  }
+
+  /**
+   * Get the misc error in the HTTP client error.
+   */
+  get miscError(): string {
+    return getHttpClientErrorMsg(this.httpClientError, Keyword.Misc);
   }
 
   /**
@@ -162,7 +186,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Emits the search event with the current search value.
+   * Emits the search event with the current searchbar value.
    */
   emitSearch(): void {
     const searchVal = this.searchTerm.controls.searchbar.value;

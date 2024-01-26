@@ -5,6 +5,7 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import { OrgMemberUser } from '@newbee/shared/util';
 import { createSelector } from '@ngrx/store';
+import { teamFeature as teamModuleFeature } from './team.reducer';
 
 /**
  * A selector for selecting the currently selected team and organization.
@@ -57,4 +58,22 @@ export const selectNonTeamOrgMembers = createSelector(
       (orgMember) => !orgMembersInTeam.has(orgMember.orgMember.slug),
     );
   },
+);
+
+/**
+ * A selector for selecting the team's posts, currently selected team, currently selected org, and error.
+ */
+export const selectTeamPostsOrgAndError = createSelector(
+  teamModuleFeature.selectDocs,
+  teamModuleFeature.selectQnas,
+  teamFeature.selectSelectedTeam,
+  organizationFeature.selectSelectedOrganization,
+  httpFeature.selectError,
+  (docs, qnas, selectedTeam, selectedOrganization, error) => ({
+    docs,
+    qnas,
+    selectedTeam,
+    selectedOrganization,
+    error,
+  }),
 );

@@ -4,6 +4,7 @@ import { AlertComponent, UpToDateBtnComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   HttpClientError,
+  RouteAndQueryParams,
   ShortUrl,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
@@ -75,12 +76,12 @@ export class ViewQnaComponent {
   /**
    * Where to navigate relative to the selected org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Where to navigate relative to the current qna.
    */
-  @Output() qnaNavigate = new EventEmitter<string>();
+  @Output() qnaNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Mark the current qna as up-to-date.
@@ -110,23 +111,5 @@ export class ViewQnaComponent {
    */
   httpClientErrorMsg(...keys: string[]): string {
     return getHttpClientErrorMsg(this.httpClientError, keys.join('-'));
-  }
-
-  /**
-   * Emit orgNavigate using the given path.
-   *
-   * @param paths The paths to join before emitting.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
-  }
-
-  /**
-   * Emit qnaNavigate using the given path.
-   *
-   * @param paths The paths to join before emitting.
-   */
-  emitQnaNavigate(...paths: string[]): void {
-    this.qnaNavigate.emit(`/${paths.join('/')}`);
   }
 }

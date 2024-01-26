@@ -10,12 +10,14 @@ import {
   EditDocComponent,
   ViewDocComponent,
 } from '@newbee/newbee/doc/ui';
+import { ViewPostsComponent } from '@newbee/newbee/shared/ui';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { DocCreateComponent } from './doc-create';
 import { DocEditComponent } from './doc-edit';
 import { DocRootComponent } from './doc-root';
 import { DocViewComponent } from './doc-view';
+import { DocsViewComponent } from './docs-view';
 import { DocRoutingModule } from './routing';
 
 @NgModule({
@@ -23,6 +25,7 @@ import { DocRoutingModule } from './routing';
     CommonModule,
     StoreModule.forFeature(docFeature),
     EffectsModule.forFeature([DocEffects]),
+    ViewPostsComponent,
     CreateDocComponent,
     ViewDocComponent,
     EditDocComponent,
@@ -34,6 +37,7 @@ import { DocRoutingModule } from './routing';
     DocRootComponent,
     DocViewComponent,
     DocEditComponent,
+    DocsViewComponent,
   ],
 })
 export class DocModule {}

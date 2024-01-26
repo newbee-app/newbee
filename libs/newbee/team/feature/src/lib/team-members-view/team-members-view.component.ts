@@ -6,6 +6,7 @@ import {
   organizationFeature,
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
+import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
 import {
   selectNonTeamOrgMembers,
   teamFeature as teamModuleFeature,
@@ -91,11 +92,13 @@ export class TeamMembersViewComponent {
   /**
    * Navigate relative to the selected organization.
    *
-   * @param route The route to navigate to, relative to the selected organization.
+   * @param routeAndQueryParams The route and query params to navigate to, relative to the selected organization.
    */
-  async onOrgNavigate(route: string): Promise<void> {
+  async onOrgNavigate(routeAndQueryParams: RouteAndQueryParams): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
     await this.router.navigate([`../../../${route}`], {
       relativeTo: this.route,
+      ...(queryParams && { queryParams }),
     });
   }
 }

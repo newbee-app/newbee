@@ -9,7 +9,11 @@
       <span *ngIf="doc.team">
         Posted in
         <a
-          (click)="emitOrgNavigate(shortUrl.Team, doc.team.slug)"
+          (click)="
+            orgNavigate.emit({
+              route: [shortUrl.Team, doc.team.slug].join('/')
+            })
+          "
           class="link"
           >{{ doc.team.name }}</a
         >
@@ -21,7 +25,9 @@
         <a
           *ngIf="doc.maintainer"
           (click)="
-            emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
+            orgNavigate.emit({
+              route: [shortUrl.Member, doc.maintainer.orgMember.slug].join('/')
+            })
           "
           class="link"
           >{{ userDisplayName(doc.maintainer.user) }}</a
@@ -32,7 +38,11 @@
           >Maintained by
           <a
             (click)="
-              emitOrgNavigate(shortUrl.Member, doc.maintainer.orgMember.slug)
+              orgNavigate.emit({
+                route: [shortUrl.Member, doc.maintainer.orgMember.slug].join(
+                  '/'
+                )
+              })
             "
             class="link"
             >{{ userDisplayName(doc.maintainer.user) }}</a
@@ -43,7 +53,11 @@
         | Created by
         <a
           *ngIf="doc.creator; else noCreator"
-          (click)="emitOrgNavigate(shortUrl.Member, doc.creator.orgMember.slug)"
+          (click)="
+            orgNavigate.emit({
+              route: [shortUrl.Member, doc.creator.orgMember.slug].join('/')
+            })
+          "
           class="link"
           >{{ userDisplayName(doc.creator.user) }}</a
         >
@@ -92,7 +106,7 @@
               postMaintainer: doc.maintainer?.orgMember
             })
           "
-          (click)="emitDocNavigate(keyword.Edit)"
+          (click)="docNavigate.emit({ route: keyword.Edit })"
           class="btn btn-sm btn-info"
         >
           Edit

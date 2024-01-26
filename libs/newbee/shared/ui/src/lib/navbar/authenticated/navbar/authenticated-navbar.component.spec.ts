@@ -56,14 +56,6 @@ describe('AuthenticatedNavbarComponent', () => {
     });
   });
 
-  describe('emitNavigateToLink', () => {
-    it('should emit a request to navigate to the link associated with the route keyword', () => {
-      component.emitNavigateToLink('');
-      expect(component.navigateToLink.emit).toHaveBeenCalledTimes(1);
-      expect(component.navigateToLink.emit).toHaveBeenCalledWith('/');
-    });
-  });
-
   describe('emitLogout', () => {
     it('should emit logout output', () => {
       component.emitLogout();

@@ -289,6 +289,11 @@ export interface QueryResponse {
   response?: DocsResponse;
 
   /**
+   * A singular doc that represents the response, if the request was a real-time get with just one ID.
+   */
+  doc?: DocResponse;
+
+  /**
    * Highlighted fields, if highlighting was requested.
    */
   highlighting?: Highlights;

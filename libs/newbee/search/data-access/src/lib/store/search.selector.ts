@@ -1,11 +1,32 @@
-import { httpFeature, searchFeature } from '@newbee/newbee/shared/data-access';
+import {
+  httpFeature,
+  organizationFeature,
+  searchFeature,
+} from '@newbee/newbee/shared/data-access';
 import { createSelector } from '@ngrx/store';
 
 /**
- * Selector for selecting the search result and screen error.
+ * Selector for selecting the search results and screen error.
  */
-export const selectSearchResultAndScreenError = createSelector(
-  searchFeature.selectSearchResult,
+export const selectSearchResultsAndScreenError = createSelector(
+  searchFeature.selectSearchResults,
   httpFeature.selectScreenError,
-  (searchResult, screenError) => ({ searchResult, screenError }),
+  (searchResults, screenError) => ({
+    searchResults,
+    screenError,
+  }),
+);
+
+/**
+ * Selector for selecting the search results, currently selected org, and error.
+ */
+export const selectSearchResultsOrgAndError = createSelector(
+  searchFeature.selectSearchResults,
+  organizationFeature.selectSelectedOrganization,
+  httpFeature.selectError,
+  (searchResults, selectedOrganization, error) => ({
+    searchResults,
+    selectedOrganization,
+    error,
+  }),
 );

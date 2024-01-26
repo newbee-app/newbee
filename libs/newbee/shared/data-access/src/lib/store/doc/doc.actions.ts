@@ -3,7 +3,9 @@ import {
   BaseDocAndMemberDto,
   BaseUpdateDocDto,
   Doc,
+  DocQueryResult,
   Keyword,
+  PaginatedResults,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -13,6 +15,21 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 export const DocActions = createActionGroup({
   source: Keyword.Doc,
   events: {
+    /**
+     * Gets all of the paginated docs of the selected org.
+     */
+    'Get Docs': emptyProps(),
+
+    /**
+     * Indicates that the get docs action is pending.
+     */
+    'Get Docs Pending': emptyProps(),
+
+    /**
+     * Indicates that the paginated docs were successfully retrieved.
+     */
+    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+
     /**
      * Creates a doc using the given information.
      */
@@ -62,5 +79,10 @@ export const DocActions = createActionGroup({
      * Reset the selected doc.
      */
     'Reset Selected Doc': emptyProps(),
+
+    /**
+     * Reset pending state fields.
+     */
+    'Reset Pending': emptyProps(),
   },
 });

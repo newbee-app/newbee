@@ -8,6 +8,7 @@ import type {
 } from '@simplewebauthn/typescript-types';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { defaultLimit } from '../constant';
 import {
   BaseCreateDocDto,
   BaseCreateOrgMemberInviteDto,
@@ -21,17 +22,18 @@ import {
   BaseEmailDto,
   BaseGenerateSlugDto,
   BaseGeneratedSlugDto,
+  BaseGetOrgMemberPostsDto,
   BaseMagicLinkLoginDto,
   BaseNameDto,
   BaseOrgAndMemberDto,
   BaseQnaAndMemberDto,
   BaseQueryDto,
-  BaseQueryResultDto,
+  BaseQueryResultsDto,
   BaseRegistrationResponseDto,
   BaseSlugDto,
   BaseSlugTakenDto,
   BaseSuggestDto,
-  BaseSuggestResultDto,
+  BaseSuggestResultsDto,
   BaseTeamAndMemberDto,
   BaseTokenDto,
   BaseUpdateAnswerDto,
@@ -51,6 +53,7 @@ import type {
   Authenticator,
   Doc,
   DocRelation,
+  OffsetAndLimit,
   OrgMember,
   OrgMemberInvite,
   OrgMemberInviteRelation,
@@ -58,10 +61,10 @@ import type {
   OrgMemberUser,
   Organization,
   OrganizationRelation,
+  PaginatedResults,
   Post,
   Qna,
   QnaRelation,
-  QueryResult,
   Team,
   TeamMember,
   TeamMemberRelation,
@@ -234,6 +237,20 @@ export const testDoc1: Doc = {
 };
 
 /**
+ * An example instance of Doc.
+ * Strictly for use in testing.
+ */
+export const testDoc2: Doc = {
+  ...testDoc1,
+  title: 'A Primer on VS Code',
+  slug: 'test-doc-2-slug',
+  docMarkdoc:
+    'VS Code is a great FOSS tool for our developers. In this doc, we will provide some tips and tricks in getting the most ouf of it.',
+  docHtml:
+    '<article><p>VS Code is a great FOSS tool for our developers. In this doc, we will provide some tips and tricks in getting the most ouf of it.</p></article>',
+};
+
+/**
  * An example instance of Qna.
  * Strictly for use in testing.
  */
@@ -360,14 +377,42 @@ export const testTeamQueryResult1: TeamQueryResult = {
 };
 
 /**
+ * An example instance of `TeamQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testTeamQueryResult2: TeamQueryResult = {
+  name: testTeam2.name,
+  slug: testTeam2.slug,
+};
+
+/**
  * An example instance of `DocQueryResult`.
  * Strictly for use in testing.
  */
 export const testDocQueryResult1: DocQueryResult = {
-  doc: { ...testPost1, docSnippet: `<p>A <b>bolded</b> doc snippet</p>` },
+  doc: {
+    ...testDoc1,
+    docSnippet:
+      '<p>All <b>employees</b> are entitled to 20 days of PTO and 5 paid sick days per year.</p>',
+  },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser1,
   team: testTeamQueryResult1,
+};
+
+/**
+ * An example instance of `DocQueryResult`.
+ * Strictly for use in testing.
+ */
+export const testDocQueryResult2: DocQueryResult = {
+  doc: {
+    ...testDoc2,
+    docSnippet:
+      '<p><b>VS Code</b> is a great FOSS tool for our developers.</p>',
+  },
+  creator: testOrgMemberUser1,
+  maintainer: testOrgMemberUser2,
+  team: testTeamQueryResult2,
 };
 
 /**
@@ -376,24 +421,13 @@ export const testDocQueryResult1: DocQueryResult = {
  */
 export const testQnaQueryResult1: QnaQueryResult = {
   qna: {
-    ...testPost1,
+    ...testQna1,
     questionSnippet: `<p>A <b>bolded</b> question snippet</p>`,
     answerSnippet: `<p>A <b>bolded</b> answer snippet</p>`,
   },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser1,
   team: testTeam1,
-};
-
-/**
- * An example instance of QueryResult.
- * Strictly for use in testing.
- */
-export const testQueryResult1: QueryResult = {
-  total: 1,
-  offset: 0,
-  results: [testTeamQueryResult1],
-  suggestion: null,
 };
 
 /**
@@ -404,8 +438,18 @@ export const testOrganizationRelation1: OrganizationRelation = {
   organization: testOrganization1,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -416,8 +460,18 @@ export const testOrganizationRelation2: OrganizationRelation = {
   organization: testOrganization2,
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -477,10 +531,30 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   organization: testOrganization1,
   user: testUser1,
   teams: [testTeamMemberRelation1],
-  createdDocs: { sample: [testDocQueryResult1], total: 1 },
-  maintainedDocs: { sample: [testDocQueryResult1], total: 1 },
-  createdQnas: { sample: [testQnaQueryResult1], total: 1 },
-  maintainedQnas: { sample: [testQnaQueryResult1], total: 1 },
+  createdDocs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  maintainedDocs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  createdQnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  maintainedQnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
 };
 
 /**
@@ -490,8 +564,18 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
 export const testTeamRelation1: TeamRelation = {
   team: testTeam1,
   organization: testOrganization1,
-  docs: { sample: [testDocQueryResult1], total: 1 },
-  qnas: { sample: [testQnaQueryResult1], total: 1 },
+  docs: {
+    results: [testDocQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
+  qnas: {
+    results: [testQnaQueryResult1],
+    total: 1,
+    offset: 0,
+    limit: defaultLimit,
+  },
   teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
 };
 
@@ -787,23 +871,15 @@ export const testBaseSuggestDto1: BaseSuggestDto = {
 export const testBaseQueryDto1: BaseQueryDto = {
   ...testBaseSuggestDto1,
   offset: 0,
+  limit: defaultLimit,
 };
 
 /**
- * An example instance of BaseSuggestResultDto.
+ * An example instance of BaseSuggestResultsDto.
  * Strictly for use in testing.
  */
-export const testBaseSuggestResultDto1: BaseSuggestResultDto = {
+export const testBaseSuggestResultsDto1: BaseSuggestResultsDto = {
   suggestions: [testTeamQueryResult1.name],
-};
-
-/**
- * An example instance of BaseQueryResultDto.
- * Strictly for use in testing.
- */
-export const testBaseQueryResultDto1: BaseQueryResultDto = {
-  ...testQueryResult1,
-  offset: testBaseQueryDto1.offset,
 };
 
 /**
@@ -844,4 +920,54 @@ export const testBaseGenerateSlugDto1: BaseGenerateSlugDto = {
  */
 export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
   generatedSlug: testOrganization1.slug,
+};
+
+/**
+ * An example instance of OffsetAndLimit.
+ * Strictly for use in testing.
+ */
+export const testOffsetAndLimit1: OffsetAndLimit = {
+  offset: 0,
+  limit: defaultLimit,
+};
+
+/**
+ * An example instance of BaseGetOrgMemberPostsDto.
+ * Strictly for use in testing.
+ */
+export const testBaseGetOrgMemberPostsDto1: BaseGetOrgMemberPostsDto =
+  testOffsetAndLimit1;
+
+/**
+ * An example instance of PaginatedResults with DocQueryResult.
+ * Strictly for use in testing.
+ */
+export const testPaginatedResultsDocQueryResult1: PaginatedResults<DocQueryResult> =
+  {
+    ...testOffsetAndLimit1,
+    total: 2,
+    results: [testDocQueryResult1, testDocQueryResult2],
+  };
+
+/**
+ * An example instance of PaginatedResults with QnaQueryResult.
+ * Strictly for use in testing.
+ */
+export const testPaginatedResultsQnaQueryResult1: PaginatedResults<QnaQueryResult> =
+  {
+    ...testOffsetAndLimit1,
+    total: 1,
+    results: [testQnaQueryResult1],
+  };
+
+/**
+ * An example instance of BaseQueryResultsDto.
+ * Strictly for use in testing.
+ */
+export const testBaseQueryResultsDto1: BaseQueryResultsDto = {
+  ...testOffsetAndLimit1,
+  ...testBaseQueryDto1,
+  results: [testTeamQueryResult1],
+  total: 1,
+  suggestion: null,
 };

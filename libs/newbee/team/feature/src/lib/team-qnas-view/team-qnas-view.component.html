@@ -1,0 +1,9 @@
+<newbee-view-posts
+  [httpClientError]="httpClientError$ | async"
+  postType="qna"
+  [posts]="(teamModuleState$ | async)!.qnas"
+  [getPostsPending]="(teamModuleState$ | async)!.pendingGetQnas"
+  (orgNavigate)="onOrgNavigate($event)"
+  (search)="onSearch($event)"
+  (continueSearch)="onContinueSearch()"
+></newbee-view-posts>

@@ -1,10 +1,11 @@
 import { SearchTab } from '@newbee/newbee/search/util';
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
+  Keyword,
+  testBaseQueryResultsDto1,
   testDocQueryResult1,
   testOrgMemberQueryResult1,
   testQnaQueryResult1,
-  testQueryResult1,
   testTeamQueryResult1,
 } from '@newbee/shared/util';
 import {
@@ -25,11 +26,12 @@ export default {
     ),
   ],
   args: {
+    httpClientError: null,
     initialSearchTerm: '',
     tab: SearchTab.All,
     searchSuggestions: [],
     searchResults: {
-      ...testQueryResult1,
+      ...testBaseQueryResultsDto1,
       total: 100,
       results: [
         testTeamQueryResult1,
@@ -43,13 +45,14 @@ export default {
       ],
     },
     searchPending: false,
+    continueSearchPending: false,
   },
   argTypes: {
     tabChange: { action: 'tabChange' },
     search: { action: 'search' },
     searchbar: { action: 'searchbar' },
     orgNavigate: { action: 'orgNavigate' },
-    scrolled: { action: 'scrolled' },
+    continueSearch: { action: 'continueSearch' },
   },
 } as Meta<SearchResultsComponent>;
 
@@ -58,7 +61,9 @@ type Story = StoryObj<SearchResultsComponent>;
 export const Primary: Story = {};
 
 export const SpellcheckSuggestion: Story = {
-  args: { searchResults: { ...testQueryResult1, suggestion: 'this thing' } },
+  args: {
+    searchResults: { ...testBaseQueryResultsDto1, suggestion: 'this thing' },
+  },
 };
 
 export const InitialSearchTerm: Story = {
@@ -73,5 +78,18 @@ export const Suggestions: Story = {
 };
 
 export const SearchPending: Story = {
-  args: { searchResults: null, searchPending: true },
+  args: { searchPending: true },
+};
+
+export const ContinueSearchPending: Story = {
+  args: { continueSearchPending: true },
+};
+
+export const WithErrors: Story = {
+  args: {
+    httpClientError: {
+      status: 400,
+      messages: { [Keyword.Misc]: 'Misc error' },
+    },
+  },
 };

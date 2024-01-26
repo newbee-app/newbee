@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  SearchResultFormat,
+  ShortUrl,
+} from '@newbee/newbee/shared/util';
 import { TeamRoleEnum, type TeamQueryResult } from '@newbee/shared/util';
 import { SearchResultTypeBtnComponent } from '../../btn';
 import { SearchResultHeaderComponent } from '../header';
@@ -37,12 +41,12 @@ export class TeamSearchResultComponent {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Navigate to the displayed team.
    */
   teamNavigate(): void {
-    this.orgNavigate.emit(`/${ShortUrl.Team}/${this.team.slug}`);
+    this.orgNavigate.emit({ route: `${ShortUrl.Team}/${this.team.slug}` });
   }
 }

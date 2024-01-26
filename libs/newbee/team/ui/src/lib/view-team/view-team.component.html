@@ -18,7 +18,7 @@
         })
       "
       type="button"
-      (click)="teamNavigate.emit(keyword.Edit)"
+      (click)="teamNavigate.emit({ route: keyword.Edit })"
       class="btn btn-xs btn-info"
     >
       Edit
@@ -32,7 +32,7 @@
         })
       "
       type="button"
-      (click)="teamNavigate.emit(shortUrl.Member)"
+      (click)="teamNavigate.emit({ route: shortUrl.Member })"
       class="btn btn-xs btn-success"
     >
       Add/edit/delete members
@@ -44,9 +44,11 @@
 
 <div>
   <h4>Members</h4>
-  <a (click)="teamNavigate.emit(shortUrl.Member)" class="link opacity-50">{{
-    totalMembers
-  }}</a>
+  <a
+    (click)="teamNavigate.emit({ route: shortUrl.Member })"
+    class="link opacity-50"
+    >{{ totalMembers }}</a
+  >
 
   <div class="flex flex-row flex-nowrap gap-x-4 py-6 overflow-x-auto">
     <div
@@ -63,26 +65,30 @@
 
     <div class="w-card flex-none">
       <newbee-view-all-card-btn
-        (clicked)="teamNavigate.emit(shortUrl.Member)"
+        (clicked)="teamNavigate.emit({ route: shortUrl.Member })"
       ></newbee-view-all-card-btn>
     </div>
   </div>
 
   <div class="divider">
-    <a (click)="teamNavigate.emit(shortUrl.Member)" class="link">View all</a>
+    <a (click)="teamNavigate.emit({ route: shortUrl.Member })" class="link"
+      >View all</a
+    >
   </div>
 </div>
 
 <div *ngIf="team.qnas.total">
   <h4>Top questions</h4>
-  <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link opacity-50">{{
-    totalQnas
-  }}</a>
+  <a
+    (click)="teamNavigate.emit({ route: shortUrl.Qna })"
+    class="link opacity-50"
+    >{{ totalQnas }}</a
+  >
 
   <div class="flex flex-row flex-nowrap">
     <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
       <newbee-search-result
-        *ngFor="let qna of team.qnas.sample"
+        *ngFor="let qna of team.qnas.results"
         [searchResult]="qna"
         (orgNavigate)="orgNavigate.emit($event)"
       ></newbee-search-result>
@@ -92,26 +98,30 @@
       class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
     >
       <newbee-view-all-btn
-        (clicked)="teamNavigate.emit(shortUrl.Qna)"
+        (clicked)="teamNavigate.emit({ route: shortUrl.Qna })"
       ></newbee-view-all-btn>
     </div>
   </div>
 
   <div class="divider">
-    <a (click)="teamNavigate.emit(shortUrl.Qna)" class="link">View all</a>
+    <a (click)="teamNavigate.emit({ route: shortUrl.Qna })" class="link"
+      >View all</a
+    >
   </div>
 </div>
 
 <div *ngIf="team.docs.total">
   <h4>Top docs</h4>
-  <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link opacity-50">{{
-    totalDocs
-  }}</a>
+  <a
+    (click)="teamNavigate.emit({ route: shortUrl.Doc })"
+    class="link opacity-50"
+    >{{ totalDocs }}</a
+  >
 
   <div class="flex flex-row flex-nowrap">
     <div class="md:basis-10/12 flex flex-col flex-nowrap gap-y-10 mt-6">
       <newbee-search-result
-        *ngFor="let doc of team.docs.sample"
+        *ngFor="let doc of team.docs.results"
         [searchResult]="doc"
         (orgNavigate)="orgNavigate.emit($event)"
       ></newbee-search-result>
@@ -121,12 +131,14 @@
       class="hidden md:basis-2/12 md:flex flex-col flex-nowrap justify-center items-center"
     >
       <newbee-view-all-btn
-        (clicked)="teamNavigate.emit(shortUrl.Doc)"
+        (clicked)="teamNavigate.emit({ route: shortUrl.Doc })"
       ></newbee-view-all-btn>
     </div>
   </div>
 
   <div class="divider">
-    <a (click)="teamNavigate.emit(shortUrl.Doc)" class="link">View all</a>
+    <a (click)="teamNavigate.emit({ route: shortUrl.Doc })" class="link"
+      >View all</a
+    >
   </div>
 </div>

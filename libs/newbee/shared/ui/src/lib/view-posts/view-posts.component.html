@@ -1,0 +1,64 @@
+<div>
+  <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
+    <form
+      [formGroup]="searchForm"
+      (ngSubmit)="emitSearch()"
+      class="flex flex-col flex-nowrap gap-y-2"
+    >
+      <newbee-searchbar
+        id="searchbar"
+        formControlName="searchbar"
+        placeholder="Type to filter, 'Enter' to search"
+      ></newbee-searchbar>
+
+      <p class="opacity-50">
+        Type to filter the displayed {{ formattedPostType }}s, press 'Enter' to
+        search all of the {{ formattedPostType }}s of the org
+      </p>
+    </form>
+
+    <div *ngIf="orgMemberTab" class="tabs tabs-boxed mt-4 w-fit">
+      <a
+        *ngFor="let tab of orgMemberPostTabs"
+        (click)="changeOrgMemberTab(tab[1])"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': orgMemberTab === tab[1] }"
+        >{{ tab[0] }}</a
+      >
+    </div>
+
+    <div class="divider my-0"></div>
+  </div>
+
+  <ng-container *ngIf="posts">
+    <p class="text-sm opacity-50 mt-2">
+      {{ postsFound }}
+    </p>
+
+    <div
+      *ngIf="postsToShow.length"
+      class="flex flex-col flex-nowrap gap-y-8 mt-6"
+    >
+      <newbee-search-result
+        *ngFor="let post of postsToShow"
+        [searchResult]="post"
+        [format]="searchResultFormat.List"
+        (orgNavigate)="orgNavigate.emit($event)"
+      ></newbee-search-result>
+    </div>
+  </ng-container>
+
+  <div
+    *ngIf="getPostsPending; else notPending"
+    class="flex justify-center mt-2"
+  >
+    <span class="loading loading-spinner"></span>
+  </div>
+  <ng-template #notPending>
+    <div newbeeIsVisible (visible)="continueSearch.emit()"></div>
+  </ng-template>
+
+  <div *ngIf="!!miscError" class="mt-6">
+    <newbee-alert [show]="!!miscError" [text]="miscError"></newbee-alert>
+  </div>
+</div>

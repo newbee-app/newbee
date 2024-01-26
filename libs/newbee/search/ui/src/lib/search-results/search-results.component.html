@@ -1,4 +1,4 @@
-<div infiniteScroll (scrolled)="scrolled.emit()">
+<div>
   <div id="top-elements" class="sticky top-0 bg-base-100 z-10 pt-close">
     <form [formGroup]="searchTerm" (ngSubmit)="emitSearch()">
       <newbee-searchbar
@@ -16,16 +16,16 @@
         >All</a
       >
       <a
-        (click)="changeTab(searchTab.Qna)"
-        class="tab text-base"
-        [ngClass]="{ 'tab-active': tab === searchTab.Qna }"
-        >QnAs</a
-      >
-      <a
         (click)="changeTab(searchTab.Doc)"
         class="tab text-base"
         [ngClass]="{ 'tab-active': tab === searchTab.Doc }"
         >Docs</a
+      >
+      <a
+        (click)="changeTab(searchTab.Qna)"
+        class="tab text-base"
+        [ngClass]="{ 'tab-active': tab === searchTab.Qna }"
+        >QnAs</a
       >
       <a
         (click)="changeTab(searchTab.Team)"
@@ -44,35 +44,49 @@
     <div class="divider my-0"></div>
   </div>
 
-  <div *ngIf="searchPending" class="flex justify-center mt-2">
+  <div
+    *ngIf="searchPending; else displayResults"
+    class="flex justify-center mt-2"
+  >
     <span class="loading loading-spinner"></span>
   </div>
+  <ng-template #displayResults>
+    <ng-container *ngIf="searchResults">
+      <p class="text-sm opacity-50 mt-2">
+        {{ resultsFound }}
+      </p>
 
-  <ng-container *ngIf="searchResults">
-    <p class="text-sm opacity-50 mt-2">
-      {{ resultsFound }}
-    </p>
+      <p *ngIf="searchResults.suggestion" class="text-error mt-2">
+        Did you mean
+        <a
+          (click)="selectSuggestion(searchResults.suggestion)"
+          class="link link-info"
+          >{{ searchResults.suggestion }}</a
+        >
+      </p>
 
-    <p *ngIf="searchResults.suggestion" class="text-error mt-2">
-      Did you mean
-      <a
-        (click)="selectSuggestion(searchResults.suggestion)"
-        class="link link-info"
-        >{{ searchResults.suggestion }}</a
+      <div
+        *ngIf="searchResults.results.length"
+        class="flex flex-col flex-nowrap gap-y-8 mt-6"
       >
-    </p>
+        <newbee-search-result
+          *ngFor="let searchResult of searchResults.results"
+          [searchResult]="searchResult"
+          [format]="searchResultFormat.List"
+          (orgNavigate)="orgNavigate.emit($event)"
+        >
+        </newbee-search-result>
+      </div>
 
-    <div
-      *ngIf="searchResults.results.length"
-      class="flex flex-col flex-nowrap gap-y-8 mt-6"
-    >
-      <newbee-search-result
-        *ngFor="let searchResult of searchResults.results"
-        [searchResult]="searchResult"
-        [format]="searchResultFormat.List"
-        (orgNavigate)="orgNavigate.emit($event)"
-      >
-      </newbee-search-result>
-    </div>
-  </ng-container>
+      <div *ngIf="continueSearchPending" class="flex justify-center mt-2">
+        <span class="loading loading-spinner"></span>
+      </div>
+    </ng-container>
+
+    <div newbeeIsVisible (visible)="continueSearch.emit()"></div>
+  </ng-template>
+
+  <div *ngIf="!!miscError" class="mt-6">
+    <newbee-alert [show]="!!miscError" [text]="miscError"></newbee-alert>
+  </div>
 </div>

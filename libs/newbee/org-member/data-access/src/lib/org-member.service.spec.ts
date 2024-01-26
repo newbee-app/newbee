@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -8,10 +9,13 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testBaseCreateOrgMemberInviteDto1,
+  testBaseGetOrgMemberPostsDto1,
   testBaseUpdateOrgMemberDto1,
   testOrgMember1,
   testOrgMemberRelation1,
   testOrganization1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
 } from '@newbee/shared/util';
 import { OrgMemberService } from './org-member.service';
 
@@ -128,6 +132,76 @@ describe('OrgMemberService', () => {
       expect(req.request.method).toEqual('DELETE');
 
       req.flush(null);
+    });
+  });
+
+  describe('getAllDocs', () => {
+    it('should send out a get request', (done) => {
+      service
+        .getAllDocs(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          testBaseGetOrgMemberPostsDto1,
+        )
+        .subscribe({
+          next: (results) => {
+            try {
+              expect(results).toEqual(testPaginatedResultsDocQueryResult1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const params = new HttpParams({
+        fromObject: { ...testBaseGetOrgMemberPostsDto1 },
+      });
+      const req = httpController.expectOne(
+        `${OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        )}/${Keyword.Doc}?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsDocQueryResult1);
+    });
+  });
+
+  describe('getAllQnas', () => {
+    it('should send out a get request', (done) => {
+      service
+        .getAllQnas(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          testBaseGetOrgMemberPostsDto1,
+        )
+        .subscribe({
+          next: (results) => {
+            try {
+              expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+          error: done.fail,
+        });
+
+      const params = new HttpParams({
+        fromObject: { ...testBaseGetOrgMemberPostsDto1 },
+      });
+      const req = httpController.expectOne(
+        `${OrgMemberService.baseApiUrl(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+        )}/${Keyword.Qna}?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsQnaQueryResult1);
     });
   });
 

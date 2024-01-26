@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   EntityService,
+  OrgMemberDocParams,
   OrgMemberEntity,
   OrganizationEntity,
   UserEntity,
@@ -75,7 +76,7 @@ export class OrgMemberService {
     try {
       await this.solrCli.addDocs(
         organization.id,
-        await this.entityService.createOrgMemberDocParams(orgMember),
+        new OrgMemberDocParams(orgMember),
       );
     } catch (err) {
       this.logger.error(err);

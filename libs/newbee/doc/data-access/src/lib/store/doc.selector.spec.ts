@@ -4,18 +4,24 @@ import {
   initialHttpState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testDocRelation1,
   testOrganizationRelation1,
+  testPaginatedResultsDocQueryResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
+import { initialDocState as initialDocModuleState } from './doc.reducer';
 import {
   selectDocAndOrg,
   selectDocAndOrgStates,
   selectDocAndScreenError,
+  selectDocsOrgAndError,
 } from './doc.selector';
 
 describe('DocSelector', () => {
@@ -26,8 +32,10 @@ describe('DocSelector', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: initialOrganizationState,
             [Keyword.Doc]: initialDocState,
+            [`${Keyword.Doc}Module`]: initialDocModuleState,
           },
         }),
       ],
@@ -66,6 +74,40 @@ describe('DocSelector', () => {
         },
       });
       expect(store.select(selectDocAndOrg)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectDocsOrgAndError', () => {
+    it('should handle null values', () => {
+      const expected$ = hot('a', {
+        a: { docs: null, selectedOrganization: null, error: null },
+      });
+      expect(store.select(selectDocsOrgAndError)).toBeObservable(expected$);
+    });
+
+    it('should return docs and org', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: testPaginatedResultsDocQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: {
+          ...initialHttpState,
+          error: testHttpClientError1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          docs: testPaginatedResultsDocQueryResult1,
+          selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
+        },
+      });
+      expect(store.select(selectDocsOrgAndError)).toBeObservable(expected$);
     });
   });
 

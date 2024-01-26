@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { QnaService } from '@newbee/api/qna/data-access';
 import {
   EntityService,
+  QnaEntity,
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testQnaEntity1,
@@ -14,6 +15,8 @@ import {
   testBaseUpdateAnswerDto1,
   testBaseUpdateQnaDto1,
   testBaseUpdateQuestionDto1,
+  testOffsetAndLimit1,
+  testQnaQueryResult1,
   testQnaRelation1,
 } from '@newbee/shared/util';
 import { QnaController } from './qna.controller';
@@ -36,7 +39,6 @@ describe('QnaController', () => {
           provide: QnaService,
           useValue: createMock<QnaService>({
             create: jest.fn().mockResolvedValue(testQnaEntity1),
-            findOneBySlug: jest.fn().mockResolvedValue(testQnaEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
             markUpToDate: jest.fn().mockResolvedValue(testUpdatedQnaEntity),
           }),
@@ -45,6 +47,12 @@ describe('QnaController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createQnaNoOrg: jest.fn().mockResolvedValue(testQnaRelation1),
+            createQnaQueryResults: jest
+              .fn()
+              .mockResolvedValue([testQnaQueryResult1]),
+            findPostsByOrgAndCount: jest
+              .fn()
+              .mockResolvedValue([[testQnaEntity1], 1]),
           }),
         },
         {
@@ -69,6 +77,28 @@ describe('QnaController', () => {
     expect(service).toBeDefined();
     expect(entityService).toBeDefined();
     expect(teamMemberService).toBeDefined();
+  });
+
+  describe('getAll', () => {
+    it('should get qna results', async () => {
+      await expect(
+        controller.getAll(testOffsetAndLimit1, testOrganizationEntity1),
+      ).resolves.toEqual({
+        ...testOffsetAndLimit1,
+        total: 1,
+        results: [testQnaQueryResult1],
+      });
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        QnaEntity,
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+      );
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+        testQnaEntity1,
+      ]);
+    });
   });
 
   it('create should create a qna', async () => {

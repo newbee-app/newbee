@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
@@ -7,7 +7,10 @@ import {
   BaseUpdateAnswerDto,
   BaseUpdateQuestionDto,
   Keyword,
+  OffsetAndLimit,
+  PaginatedResults,
   Qna,
+  QnaQueryResult,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -27,6 +30,25 @@ export class QnaService {
    */
   static baseApiUrl(orgSlug: string): string {
     return `/${Keyword.Api}/v${apiVersion.qna}/${Keyword.Organization}/${orgSlug}/${Keyword.Qna}`;
+  }
+
+  /**
+   * Sends a request to the API to get all of the qnas in the given organization in a paginated format.
+   *
+   * @param orgSlug The org to look in.
+   * @param offsetAndLimit The offset and limit for the request.
+   *
+   * @returns An observable containing the paginated qnas.
+   */
+  getAll(
+    orgSlug: string,
+    offsetAndLimit: OffsetAndLimit,
+  ): Observable<PaginatedResults<QnaQueryResult>> {
+    const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
+    return this.http.get<PaginatedResults<QnaQueryResult>>(
+      QnaService.baseApiUrl(orgSlug),
+      { params },
+    );
   }
 
   /**

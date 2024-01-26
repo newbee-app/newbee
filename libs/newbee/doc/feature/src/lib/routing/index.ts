@@ -5,6 +5,7 @@ import {
   createDocTitleResolver,
   docGuard,
   docTitleResolver,
+  docsTitleResolver,
 } from '@newbee/newbee/doc/data-access';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
@@ -12,6 +13,7 @@ import { DocCreateComponent } from '../doc-create';
 import { DocEditComponent } from '../doc-edit';
 import { DocRootComponent } from '../doc-root';
 import { DocViewComponent } from '../doc-view';
+import { DocsViewComponent } from '../docs-view';
 
 const routes: Routes = [
   {
@@ -35,6 +37,11 @@ const routes: Routes = [
         component: DocViewComponent,
       },
     ],
+  },
+  {
+    path: '',
+    component: DocsViewComponent,
+    title: docsTitleResolver,
   },
 ];
 

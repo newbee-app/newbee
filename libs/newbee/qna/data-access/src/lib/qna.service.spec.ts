@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -10,7 +11,9 @@ import {
   testBaseQnaAndMemberDto1,
   testBaseUpdateAnswerDto1,
   testBaseUpdateQuestionDto1,
+  testOffsetAndLimit1,
   testOrganization1,
+  testPaginatedResultsQnaQueryResult1,
   testQna1,
 } from '@newbee/shared/util';
 import { QnaService } from './qna.service';
@@ -38,6 +41,30 @@ describe('QnaService', () => {
       expect(QnaService.baseApiUrl(testOrganization1.slug)).toEqual(
         `/${Keyword.Api}/v${apiVersion.qna}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Qna}`,
       );
+    });
+  });
+
+  describe('getAll', () => {
+    it('should send out a get request', (done) => {
+      service.getAll(testOrganization1.slug, testOffsetAndLimit1).subscribe({
+        next: (results) => {
+          try {
+            expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const params = new HttpParams({ fromObject: { ...testOffsetAndLimit1 } });
+      const req = httpController.expectOne(
+        `${QnaService.baseApiUrl(testOrganization1.slug)}?${params.toString()}`,
+      );
+      expect(req.request.method).toEqual('GET');
+
+      req.flush(testPaginatedResultsQnaQueryResult1);
     });
   });
 

@@ -63,14 +63,14 @@ describe('DocViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navgiate relative to the current org', async () => {
-      await component.onOrgNavigate('test');
+      await component.onOrgNavigate({ route: 'test' });
       expect(router.url).toEqual('/test');
     });
   });
 
   describe('onDocNavigate', () => {
     it('should navigate relative to the current doc', async () => {
-      await component.onDocNavigate(Keyword.Edit);
+      await component.onDocNavigate({ route: Keyword.Edit });
       expect(router.url).toEqual(
         `/${ShortUrl.Doc}/${testDoc1.slug}/${Keyword.Edit}`,
       );

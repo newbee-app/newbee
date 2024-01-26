@@ -3,7 +3,12 @@ import {
   OrgMemberActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import {
+  DocQueryResult,
+  Keyword,
+  PaginatedResults,
+  QnaQueryResult,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -24,6 +29,26 @@ export interface OrgMemberState {
    * Whether the user is waiting for a response for inviting a user.
    */
   pendingInvite: boolean;
+
+  /**
+   * All of the docs of the org member as paginated results.
+   */
+  docs: PaginatedResults<DocQueryResult> | null;
+
+  /**
+   * All of the qnas of the org member as paginated results.
+   */
+  qnas: PaginatedResults<QnaQueryResult> | null;
+
+  /**
+   * Whether the user is waiting for a response for getting all paginated docs.
+   */
+  pendingGetDocs: boolean;
+
+  /**
+   * Whether the user is waiting for a response for getting all paginated qnas.
+   */
+  pendingGetQnas: boolean;
 }
 
 /**
@@ -33,6 +58,10 @@ export const initialOrgMemberState: OrgMemberState = {
   pendingEdit: false,
   pendingDelete: false,
   pendingInvite: false,
+  docs: null,
+  qnas: null,
+  pendingGetDocs: false,
+  pendingGetQnas: false,
 };
 
 /**
@@ -49,6 +78,42 @@ export const orgMemberFeature = createFeature({
     on(
       OrgMemberActions.deleteOrgMember,
       (state): OrgMemberState => ({ ...state, pendingDelete: true }),
+    ),
+    on(
+      OrgMemberActions.getDocsPending,
+      (state): OrgMemberState => ({
+        ...state,
+        pendingGetDocs: true,
+      }),
+    ),
+    on(
+      OrgMemberActions.getDocsSuccess,
+      (state, { docs }): OrgMemberState => ({
+        ...state,
+        pendingGetDocs: false,
+        docs: {
+          ...docs,
+          results: [...(state.docs?.results ?? []), ...docs.results],
+        },
+      }),
+    ),
+    on(
+      OrgMemberActions.getQnasPending,
+      (state): OrgMemberState => ({
+        ...state,
+        pendingGetQnas: true,
+      }),
+    ),
+    on(
+      OrgMemberActions.getQnasSuccess,
+      (state, { qnas }): OrgMemberState => ({
+        ...state,
+        pendingGetQnas: false,
+        qnas: {
+          ...qnas,
+          results: [...(state.qnas?.results ?? []), ...qnas.results],
+        },
+      }),
     ),
     on(
       OrgMemberActions.inviteUser,

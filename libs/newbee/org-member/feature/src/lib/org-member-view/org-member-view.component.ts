@@ -6,6 +6,7 @@ import {
   orgMemberFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
+import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
@@ -50,19 +51,29 @@ export class OrgMemberViewComponent {
   /**
    * Navigate to a path relative to the current org.
    *
-   * @param path The path to navigate to.
+   * @param routeAndQueryParams The route and query params to navigate to.
    */
-  async onOrgNavigate(path: string): Promise<void> {
-    await this.router.navigate([`../../${path}`], { relativeTo: this.route });
+  async onOrgNavigate(routeAndQueryParams: RouteAndQueryParams): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
+    await this.router.navigate([`../../${route}`], {
+      relativeTo: this.route,
+      ...(queryParams && { queryParams }),
+    });
   }
 
   /**
    * Navigate to a path relative to the current org member.
    *
-   * @param path The path to navigate to.
+   * @param routeAndQueryParams The route and query params to navigate to.
    */
-  async onMemberNavigate(path: string): Promise<void> {
-    await this.router.navigate([`./${path}`], { relativeTo: this.route });
+  async onMemberNavigate(
+    routeAndQueryParams: RouteAndQueryParams,
+  ): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
+    await this.router.navigate([`./${route}`], {
+      relativeTo: this.route,
+      ...(queryParams && { queryParams }),
+    });
   }
 
   /**

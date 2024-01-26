@@ -8,8 +8,8 @@ import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseQueryResultDto,
-  BaseSuggestResultDto,
+  BaseQueryResultsDto,
+  BaseSuggestResultsDto,
   Keyword,
   apiRoles,
 } from '@newbee/shared/util';
@@ -41,7 +41,7 @@ export class SearchController {
   async search(
     @Query() queryDto: QueryDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<BaseQueryResultDto> {
+  ): Promise<BaseQueryResultsDto> {
     this.logger.log(
       `Search request received for organization ID ${
         organization.id
@@ -69,7 +69,7 @@ export class SearchController {
   async suggest(
     @Query() suggestDto: SuggestDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<BaseSuggestResultDto> {
+  ): Promise<BaseSuggestResultsDto> {
     this.logger.log(
       `Suggest request received for organization ID ${
         organization.id

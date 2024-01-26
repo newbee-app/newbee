@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocService } from '@newbee/api/doc/data-access';
 import {
+  DocEntity,
   EntityService,
   testDocEntity1,
   testOrgMemberEntity1,
@@ -12,7 +13,9 @@ import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testBaseCreateDocDto1,
   testBaseUpdateDocDto1,
+  testDocQueryResult1,
   testDocRelation1,
+  testOffsetAndLimit1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
 
@@ -42,6 +45,12 @@ describe('DocController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createDocNoOrg: jest.fn().mockResolvedValue(testDocRelation1),
+            createDocQueryResults: jest
+              .fn()
+              .mockResolvedValue([testDocQueryResult1]),
+            findPostsByOrgAndCount: jest
+              .fn()
+              .mockResolvedValue([[testDocEntity1], 1]),
           }),
         },
         {
@@ -68,19 +77,43 @@ describe('DocController', () => {
     expect(teamMemberService).toBeDefined();
   });
 
-  it('create should create a doc', async () => {
-    await expect(
-      controller.create(
+  describe('getAll', () => {
+    it('should get doc results', async () => {
+      await expect(
+        controller.getAll(testOffsetAndLimit1, testOrganizationEntity1),
+      ).resolves.toEqual({
+        ...testOffsetAndLimit1,
+        total: 1,
+        results: [testDocQueryResult1],
+      });
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        DocEntity,
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+      );
+      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+        testDocEntity1,
+      ]);
+    });
+  });
+
+  describe('create', () => {
+    it('should create a doc', async () => {
+      await expect(
+        controller.create(
+          testBaseCreateDocDto1,
+          testOrgMemberEntity1,
+          testOrganizationEntity1,
+        ),
+      ).resolves.toEqual(testDocEntity1);
+      expect(service.create).toHaveBeenCalledTimes(1);
+      expect(service.create).toHaveBeenCalledWith(
         testBaseCreateDocDto1,
         testOrgMemberEntity1,
-        testOrganizationEntity1,
-      ),
-    ).resolves.toEqual(testDocEntity1);
-    expect(service.create).toHaveBeenCalledTimes(1);
-    expect(service.create).toHaveBeenCalledWith(
-      testBaseCreateDocDto1,
-      testOrgMemberEntity1,
-    );
+      );
+    });
   });
 
   describe('get & update', () => {
@@ -125,17 +158,21 @@ describe('DocController', () => {
     });
   });
 
-  it('markUpToDate should mark a doc as up-to-date', async () => {
-    await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
-      testUpdatedDocEntity,
-    );
-    expect(service.markUpToDate).toHaveBeenCalledTimes(1);
-    expect(service.markUpToDate).toHaveBeenCalledWith(testDocEntity1);
+  describe('markUpToDate', () => {
+    it('should mark a doc as up-to-date', async () => {
+      await expect(controller.markUpToDate(testDocEntity1)).resolves.toEqual(
+        testUpdatedDocEntity,
+      );
+      expect(service.markUpToDate).toHaveBeenCalledTimes(1);
+      expect(service.markUpToDate).toHaveBeenCalledWith(testDocEntity1);
+    });
   });
 
-  it('delete should delete a doc', async () => {
-    await expect(controller.delete(testDocEntity1)).resolves.toBeUndefined();
-    expect(service.delete).toHaveBeenCalledTimes(1);
-    expect(service.delete).toHaveBeenCalledWith(testDocEntity1);
+  describe('delete', () => {
+    it('should delete a doc', async () => {
+      await expect(controller.delete(testDocEntity1)).resolves.toBeUndefined();
+      expect(service.delete).toHaveBeenCalledTimes(1);
+      expect(service.delete).toHaveBeenCalledWith(testDocEntity1);
+    });
   });
 });

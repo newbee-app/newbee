@@ -10,6 +10,7 @@ import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
   OrgMemberEntity,
+  QnaDocParams,
   QnaEntity,
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
@@ -81,10 +82,7 @@ export class QnaService {
 
     const collectionName = creator.organization.id;
     try {
-      await this.solrCli.addDocs(
-        collectionName,
-        this.entityService.createQnaDocParams(qna),
-      );
+      await this.solrCli.addDocs(collectionName, new QnaDocParams(qna));
     } catch (err) {
       this.logger.error(err);
       await this.em.removeAndFlush(qna);
@@ -194,7 +192,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createQnaDocParams(updatedQna),
+        new QnaDocParams(updatedQna),
       );
     } catch (err) {
       this.logger.error(err);
@@ -231,7 +229,7 @@ export class QnaService {
     try {
       await this.solrCli.getVersionAndReplaceDocs(
         collectionName,
-        this.entityService.createQnaDocParams(updatedQna),
+        new QnaDocParams(updatedQna),
       );
     } catch (err) {
       this.logger.error(err);

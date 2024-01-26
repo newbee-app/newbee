@@ -1,5 +1,6 @@
-import type { DocQueryResult, QnaQueryResult, Sample } from '../../type';
+import type { DocQueryResult, QnaQueryResult } from '../../type';
 import type { OrgMember, Organization, User } from '../entity';
+import { PaginatedResults } from '../util';
 import type { TeamMemberAndTeam } from './team-member-relation.interface';
 
 /**
@@ -29,22 +30,22 @@ export interface OrgMemberRelation {
   /**
    * The docs the org member created.
    */
-  createdDocs: Sample<DocQueryResult>;
+  createdDocs: PaginatedResults<DocQueryResult>;
 
   /**
    * The docs the org member maintains.
    */
-  maintainedDocs: Sample<DocQueryResult>;
+  maintainedDocs: PaginatedResults<DocQueryResult>;
 
   /**
    * The qnas the org member created.
    */
-  createdQnas: Sample<QnaQueryResult>;
+  createdQnas: PaginatedResults<QnaQueryResult>;
 
   /**
    * The qnas the org member maintains.
    */
-  maintainedQnas: Sample<QnaQueryResult>;
+  maintainedQnas: PaginatedResults<QnaQueryResult>;
 }
 
 /**

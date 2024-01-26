@@ -9,3 +9,4 @@ export * from './lib/search-result';
 export * from './lib/testing';
 export * from './lib/toast';
 export * from './lib/tooltip';
+export * from './lib/view-posts';

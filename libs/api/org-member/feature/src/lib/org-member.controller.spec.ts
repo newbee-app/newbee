@@ -2,13 +2,21 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
+  DocEntity,
   EntityService,
+  QnaEntity,
+  testDocEntity1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
+  testQnaEntity1,
 } from '@newbee/api/shared/data-access';
 import {
+  testBaseGetOrgMemberPostsDto1,
   testBaseUpdateOrgMemberDto1,
+  testDocQueryResult1,
+  testOffsetAndLimit1,
   testOrgMemberRelation1,
+  testQnaQueryResult1,
 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
 
@@ -38,6 +46,12 @@ describe('OrgMemberController', () => {
             createOrgMemberNoOrg: jest
               .fn()
               .mockResolvedValue(testOrgMemberRelation1),
+            createDocQueryResults: jest
+              .fn()
+              .mockResolvedValue([testDocQueryResult1]),
+            createQnaQueryResults: jest
+              .fn()
+              .mockResolvedValue([testQnaQueryResult1]),
           }),
         },
       ],
@@ -96,6 +110,66 @@ describe('OrgMemberController', () => {
       ).resolves.toBeUndefined();
       expect(service.delete).toHaveBeenCalledTimes(1);
       expect(service.delete).toHaveBeenCalledWith(testOrgMemberEntity1);
+    });
+  });
+
+  describe('getAllDocs', () => {
+    it('should get doc results', async () => {
+      jest
+        .spyOn(entityService, 'findPostsByOrgAndCount')
+        .mockResolvedValue([[testDocEntity1], 1]);
+      await expect(
+        controller.getAllDocs(
+          testBaseGetOrgMemberPostsDto1,
+          testOrgMemberEntity1,
+          testOrganizationEntity1,
+        ),
+      ).resolves.toEqual({
+        ...testOffsetAndLimit1,
+        total: 1,
+        results: [testDocQueryResult1],
+      });
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        DocEntity,
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+        { orgMember: testOrgMemberEntity1 },
+      );
+      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+        testDocEntity1,
+      ]);
+    });
+  });
+
+  describe('getAllQnas', () => {
+    it('should get qna results', async () => {
+      jest
+        .spyOn(entityService, 'findPostsByOrgAndCount')
+        .mockResolvedValue([[testQnaEntity1], 1]);
+      await expect(
+        controller.getAllQnas(
+          testBaseGetOrgMemberPostsDto1,
+          testOrgMemberEntity1,
+          testOrganizationEntity1,
+        ),
+      ).resolves.toEqual({
+        ...testOffsetAndLimit1,
+        total: 1,
+        results: [testQnaQueryResult1],
+      });
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
+      expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
+        QnaEntity,
+        testOffsetAndLimit1,
+        testOrganizationEntity1,
+        { orgMember: testOrgMemberEntity1 },
+      );
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+        testQnaEntity1,
+      ]);
     });
   });
 });

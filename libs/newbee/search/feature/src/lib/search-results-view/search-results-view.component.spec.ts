@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -8,7 +9,12 @@ import {
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, SolrEntryEnum, testQueryResult1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  SolrEntryEnum,
+  defaultLimit,
+  testBaseQueryResultsDto1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SearchResultsViewComponent } from './search-results-view.component';
 
@@ -26,17 +32,22 @@ describe('SearchResultsViewComponent', () => {
   let router: Router;
 
   const testSearchTerm = 'search term';
+  const testSearchTermUrl = encodeURIComponent(testSearchTerm);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
       declarations: [SearchResultsViewComponent],
       providers: [
+        {
+          provide: PLATFORM_ID,
+          useValue: 'server',
+        },
         provideMockStore({
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResult: testQueryResult1,
+              searchResults: testBaseQueryResultsDto1,
             },
           },
         }),
@@ -61,7 +72,7 @@ describe('SearchResultsViewComponent', () => {
 
     const harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl(
-      `${Keyword.Search}/${testSearchTerm}`,
+      `${Keyword.Search}/${testSearchTerm}?${Keyword.Type}=${SolrEntryEnum.Team}`,
       SearchResultsViewComponent,
     );
   });
@@ -74,19 +85,38 @@ describe('SearchResultsViewComponent', () => {
   });
 
   describe('constructor', () => {
-    it('should initialize search term and search results', () => {
+    it('should initialize search term, tab, and fire search request', () => {
       expect(component.searchTerm).toEqual(testSearchTerm);
-      expect(component.searchResults).toEqual(testQueryResult1);
+      expect(component.tab).toEqual(SearchTab.Team);
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        SearchActions.search({
+          query: {
+            offset: 0,
+            limit: defaultLimit,
+            query: testSearchTerm,
+            type: SolrEntryEnum.Team,
+          },
+        }),
+      );
     });
   });
 
   describe('onTabChange', () => {
-    it('should change tab value and dispatch search', () => {
-      component.onTabChange(SearchTab.Doc);
-      expect(component.tab).toEqual(SearchTab.Doc);
+    it('should change tab value and dispatch search', async () => {
+      await component.onTabChange(SearchTab.Doc);
+      expect(router.url).toEqual(
+        `/${Keyword.Search}/${testSearchTermUrl}?${Keyword.Type}=${SolrEntryEnum.Doc}`,
+      );
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.search({
-          query: { offset: 0, type: SolrEntryEnum.Doc, query: testSearchTerm },
+          query: {
+            offset: 0,
+            limit: defaultLimit,
+            query: testSearchTerm,
+            type: SolrEntryEnum.Doc,
+          },
         }),
       );
     });
@@ -97,7 +127,9 @@ describe('SearchResultsViewComponent', () => {
       const newSearchTerm = 'new search term';
       await component.onSearch(newSearchTerm);
       expect(router.url).toEqual(
-        `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}`,
+        `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}?${
+          Keyword.Type
+        }=${SolrEntryEnum.Team}`,
       );
     });
   });
@@ -105,39 +137,19 @@ describe('SearchResultsViewComponent', () => {
   describe('onSearchbar', () => {
     it('should dispatch suggest', () => {
       component.onSearchbar(testSearchTerm);
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
-        SearchActions.suggest({ query: { query: testSearchTerm } }),
+        SearchActions.suggest({
+          query: { query: testSearchTerm, type: SolrEntryEnum.Team },
+        }),
       );
     });
   });
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to org', async () => {
-      await component.onOrgNavigate('test');
+      await component.onOrgNavigate({ route: 'test' });
       expect(router.url).toEqual('/test');
-    });
-  });
-
-  describe('onScrolled', () => {
-    it('should do nothing if all results are being shown', () => {
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = testQueryResult1;
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = { ...testQueryResult1, total: 10, offset: 0 };
-      component.onScrolled();
-      expect(store.dispatch).not.toHaveBeenCalled();
-
-      component.searchResults = { ...testQueryResult1, total: 100, offset: 8 };
-      component.onScrolled();
-      expect(store.dispatch).toHaveBeenCalledWith(
-        SearchActions.search({
-          query: { offset: 9, query: testSearchTerm },
-        }),
-      );
     });
   });
 });

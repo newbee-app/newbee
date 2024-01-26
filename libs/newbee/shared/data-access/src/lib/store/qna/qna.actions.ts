@@ -4,7 +4,9 @@ import {
   BaseUpdateAnswerDto,
   BaseUpdateQuestionDto,
   Keyword,
+  PaginatedResults,
   Qna,
+  QnaQueryResult,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -14,6 +16,21 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 export const QnaActions = createActionGroup({
   source: Keyword.Qna,
   events: {
+    /**
+     * Gets all of the paginated qnas of the selected org.
+     */
+    'Get Qnas': emptyProps(),
+
+    /**
+     * Indicates that the get qnas action is pending.
+     */
+    'Get Qnas Pending': emptyProps(),
+
+    /**
+     * Indicates that the paginated qnas were successfully retrieved.
+     */
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
+
     /**
      * Creates a QnA using the given information.
      */

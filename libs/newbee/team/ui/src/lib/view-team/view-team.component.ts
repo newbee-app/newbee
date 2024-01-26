@@ -5,7 +5,11 @@ import {
   ViewAllBtnComponent,
   ViewAllCardBtnComponent,
 } from '@newbee/newbee/shared/ui';
-import { SearchResultFormat, ShortUrl } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  SearchResultFormat,
+  ShortUrl,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   apiRoles,
@@ -61,12 +65,12 @@ export class ViewTeamComponent {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Where to navigate to, relative to the current team.
    */
-  @Output() teamNavigate = new EventEmitter<string>();
+  @Output() teamNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The team's up-to-date duration as a string.

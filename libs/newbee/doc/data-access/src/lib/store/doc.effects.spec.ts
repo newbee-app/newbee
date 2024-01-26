@@ -4,10 +4,11 @@ import { createMock } from '@golevelup/ts-jest';
 import {
   DocActions,
   initialDocState,
+  initialHttpState,
   initialOrganizationState,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateDocDto1,
@@ -15,8 +16,10 @@ import {
   testBaseUpdateDocDto1,
   testDoc1,
   testDocRelation1,
+  testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
+  testPaginatedResultsDocQueryResult1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -25,6 +28,7 @@ import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
 import { DocService } from '../doc.service';
 import { DocEffects } from './doc.effects';
+import { initialDocState as initialDocModuleState } from './doc.reducer';
 
 describe('DocEffects', () => {
   let actions$ = new Observable<Action>();
@@ -39,6 +43,7 @@ describe('DocEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -47,6 +52,10 @@ describe('DocEffects', () => {
               ...initialDocState,
               selectedDoc: testDocRelation1,
             },
+            [`${Keyword.Doc}Module`]: {
+              ...initialDocModuleState,
+              docs: testPaginatedResultsDocQueryResult1,
+            },
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -54,6 +63,9 @@ describe('DocEffects', () => {
         {
           provide: DocService,
           useValue: createMock<DocService>({
+            getAll: jest
+              .fn()
+              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
             create: jest.fn().mockReturnValue(of(testDoc1)),
             get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
@@ -78,6 +90,132 @@ describe('DocEffects', () => {
     expect(service).toBeDefined();
     expect(store).toBeDefined();
     expect(router).toBeDefined();
+  });
+
+  describe('getDocs$', () => {
+    it(`should fire getDocsPending if this is the first request, selected organization is set, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('a', { a: DocActions.getDocsPending() });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should fire getDocsPending if this is a follow-up request, selected organization is set, there are more results to fetch, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: { ...testPaginatedResultsDocQueryResult1, total: 100 },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('a', { a: DocActions.getDocsPending() });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selected organization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', { a: DocActions.getDocs() });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getDocsPending$', () => {
+    it('should fire getDocsSuccess if this is the first request', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: initialDocModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: DocActions.getDocsPending(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocsPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAll).toHaveBeenCalledTimes(1);
+        expect(service.getAll).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOffsetAndLimit1,
+        );
+      });
+    });
+
+    it('should fire getDocsSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Doc}Module`]: {
+          ...initialDocModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: DocActions.getDocsPending(),
+      });
+      const expected$ = hot('a', {
+        a: DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocsPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAll).toHaveBeenCalledTimes(1);
+        expect(service.getAll).toHaveBeenCalledWith(testOrganization1.slug, {
+          ...testOffsetAndLimit1,
+          offset: 1,
+        });
+      });
+    });
   });
 
   describe('createDoc$', () => {

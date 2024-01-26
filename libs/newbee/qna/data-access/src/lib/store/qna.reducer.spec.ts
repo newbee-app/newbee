@@ -3,9 +3,18 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { testPaginatedResultsQnaQueryResult1 } from '@newbee/shared/util';
 import { QnaState, initialQnaState, qnaFeature } from './qna.reducer';
 
 describe('QnaReducer', () => {
+  const stateAfterGetQnasPending: QnaState = {
+    ...initialQnaState,
+    pendingGetQnas: true,
+  };
+  const stateAfterGetQnasSuccess: QnaState = {
+    ...initialQnaState,
+    qnas: testPaginatedResultsQnaQueryResult1,
+  };
   const stateAfterCreateQna: QnaState = {
     ...initialQnaState,
     pendingCreate: true,
@@ -28,6 +37,14 @@ describe('QnaReducer', () => {
   };
 
   describe('from initial state', () => {
+    it('should update state for getQnasPending', () => {
+      const updatedState = qnaFeature.reducer(
+        initialQnaState,
+        QnaActions.getQnasPending,
+      );
+      expect(updatedState).toEqual(stateAfterGetQnasPending);
+    });
+
     it('should update state for createQna', () => {
       const updatedState = qnaFeature.reducer(
         initialQnaState,
@@ -70,6 +87,36 @@ describe('QnaReducer', () => {
   });
 
   describe('from altered state', () => {
+    it('should update state for getQnasSuccess', () => {
+      let updatedState = qnaFeature.reducer(
+        stateAfterGetQnasPending,
+        QnaActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialQnaState,
+        qnas: testPaginatedResultsQnaQueryResult1,
+      });
+
+      updatedState = qnaFeature.reducer(
+        stateAfterGetQnasSuccess,
+        QnaActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetQnasSuccess,
+        qnas: {
+          ...testPaginatedResultsQnaQueryResult1,
+          results: [
+            ...testPaginatedResultsQnaQueryResult1.results,
+            ...testPaginatedResultsQnaQueryResult1.results,
+          ],
+        },
+      });
+    });
+
     it('should update state for createQnaSuccess', () => {
       const updatedState = qnaFeature.reducer(
         stateAfterCreateQna,

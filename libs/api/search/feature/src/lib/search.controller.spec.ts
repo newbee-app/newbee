@@ -4,9 +4,9 @@ import { SearchService } from '@newbee/api/search/data-access';
 import { testOrganizationEntity1 } from '@newbee/api/shared/data-access';
 import {
   testBaseQueryDto1,
-  testBaseQueryResultDto1,
+  testBaseQueryResultsDto1,
   testBaseSuggestDto1,
-  testBaseSuggestResultDto1,
+  testBaseSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { SearchController } from './search.controller';
 
@@ -21,8 +21,8 @@ describe('SearchController', () => {
         {
           provide: SearchService,
           useValue: createMock<SearchService>({
-            query: jest.fn().mockResolvedValue(testBaseQueryResultDto1),
-            suggest: jest.fn().mockResolvedValue(testBaseSuggestResultDto1),
+            query: jest.fn().mockResolvedValue(testBaseQueryResultsDto1),
+            suggest: jest.fn().mockResolvedValue(testBaseSuggestResultsDto1),
           }),
         },
       ],
@@ -41,7 +41,7 @@ describe('SearchController', () => {
     it('should generate search results', async () => {
       await expect(
         controller.search(testBaseQueryDto1, testOrganizationEntity1),
-      ).resolves.toEqual(testBaseQueryResultDto1);
+      ).resolves.toEqual(testBaseQueryResultsDto1);
       expect(service.query).toHaveBeenCalledTimes(1);
       expect(service.query).toHaveBeenCalledWith(
         testOrganizationEntity1,
@@ -54,7 +54,7 @@ describe('SearchController', () => {
     it('should generate search suggestions', async () => {
       await expect(
         controller.suggest(testBaseSuggestDto1, testOrganizationEntity1),
-      ).resolves.toEqual(testBaseSuggestResultDto1);
+      ).resolves.toEqual(testBaseSuggestResultsDto1);
       expect(service.suggest).toHaveBeenCalledTimes(1);
       expect(service.suggest).toHaveBeenCalledWith(
         testOrganizationEntity1,

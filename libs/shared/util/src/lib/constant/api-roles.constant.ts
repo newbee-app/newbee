@@ -16,6 +16,7 @@ import {
  */
 export const apiRoles = {
   [Keyword.Doc]: {
+    getAll: anyOrgMember,
     create: anyOrgMember,
     get: anyOrgMember,
     update: anyOrgMember,
@@ -30,6 +31,8 @@ export const apiRoles = {
     getBySlug: anyOrgMember,
     update: [...atLeastOrgModerator, ConditionalRoleEnum.OrgRoleGteSubject],
     delete: [...atLeastOrgModerator, ConditionalRoleEnum.OrgRoleGteSubject],
+    getAllDocs: anyOrgMember,
+    getAllQnas: anyOrgMember,
   },
   [Keyword.OrgMemberInvite]: {
     invite: anyOrgMember,
@@ -40,6 +43,7 @@ export const apiRoles = {
     delete: [OrgRoleEnum.Owner],
   },
   [Keyword.Qna]: {
+    getAll: anyOrgMember,
     create: anyOrgMember,
     get: anyOrgMember,
     updateQuestion: anyOrgMember,
@@ -62,6 +66,8 @@ export const apiRoles = {
     get: anyOrgMember,
     update: [...atLeastOrgModerator, ...atLeastTeamModerator],
     delete: [...atLeastOrgModerator, TeamRoleEnum.Owner],
+    getAllDocs: anyOrgMember,
+    getAllQnas: anyOrgMember,
   },
   [Keyword.TeamMember]: {
     create: [...atLeastOrgModerator, ...anyTeamMember],

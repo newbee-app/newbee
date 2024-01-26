@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  initialHttpState,
   initialOrganizationState,
   initialOrgMemberState,
   OrgMemberActions,
@@ -11,6 +12,7 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
   ShortUrl,
+  testHttpClientError1,
   Toast,
   ToastXPosition,
   ToastYPosition,
@@ -18,11 +20,14 @@ import {
 import {
   Keyword,
   testBaseCreateOrgMemberInviteDto1,
+  testBaseGetOrgMemberPostsDto1,
   testBaseUpdateOrgMemberDto1,
   testOrganization1,
   testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
   testUser1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -33,6 +38,7 @@ import { Observable, of } from 'rxjs';
 import { v4 } from 'uuid';
 import { OrgMemberService } from '../org-member.service';
 import { OrgMemberEffects } from './org-member.effects';
+import { initialOrgMemberState as initialOrgMemberModuleState } from './org-member.reducer';
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -53,6 +59,7 @@ describe('OrgMemberEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: {
               ...initialOrganizationState,
               selectedOrganization: testOrganizationRelation1,
@@ -61,6 +68,7 @@ describe('OrgMemberEffects', () => {
               ...initialOrgMemberState,
               selectedOrgMember: testOrgMemberRelation1,
             },
+            [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
           },
         }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
@@ -71,6 +79,12 @@ describe('OrgMemberEffects', () => {
             get: jest.fn().mockReturnValue(of(testOrgMemberRelation1)),
             edit: jest.fn().mockReturnValue(of(testOrgMember1)),
             delete: jest.fn().mockReturnValue(of(null)),
+            getAllDocs: jest
+              .fn()
+              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
+            getAllQnas: jest
+              .fn()
+              .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
             inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -184,6 +198,406 @@ describe('OrgMemberEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(router.navigate).toHaveBeenCalledTimes(1);
         expect(router.navigate).toHaveBeenCalledWith(['/']);
+      });
+    });
+  });
+
+  describe('getDocs$', () => {
+    it(`should fire getDocsPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should fire getDocsPending if this is a follow-up request, selected organization and slected org member are set, there are more results to fetch, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          docs: testPaginatedResultsDocQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrgMember isn't set`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: initialOrgMemberState,
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocs({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getDocs$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getDocsPending$', () => {
+    it('should fire getDocsSuccess if this is the first request', () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocsPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
+        expect(service.getAllDocs).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          testBaseGetOrgMemberPostsDto1,
+        );
+      });
+    });
+
+    it('should fire getDocsSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          docs: {
+            ...testPaginatedResultsDocQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getDocsPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      });
+      expect(effects.getDocsPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllDocs).toHaveBeenCalledTimes(1);
+        expect(service.getAllDocs).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          {
+            ...testBaseGetOrgMemberPostsDto1,
+            offset: 1,
+          },
+        );
+      });
+    });
+  });
+
+  describe('getQnas$', () => {
+    it(`should fire getQnasPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should fire getQnasPending if this is a follow-up request, selected organization and slected org member are set, there are more results to fetch, and there's no error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it('should do nothing if there are no more results to fetch', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          qnas: testPaginatedResultsQnaQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrganization isn't set`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: initialOrganizationState,
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if selectedOrgMember isn't set`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: initialOrgMemberState,
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+
+    it(`should do nothing if there's an error`, () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: initialOrgMemberModuleState,
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnas({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('-');
+      expect(effects.getQnas$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getQnasPending$', () => {
+    it('should fire getQnasSuccess if this is the first request', () => {
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          testBaseGetOrgMemberPostsDto1,
+        );
+      });
+    });
+
+    it('should fire getQnasSuccess if this is a follow-up request', () => {
+      store.setState({
+        [`${Keyword.Member}Module`]: {
+          ...initialOrgMemberModuleState,
+          qnas: {
+            ...testPaginatedResultsQnaQueryResult1,
+            total: 100,
+          },
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Member]: {
+          ...initialOrgMemberState,
+          selectedOrgMember: testOrgMemberRelation1,
+        },
+        [Keyword.Http]: initialHttpState,
+      });
+      actions$ = hot('a', {
+        a: OrgMemberActions.getQnasPending({
+          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+        }),
+      });
+      const expected$ = hot('a', {
+        a: OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      });
+      expect(effects.getQnasPending$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.getAllQnas).toHaveBeenCalledTimes(1);
+        expect(service.getAllQnas).toHaveBeenCalledWith(
+          testOrganization1.slug,
+          testOrgMember1.slug,
+          {
+            ...testBaseGetOrgMemberPostsDto1,
+            offset: 1,
+          },
+        );
       });
     });
   });

@@ -51,7 +51,9 @@ describe('TeamsViewComponent', () => {
 
   describe('onOrgNavigate', () => {
     it('should navigate relative to the currently selected org', async () => {
-      await component.onOrgNavigate(`/${ShortUrl.Team}/${Keyword.New}`);
+      await component.onOrgNavigate({
+        route: `/${ShortUrl.Team}/${Keyword.New}`,
+      });
       expect(router.url).toEqual(
         `/${ShortUrl.Organization}/${testOrganization1.slug}/${ShortUrl.Team}/${Keyword.New}`,
       );

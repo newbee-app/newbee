@@ -13,6 +13,9 @@ migrations
 # angular stuff
 .angular
 
+# nx stuff
+.nx
+
 # compiled output
 /dist
 /tmp

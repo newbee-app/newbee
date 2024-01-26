@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
 import type { DocQueryResult } from '@newbee/shared/util';
 import { PostSearchResultHeaderComponent } from '../header';
 
@@ -21,5 +22,5 @@ export class DocSearchResultComponent {
   /**
    * Where we should navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 }

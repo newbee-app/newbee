@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   DocQueryResult,
   QnaQueryResult,
@@ -39,7 +39,7 @@ export class PostSearchResultHeaderComponent {
   /**
    * Where we should navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Whether the maintainer is the same org member as the creator.
@@ -49,22 +49,17 @@ export class PostSearchResultHeaderComponent {
   }
 
   /**
-   * Emit the `orgNavigate` output with the given paths joined by `/`.
-   *
-   * @param paths The paths to join.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
-  }
-
-  /**
    * Navigate to the displayed post relative to the current org.
    */
   postNavigate(): void {
     if (resultIsDocQueryResult(this.searchResult)) {
-      this.emitOrgNavigate(ShortUrl.Doc, this.searchResult.doc.slug);
+      this.orgNavigate.emit({
+        route: [ShortUrl.Doc, this.searchResult.doc.slug].join('/'),
+      });
     } else if (resultIsQnaQueryResult(this.searchResult)) {
-      this.emitOrgNavigate(ShortUrl.Qna, this.searchResult.qna.slug);
+      this.orgNavigate.emit({
+        route: [ShortUrl.Qna, this.searchResult.qna.slug].join('/'),
+      });
     }
   }
 }

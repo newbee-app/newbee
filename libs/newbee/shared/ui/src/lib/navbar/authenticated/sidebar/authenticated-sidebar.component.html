@@ -4,7 +4,11 @@
   <newbee-text-tooltip text="Create an org" placement="right">
     <button
       type="button"
-      (click)="emitNavigateToLink(shortUrl.Organization, keyword.New)"
+      (click)="
+        navigateToLink.emit({
+          route: [shortUrl.Organization, keyword.New].join('/')
+        })
+      "
       class="btn btn-primary w-full"
     >
       <!-- plus svg -->

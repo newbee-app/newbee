@@ -3,13 +3,23 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, PaginatedResults, QnaQueryResult } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
  * Module-specific piece of state related to QnAs.
  */
 export interface QnaState {
+  /**
+   * All of the qnas of the org as paginated results.
+   */
+  qnas: PaginatedResults<QnaQueryResult> | null;
+
+  /**
+   * Whether the user is waiting for a resposne for getting all paginated qnas.
+   */
+  pendingGetQnas: boolean;
+
   /**
    * Whether the user is waiting for a response for creating a qna.
    */
@@ -40,6 +50,8 @@ export interface QnaState {
  * The initial value for `QnaState`.
  */
 export const initialQnaState: QnaState = {
+  qnas: null,
+  pendingGetQnas: false,
   pendingCreate: false,
   pendingEditQuestion: false,
   pendingEditAnswer: false,
@@ -54,6 +66,24 @@ export const qnaFeature = createFeature({
   name: `${Keyword.Qna}Module`,
   reducer: createReducer(
     initialQnaState,
+    on(
+      QnaActions.getQnasPending,
+      (state): QnaState => ({
+        ...state,
+        pendingGetQnas: true,
+      }),
+    ),
+    on(
+      QnaActions.getQnasSuccess,
+      (state, { qnas }): QnaState => ({
+        ...state,
+        pendingGetQnas: false,
+        qnas: {
+          ...qnas,
+          results: [...(state.qnas?.results ?? []), ...qnas.results],
+        },
+      }),
+    ),
     on(
       QnaActions.createQna,
       (state): QnaState => ({

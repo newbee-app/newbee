@@ -6,6 +6,7 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   CreateQnaDto,
@@ -15,6 +16,7 @@ import {
 } from '@newbee/api/qna/data-access';
 import {
   EntityService,
+  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
@@ -22,7 +24,13 @@ import {
 import { OrgMember, Organization, Qna, Role } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseQnaAndMemberDto, Keyword, apiRoles } from '@newbee/shared/util';
+import {
+  BaseQnaAndMemberDto,
+  Keyword,
+  PaginatedResults,
+  QnaQueryResult,
+  apiRoles,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with `QnaEntity`.
@@ -42,6 +50,42 @@ export class QnaController {
     private readonly entityService: EntityService,
     private readonly teamMemberService: TeamMemberService,
   ) {}
+
+  /**
+   * The API route for getting paginated results of all of the qnas in an org.
+   *
+   * @param offsetAndLimitDto The offset and limit for the pagination.
+   * @param organization The organization to look in.
+   *
+   * @returns The result containing the retrieved qnas, the total number of qnas in the org, and the offset we retrieved.
+   * @throws {InternalServerErrorException} `internalServerError`. For any error.
+   */
+  @Get()
+  @Role(apiRoles.qna.getAll)
+  async getAll(
+    @Query() offsetAndLimitDto: OffsetAndLimitDto,
+    @Organization() organization: OrganizationEntity,
+  ): Promise<PaginatedResults<QnaQueryResult>> {
+    const { offset, limit } = offsetAndLimitDto;
+    this.logger.log(
+      `Get all qnas request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
+    );
+
+    const [qnas, total] = await this.entityService.findPostsByOrgAndCount(
+      QnaEntity,
+      offsetAndLimitDto,
+      organization,
+    );
+    this.logger.log(
+      `Got qnas for organization: ${organization.slug}, total count: ${total}`,
+    );
+
+    return {
+      ...offsetAndLimitDto,
+      total,
+      results: await this.entityService.createQnaQueryResults(qnas),
+    };
+  }
 
   /**
    * The API route for creating a qna.

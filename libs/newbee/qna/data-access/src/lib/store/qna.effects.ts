@@ -6,10 +6,12 @@ import {
   catchHttpScreenError,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { ShortUrl, canGetMoreResults } from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  OffsetAndLimit,
   answerIsNotEmpty,
+  defaultLimit,
   maintainerIsNotEmpty,
   questionIsNotEmpty,
   teamIsNotEmpty,
@@ -20,10 +22,46 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { QnaService } from '../qna.service';
-import { selectQnaAndOrg } from './qna.selector';
+import { selectQnaAndOrg, selectQnasOrgAndError } from './qna.selector';
 
 @Injectable()
 export class QnaEffects {
+  getQnas$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.getQnas),
+      concatLatestFrom(() => this.store.select(selectQnasOrgAndError)),
+      filter(
+        ([, { qnas, selectedOrganization, error }]) =>
+          !!(selectedOrganization && canGetMoreResults(qnas) && !error),
+      ),
+      map(() => QnaActions.getQnasPending()),
+    );
+  });
+
+  getQnasPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(QnaActions.getQnasPending),
+      concatLatestFrom(() => this.store.select(selectQnasOrgAndError)),
+      switchMap(([, { qnas, selectedOrganization }]) => {
+        const offsetAndLimit: OffsetAndLimit = {
+          offset: qnas ? qnas.offset + 1 : 0,
+          limit: qnas ? qnas.limit : defaultLimit,
+        };
+        return this.qnaService
+          .getAll(
+            selectedOrganization?.organization.slug as string,
+            offsetAndLimit,
+          )
+          .pipe(
+            map((qnas) => {
+              return QnaActions.getQnasSuccess({ qnas });
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
+          );
+      }),
+    );
+  });
+
   createQna$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(QnaActions.createQna),

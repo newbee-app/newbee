@@ -6,7 +6,11 @@
 <p class="opacity-50">
   <span *ngIf="searchResult.team">
     <a
-      (click)="emitOrgNavigate(shortUrl.Team, searchResult.team.slug)"
+      (click)="
+        orgNavigate.emit({
+          route: [shortUrl.Team, searchResult.team.slug].join('/')
+        })
+      "
       class="link"
       >{{ searchResult.team.name }}</a
     >
@@ -19,7 +23,11 @@
     by
     <a
       (click)="
-        emitOrgNavigate(shortUrl.Member, searchResult.maintainer.orgMember.slug)
+        orgNavigate.emit({
+          route: [shortUrl.Member, searchResult.maintainer.orgMember.slug].join(
+            '/'
+          )
+        })
       "
       class="link"
       >{{ userDisplayName(searchResult.maintainer.user) }}</a
@@ -31,7 +39,11 @@
     | Created by
     <a
       (click)="
-        emitOrgNavigate(shortUrl.Member, searchResult.creator.orgMember.slug)
+        orgNavigate.emit({
+          route: [shortUrl.Member, searchResult.creator.orgMember.slug].join(
+            '/'
+          )
+        })
       "
       class="link"
     >

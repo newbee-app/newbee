@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchResultsComponent } from './search-results.component';
 
@@ -15,6 +16,12 @@ describe('SearchResultsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
+      providers: [
+        {
+          provide: PLATFORM_ID,
+          useValue: 'server',
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchResultsComponent);

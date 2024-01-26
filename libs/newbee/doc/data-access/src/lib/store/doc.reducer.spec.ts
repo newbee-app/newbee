@@ -3,9 +3,18 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
+import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
 import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
+  const stateAfterGetDocsPending: DocState = {
+    ...initialDocState,
+    pendingGetDocs: true,
+  };
+  const stateAfterGetDocsSuccess: DocState = {
+    ...initialDocState,
+    docs: testPaginatedResultsDocQueryResult1,
+  };
   const stateAfterCreateDoc: DocState = {
     ...initialDocState,
     pendingCreate: true,
@@ -24,6 +33,14 @@ describe('DocReducer', () => {
   };
 
   describe('from initial state', () => {
+    it('should update state for getDocsPending', () => {
+      const updatedState = docFeature.reducer(
+        initialDocState,
+        DocActions.getDocsPending,
+      );
+      expect(updatedState).toEqual(stateAfterGetDocsPending);
+    });
+
     it('should update state for createDoc', () => {
       const updatedState = docFeature.reducer(
         initialDocState,
@@ -58,6 +75,36 @@ describe('DocReducer', () => {
   });
 
   describe('from altered state', () => {
+    it('should update state for getDocsSuccess', () => {
+      let updatedState = docFeature.reducer(
+        stateAfterGetDocsPending,
+        DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialDocState,
+        docs: testPaginatedResultsDocQueryResult1,
+      });
+
+      updatedState = docFeature.reducer(
+        stateAfterGetDocsSuccess,
+        DocActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetDocsSuccess,
+        docs: {
+          ...testPaginatedResultsDocQueryResult1,
+          results: [
+            ...testPaginatedResultsDocQueryResult1.results,
+            ...testPaginatedResultsDocQueryResult1.results,
+          ],
+        },
+      });
+    });
+
     it('should update state for createDocSuccess', () => {
       const updatedState = docFeature.reducer(
         stateAfterCreateDoc,

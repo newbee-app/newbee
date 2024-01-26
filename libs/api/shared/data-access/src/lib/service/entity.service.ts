@@ -6,15 +6,10 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import {
-  DocDocParams,
-  OrgMemberDocParams,
-  QnaDocParams,
-  TeamDocParams,
-} from '@newbee/api/shared/util';
 import type {
   DocNoOrg,
   DocQueryResult,
+  OffsetAndLimit,
   OrgMemberNoOrg,
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
@@ -34,6 +29,7 @@ import {
   cannotDeleteOnlyTeamOwnerBadRequest,
   internalServerError,
 } from '@newbee/shared/util';
+import { ClassConstructor } from 'class-transformer';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import {
@@ -62,127 +58,6 @@ export class EntityService {
   private readonly logger = new Logger(EntityService.name);
 
   constructor(private readonly em: EntityManager) {}
-
-  // START: Solr doc params
-
-  /**
-   * Creates the fields to add or replace a NewBee doc in a Solr index.
-   *
-   * @param doc The doc to translate.
-   *
-   * @returns The params to add or replace a Solr doc using SolrCli.
-   */
-  createDocDocParams(doc: DocEntity): DocDocParams {
-    const {
-      id,
-      slug,
-      team,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      outOfDateAt,
-      title,
-      creator,
-      maintainer,
-      docTxt,
-    } = doc;
-    return new DocDocParams(
-      id,
-      slug,
-      team?.id ?? null,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      outOfDateAt,
-      title,
-      creator?.id ?? null,
-      maintainer?.id ?? null,
-      docTxt,
-    );
-  }
-
-  /**
-   * Creates the fields to add or replace a qna doc in a Solr index.
-   *
-   * @param qna The qna entity to translate.
-   *
-   * @returns The params to add or replace a qna doc using SolrCli.
-   */
-  createQnaDocParams(qna: QnaEntity): QnaDocParams {
-    const {
-      id,
-      slug,
-      team,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      outOfDateAt,
-      title,
-      creator,
-      maintainer,
-      questionTxt,
-      answerTxt,
-    } = qna;
-    return new QnaDocParams(
-      id,
-      slug,
-      team?.id ?? null,
-      createdAt,
-      updatedAt,
-      markedUpToDateAt,
-      outOfDateAt,
-      title,
-      creator?.id ?? null,
-      maintainer?.id ?? null,
-      questionTxt,
-      answerTxt,
-    );
-  }
-
-  /**
-   * Creates the fields to add or replace a team doc in a Solr index.
-   *
-   * @param team The team entity to translate.
-   *
-   * @returns The params to add or replace a team doc using SolrCli.
-   */
-  createTeamDocParams(team: TeamEntity): TeamDocParams {
-    const { id, slug, name } = team;
-    return new TeamDocParams(id, slug, name);
-  }
-
-  /**
-   * Create the fields to add or replace an org member doc in a Solr index.
-   *
-   * @param orgMember The org member entity to translate.
-   *
-   * @returns The params to add or replace an org member doc using SolrCli.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async createOrgMemberDocParams(
-    orgMember: OrgMemberEntity,
-  ): Promise<OrgMemberDocParams> {
-    try {
-      await this.em.populate(orgMember, ['user']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const { id, slug, role, user } = orgMember;
-    const { email, name, displayName, phoneNumber } = user;
-    return new OrgMemberDocParams(
-      id,
-      slug,
-      email,
-      name,
-      displayName,
-      phoneNumber,
-      role,
-    );
-  }
-
-  // END: Solr doc params
 
   // START: Entities to query results
 
@@ -391,10 +266,13 @@ export class EntityService {
     try {
       await this.em.populate(team, ['teamMembers.orgMember.user']);
 
-      const postFindAndCountOptions = {
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        limit: 3,
+      const postOffsetAndLimit: OffsetAndLimit = {
         offset: 0,
+        limit: 3,
+      };
+      const postFindAndCountOptions = {
+        ...postOffsetAndLimit,
+        orderBy: { markedUpToDateAt: QueryOrder.DESC },
       };
       const [docs, docsCount] = await this.em.findAndCount(
         DocEntity,
@@ -410,20 +288,20 @@ export class EntityService {
       return {
         team,
         docs: {
-          sample: await this.createDocQueryResults(docs),
+          results: await this.createDocQueryResults(docs),
           total: docsCount,
+          ...postOffsetAndLimit,
         },
         qnas: {
-          sample: await this.createQnaQueryResults(qnas),
+          results: await this.createQnaQueryResults(qnas),
           total: qnasCount,
+          ...postOffsetAndLimit,
         },
-        teamMembers: team.teamMembers
-          .getItems()
-          .map((teamMember) => ({
-            teamMember,
-            orgMember: teamMember.orgMember,
-            user: teamMember.orgMember.user,
-          })),
+        teamMembers: team.teamMembers.getItems().map((teamMember) => ({
+          teamMember,
+          orgMember: teamMember.orgMember,
+          user: teamMember.orgMember.user,
+        })),
       };
     } catch (err) {
       this.logger.error(err);
@@ -583,10 +461,13 @@ export class EntityService {
         { populate: ['team'] },
       );
 
-      const postFindAndCountOptions = {
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-        limit: 3,
+      const postOffsetAndLimit: OffsetAndLimit = {
         offset: 0,
+        limit: 3,
+      };
+      const postFindAndCountOptions = {
+        ...postOffsetAndLimit,
+        orderBy: { markedUpToDateAt: QueryOrder.DESC },
       };
       const [createdDocs, createdDocsCount] = await this.em.findAndCount(
         DocEntity,
@@ -615,20 +496,24 @@ export class EntityService {
           team: teamMember.team,
         })),
         createdDocs: {
-          sample: await this.createDocQueryResults(createdDocs),
+          results: await this.createDocQueryResults(createdDocs),
           total: createdDocsCount,
+          ...postOffsetAndLimit,
         },
         maintainedDocs: {
-          sample: await this.createDocQueryResults(maintainedDocs),
+          results: await this.createDocQueryResults(maintainedDocs),
           total: maintainedDocsCount,
+          ...postOffsetAndLimit,
         },
         createdQnas: {
-          sample: await this.createQnaQueryResults(createdQnas),
+          results: await this.createQnaQueryResults(createdQnas),
           total: createdQnasCount,
+          ...postOffsetAndLimit,
         },
         maintainedQnas: {
-          sample: await this.createQnaQueryResults(maintainedQnas),
+          results: await this.createQnaQueryResults(maintainedQnas),
           total: maintainedQnasCount,
+          ...postOffsetAndLimit,
         },
       };
     } catch (err) {
@@ -638,6 +523,8 @@ export class EntityService {
   }
 
   // END: Entity relations
+
+  // START: Misc
 
   /**
    * Check whether the given entity is safe to delete and throw a `BadRequestException` if it's not.
@@ -765,4 +652,49 @@ export class EntityService {
         post.organization.upToDateDuration,
     );
   }
+
+  /**
+   * Finds all of a given post type associated with the given org, and possibly a team.
+   *
+   * @param postType The post type to fetch.
+   * @param offsetAndLimit The offset and limit to look for.
+   * @param organization The organization whose posts to look for.
+   * @param optionalParams All of the optional params for fetching posts.
+   *
+   * @returns A tuple containing the found post entities and a count of the total number of posts in the org.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async findPostsByOrgAndCount<PostType extends PostEntity>(
+    postType: ClassConstructor<PostType>,
+    offsetAndLimit: OffsetAndLimit,
+    organization: OrganizationEntity,
+    optionalParams?: {
+      team?: TeamEntity;
+      orgMember?: OrgMemberEntity;
+      creator?: OrgMemberEntity;
+      maintainer?: OrgMemberEntity;
+    },
+  ): Promise<[PostType[], number]> {
+    const { offset, limit } = offsetAndLimit;
+    const params = optionalParams ?? {};
+    const { orgMember, ...restParams } = params;
+    try {
+      return await this.em.findAndCount(
+        postType,
+        {
+          organization,
+          ...(orgMember && {
+            $or: [{ creator: orgMember }, { maintainer: orgMember }],
+          }),
+          ...(restParams && restParams),
+        },
+        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
+      );
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  // END: Misc
 }

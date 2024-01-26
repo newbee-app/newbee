@@ -3,7 +3,11 @@ import {
   OrgMemberActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testUser1 } from '@newbee/shared/util';
+import {
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
+  testUser1,
+} from '@newbee/shared/util';
 import {
   OrgMemberState,
   initialOrgMemberState,
@@ -18,6 +22,22 @@ describe('OrgMemberReducer', () => {
   const stateAfterDeleteOrgMember: OrgMemberState = {
     ...initialOrgMemberState,
     pendingDelete: true,
+  };
+  const stateAfterGetDocsPending: OrgMemberState = {
+    ...initialOrgMemberState,
+    pendingGetDocs: true,
+  };
+  const stateAfterGetDocsSuccess: OrgMemberState = {
+    ...initialOrgMemberState,
+    docs: testPaginatedResultsDocQueryResult1,
+  };
+  const stateAfterGetQnasPending: OrgMemberState = {
+    ...initialOrgMemberState,
+    pendingGetQnas: true,
+  };
+  const stateAfterGetQnasSuccess: OrgMemberState = {
+    ...initialOrgMemberState,
+    qnas: testPaginatedResultsQnaQueryResult1,
   };
   const stateAfterInviteUser: OrgMemberState = {
     ...initialOrgMemberState,
@@ -39,6 +59,22 @@ describe('OrgMemberReducer', () => {
         OrgMemberActions.deleteOrgMember,
       );
       expect(updatedState).toEqual(stateAfterDeleteOrgMember);
+    });
+
+    it('should update state for getDocsPending', () => {
+      const updatedState = orgMemberFeature.reducer(
+        initialOrgMemberState,
+        OrgMemberActions.getDocsPending,
+      );
+      expect(updatedState).toEqual(stateAfterGetDocsPending);
+    });
+
+    it('should update state for getQnasPending', () => {
+      const updatedState = orgMemberFeature.reducer(
+        initialOrgMemberState,
+        OrgMemberActions.getQnasPending,
+      );
+      expect(updatedState).toEqual(stateAfterGetQnasPending);
     });
 
     it('should update state for inviteUser', () => {
@@ -65,6 +101,66 @@ describe('OrgMemberReducer', () => {
         OrgMemberActions.deleteOrgMemberSuccess,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
+    });
+
+    it('should update state for getDocsSuccess', () => {
+      let updatedState = orgMemberFeature.reducer(
+        stateAfterGetDocsPending,
+        OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialOrgMemberState,
+        docs: testPaginatedResultsDocQueryResult1,
+      });
+
+      updatedState = orgMemberFeature.reducer(
+        stateAfterGetDocsSuccess,
+        OrgMemberActions.getDocsSuccess({
+          docs: testPaginatedResultsDocQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetDocsSuccess,
+        docs: {
+          ...testPaginatedResultsDocQueryResult1,
+          results: [
+            ...testPaginatedResultsDocQueryResult1.results,
+            ...testPaginatedResultsDocQueryResult1.results,
+          ],
+        },
+      });
+    });
+
+    it('should update state for getQnasSuccess', () => {
+      let updatedState = orgMemberFeature.reducer(
+        stateAfterGetQnasPending,
+        OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialOrgMemberState,
+        qnas: testPaginatedResultsQnaQueryResult1,
+      });
+
+      updatedState = orgMemberFeature.reducer(
+        stateAfterGetQnasSuccess,
+        OrgMemberActions.getQnasSuccess({
+          qnas: testPaginatedResultsQnaQueryResult1,
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...stateAfterGetQnasSuccess,
+        qnas: {
+          ...testPaginatedResultsQnaQueryResult1,
+          results: [
+            ...testPaginatedResultsQnaQueryResult1.results,
+            ...testPaginatedResultsQnaQueryResult1.results,
+          ],
+        },
+      });
     });
 
     it('should update state for inviteUserSuccess', () => {

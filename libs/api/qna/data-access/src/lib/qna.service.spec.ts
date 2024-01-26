@@ -10,6 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
+  QnaDocParams,
   QnaEntity,
   testOrgMemberEntity1,
   testOrganizationEntity1,
@@ -17,7 +18,7 @@ import {
   testQnaEntity1,
   testTeamEntity1,
 } from '@newbee/api/shared/data-access';
-import { QnaDocParams, elongateUuid } from '@newbee/api/shared/util';
+import { elongateUuid } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
 import {
@@ -62,17 +63,13 @@ describe('QnaService', () => {
   let teamService: TeamService;
   let orgMemberService: OrgMemberService;
 
-  const testUpdatedQna = {
+  const testUpdatedQna = createMock<QnaEntity>({
     ...testQnaEntity1,
     ...testBaseUpdateQnaDto1,
     team: testTeamEntity1,
-  };
-  const testUpdatedQnaDocParams: QnaDocParams = {
-    ...testQnaDocParams1,
-    qna_title: testUpdatedQna.title,
-    question_txt: testUpdatedQna.questionTxt,
-    answer_txt: testUpdatedQna.answerTxt,
-  };
+    maintainer: testOrgMemberEntity1,
+  });
+  const testUpdatedQnaDocParams = new QnaDocParams(testUpdatedQna);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -82,15 +79,13 @@ describe('QnaService', () => {
           provide: EntityManager,
           useValue: createMock<EntityManager>({
             findOneOrFail: jest.fn().mockResolvedValue(testQnaEntity1),
-            find: jest.fn().mockResolvedValue([testQnaEntity1]),
+            findAndCount: jest.fn().mockResolvedValue([[testQnaEntity1], 1]),
             assign: jest.fn().mockReturnValue(testUpdatedQna),
           }),
         },
         {
           provide: EntityService,
-          useValue: createMock<EntityService>({
-            createQnaDocParams: jest.fn().mockReturnValue(testQnaDocParams1),
-          }),
+          useValue: createMock<EntityService>(),
         },
         {
           provide: SolrCli,
@@ -224,12 +219,6 @@ describe('QnaService', () => {
   });
 
   describe('update', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entityService, 'createQnaDocParams')
-        .mockReturnValue(testUpdatedQnaDocParams);
-    });
-
     afterEach(() => {
       expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
       expect(teamService.findOneBySlug).toHaveBeenCalledWith(
@@ -301,12 +290,6 @@ describe('QnaService', () => {
   });
 
   describe('markUpToDate', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entityService, 'createQnaDocParams')
-        .mockReturnValue(testUpdatedQnaDocParams);
-    });
-
     afterEach(async () => {
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(testQnaEntity1, {

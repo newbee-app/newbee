@@ -1,15 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
+import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { internalServerError, testOffsetAndLimit1 } from '@newbee/shared/util';
 import dayjs from 'dayjs';
+import { DocEntity } from '../entity';
 import {
-  testDocDocParams1,
   testDocEntity1,
-  testOrgMemberDocParams1,
-  testOrgMemberEntity1,
-  testQnaDocParams1,
-  testQnaEntity1,
-  testTeamDocParams1,
+  testOrganizationEntity1,
   testTeamEntity1,
 } from '../example';
 import { EntityService } from './entity.service';
@@ -36,32 +35,6 @@ describe('EntityService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
-  });
-
-  describe('create solr doc params', () => {
-    it('should create DocDocParams using a doc entity', () => {
-      expect(service.createDocDocParams(testDocEntity1)).toEqual(
-        testDocDocParams1,
-      );
-    });
-
-    it('should create QnaDocParams using a qna entity', () => {
-      expect(service.createQnaDocParams(testQnaEntity1)).toEqual(
-        testQnaDocParams1,
-      );
-    });
-
-    it('should create TeamDocParams using a team entity', () => {
-      expect(service.createTeamDocParams(testTeamEntity1)).toEqual(
-        testTeamDocParams1,
-      );
-    });
-
-    it('should create OrgMemberDocParams using an org member entity', async () => {
-      await expect(
-        service.createOrgMemberDocParams(testOrgMemberEntity1),
-      ).resolves.toEqual(testOrgMemberDocParams1);
-    });
   });
 
   describe('trueUpToDateDuration', () => {
@@ -94,6 +67,78 @@ describe('EntityService', () => {
           upToDateDuration: 'P2Y',
         }),
       ).toEqual(dayjs.duration('P2Y'));
+    });
+  });
+
+  describe('findPostsByOrgAndCount', () => {
+    beforeEach(() => {
+      jest.spyOn(em, 'findAndCount').mockResolvedValue([[testDocEntity1], 1]);
+    });
+
+    afterEach(() => {
+      expect(em.findAndCount).toHaveBeenCalledTimes(1);
+    });
+
+    describe('only org', () => {
+      afterEach(() => {
+        expect(em.findAndCount).toHaveBeenCalledWith(
+          DocEntity,
+          { organization: testOrganizationEntity1 },
+          {
+            ...testOffsetAndLimit1,
+            orderBy: { markedUpToDateAt: QueryOrder.DESC },
+          },
+        );
+      });
+
+      it('should find doc entities and count', async () => {
+        await expect(
+          service.findPostsByOrgAndCount(
+            DocEntity,
+            testOffsetAndLimit1,
+            testOrganizationEntity1,
+          ),
+        ).resolves.toEqual([[testDocEntity1], 1]);
+      });
+
+      it('should throw an InternalServerErrorException if findAndCount throws an error', async () => {
+        jest
+          .spyOn(em, 'findAndCount')
+          .mockRejectedValue(new Error('findAndCount'));
+        await expect(
+          service.findPostsByOrgAndCount(
+            DocEntity,
+            testOffsetAndLimit1,
+            testOrganizationEntity1,
+          ),
+        ).rejects.toThrow(
+          new InternalServerErrorException(internalServerError),
+        );
+      });
+    });
+
+    describe('org and optional params', () => {
+      afterEach(() => {
+        expect(em.findAndCount).toHaveBeenCalledWith(
+          DocEntity,
+          { organization: testOrganizationEntity1, team: testTeamEntity1 },
+          {
+            ...testOffsetAndLimit1,
+            orderBy: { markedUpToDateAt: QueryOrder.DESC },
+          },
+        );
+      });
+
+      it('should accept team if specified', async () => {
+        await expect(
+          service.findPostsByOrgAndCount(
+            DocEntity,
+            testOffsetAndLimit1,
+            testOrganizationEntity1,
+            { team: testTeamEntity1 },
+          ),
+        ).resolves.toEqual([[testDocEntity1], 1]);
+      });
     });
   });
 });

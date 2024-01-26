@@ -1,5 +1,8 @@
 {
   "compileOnSave": false,
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

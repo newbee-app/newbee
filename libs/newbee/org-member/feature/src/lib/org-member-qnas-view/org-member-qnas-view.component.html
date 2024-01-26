@@ -1,0 +1,11 @@
+<newbee-view-posts
+  [httpClientError]="httpClientError$ | async"
+  postType="qna"
+  [orgMemberTab]="orgMemberTab"
+  (orgMemberTabChange)="onOrgMemberTabChange($event)"
+  [posts]="(memberModuleState$ | async)!.qnas"
+  [getPostsPending]="(memberModuleState$ | async)!.pendingGetQnas"
+  (orgNavigate)="onOrgNavigate($event)"
+  (search)="onSearch($event)"
+  (continueSearch)="getQnas()"
+></newbee-view-posts>

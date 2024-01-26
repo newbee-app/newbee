@@ -1,20 +1,49 @@
 import { TestBed } from '@angular/core/testing';
 import {
   initialHttpState,
+  initialOrganizationState,
   initialSearchState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
-import { Keyword, testDocQueryResult1 } from '@newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
+import {
+  Keyword,
+  testBaseQueryResultsDto1,
+  testOrganizationRelation1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
-import { selectSearchResultAndScreenError } from './search.selector';
+import {
+  selectSearchResultsAndScreenError,
+  selectSearchResultsOrgAndError,
+} from './search.selector';
 
 describe('SearchSelector', () => {
   let store: MockStore;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideMockStore()],
+      providers: [
+        provideMockStore({
+          initialState: {
+            [Keyword.Search]: {
+              ...initialSearchState,
+              searchResults: testBaseQueryResultsDto1,
+            },
+            [Keyword.Organization]: {
+              ...initialOrganizationState,
+              selectedOrganization: testOrganizationRelation1,
+            },
+            [Keyword.Http]: {
+              ...initialHttpState,
+              error: testHttpClientError1,
+              screenError: testHttpScreenError1,
+            },
+          },
+        }),
+      ],
     });
 
     store = TestBed.inject(MockStore);
@@ -24,25 +53,30 @@ describe('SearchSelector', () => {
     expect(store).toBeDefined();
   });
 
-  describe('selectSearchResultAndScreenError', () => {
-    it('should select search result and screen error', () => {
-      store.setState({
-        [Keyword.Search]: {
-          ...initialSearchState,
-          searchResult: testDocQueryResult1,
-        },
-        [Keyword.Http]: {
-          ...initialHttpState,
-          screenError: testHttpScreenError1,
-        },
-      });
+  describe('selectSearchResultsAndScreenError', () => {
+    it('should select search results and screen error', () => {
       const expected$ = hot('a', {
         a: {
-          searchResult: testDocQueryResult1,
+          searchResults: testBaseQueryResultsDto1,
           screenError: testHttpScreenError1,
         },
       });
-      expect(store.select(selectSearchResultAndScreenError)).toBeObservable(
+      expect(store.select(selectSearchResultsAndScreenError)).toBeObservable(
+        expected$,
+      );
+    });
+  });
+
+  describe('selectSeachResultsOrgAndError', () => {
+    it('should select seach results, currently selected org, and error', () => {
+      const expected$ = hot('a', {
+        a: {
+          searchResults: testBaseQueryResultsDto1,
+          selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
+        },
+      });
+      expect(store.select(selectSearchResultsOrgAndError)).toBeObservable(
         expected$,
       );
     });

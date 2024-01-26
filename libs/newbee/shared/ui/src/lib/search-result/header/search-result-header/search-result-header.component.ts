@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   PostQueryResult,
   resultIsDocQueryResult,
@@ -34,7 +34,7 @@ export class SearchResultHeaderComponent {
   /**
    * Where to navigate to, relative to the org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The search result as a `PostQueryResult` if possible, `null` otherwise.
@@ -72,15 +72,21 @@ export class SearchResultHeaderComponent {
    */
   headerClick(): void {
     if (resultIsOrgMemberQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(
-        `/${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
-      );
+      this.orgNavigate.emit({
+        route: `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
+      });
     } else if (resultIsTeamQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Team}/${this.searchResult.slug}`);
+      this.orgNavigate.emit({
+        route: `${ShortUrl.Team}/${this.searchResult.slug}`,
+      });
     } else if (resultIsDocQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Doc}/${this.searchResult.doc.slug}`);
+      this.orgNavigate.emit({
+        route: `${ShortUrl.Doc}/${this.searchResult.doc.slug}`,
+      });
     } else if (resultIsQnaQueryResult(this.searchResult)) {
-      this.orgNavigate.emit(`/${ShortUrl.Qna}/${this.searchResult.qna.slug}`);
+      this.orgNavigate.emit({
+        route: `${ShortUrl.Qna}/${this.searchResult.qna.slug}`,
+      });
     }
   }
 }

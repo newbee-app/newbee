@@ -112,7 +112,11 @@
             >
               <a
                 label
-                (click)="emitOrgNavigate(shortUrl.Member, tm.orgMember.slug)"
+                (click)="
+                  orgNavigate.emit({
+                    route: [shortUrl.Member, tm.orgMember.slug].join('/')
+                  })
+                "
                 class="link link-info"
                 >{{ userDisplayNameAndEmail(tm.user) }}</a
               >

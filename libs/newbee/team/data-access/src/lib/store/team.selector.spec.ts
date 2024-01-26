@@ -4,7 +4,10 @@ import {
   initialOrganizationState,
   initialTeamState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgMemberUser,
@@ -12,16 +15,20 @@ import {
   testOrgMemberUser1,
   testOrgMemberUser2,
   testOrganizationRelation1,
+  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsQnaQueryResult1,
   testTeamRelation1,
   testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
+import { initialTeamState as initialTeamModuleState } from './team.reducer';
 import {
   selectNonTeamOrgMembers,
   selectTeamAndOrg,
   selectTeamAndOrgStates,
   selectTeamAndScreenError,
+  selectTeamPostsOrgAndError,
 } from './team.selector';
 
 describe('TeamSelector', () => {
@@ -32,6 +39,7 @@ describe('TeamSelector', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [`${Keyword.Team}Module`]: initialTeamModuleState,
             [Keyword.Team]: initialTeamState,
             [Keyword.Organization]: initialOrganizationState,
           },
@@ -138,6 +146,39 @@ describe('TeamSelector', () => {
       });
       const expected$ = hot('a', { a: [testOrgMemberUser3] });
       expect(store.select(selectNonTeamOrgMembers)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectTeamPostsOrgAndError', () => {
+    it(`should select the team's posts, selected team, selected org, and error`, () => {
+      store.setState({
+        [`${Keyword.Team}Module`]: {
+          ...initialTeamModuleState,
+          docs: testPaginatedResultsDocQueryResult1,
+          qnas: testPaginatedResultsQnaQueryResult1,
+        },
+        [Keyword.Team]: {
+          ...initialTeamState,
+          selectedTeam: testTeamRelation1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
+      });
+      const expected$ = hot('a', {
+        a: {
+          docs: testPaginatedResultsDocQueryResult1,
+          qnas: testPaginatedResultsQnaQueryResult1,
+          selectedTeam: testTeamRelation1,
+          selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
+        },
+      });
+      expect(store.select(selectTeamPostsOrgAndError)).toBeObservable(
+        expected$,
+      );
     });
   });
 });

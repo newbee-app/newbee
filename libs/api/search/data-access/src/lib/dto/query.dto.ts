@@ -1,12 +1,17 @@
 import {
   BaseQueryDto,
+  creatorIsNotEmpty,
+  defaultLimit,
+  limitIsInt,
+  limitMin1,
+  maintainerIsNotEmpty,
   offsetIsInt,
   offsetMin0,
-  SolrEntryEnum,
-  typeIsEnum,
+  orgMemberIsNotEmpty,
+  teamIsNotEmpty,
 } from '@newbee/shared/util';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { SuggestDto } from './suggest.dto';
 
 /**
@@ -25,7 +30,36 @@ export class QueryDto extends SuggestDto implements BaseQueryDto {
   /**
    * @inheritdoc
    */
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt({ message: limitIsInt })
+  @Min(1, { message: limitMin1 })
+  limit = defaultLimit;
+
+  /**
+   * @inheritdoc
+   */
   @IsOptional()
-  @IsEnum(SolrEntryEnum, { message: typeIsEnum })
-  type?: SolrEntryEnum;
+  @IsNotEmpty({ message: teamIsNotEmpty })
+  team?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: orgMemberIsNotEmpty })
+  member?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: creatorIsNotEmpty })
+  creator?: string;
+
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsNotEmpty({ message: maintainerIsNotEmpty })
+  maintainer?: string;
 }

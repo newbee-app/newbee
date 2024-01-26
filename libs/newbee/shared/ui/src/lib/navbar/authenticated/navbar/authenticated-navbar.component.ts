@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShortUrl } from '@newbee/newbee/shared/util';
+import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
   OrgMember,
@@ -83,7 +83,7 @@ export class AuthenticatedNavbarComponent {
   /**
    * An event emitter that tells the parent component when a request has been made to navigate to a link.
    */
-  @Output() navigateToLink = new EventEmitter<string>();
+  @Output() navigateToLink = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * An event emitter that tells the parent component when a logout request has been made.
@@ -98,15 +98,6 @@ export class AuthenticatedNavbarComponent {
   selectOrganization(organization: Organization): void {
     this.selectedOrganization = organization;
     this.selectedOrganizationChange.emit(organization);
-  }
-
-  /**
-   * Calls `navigateToLink.emit()` using the given routes, joined by backslashes.
-   *
-   * @param endpoints The endpoints of the route to navigate to.
-   */
-  emitNavigateToLink(...endpoints: string[]): void {
-    this.navigateToLink.emit(`/${endpoints.join('/')}`);
   }
 
   /**

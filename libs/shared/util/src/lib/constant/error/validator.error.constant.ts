@@ -74,9 +74,24 @@ export const tokenIsNotEmpty = 'Token cannot be an empty string.';
 export const baseIsNotEmpty = 'Base cannot be an empty string.';
 
 /**
+ * Constant to say that org member cannot be an empty string.
+ */
+export const orgMemberIsNotEmpty = 'Org member cannot be an empty string.';
+
+/**
+ * Constant to say that creator cannot be an empty string.
+ */
+export const creatorIsNotEmpty = 'Creator cannot be an empty string.';
+
+/**
  * Constant to say that maintainer cannot be an empty string.
  */
 export const maintainerIsNotEmpty = 'Maintainer cannot be an empty string';
+
+/**
+ * Constant to say that role cannot be an empty string.
+ */
+export const roleIsNotEmpty = 'Role cannot be an empty string.';
 
 /**
  * Constant to say that up-to-date duration must be an ISO 8601 string.
@@ -90,9 +105,19 @@ export const upToDateDurationMatches =
 export const offsetIsInt = 'Offset must be an int.';
 
 /**
- * Constant to say that offset has a min of 0.
+ * Constant to say that offset must have a min of 0.
  */
 export const offsetMin0 = 'Offset cannot be less than 0.';
+
+/**
+ * Constant to say that liimit must be an int.
+ */
+export const limitIsInt = 'Limit must be an int.';
+
+/**
+ * Constant to say that limit must have a min of 1.
+ */
+export const limitMin1 = 'Limit cannot be less than 1.';
 
 /**
  * Constant to say that the value for type must be in SolrEntryEnum.

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   PhoneNumberPipeModule,
+  RouteAndQueryParams,
   SearchResultFormat,
   ShortUrl,
 } from '@newbee/newbee/shared/util';
@@ -42,7 +43,7 @@ export class MemberSearchResultComponent {
   /**
    * Where to navigate to, relative to the current org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * Get the line displaying the permissions the org member has.
@@ -58,8 +59,8 @@ export class MemberSearchResultComponent {
    * Navigate to the displayed org member.
    */
   orgMemberNavigate(): void {
-    this.orgNavigate.emit(
-      `/${ShortUrl.Member}/${this.orgMember.orgMember.slug}`,
-    );
+    this.orgNavigate.emit({
+      route: `${ShortUrl.Member}/${this.orgMember.orgMember.slug}`,
+    });
   }
 }

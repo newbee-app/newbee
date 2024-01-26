@@ -1,4 +1,4 @@
-import { Keyword, QueryResult } from '@newbee/shared/util';
+import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -10,7 +10,7 @@ export interface SearchState {
   /**
    * The results of a search request.
    */
-  searchResult: QueryResult | null;
+  searchResults: BaseQueryResultsDto | null;
 
   /**
    * The results of a suggest request.
@@ -21,15 +21,21 @@ export interface SearchState {
    * Whether the user is waiting for a search request.
    */
   pendingSearch: boolean;
+
+  /**
+   * Whether the user is waiting for a paginated fetch of the current search query.
+   */
+  pendingContinueSearch: boolean;
 }
 
 /**
  * The initial value for `SearchState`.
  */
 export const initialSearchState: SearchState = {
-  searchResult: null,
+  searchResults: null,
   suggestions: [],
   pendingSearch: false,
+  pendingContinueSearch: false,
 };
 
 /**
@@ -41,27 +47,48 @@ export const searchFeature = createFeature({
     initialSearchState,
     on(
       SearchActions.search,
-      (state): SearchState => ({
+      (state, { query }): SearchState => ({
         ...state,
-        searchResult: null,
-        pendingSearch: true,
-      })
+        searchResults: null,
+        pendingSearch: !!query.query,
+      }),
     ),
     on(
       SearchActions.searchSuccess,
-      (state, { result }): SearchState => ({
+      (state, { results }): SearchState => ({
         ...state,
-        searchResult: result,
+        searchResults: results,
         pendingSearch: false,
-      })
+      }),
     ),
-    on(SearchActions.suggestSuccess, (state, { result }): SearchState => {
-      const { suggestions } = result;
+    on(SearchActions.suggestSuccess, (state, { results }): SearchState => {
+      const { suggestions } = results;
       return {
         ...state,
         suggestions,
       };
     }),
-    on(RouterActions.routerRequest, (): SearchState => initialSearchState)
+    on(
+      SearchActions.continueSearchPending,
+      (state): SearchState => ({
+        ...state,
+        pendingContinueSearch: true,
+      }),
+    ),
+    on(
+      SearchActions.continueSearchSuccess,
+      (state, { results }): SearchState => ({
+        ...state,
+        pendingContinueSearch: false,
+        searchResults: {
+          ...results,
+          results: [
+            ...(state.searchResults?.results ?? []),
+            ...results.results,
+          ],
+        },
+      }),
+    ),
+    on(RouterActions.routerRequest, (): SearchState => initialSearchState),
   ),
 });

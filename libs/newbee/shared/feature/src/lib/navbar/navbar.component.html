@@ -9,10 +9,10 @@
   [selectedOrganization]="
     (orgState$ | async)!.selectedOrganization?.organization ?? null
   "
-  (selectedOrganizationChange)="selectOrganization($event)"
+  (selectedOrganizationChange)="onSelectedOrganizationChange($event)"
   [orgMember]="(orgState$ | async)!.orgMember?.orgMember ?? null"
   [includeCenter]="includeCenter"
-  (navigateToLink)="navigateToLink($event)"
+  (navigateToLink)="onNavigateToLink($event)"
   (logout)="logout()"
 >
   <ng-container *ngTemplateOutlet="content"></ng-container>

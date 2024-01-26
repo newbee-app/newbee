@@ -16,6 +16,7 @@ import {
 } from '@newbee/newbee/shared/ui';
 import {
   HttpClientError,
+  RouteAndQueryParams,
   SearchResultFormat,
   SelectOption,
   ShortUrl,
@@ -178,7 +179,7 @@ export class ViewTeamMembersComponent implements OnDestroy {
   /**
    * Where to navigate to, relative to the org.
    */
-  @Output() orgNavigate = new EventEmitter<string>();
+  @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
    * The form containing the org member and role for the user wants to add to the team.
@@ -278,14 +279,6 @@ export class ViewTeamMembersComponent implements OnDestroy {
 
     this.editTeamMember.emit({ orgMemberSlug, updateTeamMemberDto: { role } });
     this.editingTeamMembers.delete(orgMemberSlug);
-  }
-
-  /**
-   * Tell the parent UI to navigate to the given path relative to the current org.
-   * @param paths The path to navigate to, joined by `/`.
-   */
-  emitOrgNavigate(...paths: string[]): void {
-    this.orgNavigate.emit(`/${paths.join('/')}`);
   }
 
   /**

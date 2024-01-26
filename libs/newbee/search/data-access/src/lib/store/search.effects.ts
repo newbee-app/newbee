@@ -1,14 +1,21 @@
 import { Injectable } from '@angular/core';
 import {
+  catchHttpClientError,
   catchHttpScreenError,
   organizationFeature,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
-import { BaseQueryResultDto } from '@newbee/shared/util';
+import { canGetMoreResults } from '@newbee/newbee/shared/util';
+import {
+  BaseQueryDto,
+  BaseQueryResultsDto,
+  Keyword,
+} from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, filter, map, of, switchMap } from 'rxjs';
+import { catchError, filter, map, switchMap } from 'rxjs';
 import { SearchService } from '../search.service';
+import { selectSearchResultsOrgAndError } from './search.selector';
 
 /**
  * The effects tied to `SearchActions`.
@@ -21,21 +28,60 @@ export class SearchEffects {
       concatLatestFrom(() =>
         this.store.select(organizationFeature.selectSelectedOrganization),
       ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
+      filter(
+        ([{ query }, selectedOrganization]) =>
+          !!(selectedOrganization && query.query),
+      ),
       switchMap(([{ query }, selectedOrganization]) => {
-        if (!query.query) {
-          return of(
-            SearchActions.searchSuccess({ result: new BaseQueryResultDto(0) }),
-          );
-        }
-
         return this.searchService
           .search(query, selectedOrganization?.organization.slug as string)
           .pipe(
-            map((result) => {
-              return SearchActions.searchSuccess({ result });
+            map((results) => {
+              return SearchActions.searchSuccess({ results });
             }),
-            catchError(catchHttpScreenError),
+            catchError((err) => catchHttpScreenError(err)),
+          );
+      }),
+    );
+  });
+
+  continueSearch$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(SearchActions.continueSearch),
+      concatLatestFrom(() => this.store.select(selectSearchResultsOrgAndError)),
+      filter(
+        ([, { searchResults, selectedOrganization, error }]) =>
+          !!(
+            selectedOrganization &&
+            searchResults &&
+            canGetMoreResults(searchResults) &&
+            !error
+          ),
+      ),
+      map(() => SearchActions.continueSearchPending()),
+    );
+  });
+
+  continueSearchPending$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(SearchActions.continueSearchPending),
+      concatLatestFrom(() => this.store.select(selectSearchResultsOrgAndError)),
+      switchMap(([, { searchResults, selectedOrganization }]) => {
+        const { offset } = searchResults as BaseQueryResultsDto;
+
+        // The backend will strip all of the fields that aren't actually in the DTO
+        const queryDto: BaseQueryDto = {
+          ...(searchResults as BaseQueryResultsDto),
+          offset: offset + 1,
+        };
+
+        return this.searchService
+          .search(queryDto, selectedOrganization?.organization.slug as string)
+          .pipe(
+            map((results) => {
+              return SearchActions.continueSearchSuccess({ results });
+            }),
+            catchError((err) => catchHttpClientError(err, () => Keyword.Misc)),
           );
       }),
     );
@@ -43,23 +89,22 @@ export class SearchEffects {
 
   suggest$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(SearchActions.suggest),
+      ofType(SearchActions.suggest, SearchActions.search),
       concatLatestFrom(() =>
         this.store.select(organizationFeature.selectSelectedOrganization),
       ),
-      filter(([, selectedOrganization]) => !!selectedOrganization),
+      filter(
+        ([{ query }, selectedOrganization]) =>
+          !!(selectedOrganization && query.query),
+      ),
       switchMap(([{ query }, selectedOrganization]) => {
-        if (!query.query) {
-          return of(
-            SearchActions.suggestSuccess({ result: { suggestions: [] } }),
-          );
-        }
-
+        // Doesn't matter that we're potentially sending extra fields in the request in the case of search
+        // because the backend automatically strips fields that weren't specified in the DTO
         return this.searchService
           .suggest(query, selectedOrganization?.organization.slug as string)
           .pipe(
-            map((result) => {
-              return SearchActions.suggestSuccess({ result });
+            map((results) => {
+              return SearchActions.suggestSuccess({ results });
             }),
           );
       }),

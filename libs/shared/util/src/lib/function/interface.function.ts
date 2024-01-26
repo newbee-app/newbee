@@ -1,5 +1,5 @@
 import type { DocRelation, QnaRelation, User } from '../interface';
-import { DocQueryResult, QnaQueryResult } from '../type';
+import { CreatorOrMaintainer, DocQueryResult, QnaQueryResult } from '../type';
 
 /**
  * Returns a user's display name if it's not null, otherwise returns their display name.
@@ -32,8 +32,8 @@ export function userDisplayNameAndEmail(user: User): string {
  */
 export function maintainerIsCreator(
   post:
-    | Pick<DocRelation, 'maintainer' | 'creator'>
-    | Pick<QnaRelation, 'maintainer' | 'creator'>
+    | Pick<DocRelation, CreatorOrMaintainer>
+    | Pick<QnaRelation, CreatorOrMaintainer>
     | DocQueryResult
     | QnaQueryResult,
 ): boolean {

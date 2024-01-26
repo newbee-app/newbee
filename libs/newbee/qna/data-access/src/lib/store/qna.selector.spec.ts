@@ -4,18 +4,24 @@ import {
   initialOrganizationState,
   initialQnaState,
 } from '@newbee/newbee/shared/data-access';
-import { testHttpScreenError1 } from '@newbee/newbee/shared/util';
+import {
+  testHttpClientError1,
+  testHttpScreenError1,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testOrganizationRelation1,
+  testPaginatedResultsQnaQueryResult1,
   testQnaRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
+import { initialQnaState as initialQnaModuleState } from './qna.reducer';
 import {
   selectQnaAndOrg,
   selectQnaAndOrgStates,
   selectQnaAndScreenError,
+  selectQnasOrgAndError,
 } from './qna.selector';
 
 describe('QnaSelector', () => {
@@ -26,8 +32,10 @@ describe('QnaSelector', () => {
       providers: [
         provideMockStore({
           initialState: {
+            [Keyword.Http]: initialHttpState,
             [Keyword.Organization]: initialOrganizationState,
             [Keyword.Qna]: initialQnaState,
+            [`${Keyword.Qna}Module`]: initialQnaModuleState,
           },
         }),
       ],
@@ -66,6 +74,40 @@ describe('QnaSelector', () => {
         },
       });
       expect(store.select(selectQnaAndOrg)).toBeObservable(expected$);
+    });
+  });
+
+  describe('selectQnasOrgAndError', () => {
+    it('should handle null values', () => {
+      const expected$ = hot('a', {
+        a: { qnas: null, selectedOrganization: null, error: null },
+      });
+      expect(store.select(selectQnasOrgAndError)).toBeObservable(expected$);
+    });
+
+    it('should return qnas, org, and error', () => {
+      store.setState({
+        [`${Keyword.Qna}Module`]: {
+          ...initialQnaModuleState,
+          qnas: testPaginatedResultsQnaQueryResult1,
+        },
+        [Keyword.Organization]: {
+          ...initialOrganizationState,
+          selectedOrganization: testOrganizationRelation1,
+        },
+        [Keyword.Http]: {
+          ...initialHttpState,
+          error: testHttpClientError1,
+        },
+      });
+      const expected$ = hot('a', {
+        a: {
+          qnas: testPaginatedResultsQnaQueryResult1,
+          selectedOrganization: testOrganizationRelation1,
+          error: testHttpClientError1,
+        },
+      });
+      expect(store.select(selectQnasOrgAndError)).toBeObservable(expected$);
     });
   });
 

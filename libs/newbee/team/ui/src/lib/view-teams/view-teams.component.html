@@ -2,7 +2,9 @@
   <button
     *ngIf="checkRoles(apiRoles.team.create, { orgMember })"
     type="button"
-    (click)="emitOrgNavigate(shortUrl.Team, keyword.New)"
+    (click)="
+      orgNavigate.emit({ route: [shortUrl.Team, keyword.New].join('/') })
+    "
     class="btn btn-info w-fit"
   >
     Create a team

@@ -12,7 +12,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityService, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  OrgMemberDocParams,
+  UserEntity,
+} from '@newbee/api/shared/data-access';
 import type { AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
@@ -174,6 +178,7 @@ export class UserService {
 
     try {
       await this.em.flush();
+      await this.em.populate(updatedUser, ['organizations']);
     } catch (err) {
       this.logger.error(err);
 
@@ -184,20 +189,11 @@ export class UserService {
       throw new InternalServerErrorException(internalServerError);
     }
 
-    if (!data.name && !data.displayName) {
-      return updatedUser;
-    }
-
-    const { organizations } = updatedUser;
-    if (!organizations.isInitialized()) {
-      await organizations.init();
-    }
-    for (const orgMember of organizations) {
-      const { organization } = orgMember;
+    for (const orgMember of updatedUser.organizations) {
       try {
         await this.solrCli.getVersionAndReplaceDocs(
-          organization.id,
-          await this.entityService.createOrgMemberDocParams(orgMember),
+          orgMember.organization.id,
+          new OrgMemberDocParams(orgMember),
         );
       } catch (err) {
         this.logger.error(err);
