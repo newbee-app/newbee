@@ -22,6 +22,7 @@ import {
   authenticatedGuard,
   cookieGuard,
 } from '@newbee/newbee/shared/data-access';
+import { NotFoundErrorComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import { Keyword } from '@newbee/shared/util';
 
@@ -150,6 +151,10 @@ const routes: Routes = [
           const m = await import('@newbee/newbee/home/feature');
           return m.HomeModule;
         },
+      },
+      {
+        path: '**',
+        component: NotFoundErrorComponent,
       },
     ],
   },

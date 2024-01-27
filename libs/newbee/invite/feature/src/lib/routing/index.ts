@@ -22,6 +22,11 @@ const routes: Routes = [
         path: `${Keyword.Decline}/:${Keyword.Invite}`,
         component: OrgInviteDeclineComponent,
       },
+      {
+        path: '',
+        redirectTo: '/',
+        pathMatch: 'full',
+      },
     ],
   },
 ];
