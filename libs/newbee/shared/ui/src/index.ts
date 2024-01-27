@@ -6,7 +6,7 @@ export * from './lib/form-control';
 export * from './lib/markdoc-editor';
 export * from './lib/navbar';
 export * from './lib/search-result';
-export * from './lib/testing';
 export * from './lib/toast';
 export * from './lib/tooltip';
+export * from './lib/util';
 export * from './lib/view-posts';

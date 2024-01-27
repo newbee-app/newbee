@@ -15,3 +15,8 @@ export const forbiddenError =
  */
 export const unauthorizedError =
   'You must be logged in to access this resource. Please log in and try again.';
+
+/**
+ * Constant to describe a not found error.
+ */
+export const notFoundError = 'The requested route could not be found.';

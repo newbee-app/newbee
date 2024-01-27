@@ -1,7 +1,5 @@
-import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, provideRouter } from '@angular/router';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { Keyword, testUser1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -10,13 +8,12 @@ import { authenticatedGuard } from './authenticated.guard';
 describe('authenticatedGuard', () => {
   let store: MockStore;
   let router: Router;
-  let location: Location;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        EmptyComponent,
-        RouterTestingModule.withRoutes([
+      providers: [
+        provideMockStore(),
+        provideRouter([
           {
             path: `${Keyword.Auth}/${Keyword.Login}`,
             component: EmptyComponent,
@@ -32,12 +29,10 @@ describe('authenticatedGuard', () => {
           },
         ]),
       ],
-      providers: [provideMockStore()],
     });
 
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
-    location = TestBed.inject(Location);
 
     router.initialNavigation();
   });
@@ -45,7 +40,6 @@ describe('authenticatedGuard', () => {
   it('should be defined', () => {
     expect(store).toBeDefined();
     expect(router).toBeDefined();
-    expect(location).toBeDefined();
   });
 
   describe('logged in', () => {
@@ -55,7 +49,7 @@ describe('authenticatedGuard', () => {
         [Keyword.Cookie]: { csrfToken: 'token' },
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual('/test');
+      expect(router.url).toEqual('/test');
     });
   });
 
@@ -66,7 +60,7 @@ describe('authenticatedGuard', () => {
         [Keyword.Cookie]: { csrfToken: 'token' },
       });
       await expect(router.navigate(['/test'])).resolves.toBeTruthy();
-      expect(location.path()).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
+      expect(router.url).toEqual(`/${Keyword.Auth}/${Keyword.Login}`);
     });
   });
 });

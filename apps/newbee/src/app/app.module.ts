@@ -14,6 +14,7 @@ import {
   NavbarComponent,
   StoreToastComponent,
 } from '@newbee/newbee/shared/feature';
+import { NotFoundErrorComponent } from '@newbee/newbee/shared/ui';
 import { TemplateMarkerDirectiveModule } from '@newbee/newbee/shared/util';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
@@ -54,6 +55,9 @@ import { AppRoutingModule } from './routing';
 
     // eagerly loaded modules
     OrganizationModule,
+
+    // components for app router
+    NotFoundErrorComponent,
 
     // directive/component modules for `AppComponent`
     TemplateMarkerDirectiveModule,
