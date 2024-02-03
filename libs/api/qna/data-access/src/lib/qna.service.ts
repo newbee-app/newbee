@@ -169,7 +169,6 @@ export class QnaService {
       ...(team !== undefined && { team }),
       ...(maintainer !== undefined && { maintainer }),
       ...(updateTime && {
-        updatedAt: updateTime,
         markedUpToDateAt: updateTime,
         outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
       }),

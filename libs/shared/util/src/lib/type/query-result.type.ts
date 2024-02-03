@@ -1,10 +1,4 @@
-import type {
-  DocNoOrgTeam,
-  OrgMemberUser,
-  Post,
-  QnaNoOrgTeam,
-  Team,
-} from '../interface';
+import type { OrgMemberUser, Post, Team } from '../interface';
 
 /**
  * The parts of an org member that matter for a query result.
@@ -22,26 +16,44 @@ export type TeamQueryResult = Omit<Team, 'upToDateDuration'>;
 export type PostQueryResult = Omit<Post, 'upToDateDuration'>;
 
 /**
+ * All of the relations of a post.
+ */
+export type PostQueryResultRelation = {
+  /**
+   * The team the post belongs to, if any.
+   */
+  team: TeamQueryResult | null;
+
+  /**
+   * The org member who created the post.
+   */
+  creator: OrgMemberQueryResult | null;
+
+  /**
+   * The org member who maintains the doc.
+   */
+  maintainer: OrgMemberQueryResult | null;
+};
+
+/**
  * The parts of a doc that matter for a query result.
  */
-export type DocQueryResult = Omit<DocNoOrgTeam, 'doc'> & {
+export type DocQueryResult = PostQueryResultRelation & {
+  /**
+   * The doc itself.
+   */
   doc: PostQueryResult & {
     /**
      * A snippet of the doc to be displayed as a search result.
      */
     docSnippet: string;
   };
-
-  /**
-   * The team the doc belongs to, if any.
-   */
-  team: TeamQueryResult | null;
 };
 
 /**
  * The parts of a qna that matter for a query result.
  */
-export type QnaQueryResult = Omit<QnaNoOrgTeam, 'qna'> & {
+export type QnaQueryResult = PostQueryResultRelation & {
   qna: PostQueryResult & {
     /**
      * A snippet of the question to be displayed as a search result.
@@ -53,11 +65,6 @@ export type QnaQueryResult = Omit<QnaNoOrgTeam, 'qna'> & {
      */
     answerSnippet: string | null;
   };
-
-  /**
-   * The team the qna belongs to, if any.
-   */
-  team: TeamQueryResult | null;
 };
 
 /**

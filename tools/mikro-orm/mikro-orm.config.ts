@@ -1,4 +1,5 @@
 import { defineConfig } from '@mikro-orm/postgresql';
+import { SeedManager } from '@mikro-orm/seeder';
 import {
   AuthenticatorEntity,
   DocEntity,
@@ -19,6 +20,7 @@ export default defineConfig({
   dbName: process.env['POSTGRES_DB'] as string,
   user: process.env['POSTGRES_USER'] as string,
   password: process.env['POSTGRES_PASSWORD'] as string,
+  forceUtcTimezone: true,
   debug: true,
   schemaGenerator: {
     disableForeignKeys: false,
@@ -26,6 +28,7 @@ export default defineConfig({
   migrations: {
     disableForeignKeys: false,
   },
+  extensions: [SeedManager],
   entities: [
     AuthenticatorEntity,
     DocEntity,

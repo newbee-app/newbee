@@ -45,16 +45,17 @@ export class DocEntity extends PostEntity implements Doc {
   docMarkdoc: string;
 
   /**
-   * The raw markdoc converted into plain text.
-   */
-  @Property({ type: 'text' })
-  docTxt: string;
-
-  /**
    * @inheritdoc
    */
   @Property({ type: 'text' })
   docHtml: string;
+
+  /**
+   * The raw markdoc converted into plain text.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ type: 'text', hidden: true })
+  docTxt: string;
 
   constructor(
     id: string,
@@ -73,7 +74,7 @@ export class DocEntity extends PostEntity implements Doc {
 
     this.docMarkdoc = docMarkdoc;
     const content = strToContent(docMarkdoc);
-    this.docTxt = markdocTxtRenderer(content);
     this.docHtml = Markdoc.renderers.html(content);
+    this.docTxt = markdocTxtRenderer(content);
   }
 }

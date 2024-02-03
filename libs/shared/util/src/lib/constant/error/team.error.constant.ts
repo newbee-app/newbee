@@ -17,3 +17,9 @@ export const teamSlugNotFound =
  */
 export const teamSlugNotSpecifiedBadRequest =
   'You must provide a team slug as a request param.';
+
+/**
+ * Constant to say that a team slug must come with an org slug in the request params.
+ */
+export const teamWithoutOrgBadRequest =
+  'We cannot find a team if you do not specify an org to look in.';

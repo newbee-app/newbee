@@ -27,6 +27,7 @@ import {
   internalServerError,
 } from '@newbee/shared/util';
 import {
+  DocResponse,
   HighlightedFields,
   QueryResponse,
   SolrCli,
@@ -131,7 +132,9 @@ export class SearchService {
     }
 
     // Look for the type of docs that necessitate additional queries and gather the additional IDs we need to query for
-    const docs = response.docs.map((doc) => new SolrDoc(doc));
+    const docs = response.docs.map((doc) =>
+      SearchService.docResponseToSolrDoc(doc),
+    );
     const queryIds = Array.from(
       new Set(
         docs
@@ -154,9 +157,13 @@ export class SearchService {
     const idsResDocs: SolrDoc[] = [];
     if (idsRes) {
       if (idsRes.doc) {
-        idsResDocs.push(new SolrDoc(idsRes.doc));
+        idsResDocs.push(SearchService.docResponseToSolrDoc(idsRes.doc));
       } else if (idsRes.response) {
-        idsResDocs.push(...idsRes.response.docs.map((doc) => new SolrDoc(doc)));
+        idsResDocs.push(
+          ...idsRes.response.docs.map((doc) =>
+            SearchService.docResponseToSolrDoc(doc),
+          ),
+        );
       }
     }
 
@@ -166,7 +173,9 @@ export class SearchService {
         .filter((doc) => doc.entry_type === SolrEntryEnum.User)
         .map((doc) => [
           doc.id,
-          SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
+          SearchService.orgMemberSolrDocToOrgMemberQueryResult(
+            doc as OrgMemberSolrDoc,
+          ),
         ]),
     );
 
@@ -174,7 +183,10 @@ export class SearchService {
     const teamMap = new Map(
       idsResDocs
         .filter((doc) => doc.entry_type === SolrEntryEnum.Team)
-        .map((doc) => [doc.id, SearchService.handleTeam(doc as TeamSolrDoc)]),
+        .map((doc) => [
+          doc.id,
+          SearchService.teamSolrDocToTeamQueryResult(doc as TeamSolrDoc),
+        ]),
     );
 
     // Construct a map from the highlighting portion of the original response
@@ -189,17 +201,21 @@ export class SearchService {
       switch (entryType) {
         case SolrEntryEnum.User: {
           results.results.push(
-            SearchService.handleOrgMember(doc as OrgMemberSolrDoc),
+            SearchService.orgMemberSolrDocToOrgMemberQueryResult(
+              doc as OrgMemberSolrDoc,
+            ),
           );
           break;
         }
         case SolrEntryEnum.Team: {
-          results.results.push(SearchService.handleTeam(doc as TeamSolrDoc));
+          results.results.push(
+            SearchService.teamSolrDocToTeamQueryResult(doc as TeamSolrDoc),
+          );
           break;
         }
         case SolrEntryEnum.Doc: {
           results.results.push(
-            SearchService.handleDoc(
+            SearchService.docSolrDocToDocQueryResult(
               doc as DocSolrDoc,
               orgMemberMap,
               teamMap,
@@ -210,7 +226,7 @@ export class SearchService {
         }
         case SolrEntryEnum.Qna: {
           results.results.push(
-            SearchService.handleQna(
+            SearchService.qnaSolrDocToQnaQueryResult(
               doc as QnaSolrDoc,
               orgMemberMap,
               teamMap,
@@ -317,6 +333,27 @@ export class SearchService {
   }
 
   /**
+   * Converts a `DocResponse` to the relevant subtype of `SolrDoc`, depending on its type.
+   *
+   * @param doc The `DocResponse` to convert.
+   *
+   * @returns The corresponding `SolrDoc`.
+   */
+  private static docResponseToSolrDoc(doc: DocResponse): SolrDoc {
+    const type = doc[solrFields.entry_type] as SolrEntryEnum;
+    switch (type) {
+      case SolrEntryEnum.Doc:
+        return new DocSolrDoc(doc);
+      case SolrEntryEnum.Qna:
+        return new QnaSolrDoc(doc);
+      case SolrEntryEnum.Team:
+        return new TeamSolrDoc(doc);
+      case SolrEntryEnum.User:
+        return new OrgMemberSolrDoc(doc);
+    }
+  }
+
+  /**
    * A helper function that takes in a doc doc response and converts it to a `DocQueryResult`.
    *
    * @param doc The doc response to convert.
@@ -326,7 +363,7 @@ export class SearchService {
    *
    * @returns The `DocQueryResult` resulting from the doc.
    */
-  private static handleDoc(
+  private static docSolrDocToDocQueryResult(
     doc: DocSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
@@ -374,7 +411,7 @@ export class SearchService {
    *
    * @returns The `QnaQueryResult` resulting from the doc.
    */
-  private static handleQna(
+  private static qnaSolrDocToQnaQueryResult(
     doc: QnaSolrDoc,
     orgMemberMap: Map<string, OrgMemberQueryResult>,
     teamMap: Map<string, TeamQueryResult>,
@@ -423,9 +460,16 @@ export class SearchService {
    *
    * @returns The `TeamQueryResult` resulting from the doc.
    */
-  private static handleTeam(doc: TeamSolrDoc): TeamQueryResult {
-    const { slug, team_name } = doc;
-    return { slug, name: team_name };
+  private static teamSolrDocToTeamQueryResult(
+    doc: TeamSolrDoc,
+  ): TeamQueryResult {
+    const { slug, created_at, updated_at, team_name } = doc;
+    return {
+      slug,
+      createdAt: created_at,
+      updatedAt: updated_at,
+      name: team_name,
+    };
   }
 
   /**
@@ -435,9 +479,13 @@ export class SearchService {
    *
    * @returns The `OrgMemberQueryResult` resulting from the doc.
    */
-  private static handleOrgMember(doc: OrgMemberSolrDoc): OrgMemberQueryResult {
+  private static orgMemberSolrDocToOrgMemberQueryResult(
+    doc: OrgMemberSolrDoc,
+  ): OrgMemberQueryResult {
     const {
       slug,
+      created_at,
+      updated_at,
       user_email,
       user_name,
       user_display_name,
@@ -445,7 +493,12 @@ export class SearchService {
       user_org_role,
     } = doc;
     return {
-      orgMember: { slug, role: user_org_role },
+      orgMember: {
+        slug,
+        createdAt: created_at,
+        updatedAt: updated_at,
+        role: user_org_role,
+      },
       user: {
         email: user_email,
         name: user_name,

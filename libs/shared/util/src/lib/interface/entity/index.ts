@@ -1,4 +1,5 @@
 export * from './authenticator.interface';
+export * from './common-entity-fields.interface';
 export * from './doc.interface';
 export * from './org-member-invite.interface';
 export * from './org-member.interface';

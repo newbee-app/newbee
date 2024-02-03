@@ -85,8 +85,8 @@ export default (): AppConfig => ({
   },
   rpInfo: {
     name: process.env['APP_NAME'] as string,
-    id: 'localhost',
-    origin: 'http://localhost:4200',
+    id: process.env['FRONTEND_DOMAIN'] as string,
+    origin: process.env['FRONTEND_URL'] as string,
   },
   csrf: {
     generateToken,

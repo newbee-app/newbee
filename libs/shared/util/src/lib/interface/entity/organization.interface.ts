@@ -1,8 +1,10 @@
+import { CommonEntityFields } from './common-entity-fields.interface';
+
 /**
  * The information associated with an organization.
  * Stored as an entity in the backend.
  */
-export interface Organization {
+export interface Organization extends CommonEntityFields {
   /**
    * The unique name for the organization, as it will be displayed on the platform.
    */

@@ -1,5 +1,13 @@
-import { Entity, Enum, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
-import { ascTeamRoleEnum, TeamMember, TeamRoleEnum } from '@newbee/shared/util';
+import {
+  Entity,
+  Enum,
+  ManyToOne,
+  PrimaryKeyType,
+  Unique,
+} from '@mikro-orm/core';
+import { TeamMember, TeamRoleEnum, ascTeamRoleEnum } from '@newbee/shared/util';
+import { v4 } from 'uuid';
+import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
 
@@ -7,19 +15,20 @@ import { TeamEntity } from './team.entity';
  * The MikroORM entity representing the link between org members and their teams.
  */
 @Entity()
-export class TeamMemberEntity implements TeamMember {
+@Unique<TeamMemberEntity>({ properties: ['orgMember', 'team'] })
+export class TeamMemberEntity extends CommonEntity implements TeamMember {
   /**
    * The org member associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => OrgMemberEntity, { primary: true, hidden: true })
+  @ManyToOne(() => OrgMemberEntity, { hidden: true })
   orgMember: OrgMemberEntity;
 
   /**
    * The team associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
-  @ManyToOne(() => TeamEntity, { primary: true, hidden: true })
+  @ManyToOne(() => TeamEntity, { hidden: true })
   team: TeamEntity;
 
   /**
@@ -40,8 +49,10 @@ export class TeamMemberEntity implements TeamMember {
   constructor(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
-    role: TeamRoleEnum
+    role: TeamRoleEnum,
   ) {
+    super(v4());
+
     this.orgMember = orgMember;
     this.team = team;
     this.role = role;

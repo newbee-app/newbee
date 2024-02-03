@@ -52,12 +52,14 @@ export default registerAs(
     },
     magicLinkLogin: {
       secret: process.env['JWT_SECRET'] as string,
-      verifyLink: process.env['MAGIC_LINK_LOGIN_VERIFY_LINK'] as string,
+      verifyLink: `${process.env['FRONTEND_URL'] as string}/${Keyword.Auth}/${
+        Keyword.Login
+      }/${Keyword.MagicLinkLogin}`,
       name: Keyword.MagicLinkLogin,
     },
     jwtStrategy: {
       secretOrKey: process.env['JWT_SECRET'] as string,
       jwtFromRequest: (req) => req.signedCookies[authJwtCookie],
     },
-  })
+  }),
 );

@@ -4,6 +4,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   Injectable,
@@ -17,9 +18,11 @@ import {
   OrgMemberDocParams,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import type { AppConfig } from '@newbee/api/shared/util';
+import { shortenUuid, type AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
+  Keyword,
+  UserRoleEnum,
   internalServerError,
   userEmailNotFound,
   userEmailTakenBadRequest,
@@ -45,6 +48,7 @@ export class UserService {
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
+    private readonly mailerService: MailerService,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly solrCli: SolrCli,
   ) {}
@@ -81,11 +85,11 @@ export class UserService {
       displayName,
       phoneNumber,
       options.challenge,
+      UserRoleEnum.User,
       userInvites,
     );
     try {
       await this.em.persistAndFlush(user);
-      return { user, options };
     } catch (err) {
       this.logger.error(err);
 
@@ -95,6 +99,9 @@ export class UserService {
 
       throw new InternalServerErrorException(internalServerError);
     }
+
+    const emailSentUser = await this.sendVerificationEmail(user);
+    return { user: emailSentUser, options };
   }
 
   /**
@@ -229,6 +236,54 @@ export class UserService {
       }
     } catch (err) {
       this.logger.error(err);
+    }
+  }
+
+  /**
+   * Send a verification email to the given user.
+   *
+   * @param user The user to send a verification email to.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the mailer or ORM throws an error.
+   */
+  async sendVerificationEmail(user: UserEntity): Promise<UserEntity> {
+    const verifyLink = `${this.configService.get('rpInfo.origin', {
+      infer: true,
+    })}/${Keyword.User}/${Keyword.Verify}/${shortenUuid(user.id)}`;
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: 'Verify your NewBee email',
+        text: `You must verify your email to keep using NewBee. Please click the link below to verify: ${verifyLink}`,
+        html: `<p>You must verify your email to keep using NewBee. Please click the link below to verify: <a href="${verifyLink}">${verifyLink}</a></p>`,
+      });
+
+      const emailSentUser = this.em.assign(user, {
+        verifyEmailLastSentAt: new Date(),
+      });
+      await this.em.flush();
+      return emailSentUser;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * Mark the user's email as verified.
+   *
+   * @param user The user to verify.
+   *
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async verifyEmail(user: UserEntity): Promise<UserEntity> {
+    const verifiedUser = this.em.assign(user, { emailVerified: true });
+    try {
+      await this.em.flush();
+      return verifiedUser;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
     }
   }
 }

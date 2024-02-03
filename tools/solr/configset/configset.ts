@@ -322,6 +322,8 @@ async function create(options: OptionValues): Promise<void> {
 
       // Applicable for all entries
       { name: solrFields.slug, type: stringFieldType, required: true },
+      { name: solrFields.created_at, type: pdate, required: true },
+      { name: solrFields.updated_at, type: pdate, required: true },
 
       // Applicable for user
       { name: solrFields.user_email, type: stringFieldType },
@@ -339,8 +341,6 @@ async function create(options: OptionValues): Promise<void> {
 
       // Applicable for doc and qna
       { name: solrFields.team_id, type: stringFieldType },
-      { name: solrFields.created_at, type: pdate },
-      { name: solrFields.updated_at, type: pdate },
       { name: solrFields.marked_up_to_date_at, type: pdate },
       { name: solrFields.out_of_date_at, type: pdate },
       { name: solrFields.creator_id, type: stringFieldType },

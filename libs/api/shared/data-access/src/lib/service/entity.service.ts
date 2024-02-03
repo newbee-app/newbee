@@ -15,6 +15,7 @@ import type {
   OrgMemberNoUserOrg,
   OrgMemberRelation,
   OrgTeamsMembers,
+  PublicUser,
   QnaNoOrg,
   QnaQueryResult,
   TeamMemberUserOrgMember,
@@ -179,9 +180,10 @@ export class EntityService {
       return {
         organization,
         teams: organization.teams.toArray(),
-        members: organization.members
-          .getItems()
-          .map((orgMember) => ({ orgMember, user: orgMember.user })),
+        members: organization.members.getItems().map((orgMember) => ({
+          orgMember,
+          user: EntityService.createPublicUser(orgMember.user),
+        })),
       };
     } catch (err) {
       this.logger.error(err);
@@ -207,7 +209,11 @@ export class EntityService {
       await this.em.populate(orgMember, ['user']);
       const { user } = orgMember;
 
-      return { orgMember, user, ...orgMemberCollections };
+      return {
+        orgMember,
+        user: EntityService.createPublicUser(user),
+        ...orgMemberCollections,
+      };
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -300,7 +306,7 @@ export class EntityService {
         teamMembers: team.teamMembers.getItems().map((teamMember) => ({
           teamMember,
           orgMember: teamMember.orgMember,
-          user: teamMember.orgMember.user,
+          user: EntityService.createPublicUser(teamMember.orgMember.user),
         })),
       };
     } catch (err) {
@@ -330,7 +336,7 @@ export class EntityService {
     return {
       teamMember,
       orgMember: teamMember.orgMember,
-      user: teamMember.orgMember.user,
+      user: EntityService.createPublicUser(teamMember.orgMember.user),
     };
   }
 
@@ -348,11 +354,11 @@ export class EntityService {
       doc,
       creator: doc.creator && {
         orgMember: doc.creator,
-        user: doc.creator.user,
+        user: EntityService.createPublicUser(doc.creator.user),
       },
       maintainer: doc.maintainer && {
         orgMember: doc.maintainer,
-        user: doc.maintainer.user,
+        user: EntityService.createPublicUser(doc.maintainer.user),
       },
       team: doc.team,
     };
@@ -372,11 +378,11 @@ export class EntityService {
       qna,
       creator: qna.creator && {
         orgMember: qna.creator,
-        user: qna.creator.user,
+        user: EntityService.createPublicUser(qna.creator.user),
       },
       maintainer: qna.maintainer && {
         orgMember: qna.maintainer,
-        user: qna.maintainer.user,
+        user: EntityService.createPublicUser(qna.maintainer.user),
       },
       team: qna.team,
     };
@@ -694,6 +700,18 @@ export class EntityService {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
+  }
+
+  /**
+   * Converts a `UserEntity` into a `PublicUser`.
+   *
+   * @param user The user entity to convert.
+   *
+   * @returns The user entity stripped of sensistive private information.
+   */
+  static createPublicUser(user: UserEntity): PublicUser {
+    const { email, name, displayName, phoneNumber } = user;
+    return { email, name, displayName, phoneNumber };
   }
 
   // END: Misc

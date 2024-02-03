@@ -1,12 +1,23 @@
-import { OrgRoleEnum, testOrgMemberRelation1 } from '@newbee/shared/util';
+import {
+  OrgMember,
+  OrgRoleEnum,
+  testOrgMember1,
+  testOrgMemberRelation1,
+} from '@newbee/shared/util';
 import { OrgMemberActions } from './org-member.actions';
 import {
+  OrgMemberState,
   initialOrgMemberState,
   orgMemberFeature,
-  OrgMemberState,
 } from './org-member.reducer';
 
 describe('OrgMemberReducer', () => {
+  const testNewOrgMember: OrgMember = {
+    ...testOrgMember1,
+    role: OrgRoleEnum.Member,
+    slug: 'newslug',
+  };
+
   const stateAfterGetOrgMemberSuccess: OrgMemberState = {
     ...initialOrgMemberState,
     selectedOrgMember: testOrgMemberRelation1,
@@ -18,7 +29,7 @@ describe('OrgMemberReducer', () => {
         initialOrgMemberState,
         OrgMemberActions.getOrgMemberSuccess({
           orgMember: testOrgMemberRelation1,
-        })
+        }),
       );
       expect(updatedState).toEqual(stateAfterGetOrgMemberSuccess);
     });
@@ -29,13 +40,13 @@ describe('OrgMemberReducer', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterGetOrgMemberSuccess,
         OrgMemberActions.editOrgMemberSuccess({
-          orgMember: { role: OrgRoleEnum.Member, slug: 'newslug' },
-        })
+          orgMember: testNewOrgMember,
+        }),
       );
       expect(updatedState).toEqual({
         selectedOrgMember: {
           ...testOrgMemberRelation1,
-          orgMember: { role: OrgRoleEnum.Member, slug: 'newslug' },
+          orgMember: testNewOrgMember,
         },
       });
     });
@@ -43,7 +54,7 @@ describe('OrgMemberReducer', () => {
     it('should update state for deleteOrgMemberSuccess', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterGetOrgMemberSuccess,
-        OrgMemberActions.deleteOrgMemberSuccess
+        OrgMemberActions.deleteOrgMemberSuccess,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });
@@ -51,7 +62,7 @@ describe('OrgMemberReducer', () => {
     it('should update state for resetSelectedOrgMember', () => {
       const updatedState = orgMemberFeature.reducer(
         stateAfterGetOrgMemberSuccess,
-        OrgMemberActions.resetSelectedOrgMember
+        OrgMemberActions.resetSelectedOrgMember,
       );
       expect(updatedState).toEqual(initialOrgMemberState);
     });

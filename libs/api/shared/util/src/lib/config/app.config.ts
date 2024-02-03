@@ -81,12 +81,22 @@ export interface AppConfig {
  * All of the environment variables we use in NewBee, validated using the `joi` library.
  */
 export const appEnvironmentVariablesSchema = Joi.object({
+  // SMTP
+  SMTP_HOST: Joi.string().domain().required(),
+  SMTP_USERNAME: Joi.string().required(),
+  SMTP_PASSWORD: Joi.string().required(),
+  SMTP_DEFAULT_FROM: Joi.string().email().required(),
+
+  // Frontend information
+  FRONTEND_URL: Joi.string().uri().required(),
+  FRONTEND_DOMAIN: Joi.string().required(),
+
   // App information
   APP_NAME: Joi.string().required(),
 
   // PostgreSQL
-  POSTGRES_HOST: Joi.string().required(),
-  POSTGRES_PORT: Joi.number().required(),
+  POSTGRES_HOST: Joi.string().ip().required(),
+  POSTGRES_PORT: Joi.number().port().required(),
   POSTGRES_DB: Joi.string().required(),
   POSTGRES_USER: Joi.string().required(),
   POSTGRES_PASSWORD: Joi.string().required(),
@@ -97,21 +107,8 @@ export const appEnvironmentVariablesSchema = Joi.object({
   // Cookies
   COOKIE_SECRET: Joi.string().required(),
 
-  // SMTP
-  SMTP_HOST: Joi.string().required(),
-  SMTP_USERNAME: Joi.string().required(),
-  SMTP_PASSWORD: Joi.string().required(),
-  SMTP_DEFAULT_FROM: Joi.string().required(),
-
   // Solr
-  SOLR_URL: Joi.string().required(),
+  SOLR_URL: Joi.string().uri().required(),
   SOLR_USERNAME: Joi.string().required(),
   SOLR_PASSWORD: Joi.string().required(),
-
-  // AUTH: Magic Link Login Strategy
-  MAGIC_LINK_LOGIN_VERIFY_LINK: Joi.string().required(),
-
-  // ORG-MEMBER-INVITE
-  ORG_MEMBER_INVITE_ACCEPT_LINK: Joi.string().required(),
-  ORG_MEMBER_INVITE_DECLINE_LINK: Joi.string().required(),
 });

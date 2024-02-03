@@ -22,6 +22,7 @@ export enum Keyword {
 
   // user keywords
   User = 'user',
+  Verify = 'verify',
 
   // organization keywords
   Organization = 'org',

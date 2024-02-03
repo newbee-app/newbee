@@ -57,9 +57,6 @@
       "@newbee/api/org-member-invite/feature": [
         "libs/api/org-member-invite/feature/src/index.ts"
       ],
-      "@newbee/api/org-member-invite/util": [
-        "libs/api/org-member-invite/util/src/index.ts"
-      ],
       "@newbee/api/org-member/data-access": [
         "libs/api/org-member/data-access/src/index.ts"
       ],

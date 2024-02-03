@@ -27,6 +27,7 @@ import {
 import { TeamMemberModule } from '@newbee/api/team-member/feature';
 import { TeamModule } from '@newbee/api/team/feature';
 import { UserInvitesModule } from '@newbee/api/user-invites/feature';
+import { EmailVerifiedGuard } from '@newbee/api/user/data-access';
 import { UserModule } from '@newbee/api/user/feature';
 import { SolrModule } from '@newbee/nest-solr-cli';
 import { WinstonModule } from 'nest-winston';
@@ -103,6 +104,10 @@ import { default as appConfig } from '../environments/environment';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: EmailVerifiedGuard,
     },
     {
       provide: APP_GUARD,

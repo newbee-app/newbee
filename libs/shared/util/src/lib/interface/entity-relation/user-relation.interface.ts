@@ -2,16 +2,16 @@ import type { Organization, User } from '../entity';
 import { OrgMemberInviteNoUser } from './org-member-invite-relation.interface';
 
 /**
- * The User interface with relevant relationship information.
+ * The User interface with relationship information, only for the logged in user.
  */
 export interface UserRelation {
   /**
-   * The email, name, display name, and phone number of the user.
+   * The user themselves.
    */
   user: User;
 
   /**
-   * The names and slugs of the organizations the user is a part of.
+   * The organizations the user is a part of.
    */
   organizations: Organization[];
 

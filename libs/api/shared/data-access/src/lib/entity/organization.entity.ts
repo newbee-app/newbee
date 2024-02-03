@@ -1,13 +1,8 @@
-import {
-  Collection,
-  Entity,
-  OneToMany,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
 import type { Organization } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import slugify from 'slug';
+import { CommonEntity } from './common.abstract.entity';
 import { DocEntity } from './doc.entity';
 import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { OrgMemberEntity } from './org-member.entity';
@@ -19,15 +14,7 @@ import { UserEntity } from './user.entity';
  * The MikroORM entity representing an `Organization`.
  */
 @Entity()
-export class OrganizationEntity implements Organization {
-  /**
-   * The globally unique ID for the organization.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
+export class OrganizationEntity extends CommonEntity implements Organization {
   /**
    * @inheritdoc
    */
@@ -43,7 +30,7 @@ export class OrganizationEntity implements Organization {
   /**
    * @inheritdoc
    */
-  @Property()
+  @Property({ length: 50 })
   upToDateDuration: string;
 
   /**
@@ -118,7 +105,8 @@ export class OrganizationEntity implements Organization {
     upToDateDuration: string,
     creator: UserEntity,
   ) {
-    this.id = id;
+    super(id);
+
     this.name = name;
     this.slug = slugify(slug);
     this.upToDateDuration = upToDateDuration;

@@ -27,10 +27,8 @@ export class DocDocParams extends SolrDocFields implements AddDocParams {
       title,
       docTxt,
     } = doc;
-    super(id, SolrEntryEnum.Doc, slug, {
+    super(id, SolrEntryEnum.Doc, slug, createdAt, updatedAt, {
       team_id: team?.id ?? null,
-      created_at: createdAt,
-      updated_at: updatedAt,
       marked_up_to_date_at: markedUpToDateAt,
       out_of_date_at: outOfDateAt,
       creator_id: creator?.id ?? null,
@@ -66,10 +64,8 @@ export class QnaDocParams extends SolrDocFields implements AddDocParams {
       questionTxt,
       answerTxt,
     } = qna;
-    super(id, SolrEntryEnum.Qna, slug, {
+    super(id, SolrEntryEnum.Qna, slug, createdAt, updatedAt, {
       team_id: team?.id ?? null,
-      created_at: createdAt,
-      updated_at: updatedAt,
       marked_up_to_date_at: markedUpToDateAt,
       out_of_date_at: outOfDateAt,
       creator_id: creator?.id ?? null,
@@ -92,8 +88,8 @@ export class TeamDocParams extends SolrDocFields implements AddDocParams {
   [docFields: string]: DocInput;
 
   constructor(team: TeamEntity) {
-    const { id, slug, name } = team;
-    super(id, SolrEntryEnum.Team, slug, {
+    const { id, slug, createdAt, updatedAt, name } = team;
+    super(id, SolrEntryEnum.Team, slug, createdAt, updatedAt, {
       team_name: name,
     });
   }
@@ -112,9 +108,9 @@ export class OrgMemberDocParams extends SolrDocFields implements AddDocParams {
   [docFields: string]: DocInput;
 
   constructor(orgMember: OrgMemberEntity) {
-    const { id, slug, user, role } = orgMember;
+    const { id, slug, createdAt, updatedAt, user, role } = orgMember;
     const { email, name, displayName, phoneNumber } = user;
-    super(id, SolrEntryEnum.User, slug, {
+    super(id, SolrEntryEnum.User, slug, createdAt, updatedAt, {
       user_org_role: role,
       user_email: email,
       user_name: name,

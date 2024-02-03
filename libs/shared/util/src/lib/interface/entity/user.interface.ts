@@ -1,8 +1,11 @@
+import { UserRoleEnum } from '../../enum';
+import { CommonEntityFields } from './common-entity-fields.interface';
+
 /**
  * The information associated with a given user.
  * Stored as an entity in the backend.
  */
-export interface User {
+export interface User extends CommonEntityFields {
   /**
    * The globally unique email of the given user.
    */
@@ -23,4 +26,22 @@ export interface User {
    * The phone number of the given user, stored in the backend in E.164 format.
    */
   phoneNumber: string | null;
+
+  /**
+   * The user's role in the given NewBee instance.
+   */
+  role: UserRoleEnum;
+
+  /**
+   * Whether the user's email has been verified.
+   */
+  emailVerified: boolean;
 }
+
+/**
+ * The user information that is passed around to other users.
+ */
+export type PublicUser = Omit<
+  User,
+  keyof CommonEntityFields | 'role' | 'emailVerified'
+>;

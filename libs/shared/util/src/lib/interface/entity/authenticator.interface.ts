@@ -2,12 +2,13 @@ import type {
   AuthenticatorTransportFuture,
   CredentialDeviceType,
 } from '@simplewebauthn/typescript-types';
+import { CommonEntityFields } from './common-entity-fields.interface';
 
 /**
  * A device compatible for use in authentication using WebAuthn.
  * Stored as an entity in the backend.
  */
-export interface Authenticator {
+export interface Authenticator extends CommonEntityFields {
   /**
    * The globally unique ID for the authenticator.
    */

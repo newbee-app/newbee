@@ -1,14 +1,8 @@
-import {
-  Entity,
-  Enum,
-  ManyToOne,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import type { OrgMemberInvite } from '@newbee/shared/util';
-import { ascOrgRoleEnum, OrgRoleEnum } from '@newbee/shared/util';
+import { OrgRoleEnum, ascOrgRoleEnum } from '@newbee/shared/util';
+import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { UserInvitesEntity } from './user-invites.entity';
@@ -18,18 +12,24 @@ import { UserInvitesEntity } from './user-invites.entity';
  */
 @Entity()
 @Unique<OrgMemberInviteEntity>({ properties: ['organization', 'userInvites'] })
-export class OrgMemberInviteEntity implements OrgMemberInvite {
-  /**
-   * The globally unique ID for the org member invite.
-   */
-  @PrimaryKey()
-  id: string;
-
+export class OrgMemberInviteEntity
+  extends CommonEntity
+  implements OrgMemberInvite
+{
   /**
    * @inheritdoc
    */
   @Property({ unique: true })
   token: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Enum({
+    items: () => OrgRoleEnum,
+    customOrder: ascOrgRoleEnum,
+  })
+  role: OrgRoleEnum;
 
   /**
    * The organization the invitation is for.
@@ -52,22 +52,14 @@ export class OrgMemberInviteEntity implements OrgMemberInvite {
   @ManyToOne(() => OrgMemberEntity, { hidden: true })
   inviter: OrgMemberEntity;
 
-  /**
-   * @inheritdoc
-   */
-  @Enum({
-    items: () => OrgRoleEnum,
-    customOrder: ascOrgRoleEnum,
-  })
-  role: OrgRoleEnum;
-
   constructor(
     id: string,
     userInvites: UserInvitesEntity,
     inviter: OrgMemberEntity,
-    role: OrgRoleEnum
+    role: OrgRoleEnum,
   ) {
-    this.id = id;
+    super(id);
+
     this.token = shortenUuid(id);
     this.organization = inviter.organization;
     this.userInvites = userInvites;

@@ -3,18 +3,24 @@ import {
   OrgRoleEnum,
   PostRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
   anyOrgMember,
   anyTeamMember,
   atLeastOrgModerator,
   atLeastTeamModerator,
 } from '../../enum';
-import { testOrgMember1 } from '../../example';
+import { testOrgMember1, testUser1, testUser2 } from '../../example';
 import { OrgMember } from '../../interface';
 import { checkRoles } from './check-roles.function';
 
 describe('checkRoles', () => {
-  const orgMember: OrgMember = { role: OrgRoleEnum.Member, slug: 'bad' };
+  const orgMember: OrgMember = {
+    ...testOrgMember1,
+    role: OrgRoleEnum.Member,
+    slug: 'bad',
+  };
   const orgModerator: OrgMember = {
+    ...testOrgMember1,
     role: OrgRoleEnum.Moderator,
     slug: 'bad',
   };
@@ -31,6 +37,15 @@ describe('checkRoles', () => {
         ].flat(),
         {},
       ),
+    ).toBeFalsy();
+  });
+
+  it('should check user roles', () => {
+    expect(
+      checkRoles([UserRoleEnum.Admin], { userRole: testUser1.role }),
+    ).toBeTruthy();
+    expect(
+      checkRoles([UserRoleEnum.Admin], { userRole: testUser2.role }),
     ).toBeFalsy();
   });
 

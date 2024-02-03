@@ -48,9 +48,10 @@ import {
   BaseUserRelationAndOptionsDto,
   BaseWebAuthnLoginDto,
 } from '../dto';
-import { OrgRoleEnum, TeamRoleEnum } from '../enum';
+import { OrgRoleEnum, TeamRoleEnum, UserRoleEnum } from '../enum';
 import type {
   Authenticator,
+  CommonEntityFields,
   Doc,
   DocRelation,
   OffsetAndLimit,
@@ -63,6 +64,7 @@ import type {
   OrganizationRelation,
   PaginatedResults,
   Post,
+  PublicUser,
   Qna,
   QnaRelation,
   Team,
@@ -98,11 +100,21 @@ export const testNow1 = new Date();
 export const testNowDayjs1 = dayjs(testNow1);
 
 /**
+ * An example instance of CommonEntityFields.
+ * Strictly for use in testing.
+ */
+export const testCommonEntityFields1: CommonEntityFields = {
+  createdAt: testNow1,
+  updatedAt: testNow1,
+};
+
+/**
  * An example instance of Authenticator.
  * Strictly for use in testing.
  */
 export const testAuthenticator1: Authenticator = {
-  id: '1',
+  ...testCommonEntityFields1,
+  id: 'authenticator-1',
   name: 'MacBook',
   credentialId: 'Y3JlZDE', // 'cred1' with base64url encoding
   credentialPublicKey: 'Y3JlZHBrMQ', // 'credpk1' with base64url encoding
@@ -113,10 +125,10 @@ export const testAuthenticator1: Authenticator = {
 };
 
 /**
- * An example instance of User.
+ * An example instance of PublicUser.
  * Strictly for use in testing.
  */
-export const testUser1: User = {
+export const testPublicUser1: PublicUser = {
   email: 'johndoe@example.com',
   name: 'John Doe',
   displayName: 'John',
@@ -124,10 +136,10 @@ export const testUser1: User = {
 };
 
 /**
- * An example instance of User.
+ * An example instance of PublicUser.
  * Strictly for use in testing.
  */
-export const testUser2: User = {
+export const testPublicUser2: PublicUser = {
   email: 'janedoe@example.com',
   name: 'Jane Doe',
   displayName: null,
@@ -135,10 +147,33 @@ export const testUser2: User = {
 };
 
 /**
+ * An example instance of User.
+ * Strictly for use in testing.
+ */
+export const testUser1: User = {
+  ...testCommonEntityFields1,
+  ...testPublicUser1,
+  role: UserRoleEnum.Admin,
+  emailVerified: true,
+};
+
+/**
+ * An example instance of User.
+ * Strictly for use in testing.
+ */
+export const testUser2: User = {
+  ...testCommonEntityFields1,
+  ...testPublicUser2,
+  role: UserRoleEnum.User,
+  emailVerified: true,
+};
+
+/**
  * An example instance of Organization.
  * Strictly for use in testing.
  */
 export const testOrganization1: Organization = {
+  ...testCommonEntityFields1,
   name: 'NewBee',
   slug: 'newbee',
   upToDateDuration: 'P6M',
@@ -149,6 +184,7 @@ export const testOrganization1: Organization = {
  * Strictly for use in testing.
  */
 export const testOrganization2: Organization = {
+  ...testCommonEntityFields1,
   name: 'Example Org',
   slug: 'example-org',
   upToDateDuration: 'P6M',
@@ -159,6 +195,7 @@ export const testOrganization2: Organization = {
  * Strictly for use in testing.
  */
 export const testTeam1: Team = {
+  ...testCommonEntityFields1,
   name: 'Development',
   slug: 'development',
   upToDateDuration: null,
@@ -169,6 +206,7 @@ export const testTeam1: Team = {
  * Strictly for use in testing.
  */
 export const testTeam2: Team = {
+  ...testCommonEntityFields1,
   name: 'HR',
   slug: 'hr',
   upToDateDuration: 'P1Y',
@@ -179,6 +217,7 @@ export const testTeam2: Team = {
  * Strictly for use in testing.
  */
 export const testTeamMember1: TeamMember = {
+  ...testCommonEntityFields1,
   role: TeamRoleEnum.Owner,
 };
 
@@ -187,6 +226,7 @@ export const testTeamMember1: TeamMember = {
  * Strictly for use in testing.
  */
 export const testTeamMember2: TeamMember = {
+  ...testCommonEntityFields1,
   role: TeamRoleEnum.Member,
 };
 
@@ -195,6 +235,7 @@ export const testTeamMember2: TeamMember = {
  * Strictly for use in testing.
  */
 export const testOrgMember1: OrgMember = {
+  ...testCommonEntityFields1,
   role: OrgRoleEnum.Owner,
   slug: 'test-org-member-1-slug',
 };
@@ -204,6 +245,7 @@ export const testOrgMember1: OrgMember = {
  * STrictly for use in testing.
  */
 export const testOrgMember2: OrgMember = {
+  ...testCommonEntityFields1,
   role: OrgRoleEnum.Member,
   slug: 'test-org-member-2-slug',
 };
@@ -213,8 +255,7 @@ export const testOrgMember2: OrgMember = {
  * Strictly for use in testing.
  */
 export const testPost1: Post = {
-  createdAt: testNow1,
-  updatedAt: testNow1,
+  ...testCommonEntityFields1,
   markedUpToDateAt: testNow1,
   title: 'This is the title of a post',
   slug: 'test-post-1-slug',
@@ -271,6 +312,7 @@ export const testQna1: Qna = {
  * Strictly for use in testing.
  */
 export const testUserInvites1: UserInvites = {
+  ...testCommonEntityFields1,
   email: testUser1.email,
 };
 
@@ -279,6 +321,7 @@ export const testUserInvites1: UserInvites = {
  * Strictly for use in testing.
  */
 export const testOrgMemberInvite1: OrgMemberInvite = {
+  ...testCommonEntityFields1,
   token: 'token1',
   role: OrgRoleEnum.Member,
 };
@@ -348,7 +391,7 @@ export const testAuthenticationCredential1: AuthenticationResponseJSON = {
  */
 export const testOrgMemberUser1: OrgMemberUser = {
   orgMember: testOrgMember1,
-  user: testUser1,
+  user: testPublicUser1,
 };
 
 /**
@@ -357,7 +400,7 @@ export const testOrgMemberUser1: OrgMemberUser = {
  */
 export const testOrgMemberUser2: OrgMemberUser = {
   orgMember: testOrgMember2,
-  user: testUser2,
+  user: testPublicUser2,
 };
 
 /**
@@ -372,6 +415,7 @@ export const testOrgMemberQueryResult1: OrgMemberQueryResult =
  * Strictly for use in testing.
  */
 export const testTeamQueryResult1: TeamQueryResult = {
+  ...testCommonEntityFields1,
   name: testTeam1.name,
   slug: testTeam1.slug,
 };
@@ -381,6 +425,7 @@ export const testTeamQueryResult1: TeamQueryResult = {
  * Strictly for use in testing.
  */
 export const testTeamQueryResult2: TeamQueryResult = {
+  ...testCommonEntityFields1,
   name: testTeam2.name,
   slug: testTeam2.slug,
 };
@@ -483,7 +528,7 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
   team: testTeam1,
   orgMember: testOrgMember1,
   organization: testOrganization1,
-  user: testUser1,
+  user: testPublicUser1,
 };
 
 /**
@@ -495,7 +540,7 @@ export const testTeamMemberRelation2: TeamMemberRelation = {
   team: testTeam1,
   orgMember: testOrgMember2,
   organization: testOrganization1,
-  user: testUser2,
+  user: testPublicUser2,
 };
 
 /**
@@ -529,7 +574,7 @@ export const testQnaRelation1: QnaRelation = {
 export const testOrgMemberRelation1: OrgMemberRelation = {
   orgMember: testOrgMember1,
   organization: testOrganization1,
-  user: testUser1,
+  user: testPublicUser1,
   teams: [testTeamMemberRelation1],
   createdDocs: {
     results: [testDocQueryResult1],

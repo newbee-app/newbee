@@ -9,7 +9,9 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { translator } from '@newbee/api/shared/util';
-import { ascOrgRoleEnum, OrgMember, OrgRoleEnum } from '@newbee/shared/util';
+import { OrgMember, OrgRoleEnum, ascOrgRoleEnum } from '@newbee/shared/util';
+import { v4 } from 'uuid';
+import { CommonEntity } from './common.abstract.entity';
 import { DocEntity } from './doc.entity';
 import { OrganizationEntity } from './organization.entity';
 import { QnaEntity } from './qna.entity';
@@ -22,29 +24,8 @@ import { UserEntity } from './user.entity';
  */
 @Entity()
 @Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
-export class OrgMemberEntity implements OrgMember {
-  /**
-   * Gets the ID for the entity as a comma-delimited string.
-   */
-  @Property({ persist: false })
-  get id(): string {
-    return `${this.user.id},${this.organization.id}`;
-  }
-
-  /**
-   * The user associated with this entity.
-   * `hidden` is on, so it will never be serialized.
-   */
-  @ManyToOne(() => UserEntity, { primary: true, hidden: true })
-  user: UserEntity;
-
-  /**
-   * The organization associated with this entity.
-   * `hidden` is on, so it will never be serialized.
-   */
-  @ManyToOne(() => OrganizationEntity, { primary: true, hidden: true })
-  organization: OrganizationEntity;
-
+@Unique<OrgMemberEntity>({ properties: ['user', 'organization'] })
+export class OrgMemberEntity extends CommonEntity implements OrgMember {
   /**
    * @inheritdoc
    */
@@ -59,6 +40,20 @@ export class OrgMemberEntity implements OrgMember {
    */
   @Property()
   slug: string = translator.new();
+
+  /**
+   * The user associated with this entity.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @ManyToOne(() => UserEntity, { hidden: true })
+  user: UserEntity;
+
+  /**
+   * The organization associated with this entity.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @ManyToOne(() => OrganizationEntity, { hidden: true })
+  organization: OrganizationEntity;
 
   /**
    * The teams the org member is a part of along with the role the org member holds.
@@ -107,8 +102,10 @@ export class OrgMemberEntity implements OrgMember {
   constructor(
     user: UserEntity,
     organization: OrganizationEntity,
-    role: OrgRoleEnum
+    role: OrgRoleEnum,
   ) {
+    super(v4());
+
     this.user = user;
     this.organization = organization;
     this.role = role;

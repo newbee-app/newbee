@@ -45,16 +45,17 @@ export class QnaEntity extends PostEntity implements Qna {
   questionMarkdoc: string | null;
 
   /**
-   * The question markdoc converted into plain text.
-   */
-  @Property({ type: 'text', nullable: true })
-  questionTxt: string | null;
-
-  /**
    * @inheritdoc
    */
   @Property({ type: 'text', nullable: true })
   questionHtml: string | null;
+
+  /**
+   * The question markdoc converted into plain text.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ type: 'text', nullable: true, hidden: true })
+  questionTxt: string | null;
 
   /**
    * @inheritdoc
@@ -63,16 +64,17 @@ export class QnaEntity extends PostEntity implements Qna {
   answerMarkdoc: string | null;
 
   /**
-   * The answer markdoc converted into plain text.
-   */
-  @Property({ type: 'text', nullable: true })
-  answerTxt: string | null;
-
-  /**
    * @inheritdoc
    */
   @Property({ type: 'text', nullable: true })
   answerHtml: string | null;
+
+  /**
+   * The answer markdoc converted into plain text.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ type: 'text', nullable: true, hidden: true })
+  answerTxt: string | null;
 
   constructor(
     id: string,

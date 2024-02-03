@@ -59,16 +59,6 @@ export class SolrDocFields {
   readonly team_id?: string | null;
 
   /**
-   * When the post was created, if the doc is a doc or a qna.
-   */
-  readonly created_at?: Date | string;
-
-  /**
-   * When the post was last updated, if the doc is a doc or a qna.
-   */
-  readonly updated_at?: Date | string;
-
-  /**
    * When the post was last marked up-to-date, if the doc is a doc or a qna.
    */
   readonly marked_up_to_date_at?: Date | string;
@@ -127,13 +117,20 @@ export class SolrDocFields {
    * @param id The unique ID for the doc.
    * @param entry_type What type of entry the doc represents.
    * @param slug The slug associated with the doc.
+   * @param created_at When the doc was created.
+   * @param updated_at When the doc was last updated.
    * @param partials All of the optional fields of the class.
    */
   constructor(
     readonly id: string,
     readonly entry_type: SolrEntryEnum,
     readonly slug: string,
-    partials: Omit<SolrDocFields, 'id' | 'entry_type' | 'slug'>,
+    readonly created_at: Date,
+    readonly updated_at: Date,
+    partials: Omit<
+      SolrDocFields,
+      'id' | 'entry_type' | 'slug' | 'created_at' | 'updated_at'
+    >,
   ) {
     Object.assign(this, partials);
   }
@@ -187,8 +184,23 @@ export class SolrDoc extends SolrDocFields {
   override readonly answer_txt?: string;
 
   constructor(doc: DocResponse) {
-    const { id, _version_, entry_type, slug, ...restDoc } = doc;
-    super(id, entry_type as SolrEntryEnum, slug as string, restDoc);
+    const {
+      _version_,
+      id,
+      entry_type,
+      slug,
+      created_at,
+      updated_at,
+      ...restDoc
+    } = doc;
+    super(
+      id,
+      entry_type as SolrEntryEnum,
+      slug as string,
+      new Date(created_at as string),
+      new Date(updated_at as string),
+      restDoc,
+    );
     this._version_ = _version_;
   }
 }
@@ -201,16 +213,6 @@ export abstract class PostSolrDoc extends SolrDoc {
   /**
    * @inheritdoc
    */
-  override readonly created_at: Date;
-
-  /**
-   * @inheritdoc
-   */
-  override readonly updated_at: Date;
-
-  /**
-   * @inheritdoc
-   */
   override readonly marked_up_to_date_at: Date;
 
   /**
@@ -219,16 +221,8 @@ export abstract class PostSolrDoc extends SolrDoc {
   override readonly out_of_date_at: Date;
 
   constructor(doc: DocResponse) {
-    const {
-      created_at,
-      updated_at,
-      marked_up_to_date_at,
-      out_of_date_at,
-      ...restDoc
-    } = doc;
+    const { marked_up_to_date_at, out_of_date_at, ...restDoc } = doc;
     super(restDoc);
-    this.created_at = new Date(created_at as string);
-    this.updated_at = new Date(updated_at as string);
     this.marked_up_to_date_at = new Date(marked_up_to_date_at as string);
     this.out_of_date_at = new Date(out_of_date_at as string);
   }

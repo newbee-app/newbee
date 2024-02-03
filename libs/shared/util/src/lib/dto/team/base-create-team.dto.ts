@@ -1,10 +1,10 @@
-import type { Team } from '../../interface';
+import type { CommonEntityFields, Team } from '../../interface';
 
 /**
  * The DTO sent from the frontend to the backend to create a new team.
  * Suitable for use in POST requests.
  */
-export class BaseCreateTeamDto implements Team {
+export class BaseCreateTeamDto implements Omit<Team, keyof CommonEntityFields> {
   /**
    * @inheritdoc
    */

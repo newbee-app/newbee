@@ -14,6 +14,7 @@ import {
   testQna1,
   testTeam1,
   testUser1,
+  testUser2,
   testUserInvites1,
 } from '@newbee/shared/util';
 import type {
@@ -53,6 +54,16 @@ export const testUserEntity1 = {
 } as UserEntity;
 
 /**
+ * An example instance of `UserEntity`.
+ * Strictly for use in testing.
+ */
+export const testUserEntity2 = {
+  ...testUser2,
+  id: '2',
+  challenge: testChallenge1,
+} as UserEntity;
+
+/**
  * An example instance of `AuthenticatorEntity`.
  * Strictly for use in testing.
  */
@@ -77,7 +88,7 @@ export const testUserInvitesEntity1 = {
  */
 export const testOrganizationEntity1 = {
   ...testOrganization1,
-  id: 'org1',
+  id: '1',
   suggesterBuiltAt: testNow1,
 } as OrganizationEntity;
 
@@ -99,7 +110,7 @@ export const testOrgMemberEntity1 = {
   ...testOrgMember1,
   user: testUserEntity1,
   organization: testOrganizationEntity1,
-  id: `${testUserEntity1.id},${testOrganizationEntity1.id}`,
+  id: '1',
 } as OrgMemberEntity;
 
 /**
@@ -203,6 +214,8 @@ export const testDocResponse1: DocResponse = {
   _version_: BigInt(1),
   entry_type: SolrEntryEnum.Team,
   slug: testTeamEntity1.slug,
+  created_at: testTeamEntity1.createdAt.toISOString(),
+  updated_at: testTeamEntity1.updatedAt.toISOString(),
   team_name: testTeamEntity1.name,
 };
 

@@ -1,5 +1,5 @@
 import type { DocQueryResult, QnaQueryResult } from '../../type';
-import type { OrgMember, Organization, User } from '../entity';
+import type { OrgMember, Organization, PublicUser } from '../entity';
 import { PaginatedResults } from '../util';
 import type { TeamMemberAndTeam } from './team-member-relation.interface';
 
@@ -20,7 +20,7 @@ export interface OrgMemberRelation {
   /**
    * The email, name, display name, and phone number of the user the org member is attached to.
    */
-  user: User;
+  user: PublicUser;
 
   /**
    * The teams the org member is a part of, and the role they hold in each team.

@@ -3,10 +3,10 @@ import {
   Entity,
   OneToMany,
   OneToOne,
-  PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import type { UserInvites } from '@newbee/shared/util';
+import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { UserEntity } from './user.entity';
 
@@ -14,14 +14,7 @@ import { UserEntity } from './user.entity';
  * The MikroORM entity representing user invites.
  */
 @Entity()
-export class UserInvitesEntity implements UserInvites {
-  /**
-   * The globally unique ID for the user invites.
-   * `hidden` is on, so it will never be serialized.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
+export class UserInvitesEntity extends CommonEntity implements UserInvites {
   /**
    * @inheritdoc
    */
@@ -48,12 +41,13 @@ export class UserInvitesEntity implements UserInvites {
   @OneToMany(
     () => OrgMemberInviteEntity,
     (orgMemberInvite) => orgMemberInvite.userInvites,
-    { hidden: true, orphanRemoval: true }
+    { hidden: true, orphanRemoval: true },
   )
   orgMemberInvites = new Collection<OrgMemberInviteEntity>(this);
 
   constructor(id: string, email: string) {
-    this.id = id;
+    super(id);
+
     this.email = email;
   }
 }

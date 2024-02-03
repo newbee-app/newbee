@@ -12,6 +12,7 @@ import {
   Keyword,
   OrgMemberUser,
   OrgRoleEnum,
+  testOrgMember1,
   testOrgMemberUser1,
   testOrgMemberUser2,
   testOrganizationRelation1,
@@ -124,7 +125,11 @@ describe('TeamSelector', () => {
   describe('selectNonTeamOrgMembers', () => {
     it('should select all of the org members who are not in the team', () => {
       const testOrgMemberUser3: OrgMemberUser = {
-        orgMember: { slug: 'different', role: OrgRoleEnum.Member },
+        orgMember: {
+          ...testOrgMember1,
+          slug: 'different',
+          role: OrgRoleEnum.Member,
+        },
         user: testUser1,
       };
       store.setState({

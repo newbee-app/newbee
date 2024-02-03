@@ -1,9 +1,9 @@
 import type {
   Organization,
   OrgMember,
+  PublicUser,
   Team,
   TeamMember,
-  User,
 } from '../entity';
 
 /**
@@ -33,7 +33,7 @@ export interface TeamMemberRelation {
   /**
    * The email, name, display name, and phone number of the user the team member is attached to.
    */
-  user: User;
+  user: PublicUser;
 }
 
 /**

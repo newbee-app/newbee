@@ -247,7 +247,6 @@ describe('QnaService', () => {
         answerHtml,
         team: testTeamEntity1,
         maintainer: testOrgMemberEntity1,
-        updatedAt: testNow1,
         markedUpToDateAt: testNow1,
         outOfDateAt: testNowDayjs1
           .add(dayjs.duration(testBaseUpdateQnaDto1.upToDateDuration as string))

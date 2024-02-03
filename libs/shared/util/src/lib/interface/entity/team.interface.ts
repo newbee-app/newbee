@@ -1,8 +1,10 @@
+import { CommonEntityFields } from './common-entity-fields.interface';
+
 /**
  * The information associated with a team.
  * Stored as an entity in the backend.
  */
-export interface Team {
+export interface Team extends CommonEntityFields {
   /**
    * The unique name for the team, within an organization, as it will be displayed on the platform.
    */

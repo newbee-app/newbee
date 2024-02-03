@@ -2,13 +2,14 @@ import {
   Cascade,
   Collection,
   Entity,
+  Enum,
   OneToMany,
   OneToOne,
-  PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import type { User } from '@newbee/shared/util';
+import { UserRoleEnum, ascUserRoleEnum, type User } from '@newbee/shared/util';
 import { AuthenticatorEntity } from './authenticator.entity';
+import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { UserInvitesEntity } from './user-invites.entity';
 
@@ -16,15 +17,7 @@ import { UserInvitesEntity } from './user-invites.entity';
  * The MikroORM entity representing a `User`.
  */
 @Entity()
-export class UserEntity implements User {
-  /**
-   * The UUID of the given user.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
+export class UserEntity extends CommonEntity implements User {
   /**
    * @inheritdoc
    */
@@ -46,19 +39,38 @@ export class UserEntity implements User {
   /**
    * @inheritdoc
    */
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 50 })
   phoneNumber: string | null;
 
   /**
-   * The challenge associated with the given user.
+   * @inheritdoc
+   */
+  @Enum({ items: () => UserRoleEnum, customOrder: ascUserRoleEnum })
+  role: UserRoleEnum;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'boolean' })
+  emailVerified = false;
+
+  /**
+   * When the user verification email was last sent.
    * Acts as a hidden property, meaning it will never be serialized.
    */
-  @Property({ nullable: true })
+  @Property({ type: 'datetime', nullable: true, hidden: true })
+  verifyEmailLastSentAt: Date | null = null;
+
+  /**
+   * The challenge associated with the given user.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ nullable: true, hidden: true })
   challenge: string | null;
 
   /**
    * The `UserInvitesEntity` associated with the given user.
-   * Acts as a hidden property, meaning it will never be serialized.
+   * `hidden` is on, so it will never be serialized.
    * All actions are cascaded, so if the user is deleted, so is its assocaited invites.
    */
   @OneToOne(() => UserInvitesEntity, (userInvite) => userInvite.user, {
@@ -98,14 +110,17 @@ export class UserEntity implements User {
     displayName: string | null,
     phoneNumber: string | null,
     challenge: string | null,
+    role: UserRoleEnum,
     invites: UserInvitesEntity,
   ) {
-    this.id = id;
+    super(id);
+
     this.email = email.toLowerCase();
     this.name = name;
     this.displayName = displayName;
     this.phoneNumber = phoneNumber;
     this.challenge = challenge;
+    this.role = role;
     this.invites = invites;
   }
 }

@@ -13,7 +13,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppOrgMemberInviteConfig } from '@newbee/api/org-member-invite/util';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   EntityService,
@@ -22,10 +21,11 @@ import {
   OrganizationEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { elongateUuid, shortenUuid } from '@newbee/api/shared/util';
+import { AppConfig, elongateUuid, shortenUuid } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
+  Keyword,
   OrgRoleEnum,
   forbiddenError,
   internalServerError,
@@ -52,10 +52,7 @@ export class OrgMemberInviteService {
     private readonly userInvitesService: UserInvitesService,
     private readonly orgMemberService: OrgMemberService,
     private readonly mailerService: MailerService,
-    private readonly configService: ConfigService<
-      AppOrgMemberInviteConfig,
-      true
-    >,
+    private readonly configService: ConfigService<AppConfig, true>,
   ) {}
 
   /**
@@ -93,13 +90,13 @@ export class OrgMemberInviteService {
     );
 
     const acceptLink =
-      this.configService.get('orgMemberInvite.acceptLink', {
+      this.configService.get('rpInfo.origin', {
         infer: true,
-      }) + `/${token}`;
+      }) + `/${Keyword.Invite}/${Keyword.Accept}/${token}`;
     const declineLink =
-      this.configService.get('orgMemberInvite.declineLink', {
+      this.configService.get('rpInfo.origin', {
         infer: true,
-      }) + `/${token}`;
+      }) + `/${Keyword.Invite}/${Keyword.Decline}/${token}`;
 
     try {
       await this.em.persistAndFlush(orgMemberInvite);

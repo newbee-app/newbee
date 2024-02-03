@@ -1,23 +1,18 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import type { Authenticator } from '@newbee/shared/util';
 import type {
   AuthenticatorTransportFuture,
   CredentialDeviceType,
 } from '@simplewebauthn/typescript-types';
 import { v4 } from 'uuid';
+import { CommonEntity } from './common.abstract.entity';
 import { UserEntity } from './user.entity';
 
 /**
  * The MikroORM entity representing a WebAuthn `Authenticator`.
  */
 @Entity()
-export class AuthenticatorEntity implements Authenticator {
-  /**
-   * @inheritdoc
-   */
-  @PrimaryKey()
-  id: string = v4();
-
+export class AuthenticatorEntity extends CommonEntity implements Authenticator {
   /**
    * @inheritdoc
    */
@@ -62,7 +57,7 @@ export class AuthenticatorEntity implements Authenticator {
 
   /**
    * The `UserEntity` associated with the given authenticator.
-   * Acts as a hidden property, meaning it will never be serialized.
+   * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => UserEntity, {
     hidden: true,
@@ -76,8 +71,10 @@ export class AuthenticatorEntity implements Authenticator {
     credentialDeviceType: CredentialDeviceType,
     credentialBackedUp: boolean,
     transports: AuthenticatorTransportFuture[] | null,
-    user: UserEntity
+    user: UserEntity,
   ) {
+    super(v4());
+
     this.credentialId = credentialId;
     this.credentialPublicKey = credentialPublicKey;
     this.counter = counter;

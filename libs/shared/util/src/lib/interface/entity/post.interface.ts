@@ -1,19 +1,11 @@
+import { CommonEntityFields } from './common-entity-fields.interface';
+
 /**
  * The information associated with a post.
  * A post can be either a doc or a QnA.
  * Stored as an abstract entity in the backend.
  */
-export interface Post {
-  /**
-   * The DateTime or datetime string when the post was created.
-   */
-  createdAt: Date | string;
-
-  /**
-   * The DateTime or datetime string when the post was last updated.
-   */
-  updatedAt: Date | string;
-
+export interface Post extends CommonEntityFields {
   /**
    * The DateTime or datetime string when the post was last marked up-to-date.
    */

@@ -1,7 +1,8 @@
-import { Entity, Index, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import { type Post } from '@newbee/shared/util';
 import dayjs from 'dayjs';
+import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { TeamEntity } from './team.entity';
@@ -12,27 +13,7 @@ import { TeamEntity } from './team.entity';
  */
 @Entity({ abstract: true })
 @Unique<PostEntity>({ properties: ['slug', 'organization'] })
-export abstract class PostEntity implements Post {
-  /**
-   * The globally unique ID for the post.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
-  /**
-   * @inheritdoc
-   */
-  @Property()
-  createdAt: Date = new Date();
-
-  /**
-   * @inheritdoc
-   */
-  @Property()
-  updatedAt: Date = this.createdAt;
-
+export abstract class PostEntity extends CommonEntity implements Post {
   /**
    * @inheritdoc
    */
@@ -55,7 +36,7 @@ export abstract class PostEntity implements Post {
   /**
    * @inheritdoc
    */
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 50 })
   @Index()
   upToDateDuration: string | null;
 
@@ -100,11 +81,12 @@ export abstract class PostEntity implements Post {
     team: TeamEntity | null,
     creator: OrgMemberEntity,
   ) {
-    this.id = id;
+    super(id);
+
     this.title = title;
     this.slug = shortenUuid(id);
     this.upToDateDuration = upToDateDuration;
-    this.outOfDateAt = dayjs(new Date())
+    this.outOfDateAt = dayjs(this.createdAt)
       .add(
         dayjs.duration(
           upToDateDuration ??

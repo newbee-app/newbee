@@ -1,10 +1,12 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DocService } from '@newbee/api/doc/data-access';
@@ -14,10 +16,12 @@ import { QnaService } from '@newbee/api/qna/data-access';
 import {
   DocEntity,
   OrgMemberEntity,
+  OrganizationEntity,
   PostEntity,
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
+  UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
   ROLE_KEY,
@@ -36,13 +40,16 @@ import {
   Keyword,
   RoleType,
   checkRoles,
+  docWithoutOrgBadRequest,
   internalServerError,
+  qnaWithoutOrgBadRequest,
+  teamWithoutOrgBadRequest,
+  unauthorizedError,
 } from '@newbee/shared/util';
 
 /**
  * A guard that prevents users from accessing endpoints annotated with role metadata unless they possess the required roles.
  *
- * This guard should only deal with data we can obtain from the route params.
  * Data stored in DTOs (from the request's query or body) should be dealt with within the route itself.
  */
 @Injectable()
@@ -74,57 +81,74 @@ export class RoleGuard implements CanActivate {
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get all of the roles annotated at the endpoint
-    const roles = this.reflector.get<RoleType[] | undefined>(
+    const roles = this.reflector.getAllAndOverride<RoleType[] | undefined>(
       ROLE_KEY,
-      context.getHandler(),
+      [context.getHandler(), context.getClass()],
     );
 
+    // Get the request object, its params, and the user making the request
     const request = context.switchToHttp().getRequest();
-    const { params, user } = request;
-    const orgSlug: string | undefined = params[Keyword.Organization];
+    const params: Record<string, string | undefined> = request.params;
+    const user: UserEntity | undefined = request.user;
 
-    // Fail if org slug wasn't specified but roles were
-    // Pass if both org slug and roles weren't specified
-    if (!orgSlug) {
-      return !roles;
+    // It's not possible for the user to have roles if they're not logged in!
+    if (roles && !user) {
+      throw new UnauthorizedException(unauthorizedError);
     }
 
+    // Get all of the slugs we know to look for in the request's params
+    const orgSlug: string | undefined = params[Keyword.Organization];
     const teamSlug: string | undefined = params[Keyword.Team];
     const orgMemberSlug: string | undefined = params[Keyword.Member];
     const docSlug: string | undefined = params[Keyword.Doc];
     const qnaSlug: string | undefined = params[Keyword.Qna];
 
-    // Fill in info about the org and the requester's role within it
-    const organization = await this.organizationService.findOneBySlug(orgSlug);
-    request[organizationKey] = organization;
-    const orgMember = await this.orgMemberService.findOneByUserAndOrg(
-      user,
-      organization,
-    );
-    request[orgMemberKey] = orgMember;
-
-    // Fill in info about the subject org member
+    // Fill in info about the org, the requester's role within it, and the subject org member
+    let organization: OrganizationEntity | null = null;
+    let orgMember: OrgMemberEntity | null = null;
     let subjectOrgMember: OrgMemberEntity | null = null;
-    if (orgMemberSlug) {
-      subjectOrgMember = await this.orgMemberService.findOneByOrgAndSlug(
-        organization,
-        orgMemberSlug,
-      );
-      request[subjectOrgMemberKey] = subjectOrgMember;
+    if (orgSlug) {
+      organization = await this.organizationService.findOneBySlug(orgSlug);
+      request[organizationKey] = organization;
+
+      orgMember = user
+        ? await this.orgMemberService.findOneByUserAndOrgOrNull(
+            user,
+            organization,
+          )
+        : null;
+      if (orgMember) {
+        request[orgMemberKey] = orgMember;
+      }
+
+      if (orgMemberSlug) {
+        subjectOrgMember = await this.orgMemberService.findOneByOrgAndSlug(
+          organization,
+          orgMemberSlug,
+        );
+        request[subjectOrgMemberKey] = subjectOrgMember;
+      }
+    }
+
+    // It should not be possible to request a team without an org
+    if (teamSlug && !organization) {
+      throw new BadRequestException(teamWithoutOrgBadRequest);
     }
 
     // Fill in info about the team, the requester's role within it, and the subject team member
     let team: TeamEntity | null = null;
     let teamMember: TeamMemberEntity | null = null;
     let subjectTeamMember: TeamMemberEntity | null = null;
-    if (teamSlug) {
+    if (teamSlug && organization) {
       team = await this.teamService.findOneBySlug(organization, teamSlug);
       request[teamKey] = team;
 
-      teamMember = await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
-        orgMember,
-        team,
-      );
+      teamMember = orgMember
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null;
       if (teamMember) {
         request[teamMemberKey] = teamMember;
       }
@@ -139,16 +163,22 @@ export class RoleGuard implements CanActivate {
       }
     }
 
+    // It should not be possible to request a doc without an org
+    if (docSlug && !organization) {
+      throw new BadRequestException(docWithoutOrgBadRequest);
+    }
+
     // Fill in info about the doc
     // Now that we're down to the post-level, check if the post has the permissions to pass
     let doc: DocEntity | null = null;
     let docPasses: boolean | null = null;
-    if (docSlug) {
+    if (docSlug && organization) {
       doc = await this.docService.findOneBySlug(docSlug);
       request[docKey] = doc;
       docPasses = await this.checkPostRoles(
         roles ?? [],
         doc,
+        user,
         orgMember,
         teamMember,
         subjectOrgMember,
@@ -157,16 +187,22 @@ export class RoleGuard implements CanActivate {
       );
     }
 
+    // It should not be possible to request a qna without an org
+    if (qnaSlug && !organization) {
+      throw new BadRequestException(qnaWithoutOrgBadRequest);
+    }
+
     // Fill in info about the qna
     // Now that we're down to the post-level, check if the post has the permissions to pass
     let qna: QnaEntity | null = null;
     let qnaPasses: boolean | null = null;
-    if (qnaSlug) {
+    if (qnaSlug && organization) {
       qna = await this.qnaService.findOneBySlug(qnaSlug);
       request[qnaKey] = qna;
       qnaPasses = await this.checkPostRoles(
         roles ?? [],
         qna,
+        user,
         orgMember,
         teamMember,
         subjectOrgMember,
@@ -183,6 +219,7 @@ export class RoleGuard implements CanActivate {
         ((docPasses === null &&
           qnaPasses === null &&
           checkRoles(roles, {
+            userRole: user?.role,
             orgMember,
             teamRole: teamMember?.role,
             subjectOrgRole: subjectOrgMember?.role,
@@ -211,11 +248,12 @@ export class RoleGuard implements CanActivate {
   async checkPostRoles(
     roles: RoleType[],
     post: PostEntity,
-    orgMember: OrgMemberEntity,
-    teamMember: TeamMemberEntity | null,
-    subjectOrgMember: OrgMemberEntity | null,
-    subjectTeamMember: TeamMemberEntity | null,
-    team: TeamEntity | null,
+    user: UserEntity | null | undefined,
+    orgMember: OrgMemberEntity | null | undefined,
+    teamMember: TeamMemberEntity | null | undefined,
+    subjectOrgMember: OrgMemberEntity | null | undefined,
+    subjectTeamMember: TeamMemberEntity | null | undefined,
+    team: TeamEntity | null | undefined,
   ): Promise<boolean> {
     try {
       await this.em.populate(post, ['team', 'creator', 'maintainer']);
@@ -225,15 +263,17 @@ export class RoleGuard implements CanActivate {
     }
 
     const { team: postTeam, creator, maintainer } = post;
-    const postTeamMember = team
-      ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
-          orgMember,
-          team,
-        )
-      : null;
+    const postTeamMember =
+      team && orgMember
+        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+            orgMember,
+            team,
+          )
+        : null;
 
     return (
       checkRoles(roles, {
+        userRole: user?.role,
         orgMember,
         teamRole: teamMember?.role,
         subjectOrgRole: subjectOrgMember?.role,
@@ -243,6 +283,7 @@ export class RoleGuard implements CanActivate {
         postMaintainer: maintainer,
       }) &&
       checkRoles(roles, {
+        userRole: user?.role,
         orgMember,
         teamRole: postTeamMember?.role,
         subjectOrgRole: subjectOrgMember?.role,

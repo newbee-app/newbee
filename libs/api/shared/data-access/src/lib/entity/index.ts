@@ -1,4 +1,5 @@
 export * from './authenticator.entity';
+export * from './common.abstract.entity';
 export * from './doc.entity';
 export * from './org-member-invite.entity';
 export * from './org-member.entity';

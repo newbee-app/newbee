@@ -1,6 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { ExecutionContext } from '@nestjs/common';
+import {
+  BadRequestException,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { DocService } from '@newbee/api/doc/data-access';
@@ -13,19 +17,20 @@ import {
   QnaEntity,
   TeamMemberEntity,
   testDocEntity1,
-  testOrganizationEntity1,
   testOrgMemberEntity1,
+  testOrganizationEntity1,
   testQnaEntity1,
   testTeamEntity1,
   testTeamMemberEntity1,
   testUserEntity1,
+  testUserEntity2,
 } from '@newbee/api/shared/data-access';
 import {
-  docKey,
-  organizationKey,
-  orgMemberKey,
-  qnaKey,
   ROLE_KEY,
+  docKey,
+  orgMemberKey,
+  organizationKey,
+  qnaKey,
   subjectOrgMemberKey,
   subjectTeamMemberKey,
   teamKey,
@@ -39,6 +44,11 @@ import {
   OrgRoleEnum,
   PostRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
+  docWithoutOrgBadRequest,
+  qnaWithoutOrgBadRequest,
+  teamWithoutOrgBadRequest,
+  unauthorizedError,
 } from '@newbee/shared/util';
 import { RoleGuard } from './role.guard';
 
@@ -64,14 +74,16 @@ describe('RoleGuard', () => {
 
   beforeEach(() => {
     reflector = createMock<Reflector>({
-      get: jest.fn().mockReturnValue([]),
+      getAllAndOverride: jest.fn().mockReturnValue([]),
     });
     em = createMock<EntityManager>();
     organizationService = createMock<OrganizationService>({
       findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
     });
     orgMemberService = createMock<OrgMemberService>({
-      findOneByUserAndOrg: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+      findOneByUserAndOrgOrNull: jest
+        .fn()
+        .mockResolvedValue(testOrgMemberEntity1),
       findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
     });
     teamService = createMock<TeamService>({
@@ -135,27 +147,69 @@ describe('RoleGuard', () => {
     expect(context).toBeDefined();
   });
 
-  describe('preliminary checks', () => {
+  describe('error checks', () => {
     afterEach(() => {
-      expect(reflector.get).toHaveBeenCalledTimes(1);
-      expect(reflector.get).toHaveBeenCalledWith(
-        ROLE_KEY,
+      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(1);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(ROLE_KEY, [
         context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(context.switchToHttp().getRequest).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an UnauthorizedException if roles are specified and user is not', async () => {
+      jest
+        .spyOn(context.switchToHttp(), 'getRequest')
+        .mockReturnValue({ params: {} });
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        new UnauthorizedException(unauthorizedError),
       );
     });
 
-    it('should return true if roles were never specified and org is not a route parameter', async () => {
-      jest.spyOn(reflector, 'get').mockReturnValue(undefined);
-      jest
-        .spyOn(context.switchToHttp(), 'getRequest')
-        .mockReturnValue({ params: {} });
-      await expect(guard.canActivate(context)).resolves.toBeTruthy();
+    it('should throw a BadRequestException if team slug is specified and org is not', async () => {
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { [Keyword.Team]: testTeamEntity1.slug },
+      });
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        new BadRequestException(teamWithoutOrgBadRequest),
+      );
     });
 
-    it('should return false if roles were specified and org is not a route parameter', async () => {
+    it('should throw a BadRequestException if doc slug is specified and org is not', async () => {
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { [Keyword.Doc]: testDocEntity1.slug },
+      });
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        new BadRequestException(docWithoutOrgBadRequest),
+      );
+    });
+
+    it('should throw a BadRequestException if qna slug is specified and org is not', async () => {
+      jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
+        ...baseRequest,
+        params: { [Keyword.Qna]: testQnaEntity1.slug },
+      });
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        new BadRequestException(qnaWithoutOrgBadRequest),
+      );
+    });
+  });
+
+  describe('user checks', () => {
+    it(`should return true if roles contains user's role`, async () => {
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([UserRoleEnum.Admin]);
       jest
         .spyOn(context.switchToHttp(), 'getRequest')
-        .mockReturnValue({ params: {} });
+        .mockReturnValue({ ...baseRequest, params: {} });
+      await expect(guard.canActivate(context)).resolves.toBeTruthy();
+
+      jest
+        .spyOn(context.switchToHttp(), 'getRequest')
+        .mockReturnValue({ [Keyword.User]: testUserEntity2, params: {} });
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
   });
@@ -177,32 +231,36 @@ describe('RoleGuard', () => {
       expect(context.switchToHttp().getRequest()[organizationKey]).toEqual(
         testOrganizationEntity1,
       );
-
-      expect(orgMemberService.findOneByUserAndOrg).toHaveBeenCalledWith(
+      expect(orgMemberService.findOneByUserAndOrgOrNull).toHaveBeenCalledWith(
         testUserEntity1,
         testOrganizationEntity1,
       );
     });
 
     it(`should return true if roles contains org member's role`, async () => {
-      jest.spyOn(reflector, 'get').mockReturnValue([OrgRoleEnum.Owner]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([OrgRoleEnum.Owner]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
         testOrgMemberEntity1,
       );
 
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
         .mockResolvedValue(moderator);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
+      expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
+        moderator,
+      );
     });
 
     it('should account for OrgMemberIfNoTeam', async () => {
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
         .mockResolvedValue(member);
       jest
-        .spyOn(reflector, 'get')
+        .spyOn(reflector, 'getAllAndOverride')
         .mockReturnValue([ConditionalRoleEnum.OrgMemberIfNoTeam]);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
@@ -219,23 +277,23 @@ describe('RoleGuard', () => {
 
       jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
         ...baseRequest,
-        params: { ...baseParams, [Keyword.Qna]: testQnaEntity1.slug },
+        params: { ...baseParams, [Keyword.Doc]: testDocEntity1.slug },
       });
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
       jest.spyOn(context.switchToHttp(), 'getRequest').mockReturnValue({
         ...baseRequest,
-        params: { ...baseParams, [Keyword.Doc]: testDocEntity1.slug },
+        params: { ...baseParams, [Keyword.Qna]: testQnaEntity1.slug },
       });
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
 
     it('should account for OrgRoleGteSubject', async () => {
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrg')
+        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
         .mockResolvedValue(moderator);
       jest
-        .spyOn(reflector, 'get')
+        .spyOn(reflector, 'getAllAndOverride')
         .mockReturnValue([
           OrgRoleEnum.Moderator,
           OrgRoleEnum.Owner,
@@ -269,7 +327,7 @@ describe('RoleGuard', () => {
 
     beforeEach(() => {
       jest
-        .spyOn(reflector, 'get')
+        .spyOn(reflector, 'getAllAndOverride')
         .mockReturnValue([TeamRoleEnum.Moderator, TeamRoleEnum.Owner]);
     });
 
@@ -327,7 +385,7 @@ describe('RoleGuard', () => {
 
     it('should account for TeamRoleGteSubject', async () => {
       jest
-        .spyOn(reflector, 'get')
+        .spyOn(reflector, 'getAllAndOverride')
         .mockReturnValue([
           TeamRoleEnum.Moderator,
           TeamRoleEnum.Owner,
@@ -370,7 +428,9 @@ describe('RoleGuard', () => {
     });
 
     it('should return true if roles contains post role', async () => {
-      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[docKey]).toEqual(
         testDocEntity1,
@@ -382,7 +442,9 @@ describe('RoleGuard', () => {
       } as DocEntity);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Creator]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([PostRoleEnum.Creator]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
 
       jest
@@ -411,7 +473,9 @@ describe('RoleGuard', () => {
     });
 
     it('should return true if roles contains post role', async () => {
-      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Maintainer]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([PostRoleEnum.Maintainer]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[qnaKey]).toEqual(
         testQnaEntity1,
@@ -423,7 +487,9 @@ describe('RoleGuard', () => {
       } as QnaEntity);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
-      jest.spyOn(reflector, 'get').mockReturnValue([PostRoleEnum.Creator]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([PostRoleEnum.Creator]);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
 
       jest

@@ -3,13 +3,20 @@ import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { internalServerError, testOffsetAndLimit1 } from '@newbee/shared/util';
+import {
+  internalServerError,
+  testOffsetAndLimit1,
+  testPublicUser1,
+  testPublicUser2,
+} from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { DocEntity } from '../entity';
 import {
   testDocEntity1,
   testOrganizationEntity1,
   testTeamEntity1,
+  testUserEntity1,
+  testUserEntity2,
 } from '../example';
 import { EntityService } from './entity.service';
 
@@ -139,6 +146,17 @@ describe('EntityService', () => {
           ),
         ).resolves.toEqual([[testDocEntity1], 1]);
       });
+    });
+  });
+
+  describe('createPublicUser', () => {
+    it('should convert user entity into public user', () => {
+      expect(EntityService.createPublicUser(testUserEntity1)).toEqual(
+        testPublicUser1,
+      );
+      expect(EntityService.createPublicUser(testUserEntity2)).toEqual(
+        testPublicUser2,
+      );
     });
   });
 });

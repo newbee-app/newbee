@@ -1,4 +1,5 @@
 import {
+  Team,
   testBaseTeamAndMemberDto1,
   testOrgMember1,
   testTeam1,
@@ -12,6 +13,13 @@ import { TeamActions } from './team.actions';
 import { TeamState, initialTeamState, teamFeature } from './team.reducer';
 
 describe('TeamReducer', () => {
+  const testNewTeam: Team = {
+    ...testTeam1,
+    name: 'New name',
+    slug: 'new-slug',
+    upToDateDuration: 'P1Y',
+  };
+
   const stateAfterGetTeamSuccess: TeamState = {
     ...initialTeamState,
     selectedTeam: testTeamRelation1,
@@ -21,7 +29,7 @@ describe('TeamReducer', () => {
     ...stateAfterGetTeamSuccess,
     selectedTeam: {
       ...testTeamRelation1,
-      team: { name: 'New name', slug: 'new-slug', upToDateDuration: 'P1Y' },
+      team: testNewTeam,
     },
   };
 
@@ -43,11 +51,7 @@ describe('TeamReducer', () => {
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSuccess({
           oldSlug: testTeam1.slug,
-          newTeam: {
-            name: 'New name',
-            slug: 'new-slug',
-            upToDateDuration: 'P1Y',
-          },
+          newTeam: testNewTeam,
         }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamSuccess);
@@ -58,11 +62,7 @@ describe('TeamReducer', () => {
         stateAfterGetTeamSuccess,
         TeamActions.editTeamSlugSuccess({
           oldSlug: testTeam1.slug,
-          newTeam: {
-            name: 'New name',
-            slug: 'new-slug',
-            upToDateDuration: 'P1Y',
-          },
+          newTeam: testNewTeam,
         }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamSuccess);

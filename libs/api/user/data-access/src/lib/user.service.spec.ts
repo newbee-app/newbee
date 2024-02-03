@@ -5,6 +5,7 @@ import {
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -19,11 +20,14 @@ import {
   testUserEntity1,
   testUserInvitesEntity1,
 } from '@newbee/api/shared/data-access';
+import { shortenUuid } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
+  Keyword,
   internalServerError,
   testBaseCreateUserDto1,
   testBaseUpdateUserDto1,
+  testNow1,
   testPublicKeyCredentialCreationOptions1,
   userEmailNotFound,
   userEmailTakenBadRequest,
@@ -60,6 +64,8 @@ describe('UserService', () => {
   let em: EntityManager;
   let entityService: EntityService;
   let userInvitesService: UserInvitesService;
+  let mailerService: MailerService;
+  let configService: ConfigService;
 
   const testUserEntity = createMock<UserEntity>({
     ...testUserEntity1,
@@ -96,6 +102,10 @@ describe('UserService', () => {
           }),
         },
         {
+          provide: MailerService,
+          useValue: createMock<MailerService>(),
+        },
+        {
           provide: ConfigService,
           useValue: createMock<ConfigService>(),
         },
@@ -110,11 +120,15 @@ describe('UserService', () => {
     em = module.get<EntityManager>(EntityManager);
     entityService = module.get<EntityService>(EntityService);
     userInvitesService = module.get<UserInvitesService>(UserInvitesService);
+    mailerService = module.get<MailerService>(MailerService);
+    configService = module.get<ConfigService>(ConfigService);
 
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockReturnValue(testUserAndOptions.options);
     mockV4.mockReturnValue(testUserEntity.id);
     mockUserEntity.mockReturnValue(testUserEntity);
+
+    jest.useFakeTimers().setSystemTime(testNow1);
   });
 
   it('should be defined', () => {
@@ -122,9 +136,17 @@ describe('UserService', () => {
     expect(em).toBeDefined();
     expect(entityService).toBeDefined();
     expect(userInvitesService).toBeDefined();
+    expect(mailerService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('create', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(service, 'sendVerificationEmail')
+        .mockResolvedValue(testUserEntity);
+    });
+
     afterEach(() => {
       expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledTimes(
         1,
@@ -140,6 +162,10 @@ describe('UserService', () => {
     it('should create a user', async () => {
       await expect(service.create(testBaseCreateUserDto1)).resolves.toEqual(
         testUserAndOptions,
+      );
+      expect(service.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      expect(service.sendVerificationEmail).toHaveBeenCalledWith(
+        testUserEntity,
       );
     });
 
@@ -305,6 +331,75 @@ describe('UserService', () => {
         .spyOn(em, 'removeAndFlush')
         .mockRejectedValue(new Error('removeAndFlush'));
       await expect(service.delete(testUserEntity)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
+    });
+  });
+
+  describe('sendVerificationEmail', () => {
+    beforeEach(() => {
+      jest.spyOn(configService, 'get').mockReturnValue('http://localhost:4200');
+    });
+
+    afterEach(() => {
+      const verifyLink = `http://localhost:4200/${Keyword.User}/${
+        Keyword.Verify
+      }/${shortenUuid(testUserEntity.id)}`;
+      expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
+      expect(mailerService.sendMail).toHaveBeenCalledWith({
+        to: testUserEntity.email,
+        subject: 'Verify your NewBee email',
+        text: `You must verify your email to keep using NewBee. Please click the link below to verify: ${verifyLink}`,
+        html: `<p>You must verify your email to keep using NewBee. Please click the link below to verify: <a href="${verifyLink}">${verifyLink}</a></p>`,
+      });
+    });
+
+    it('should send email', async () => {
+      await expect(
+        service.sendVerificationEmail(testUserEntity),
+      ).resolves.toEqual(testUpdatedUser);
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testUserEntity, {
+        verifyEmailLastSentAt: testNow1,
+      });
+      expect(em.flush).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an InternalServerErrorException if sendMail throws an error', async () => {
+      jest
+        .spyOn(mailerService, 'sendMail')
+        .mockRejectedValue(new Error('sendMail'));
+      await expect(
+        service.sendVerificationEmail(testUserEntity),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
+      await expect(
+        service.sendVerificationEmail(testUserEntity),
+      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('verifyEmail', () => {
+    afterEach(() => {
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testUserEntity, {
+        emailVerified: true,
+      });
+      expect(em.flush).toHaveBeenCalledTimes(1);
+    });
+
+    it('should mark the user as having a verified email', async () => {
+      await expect(service.verifyEmail(testUserEntity)).resolves.toEqual(
+        testUpdatedUser,
+      );
+    });
+
+    it('should throw an InternalServerErrorException if flush throws an error', async () => {
+      jest.spyOn(em, 'flush').mockRejectedValue('flush');
+      await expect(service.verifyEmail(testUserEntity)).rejects.toThrow(
         new InternalServerErrorException(internalServerError),
       );
     });

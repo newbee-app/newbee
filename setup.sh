@@ -46,6 +46,10 @@ SMTP_USERNAME='CHANGE_ME'
 SMTP_PASSWORD='CHANGE_ME'
 SMTP_DEFAULT_FROM='CHANGE_ME'
 
+# TODO: Variables you MIGHT need to change
+FRONTEND_URL='http://localhost:4200'
+FRONTEND_DOMAIN='localhost'
+
 APP_NAME='NewBee'
 
 POSTGRES_HOST='127.0.0.1'
@@ -66,11 +70,6 @@ SOLR_URL='http://localhost:8983'
 SOLR_USERNAME='newbee'
 SOLR_PASSWORD='$solr_pw'
 SOLR_FORMAT_PASSWORD='$solr_format_pw'
-
-MAGIC_LINK_LOGIN_VERIFY_LINK='http://localhost:4200/auth/login/magic-link-login'
-
-ORG_MEMBER_INVITE_ACCEPT_LINK='http://localhost:4200/invite/accept'
-ORG_MEMBER_INVITE_DECLINE_LINK='http://localhost:4200/invite/reject'
 END
   )
   echo "$env_file" >.env

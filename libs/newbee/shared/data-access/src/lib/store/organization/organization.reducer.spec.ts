@@ -22,13 +22,14 @@ import {
   organizationFeature,
 } from './organization.reducer';
 
-const testNewTeam: Team = {
-  name: 'NewWasp',
-  slug: 'new-wasp',
-  upToDateDuration: null,
-};
-
 describe('OrganizationReducer', () => {
+  const testNewTeam: Team = {
+    ...testTeam1,
+    name: 'NewWasp',
+    slug: 'new-wasp',
+    upToDateDuration: null,
+  };
+
   const stateAfterLoginSuccess: OrganizationState = {
     ...initialOrganizationState,
     organizations: [testOrganization1],

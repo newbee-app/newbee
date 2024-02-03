@@ -1,4 +1,4 @@
-import type { DocRelation, QnaRelation, User } from '../interface';
+import type { DocRelation, PublicUser, QnaRelation } from '../interface';
 import { CreatorOrMaintainer, DocQueryResult, QnaQueryResult } from '../type';
 
 /**
@@ -8,7 +8,7 @@ import { CreatorOrMaintainer, DocQueryResult, QnaQueryResult } from '../type';
  *
  * @returns The user's display name if it's not null, their name otherwise.
  */
-export function userDisplayName(user: User): string {
+export function userDisplayName(user: PublicUser): string {
   return user.displayName ?? user.name;
 }
 
@@ -19,7 +19,7 @@ export function userDisplayName(user: User): string {
  *
  * @returns The user's display name with its email after.
  */
-export function userDisplayNameAndEmail(user: User): string {
+export function userDisplayNameAndEmail(user: PublicUser): string {
   return `${userDisplayName(user)} (${user.email})`;
 }
 

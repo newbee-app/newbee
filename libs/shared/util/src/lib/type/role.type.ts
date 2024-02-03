@@ -3,6 +3,7 @@ import {
   OrgRoleEnum,
   PostRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
 } from '../enum';
 
 /**
@@ -13,4 +14,5 @@ export type RoleType =
   | OrgRoleEnum
   | TeamRoleEnum
   | PostRoleEnum
+  | UserRoleEnum
   | ConditionalRoleEnum;

@@ -4,13 +4,13 @@ import {
   Index,
   ManyToOne,
   OneToMany,
-  PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
 import type { Team } from '@newbee/shared/util';
 import { TeamRoleEnum } from '@newbee/shared/util';
 import slugify from 'slug';
+import { CommonEntity } from './common.abstract.entity';
 import { DocEntity } from './doc.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -23,15 +23,7 @@ import { TeamMemberEntity } from './team-member.entity';
  */
 @Entity()
 @Unique<TeamEntity>({ properties: ['slug', 'organization'] })
-export class TeamEntity implements Team {
-  /**
-   * The globally unique ID for the team.
-   * `hidden` is on, so it will never be serialized.
-   * No need for users to know what this value is.
-   */
-  @PrimaryKey({ hidden: true })
-  id: string;
-
+export class TeamEntity extends CommonEntity implements Team {
   /**
    * @inheritdoc
    */
@@ -48,7 +40,7 @@ export class TeamEntity implements Team {
   /**
    * @inheritdoc
    */
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 50 })
   @Index()
   upToDateDuration: string | null;
 
@@ -102,7 +94,8 @@ export class TeamEntity implements Team {
     upToDateDuration: string | null,
     creator: OrgMemberEntity,
   ) {
-    this.id = id;
+    super(id);
+
     this.name = name;
     this.slug = slugify(slug);
     this.upToDateDuration = upToDateDuration;

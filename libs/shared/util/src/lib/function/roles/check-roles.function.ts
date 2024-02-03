@@ -3,6 +3,7 @@ import {
   OrgRoleEnum,
   PostRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
 } from '../../enum';
 import { OrgMember } from '../../interface';
 import { RoleType } from '../../type';
@@ -12,6 +13,11 @@ import { compareOrgRoles, compareTeamRoles } from './compare-roles.function';
  * The options object to use in the `checkRoles` function.
  */
 interface CheckRolesOptions {
+  /**
+   * The user role for the user attempting to make the request.
+   */
+  userRole?: UserRoleEnum | null | undefined;
+
   /**
    * The org member attempting to make the request.
    */
@@ -76,6 +82,7 @@ export function checkRoles(
   };
 
   const {
+    userRole,
     orgMember,
     teamRole,
     subjectOrgRole,
@@ -87,6 +94,7 @@ export function checkRoles(
   const orgRole = orgMember?.role;
 
   return !!(
+    (userRole && checkRole(roles, userRole)) ||
     (orgRole &&
       (checkRole(roles, orgRole) ||
         (!team && checkRole(roles, ConditionalRoleEnum.OrgMemberIfNoTeam))) &&
