@@ -72,4 +72,11 @@ export class UserEditComponent {
   onDelete(): void {
     this.store.dispatch(UserActions.deleteUser());
   }
+
+  /**
+   * When the dumb UI emits a send verification email event, send the event to the store.
+   */
+  onSendVerificationEmail(): void {
+    this.store.dispatch(UserActions.sendVerificationEmail());
+  }
 }

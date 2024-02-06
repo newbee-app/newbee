@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import type { Authenticator } from '@newbee/shared/util';
 import type {
   AuthenticatorTransportFuture,
@@ -13,6 +13,12 @@ import { UserEntity } from './user.entity';
  */
 @Entity()
 export class AuthenticatorEntity extends CommonEntity implements Authenticator {
+  /**
+   * @inheritdoc
+   */
+  @PrimaryKey()
+  override id: string;
+
   /**
    * @inheritdoc
    */
@@ -73,8 +79,10 @@ export class AuthenticatorEntity extends CommonEntity implements Authenticator {
     transports: AuthenticatorTransportFuture[] | null,
     user: UserEntity,
   ) {
-    super(v4());
+    const id = v4();
+    super(id);
 
+    this.id = id;
     this.credentialId = credentialId;
     this.credentialPublicKey = credentialPublicKey;
     this.counter = counter;

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AlertType } from '@newbee/newbee/shared/util';
+import { AlertType, Button } from '@newbee/newbee/shared/util';
 
 /**
  * A simple component that displays an alert.
@@ -41,6 +41,11 @@ export class AlertComponent {
    * Emits any changes to `show`.
    */
   @Output() showChange = new EventEmitter<boolean>();
+
+  /**
+   * Displays a custom button in the alert that performs the fed-in click functionality.
+   */
+  @Input() customButton: Button | null = null;
 
   /**
    * The alert type for use in the div's class.

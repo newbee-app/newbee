@@ -15,6 +15,7 @@ describe('httpClientErrorToToast', () => {
       type: AlertType.Error,
       position: [ToastXPosition.Center, ToastYPosition.Bottom],
       duration: 5000,
+      button: null,
     });
   });
 
@@ -29,6 +30,7 @@ describe('httpClientErrorToToast', () => {
         type: AlertType.Error,
         position: [ToastXPosition.Center, ToastYPosition.Bottom],
         duration: 5000,
+        button: null,
       },
     ]);
   });
@@ -44,6 +46,7 @@ describe('httpClientErrorToToast', () => {
         type: AlertType.Error,
         position: [ToastXPosition.Center, ToastYPosition.Bottom],
         duration: 5000,
+        button: null,
       },
     ]);
     expect(
@@ -56,6 +59,7 @@ describe('httpClientErrorToToast', () => {
         type: AlertType.Error,
         position: [ToastXPosition.Center, ToastYPosition.Bottom],
         duration: 5000,
+        button: null,
       },
     ]);
   });

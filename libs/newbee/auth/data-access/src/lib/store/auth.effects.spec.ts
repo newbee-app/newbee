@@ -4,8 +4,17 @@ import { createMock } from '@golevelup/ts-jest';
 import {
   AuthActions,
   AuthenticatorActions,
+  ToastActions,
 } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
+import {
+  AlertType,
+  Button,
+  Toast,
+  ToastXPosition,
+  ToastYPosition,
+  unverifiedUserEmailAlert,
+} from '@newbee/newbee/shared/util';
 import {
   Keyword,
   testBaseCreateUserDto1,
@@ -13,20 +22,28 @@ import {
   testBaseMagicLinkLoginDto1,
   testBaseUserRelationAndOptionsDto1,
   testPublicKeyCredentialRequestOptions1,
+  testUser2,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
+import { v4 } from 'uuid';
 import { AuthService } from '../auth.service';
 import { AuthEffects } from './auth.effects';
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('AuthEffects', () => {
   let actions$ = new Observable<Action>();
   let effects: AuthEffects;
-  let service: AuthService;
   let router: Router;
+  let service: AuthService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,17 +72,19 @@ describe('AuthEffects', () => {
     });
 
     effects = TestBed.inject(AuthEffects);
-    service = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
+    service = TestBed.inject(AuthService);
 
+    jest.clearAllMocks();
     jest.spyOn(router, 'navigate');
+    mockV4.mockReturnValue('1');
   });
 
   it('should be defined', () => {
     expect(actions$).toBeDefined();
     expect(effects).toBeDefined();
-    expect(service).toBeDefined();
     expect(router).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   describe('sendLoginMagicLink$', () => {
@@ -204,8 +223,37 @@ describe('AuthEffects', () => {
       actions$ = hot('a', {
         a: AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
       });
+      const expected$ = hot('-');
+      expect(effects.loginSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
+      });
+    });
+
+    it('should fire addToast is user email is unverified', () => {
+      actions$ = hot('a', {
+        a: AuthActions.loginSuccess({
+          userRelation: { ...testUserRelation1, user: testUser2 },
+        }),
+      });
       const expected$ = hot('a', {
-        a: AuthActions.loginSuccess({ userRelation: testUserRelation1 }),
+        a: ToastActions.addToast({
+          toast: new Toast(
+            unverifiedUserEmailAlert.header,
+            unverifiedUserEmailAlert.text,
+            AlertType.Warning,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+            new Button(
+              'User Settings',
+              effects.navigateToUser,
+              null,
+              false,
+              false,
+            ),
+          ),
+        }),
       });
       expect(effects.loginSuccess$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {

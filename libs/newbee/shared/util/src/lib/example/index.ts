@@ -1,5 +1,5 @@
 import { forbiddenError, testUser1 } from '@newbee/shared/util';
-import { Country, SelectOption, Toast } from '../class';
+import { Button, Country, SelectOption, Toast } from '../class';
 import { AlertType, ToastXPosition, ToastYPosition } from '../enum';
 import type {
   HttpClientError,
@@ -70,11 +70,25 @@ export const testSelectOptionCountry2 = new SelectOption(
  * An example instance of `Toast`.
  * Strictly for use in testing.
  */
-export const testToast1: Toast = {
-  id: '1',
-  header: 'Header',
-  text: 'Text',
-  type: AlertType.Error,
-  position: [ToastXPosition.Center, ToastYPosition.Bottom],
-  duration: 1000,
-};
+export const testToast1 = new Toast(
+  'Header',
+  'Text',
+  AlertType.Error,
+  [ToastXPosition.Center, ToastYPosition.Bottom],
+  1000,
+  null,
+);
+
+/**
+ * An example instance of `Button`.
+ * Strictly for use in testing.
+ */
+export const testButton1 = new Button(
+  'Click me',
+  () => {
+    return;
+  },
+  null,
+  false,
+  false,
+);

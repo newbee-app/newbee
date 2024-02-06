@@ -67,10 +67,25 @@
   </div>
 
   <button
+    *ngIf="customButton"
+    type="button"
+    [disabled]="customButton.disabled"
+    (click)="customButton.click()"
+    class="btn btn-sm btn-neutral"
+    [ngClass]="customButton.styles"
+  >
+    <span
+      *ngIf="customButton.pending"
+      class="loading loading-spinner loading-sm"
+    ></span>
+    {{ customButton.text }}
+  </button>
+
+  <button
     *ngIf="includeClearSymbol"
     type="button"
     (click)="hide()"
-    class="btn btn-ghost btn-sm"
+    class="btn btn-sm btn-ghost"
   >
     <!-- x-mark svg -->
     <svg

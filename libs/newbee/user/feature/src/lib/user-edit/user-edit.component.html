@@ -12,10 +12,14 @@
     (userModuleState$ | async)!.pendingDeleteAuthenticator
   "
   [deletePending]="(userModuleState$ | async)!.pendingDelete"
+  [sendVerificationEmailPending]="
+    (userModuleState$ | async)!.pendingSendVerificationEmail
+  "
   [httpClientError]="(httpClientError$ | async)!"
   (edit)="onEdit($event)"
   (addAuthenticator)="onAddAuthenticator()"
   (editAuthenticator)="onEditAuthenticator($event)"
   (deleteAuthenticator)="onDeleteAuthenticator($event)"
   (delete)="onDelete()"
+  (sendVerificationEmail)="onSendVerificationEmail()"
 ></newbee-edit-user>

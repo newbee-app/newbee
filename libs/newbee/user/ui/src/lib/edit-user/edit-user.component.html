@@ -1,4 +1,12 @@
 <div class="flex flex-col flex-nowrap gap-y-4 mt-close">
+  <newbee-alert
+    *ngIf="!user.emailVerified"
+    [type]="alertType.Warning"
+    [header]="unverifiedUserEmailAlert.header"
+    [text]="unverifiedUserEmailAlert.text"
+    [customButton]="unverifiedAlertCustomButton"
+  ></newbee-alert>
+
   <div class="collapse collapse-arrow overflow-visible">
     <input type="checkbox" id="edit-collapse" checked />
     <label for="edit-collapse" class="collapse-title"

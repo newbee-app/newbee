@@ -1,5 +1,9 @@
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import { TeamRoleEnum, testTeamQueryResult1 } from '@newbee/shared/util';
+import {
+  TeamRoleEnum,
+  testTeam1,
+  testTeamQueryResult1,
+} from '@newbee/shared/util';
 import { Meta, StoryObj, componentWrapperDecorator } from '@storybook/angular';
 import { TeamSearchResultComponent } from './team-search-result.component';
 
@@ -31,6 +35,10 @@ export const ListNoTeamRole: Story = {
 
 export const LongTeamName: Story = {
   args: {
-    team: { name: 'VeryLongTeamNameWithNoNaturalSpaceBreaking', slug: 'slug' },
+    team: {
+      ...testTeam1,
+      name: 'VeryLongTeamNameWithNoNaturalSpaceBreaking',
+      slug: 'slug',
+    },
   },
 };

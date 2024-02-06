@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseUpdateUserDto, Keyword, User } from '@newbee/shared/util';
+import {
+  BaseTokenDto,
+  BaseUpdateUserDto,
+  Keyword,
+  User,
+} from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -30,8 +35,34 @@ export class UserService {
 
   /**
    * Sends a request to the API to delete the current user.
+   *
+   * @returns A null observable.
    */
   delete(): Observable<null> {
     return this.http.delete<null>(UserService.baseApiUrl);
+  }
+
+  /**
+   * Send a request to the API to verify a user's email based on a token.
+   *
+   * @param token The token of the user email to verify.
+   *
+   * @returns An observable containing the email verified user.
+   */
+  verifyEmail(token: string): Observable<User> {
+    const tokenDto = new BaseTokenDto(token);
+    return this.http.post<User>(
+      `${UserService.baseApiUrl}/${Keyword.Verify}`,
+      tokenDto,
+    );
+  }
+
+  /**
+   * Send a request to the API to send a verification email for the logged-in user.
+   *
+   * @returns A null observable.
+   */
+  sendVerificationEmail(): Observable<null> {
+    return this.http.post<null>(UserService.baseApiUrl, {});
   }
 }

@@ -9,7 +9,7 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../util';
 import { SearchableSelectComponent } from './searchable-select.component';
 
 export default {

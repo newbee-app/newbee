@@ -65,6 +65,7 @@ describe('UserEditComponent', () => {
   describe('onEdit', () => {
     it('should dispatch editUser', () => {
       component.onEdit(testBaseUpdateUserDto1);
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
       );
@@ -74,6 +75,7 @@ describe('UserEditComponent', () => {
   describe('onAddAuthenticator', () => {
     it('should dispatch createRegistrationOptions', () => {
       component.onAddAuthenticator();
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.createRegistrationOptions(),
       );
@@ -86,6 +88,7 @@ describe('UserEditComponent', () => {
         id: testAuthenticator1.id,
         name: testAuthenticator1.name,
       });
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.editAuthenticatorName({
           id: testAuthenticator1.id,
@@ -98,6 +101,7 @@ describe('UserEditComponent', () => {
   describe('onDeleteAuthenticator', () => {
     it('should dispatch deleteAuthenticator', () => {
       component.onDeleteAuthenticator(testAuthenticator1.id);
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         AuthenticatorActions.deleteAuthenticator({ id: testAuthenticator1.id }),
       );
@@ -107,7 +111,18 @@ describe('UserEditComponent', () => {
   describe('onDelete', () => {
     it('should dispatch deleteUser', () => {
       component.onDelete();
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(UserActions.deleteUser());
+    });
+  });
+
+  describe('onSendVerificationEmail', () => {
+    it('should dispatch sendVerificationEmail', () => {
+      component.onSendVerificationEmail();
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        UserActions.sendVerificationEmail(),
+      );
     });
   });
 });

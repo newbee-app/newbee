@@ -34,6 +34,10 @@ describe('UserReducer', () => {
     ...stateAfterGetAuthenticatorsSuccess,
     pendingDeleteAuthenticator: new Set([testAuthenticator1.id]),
   };
+  const stateAfterSendVerificationEmail: UserState = {
+    ...initialUserState,
+    pendingSendVerificationEmail: true,
+  };
 
   describe('from initial state', () => {
     it('should update state for editUser', () => {
@@ -68,6 +72,14 @@ describe('UserReducer', () => {
         AuthenticatorActions.createRegistrationOptions,
       );
       expect(updatedState).toEqual(stateAfterCreateRegistrationOptions);
+    });
+
+    it('should update state for sendVerificationEmail', () => {
+      const updatedState = userFeature.reducer(
+        initialUserState,
+        UserActions.sendVerificationEmail,
+      );
+      expect(updatedState).toEqual(stateAfterSendVerificationEmail);
     });
   });
 
@@ -136,6 +148,14 @@ describe('UserReducer', () => {
         }),
       );
       expect(updatedState).toEqual({ ...initialUserState, authenticators: [] });
+    });
+
+    it('should update state for sendVerificationEmailSuccess', () => {
+      const updatedState = userFeature.reducer(
+        stateAfterSendVerificationEmail,
+        UserActions.sendVerificationEmailSuccess,
+      );
+      expect(updatedState).toEqual(initialUserState);
     });
 
     it('should update state for clientError', () => {

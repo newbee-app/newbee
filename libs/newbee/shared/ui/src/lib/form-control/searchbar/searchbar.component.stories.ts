@@ -5,7 +5,7 @@ import {
   StoryObj,
 } from '@storybook/angular';
 import { range } from 'lodash-es';
-import { ClickWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../util';
 import { SearchbarComponent } from './searchbar.component';
 
 export default {

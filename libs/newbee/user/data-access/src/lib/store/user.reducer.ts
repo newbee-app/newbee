@@ -40,6 +40,11 @@ export interface UserState {
    * Whether the user is waiting for a response for deleting a user.
    */
   pendingDelete: boolean;
+
+  /**
+   * Whether the user is waiting for a response for sending a verification email.
+   */
+  pendingSendVerificationEmail: boolean;
 }
 
 /**
@@ -52,6 +57,7 @@ export const initialUserState: UserState = {
   pendingEditAuthenticator: new Set(),
   pendingDeleteAuthenticator: new Set(),
   pendingDelete: false,
+  pendingSendVerificationEmail: false,
 };
 
 /**
@@ -167,6 +173,20 @@ export const userFeature = createFeature({
       (state): UserState => ({
         ...state,
         pendingEdit: false,
+      }),
+    ),
+    on(
+      UserActions.sendVerificationEmail,
+      (state): UserState => ({
+        ...state,
+        pendingSendVerificationEmail: true,
+      }),
+    ),
+    on(
+      UserActions.sendVerificationEmailSuccess,
+      (state): UserState => ({
+        ...state,
+        pendingSendVerificationEmail: false,
       }),
     ),
     on(HttpActions.clientError, (state): UserState => {

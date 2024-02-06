@@ -76,6 +76,13 @@ export const authFeature = createFeature({
         user,
       }),
     ),
+    on(UserActions.verifyEmailSuccess, (state, { user }): AuthState => {
+      if (user.email !== state.user?.email) {
+        return state;
+      }
+
+      return { ...state, user };
+    }),
     on(
       AuthActions.logoutSuccess,
       UserActions.deleteUserSuccess,

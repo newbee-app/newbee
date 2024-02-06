@@ -1,10 +1,9 @@
-<div [ngClass]="toastClasses">
-  <newbee-alert
-    [header]="toast.header"
-    [text]="toast.text"
-    [type]="toast.type"
-    [includeClearSymbol]="true"
-    [show]="show"
-    (showChange)="onShowChange($event)"
-  ></newbee-alert>
-</div>
+<newbee-alert
+  [header]="toast.header"
+  [text]="toast.text"
+  [type]="toast.type"
+  [includeClearSymbol]="true"
+  [show]="show"
+  (showChange)="onShowChange($event)"
+  [customButton]="toast.button"
+></newbee-alert>

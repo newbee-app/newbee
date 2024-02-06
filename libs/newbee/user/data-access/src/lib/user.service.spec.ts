@@ -6,6 +6,7 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testBaseTokenDto1,
   testBaseUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
@@ -75,6 +76,52 @@ describe('UserService', () => {
 
       const req = httpController.expectOne(UserService.baseApiUrl);
       expect(req.request.method).toEqual('DELETE');
+
+      req.flush(null);
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('should send out a post request', (done) => {
+      service.verifyEmail(testBaseTokenDto1.token).subscribe({
+        next: (user) => {
+          try {
+            expect(user).toEqual(testUser1);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(
+        `${UserService.baseApiUrl}/${Keyword.Verify}`,
+      );
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual(testBaseTokenDto1);
+
+      req.flush(testUser1);
+    });
+  });
+
+  describe('sendVerificationEmail', () => {
+    it('should send out a post request', (done) => {
+      service.sendVerificationEmail().subscribe({
+        next: (signal) => {
+          try {
+            expect(signal).toBeNull();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+        error: done.fail,
+      });
+
+      const req = httpController.expectOne(UserService.baseApiUrl);
+      expect(req.request.method).toEqual('POST');
+      expect(req.request.body).toEqual({});
 
       req.flush(null);
     });

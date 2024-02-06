@@ -26,5 +26,25 @@ export const UserActions = createActionGroup({
      * Indicates the current user was successfully deleted.
      */
     'Delete User Success': emptyProps(),
+
+    /**
+     * Verify the email associated with the given token.
+     */
+    'Verify Email': props<{ token: string }>(),
+
+    /**
+     * Indicates that the email associated with the token was successfully verified.
+     */
+    'Verify Email Success': props<{ user: User }>(),
+
+    /**
+     * Send an email to verify the logged-in user's email.
+     */
+    'Send Verification Email': emptyProps(),
+
+    /**
+     * Indicates that a verification email was successfully sent.
+     */
+    'Send Verification Email Success': emptyProps(),
   },
 });

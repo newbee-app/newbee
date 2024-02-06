@@ -1,5 +1,98 @@
-<newbee-toast
-  *ngFor="let toast of toasts$ | async"
-  [toast]="toast"
-  (dismissed)="onDismissed(toast.id)"
-></newbee-toast>
+<div
+  *ngIf="toasts[toastXPosition.Start + toastYPosition.Top]"
+  class="z-50 toast toast-start toast-top"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Start + toastYPosition.Top]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.Start + toastYPosition.Middle]"
+  class="z-50 toast toast-start toast-middle"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Start + toastYPosition.Middle]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.Start + toastYPosition.Bottom]"
+  class="z-50 toast toast-start toast-bottom"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Start + toastYPosition.Bottom]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.Center + toastYPosition.Top]"
+  class="z-50 toast toast-center toast-top"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Center + toastYPosition.Top]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.Center + toastYPosition.Middle]"
+  class="z-50 toast toast-center toast-middle"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Center + toastYPosition.Middle]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.Center + toastYPosition.Bottom]"
+  class="z-50 toast toast-center toast-bottom"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.Center + toastYPosition.Bottom]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.End + toastYPosition.Top]"
+  class="z-50 toast toast-end toast-top"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.End + toastYPosition.Top]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.End + toastYPosition.Middle]"
+  class="z-50 toast toast-end toast-middle"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.End + toastYPosition.Middle]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>
+
+<div
+  *ngIf="toasts[toastXPosition.End + toastYPosition.Bottom]"
+  class="z-50 toast toast-end toast-bottom"
+>
+  <newbee-toast
+    *ngFor="let toast of toasts[toastXPosition.End + toastYPosition.Bottom]"
+    [toast]="toast"
+    (dismissed)="onDismissed(toast.id)"
+  ></newbee-toast>
+</div>

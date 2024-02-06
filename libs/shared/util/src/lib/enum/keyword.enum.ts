@@ -66,6 +66,7 @@ export enum Keyword {
   New = 'new',
   Edit = 'edit',
   Delete = 'delete',
+  Success = 'success',
 
   // misc stuff for use in ngrx stores
   Http = 'http',

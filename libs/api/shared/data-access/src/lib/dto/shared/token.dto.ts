@@ -10,5 +10,5 @@ export class TokenDto implements BaseTokenDto {
    * @inheritdoc
    */
   @IsNotEmpty({ message: tokenIsNotEmpty })
-  token!: string;
+  readonly token!: string;
 }

@@ -7,11 +7,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import {
-  ToastXPosition,
-  ToastYPosition,
-  type Toast,
-} from '@newbee/newbee/shared/util';
+import { type Toast } from '@newbee/newbee/shared/util';
 import { AlertComponent } from '../alert';
 
 /**
@@ -27,14 +23,10 @@ export class ToastComponent implements OnInit, OnDestroy {
   /**
    * Whether to show the toast.
    */
-  private _show = true;
-
-  /**
-   * Getter for `_show`.
-   */
   get show(): boolean {
     return this._show;
   }
+  private _show = true;
 
   /**
    * The timeout for closing the toast, if duration is not null.
@@ -50,40 +42,6 @@ export class ToastComponent implements OnInit, OnDestroy {
    * Emit to let the parent component know the toast was dismissed, whether by the user or time.
    */
   @Output() dismissed = new EventEmitter<void>();
-
-  /**
-   * The classses needed to set up the toast div.
-   */
-  get toastClasses(): string[] {
-    const [x, y] = this.toast.position;
-    const result: string[] = ['toast'];
-
-    switch (x) {
-      case ToastXPosition.Start:
-        result.push('toast-start');
-        break;
-      case ToastXPosition.Center:
-        result.push('toast-center');
-        break;
-      case ToastXPosition.End:
-        result.push('toast-end');
-        break;
-    }
-
-    switch (y) {
-      case ToastYPosition.Top:
-        result.push('toast-top');
-        break;
-      case ToastYPosition.Middle:
-        result.push('toast-middle');
-        break;
-      case ToastYPosition.Bottom:
-        result.push('toast-bottom');
-        break;
-    }
-
-    return result;
-  }
 
   /**
    * Set the timeout for the toast.

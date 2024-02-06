@@ -10,6 +10,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { UserRoutingModule } from './routing';
 import { UserEditComponent } from './user-edit';
+import { UserEmailVerifyComponent } from './user-email-verify';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { UserEditComponent } from './user-edit';
     UserRoutingModule,
   ],
   providers: [UserService],
-  declarations: [UserEditComponent],
+  declarations: [UserEditComponent, UserEmailVerifyComponent],
 })
 export class UserModule {}

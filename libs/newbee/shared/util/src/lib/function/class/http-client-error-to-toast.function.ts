@@ -40,5 +40,6 @@ function makeToast(text: string): Toast {
     AlertType.Error,
     [ToastXPosition.Center, ToastYPosition.Bottom],
     5000,
+    null,
   );
 }

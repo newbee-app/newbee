@@ -4,7 +4,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../util';
 import { DropdownComponent } from './dropdown.component';
 
 export default {

@@ -30,6 +30,7 @@ export default {
     editAuthenticatorPending: new Set(),
     deleteAuthenticatorPending: new Set(),
     deletePending: false,
+    sendVerificationEmailPending: false,
     httpClientError: null,
   },
   argTypes: {
@@ -38,6 +39,7 @@ export default {
     editAuthenticator: { action: 'editAuthenticator' },
     deleteAuthenticator: { action: 'deleteAuthenticator' },
     delete: { action: 'delete' },
+    sendVerificationEmail: { action: 'sendVerificationEmail' },
   },
 } as Meta<EditUserComponent>;
 
@@ -77,6 +79,12 @@ export const DeleteAuthenticatorPending: Story = {
 };
 
 export const DeletePending: Story = { args: { deletePending: true } };
+
+export const UnverifiedUser: Story = { args: { user: testUser2 } };
+
+export const SendVerificationEmailPending: Story = {
+  args: { ...UnverifiedUser.args, sendVerificationEmailPending: true },
+};
 
 export const WithErrors: Story = {
   args: {

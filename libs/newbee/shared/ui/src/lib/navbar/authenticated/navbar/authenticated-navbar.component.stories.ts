@@ -11,7 +11,7 @@ import {
   moduleMetadata,
   StoryObj,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../../testing';
+import { ClickWrapperComponent } from '../../../util';
 import { AuthenticatedNavbarComponent } from './authenticated-navbar.component';
 
 export default {
@@ -49,5 +49,7 @@ export const NoSelectedOrg: Story = {
 export const IncludeCenter: Story = { args: { includeCenter: true } };
 
 export const Member: Story = {
-  args: { orgMember: { slug: 'bad', role: OrgRoleEnum.Member } },
+  args: {
+    orgMember: { ...testOrgMember1, slug: 'bad', role: OrgRoleEnum.Member },
+  },
 };

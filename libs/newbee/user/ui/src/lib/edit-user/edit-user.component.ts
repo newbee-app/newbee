@@ -9,6 +9,7 @@ import {
 import { AlertComponent, PhoneInputComponent } from '@newbee/newbee/shared/ui';
 import {
   AlertType,
+  Button,
   CountryService,
   HttpClientError,
   PhoneInput,
@@ -16,6 +17,7 @@ import {
   inputDisplayError,
   inputErrorMessage,
   phoneInputToString,
+  unverifiedUserEmailAlert,
 } from '@newbee/newbee/shared/util';
 import {
   Authenticator,
@@ -42,6 +44,7 @@ import parsePhoneNumber from 'libphonenumber-js';
 export class EditUserComponent implements OnInit {
   readonly keyword = Keyword;
   readonly alertType = AlertType;
+  readonly unverifiedUserEmailAlert = unverifiedUserEmailAlert;
 
   /**
    * The user to edit.
@@ -91,6 +94,11 @@ export class EditUserComponent implements OnInit {
   @Input() deletePending = false;
 
   /**
+   * Whether to display the spinner on the send verification email button.
+   */
+  @Input() sendVerificationEmailPending = false;
+
+  /**
    * An HTTP error for the component, if one exists.
    */
   @Input() httpClientError: HttpClientError | null = null;
@@ -124,9 +132,14 @@ export class EditUserComponent implements OnInit {
   @Output() delete = new EventEmitter<void>();
 
   /**
+   * Request that a new verification email be sent.
+   */
+  @Output() sendVerificationEmail = new EventEmitter<void>();
+
+  /**
    * The internal edit user form.
    */
-  editUserForm = this.fb.group({
+  readonly editUserForm = this.fb.group({
     name: ['', Validators.required],
     displayName: [''],
     phoneNumber: [
@@ -137,7 +150,7 @@ export class EditUserComponent implements OnInit {
   /**
    * The internal delete user form.
    */
-  deleteUserForm = this.fb.group({
+  readonly deleteUserForm = this.fb.group({
     delete: ['', [Validators.required, Validators.pattern('DELETE')]],
   });
 
@@ -145,14 +158,27 @@ export class EditUserComponent implements OnInit {
    * A form array containing form controls for each authenticator in authenticators.
    * Wrapped in a redundant form group because Angular requires it (idk why).
    */
-  editAuthenticatorForm = this.fb.group({
+  readonly editAuthenticatorForm = this.fb.group({
     names: this.fb.array<string | null>([]),
   });
 
   /**
    * The IDs of the authenticators that are currently being edited.
    */
-  editingAuthenticators = new Set<string>();
+  readonly editingAuthenticators = new Set<string>();
+
+  /**
+   * The object to feed into the unverified alert's custom button.
+   */
+  readonly unverifiedAlertCustomButton = new Button(
+    'Send verification email',
+    () => {
+      this.sendVerificationEmail.emit();
+    },
+    null,
+    () => this.sendVerificationEmailPending,
+    () => this.sendVerificationEmailPending,
+  );
 
   constructor(
     private readonly fb: FormBuilder,

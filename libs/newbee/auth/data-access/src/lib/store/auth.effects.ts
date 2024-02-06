@@ -3,21 +3,30 @@ import { Router } from '@angular/router';
 import {
   AuthActions,
   AuthenticatorActions,
+  ToastActions,
   catchHttpClientError,
   catchHttpScreenError,
   catchToastError,
 } from '@newbee/newbee/shared/data-access';
 import {
+  AlertType,
+  Button,
+  Toast,
+  ToastXPosition,
+  ToastYPosition,
+  unverifiedUserEmailAlert,
+} from '@newbee/newbee/shared/util';
+import {
+  Keyword,
   displayNameIsNotEmpty,
   emailIsEmail,
-  Keyword,
   nameIsNotEmpty,
   phoneNumberIsPhoneNumber,
   userEmailNotFound,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 /**
@@ -128,17 +137,33 @@ export class AuthEffects {
     );
   });
 
-  loginSuccess$ = createEffect(
-    () => {
-      return this.actions$.pipe(
-        ofType(AuthActions.loginSuccess),
-        tap(async () => {
-          await this.router.navigate(['/']);
-        }),
-      );
-    },
-    { dispatch: false },
-  );
+  loginSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.loginSuccess),
+      tap(async () => {
+        await this.router.navigate(['/']);
+      }),
+      filter(({ userRelation }) => !userRelation.user.emailVerified),
+      map(() => {
+        return ToastActions.addToast({
+          toast: new Toast(
+            unverifiedUserEmailAlert.header,
+            unverifiedUserEmailAlert.text,
+            AlertType.Warning,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+            new Button(
+              'User Settings',
+              this.navigateToUser,
+              null,
+              false,
+              false,
+            ),
+          ),
+        });
+      }),
+    );
+  });
 
   logout$ = createEffect(() => {
     return this.actions$.pipe(
@@ -166,9 +191,16 @@ export class AuthEffects {
 
   constructor(
     private readonly actions$: Actions,
-    private readonly authService: AuthService,
     private readonly router: Router,
+    private readonly authService: AuthService,
   ) {}
+
+  /**
+   * A helper function for navigating to the user route.
+   */
+  readonly navigateToUser = async (): Promise<void> => {
+    await this.router.navigate([`/${Keyword.User}`]);
+  };
 
   /**
    * Helper function to sort error messages.

@@ -4,7 +4,7 @@ import {
   componentWrapperDecorator,
   moduleMetadata,
 } from '@storybook/angular';
-import { ClickWrapperComponent } from '../../testing';
+import { ClickWrapperComponent } from '../../util';
 import { DropdownWithArrowComponent } from './dropdown-with-arrow.component';
 
 export default {

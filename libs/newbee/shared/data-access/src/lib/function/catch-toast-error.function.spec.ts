@@ -36,6 +36,7 @@ describe('catchToastError', () => {
             AlertType.Error,
             [ToastXPosition.Center, ToastYPosition.Bottom],
             5000,
+            null,
           ),
         }),
       }),

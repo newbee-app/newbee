@@ -5,11 +5,11 @@ import { Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
- * The component made for sending a magic link verification request to the backend.
+ * The empty smart component for sending a magic link verification request to the backend.
  */
 @Component({
   selector: 'newbee-magic-link-login',
-  templateUrl: './magic-link-login.component.html',
+  template: '',
 })
 export class MagicLinkLoginComponent {
   /**

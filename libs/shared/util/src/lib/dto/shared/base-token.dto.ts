@@ -6,5 +6,9 @@ export class BaseTokenDto {
   /**
    * The token to send.
    */
-  token!: string;
+  readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
 }

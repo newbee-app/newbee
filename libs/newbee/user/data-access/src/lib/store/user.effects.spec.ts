@@ -1,16 +1,38 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
-import { UserActions } from '@newbee/newbee/shared/data-access';
+import {
+  ToastActions,
+  UserActions,
+  initialAuthState,
+} from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseUpdateUserDto1, testUser1 } from '@newbee/shared/util';
+import {
+  AlertType,
+  Toast,
+  ToastXPosition,
+  ToastYPosition,
+} from '@newbee/newbee/shared/util';
+import {
+  Keyword,
+  testBaseTokenDto1,
+  testBaseUpdateUserDto1,
+  testUser1,
+} from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
 import { Observable, of } from 'rxjs';
+import { v4 } from 'uuid';
 import { UserService } from '../user.service';
 import { UserEffects } from './user.effects';
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(),
+}));
+const mockV4 = v4 as jest.Mock;
 
 describe('UserEffects', () => {
   let actions$ = new Observable<Action>();
@@ -23,7 +45,11 @@ describe('UserEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
-        provideMockStore(),
+        provideMockStore({
+          initialState: {
+            [Keyword.Auth]: { ...initialAuthState, [Keyword.User]: testUser1 },
+          },
+        }),
         provideRouter([{ path: '**', component: EmptyComponent }]),
         UserEffects,
         {
@@ -31,6 +57,8 @@ describe('UserEffects', () => {
           useValue: createMock<UserService>({
             edit: jest.fn().mockReturnValue(of(testUser1)),
             delete: jest.fn().mockReturnValue(of(null)),
+            verifyEmail: jest.fn().mockReturnValue(of(testUser1)),
+            sendVerificationEmail: jest.fn().mockReturnValue(of(null)),
           }),
         },
       ],
@@ -41,7 +69,9 @@ describe('UserEffects', () => {
     store = TestBed.inject(MockStore);
     router = TestBed.inject(Router);
 
+    jest.clearAllMocks();
     jest.spyOn(router, 'navigate');
+    mockV4.mockReturnValue('1');
   });
 
   it('should be defined', () => {
@@ -89,6 +119,81 @@ describe('UserEffects', () => {
         expect(router.navigate).toHaveBeenCalledTimes(1);
         expect(router.navigate).toHaveBeenCalledWith(['/']);
       });
+    });
+  });
+
+  describe('verifyEmail$', () => {
+    it('should fire verifyEmailSuccess if successful', () => {
+      actions$ = hot('a', {
+        a: UserActions.verifyEmail({ token: testBaseTokenDto1.token }),
+      });
+      const expected$ = hot('a', {
+        a: UserActions.verifyEmailSuccess({ user: testUser1 }),
+      });
+      expect(effects.verifyEmail$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.verifyEmail).toHaveBeenCalledTimes(1);
+        expect(service.verifyEmail).toHaveBeenCalledWith(
+          testBaseTokenDto1.token,
+        );
+      });
+    });
+  });
+
+  describe('verifyEmailSuccess$', () => {
+    it('should fire addToast and navigate the user to the homepage', () => {
+      actions$ = hot('a', {
+        a: UserActions.verifyEmailSuccess({ user: testUser1 }),
+      });
+      const expected$ = hot('a', {
+        a: ToastActions.addToast({
+          toast: new Toast(
+            `Successfully verified ${testUser1.email}`,
+            '',
+            AlertType.Success,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+            null,
+          ),
+        }),
+      });
+      expect(effects.verifyEmailSuccess$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
+      });
+    });
+  });
+
+  describe('sendVerificationEmail$', () => {
+    it('should fire sendVerificationEmailSuccess if successful', () => {
+      actions$ = hot('a', { a: UserActions.sendVerificationEmail() });
+      const expected$ = hot('a', {
+        a: UserActions.sendVerificationEmailSuccess(),
+      });
+      expect(effects.sendVerificationEmail$).toBeObservable(expected$);
+      expect(expected$).toSatisfyOnFlush(() => {
+        expect(service.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  describe('sendVerificationEmailSuccess$', () => {
+    it('should fire addToast if successful', () => {
+      actions$ = hot('a', { a: UserActions.sendVerificationEmailSuccess() });
+      const expected$ = hot('a', {
+        a: ToastActions.addToast({
+          toast: new Toast(
+            `Successfully sent verification email to ${testUser1.email}`,
+            'Please check your inbox',
+            AlertType.Success,
+            [ToastXPosition.Center, ToastYPosition.Bottom],
+            3000,
+            null,
+          ),
+        }),
+      });
+      expect(effects.sendVerificationEmailSuccess$).toBeObservable(expected$);
     });
   });
 });

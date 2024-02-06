@@ -65,6 +65,25 @@ describe('AuthReducer', () => {
       });
     });
 
+    it('should update state for verifyEmailSuccess', () => {
+      let updatedState = authFeature.reducer(
+        { ...initialAuthState, user: testUser2 },
+        UserActions.verifyEmailSuccess({
+          user: { ...testUser2, emailVerified: true },
+        }),
+      );
+      expect(updatedState).toEqual({
+        ...initialAuthState,
+        user: { ...testUser2, emailVerified: true },
+      });
+
+      updatedState = authFeature.reducer(
+        stateAfterLoginSuccess,
+        UserActions.verifyEmailSuccess({ user: testUser2 }),
+      );
+      expect(updatedState).toEqual(stateAfterLoginSuccess);
+    });
+
     it('should update state for logoutSuccess', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginSuccess,

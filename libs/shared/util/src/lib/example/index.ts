@@ -165,7 +165,7 @@ export const testUser2: User = {
   ...testCommonEntityFields1,
   ...testPublicUser2,
   role: UserRoleEnum.User,
-  emailVerified: true,
+  emailVerified: false,
 };
 
 /**
@@ -889,9 +889,7 @@ export const testBaseCreateOrgMemberInviteDto1: BaseCreateOrgMemberInviteDto = {
  * An example instance of `BaseTokenDto`.
  * Strictly for use in testing.
  */
-export const testBaseTokenDto1: BaseTokenDto = {
-  token: 'token',
-};
+export const testBaseTokenDto1 = new BaseTokenDto('token');
 
 /**
  * An example instance of BaseRegistrationResponseDto.

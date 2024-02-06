@@ -31,13 +31,13 @@ export const toastFeature = createFeature({
       ToastActions.addToast,
       (state, { toast }): ToastState => ({
         toasts: [...state.toasts, ...(Array.isArray(toast) ? toast : [toast])],
-      })
+      }),
     ),
     on(
       ToastActions.removeToast,
       (state, { id }): ToastState => ({
         toasts: state.toasts.filter((toast) => toast.id !== id),
-      })
-    )
+      }),
+    ),
   ),
 });

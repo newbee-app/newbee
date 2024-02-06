@@ -1,9 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  ToastXPosition,
-  ToastYPosition,
-  testToast1,
-} from '@newbee/newbee/shared/util';
+import { testToast1 } from '@newbee/newbee/shared/util';
 import { ToastComponent } from './toast.component';
 
 describe('ToastComponent', () => {
@@ -31,21 +27,6 @@ describe('ToastComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(fixture).toBeDefined();
-  });
-
-  describe('toastClasses', () => {
-    it('should get toast classes', () => {
-      for (const x of Object.values(ToastXPosition)) {
-        for (const y of Object.values(ToastYPosition)) {
-          component.toast = { ...testToast1, position: [x, y] };
-          expect(component.toastClasses).toEqual([
-            'toast',
-            `toast-${x}`,
-            `toast-${y}`,
-          ]);
-        }
-      }
-    });
   });
 
   describe('ngOnInit', () => {
