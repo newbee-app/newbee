@@ -7,7 +7,10 @@ import {
   InternalServerErrorComponent,
   NotFoundErrorComponent,
 } from '@newbee/newbee/shared/ui';
-import { TemplateMarkerDirective } from '@newbee/newbee/shared/util';
+import {
+  RouteAndQueryParams,
+  TemplateMarkerDirective,
+} from '@newbee/newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -44,9 +47,12 @@ export class ErrorScreenComponent {
   /**
    * When the dumb UI emits a request to navigate home, pass it to the router.
    */
-  async onNavigateHome(): Promise<void> {
+  async onNavigate(routeAndQueryParams: RouteAndQueryParams): Promise<void> {
+    const { route, queryParams } = routeAndQueryParams;
     this.ngZone.run(async () => {
-      await this.router.navigate(['/']);
+      await this.router.navigate([route], {
+        ...(queryParams && { queryParams }),
+      });
     });
   }
 }

@@ -1,10 +1,18 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import {
   IS_PUBLIC_KEY,
+  UNVERIFIED_OK_KEY,
   emailVerificationDeadline,
 } from '@newbee/api/shared/util';
+import { emailUnverifiedForbiddenError } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 
 /**
@@ -12,6 +20,8 @@ import dayjs from 'dayjs';
  */
 @Injectable()
 export class EmailVerifiedGuard implements CanActivate {
+  private readonly logger = new Logger(EmailVerifiedGuard.name);
+
   constructor(private readonly reflector: Reflector) {}
 
   /**
@@ -30,15 +40,26 @@ export class EmailVerifiedGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
+    const unverifiedOk = this.reflector.getAllAndOverride<boolean>(
+      UNVERIFIED_OK_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    if (isPublic || unverifiedOk) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
     const user: UserEntity = request.user;
-    return (
+    if (
       user.emailVerified ||
       dayjs(user.createdAt).add(emailVerificationDeadline).toDate() > new Date()
+    ) {
+      return true;
+    }
+
+    this.logger.log(
+      `Email is unverified for user ID: ${user.id}, throwing forbidden exception`,
     );
+    throw new ForbiddenException(emailUnverifiedForbiddenError);
   }
 }

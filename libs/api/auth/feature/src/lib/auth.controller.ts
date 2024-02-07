@@ -19,7 +19,12 @@ import {
   EntityService,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { Public, User, authJwtCookie } from '@newbee/api/shared/util';
+import {
+  Public,
+  UnverifiedOk,
+  User,
+  authJwtCookie,
+} from '@newbee/api/shared/util';
 import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
@@ -36,6 +41,7 @@ import type { CookieOptions, Response } from 'express';
  * The controller that provides API routes for logging in and registering users.
  */
 @Controller({ path: Keyword.Auth, version: apiVersion.auth })
+@Public()
 export class AuthController {
   /**
    * The logger to use to log anything in the controller.
@@ -68,7 +74,6 @@ export class AuthController {
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the email is already taken.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Public()
   @Post(`${Keyword.WebAuthn}/${Keyword.Register}`)
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
@@ -102,7 +107,6 @@ export class AuthController {
    * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
-  @Public()
   @Post(`${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`)
   async webAuthnLoginOptions(
     @Body() emailDto: EmailDto,
@@ -131,7 +135,6 @@ export class AuthController {
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
-  @Public()
   @Post(`${Keyword.WebAuthn}/${Keyword.Login}`)
   async webAuthnLogin(
     @Res({ passthrough: true }) res: Response,
@@ -160,7 +163,6 @@ export class AuthController {
    * @returns The JWT ID and email associated with the magic link email.
    * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
-  @Public()
   @Post(`${Keyword.MagicLinkLogin}/${Keyword.Login}`)
   async magicLinkLoginLogin(
     @Body() emailDto: EmailDto,
@@ -187,7 +189,6 @@ export class AuthController {
    *
    * @returns The logged in user and their access token.
    */
-  @Public()
   @UseGuards(MagicLinkLoginAuthGuard)
   @Post(Keyword.MagicLinkLogin)
   async magicLinkLogin(
@@ -207,6 +208,8 @@ export class AuthController {
    * @param res The response object to clear the auth token cookie from.
    */
   @Post(Keyword.Logout)
+  @Public(false)
+  @UnverifiedOk()
   logout(
     @Res({ passthrough: true }) res: Response,
     @User() user: UserEntity,

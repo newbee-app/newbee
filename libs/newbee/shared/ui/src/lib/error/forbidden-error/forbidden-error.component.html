@@ -1,5 +1,15 @@
-<div class="flex flex-col flex-nowrap gap-y-6 items-center text-center mt-far">
+<div
+  *ngIf="httpScreenError && httpScreenError.status === 403"
+  class="flex flex-col flex-nowrap gap-y-6 items-center text-center mt-far"
+>
   <h2>Forbidden</h2>
-
-  <p class="md:w-2/3">{{ forbiddenError }}</p>
+  <p class="md:w-2/3">{{ httpScreenError.message }}</p>
+  <p
+    *ngIf="httpScreenError.message === emailUnverifiedForbiddenError"
+    class="md:w-2/3"
+  >
+    You can go to
+    <a (click)="emitNavigateToUser()" class="link link-info">user settings</a>
+    to verify your email.
+  </p>
 </div>

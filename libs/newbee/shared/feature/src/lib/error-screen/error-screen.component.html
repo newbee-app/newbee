@@ -3,10 +3,12 @@
 >
   <newbee-forbidden-error
     *ngIf="httpScreenError.status === 403"
+    [httpScreenError]="httpScreenError"
+    (navigate)="onNavigate($event)"
   ></newbee-forbidden-error>
   <newbee-not-found-error
     *ngIf="httpScreenError.status === 404"
-    (navigateHome)="onNavigateHome()"
+    (navigate)="onNavigate($event)"
   ></newbee-not-found-error>
   <newbee-internal-server-error
     *ngIf="httpScreenError.status === 500"

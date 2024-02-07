@@ -4,7 +4,10 @@ import {
   ExceptionFilter,
   ForbiddenException,
 } from '@nestjs/common';
-import { forbiddenError } from '@newbee/shared/util';
+import {
+  emailUnverifiedForbiddenError,
+  forbiddenError,
+} from '@newbee/shared/util';
 import type { Response } from 'express';
 
 /**
@@ -14,13 +17,16 @@ import type { Response } from 'express';
 @Catch(ForbiddenException)
 export class ForbiddenExceptionFilter implements ExceptionFilter {
   catch(exception: ForbiddenException, host: ArgumentsHost) {
+    const { message } = exception;
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
     response.status(status).json({
       statusCode: status,
-      message: forbiddenError,
+      message: [forbiddenError, emailUnverifiedForbiddenError].includes(message)
+        ? message
+        : forbiddenError,
       error: 'Forbidden',
     });
   }

@@ -42,7 +42,6 @@ describe('ErrorScreenComponent', () => {
     jest.spyOn(router, 'navigate');
 
     fixture.detectChanges();
-
     component = fixture.componentInstance.errorScreenComponent;
   });
 
@@ -52,11 +51,11 @@ describe('ErrorScreenComponent', () => {
     expect(router).toBeDefined();
   });
 
-  describe('onNavigateHome', () => {
-    it('should navigate home', async () => {
-      await component.onNavigateHome();
+  describe('onNavigate', () => {
+    it('should navigate', async () => {
+      await component.onNavigate({ route: '/' });
       expect(router.navigate).toHaveBeenCalledTimes(1);
-      expect(router.navigate).toHaveBeenCalledWith(['/']);
+      expect(router.navigate).toHaveBeenCalledWith(['/'], {});
     });
   });
 });

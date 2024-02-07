@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
 
 /**
  * A dumb UI for displaying a 404 not found error.
@@ -14,5 +15,5 @@ export class NotFoundErrorComponent {
   /**
    * Tell the smart UI parent to go home.
    */
-  @Output() navigateHome = new EventEmitter<void>();
+  @Output() navigate = new EventEmitter<RouteAndQueryParams>();
 }

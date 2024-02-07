@@ -8,4 +8,5 @@ export * from './subject-org-member.decorator';
 export * from './subject-team-member.decorator';
 export * from './team-member.decorator';
 export * from './team.decorator';
+export * from './unverified-ok.decorator';
 export * from './user.decorator';

@@ -1,9 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { UserEntity, testUserEntity1 } from '@newbee/api/shared/data-access';
-import { testNow1, testNowDayjs1 } from '@newbee/shared/util';
+import {
+  emailUnverifiedForbiddenError,
+  testNow1,
+  testNowDayjs1,
+} from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { EmailVerifiedGuard } from './email-verified.guard';
 
@@ -36,7 +40,7 @@ describe('EmailVerifiedGuard', () => {
     expect(context).toBeDefined();
   });
 
-  it('should return true if public', () => {
+  it('should return true if public or unverified ok', () => {
     const badUser = {
       ...testUserEntity1,
       emailVerified: false,
@@ -45,7 +49,9 @@ describe('EmailVerifiedGuard', () => {
     jest
       .spyOn(context.switchToHttp(), 'getRequest')
       .mockReturnValue({ user: badUser });
-    expect(guard.canActivate(context)).toBeFalsy();
+    expect(() => guard.canActivate(context)).toThrow(
+      new ForbiddenException(emailUnverifiedForbiddenError),
+    );
 
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
     expect(guard.canActivate(context)).toBeTruthy();
@@ -69,6 +75,8 @@ describe('EmailVerifiedGuard', () => {
     jest
       .spyOn(context.switchToHttp(), 'getRequest')
       .mockReturnValue({ user: badUser });
-    expect(guard.canActivate(context)).toBeFalsy();
+    expect(() => guard.canActivate(context)).toThrow(
+      emailUnverifiedForbiddenError,
+    );
   });
 });

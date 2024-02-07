@@ -17,7 +17,7 @@ import {
   NameDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { User } from '@newbee/api/shared/util';
+import { UnverifiedOk, User } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import { Authenticator, Keyword } from '@newbee/shared/util';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -26,6 +26,7 @@ import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typ
  * The controller that interacts with the `AuthenticatorEntity`.
  */
 @Controller({ path: Keyword.Authenticator, version: apiVersion.authenticator })
+@UnverifiedOk()
 export class AuthenticatorController {
   private readonly logger = new Logger(AuthenticatorController.name);
 

@@ -4,7 +4,7 @@ import { NotFoundErrorComponent } from './not-found-error.component';
 export default {
   title: 'Error/NotFoundErrorComponent',
   component: NotFoundErrorComponent,
-  argTypes: { navigateHome: { action: 'navigateHome' } },
+  argTypes: { navigate: { action: 'navigate' } },
 } as Meta<NotFoundErrorComponent>;
 
 type Story = StoryObj<NotFoundErrorComponent>;

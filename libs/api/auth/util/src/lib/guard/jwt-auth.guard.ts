@@ -22,7 +22,7 @@ export class JwtAuthGuard extends AuthGuard(jwt) {
    * @returns Whether the given API route can be activated.
    */
   override canActivate(
-    context: ExecutionContext
+    context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -31,6 +31,7 @@ export class JwtAuthGuard extends AuthGuard(jwt) {
     if (isPublic) {
       return true;
     }
+
     return super.canActivate(context);
   }
 }

@@ -1,6 +1,11 @@
 import { Body, Controller, Delete, Logger, Patch, Post } from '@nestjs/common';
 import { TokenDto, UserEntity } from '@newbee/api/shared/data-access';
-import { Public, User, elongateUuid } from '@newbee/api/shared/util';
+import {
+  Public,
+  UnverifiedOk,
+  User,
+  elongateUuid,
+} from '@newbee/api/shared/util';
 import { UpdateUserDto, UserService } from '@newbee/api/user/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import { Keyword } from '@newbee/shared/util';
@@ -9,6 +14,7 @@ import { Keyword } from '@newbee/shared/util';
  * The controller that interacts with the `UserEntity`.
  */
 @Controller({ path: Keyword.User, version: apiVersion.user })
+@UnverifiedOk()
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
@@ -77,8 +83,8 @@ export class UserController {
    * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM or mailer throws any other type of error.
    */
-  @Public()
   @Post(Keyword.Verify)
+  @Public()
   async verifyEmail(@Body() tokenDto: TokenDto): Promise<UserEntity> {
     const { token } = tokenDto;
     this.logger.log(`Verify email request received for token: ${token}`);
