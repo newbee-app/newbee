@@ -5,7 +5,7 @@ import { AuthService } from '@newbee/api/auth/data-access';
 import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
 import {
-  testBaseCsrfTokenAndDataDto1,
+  testCsrfTokenAndDataDto1,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { request, response } from 'express';
@@ -52,7 +52,7 @@ describe('CookieController', () => {
     request.signedCookies[authJwtCookie] = testToken;
 
     jest.clearAllMocks();
-    generateToken.mockReturnValue(testBaseCsrfTokenAndDataDto1.csrfToken);
+    generateToken.mockReturnValue(testCsrfTokenAndDataDto1.csrfToken);
   });
 
   it('should be defined', () => {
@@ -69,7 +69,7 @@ describe('CookieController', () => {
 
     it('should return a CSRF token and initial data as a DTO', async () => {
       await expect(controller.initCookies(request, response)).resolves.toEqual(
-        testBaseCsrfTokenAndDataDto1,
+        testCsrfTokenAndDataDto1,
       );
       expect(authService.verifyAuthToken).toHaveBeenCalledTimes(1);
       expect(authService.verifyAuthToken).toHaveBeenCalledWith(testToken);
@@ -82,7 +82,7 @@ describe('CookieController', () => {
     it('should only return a CSRF token if request has no auth cookie', async () => {
       request.signedCookies = {};
       await expect(controller.initCookies(request, response)).resolves.toEqual({
-        ...testBaseCsrfTokenAndDataDto1,
+        ...testCsrfTokenAndDataDto1,
         userRelation: null,
       });
       expect(authService.verifyAuthToken).not.toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe('CookieController', () => {
     it('should only return a CSRF token if verify returns null', async () => {
       jest.spyOn(authService, 'verifyAuthToken').mockResolvedValue(null);
       await expect(controller.initCookies(request, response)).resolves.toEqual({
-        ...testBaseCsrfTokenAndDataDto1,
+        ...testCsrfTokenAndDataDto1,
         userRelation: null,
       });
       expect(authService.verifyAuthToken).toHaveBeenCalledTimes(1);

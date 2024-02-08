@@ -5,7 +5,7 @@ import {
   OrganizationActions,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseUpdateOrganizationDto } from '@newbee/shared/util';
+import { UpdateOrganizationDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -56,7 +56,7 @@ export class OrgEditComponent {
    *
    * @param updateOrganizationDto The values to send to the backend.
    */
-  onEdit(updateOrganizationDto: BaseUpdateOrganizationDto): void {
+  onEdit(updateOrganizationDto: UpdateOrganizationDto): void {
     this.store.dispatch(OrganizationActions.editOrg({ updateOrganizationDto }));
   }
 
@@ -65,7 +65,7 @@ export class OrgEditComponent {
    *
    * @param updateOrganizationDto The values to send to the backend.
    */
-  onEditSlug(updateOrganizationDto: BaseUpdateOrganizationDto): void {
+  onEditSlug(updateOrganizationDto: UpdateOrganizationDto): void {
     this.store.dispatch(
       OrganizationActions.editOrgSlug({ updateOrganizationDto }),
     );

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseCsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
+import { CsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
 import { Observable, retry } from 'rxjs';
 
 /**
@@ -22,9 +22,9 @@ export class CookieService {
    *
    * @returns An observable of the CSRF token DTO.
    */
-  initCookies(): Observable<BaseCsrfTokenAndDataDto> {
+  initCookies(): Observable<CsrfTokenAndDataDto> {
     return this.http
-      .get<BaseCsrfTokenAndDataDto>(CookieService.baseApiUrl)
+      .get<CsrfTokenAndDataDto>(CookieService.baseApiUrl)
       .pipe(retry(3));
   }
 }

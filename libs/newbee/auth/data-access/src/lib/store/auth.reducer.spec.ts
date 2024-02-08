@@ -4,10 +4,7 @@ import {
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
-import {
-  testBaseMagicLinkLoginDto1,
-  testUserRelation1,
-} from '@newbee/shared/util';
+import { testMagicLinkLoginDto1, testUserRelation1 } from '@newbee/shared/util';
 import { AuthState, authFeature, initialAuthState } from './auth.reducer';
 
 describe('AuthReducer', () => {
@@ -17,8 +14,8 @@ describe('AuthReducer', () => {
   };
   const stateAfterLoginMagicLinkSuccess: AuthState = {
     ...stateAfterLoginMagicLink,
-    jwtId: testBaseMagicLinkLoginDto1.jwtId,
-    email: testBaseMagicLinkLoginDto1.email,
+    jwtId: testMagicLinkLoginDto1.jwtId,
+    email: testMagicLinkLoginDto1.email,
     pendingMagicLink: false,
   };
   const stateAfterWebAuthnRegisterChallenge: AuthState = {
@@ -67,7 +64,7 @@ describe('AuthReducer', () => {
       const updatedState = authFeature.reducer(
         stateAfterLoginMagicLink,
         AuthActions.sendLoginMagicLinkSuccess({
-          magicLinkLoginDto: testBaseMagicLinkLoginDto1,
+          magicLinkLoginDto: testMagicLinkLoginDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterLoginMagicLinkSuccess);

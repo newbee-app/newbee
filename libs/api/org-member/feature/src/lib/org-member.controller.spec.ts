@@ -11,12 +11,12 @@ import {
   testQnaEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseGetOrgMemberPostsDto1,
-  testBaseUpdateOrgMemberDto1,
   testDocQueryResult1,
+  testGetOrgMemberPostsDto1,
   testOffsetAndLimit1,
   testOrgMemberRelation1,
   testQnaQueryResult1,
+  testUpdateOrgMemberDto1,
 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
 
@@ -27,7 +27,7 @@ describe('OrgMemberController', () => {
 
   const testUpdatedOrgMember = {
     ...testOrgMemberEntity1,
-    role: testBaseUpdateOrgMemberDto1.role,
+    role: testUpdateOrgMemberDto1.role,
   };
 
   beforeEach(async () => {
@@ -84,7 +84,7 @@ describe('OrgMemberController', () => {
     it('should update an org member', async () => {
       await expect(
         controller.update(
-          testBaseUpdateOrgMemberDto1,
+          testUpdateOrgMemberDto1,
           testOrgMemberEntity1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
@@ -93,7 +93,7 @@ describe('OrgMemberController', () => {
       expect(service.updateRole).toHaveBeenCalledTimes(1);
       expect(service.updateRole).toHaveBeenCalledWith(
         testOrgMemberEntity1,
-        testBaseUpdateOrgMemberDto1.role,
+        testUpdateOrgMemberDto1.role,
         testOrgMemberEntity1.role,
       );
     });
@@ -120,7 +120,7 @@ describe('OrgMemberController', () => {
         .mockResolvedValue([[testDocEntity1], 1]);
       await expect(
         controller.getAllDocs(
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),
@@ -150,7 +150,7 @@ describe('OrgMemberController', () => {
         .mockResolvedValue([[testQnaEntity1], 1]);
       await expect(
         controller.getAllQnas(
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),

@@ -7,11 +7,11 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseQueryDto1,
-  testBaseQueryResultsDto1,
-  testBaseSuggestDto1,
-  testBaseSuggestResultsDto1,
   testOrganization1,
+  testQueryDto1,
+  testQueryResultsDto1,
+  testSuggestDto1,
+  testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { SearchService } from './search.service';
 
@@ -43,10 +43,10 @@ describe('SearchService', () => {
 
   describe('search', () => {
     it('should send out a get request', (done) => {
-      service.search(testBaseQueryDto1, testOrganization1.slug).subscribe({
+      service.search(testQueryDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
-            expect(result).toEqual(testBaseQueryResultsDto1);
+            expect(result).toEqual(testQueryResultsDto1);
             done();
           } catch (err) {
             done(err);
@@ -55,7 +55,7 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testBaseQueryDto1 } });
+      const params = new HttpParams({ fromObject: { ...testQueryDto1 } });
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(
           testOrganization1.slug,
@@ -63,16 +63,16 @@ describe('SearchService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseQueryResultsDto1);
+      req.flush(testQueryResultsDto1);
     });
   });
 
   describe('suggest', () => {
     it('should send out a get request', (done) => {
-      service.suggest(testBaseSuggestDto1, testOrganization1.slug).subscribe({
+      service.suggest(testSuggestDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
-            expect(result).toEqual(testBaseSuggestResultsDto1);
+            expect(result).toEqual(testSuggestResultsDto1);
             done();
           } catch (err) {
             done(err);
@@ -81,7 +81,7 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testBaseSuggestDto1 } });
+      const params = new HttpParams({ fromObject: { ...testSuggestDto1 } });
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(testOrganization1.slug)}/${
           Keyword.Suggest
@@ -89,7 +89,7 @@ describe('SearchService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseSuggestResultsDto1);
+      req.flush(testSuggestResultsDto1);
     });
   });
 });

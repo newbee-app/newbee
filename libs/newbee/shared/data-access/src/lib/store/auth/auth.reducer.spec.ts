@@ -1,10 +1,10 @@
 import {
-  testBaseCsrfTokenAndDataDto1,
-  testBaseUserRelationAndOptionsDto1,
+  testCsrfTokenAndDataDto1,
   testOrgMemberInviteRelation1,
   testUser1,
   testUser2,
   testUserRelation1,
+  testUserRelationAndOptionsDto1,
 } from '@newbee/shared/util';
 import { CookieActions } from '../cookie';
 import { UserActions } from '../user';
@@ -28,7 +28,7 @@ describe('AuthReducer', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
         AuthActions.registerWithWebAuthnSuccess({
-          userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
+          userRelationAndOptionsDto: testUserRelationAndOptionsDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
@@ -46,7 +46,7 @@ describe('AuthReducer', () => {
       const updatedState = authFeature.reducer(
         initialAuthState,
         CookieActions.initCookiesSuccess({
-          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+          csrfTokenAndDataDto: testCsrfTokenAndDataDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);

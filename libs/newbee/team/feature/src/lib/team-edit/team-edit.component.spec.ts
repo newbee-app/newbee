@@ -9,11 +9,11 @@ import { initialTeamState as initialTeamModuleState } from '@newbee/newbee/team/
 import { EditTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
-  testBaseUpdateTeamDto1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
   testTeam1,
   testTeamRelation1,
+  testUpdateTeamDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamEditComponent } from './team-edit.component';
@@ -80,9 +80,9 @@ describe('TeamEditComponent', () => {
 
   describe('onEdit', () => {
     it('should dispatch editTeam', () => {
-      component.onEdit(testBaseUpdateTeamDto1);
+      component.onEdit(testUpdateTeamDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
+        TeamActions.editTeam({ updateTeamDto: testUpdateTeamDto1 }),
       );
     });
   });

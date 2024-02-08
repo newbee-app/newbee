@@ -7,7 +7,7 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testBaseTokenDto1,
-  testBaseUpdateUserDto1,
+  testUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { UserService } from './user.service';
@@ -40,7 +40,7 @@ describe('UserService', () => {
 
   describe('edit', () => {
     it('should send out an patch request', (done) => {
-      service.edit(testBaseUpdateUserDto1).subscribe({
+      service.edit(testUpdateUserDto1).subscribe({
         next: (user) => {
           try {
             expect(user).toEqual(testUser1);
@@ -54,7 +54,7 @@ describe('UserService', () => {
 
       const req = httpController.expectOne(UserService.baseApiUrl);
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateUserDto1);
+      expect(req.request.body).toEqual(testUpdateUserDto1);
 
       req.flush(testUser1);
     });

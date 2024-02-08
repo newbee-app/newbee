@@ -25,7 +25,7 @@ import {
   numAndFreqInputToDuration,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseCreateDocDto,
+  CreateDocDto,
   Keyword,
   Team,
   type Organization,
@@ -91,7 +91,7 @@ export class CreateDocComponent implements OnInit {
   /**
    * Tells the smart UI parent when the doc is ready to be created.
    */
-  @Output() create = new EventEmitter<BaseCreateDocDto>();
+  @Output() create = new EventEmitter<CreateDocDto>();
 
   /**
    * The doc markdoc as a string, for internal tracking.
@@ -143,15 +143,16 @@ export class CreateDocComponent implements OnInit {
    */
   emitCreate(): void {
     const { title, team } = this.docForm.value;
-    this.create.emit({
-      title: title ?? '',
-      team: team?.slug ?? null,
-      docMarkdoc: this.docMarkdoc,
-      upToDateDuration:
+    this.create.emit(
+      new CreateDocDto(
+        title ?? '',
         numAndFreqInputToDuration(
           this.docForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
-    });
+        this.docMarkdoc,
+        team?.slug ?? null,
+      ),
+    );
   }
 
   /**

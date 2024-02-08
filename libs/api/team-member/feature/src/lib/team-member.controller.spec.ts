@@ -10,9 +10,9 @@ import {
 } from '@newbee/api/shared/data-access';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
-  testBaseCreateTeamMemberDto1,
-  testBaseUpdateTeamMemberDto1,
+  testCreateTeamMemberDto1,
   testTeamMemberRelation1,
+  testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
 import { TeamMemberController } from './team-member.controller';
 
@@ -24,7 +24,7 @@ describe('TeamMemberController', () => {
 
   const testUpdatedTeamMember = {
     ...testTeamMemberEntity1,
-    role: testBaseUpdateTeamMemberDto1.role,
+    role: testUpdateTeamMemberDto1.role,
   };
 
   beforeEach(async () => {
@@ -74,7 +74,7 @@ describe('TeamMemberController', () => {
     it('should create a team member', async () => {
       await expect(
         controller.create(
-          testBaseCreateTeamMemberDto1,
+          testCreateTeamMemberDto1,
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
@@ -84,13 +84,13 @@ describe('TeamMemberController', () => {
       expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
       expect(orgMemberService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
-        testBaseCreateTeamMemberDto1.orgMemberSlug,
+        testCreateTeamMemberDto1.orgMemberSlug,
       );
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(service.create).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
-        testBaseCreateTeamMemberDto1.role,
+        testCreateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
         testTeamMemberEntity1.role,
       );
@@ -107,7 +107,7 @@ describe('TeamMemberController', () => {
     it('should update a team member', async () => {
       await expect(
         controller.update(
-          testBaseUpdateTeamMemberDto1,
+          testUpdateTeamMemberDto1,
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrgMemberEntity1,
@@ -119,7 +119,7 @@ describe('TeamMemberController', () => {
       expect(service.updateRole).toHaveBeenCalledTimes(1);
       expect(service.updateRole).toHaveBeenCalledWith(
         testTeamMemberEntity1,
-        testBaseUpdateTeamMemberDto1.role,
+        testUpdateTeamMemberDto1.role,
         testOrgMemberEntity1.role,
         testTeamMemberEntity1.role,
       );

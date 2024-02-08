@@ -22,6 +22,8 @@ import {
   TeamEntity,
 } from '@newbee/api/shared/data-access';
 import {
+  CreateTeamDto,
+  UpdateTeamDto,
   internalServerError,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
@@ -29,7 +31,6 @@ import {
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
 import { v4 } from 'uuid';
-import { CreateTeamDto, UpdateTeamDto } from './dto';
 
 /**
  * The service that interacts with the `TeamEntity`.

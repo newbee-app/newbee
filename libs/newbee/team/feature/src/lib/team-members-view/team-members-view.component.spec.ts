@@ -11,14 +11,14 @@ import { initialTeamState as initialTeamModuleState } from '@newbee/newbee/team/
 import { ViewTeamMembersComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
-  testBaseCreateTeamMemberDto1,
-  testBaseUpdateTeamMemberDto1,
+  testCreateTeamMemberDto1,
   testOrgMember1,
   testOrgMemberRelation1,
   testOrganization1,
   testOrganizationRelation1,
   testTeam1,
   testTeamRelation1,
+  testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TeamMembersViewComponent } from './team-members-view.component';
@@ -71,11 +71,11 @@ describe('TeamMembersViewComponent', () => {
 
   describe('onAddTeamMember', () => {
     it('should dispatch addTeamMember', () => {
-      component.onAddTeamMember(testBaseCreateTeamMemberDto1);
+      component.onAddTeamMember(testCreateTeamMemberDto1);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.addTeamMember({
-          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+          createTeamMemberDto: testCreateTeamMemberDto1,
         }),
       );
     });
@@ -85,13 +85,13 @@ describe('TeamMembersViewComponent', () => {
     it('should dispatch editTeamMember', () => {
       component.onEditTeamMember({
         orgMemberSlug: testOrgMember1.slug,
-        updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+        updateTeamMemberDto: testUpdateTeamMemberDto1,
       });
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         TeamActions.editTeamMember({
           orgMemberSlug: testOrgMember1.slug,
-          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+          updateTeamMemberDto: testUpdateTeamMemberDto1,
         }),
       );
     });

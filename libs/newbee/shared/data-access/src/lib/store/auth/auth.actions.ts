@@ -1,10 +1,10 @@
 import {
-  BaseCreateUserDto,
-  BaseEmailDto,
-  BaseMagicLinkLoginDto,
-  BaseUserRelationAndOptionsDto,
+  CreateUserDto,
+  EmailDto,
   Keyword,
+  MagicLinkLoginDto,
   UserRelation,
+  UserRelationAndOptionsDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -19,14 +19,14 @@ export const AuthActions = createActionGroup({
      * Send a magic link login request to the API.
      * Should call `Send Login Magic Link Success` with the result and redirect.
      */
-    'Send Login Magic Link': props<{ emailDto: BaseEmailDto }>(),
+    'Send Login Magic Link': props<{ emailDto: EmailDto }>(),
 
     /**
      * Marks the magic link as successfully sent to the user's email.
      * The information is saved in the module-specific reducer for display to the user.
      */
     'Send Login Magic Link Success': props<{
-      magicLinkLoginDto: BaseMagicLinkLoginDto;
+      magicLinkLoginDto: MagicLinkLoginDto;
     }>(),
 
     /**
@@ -39,27 +39,27 @@ export const AuthActions = createActionGroup({
      * Register a new user and get WebAuthn registration options from the API for registering a new authenticator.
      * Should call `Register With WebAuthn Success` with the result, if successful.
      */
-    'Register With WebAuthn': props<{ createUserDto: BaseCreateUserDto }>(),
+    'Register With WebAuthn': props<{ createUserDto: CreateUserDto }>(),
 
     /**
      * Saves the newly created user and access token in the app-wide reducer, calls `[Authenticator] Create Authenticator`, and redirects.
      */
     'Register With WebAuthn Success': props<{
-      userRelationAndOptionsDto: BaseUserRelationAndOptionsDto;
+      userRelationAndOptionsDto: UserRelationAndOptionsDto;
     }>(),
 
     /**
      * Gets WebAuthn login options from the API for logging in an existing user.
      * Should call `Login With WebAuthn` with the result, if successful.
      */
-    'Create WebAuthn Login Options': props<{ emailDto: BaseEmailDto }>(),
+    'Create WebAuthn Login Options': props<{ emailDto: EmailDto }>(),
 
     /**
      * Sends the authenticator's response back to the API for verification.
      * Should call `Login Success` with the result and redirect.
      */
     'Login With WebAuthn': props<{
-      emailDto: BaseEmailDto;
+      emailDto: EmailDto;
       options: PublicKeyCredentialRequestOptionsJSON;
     }>(),
 

@@ -12,7 +12,7 @@ import {
   inputErrorMessage,
   phoneInputToString,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateUserDto, Keyword } from '@newbee/shared/util';
+import { CreateUserDto, Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -42,7 +42,7 @@ export class RegisterFormComponent {
   /**
    * The emitted register form, for use in the smart UI parent.
    */
-  @Output() register = new EventEmitter<BaseCreateUserDto>();
+  @Output() register = new EventEmitter<CreateUserDto>();
 
   /**
    * An HTTP error for the component, if one exists.
@@ -114,12 +114,14 @@ export class RegisterFormComponent {
     const phoneNumberString = phoneNumber
       ? phoneInputToString(phoneNumber)
       : null;
-    this.register.emit({
-      email: email ?? '',
-      name: name ?? '',
-      displayName: displayName || null,
-      phoneNumber: phoneNumberString,
-    });
+    this.register.emit(
+      new CreateUserDto(
+        email ?? '',
+        name ?? '',
+        displayName || null,
+        phoneNumberString,
+      ),
+    );
   }
 
   /**

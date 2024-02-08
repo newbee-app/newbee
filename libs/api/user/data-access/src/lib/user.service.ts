@@ -21,6 +21,7 @@ import {
 import { shortenUuid, type AppConfig } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
+  CreateUserDto,
   Keyword,
   UserRoleEnum,
   internalServerError,
@@ -31,7 +32,6 @@ import {
 import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { v4 } from 'uuid';
-import { CreateUserDto } from './dto';
 import type { UserAndOptions } from './interface';
 
 /**

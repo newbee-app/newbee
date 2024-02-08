@@ -27,11 +27,7 @@ import {
   numAndFreqInputToDuration,
   type HttpClientError,
 } from '@newbee/newbee/shared/util';
-import {
-  BaseCreateTeamDto,
-  Keyword,
-  type Organization,
-} from '@newbee/shared/util';
+import { CreateTeamDto, Keyword, type Organization } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -109,7 +105,7 @@ export class CreateTeamComponent implements OnDestroy {
   /**
    * The emitted create team form, for use in the smart UI parent.
    */
-  @Output() create = new EventEmitter<BaseCreateTeamDto>();
+  @Output() create = new EventEmitter<CreateTeamDto>();
 
   /**
    * The org's duration represented as a human-readable string.
@@ -162,14 +158,15 @@ export class CreateTeamComponent implements OnDestroy {
    */
   emitCreate(): void {
     const { name, slug } = this.createTeamForm.value;
-    this.create.emit({
-      name: name ?? '',
-      slug: slug ?? '',
-      upToDateDuration:
+    this.create.emit(
+      new CreateTeamDto(
+        name ?? '',
+        slug ?? '',
         numAndFreqInputToDuration(
           this.createTeamForm.controls.upToDateDuration.value,
         )?.toISOString() ?? null,
-    });
+      ),
+    );
   }
 
   /**

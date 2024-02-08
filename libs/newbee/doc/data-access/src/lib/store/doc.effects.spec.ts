@@ -11,15 +11,15 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateDocDto1,
   testBaseDocAndMemberDto1,
-  testBaseUpdateDocDto1,
+  testCreateDocDto1,
   testDoc1,
   testDocRelation1,
   testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
   testPaginatedResultsDocQueryResult1,
+  testUpdateDocDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -221,7 +221,7 @@ describe('DocEffects', () => {
   describe('createDoc$', () => {
     it('should fire createDocSuccess if successful', () => {
       actions$ = hot('a', {
-        a: DocActions.createDoc({ createDocDto: testBaseCreateDocDto1 }),
+        a: DocActions.createDoc({ createDocDto: testCreateDocDto1 }),
       });
       const expected$ = hot('a', {
         a: DocActions.createDocSuccess({ doc: testDoc1 }),
@@ -231,7 +231,7 @@ describe('DocEffects', () => {
         expect(service.create).toHaveBeenCalledTimes(1);
         expect(service.create).toHaveBeenCalledWith(
           testOrganization1.slug,
-          testBaseCreateDocDto1,
+          testCreateDocDto1,
         );
       });
     });
@@ -239,7 +239,7 @@ describe('DocEffects', () => {
     it(`should do nothing if selectedOrganization isn't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: DocActions.createDoc({ createDocDto: testBaseCreateDocDto1 }),
+        a: DocActions.createDoc({ createDocDto: testCreateDocDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.createDoc$).toBeObservable(expected$);
@@ -349,7 +349,7 @@ describe('DocEffects', () => {
   describe('editDoc$', () => {
     it('should fire editDocSuccess if successful', () => {
       actions$ = hot('a', {
-        a: DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
+        a: DocActions.editDoc({ updateDocDto: testUpdateDocDto1 }),
       });
       const expected$ = hot('a', {
         a: DocActions.getDocSuccess({
@@ -362,7 +362,7 @@ describe('DocEffects', () => {
         expect(service.edit).toHaveBeenCalledWith(
           testDoc1.slug,
           testOrganization1.slug,
-          testBaseUpdateDocDto1,
+          testUpdateDocDto1,
         );
       });
     });
@@ -370,7 +370,7 @@ describe('DocEffects', () => {
     it(`should do nothing if selectedOrganization or selectedDoc isn't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
+        a: DocActions.editDoc({ updateDocDto: testUpdateDocDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.editDoc$).toBeObservable(expected$);

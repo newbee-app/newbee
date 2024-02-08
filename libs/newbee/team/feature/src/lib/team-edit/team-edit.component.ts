@@ -6,7 +6,7 @@ import {
   teamFeature,
 } from '@newbee/newbee/shared/data-access';
 import { teamFeature as teamModuleFeature } from '@newbee/newbee/team/data-access';
-import { BaseUpdateTeamDto } from '@newbee/shared/util';
+import { UpdateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -62,7 +62,7 @@ export class TeamEditComponent {
    *
    * @param updateTeamDto The value to send to the backend.
    */
-  onEdit(updateTeamDto: BaseUpdateTeamDto): void {
+  onEdit(updateTeamDto: UpdateTeamDto): void {
     this.store.dispatch(TeamActions.editTeam({ updateTeamDto }));
   }
 

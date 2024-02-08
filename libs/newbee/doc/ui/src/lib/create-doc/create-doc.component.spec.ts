@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Frequency, SelectOption } from '@newbee/newbee/shared/util';
 import {
-  testBaseCreateDocDto1,
+  testCreateDocDto1,
   testDoc1,
   testOrganization1,
   testTeam1,
@@ -71,7 +71,7 @@ describe('CreateDocComponent', () => {
       component.docMarkdoc = testDoc1.docMarkdoc;
       component.emitCreate();
       expect(component.create.emit).toHaveBeenCalledTimes(2);
-      expect(component.create.emit).toHaveBeenCalledWith(testBaseCreateDocDto1);
+      expect(component.create.emit).toHaveBeenCalledWith(testCreateDocDto1);
     });
   });
 });

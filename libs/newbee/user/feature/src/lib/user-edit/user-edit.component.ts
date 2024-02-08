@@ -6,7 +6,7 @@ import {
   UserActions,
 } from '@newbee/newbee/shared/data-access';
 import { userFeature } from '@newbee/newbee/user/data-access';
-import { BaseUpdateUserDto } from '@newbee/shared/util';
+import { UpdateUserDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -39,7 +39,7 @@ export class UserEditComponent {
    *
    * @param updateUserDto The values to send to the backend.
    */
-  onEdit(updateUserDto: BaseUpdateUserDto): void {
+  onEdit(updateUserDto: UpdateUserDto): void {
     this.store.dispatch(UserActions.editUser({ updateUserDto }));
   }
 

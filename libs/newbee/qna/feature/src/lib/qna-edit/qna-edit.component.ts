@@ -7,10 +7,7 @@ import {
   qnaFeature,
   selectOrgMemberUser,
 } from '@newbee/newbee/shared/data-access';
-import {
-  BaseUpdateAnswerDto,
-  BaseUpdateQuestionDto,
-} from '@newbee/shared/util';
+import { UpdateAnswerDto, UpdateQuestionDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -53,7 +50,7 @@ export class QnaEditComponent {
    *
    * @param updateQuestionDto The new details for the currently selected qna.
    */
-  onEditQuestion(updateQuestionDto: BaseUpdateQuestionDto): void {
+  onEditQuestion(updateQuestionDto: UpdateQuestionDto): void {
     this.store.dispatch(QnaActions.editQuestion({ updateQuestionDto }));
   }
 
@@ -62,7 +59,7 @@ export class QnaEditComponent {
    *
    * @param updateAnswerDto The new details for the currently selected qna.
    */
-  onEditAnswer(updateAnswerDto: BaseUpdateAnswerDto): void {
+  onEditAnswer(updateAnswerDto: UpdateAnswerDto): void {
     this.store.dispatch(QnaActions.editAnswer({ updateAnswerDto }));
   }
 

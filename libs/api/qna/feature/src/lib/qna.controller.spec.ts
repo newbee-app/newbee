@@ -11,13 +11,12 @@ import {
 } from '@newbee/api/shared/data-access';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
-  testBaseCreateQnaDto1,
-  testBaseUpdateAnswerDto1,
-  testBaseUpdateQnaDto1,
-  testBaseUpdateQuestionDto1,
+  testCreateQnaDto1,
   testOffsetAndLimit1,
   testQnaQueryResult1,
   testQnaRelation1,
+  testUpdateAnswerDto1,
+  testUpdateQnaDto1,
 } from '@newbee/shared/util';
 import { QnaController } from './qna.controller';
 
@@ -27,7 +26,7 @@ describe('QnaController', () => {
   let entityService: EntityService;
   let teamMemberService: TeamMemberService;
 
-  const { team: _team, ...restUpdateQnaDto } = testBaseUpdateQnaDto1;
+  const { team: _team, ...restUpdateQnaDto } = testUpdateQnaDto1;
   _team;
   const testUpdatedQnaEntity = { ...testQnaEntity1, ...restUpdateQnaDto };
 
@@ -104,14 +103,14 @@ describe('QnaController', () => {
   it('create should create a qna', async () => {
     await expect(
       controller.create(
-        testBaseCreateQnaDto1,
+        testCreateQnaDto1,
         testOrgMemberEntity1,
         testOrganizationEntity1,
       ),
     ).resolves.toEqual(testQnaEntity1);
     expect(service.create).toHaveBeenCalledTimes(1);
     expect(service.create).toHaveBeenCalledWith(
-      testBaseCreateQnaDto1,
+      testCreateQnaDto1,
       testOrgMemberEntity1,
     );
   });
@@ -142,7 +141,7 @@ describe('QnaController', () => {
     it('updateQuestion should update the question', async () => {
       await expect(
         controller.updateQuestion(
-          testBaseUpdateQuestionDto1,
+          testUpdateQnaDto1,
           testQnaEntity1,
           testOrgMemberEntity1,
         ),
@@ -150,7 +149,7 @@ describe('QnaController', () => {
       expect(service.update).toHaveBeenCalledTimes(1);
       expect(service.update).toHaveBeenCalledWith(
         testQnaEntity1,
-        testBaseUpdateQuestionDto1,
+        testUpdateQnaDto1,
       );
       expect(entityService.createQnaNoOrg).toHaveBeenCalledWith(
         testUpdatedQnaEntity,
@@ -160,12 +159,12 @@ describe('QnaController', () => {
 
   it('updateAnswer should update the answer', async () => {
     await expect(
-      controller.updateAnswer(testBaseUpdateAnswerDto1, testQnaEntity1),
+      controller.updateAnswer(testUpdateAnswerDto1, testQnaEntity1),
     ).resolves.toEqual(testUpdatedQnaEntity);
     expect(service.update).toHaveBeenCalledTimes(1);
     expect(service.update).toHaveBeenCalledWith(
       testQnaEntity1,
-      testBaseUpdateAnswerDto1,
+      testUpdateAnswerDto1,
     );
   });
 

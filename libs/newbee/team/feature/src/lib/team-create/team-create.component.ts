@@ -5,7 +5,7 @@ import {
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { teamFeature } from '@newbee/newbee/team/data-access';
-import { BaseCreateTeamDto } from '@newbee/shared/util';
+import { CreateTeamDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
@@ -89,7 +89,7 @@ export class TeamCreateComponent implements OnDestroy {
    *
    * @param createTeamDto The values to send to the backend.
    */
-  onCreate(createTeamDto: BaseCreateTeamDto): void {
+  onCreate(createTeamDto: CreateTeamDto): void {
     this.store.dispatch(TeamActions.createTeam({ createTeamDto }));
   }
 }

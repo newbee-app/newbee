@@ -21,8 +21,8 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Authenticator,
-  BaseUpdateUserDto,
   Keyword,
+  UpdateUserDto,
   type User,
 } from '@newbee/shared/util';
 import parsePhoneNumber from 'libphonenumber-js';
@@ -106,7 +106,7 @@ export class EditUserComponent implements OnInit {
   /**
    * The emitted edit user form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<BaseUpdateUserDto>();
+  @Output() edit = new EventEmitter<UpdateUserDto>();
 
   /**
    * Indicates that the user has initiated a request to add a new authenticator.
@@ -231,11 +231,13 @@ export class EditUserComponent implements OnInit {
     const phoneNumberString = phoneNumber
       ? phoneInputToString(phoneNumber)
       : null;
-    this.edit.emit({
-      name: name ?? '',
-      displayName: displayName || null,
-      phoneNumber: phoneNumberString,
-    });
+    this.edit.emit(
+      new UpdateUserDto({
+        name: name ?? '',
+        displayName: displayName || null,
+        phoneNumber: phoneNumberString,
+      }),
+    );
   }
 
   /**

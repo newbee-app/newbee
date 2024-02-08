@@ -11,7 +11,7 @@ import {
   unverifiedUserEmailAlert,
 } from '@newbee/newbee/shared/util';
 import {
-  testBaseCsrfTokenAndDataDto1,
+  testCsrfTokenAndDataDto1,
   testUser2,
   testUserRelation1,
 } from '@newbee/shared/util';
@@ -52,7 +52,7 @@ describe('CookieEffects', () => {
           useValue: createMock<CookieService>({
             initCookies: jest
               .fn()
-              .mockReturnValue(of(testBaseCsrfTokenAndDataDto1)),
+              .mockReturnValue(of(testCsrfTokenAndDataDto1)),
           }),
         },
       ],
@@ -81,7 +81,7 @@ describe('CookieEffects', () => {
       actions$ = hot('a', { a: CookieActions.initCookies() });
       const expected$ = hot('a', {
         a: CookieActions.initCookiesSuccess({
-          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+          csrfTokenAndDataDto: testCsrfTokenAndDataDto1,
         }),
       });
       expect(effects.initCookies$).toBeObservable(expected$);
@@ -95,7 +95,7 @@ describe('CookieEffects', () => {
       store.setState({
         cookie: {
           ...initialCookieState,
-          csrfToken: testBaseCsrfTokenAndDataDto1.csrfToken,
+          csrfToken: testCsrfTokenAndDataDto1.csrfToken,
         },
       });
       actions$ = hot('a', { a: CookieActions.initCookies() });
@@ -112,7 +112,7 @@ describe('CookieEffects', () => {
       actions$ = hot('a', {
         a: CookieActions.initCookiesSuccess({
           csrfTokenAndDataDto: {
-            ...testBaseCsrfTokenAndDataDto1,
+            ...testCsrfTokenAndDataDto1,
             userRelation: { ...testUserRelation1, user: testUser2 },
           },
         }),
@@ -141,7 +141,7 @@ describe('CookieEffects', () => {
     it('should do nothing if user email is verified', () => {
       actions$ = hot('a', {
         a: CookieActions.initCookiesSuccess({
-          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+          csrfTokenAndDataDto: testCsrfTokenAndDataDto1,
         }),
       });
       const expected$ = hot('-');

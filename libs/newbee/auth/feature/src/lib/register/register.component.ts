@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
-import { BaseCreateUserDto, Keyword } from '@newbee/shared/util';
+import { CreateUserDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -34,7 +34,7 @@ export class RegisterComponent {
    *
    * @param createUserDto The values to feed into the register request.
    */
-  onRegister(createUserDto: BaseCreateUserDto): void {
+  onRegister(createUserDto: CreateUserDto): void {
     this.store.dispatch(AuthActions.registerWithWebAuthn({ createUserDto }));
   }
 

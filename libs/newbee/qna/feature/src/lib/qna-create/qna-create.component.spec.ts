@@ -3,7 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { CreateQnaComponent } from '@newbee/newbee/qna/ui';
 import { QnaActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseCreateQnaDto1 } from '@newbee/shared/util';
+import { testCreateQnaDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnaCreateComponent } from './qna-create.component';
 
@@ -49,9 +49,9 @@ describe('QnaCreateComponent', () => {
 
   describe('onCreate', () => {
     it('should dispatch createQna', () => {
-      component.onCreate(testBaseCreateQnaDto1);
+      component.onCreate(testCreateQnaDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
+        QnaActions.createQna({ createQnaDto: testCreateQnaDto1 }),
       );
     });
   });

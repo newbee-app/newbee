@@ -2,14 +2,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateDocDto,
-  BaseDocAndMemberDto,
-  BaseUpdateDocDto,
+  CreateDocDto,
   Doc,
+  DocAndMemberDto,
   DocQueryResult,
   Keyword,
   OffsetAndLimit,
   PaginatedResults,
+  UpdateDocDto,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -58,7 +58,7 @@ export class DocService {
    *
    * @returns An observable containing the created doc.
    */
-  create(orgSlug: string, createDocDto: BaseCreateDocDto): Observable<Doc> {
+  create(orgSlug: string, createDocDto: CreateDocDto): Observable<Doc> {
     return this.http.post<Doc>(DocService.baseApiUrl(orgSlug), createDocDto);
   }
 
@@ -70,8 +70,8 @@ export class DocService {
    *
    * @returns An observable containing the requested doc.
    */
-  get(docSlug: string, orgSlug: string): Observable<BaseDocAndMemberDto> {
-    return this.http.get<BaseDocAndMemberDto>(
+  get(docSlug: string, orgSlug: string): Observable<DocAndMemberDto> {
+    return this.http.get<DocAndMemberDto>(
       `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
     );
   }
@@ -103,9 +103,9 @@ export class DocService {
   edit(
     docSlug: string,
     orgSlug: string,
-    updateDocDto: BaseUpdateDocDto,
-  ): Observable<BaseDocAndMemberDto> {
-    return this.http.patch<BaseDocAndMemberDto>(
+    updateDocDto: UpdateDocDto,
+  ): Observable<DocAndMemberDto> {
+    return this.http.patch<DocAndMemberDto>(
       `${DocService.baseApiUrl(orgSlug)}/${docSlug}`,
       updateDocDto,
     );

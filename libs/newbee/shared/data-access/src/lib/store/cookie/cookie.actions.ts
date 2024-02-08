@@ -1,4 +1,4 @@
-import { BaseCsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
+import { CsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
@@ -17,7 +17,7 @@ export const CookieActions = createActionGroup({
      * Saves the server-created CSRF token and initial data to the global store for use in future requests.
      */
     'Init Cookies Success': props<{
-      csrfTokenAndDataDto: BaseCsrfTokenAndDataDto;
+      csrfTokenAndDataDto: CsrfTokenAndDataDto;
     }>(),
   },
 });

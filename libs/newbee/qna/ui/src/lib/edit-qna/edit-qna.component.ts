@@ -28,12 +28,12 @@ import {
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseUpdateAnswerDto,
-  BaseUpdateQuestionDto,
   Keyword,
   RoleType,
   Team,
   TeamMember,
+  UpdateAnswerDto,
+  UpdateQuestionDto,
   apiRoles,
   checkRoles,
   userDisplayName,
@@ -184,12 +184,12 @@ export class EditQnaComponent implements OnInit {
   /**
    * Tells the smart UI parent to update the question with the given values.
    */
-  @Output() editQuestion = new EventEmitter<BaseUpdateQuestionDto>();
+  @Output() editQuestion = new EventEmitter<UpdateQuestionDto>();
 
   /**
    * Tells the smart UI parent to update the answer with the given value.
    */
-  @Output() editAnswer = new EventEmitter<BaseUpdateAnswerDto>();
+  @Output() editAnswer = new EventEmitter<UpdateAnswerDto>();
 
   /**
    * Tells the smart UI parent to mark the qna as up-to-date.
@@ -274,11 +274,13 @@ export class EditQnaComponent implements OnInit {
    */
   emitEditQuestion(): void {
     const { title, team } = this.editQuestionForm.value;
-    this.editQuestion.emit({
-      title: title ?? '',
-      questionMarkdoc: this.questionMarkdoc || null,
-      team: team?.slug ?? null,
-    });
+    this.editQuestion.emit(
+      new UpdateQuestionDto({
+        title: title ?? '',
+        questionMarkdoc: this.questionMarkdoc || null,
+        team: team?.slug ?? null,
+      }),
+    );
   }
 
   /**
@@ -286,14 +288,16 @@ export class EditQnaComponent implements OnInit {
    */
   emitEditAnswer(): void {
     const { maintainer } = this.editAnswerForm.value;
-    this.editAnswer.emit({
-      answerMarkdoc: this.answerMarkdoc,
-      maintainer: maintainer?.orgMember.slug ?? '',
-      upToDateDuration:
-        numAndFreqInputToDuration(
-          this.editAnswerForm.controls.upToDateDuration.value,
-        )?.toISOString() ?? null,
-    });
+    this.editAnswer.emit(
+      new UpdateAnswerDto({
+        answerMarkdoc: this.answerMarkdoc,
+        maintainer: maintainer?.orgMember.slug ?? '',
+        upToDateDuration:
+          numAndFreqInputToDuration(
+            this.editAnswerForm.controls.upToDateDuration.value,
+          )?.toISOString() ?? null,
+      }),
+    );
   }
 
   /**

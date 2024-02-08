@@ -1,7 +1,7 @@
 import {
   Qna,
-  testBaseQnaAndMemberDto1,
   testQna1,
+  testQnaAndMemberDto1,
   testQnaRelation1,
   testTeamMember1,
 } from '@newbee/shared/util';
@@ -18,7 +18,7 @@ describe('QnaReducer', () => {
     it('should update state for getQnaSuccess', () => {
       const updatedState = qnaFeature.reducer(
         initialQnaState,
-        QnaActions.getQnaSuccess({ qnaAndMemberDto: testBaseQnaAndMemberDto1 }),
+        QnaActions.getQnaSuccess({ qnaAndMemberDto: testQnaAndMemberDto1 }),
       );
       expect(updatedState).toEqual(stateAfterGetQnaSuccess);
     });

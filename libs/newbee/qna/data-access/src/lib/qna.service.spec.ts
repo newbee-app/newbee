@@ -7,14 +7,14 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateQnaDto1,
-  testBaseQnaAndMemberDto1,
-  testBaseUpdateAnswerDto1,
-  testBaseUpdateQuestionDto1,
+  testCreateQnaDto1,
   testOffsetAndLimit1,
   testOrganization1,
   testPaginatedResultsQnaQueryResult1,
   testQna1,
+  testQnaAndMemberDto1,
+  testUpdateAnswerDto1,
+  testUpdateQuestionDto1,
 } from '@newbee/shared/util';
 import { QnaService } from './qna.service';
 
@@ -70,7 +70,7 @@ describe('QnaService', () => {
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testBaseCreateQnaDto1, testOrganization1.slug).subscribe({
+      service.create(testCreateQnaDto1, testOrganization1.slug).subscribe({
         next: (qna) => {
           try {
             expect(qna).toEqual(testQna1);
@@ -86,7 +86,7 @@ describe('QnaService', () => {
         QnaService.baseApiUrl(testOrganization1.slug),
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateQnaDto1);
+      expect(req.request.body).toEqual(testCreateQnaDto1);
 
       req.flush(testQna1);
     });
@@ -97,7 +97,7 @@ describe('QnaService', () => {
       service.get(testQna1.slug, testOrganization1.slug).subscribe({
         next: (qnaAndMemberDto) => {
           try {
-            expect(qnaAndMemberDto).toEqual(testBaseQnaAndMemberDto1);
+            expect(qnaAndMemberDto).toEqual(testQnaAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -111,7 +111,7 @@ describe('QnaService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseQnaAndMemberDto1);
+      req.flush(testQnaAndMemberDto1);
     });
   });
 
@@ -145,12 +145,12 @@ describe('QnaService', () => {
         .editQuestion(
           testQna1.slug,
           testOrganization1.slug,
-          testBaseUpdateQuestionDto1,
+          testUpdateQuestionDto1,
         )
         .subscribe({
           next: (qnaAndMemberDto) => {
             try {
-              expect(qnaAndMemberDto).toEqual(testBaseQnaAndMemberDto1);
+              expect(qnaAndMemberDto).toEqual(testQnaAndMemberDto1);
               done();
             } catch (err) {
               done(err);
@@ -165,20 +165,16 @@ describe('QnaService', () => {
         }`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateQuestionDto1);
+      expect(req.request.body).toEqual(testUpdateQuestionDto1);
 
-      req.flush(testBaseQnaAndMemberDto1);
+      req.flush(testQnaAndMemberDto1);
     });
   });
 
   describe('editAnswer', () => {
     it('should send out a patch request', (done) => {
       service
-        .editAnswer(
-          testQna1.slug,
-          testOrganization1.slug,
-          testBaseUpdateAnswerDto1,
-        )
+        .editAnswer(testQna1.slug, testOrganization1.slug, testUpdateAnswerDto1)
         .subscribe({
           next: (qna) => {
             try {
@@ -197,7 +193,7 @@ describe('QnaService', () => {
         }`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateAnswerDto1);
+      expect(req.request.body).toEqual(testUpdateAnswerDto1);
 
       req.flush(testQna1);
     });

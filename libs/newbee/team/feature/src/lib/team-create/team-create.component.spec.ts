@@ -13,7 +13,7 @@ import { initialTeamState } from '@newbee/newbee/team/data-access';
 import { CreateTeamComponent } from '@newbee/newbee/team/ui';
 import {
   Keyword,
-  testBaseCreateTeamDto1,
+  testCreateTeamDto1,
   testOrganizationRelation1,
   testTeam1,
 } from '@newbee/shared/util';
@@ -94,9 +94,9 @@ describe('TeamCreateComponent', () => {
 
   describe('onCreate', () => {
     it('should dispatch createTeam', () => {
-      component.onCreate(testBaseCreateTeamDto1);
+      component.onCreate(testCreateTeamDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
+        TeamActions.createTeam({ createTeamDto: testCreateTeamDto1 }),
       );
     });
   });

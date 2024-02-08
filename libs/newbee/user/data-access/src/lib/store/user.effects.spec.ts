@@ -16,7 +16,7 @@ import {
 import {
   Keyword,
   testBaseTokenDto1,
-  testBaseUpdateUserDto1,
+  testUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -85,7 +85,7 @@ describe('UserEffects', () => {
   describe('editUser$', () => {
     it('should fire editUserSuccess if successful', () => {
       actions$ = hot('a', {
-        a: UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
+        a: UserActions.editUser({ updateUserDto: testUpdateUserDto1 }),
       });
       const expected$ = hot('a', {
         a: UserActions.editUserSuccess({ user: testUser1 }),
@@ -93,7 +93,7 @@ describe('UserEffects', () => {
       expect(effects.editUser$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.edit).toHaveBeenCalledTimes(1);
-        expect(service.edit).toHaveBeenCalledWith(testBaseUpdateUserDto1);
+        expect(service.edit).toHaveBeenCalledWith(testUpdateUserDto1);
       });
     });
   });

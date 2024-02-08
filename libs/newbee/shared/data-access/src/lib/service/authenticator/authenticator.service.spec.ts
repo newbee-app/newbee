@@ -7,10 +7,10 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testAuthenticator1,
-  testBaseNameDto1,
-  testBaseRegistrationResponseDto1,
+  testNameDto1,
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
+  testRegistrationResponseDto1,
 } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import { of } from 'rxjs';
@@ -116,7 +116,7 @@ describe('AuthenticatorService', () => {
         `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseRegistrationResponseDto1);
+      expect(req.request.body).toEqual(testRegistrationResponseDto1);
 
       req.flush(testAuthenticator1);
     });
@@ -124,7 +124,7 @@ describe('AuthenticatorService', () => {
 
   describe('editName', () => {
     it('should send out a patch request', (done) => {
-      service.editName(testAuthenticator1.id, testBaseNameDto1.name).subscribe({
+      service.editName(testAuthenticator1.id, testNameDto1.name).subscribe({
         next: (authenticator) => {
           try {
             expect(authenticator).toEqual(testAuthenticator1);
@@ -140,7 +140,7 @@ describe('AuthenticatorService', () => {
         `/${Keyword.Api}/v${apiVersion.authenticator}/${Keyword.Authenticator}/${testAuthenticator1.id}`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseNameDto1);
+      expect(req.request.body).toEqual(testNameDto1);
 
       req.flush(testAuthenticator1);
     });

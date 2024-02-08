@@ -1,1 +1,1 @@
-export * from './base-registration-response.dto';
+export * from './registration-response.dto';

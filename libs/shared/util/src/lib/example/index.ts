@@ -10,43 +10,43 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { defaultLimit } from '../constant';
 import {
-  BaseCreateDocDto,
-  BaseCreateOrgMemberInviteDto,
-  BaseCreateOrganizationDto,
-  BaseCreateQnaDto,
-  BaseCreateTeamDto,
-  BaseCreateTeamMemberDto,
-  BaseCreateUserDto,
-  BaseCsrfTokenAndDataDto,
-  BaseDocAndMemberDto,
-  BaseEmailDto,
-  BaseGenerateSlugDto,
-  BaseGeneratedSlugDto,
-  BaseGetOrgMemberPostsDto,
-  BaseMagicLinkLoginDto,
-  BaseNameDto,
-  BaseOrgAndMemberDto,
-  BaseQnaAndMemberDto,
-  BaseQueryDto,
-  BaseQueryResultsDto,
-  BaseRegistrationResponseDto,
-  BaseSlugDto,
-  BaseSlugTakenDto,
-  BaseSuggestDto,
-  BaseSuggestResultsDto,
-  BaseTeamAndMemberDto,
-  BaseTokenDto,
-  BaseUpdateAnswerDto,
-  BaseUpdateDocDto,
-  BaseUpdateOrgMemberDto,
-  BaseUpdateOrganizationDto,
-  BaseUpdateQnaDto,
-  BaseUpdateQuestionDto,
-  BaseUpdateTeamDto,
-  BaseUpdateTeamMemberDto,
-  BaseUpdateUserDto,
-  BaseUserRelationAndOptionsDto,
-  BaseWebAuthnLoginDto,
+  CreateDocDto,
+  CreateOrgMemberInviteDto,
+  CreateOrganizationDto,
+  CreateQnaDto,
+  CreateTeamDto,
+  CreateTeamMemberDto,
+  CreateUserDto,
+  CsrfTokenAndDataDto,
+  DocAndMemberDto,
+  EmailDto,
+  GenerateSlugDto,
+  GeneratedSlugDto,
+  GetOrgMemberPostsDto,
+  MagicLinkLoginDto,
+  NameDto,
+  OrgAndMemberDto,
+  QnaAndMemberDto,
+  QueryDto,
+  QueryResultsDto,
+  RegistrationResponseDto,
+  SlugDto,
+  SlugTakenDto,
+  SuggestDto,
+  SuggestResultsDto,
+  TeamAndMemberDto,
+  TokenDto,
+  UpdateAnswerDto,
+  UpdateDocDto,
+  UpdateOrgMemberDto,
+  UpdateOrganizationDto,
+  UpdateQnaDto,
+  UpdateQuestionDto,
+  UpdateTeamDto,
+  UpdateTeamMemberDto,
+  UpdateUserDto,
+  UserRelationAndOptionsDto,
+  WebAuthnLoginDto,
 } from '../dto';
 import { OrgRoleEnum, TeamRoleEnum, UserRoleEnum } from '../enum';
 import type {
@@ -645,325 +645,312 @@ export const testUserRelation1: UserRelation = {
 };
 
 /**
- * An example instance of BaseEmailDto.
+ * An example instance of EmailDto.
  * Strictly for use in testing.
  */
-export const testBaseEmailDto1: BaseEmailDto = {
-  email: testUser1.email,
-};
+export const testEmailDto1 = new EmailDto(testUser1.email);
 
 /**
- * An example instance of BaseMagicLinkLoginDto.
+ * An example instance of MagicLinkLoginDto.
  * Strictly for use in testing.
  */
-export const testBaseMagicLinkLoginDto1: BaseMagicLinkLoginDto = {
-  jwtId: '1234',
-  email: testUser1.email,
-};
+export const testMagicLinkLoginDto1 = new MagicLinkLoginDto(
+  '1234',
+  testUser1.email,
+);
 
 /**
- * An example instance of BaseUserAndOptionsDto.
+ * An example instance of UserAndOptionsDto.
  * Strictly for use in testing.
  */
-export const testBaseUserRelationAndOptionsDto1: BaseUserRelationAndOptionsDto =
-  {
-    userRelation: testUserRelation1,
-    options: testPublicKeyCredentialCreationOptions1,
-  };
+export const testUserRelationAndOptionsDto1 = new UserRelationAndOptionsDto(
+  testUserRelation1,
+  testPublicKeyCredentialCreationOptions1,
+);
 
 /**
- * An example instance of BaseWebAuthnLoginDto.
+ * An example instance of WebAuthnLoginDto.
  * Strictly for use in testing.
  */
-export const testBaseWebAuthnLoginDto1: BaseWebAuthnLoginDto = {
-  email: testUser1.email,
-  response: testAuthenticationCredential1,
-};
+export const testWebAuthnLoginDto1 = new WebAuthnLoginDto(
+  testUser1.email,
+  testAuthenticationCredential1,
+);
 
 /**
- * An example instance of BaseCsrfTokenDto.
+ * An example instance of CsrfTokenDto.
  * Strictly for use in testing.
  */
-export const testBaseCsrfTokenAndDataDto1: BaseCsrfTokenAndDataDto = {
-  csrfToken: 'csrf1',
-  userRelation: testUserRelation1,
-};
+export const testCsrfTokenAndDataDto1 = new CsrfTokenAndDataDto(
+  'csrf1',
+  testUserRelation1,
+);
 
 /**
- * An example instance of BaseCreateUserDto.
+ * An example instance of CreateUserDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateUserDto1: BaseCreateUserDto = {
-  email: testUser1.email,
-  name: testUser1.name,
-  displayName: testUser1.displayName,
-  phoneNumber: testUser1.phoneNumber,
-};
+export const testCreateUserDto1 = new CreateUserDto(
+  testUser1.email,
+  testUser1.name,
+  testUser1.displayName,
+  testUser1.phoneNumber,
+);
 
 /**
- * An example instance of BaseUpdateUserDto.
+ * An example instance of UpdateUserDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateUserDto1: BaseUpdateUserDto = {
+export const testUpdateUserDto1 = new UpdateUserDto({
   name: testUser2.name,
   displayName: null,
   phoneNumber: null,
-};
+});
 
 /**
- * An example instance of BaseCreateOrganizationDto.
+ * An example instance of CreateOrganizationDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateOrganizationDto1: BaseCreateOrganizationDto = {
-  ...testOrganization1,
-};
+export const testCreateOrganizationDto1 = new CreateOrganizationDto(
+  testOrganization1.name,
+  testOrganization1.slug,
+  testOrganization1.upToDateDuration,
+);
 
 /**
- * An example instance of BaseOrgAndMemberDto.
+ * An example instance of OrgAndMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseOrgAndMemberDto1: BaseOrgAndMemberDto = {
-  organization: testOrganizationRelation1,
-  orgMember: testOrgMemberRelation1,
-};
+export const testOrgAndMemberDto1 = new OrgAndMemberDto(
+  testOrganizationRelation1,
+  testOrgMemberRelation1,
+);
 
 /**
- * An example instance of BaseUpdateOrganizationDto.
+ * An example instance of UpdateOrganizationDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateOrganizationDto1: BaseUpdateOrganizationDto = {
+export const testUpdateOrganizationDto1 = new UpdateOrganizationDto({
   name: 'NewWasp',
   slug: 'new-wasp',
   upToDateDuration: 'P1Y',
-};
+});
 
 /**
- * An example instance of BaseCreateTeamDto.
+ * An example instance of CreateTeamDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateTeamDto1: BaseCreateTeamDto = {
-  name: testTeam1.name,
-  slug: testTeam1.slug,
-  upToDateDuration: null,
-};
+export const testCreateTeamDto1 = new CreateTeamDto(
+  testTeam1.name,
+  testTeam1.slug,
+  null,
+);
 
 /**
- * An example instance of BaseTeamAndMemberDto.
+ * An example instance of TeamAndMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseTeamAndMemberDto1: BaseTeamAndMemberDto = {
-  team: testTeamRelation1,
-  teamMember: testTeamMember1,
-};
+export const testTeamAndMemberDto1 = new TeamAndMemberDto(
+  testTeamRelation1,
+  testTeamMember1,
+);
 
 /**
- * An example instance of BaseUpdateTeamDto.
+ * An example instance of UpdateTeamDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateTeamDto1: BaseUpdateTeamDto = {
+export const testUpdateTeamDto1 = new UpdateTeamDto({
   name: 'Human Resources',
   slug: 'human-resources',
   upToDateDuration: 'P1Y',
-};
+});
 
 /**
- * An example instance of BaseCreateDocDto.
+ * An example instance of CreateDocDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateDocDto1: BaseCreateDocDto = {
-  title: testDoc1.title,
-  upToDateDuration: 'P1Y',
-  docMarkdoc: testDoc1.docMarkdoc,
-  team: testTeam1.slug,
-};
+export const testCreateDocDto1 = new CreateDocDto(
+  testDoc1.title,
+  'P1Y',
+  testDoc1.docMarkdoc,
+  testTeam1.slug,
+);
 
 /**
- * An example instance of BaseUpdateDocDto.
+ * An example instance of UpdateDocDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateDocDto1: BaseUpdateDocDto = {
+export const testUpdateDocDto1 = new UpdateDocDto({
   title: 'New title',
   docMarkdoc: 'new raw markdoc',
   upToDateDuration: 'P1Y',
   team: testTeam1.slug,
   maintainer: testOrgMember1.slug,
-};
+});
 
 /**
- * An example instance of BaseDocAndMemberDto.
+ * An example instance of DocAndMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseDocAndMemberDto1: BaseDocAndMemberDto = {
-  doc: testDocRelation1,
-  teamMember: testTeamMember1,
-};
+export const testBaseDocAndMemberDto1 = new DocAndMemberDto(
+  testDocRelation1,
+  testTeamMember1,
+);
 
 /**
- * An example instance of BaseCreateQnaDto.
+ * An example instance of CreateQnaDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateQnaDto1: BaseCreateQnaDto = {
-  title: testQna1.title,
-  questionMarkdoc: testQna1.questionMarkdoc as string,
-  answerMarkdoc: testQna1.answerMarkdoc,
-  team: testTeam1.slug,
-};
+export const testCreateQnaDto1 = new CreateQnaDto(
+  testQna1.title,
+  testQna1.questionMarkdoc,
+  testQna1.answerMarkdoc,
+  testTeam1.slug,
+);
 
 /**
- * An example instance of BaseUpdateQnaDto.
+ * An example instance of UpdateQnaDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateQnaDto1: BaseUpdateQnaDto = {
+export const testUpdateQnaDto1 = new UpdateQnaDto({
   title: 'New title',
   upToDateDuration: 'P1Y',
   questionMarkdoc: 'new question',
   answerMarkdoc: 'new answer',
   team: testTeam1.slug,
   maintainer: testOrgMember1.slug,
-};
+});
 
 /**
- * An example instance of BaseUpdateQuestionDto.
+ * An example instance of UpdateQuestionDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateQuestionDto1: BaseUpdateQuestionDto = {
+export const testUpdateQuestionDto1 = new UpdateQuestionDto({
   title: 'New title',
   questionMarkdoc: 'new question',
   team: null,
-};
+});
 
 /**
- * An example instance of BaseUpdateAnswerDto.
+ * An example instance of UpdateAnswerDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateAnswerDto1: BaseUpdateAnswerDto = {
+export const testUpdateAnswerDto1 = new UpdateAnswerDto({
   upToDateDuration: 'P1Y',
   answerMarkdoc: 'new answer',
   maintainer: testOrgMember1.slug,
-};
+});
 
 /**
- * An example instance of `BaseQnaAndMemberDto`.
+ * An example instance of QnaAndMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseQnaAndMemberDto1: BaseQnaAndMemberDto = {
-  qna: testQnaRelation1,
-  teamMember: testTeamMember1,
-};
+export const testQnaAndMemberDto1 = new QnaAndMemberDto(
+  testQnaRelation1,
+  testTeamMember1,
+);
 
 /**
- * An example instance of BaseCreateTeamMemberDto.
+ * An example instance of CreateTeamMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateTeamMemberDto1: BaseCreateTeamMemberDto = {
-  role: testTeamMember1.role,
-  orgMemberSlug: testOrgMember1.slug,
-};
+export const testCreateTeamMemberDto1 = new CreateTeamMemberDto(
+  testTeamMember1.role,
+  testOrgMember1.slug,
+);
 
 /**
- * An example instance of BaseUpdateTeamMemberDto.
+ * An example instance of UpdateTeamMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateTeamMemberDto1: BaseUpdateTeamMemberDto = {
-  role: TeamRoleEnum.Moderator,
-};
+export const testUpdateTeamMemberDto1 = new UpdateTeamMemberDto(
+  TeamRoleEnum.Moderator,
+);
 
 /**
- * An example instance of BaseUpdateOrgMemberDto.
+ * An example instance of UpdateOrgMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseUpdateOrgMemberDto1: BaseUpdateOrgMemberDto = {
-  role: OrgRoleEnum.Moderator,
-};
+export const testUpdateOrgMemberDto1 = new UpdateOrgMemberDto(
+  OrgRoleEnum.Moderator,
+);
 
 /**
- * An example instance of BaseCreateOrgMemberInviteDto.
+ * An example instance of CreateOrgMemberInviteDto.
  * Strictly for use in testing.
  */
-export const testBaseCreateOrgMemberInviteDto1: BaseCreateOrgMemberInviteDto = {
-  email: testUser1.email,
-  role: OrgRoleEnum.Member,
-};
+export const testCreateOrgMemberInviteDto1 = new CreateOrgMemberInviteDto(
+  testUser1.email,
+  OrgRoleEnum.Member,
+);
 
 /**
  * An example instance of `BaseTokenDto`.
  * Strictly for use in testing.
  */
-export const testBaseTokenDto1 = new BaseTokenDto('token');
+export const testBaseTokenDto1 = new TokenDto('token');
 
 /**
- * An example instance of BaseRegistrationResponseDto.
+ * An example instance of RegistrationResponseDto.
  * Strictly for use in testing.
  */
-export const testBaseRegistrationResponseDto1: BaseRegistrationResponseDto = {
-  response: testRegistrationResponse1,
-};
+export const testRegistrationResponseDto1 = new RegistrationResponseDto(
+  testRegistrationResponse1,
+);
 
 /**
- * An example instance of BaseSuggestDto.
+ * An example instance of SuggestDto.
  * Strictly for use in testing.
  */
-export const testBaseSuggestDto1: BaseSuggestDto = {
-  query: testTeam1.name,
-};
+export const testSuggestDto1 = new SuggestDto();
+testSuggestDto1.query = testTeam1.name;
 
 /**
- * An example instance of BaseQueryDto.
+ * An example instance of QueryDto.
  * Strictly for use in testing.
  */
-export const testBaseQueryDto1: BaseQueryDto = {
-  ...testBaseSuggestDto1,
-  offset: 0,
-  limit: defaultLimit,
-};
+export const testQueryDto1 = new QueryDto();
+Object.assign(testQueryDto1, testSuggestDto1);
 
 /**
- * An example instance of BaseSuggestResultsDto.
+ * An example instance of SuggestResultsDto.
  * Strictly for use in testing.
  */
-export const testBaseSuggestResultsDto1: BaseSuggestResultsDto = {
-  suggestions: [testTeamQueryResult1.name],
-};
+export const testSuggestResultsDto1 = new SuggestResultsDto([
+  testTeamQueryResult1.name,
+]);
 
 /**
- * An example instance of BaseNameDto.
+ * An example instance of NameDto.
  * Strictly for use in testing.
  */
-export const testBaseNameDto1: BaseNameDto = {
-  name: 'new name',
-};
+export const testNameDto1 = new NameDto('new name');
 
 /**
- * An example instance of BaseSlugDto.
+ * An example instance of SlugDto.
  * Strictly for use in testing.
  */
-export const testBaseSlugDto1: BaseSlugDto = {
-  slug: testOrganization1.slug,
-};
+export const testSlugDto1 = new SlugDto(testOrganization1.slug);
 
 /**
- * An example instance of BaseSlugTakenDto.
+ * An example instance of SlugTakenDto.
  * Strictly for use in testing.
  */
-export const testBaseSlugTakenDto1: BaseSlugTakenDto = {
-  slugTaken: true,
-};
+export const testSlugTakenDto1 = new SlugTakenDto(true);
 
 /**
- * An example instance of BaseNewSlugDto.
+ * An example instance of GenerateSlugDto.
  * Strictly for use in testing.
  */
-export const testBaseGenerateSlugDto1: BaseGenerateSlugDto = {
-  base: testOrganization1.name,
-};
+export const testGenerateSlugDto1 = new GenerateSlugDto(testOrganization1.name);
 
 /**
- * An example instance of BaseGeneratedSlugDto.
+ * An example instance of GeneratedSlugDto.
  * Strictly for use in testing.
  */
-export const testBaseGeneratedSlugDto1: BaseGeneratedSlugDto = {
-  generatedSlug: testOrganization1.slug,
-};
+export const testGeneratedSlugDto1 = new GeneratedSlugDto(
+  testOrganization1.slug,
+);
 
 /**
  * An example instance of OffsetAndLimit.
@@ -975,11 +962,13 @@ export const testOffsetAndLimit1: OffsetAndLimit = {
 };
 
 /**
- * An example instance of BaseGetOrgMemberPostsDto.
+ * An example instance of GetOrgMemberPostsDto.
  * Strictly for use in testing.
  */
-export const testBaseGetOrgMemberPostsDto1: BaseGetOrgMemberPostsDto =
-  testOffsetAndLimit1;
+export const testGetOrgMemberPostsDto1 = new GetOrgMemberPostsDto(
+  0,
+  defaultLimit,
+);
 
 /**
  * An example instance of PaginatedResults with DocQueryResult.
@@ -1007,10 +996,7 @@ export const testPaginatedResultsQnaQueryResult1: PaginatedResults<QnaQueryResul
  * An example instance of BaseQueryResultsDto.
  * Strictly for use in testing.
  */
-export const testBaseQueryResultsDto1: BaseQueryResultsDto = {
-  ...testOffsetAndLimit1,
-  ...testBaseQueryDto1,
-  results: [testTeamQueryResult1],
-  total: 1,
-  suggestion: null,
-};
+export const testQueryResultsDto1 = new QueryResultsDto();
+Object.assign(testQueryResultsDto1, testQueryDto1);
+testQueryResultsDto1.total = 1;
+testQueryResultsDto1.results = [testTeamQueryResult1];

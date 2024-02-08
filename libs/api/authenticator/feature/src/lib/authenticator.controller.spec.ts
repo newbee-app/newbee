@@ -6,10 +6,10 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseNameDto1,
-  testBaseRegistrationResponseDto1,
+  testNameDto1,
   testPublicKeyCredentialCreationOptions1,
   testRegistrationResponse1,
+  testRegistrationResponseDto1,
 } from '@newbee/shared/util';
 import { AuthenticatorController } from './authenticator.controller';
 
@@ -71,7 +71,7 @@ describe('AuthenticatorController', () => {
   describe('createPost', () => {
     it('should create an authenticator', async () => {
       await expect(
-        controller.create(testBaseRegistrationResponseDto1, testUserEntity1),
+        controller.create(testRegistrationResponseDto1, testUserEntity1),
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(service.create).toHaveBeenCalledWith(
@@ -86,14 +86,14 @@ describe('AuthenticatorController', () => {
       await expect(
         controller.updateName(
           testAuthenticatorEntity1.id,
-          testBaseNameDto1,
+          testNameDto1,
           testUserEntity1,
         ),
       ).resolves.toEqual(testAuthenticatorEntity1);
       expect(service.updateNameById).toHaveBeenCalledTimes(1);
       expect(service.updateNameById).toHaveBeenCalledWith(
         testAuthenticatorEntity1.id,
-        testBaseNameDto1.name,
+        testNameDto1.name,
         testUserEntity1.id,
       );
     });

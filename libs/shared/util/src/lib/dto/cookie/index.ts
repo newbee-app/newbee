@@ -1,1 +1,1 @@
-export * from './base-csrf-token-and-data.dto';
+export * from './csrf-token-and-data.dto';

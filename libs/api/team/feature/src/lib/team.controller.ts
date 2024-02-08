@@ -11,12 +11,9 @@ import {
 import {
   DocEntity,
   EntityService,
-  GenerateSlugDto,
-  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
-  SlugDto,
   TeamEntity,
   TeamMemberEntity,
   UserEntity,
@@ -30,20 +27,21 @@ import {
   User,
   generateUniqueSlug,
 } from '@newbee/api/shared/util';
-import {
-  CreateTeamDto,
-  TeamService,
-  UpdateTeamDto,
-} from '@newbee/api/team/data-access';
+import { TeamService } from '@newbee/api/team/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseGeneratedSlugDto,
-  BaseSlugTakenDto,
-  BaseTeamAndMemberDto,
+  CreateTeamDto,
   DocQueryResult,
+  GenerateSlugDto,
+  GeneratedSlugDto,
   Keyword,
+  OffsetAndLimitDto,
   PaginatedResults,
   QnaQueryResult,
+  SlugDto,
+  SlugTakenDto,
+  TeamAndMemberDto,
+  UpdateTeamDto,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -101,7 +99,7 @@ export class TeamController {
   /**
    * The API route for checking whether a team slug has been taken in an org.
    *
-   * @param checkSlugDto The team slug to check.
+   * @param slugDto The team slug to check.
    * @param organization The organization to check in.
    * @param user The user making the request.
    *
@@ -111,18 +109,18 @@ export class TeamController {
   @Get(Keyword.CheckSlug)
   @Role(apiRoles.team.checkSlug)
   async checkSlug(
-    @Query() checkSlugDto: SlugDto,
+    @Query() slugDto: SlugDto,
     @Organization() organization: OrganizationEntity,
     @User() user: UserEntity,
-  ): Promise<BaseSlugTakenDto> {
-    const { slug } = checkSlugDto;
+  ): Promise<SlugTakenDto> {
+    const { slug } = slugDto;
     this.logger.log(
       `Check team slug request received for slug: ${slug}, in org ID: ${organization.id}, by user ID: ${user.id}`,
     );
     const hasSlug = await this.teamService.hasOneBySlug(organization, slug);
     this.logger.log(`Team slug ${slug} taken: ${hasSlug}`);
 
-    return { slugTaken: hasSlug };
+    return new SlugTakenDto(hasSlug);
   }
 
   /**
@@ -141,7 +139,7 @@ export class TeamController {
     @Query() generateSlugDto: GenerateSlugDto,
     @Organization() organization: OrganizationEntity,
     @User() user: UserEntity,
-  ): Promise<BaseGeneratedSlugDto> {
+  ): Promise<GeneratedSlugDto> {
     const { base } = generateSlugDto;
     this.logger.log(
       `Genereate team slug request received for base: ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`,
@@ -155,7 +153,7 @@ export class TeamController {
       `Team slug ${slug} generated for base ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`,
     );
 
-    return { generatedSlug: slug };
+    return new GeneratedSlugDto(slug);
   }
 
   /**
@@ -175,15 +173,15 @@ export class TeamController {
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
     @TeamMember() teamMember: TeamMemberEntity | undefined,
-  ): Promise<BaseTeamAndMemberDto> {
+  ): Promise<TeamAndMemberDto> {
     this.logger.log(
       `Get team request received for team slug: ${team.slug}, in organization ID: ${organization.id}`,
     );
     this.logger.log(`Found team, slug: ${team.slug}, ID: ${team.id}`);
-    return {
-      team: await this.entityService.createTeamNoOrg(team),
-      teamMember: teamMember ?? null,
-    };
+    return new TeamAndMemberDto(
+      await this.entityService.createTeamNoOrg(team),
+      teamMember ?? null,
+    );
   }
 
   /**

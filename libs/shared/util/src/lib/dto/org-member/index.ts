@@ -1,2 +1,2 @@
-export * from './base-get-org-member-posts.dto';
-export * from './base-update-org-member.dto';
+export * from './get-org-member-posts.dto';
+export * from './update-org-member.dto';

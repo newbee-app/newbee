@@ -6,7 +6,7 @@ import {
 } from '@angular/core/testing';
 import { Frequency } from '@newbee/newbee/shared/util';
 import {
-  testBaseCreateTeamDto1,
+  testCreateTeamDto1,
   testOrganization1,
   testTeam1,
 } from '@newbee/shared/util';
@@ -77,9 +77,7 @@ describe('CreateTeamComponent', () => {
         });
         component.emitCreate();
         expect(component.create.emit).toHaveBeenCalledTimes(2);
-        expect(component.create.emit).toHaveBeenCalledWith(
-          testBaseCreateTeamDto1,
-        );
+        expect(component.create.emit).toHaveBeenCalledWith(testCreateTeamDto1);
 
         component.createTeamForm.patchValue({
           upToDateDuration: { num: 1, frequency: Frequency.Year },
@@ -87,7 +85,7 @@ describe('CreateTeamComponent', () => {
         component.emitCreate();
         expect(component.create.emit).toHaveBeenCalledTimes(3);
         expect(component.create.emit).toHaveBeenCalledWith({
-          ...testBaseCreateTeamDto1,
+          ...testCreateTeamDto1,
           upToDateDuration: 'P1Y',
         });
       });

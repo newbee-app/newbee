@@ -7,13 +7,13 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
   testAuthenticationCredential1,
-  testBaseCreateUserDto1,
-  testBaseEmailDto1,
-  testBaseMagicLinkLoginDto1,
-  testBaseUserRelationAndOptionsDto1,
-  testBaseWebAuthnLoginDto1,
+  testCreateUserDto1,
+  testEmailDto1,
+  testMagicLinkLoginDto1,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
+  testUserRelationAndOptionsDto1,
+  testWebAuthnLoginDto1,
 } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { of } from 'rxjs';
@@ -56,10 +56,10 @@ describe('AuthService', () => {
 
   describe('magicLinkLoginLogin', () => {
     it('should send out a post request', (done) => {
-      service.magicLinkLoginLogin(testBaseEmailDto1).subscribe({
+      service.magicLinkLoginLogin(testEmailDto1).subscribe({
         next: (magicLinkLoginDto) => {
           try {
-            expect(magicLinkLoginDto).toEqual(testBaseMagicLinkLoginDto1);
+            expect(magicLinkLoginDto).toEqual(testMagicLinkLoginDto1);
             done();
           } catch (err) {
             done(err);
@@ -72,9 +72,9 @@ describe('AuthService', () => {
         `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseEmailDto1);
+      expect(req.request.body).toEqual(testEmailDto1);
 
-      req.flush(testBaseMagicLinkLoginDto1);
+      req.flush(testMagicLinkLoginDto1);
     });
   });
 
@@ -104,11 +104,11 @@ describe('AuthService', () => {
 
   describe('webAuthnRegister', () => {
     it('should send out a post request', (done) => {
-      service.webAuthnRegister(testBaseCreateUserDto1).subscribe({
+      service.webAuthnRegister(testCreateUserDto1).subscribe({
         next: (userRelationAndOptionsDto) => {
           try {
             expect(userRelationAndOptionsDto).toEqual(
-              testBaseUserRelationAndOptionsDto1,
+              testUserRelationAndOptionsDto1,
             );
             done();
           } catch (err) {
@@ -122,15 +122,15 @@ describe('AuthService', () => {
         `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Register}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateUserDto1);
+      expect(req.request.body).toEqual(testCreateUserDto1);
 
-      req.flush(testBaseUserRelationAndOptionsDto1);
+      req.flush(testUserRelationAndOptionsDto1);
     });
   });
 
   describe('webAuthnLoginOptions', () => {
     it('should send out a post request', (done) => {
-      service.webAuthnLoginOptions(testBaseEmailDto1).subscribe({
+      service.webAuthnLoginOptions(testEmailDto1).subscribe({
         next: (options) => {
           try {
             expect(options).toEqual(testPublicKeyCredentialRequestOptions1);
@@ -146,7 +146,7 @@ describe('AuthService', () => {
         `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseEmailDto1);
+      expect(req.request.body).toEqual(testEmailDto1);
 
       req.flush(testPublicKeyCredentialRequestOptions1);
     });
@@ -155,10 +155,7 @@ describe('AuthService', () => {
   describe('webauthnLogin', () => {
     it('should send out a post request', (done) => {
       service
-        .webAuthnLogin(
-          testBaseEmailDto1,
-          testPublicKeyCredentialRequestOptions1,
-        )
+        .webAuthnLogin(testEmailDto1, testPublicKeyCredentialRequestOptions1)
         .subscribe({
           next: (userRelation) => {
             try {
@@ -180,7 +177,7 @@ describe('AuthService', () => {
         `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseWebAuthnLoginDto1);
+      expect(req.request.body).toEqual(testWebAuthnLoginDto1);
 
       req.flush(testUserRelation1);
     });

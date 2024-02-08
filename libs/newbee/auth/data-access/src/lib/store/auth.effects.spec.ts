@@ -17,13 +17,13 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateUserDto1,
-  testBaseEmailDto1,
-  testBaseMagicLinkLoginDto1,
-  testBaseUserRelationAndOptionsDto1,
+  testCreateUserDto1,
+  testEmailDto1,
+  testMagicLinkLoginDto1,
   testPublicKeyCredentialRequestOptions1,
   testUser2,
   testUserRelation1,
+  testUserRelationAndOptionsDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -56,11 +56,11 @@ describe('AuthEffects', () => {
           useValue: createMock<AuthService>({
             magicLinkLoginLogin: jest
               .fn()
-              .mockReturnValue(of(testBaseMagicLinkLoginDto1)),
+              .mockReturnValue(of(testMagicLinkLoginDto1)),
             magicLinkLogin: jest.fn().mockReturnValue(of(testUserRelation1)),
             webAuthnRegister: jest
               .fn()
-              .mockReturnValue(of(testBaseUserRelationAndOptionsDto1)),
+              .mockReturnValue(of(testUserRelationAndOptionsDto1)),
             webAuthnLoginOptions: jest
               .fn()
               .mockReturnValue(of(testPublicKeyCredentialRequestOptions1)),
@@ -90,19 +90,17 @@ describe('AuthEffects', () => {
   describe('sendLoginMagicLink$', () => {
     it('should fire sendLoginMagicLinkSuccess if successful', () => {
       actions$ = hot('a', {
-        a: AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
+        a: AuthActions.sendLoginMagicLink({ emailDto: testEmailDto1 }),
       });
       const expected$ = hot('a', {
         a: AuthActions.sendLoginMagicLinkSuccess({
-          magicLinkLoginDto: testBaseMagicLinkLoginDto1,
+          magicLinkLoginDto: testMagicLinkLoginDto1,
         }),
       });
       expect(effects.sendLoginMagicLink$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.magicLinkLoginLogin).toHaveBeenCalledTimes(1);
-        expect(service.magicLinkLoginLogin).toHaveBeenCalledWith(
-          testBaseEmailDto1,
-        );
+        expect(service.magicLinkLoginLogin).toHaveBeenCalledWith(testEmailDto1);
       });
     });
   });
@@ -127,19 +125,19 @@ describe('AuthEffects', () => {
     it('should fire registerWithWebAuthnSuccess if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.registerWithWebAuthn({
-          createUserDto: testBaseCreateUserDto1,
+          createUserDto: testCreateUserDto1,
         }),
       });
       const expected$ = hot('a', {
         a: AuthActions.registerWithWebAuthnSuccess({
-          userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
+          userRelationAndOptionsDto: testUserRelationAndOptionsDto1,
         }),
       });
       expect(effects.registerWithWebAuthn$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnRegister).toHaveBeenCalledTimes(1);
         expect(service.webAuthnRegister).toHaveBeenCalledWith(
-          testBaseCreateUserDto1,
+          testCreateUserDto1,
         );
       });
     });
@@ -149,12 +147,12 @@ describe('AuthEffects', () => {
     it('should fire verifyRegisterChallenge if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.registerWithWebAuthnSuccess({
-          userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
+          userRelationAndOptionsDto: testUserRelationAndOptionsDto1,
         }),
       });
       const expected$ = hot('a', {
         a: AuthenticatorActions.createAuthenticator({
-          options: testBaseUserRelationAndOptionsDto1.options,
+          options: testUserRelationAndOptionsDto1.options,
           caller: Keyword.Auth,
         }),
       });
@@ -175,12 +173,12 @@ describe('AuthEffects', () => {
     it('should fire loginWithWebAuthn if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.createWebAuthnLoginOptions({
-          emailDto: testBaseEmailDto1,
+          emailDto: testEmailDto1,
         }),
       });
       const expected$ = hot('a', {
         a: AuthActions.loginWithWebAuthn({
-          emailDto: testBaseEmailDto1,
+          emailDto: testEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
@@ -188,7 +186,7 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLoginOptions).toHaveBeenCalledTimes(1);
         expect(service.webAuthnLoginOptions).toHaveBeenCalledWith(
-          testBaseEmailDto1,
+          testEmailDto1,
         );
       });
     });
@@ -198,7 +196,7 @@ describe('AuthEffects', () => {
     it('should fire loginSuccess if successful', () => {
       actions$ = hot('a', {
         a: AuthActions.loginWithWebAuthn({
-          emailDto: testBaseEmailDto1,
+          emailDto: testEmailDto1,
           options: testPublicKeyCredentialRequestOptions1,
         }),
       });
@@ -211,7 +209,7 @@ describe('AuthEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.webAuthnLogin).toHaveBeenCalledTimes(1);
         expect(service.webAuthnLogin).toHaveBeenCalledWith(
-          testBaseEmailDto1,
+          testEmailDto1,
           testPublicKeyCredentialRequestOptions1,
         );
       });

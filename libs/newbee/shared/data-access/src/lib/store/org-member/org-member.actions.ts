@@ -1,12 +1,12 @@
 import {
-  BaseCreateOrgMemberInviteDto,
-  BaseUpdateOrgMemberDto,
+  CreateOrgMemberInviteDto,
   CreatorOrMaintainer,
   DocQueryResult,
   Keyword,
   OrgMember,
   PaginatedResults,
   QnaQueryResult,
+  UpdateOrgMemberDto,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
@@ -32,7 +32,7 @@ export const OrgMemberActions = createActionGroup({
      * Edits the selected org member with the given information.
      * Should call `Edit Org Member Success` with the result.
      */
-    'Edit Org Member': props<{ updateOrgMemberDto: BaseUpdateOrgMemberDto }>(),
+    'Edit Org Member': props<{ updateOrgMemberDto: UpdateOrgMemberDto }>(),
 
     /**
      * Indicates that an org member was successfully updated.
@@ -84,7 +84,7 @@ export const OrgMemberActions = createActionGroup({
      * Invite a user to an org.
      */
     'Invite User': props<{
-      createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto;
+      createOrgMemberInviteDto: CreateOrgMemberInviteDto;
     }>(),
 
     /**

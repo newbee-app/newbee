@@ -14,16 +14,16 @@ import {
 } from '@newbee/api/shared/data-access';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
-  testBaseCreateTeamDto1,
-  testBaseGenerateSlugDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseSlugDto1,
-  testBaseSlugTakenDto1,
-  testBaseUpdateTeamDto1,
+  testCreateTeamDto1,
   testDocQueryResult1,
+  testGenerateSlugDto1,
+  testGeneratedSlugDto1,
   testOffsetAndLimit1,
   testQnaQueryResult1,
+  testSlugDto1,
+  testSlugTakenDto1,
   testTeamRelation1,
+  testUpdateTeamDto1,
 } from '@newbee/shared/util';
 import slug from 'slug';
 import { TeamController } from './team.controller';
@@ -35,7 +35,7 @@ describe('TeamController', () => {
 
   const testUpdatedTeamEntity = {
     ...testTeamEntity1,
-    ...testBaseUpdateTeamDto1,
+    ...testUpdateTeamDto1,
   };
 
   beforeEach(async () => {
@@ -80,14 +80,14 @@ describe('TeamController', () => {
     it('should create a team', async () => {
       await expect(
         controller.create(
-          testBaseCreateTeamDto1,
+          testCreateTeamDto1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),
       ).resolves.toEqual(testTeamEntity1);
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(service.create).toHaveBeenCalledWith(
-        testBaseCreateTeamDto1,
+        testCreateTeamDto1,
         testOrgMemberEntity1,
       );
     });
@@ -97,21 +97,21 @@ describe('TeamController', () => {
     it('should return true if slug is taken, false if not', async () => {
       await expect(
         controller.checkSlug(
-          testBaseSlugDto1,
+          testSlugDto1,
           testOrganizationEntity1,
           testUserEntity1,
         ),
-      ).resolves.toEqual(testBaseSlugTakenDto1);
+      ).resolves.toEqual(testSlugTakenDto1);
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
       expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
-        testBaseSlugDto1.slug,
+        testSlugDto1.slug,
       );
 
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
       await expect(
         controller.checkSlug(
-          testBaseSlugDto1,
+          testSlugDto1,
           testOrganizationEntity1,
           testUserEntity1,
         ),
@@ -119,7 +119,7 @@ describe('TeamController', () => {
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(2);
       expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
-        testBaseSlugDto1.slug,
+        testSlugDto1.slug,
       );
     });
   });
@@ -127,14 +127,14 @@ describe('TeamController', () => {
   describe('generateSlug', () => {
     it('should generate a unique slug', async () => {
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
-      const sluggedBase = slug(testBaseGenerateSlugDto1.base);
+      const sluggedBase = slug(testGenerateSlugDto1.base);
       await expect(
         controller.generateSlug(
-          testBaseGenerateSlugDto1,
+          testGenerateSlugDto1,
           testOrganizationEntity1,
           testUserEntity1,
         ),
-      ).resolves.toEqual(testBaseGeneratedSlugDto1);
+      ).resolves.toEqual(testGeneratedSlugDto1);
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
       expect(service.hasOneBySlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
@@ -175,7 +175,7 @@ describe('TeamController', () => {
   it('udpate should find and update a team', async () => {
     await expect(
       controller.update(
-        testBaseUpdateTeamDto1,
+        testUpdateTeamDto1,
         testOrganizationEntity1,
         testTeamEntity1,
       ),
@@ -183,7 +183,7 @@ describe('TeamController', () => {
     expect(service.update).toHaveBeenCalledTimes(1);
     expect(service.update).toHaveBeenCalledWith(
       testTeamEntity1,
-      testBaseUpdateTeamDto1,
+      testUpdateTeamDto1,
     );
   });
 

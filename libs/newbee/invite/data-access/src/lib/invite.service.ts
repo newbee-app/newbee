@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseTokenDto, Keyword, OrgMemberNoUser } from '@newbee/shared/util';
+import { Keyword, OrgMemberNoUser, TokenDto } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -23,7 +23,7 @@ export class InviteService {
    *
    * @returns A null observable.
    */
-  acceptInvite(tokenDto: BaseTokenDto): Observable<OrgMemberNoUser> {
+  acceptInvite(tokenDto: TokenDto): Observable<OrgMemberNoUser> {
     return this.http.post<OrgMemberNoUser>(
       `${InviteService.baseApiUrl}/${Keyword.Accept}`,
       tokenDto,
@@ -37,7 +37,7 @@ export class InviteService {
    *
    * @returns A null observable.
    */
-  declineInvite(tokenDto: BaseTokenDto): Observable<null> {
+  declineInvite(tokenDto: TokenDto): Observable<null> {
     return this.http.post<null>(
       `${InviteService.baseApiUrl}/${Keyword.Decline}`,
       tokenDto,

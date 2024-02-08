@@ -7,7 +7,7 @@ import {
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
 import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
-import { BaseCreateOrgMemberInviteDto } from '@newbee/shared/util';
+import { CreateOrgMemberInviteDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -44,7 +44,7 @@ export class OrgMembersViewComponent {
    *
    * @param createOrgMemberInviteDto The values to send to the backend.
    */
-  onInvite(createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto): void {
+  onInvite(createOrgMemberInviteDto: CreateOrgMemberInviteDto): void {
     this.store.dispatch(
       OrgMemberActions.inviteUser({ createOrgMemberInviteDto }),
     );

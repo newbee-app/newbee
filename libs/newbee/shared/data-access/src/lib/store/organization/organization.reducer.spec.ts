@@ -1,8 +1,7 @@
 import {
   Team,
-  testBaseCsrfTokenAndDataDto1,
-  testBaseOrgAndMemberDto1,
-  testBaseUserRelationAndOptionsDto1,
+  testCsrfTokenAndDataDto1,
+  testOrgAndMemberDto1,
   testOrgMemberRelation1,
   testOrganization1,
   testOrganization2,
@@ -10,6 +9,7 @@ import {
   testOrganizationRelation2,
   testTeam1,
   testUserRelation1,
+  testUserRelationAndOptionsDto1,
 } from '@newbee/shared/util';
 import { AuthActions } from '../auth';
 import { CookieActions } from '../cookie';
@@ -55,7 +55,7 @@ describe('OrganizationReducer', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
         AuthActions.registerWithWebAuthnSuccess({
-          userRelationAndOptionsDto: testBaseUserRelationAndOptionsDto1,
+          userRelationAndOptionsDto: testUserRelationAndOptionsDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
@@ -73,7 +73,7 @@ describe('OrganizationReducer', () => {
       const updatedState = organizationFeature.reducer(
         initialOrganizationState,
         CookieActions.initCookiesSuccess({
-          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+          csrfTokenAndDataDto: testCsrfTokenAndDataDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterLoginSuccess);
@@ -140,7 +140,7 @@ describe('OrganizationReducer', () => {
       const updatedState = organizationFeature.reducer(
         stateAfterLoginSuccess,
         OrganizationActions.getOrgSuccess({
-          orgAndMemberDto: testBaseOrgAndMemberDto1,
+          orgAndMemberDto: testOrgAndMemberDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterGetOrgSuccess);

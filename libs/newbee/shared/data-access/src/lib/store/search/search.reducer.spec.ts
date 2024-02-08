@@ -1,9 +1,9 @@
 import {
-  testBaseQueryDto1,
-  testBaseQueryResultsDto1,
-  testBaseSuggestResultsDto1,
   testDocQueryResult1,
   testQnaQueryResult1,
+  testQueryDto1,
+  testQueryResultsDto1,
+  testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -17,11 +17,11 @@ describe('SearchReducer', () => {
   };
   const stateAfterSearchSuccess: SearchState = {
     ...initialSearchState,
-    searchResults: testBaseQueryResultsDto1,
+    searchResults: testQueryResultsDto1,
   };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
-    suggestions: testBaseSuggestResultsDto1.suggestions,
+    suggestions: testSuggestResultsDto1.suggestions,
   };
   const stateAfterContinueSearchPending: SearchState = {
     ...stateAfterSearchSuccess,
@@ -32,7 +32,7 @@ describe('SearchReducer', () => {
     it('should update state for search', () => {
       const updatedState = searchFeature.reducer(
         initialSearchState,
-        SearchActions.search({ query: testBaseQueryDto1 }),
+        SearchActions.search({ query: testQueryDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearch);
     });
@@ -42,24 +42,24 @@ describe('SearchReducer', () => {
     it('should update state for searchSuccess', () => {
       let updatedState = searchFeature.reducer(
         stateAfterSearch,
-        SearchActions.searchSuccess({ results: testBaseQueryResultsDto1 }),
+        SearchActions.searchSuccess({ results: testQueryResultsDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearchSuccess);
 
       updatedState = searchFeature.reducer(
         stateAfterSuggestSuccess,
-        SearchActions.searchSuccess({ results: testBaseQueryResultsDto1 }),
+        SearchActions.searchSuccess({ results: testQueryResultsDto1 }),
       );
       expect(updatedState).toEqual({
         ...stateAfterSuggestSuccess,
-        searchResults: testBaseQueryResultsDto1,
+        searchResults: testQueryResultsDto1,
       });
     });
 
     it('should update state for suggestSuccess', () => {
       const updatedState = searchFeature.reducer(
         initialSearchState,
-        SearchActions.suggestSuccess({ results: testBaseSuggestResultsDto1 }),
+        SearchActions.suggestSuccess({ results: testSuggestResultsDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSuggestSuccess);
     });
@@ -77,7 +77,7 @@ describe('SearchReducer', () => {
         stateAfterContinueSearchPending,
         SearchActions.continueSearchSuccess({
           results: {
-            ...testBaseQueryResultsDto1,
+            ...testQueryResultsDto1,
             offset: 1,
             results: [testDocQueryResult1, testQnaQueryResult1],
           },
@@ -86,10 +86,10 @@ describe('SearchReducer', () => {
       expect(updatedState).toEqual({
         ...initialSearchState,
         searchResults: {
-          ...testBaseQueryResultsDto1,
+          ...testQueryResultsDto1,
           offset: 1,
           results: [
-            ...testBaseQueryResultsDto1.results,
+            ...testQueryResultsDto1.results,
             testDocQueryResult1,
             testQnaQueryResult1,
           ],

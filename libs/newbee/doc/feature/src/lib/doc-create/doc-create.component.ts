@@ -6,7 +6,7 @@ import {
   httpFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateDocDto, Keyword } from '@newbee/shared/util';
+import { CreateDocDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 
@@ -50,7 +50,7 @@ export class DocCreateComponent {
    *
    * @param createDocDto The value to use to create a doc.
    */
-  onCreate(createDocDto: BaseCreateDocDto): void {
+  onCreate(createDocDto: CreateDocDto): void {
     this.store.dispatch(DocActions.createDoc({ createDocDto }));
   }
 }

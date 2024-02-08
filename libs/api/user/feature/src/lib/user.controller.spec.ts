@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { elongateUuid } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
-import { testBaseTokenDto1, testBaseUpdateUserDto1 } from '@newbee/shared/util';
+import { testBaseTokenDto1, testUpdateUserDto1 } from '@newbee/shared/util';
 import { UserController } from './user.controller';
 
 describe('UserController', () => {
@@ -12,7 +12,7 @@ describe('UserController', () => {
 
   const testUpdatedUserEntity = {
     ...testUserEntity1,
-    ...testBaseUpdateUserDto1,
+    ...testUpdateUserDto1,
   };
 
   beforeEach(async () => {
@@ -43,12 +43,12 @@ describe('UserController', () => {
   describe('update', () => {
     it('should find and update a user', async () => {
       await expect(
-        controller.update(testBaseUpdateUserDto1, testUserEntity1),
+        controller.update(testUpdateUserDto1, testUserEntity1),
       ).resolves.toEqual(testUpdatedUserEntity);
       expect(service.update).toHaveBeenCalledTimes(1);
       expect(service.update).toHaveBeenCalledWith(
         testUserEntity1,
-        testBaseUpdateUserDto1,
+        testUpdateUserDto1,
       );
     });
   });

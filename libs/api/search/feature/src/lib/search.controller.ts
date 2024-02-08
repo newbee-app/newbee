@@ -1,16 +1,14 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common';
-import {
-  QueryDto,
-  SearchService,
-  SuggestDto,
-} from '@newbee/api/search/data-access';
+import { SearchService } from '@newbee/api/search/data-access';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import { Organization, Role } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseQueryResultsDto,
-  BaseSuggestResultsDto,
   Keyword,
+  QueryDto,
+  QueryResultsDto,
+  SuggestDto,
+  SuggestResultsDto,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -41,7 +39,7 @@ export class SearchController {
   async search(
     @Query() queryDto: QueryDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<BaseQueryResultsDto> {
+  ): Promise<QueryResultsDto> {
     this.logger.log(
       `Search request received for organization ID ${
         organization.id
@@ -69,7 +67,7 @@ export class SearchController {
   async suggest(
     @Query() suggestDto: SuggestDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<BaseSuggestResultsDto> {
+  ): Promise<SuggestResultsDto> {
     this.logger.log(
       `Suggest request received for organization ID ${
         organization.id

@@ -1,4 +1,4 @@
-import { BaseUpdateUserDto, Keyword, User } from '@newbee/shared/util';
+import { Keyword, UpdateUserDto, User } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 /**
@@ -10,7 +10,7 @@ export const UserActions = createActionGroup({
     /**
      * Edits the current user with the given information.
      */
-    'Edit User': props<{ updateUserDto: BaseUpdateUserDto }>(),
+    'Edit User': props<{ updateUserDto: UpdateUserDto }>(),
 
     /**
      * Indicates the current user was successfully updated.

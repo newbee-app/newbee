@@ -1,17 +1,17 @@
 import {
-  BaseCreateTeamDto,
-  BaseCreateTeamMemberDto,
-  BaseTeamAndMemberDto,
-  BaseUpdateTeamDto,
-  BaseUpdateTeamMemberDto,
+  CreateTeamDto,
+  CreateTeamMemberDto,
   DocQueryResult,
   Keyword,
   Organization,
   PaginatedResults,
   QnaQueryResult,
   Team,
+  TeamAndMemberDto,
   TeamMember,
   TeamMemberUserOrgMember,
+  UpdateTeamDto,
+  UpdateTeamMemberDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -29,12 +29,12 @@ export const TeamActions = createActionGroup({
     /**
      * Indiciates that a team was successfully retrieved.
      */
-    'Get Team Success': props<{ teamAndMemberDto: BaseTeamAndMemberDto }>(),
+    'Get Team Success': props<{ teamAndMemberDto: TeamAndMemberDto }>(),
 
     /**
      * Create a team using the given information.
      */
-    'Create Team': props<{ createTeamDto: BaseCreateTeamDto }>(),
+    'Create Team': props<{ createTeamDto: CreateTeamDto }>(),
 
     /**
      * Indicates that a team was successfully created.
@@ -44,7 +44,7 @@ export const TeamActions = createActionGroup({
     /**
      * Edits the currently selected team with the given information.
      */
-    'Edit Team': props<{ updateTeamDto: BaseUpdateTeamDto }>(),
+    'Edit Team': props<{ updateTeamDto: UpdateTeamDto }>(),
 
     /**
      * Indicates that the currently selected team was successfully updated.
@@ -54,7 +54,7 @@ export const TeamActions = createActionGroup({
     /**
      * Edits the currently selected team with a new slug.
      */
-    'Edit Team Slug': props<{ updateTeamDto: BaseUpdateTeamDto }>(),
+    'Edit Team Slug': props<{ updateTeamDto: UpdateTeamDto }>(),
 
     /**
      * Indicates that the currently selected team was successfully updated with the new slug.
@@ -130,7 +130,7 @@ export const TeamActions = createActionGroup({
      * Add a new team member to the team.
      */
     'Add Team Member': props<{
-      createTeamMemberDto: BaseCreateTeamMemberDto;
+      createTeamMemberDto: CreateTeamMemberDto;
     }>(),
 
     /**
@@ -143,7 +143,7 @@ export const TeamActions = createActionGroup({
      */
     'Edit Team Member': props<{
       orgMemberSlug: string;
-      updateTeamMemberDto: BaseUpdateTeamMemberDto;
+      updateTeamMemberDto: UpdateTeamMemberDto;
     }>(),
 
     /**

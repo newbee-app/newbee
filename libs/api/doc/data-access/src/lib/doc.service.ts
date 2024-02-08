@@ -15,11 +15,15 @@ import {
 } from '@newbee/api/shared/data-access';
 import { elongateUuid, renderMarkdoc } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
-import { docSlugNotFound, internalServerError } from '@newbee/shared/util';
+import {
+  CreateDocDto,
+  UpdateDocDto,
+  docSlugNotFound,
+  internalServerError,
+} from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
 import { v4 } from 'uuid';
-import { CreateDocDto, UpdateDocDto } from './dto';
 
 /**
  * The service that interacts with the `DocEntity`.

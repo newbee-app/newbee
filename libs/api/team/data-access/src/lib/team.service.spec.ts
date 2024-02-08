@@ -29,8 +29,8 @@ import {
   internalServerError,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
-  testBaseCreateTeamDto1,
-  testBaseUpdateTeamDto1,
+  testCreateTeamDto1,
+  testUpdateTeamDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -56,7 +56,7 @@ describe('TeamService', () => {
   let entityService: EntityService;
   let solrCli: SolrCli;
 
-  const testUpdatedTeam = { ...testTeamEntity1, ...testBaseUpdateTeamDto1 };
+  const testUpdatedTeam = { ...testTeamEntity1, ...testUpdateTeamDto1 };
   const testUpdatedTeamDocParams = new TeamDocParams(testUpdatedTeam);
 
   beforeEach(async () => {
@@ -105,9 +105,9 @@ describe('TeamService', () => {
       expect(mockTeamEntity).toHaveBeenCalledTimes(1);
       expect(mockTeamEntity).toHaveBeenCalledWith(
         testTeamEntity1.id,
-        testBaseCreateTeamDto1.name,
-        testBaseCreateTeamDto1.slug,
-        testBaseCreateTeamDto1.upToDateDuration,
+        testCreateTeamDto1.name,
+        testCreateTeamDto1.slug,
+        testCreateTeamDto1.upToDateDuration,
         testOrgMemberEntity1,
       );
       expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
@@ -116,7 +116,7 @@ describe('TeamService', () => {
 
     it('should create a new team', async () => {
       await expect(
-        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
+        service.create(testCreateTeamDto1, testOrgMemberEntity1),
       ).resolves.toEqual(testTeamEntity1);
       expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.addDocs).toHaveBeenCalledWith(
@@ -130,7 +130,7 @@ describe('TeamService', () => {
         .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
+        service.create(testCreateTeamDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -141,14 +141,14 @@ describe('TeamService', () => {
           new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
       await expect(
-        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
+        service.create(testCreateTeamDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
     });
 
     it('should throw an InternalServerErrorException and delete if addDocs throws an error', async () => {
       jest.spyOn(solrCli, 'addDocs').mockRejectedValue(new Error('addDocs'));
       await expect(
-        service.create(testBaseCreateTeamDto1, testOrgMemberEntity1),
+        service.create(testCreateTeamDto1, testOrgMemberEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
       expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
@@ -257,19 +257,19 @@ describe('TeamService', () => {
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(
         testTeamEntity1,
-        testBaseUpdateTeamDto1,
+        testUpdateTeamDto1,
       );
       expect(service.changeUpToDateDuration).toHaveBeenCalledTimes(1);
       expect(service.changeUpToDateDuration).toHaveBeenCalledWith(
         testTeamEntity1,
-        testBaseUpdateTeamDto1.upToDateDuration,
+        testUpdateTeamDto1.upToDateDuration,
       );
       expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update a team', async () => {
       await expect(
-        service.update(testTeamEntity1, testBaseUpdateTeamDto1),
+        service.update(testTeamEntity1, testUpdateTeamDto1),
       ).resolves.toEqual(testUpdatedTeam);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
@@ -281,7 +281,7 @@ describe('TeamService', () => {
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testTeamEntity1, testBaseUpdateTeamDto1),
+        service.update(testTeamEntity1, testUpdateTeamDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -292,7 +292,7 @@ describe('TeamService', () => {
           new UniqueConstraintViolationException(new Error('flush')),
         );
       await expect(
-        service.update(testTeamEntity1, testBaseUpdateTeamDto1),
+        service.update(testTeamEntity1, testUpdateTeamDto1),
       ).rejects.toThrow(new BadRequestException(teamSlugTakenBadRequest));
     });
 
@@ -301,7 +301,7 @@ describe('TeamService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(
-        service.update(testTeamEntity1, testBaseUpdateTeamDto1),
+        service.update(testTeamEntity1, testUpdateTeamDto1),
       ).resolves.toEqual(testUpdatedTeam);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(

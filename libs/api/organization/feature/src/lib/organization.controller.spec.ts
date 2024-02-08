@@ -8,14 +8,14 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseCreateOrganizationDto1,
-  testBaseGenerateSlugDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseSlugDto1,
-  testBaseSlugTakenDto1,
-  testBaseUpdateOrganizationDto1,
+  testCreateOrganizationDto1,
+  testGenerateSlugDto1,
+  testGeneratedSlugDto1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
+  testSlugDto1,
+  testSlugTakenDto1,
+  testUpdateOrganizationDto1,
 } from '@newbee/shared/util';
 import slug from 'slug';
 import { OrganizationController } from './organization.controller';
@@ -27,7 +27,7 @@ describe('OrganizationController', () => {
 
   const testUpdatedOrganizationEntity = {
     ...testOrganizationEntity1,
-    ...testBaseUpdateOrganizationDto1,
+    ...testUpdateOrganizationDto1,
   };
 
   beforeEach(async () => {
@@ -70,11 +70,11 @@ describe('OrganizationController', () => {
   describe('create', () => {
     it('should create an organization', async () => {
       await expect(
-        controller.create(testBaseCreateOrganizationDto1, testUserEntity1),
+        controller.create(testCreateOrganizationDto1, testUserEntity1),
       ).resolves.toEqual(testOrganizationEntity1);
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(service.create).toHaveBeenCalledWith(
-        testBaseCreateOrganizationDto1,
+        testCreateOrganizationDto1,
         testUserEntity1,
       );
     });
@@ -82,28 +82,28 @@ describe('OrganizationController', () => {
 
   describe('checkSlug', () => {
     it('should return true if slug is taken, false if not', async () => {
-      await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual(
-        testBaseSlugTakenDto1,
+      await expect(controller.checkSlug(testSlugDto1)).resolves.toEqual(
+        testSlugTakenDto1,
       );
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
-      expect(service.hasOneBySlug).toHaveBeenCalledWith(testBaseSlugDto1.slug);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(testSlugDto1.slug);
 
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
-      await expect(controller.checkSlug(testBaseSlugDto1)).resolves.toEqual({
+      await expect(controller.checkSlug(testSlugDto1)).resolves.toEqual({
         slugTaken: false,
       });
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(2);
-      expect(service.hasOneBySlug).toHaveBeenCalledWith(testBaseSlugDto1.slug);
+      expect(service.hasOneBySlug).toHaveBeenCalledWith(testSlugDto1.slug);
     });
   });
 
   describe('generateSlug', () => {
     it('should generate a unique slug', async () => {
       jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
-      const sluggedBase = slug(testBaseGenerateSlugDto1.base);
+      const sluggedBase = slug(testGenerateSlugDto1.base);
       await expect(
-        controller.generateSlug(testBaseGenerateSlugDto1),
-      ).resolves.toEqual(testBaseGeneratedSlugDto1);
+        controller.generateSlug(testGenerateSlugDto1),
+      ).resolves.toEqual(testGeneratedSlugDto1);
       expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
       expect(service.hasOneBySlug).toHaveBeenCalledWith(sluggedBase);
     });
@@ -131,15 +131,12 @@ describe('OrganizationController', () => {
   describe('update', () => {
     it('should find and update an organization', async () => {
       await expect(
-        controller.update(
-          testOrganizationEntity1,
-          testBaseUpdateOrganizationDto1,
-        ),
+        controller.update(testOrganizationEntity1, testUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganizationEntity);
       expect(service.update).toHaveBeenCalledTimes(1);
       expect(service.update).toHaveBeenCalledWith(
         testOrganizationEntity1,
-        testBaseUpdateOrganizationDto1,
+        testUpdateOrganizationDto1,
       );
     });
   });

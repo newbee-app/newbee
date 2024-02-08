@@ -11,17 +11,17 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateQnaDto1,
-  testBaseQnaAndMemberDto1,
-  testBaseUpdateAnswerDto1,
-  testBaseUpdateQuestionDto1,
+  testCreateQnaDto1,
   testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
   testPaginatedResultsQnaQueryResult1,
   testQna1,
+  testQnaAndMemberDto1,
   testQnaRelation1,
   testTeamRelation1,
+  testUpdateAnswerDto1,
+  testUpdateQuestionDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -73,11 +73,9 @@ describe('QnaEffects', () => {
               .fn()
               .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
             create: jest.fn().mockReturnValue(of(testQna1)),
-            get: jest.fn().mockReturnValue(of(testBaseQnaAndMemberDto1)),
+            get: jest.fn().mockReturnValue(of(testQnaAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
-            editQuestion: jest
-              .fn()
-              .mockReturnValue(of(testBaseQnaAndMemberDto1)),
+            editQuestion: jest.fn().mockReturnValue(of(testQnaAndMemberDto1)),
             editAnswer: jest.fn().mockReturnValue(of(testQna1)),
             delete: jest.fn().mockReturnValue(of(null)),
           }),
@@ -266,7 +264,7 @@ describe('QnaEffects', () => {
   describe('createQna$', () => {
     it('should fire createQnaSuccess if successful', () => {
       actions$ = hot('a', {
-        a: QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
+        a: QnaActions.createQna({ createQnaDto: testCreateQnaDto1 }),
       });
       const expected$ = hot('a', {
         a: QnaActions.createQnaSuccess({ qna: testQna1 }),
@@ -275,7 +273,7 @@ describe('QnaEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).toHaveBeenCalledTimes(1);
         expect(service.create).toHaveBeenCalledWith(
-          testBaseCreateQnaDto1,
+          testCreateQnaDto1,
           testOrganization1.slug,
         );
       });
@@ -284,7 +282,7 @@ describe('QnaEffects', () => {
     it(`should do nothing if selectedOrganization isn't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: QnaActions.createQna({ createQnaDto: testBaseCreateQnaDto1 }),
+        a: QnaActions.createQna({ createQnaDto: testCreateQnaDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.createQna$).toBeObservable(expected$);
@@ -334,7 +332,7 @@ describe('QnaEffects', () => {
       });
       const expected$ = hot('a', {
         a: QnaActions.getQnaSuccess({
-          qnaAndMemberDto: testBaseQnaAndMemberDto1,
+          qnaAndMemberDto: testQnaAndMemberDto1,
         }),
       });
       expect(effects.getQna$).toBeObservable(expected$);
@@ -389,12 +387,12 @@ describe('QnaEffects', () => {
     it('should fire getQnaSuccess if successful', () => {
       actions$ = hot('a', {
         a: QnaActions.editQuestion({
-          updateQuestionDto: testBaseUpdateQuestionDto1,
+          updateQuestionDto: testUpdateQuestionDto1,
         }),
       });
       const expected$ = hot('a', {
         a: QnaActions.getQnaSuccess({
-          qnaAndMemberDto: testBaseQnaAndMemberDto1,
+          qnaAndMemberDto: testQnaAndMemberDto1,
         }),
       });
       expect(effects.editQuestion$).toBeObservable(expected$);
@@ -403,7 +401,7 @@ describe('QnaEffects', () => {
         expect(service.editQuestion).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
-          testBaseUpdateQuestionDto1,
+          testUpdateQuestionDto1,
         );
       });
     });
@@ -412,7 +410,7 @@ describe('QnaEffects', () => {
       store.setState({});
       actions$ = hot('a', {
         a: QnaActions.editQuestion({
-          updateQuestionDto: testBaseUpdateQuestionDto1,
+          updateQuestionDto: testUpdateQuestionDto1,
         }),
       });
       const expected$ = hot('-');
@@ -426,7 +424,7 @@ describe('QnaEffects', () => {
   describe('editAnswer$', () => {
     it('should fire editQnaSuccess if successful', () => {
       actions$ = hot('a', {
-        a: QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
+        a: QnaActions.editAnswer({ updateAnswerDto: testUpdateAnswerDto1 }),
       });
       const expected$ = hot('a', {
         a: QnaActions.editQnaSuccess({ qna: testQna1 }),
@@ -437,7 +435,7 @@ describe('QnaEffects', () => {
         expect(service.editAnswer).toHaveBeenCalledWith(
           testQna1.slug,
           testOrganization1.slug,
-          testBaseUpdateAnswerDto1,
+          testUpdateAnswerDto1,
         );
       });
     });
@@ -445,7 +443,7 @@ describe('QnaEffects', () => {
     it(`should do nothing if selectedOrganization and selectedQna aren't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
+        a: QnaActions.editAnswer({ updateAnswerDto: testUpdateAnswerDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.editAnswer$).toBeObservable(expected$);

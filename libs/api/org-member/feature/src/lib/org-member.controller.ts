@@ -7,11 +7,7 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
-import {
-  GetOrgMemberPostsDto,
-  OrgMemberService,
-  UpdateOrgMemberDto,
-} from '@newbee/api/org-member/data-access';
+import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocEntity,
   EntityService,
@@ -28,10 +24,12 @@ import {
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   DocQueryResult,
+  GetOrgMemberPostsDto,
   Keyword,
   OrgMemberNoOrg,
   PaginatedResults,
   QnaQueryResult,
+  UpdateOrgMemberDto,
   apiRoles,
 } from '@newbee/shared/util';
 

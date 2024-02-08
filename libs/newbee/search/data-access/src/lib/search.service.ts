@@ -2,11 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseQueryDto,
-  BaseQueryResultsDto,
-  BaseSuggestDto,
-  BaseSuggestResultsDto,
   Keyword,
+  QueryDto,
+  QueryResultsDto,
+  SuggestDto,
+  SuggestResultsDto,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -37,17 +37,11 @@ export class SearchService {
    *
    * @returns An observable containing the results of the search.
    */
-  search(
-    query: BaseQueryDto,
-    orgSlug: string,
-  ): Observable<BaseQueryResultsDto> {
+  search(query: QueryDto, orgSlug: string): Observable<QueryResultsDto> {
     const params = new HttpParams({ fromObject: { ...query } });
-    return this.http.get<BaseQueryResultsDto>(
-      SearchService.baseApiUrl(orgSlug),
-      {
-        params,
-      },
-    );
+    return this.http.get<QueryResultsDto>(SearchService.baseApiUrl(orgSlug), {
+      params,
+    });
   }
 
   /**
@@ -58,12 +52,9 @@ export class SearchService {
    *
    * @returns An observable containing the search suggestions.
    */
-  suggest(
-    query: BaseSuggestDto,
-    orgSlug: string,
-  ): Observable<BaseSuggestResultsDto> {
+  suggest(query: SuggestDto, orgSlug: string): Observable<SuggestResultsDto> {
     const params = new HttpParams({ fromObject: { ...query } });
-    return this.http.get<BaseSuggestResultsDto>(
+    return this.http.get<SuggestResultsDto>(
       `${SearchService.baseApiUrl(orgSlug)}/${Keyword.Suggest}`,
       { params },
     );

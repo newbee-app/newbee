@@ -8,17 +8,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  CreateOrganizationDto,
-  OrganizationService,
-  UpdateOrganizationDto,
-} from '@newbee/api/organization/data-access';
+import { OrganizationService } from '@newbee/api/organization/data-access';
 import {
   EntityService,
-  GenerateSlugDto,
   OrgMemberEntity,
   OrganizationEntity,
-  SlugDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import {
@@ -30,10 +24,14 @@ import {
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseGeneratedSlugDto,
-  BaseOrgAndMemberDto,
-  BaseSlugTakenDto,
+  CreateOrganizationDto,
+  GenerateSlugDto,
+  GeneratedSlugDto,
   Keyword,
+  OrgAndMemberDto,
+  SlugDto,
+  SlugTakenDto,
+  UpdateOrganizationDto,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -87,21 +85,21 @@ export class OrganizationController {
   /**
    * The API route for checking whether an org slug has been taken.
    *
-   * @param checkSlugDto The org slug to check.
+   * @param slugDto The org slug to check.
    *
    * @returns `true` if the org slug is taken, `false` if not.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.CheckSlug)
-  async checkSlug(@Query() checkSlugDto: SlugDto): Promise<BaseSlugTakenDto> {
-    const { slug } = checkSlugDto;
+  async checkSlug(@Query() slugDto: SlugDto): Promise<SlugTakenDto> {
+    const { slug } = slugDto;
     this.logger.log(
       `Check organization slug request received for slug: ${slug}`,
     );
     const hasSlug = await this.organizationService.hasOneBySlug(slug);
     this.logger.log(`Organization slug ${slug} taken: ${hasSlug}`);
 
-    return { slugTaken: hasSlug };
+    return new SlugTakenDto(hasSlug);
   }
 
   /**
@@ -115,7 +113,7 @@ export class OrganizationController {
   @Get(Keyword.GenerateSlug)
   async generateSlug(
     @Query() generateSlugDto: GenerateSlugDto,
-  ): Promise<BaseGeneratedSlugDto> {
+  ): Promise<GeneratedSlugDto> {
     const { base } = generateSlugDto;
     this.logger.log(`New organization slug request received for base: ${base}`);
     const slug = await generateUniqueSlug(
@@ -125,7 +123,7 @@ export class OrganizationController {
     );
     this.logger.log(`Organization slug ${slug} generated for base ${base}`);
 
-    return { generatedSlug: slug };
+    return new GeneratedSlugDto(slug);
   }
 
   /**
@@ -141,17 +139,16 @@ export class OrganizationController {
   async get(
     @Organization() organization: OrganizationEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<BaseOrgAndMemberDto> {
+  ): Promise<OrgAndMemberDto> {
     const { id, slug } = organization;
     this.logger.log(
       `Get organization request received for organization slug: ${slug}`,
     );
     this.logger.log(`Found organization, slug: ${slug}, ID: ${id}`);
-    return {
-      organization:
-        await this.entityService.createOrgTeamsMembers(organization),
-      orgMember: await this.entityService.createOrgMemberNoUserOrg(orgMember),
-    };
+    return new OrgAndMemberDto(
+      await this.entityService.createOrgTeamsMembers(organization),
+      await this.entityService.createOrgMemberNoUserOrg(orgMember),
+    );
   }
 
   /**

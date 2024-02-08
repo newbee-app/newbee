@@ -11,13 +11,9 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateTeamDto1,
-  testBaseCreateTeamMemberDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseSlugTakenDto1,
-  testBaseTeamAndMemberDto1,
-  testBaseUpdateTeamDto1,
-  testBaseUpdateTeamMemberDto1,
+  testCreateTeamDto1,
+  testCreateTeamMemberDto1,
+  testGeneratedSlugDto1,
   testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
@@ -26,11 +22,15 @@ import {
   testOrgMemberRelation1,
   testPaginatedResultsDocQueryResult1,
   testPaginatedResultsQnaQueryResult1,
+  testSlugTakenDto1,
   testTeam1,
+  testTeamAndMemberDto1,
   testTeamMember1,
   testTeamMemberRelation1,
   testTeamMemberRelation2,
   testTeamRelation1,
+  testUpdateTeamDto1,
+  testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -72,14 +72,12 @@ describe('TeamEffects', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
-            get: jest.fn().mockReturnValue(of(testBaseTeamAndMemberDto1)),
+            get: jest.fn().mockReturnValue(of(testTeamAndMemberDto1)),
             create: jest.fn().mockReturnValue(of(testTeam1)),
             edit: jest.fn().mockReturnValue(of(testTeam1)),
             delete: jest.fn().mockReturnValue(of(null)),
-            checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
-            generateSlug: jest
-              .fn()
-              .mockReturnValue(of(testBaseGeneratedSlugDto1)),
+            checkSlug: jest.fn().mockReturnValue(of(testSlugTakenDto1)),
+            generateSlug: jest.fn().mockReturnValue(of(testGeneratedSlugDto1)),
             getAllDocs: jest
               .fn()
               .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
@@ -117,7 +115,7 @@ describe('TeamEffects', () => {
       actions$ = hot('a', { a: TeamActions.getTeam({ slug: testTeam1.slug }) });
       const expected$ = hot('a', {
         a: TeamActions.getTeamSuccess({
-          teamAndMemberDto: testBaseTeamAndMemberDto1,
+          teamAndMemberDto: testTeamAndMemberDto1,
         }),
       });
       expect(effects.getTeam$).toBeObservable(expected$);
@@ -144,7 +142,7 @@ describe('TeamEffects', () => {
   describe('createTeam$', () => {
     it('should fire createTeamSuccess if successful', () => {
       actions$ = hot('a', {
-        a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
+        a: TeamActions.createTeam({ createTeamDto: testCreateTeamDto1 }),
       });
       const expected$ = hot('a', {
         a: TeamActions.createTeamSuccess({
@@ -156,7 +154,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).toHaveBeenCalledTimes(1);
         expect(service.create).toHaveBeenCalledWith(
-          testBaseCreateTeamDto1,
+          testCreateTeamDto1,
           testOrganization1.slug,
         );
       });
@@ -165,7 +163,7 @@ describe('TeamEffects', () => {
     it(`should do nothing if selectedOrganization isn't set`, () => {
       store.setState({});
       actions$ = hot('a', {
-        a: TeamActions.createTeam({ createTeamDto: testBaseCreateTeamDto1 }),
+        a: TeamActions.createTeam({ createTeamDto: testCreateTeamDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.createTeam$).toBeObservable(expected$);
@@ -205,7 +203,7 @@ describe('TeamEffects', () => {
   describe('editTeam$', () => {
     it('should fire editTeamSuccess if successful for editTeam', () => {
       actions$ = hot('a', {
-        a: TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
+        a: TeamActions.editTeam({ updateTeamDto: testUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
         a: TeamActions.editTeamSuccess({
@@ -219,14 +217,14 @@ describe('TeamEffects', () => {
         expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
-          testBaseUpdateTeamDto1,
+          testUpdateTeamDto1,
         );
       });
     });
 
     it('should fire editTeamSlugSuccess if successful for editTeamSlug', () => {
       actions$ = hot('a', {
-        a: TeamActions.editTeamSlug({ updateTeamDto: testBaseUpdateTeamDto1 }),
+        a: TeamActions.editTeamSlug({ updateTeamDto: testUpdateTeamDto1 }),
       });
       const expected$ = hot('a', {
         a: TeamActions.editTeamSlugSuccess({
@@ -240,7 +238,7 @@ describe('TeamEffects', () => {
         expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testTeam1.slug,
-          testBaseUpdateTeamDto1,
+          testUpdateTeamDto1,
         );
       });
     });
@@ -248,7 +246,7 @@ describe('TeamEffects', () => {
     it('should do nothing if selectedOrganization or selectedTeam is null', () => {
       store.setState({});
       actions$ = hot('a', {
-        a: TeamActions.editTeam({ updateTeamDto: testBaseUpdateTeamDto1 }),
+        a: TeamActions.editTeam({ updateTeamDto: testUpdateTeamDto1 }),
       });
       const expected$ = hot('-');
       expect(expected$).toSatisfyOnFlush(() => {
@@ -360,7 +358,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.checkSlugSuccess({
-          slugTaken: testBaseSlugTakenDto1.slugTaken,
+          slugTaken: testSlugTakenDto1.slugTaken,
         }),
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
@@ -415,7 +413,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.generateSlugSuccess({
-          slug: testBaseGeneratedSlugDto1.generatedSlug,
+          slug: testGeneratedSlugDto1.generatedSlug,
         }),
       });
       expect(effects.generateSlug$).toBeObservable(expected$);
@@ -815,7 +813,7 @@ describe('TeamEffects', () => {
         .mockReturnValue(of(testTeamMemberRelation2));
       actions$ = hot('a', {
         a: TeamActions.addTeamMember({
-          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+          createTeamMemberDto: testCreateTeamMemberDto1,
         }),
       });
       const expected$ = hot('a', {
@@ -827,7 +825,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createTeamMember).toHaveBeenCalledTimes(1);
         expect(service.createTeamMember).toHaveBeenCalledWith(
-          testBaseCreateTeamMemberDto1,
+          testCreateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
         );
@@ -837,7 +835,7 @@ describe('TeamEffects', () => {
     it('should fire editCurrentTeamMember if current org member was just added to the team', () => {
       actions$ = hot('a', {
         a: TeamActions.addTeamMember({
-          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+          createTeamMemberDto: testCreateTeamMemberDto1,
         }),
       });
       const expected$ = hot('(ab)', {
@@ -850,7 +848,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.createTeamMember).toHaveBeenCalledTimes(1);
         expect(service.createTeamMember).toHaveBeenCalledWith(
-          testBaseCreateTeamMemberDto1,
+          testCreateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
         );
@@ -864,7 +862,7 @@ describe('TeamEffects', () => {
       });
       actions$ = hot('a', {
         a: TeamActions.addTeamMember({
-          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+          createTeamMemberDto: testCreateTeamMemberDto1,
         }),
       });
       const expected$ = hot('-');
@@ -880,7 +878,7 @@ describe('TeamEffects', () => {
       actions$ = hot('a', {
         a: TeamActions.editTeamMember({
           orgMemberSlug: testOrgMember2.slug,
-          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+          updateTeamMemberDto: testUpdateTeamMemberDto1,
         }),
       });
       const expected$ = hot('a', {
@@ -893,7 +891,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.editTeamMember).toHaveBeenCalledTimes(1);
         expect(service.editTeamMember).toHaveBeenCalledWith(
-          testBaseUpdateTeamMemberDto1,
+          testUpdateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
           testOrgMember2.slug,
@@ -905,7 +903,7 @@ describe('TeamEffects', () => {
       actions$ = hot('a', {
         a: TeamActions.editTeamMember({
           orgMemberSlug: testOrgMember1.slug,
-          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+          updateTeamMemberDto: testUpdateTeamMemberDto1,
         }),
       });
       const expected$ = hot('(ab)', {
@@ -919,7 +917,7 @@ describe('TeamEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.editTeamMember).toHaveBeenCalledTimes(1);
         expect(service.editTeamMember).toHaveBeenCalledWith(
-          testBaseUpdateTeamMemberDto1,
+          testUpdateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
           testOrgMember1.slug,
@@ -935,7 +933,7 @@ describe('TeamEffects', () => {
       actions$ = hot('a', {
         a: TeamActions.editTeamMember({
           orgMemberSlug: testOrgMember1.slug,
-          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+          updateTeamMemberDto: testUpdateTeamMemberDto1,
         }),
       });
       const expected$ = hot('-');

@@ -6,7 +6,7 @@ import {
   httpFeature,
   organizationFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateQnaDto, Keyword } from '@newbee/shared/util';
+import { CreateQnaDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 
@@ -52,7 +52,7 @@ export class QnaCreateComponent {
    *
    * @param createQnaDto The value to use to create a QnA.
    */
-  onCreate(createQnaDto: BaseCreateQnaDto): void {
+  onCreate(createQnaDto: CreateQnaDto): void {
     this.store.dispatch(QnaActions.createQna({ createQnaDto }));
   }
 }

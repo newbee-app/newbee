@@ -21,7 +21,7 @@ import {
   SearchResultFormat,
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
-import { BaseQueryResultsDto, Keyword } from '@newbee/shared/util';
+import { Keyword, QueryResultsDto } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
 
 /**
@@ -73,7 +73,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   /**
    * The search results themselves.
    */
-  @Input() searchResults: BaseQueryResultsDto | null = null;
+  @Input() searchResults: QueryResultsDto | null = null;
 
   /**
    * Whether to display a loader to indicate a search is occurring.

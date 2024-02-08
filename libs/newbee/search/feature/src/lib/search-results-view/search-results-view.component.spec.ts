@@ -13,7 +13,7 @@ import {
   Keyword,
   SolrEntryEnum,
   defaultLimit,
-  testBaseQueryResultsDto1,
+  testQueryResultsDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SearchResultsViewComponent } from './search-results-view.component';
@@ -47,7 +47,7 @@ describe('SearchResultsViewComponent', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testBaseQueryResultsDto1,
+              searchResults: testQueryResultsDto1,
             },
           },
         }),

@@ -11,27 +11,25 @@ import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
   MagicLinkLoginStrategy,
-  WebAuthnLoginDto,
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import {
-  EmailDto,
-  EntityService,
-  UserEntity,
-} from '@newbee/api/shared/data-access';
+import { EntityService, UserEntity } from '@newbee/api/shared/data-access';
 import {
   Public,
   UnverifiedOk,
   User,
   authJwtCookie,
 } from '@newbee/api/shared/util';
-import { CreateUserDto, UserService } from '@newbee/api/user/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseMagicLinkLoginDto,
-  BaseUserRelationAndOptionsDto,
+  CreateUserDto,
+  EmailDto,
   Keyword,
+  MagicLinkLoginDto,
   UserRelation,
+  UserRelationAndOptionsDto,
+  WebAuthnLoginDto,
   internalServerError,
 } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -78,7 +76,7 @@ export class AuthController {
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto,
-  ): Promise<BaseUserRelationAndOptionsDto> {
+  ): Promise<UserRelationAndOptionsDto> {
     const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
       `WebAuthn register request received for: ${createUserDtoString}`,
@@ -92,10 +90,10 @@ export class AuthController {
     this.logger.log(`Access token created: ${accessToken}`);
 
     res.cookie(authJwtCookie, accessToken, this.cookieOptions);
-    return {
+    return new UserRelationAndOptionsDto(
+      await this.entityService.createUserRelation(user),
       options,
-      userRelation: await this.entityService.createUserRelation(user),
-    };
+    );
   }
 
   /**
@@ -166,7 +164,7 @@ export class AuthController {
   @Post(`${Keyword.MagicLinkLogin}/${Keyword.Login}`)
   async magicLinkLoginLogin(
     @Body() emailDto: EmailDto,
-  ): Promise<BaseMagicLinkLoginDto> {
+  ): Promise<MagicLinkLoginDto> {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
 
@@ -174,7 +172,7 @@ export class AuthController {
       const jwtId = await this.magicLinkLoginStrategy.send({ email });
       this.logger.log(`Magic link sent to email: ${email}`);
 
-      return { jwtId, email };
+      return new MagicLinkLoginDto(jwtId, email);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);

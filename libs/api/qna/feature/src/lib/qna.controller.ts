@@ -8,15 +8,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  CreateQnaDto,
-  QnaService,
-  UpdateAnswerDto,
-  UpdateQuestionDto,
-} from '@newbee/api/qna/data-access';
+import { QnaService } from '@newbee/api/qna/data-access';
 import {
   EntityService,
-  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
   QnaEntity,
@@ -25,10 +19,14 @@ import { OrgMember, Organization, Qna, Role } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseQnaAndMemberDto,
+  CreateQnaDto,
   Keyword,
+  OffsetAndLimitDto,
   PaginatedResults,
+  QnaAndMemberDto,
   QnaQueryResult,
+  UpdateAnswerDto,
+  UpdateQuestionDto,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -132,20 +130,20 @@ export class QnaController {
   async get(
     @Qna() qna: QnaEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<BaseQnaAndMemberDto> {
+  ): Promise<QnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
 
     const { team } = qna;
-    return {
-      qna: await this.entityService.createQnaNoOrg(qna),
-      teamMember: team
+    return new QnaAndMemberDto(
+      await this.entityService.createQnaNoOrg(qna),
+      team
         ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
             team,
           )
         : null,
-    };
+    );
   }
 
   /**
@@ -164,7 +162,7 @@ export class QnaController {
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Qna() qna: QnaEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<BaseQnaAndMemberDto> {
+  ): Promise<QnaAndMemberDto> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
     const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
     this.logger.log(
@@ -172,15 +170,15 @@ export class QnaController {
     );
 
     const { team } = updatedQna;
-    return {
-      qna: await this.entityService.createQnaNoOrg(updatedQna),
-      teamMember: team
+    return new QnaAndMemberDto(
+      await this.entityService.createQnaNoOrg(updatedQna),
+      team
         ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
             team,
           )
         : null,
-    };
+    );
   }
 
   /**

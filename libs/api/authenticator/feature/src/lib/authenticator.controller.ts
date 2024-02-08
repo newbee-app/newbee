@@ -8,18 +8,19 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import {
-  AuthenticatorService,
-  RegistrationResponseDto,
-} from '@newbee/api/authenticator/data-access';
+import { AuthenticatorService } from '@newbee/api/authenticator/data-access';
 import {
   AuthenticatorEntity,
-  NameDto,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { UnverifiedOk, User } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Authenticator, Keyword } from '@newbee/shared/util';
+import {
+  Authenticator,
+  Keyword,
+  NameDto,
+  RegistrationResponseDto,
+} from '@newbee/shared/util';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 
 /**

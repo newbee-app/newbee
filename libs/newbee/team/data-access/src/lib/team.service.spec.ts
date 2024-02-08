@@ -7,21 +7,21 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateTeamDto1,
-  testBaseCreateTeamMemberDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseSlugTakenDto1,
-  testBaseTeamAndMemberDto1,
-  testBaseUpdateTeamDto1,
-  testBaseUpdateTeamMemberDto1,
+  testCreateTeamDto1,
+  testCreateTeamMemberDto1,
+  testGeneratedSlugDto1,
   testOffsetAndLimit1,
   testOrgMember1,
   testOrganization1,
   testPaginatedResultsDocQueryResult1,
   testPaginatedResultsQnaQueryResult1,
+  testSlugTakenDto1,
   testTeam1,
+  testTeamAndMemberDto1,
   testTeamMember1,
   testTeamMemberRelation1,
+  testUpdateTeamDto1,
+  testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
 import { TeamService } from './team.service';
 
@@ -56,7 +56,7 @@ describe('TeamService', () => {
       service.get(testTeam1.slug, testOrganization1.slug).subscribe({
         next: (team) => {
           try {
-            expect(team).toEqual(testBaseTeamAndMemberDto1);
+            expect(team).toEqual(testTeamAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -70,13 +70,13 @@ describe('TeamService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseTeamAndMemberDto1);
+      req.flush(testTeamAndMemberDto1);
     });
   });
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testBaseCreateTeamDto1, testOrganization1.slug).subscribe({
+      service.create(testCreateTeamDto1, testOrganization1.slug).subscribe({
         next: (team) => {
           try {
             expect(team).toEqual(testTeam1);
@@ -92,7 +92,7 @@ describe('TeamService', () => {
         TeamService.baseApiUrl(testOrganization1.slug),
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateTeamDto1);
+      expect(req.request.body).toEqual(testCreateTeamDto1);
 
       req.flush(testTeam1);
     });
@@ -101,7 +101,7 @@ describe('TeamService', () => {
   describe('edit', () => {
     it('should send out a patch request', (done) => {
       service
-        .edit(testOrganization1.slug, testTeam1.slug, testBaseUpdateTeamDto1)
+        .edit(testOrganization1.slug, testTeam1.slug, testUpdateTeamDto1)
         .subscribe({
           next: (team) => {
             try {
@@ -118,7 +118,7 @@ describe('TeamService', () => {
         `${TeamService.baseApiUrl(testOrganization1.slug)}/${testTeam1.slug}`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateTeamDto1);
+      expect(req.request.body).toEqual(testUpdateTeamDto1);
 
       req.flush(testTeam1);
     });
@@ -152,7 +152,7 @@ describe('TeamService', () => {
       service.checkSlug(testTeam1.slug, testOrganization1.slug).subscribe({
         next: (slugTakenDto) => {
           try {
-            expect(slugTakenDto).toEqual(testBaseSlugTakenDto1);
+            expect(slugTakenDto).toEqual(testSlugTakenDto1);
             done();
           } catch (err) {
             done(err);
@@ -169,7 +169,7 @@ describe('TeamService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseSlugTakenDto1);
+      req.flush(testSlugTakenDto1);
     });
   });
 
@@ -178,7 +178,7 @@ describe('TeamService', () => {
       service.generateSlug(testTeam1.name, testOrganization1.slug).subscribe({
         next: (generatedSlugDto) => {
           try {
-            expect(generatedSlugDto).toEqual(testBaseGeneratedSlugDto1);
+            expect(generatedSlugDto).toEqual(testGeneratedSlugDto1);
             done();
           } catch (err) {
             done(err);
@@ -195,7 +195,7 @@ describe('TeamService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseGeneratedSlugDto1);
+      req.flush(testGeneratedSlugDto1);
     });
   });
 
@@ -259,7 +259,7 @@ describe('TeamService', () => {
     it('should send out a post request', (done) => {
       service
         .createTeamMember(
-          testBaseCreateTeamMemberDto1,
+          testCreateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
         )
@@ -282,7 +282,7 @@ describe('TeamService', () => {
         ),
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateTeamMemberDto1);
+      expect(req.request.body).toEqual(testCreateTeamMemberDto1);
 
       req.flush(testTeamMemberRelation1);
     });
@@ -292,7 +292,7 @@ describe('TeamService', () => {
     it('should send out a patch request', (done) => {
       service
         .editTeamMember(
-          testBaseUpdateTeamMemberDto1,
+          testUpdateTeamMemberDto1,
           testOrganization1.slug,
           testTeam1.slug,
           testOrgMember1.slug,
@@ -316,7 +316,7 @@ describe('TeamService', () => {
         )}/${testOrgMember1.slug}`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateTeamMemberDto1);
+      expect(req.request.body).toEqual(testUpdateTeamMemberDto1);
 
       req.flush(testTeamMember1);
     });

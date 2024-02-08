@@ -1,12 +1,12 @@
 import {
-  BaseCreateQnaDto,
-  BaseQnaAndMemberDto,
-  BaseUpdateAnswerDto,
-  BaseUpdateQuestionDto,
+  CreateQnaDto,
   Keyword,
   PaginatedResults,
   Qna,
+  QnaAndMemberDto,
   QnaQueryResult,
+  UpdateAnswerDto,
+  UpdateQuestionDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -34,7 +34,7 @@ export const QnaActions = createActionGroup({
     /**
      * Creates a QnA using the given information.
      */
-    'Create Qna': props<{ createQnaDto: BaseCreateQnaDto }>(),
+    'Create Qna': props<{ createQnaDto: CreateQnaDto }>(),
 
     /**
      * Indicates that a QnA was successfully created.
@@ -49,7 +49,7 @@ export const QnaActions = createActionGroup({
     /**
      * Indicates that a qna was successfully retrieved.
      */
-    'Get Qna Success': props<{ qnaAndMemberDto: BaseQnaAndMemberDto }>(),
+    'Get Qna Success': props<{ qnaAndMemberDto: QnaAndMemberDto }>(),
 
     /**
      * Mark the selected qna as up-to-date.
@@ -59,12 +59,12 @@ export const QnaActions = createActionGroup({
     /**
      * Edit the question portion of the currently selected qna.
      */
-    'Edit Question': props<{ updateQuestionDto: BaseUpdateQuestionDto }>(),
+    'Edit Question': props<{ updateQuestionDto: UpdateQuestionDto }>(),
 
     /**
      * Edit the answer portion of the currently selected qna.
      */
-    'Edit Answer': props<{ updateAnswerDto: BaseUpdateAnswerDto }>(),
+    'Edit Answer': props<{ updateAnswerDto: UpdateAnswerDto }>(),
 
     /**
      * Indicates that the qna was successfully edited.

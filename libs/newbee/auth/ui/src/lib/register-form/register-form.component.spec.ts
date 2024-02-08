@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { testPhoneInput1 } from '@newbee/newbee/shared/util';
-import { testBaseCreateUserDto1, testUser1 } from '@newbee/shared/util';
+import { testCreateUserDto1, testUser1 } from '@newbee/shared/util';
 import { RegisterFormComponent } from './register-form.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -51,7 +51,7 @@ describe('RegisterFormComponent', () => {
         component.emitRegister();
         expect(component.register.emit).toHaveBeenCalledTimes(1);
         expect(component.register.emit).toHaveBeenCalledWith(
-          testBaseCreateUserDto1,
+          testCreateUserDto1,
         );
       });
 
@@ -61,7 +61,7 @@ describe('RegisterFormComponent', () => {
         submitElement?.click();
         expect(component.register.emit).toHaveBeenCalledTimes(1);
         expect(component.register.emit).toHaveBeenCalledWith(
-          testBaseCreateUserDto1,
+          testCreateUserDto1,
         );
       });
     });

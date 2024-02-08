@@ -8,7 +8,7 @@ import {
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
-  testBaseCreateDocDto1,
+  testCreateDocDto1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
 } from '@newbee/shared/util';
@@ -58,9 +58,9 @@ describe('DocCreateComponent', () => {
 
   describe('onCreate', () => {
     it('should dispatch createDoc', () => {
-      component.onCreate(testBaseCreateDocDto1);
+      component.onCreate(testCreateDocDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        DocActions.createDoc({ createDocDto: testBaseCreateDocDto1 }),
+        DocActions.createDoc({ createDocDto: testCreateDocDto1 }),
       );
     });
   });

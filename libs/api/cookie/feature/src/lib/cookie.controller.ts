@@ -4,7 +4,7 @@ import { AuthService } from '@newbee/api/auth/data-access';
 import { EntityService } from '@newbee/api/shared/data-access';
 import { AppConfig, Public, authJwtCookie } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
-import { BaseCsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
+import { CsrfTokenAndDataDto, Keyword } from '@newbee/shared/util';
 import type { CsrfTokenCreator } from 'csrf-csrf';
 import type { Request, Response } from 'express';
 
@@ -46,7 +46,7 @@ export class CookieController {
   async initCookies(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<BaseCsrfTokenAndDataDto> {
+  ): Promise<CsrfTokenAndDataDto> {
     this.logger.log('Init cookies request received');
     const csrfToken = this.generateToken(req, res, true);
     this.logger.log(`CSRF token generated: ${csrfToken}`);
@@ -61,7 +61,9 @@ export class CookieController {
       return { csrfToken, userRelation: null };
     }
 
-    const userRelation = await this.entityService.createUserRelation(user);
-    return { csrfToken, userRelation };
+    return new CsrfTokenAndDataDto(
+      csrfToken,
+      await this.entityService.createUserRelation(user),
+    );
   }
 }

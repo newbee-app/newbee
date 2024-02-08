@@ -2,13 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateOrganizationDto,
-  BaseGeneratedSlugDto,
-  BaseOrgAndMemberDto,
-  BaseSlugTakenDto,
-  BaseUpdateOrganizationDto,
+  CreateOrganizationDto,
+  GeneratedSlugDto,
   Keyword,
+  OrgAndMemberDto,
   Organization,
+  SlugTakenDto,
+  UpdateOrganizationDto,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -32,8 +32,8 @@ export class OrganizationService {
    *
    * @returns An observable containing information about the organization and the requester's relation to it.
    */
-  get(slug: string): Observable<BaseOrgAndMemberDto> {
-    return this.http.get<BaseOrgAndMemberDto>(
+  get(slug: string): Observable<OrgAndMemberDto> {
+    return this.http.get<OrgAndMemberDto>(
       `${OrganizationService.baseApiUrl}/${slug}`,
     );
   }
@@ -46,7 +46,7 @@ export class OrganizationService {
    * @returns An observable with information about the new organization.
    */
   create(
-    createOrganizationDto: BaseCreateOrganizationDto,
+    createOrganizationDto: CreateOrganizationDto,
   ): Observable<Organization> {
     return this.http.post<Organization>(
       OrganizationService.baseApiUrl,
@@ -63,7 +63,7 @@ export class OrganizationService {
    */
   edit(
     orgSlug: string,
-    updateOrganizationDto: BaseUpdateOrganizationDto,
+    updateOrganizationDto: UpdateOrganizationDto,
   ): Observable<Organization> {
     return this.http.patch<Organization>(
       `${OrganizationService.baseApiUrl}/${orgSlug}`,
@@ -91,9 +91,9 @@ export class OrganizationService {
    *
    * @returns An observable containing a boolean that is `true` if the slug is taken, `false` otherwise.
    */
-  checkSlug(slug: string): Observable<BaseSlugTakenDto> {
+  checkSlug(slug: string): Observable<SlugTakenDto> {
     const params = new HttpParams({ fromObject: { slug } });
-    return this.http.get<BaseSlugTakenDto>(
+    return this.http.get<SlugTakenDto>(
       `${OrganizationService.baseApiUrl}/${Keyword.CheckSlug}`,
       { params },
     );
@@ -106,9 +106,9 @@ export class OrganizationService {
    *
    * @returns An observable containing the generated slug.
    */
-  generateSlug(name: string): Observable<BaseGeneratedSlugDto> {
+  generateSlug(name: string): Observable<GeneratedSlugDto> {
     const params = new HttpParams({ fromObject: { base: name } });
-    return this.http.get<BaseGeneratedSlugDto>(
+    return this.http.get<GeneratedSlugDto>(
       `${OrganizationService.baseApiUrl}/${Keyword.GenerateSlug}`,
       { params },
     );

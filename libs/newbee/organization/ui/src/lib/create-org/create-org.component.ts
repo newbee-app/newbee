@@ -27,7 +27,7 @@ import {
   inputErrorMessage,
   objectRequiredValidator,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateOrganizationDto, Keyword } from '@newbee/shared/util';
+import { CreateOrganizationDto, Keyword } from '@newbee/shared/util';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -100,7 +100,7 @@ export class CreateOrgComponent implements OnDestroy {
   /**
    * The emitted create organization form, for use in the smart UI parent.
    */
-  @Output() create = new EventEmitter<BaseCreateOrganizationDto>();
+  @Output() create = new EventEmitter<CreateOrganizationDto>();
 
   /**
    * The internal form to create a new organization.
@@ -149,11 +149,11 @@ export class CreateOrgComponent implements OnDestroy {
     const frequency =
       upToDateDuration?.frequency ?? defaultOrgNumAndFreq.frequency;
 
-    const createOrganizationDto: BaseCreateOrganizationDto = {
-      name: name ?? '',
-      slug: slug ?? '',
-      upToDateDuration: dayjs.duration(num, frequency).toISOString(),
-    };
+    const createOrganizationDto = new CreateOrganizationDto(
+      name ?? '',
+      slug ?? '',
+      dayjs.duration(num, frequency).toISOString(),
+    );
     this.create.emit(createOrganizationDto);
   }
 

@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Authenticator,
-  BaseNameDto,
-  BaseRegistrationResponseDto,
   Keyword,
+  NameDto,
+  RegistrationResponseDto,
 } from '@newbee/shared/util';
 import { startRegistration } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -54,9 +54,7 @@ export class AuthenticatorService {
   ): Observable<Authenticator> {
     return from(startRegistration(options)).pipe(
       switchMap((response) => {
-        const registrationResponseDto: BaseRegistrationResponseDto = {
-          response,
-        };
+        const registrationResponseDto = new RegistrationResponseDto(response);
         return this.http.post<Authenticator>(
           AuthenticatorService.baseApiUrl,
           registrationResponseDto,
@@ -74,7 +72,7 @@ export class AuthenticatorService {
    * @returns An observable of the updated authenticator.
    */
   editName(id: string, name: string | null): Observable<Authenticator> {
-    const nameDto: BaseNameDto = { name };
+    const nameDto = new NameDto(name);
     return this.http.patch<Authenticator>(
       `${AuthenticatorService.baseApiUrl}/${id}`,
       nameDto,

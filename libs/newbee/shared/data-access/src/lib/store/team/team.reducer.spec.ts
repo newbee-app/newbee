@@ -1,8 +1,8 @@
 import {
   Team,
-  testBaseTeamAndMemberDto1,
   testOrgMember1,
   testTeam1,
+  testTeamAndMemberDto1,
   testTeamMember1,
   testTeamMember2,
   testTeamMemberRelation1,
@@ -38,7 +38,7 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
         TeamActions.getTeamSuccess({
-          teamAndMemberDto: testBaseTeamAndMemberDto1,
+          teamAndMemberDto: testTeamAndMemberDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterGetTeamSuccess);

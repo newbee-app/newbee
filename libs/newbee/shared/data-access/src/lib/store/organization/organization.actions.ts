@@ -1,9 +1,9 @@
 import {
-  BaseCreateOrganizationDto,
-  BaseOrgAndMemberDto,
-  BaseUpdateOrganizationDto,
+  CreateOrganizationDto,
   Keyword,
+  OrgAndMemberDto,
   Organization,
+  UpdateOrganizationDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -22,12 +22,12 @@ export const OrganizationActions = createActionGroup({
     /**
      * Indicates that an org was successfully retrieved.
      */
-    'Get Org Success': props<{ orgAndMemberDto: BaseOrgAndMemberDto }>(),
+    'Get Org Success': props<{ orgAndMemberDto: OrgAndMemberDto }>(),
 
     /**
      * Creates a new org with the given information.
      */
-    'Create Org': props<{ createOrganizationDto: BaseCreateOrganizationDto }>(),
+    'Create Org': props<{ createOrganizationDto: CreateOrganizationDto }>(),
 
     /**
      * Indicates that an org was successfully created.
@@ -37,7 +37,7 @@ export const OrganizationActions = createActionGroup({
     /**
      * Edits the currently selected organization with the given information.
      */
-    'Edit Org': props<{ updateOrganizationDto: BaseUpdateOrganizationDto }>(),
+    'Edit Org': props<{ updateOrganizationDto: UpdateOrganizationDto }>(),
 
     /**
      * Indicates that the currently selected org was successfully updated.
@@ -48,7 +48,7 @@ export const OrganizationActions = createActionGroup({
      * Edits the currently selected org with a new slug.
      */
     'Edit Org Slug': props<{
-      updateOrganizationDto: BaseUpdateOrganizationDto;
+      updateOrganizationDto: UpdateOrganizationDto;
     }>(),
 
     /**

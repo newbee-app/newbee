@@ -7,7 +7,7 @@ import {
   organizationFeature,
   selectOrgMemberUser,
 } from '@newbee/newbee/shared/data-access';
-import { BaseUpdateDocDto } from '@newbee/shared/util';
+import { UpdateDocDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -52,7 +52,7 @@ export class DocEditComponent {
    *
    * @param updateDocDto The new details for the currently selected doc.
    */
-  onEdit(updateDocDto: BaseUpdateDocDto): void {
+  onEdit(updateDocDto: UpdateDocDto): void {
     this.store.dispatch(DocActions.editDoc({ updateDocDto }));
   }
 

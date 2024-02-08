@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
+import { Keyword, testCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { CookieService } from './cookie.service';
 
 describe('CsrfService', () => {
@@ -38,7 +38,7 @@ describe('CsrfService', () => {
       service.initCookies().subscribe({
         next: (csrfTokenDto) => {
           try {
-            expect(csrfTokenDto).toEqual(testBaseCsrfTokenAndDataDto1);
+            expect(csrfTokenDto).toEqual(testCsrfTokenAndDataDto1);
             done();
           } catch (err) {
             done(err);
@@ -52,7 +52,7 @@ describe('CsrfService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseCsrfTokenAndDataDto1);
+      req.flush(testCsrfTokenAndDataDto1);
     });
   });
 });

@@ -1,12 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
-import {
-  BaseTokenDto,
-  BaseUpdateUserDto,
-  Keyword,
-  User,
-} from '@newbee/shared/util';
+import { Keyword, TokenDto, UpdateUserDto, User } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
 /**
@@ -29,7 +24,7 @@ export class UserService {
    *
    * @returns An observable containing information about the edited user.
    */
-  edit(updateUserDto: BaseUpdateUserDto): Observable<User> {
+  edit(updateUserDto: UpdateUserDto): Observable<User> {
     return this.http.patch<User>(UserService.baseApiUrl, updateUserDto);
   }
 
@@ -50,7 +45,7 @@ export class UserService {
    * @returns An observable containing the email verified user.
    */
   verifyEmail(token: string): Observable<User> {
-    const tokenDto = new BaseTokenDto(token);
+    const tokenDto = new TokenDto(token);
     return this.http.post<User>(
       `${UserService.baseApiUrl}/${Keyword.Verify}`,
       tokenDto,

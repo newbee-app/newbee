@@ -1,9 +1,9 @@
 import {
-  BaseQueryDto,
-  BaseQueryResultsDto,
-  BaseSuggestDto,
-  BaseSuggestResultsDto,
   Keyword,
+  QueryDto,
+  QueryResultsDto,
+  SuggestDto,
+  SuggestResultsDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -17,23 +17,23 @@ export const SearchActions = createActionGroup({
      * Send a search request to the API.
      * Should call `Search Success` with the result.
      */
-    Search: props<{ query: BaseQueryDto }>(),
+    Search: props<{ query: QueryDto }>(),
 
     /**
      * Indicates that the results of a search query were successfully retrieved.
      */
-    'Search Success': props<{ results: BaseQueryResultsDto }>(),
+    'Search Success': props<{ results: QueryResultsDto }>(),
 
     /**
      * Send a request to the API asking for query suggestions based on the query thus far.
      * Should call `Suggest Success` with the result.
      */
-    Suggest: props<{ query: BaseSuggestDto }>(),
+    Suggest: props<{ query: SuggestDto }>(),
 
     /**
      * Indicates that the results of a suggest query were successfully retrieved.
      */
-    'Suggest Success': props<{ results: BaseSuggestResultsDto }>(),
+    'Suggest Success': props<{ results: SuggestResultsDto }>(),
 
     /**
      * Send a search request to the API, which should be a continuation of a previous search request.
@@ -50,6 +50,6 @@ export const SearchActions = createActionGroup({
     /**
      * Indicates that more results of a previous search query were successfully retrieved.
      */
-    'Continue Search Success': props<{ results: BaseQueryResultsDto }>(),
+    'Continue Search Success': props<{ results: QueryResultsDto }>(),
   },
 });

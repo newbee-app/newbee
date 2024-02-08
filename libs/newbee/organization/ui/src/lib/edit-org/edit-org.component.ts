@@ -33,8 +33,8 @@ import {
   objectRequiredValidator,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseUpdateOrganizationDto,
   Keyword,
+  UpdateOrganizationDto,
   apiRoles,
   checkRoles,
   defaultOrgDuration,
@@ -120,12 +120,12 @@ export class EditOrgComponent implements OnInit, OnDestroy {
   /**
    * The emitted edit organization form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<BaseUpdateOrganizationDto>();
+  @Output() edit = new EventEmitter<UpdateOrganizationDto>();
 
   /**
    * The emitted edit org slug form, for use in the smart UI parent.
    */
-  @Output() editSlug = new EventEmitter<BaseUpdateOrganizationDto>();
+  @Output() editSlug = new EventEmitter<UpdateOrganizationDto>();
 
   /**
    * Emit to tell the smart UI parent to send a delete request.
@@ -237,14 +237,16 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   emitEdit(): void {
     const { name } = this.editOrgForm.value;
-    this.edit.emit({
-      name: name ?? '',
-      upToDateDuration: (
-        numAndFreqInputToDuration(
-          this.editOrgForm.controls.upToDateDuration.value,
-        ) ?? defaultOrgDuration
-      ).toISOString(),
-    });
+    this.edit.emit(
+      new UpdateOrganizationDto({
+        name: name ?? '',
+        upToDateDuration: (
+          numAndFreqInputToDuration(
+            this.editOrgForm.controls.upToDateDuration.value,
+          ) ?? defaultOrgDuration
+        ).toISOString(),
+      }),
+    );
   }
 
   /**
@@ -252,7 +254,7 @@ export class EditOrgComponent implements OnInit, OnDestroy {
    */
   emitEditSlug(): void {
     const { slug } = this.editOrgSlugForm.value;
-    this.editSlug.emit({ slug: slug ?? '' });
+    this.editSlug.emit(new UpdateOrganizationDto({ slug: slug ?? '' }));
   }
 
   /**

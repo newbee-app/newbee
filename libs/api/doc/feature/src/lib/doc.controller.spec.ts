@@ -11,11 +11,11 @@ import {
 } from '@newbee/api/shared/data-access';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
-  testBaseCreateDocDto1,
-  testBaseUpdateDocDto1,
+  testCreateDocDto1,
   testDocQueryResult1,
   testDocRelation1,
   testOffsetAndLimit1,
+  testUpdateDocDto1,
 } from '@newbee/shared/util';
 import { DocController } from './doc.controller';
 
@@ -25,8 +25,8 @@ describe('DocController', () => {
   let entityService: EntityService;
   let teamMemberService: TeamMemberService;
 
-  const { team: _team, ...restUpdateDocDto } = testBaseUpdateDocDto1;
-  _team;
+  const { team, ...restUpdateDocDto } = testUpdateDocDto1;
+  team;
   const testUpdatedDocEntity = { ...testDocEntity1, ...restUpdateDocDto };
 
   beforeEach(async () => {
@@ -103,14 +103,14 @@ describe('DocController', () => {
     it('should create a doc', async () => {
       await expect(
         controller.create(
-          testBaseCreateDocDto1,
+          testCreateDocDto1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),
       ).resolves.toEqual(testDocEntity1);
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(service.create).toHaveBeenCalledWith(
-        testBaseCreateDocDto1,
+        testCreateDocDto1,
         testOrgMemberEntity1,
       );
     });
@@ -142,7 +142,7 @@ describe('DocController', () => {
     it('update should update a doc', async () => {
       await expect(
         controller.update(
-          testBaseUpdateDocDto1,
+          testUpdateDocDto1,
           testDocEntity1,
           testOrgMemberEntity1,
         ),
@@ -150,7 +150,7 @@ describe('DocController', () => {
       expect(service.update).toHaveBeenCalledTimes(1);
       expect(service.update).toHaveBeenCalledWith(
         testDocEntity1,
-        testBaseUpdateDocDto1,
+        testUpdateDocDto1,
       );
       expect(entityService.createDocNoOrg).toHaveBeenCalledWith(
         testUpdatedDocEntity,

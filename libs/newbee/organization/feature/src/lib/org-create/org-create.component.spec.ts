@@ -10,7 +10,7 @@ import { CreateOrgComponent } from '@newbee/newbee/organization/ui';
 import { OrganizationActions } from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateOrganizationDto1,
+  testCreateOrganizationDto1,
   testOrganization1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -86,10 +86,10 @@ describe('OrgCreateComponent', () => {
 
   describe('onCreate', () => {
     it('should dispatch createOrg', () => {
-      component.onCreate(testBaseCreateOrganizationDto1);
+      component.onCreate(testCreateOrganizationDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
         OrganizationActions.createOrg({
-          createOrganizationDto: testBaseCreateOrganizationDto1,
+          createOrganizationDto: testCreateOrganizationDto1,
         }),
       );
     });

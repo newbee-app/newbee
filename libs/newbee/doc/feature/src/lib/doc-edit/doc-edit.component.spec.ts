@@ -9,10 +9,10 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
-  testBaseUpdateDocDto1,
   testDocRelation1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
+  testUpdateDocDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -66,10 +66,10 @@ describe('DocEditComponent', () => {
 
   describe('onEdit', () => {
     it('should dispatch editDoc', () => {
-      component.onEdit(testBaseUpdateDocDto1);
+      component.onEdit(testUpdateDocDto1);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        DocActions.editDoc({ updateDocDto: testBaseUpdateDocDto1 }),
+        DocActions.editDoc({ updateDocDto: testUpdateDocDto1 }),
       );
     });
   });

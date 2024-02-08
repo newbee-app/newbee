@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateUserDto,
-  BaseEmailDto,
-  BaseMagicLinkLoginDto,
-  BaseUserRelationAndOptionsDto,
-  BaseWebAuthnLoginDto,
+  CreateUserDto,
+  EmailDto,
   Keyword,
+  MagicLinkLoginDto,
   UserRelation,
+  UserRelationAndOptionsDto,
+  WebAuthnLoginDto,
 } from '@newbee/shared/util';
 import { startAuthentication } from '@simplewebauthn/browser';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
@@ -34,10 +34,8 @@ export class AuthService {
    *
    * @returns An observable containing the magic link's JWT ID and the email the magic link was sent to.
    */
-  magicLinkLoginLogin(
-    emailDto: BaseEmailDto,
-  ): Observable<BaseMagicLinkLoginDto> {
-    return this.http.post<BaseMagicLinkLoginDto>(
+  magicLinkLoginLogin(emailDto: EmailDto): Observable<MagicLinkLoginDto> {
+    return this.http.post<MagicLinkLoginDto>(
       `${AuthService.baseApiUrl}/${Keyword.MagicLinkLogin}/${Keyword.Login}`,
       emailDto,
     );
@@ -64,9 +62,9 @@ export class AuthService {
    * @returns An observable containing the newly created user, their access token, and the options needed to register an authenticator.
    */
   webAuthnRegister(
-    createUserDto: BaseCreateUserDto,
-  ): Observable<BaseUserRelationAndOptionsDto> {
-    return this.http.post<BaseUserRelationAndOptionsDto>(
+    createUserDto: CreateUserDto,
+  ): Observable<UserRelationAndOptionsDto> {
+    return this.http.post<UserRelationAndOptionsDto>(
       `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Register}`,
       createUserDto,
     );
@@ -80,7 +78,7 @@ export class AuthService {
    * @returns An observable of the options needed to log in with a registered authenticator.
    */
   webAuthnLoginOptions(
-    emailDto: BaseEmailDto,
+    emailDto: EmailDto,
   ): Observable<PublicKeyCredentialRequestOptionsJSON> {
     return this.http.post<PublicKeyCredentialRequestOptionsJSON>(
       `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`,
@@ -97,15 +95,13 @@ export class AuthService {
    * @returns An observable containing information about the logged in user.
    */
   webAuthnLogin(
-    emailDto: BaseEmailDto,
+    emailDto: EmailDto,
     options: PublicKeyCredentialRequestOptionsJSON,
   ): Observable<UserRelation> {
     return from(startAuthentication(options)).pipe(
       switchMap((response) => {
-        const webAuthnLoginDto: BaseWebAuthnLoginDto = {
-          ...emailDto,
-          response,
-        };
+        const { email } = emailDto;
+        const webAuthnLoginDto = new WebAuthnLoginDto(email, response);
         return this.http.post<UserRelation>(
           `${AuthService.baseApiUrl}/${Keyword.WebAuthn}/${Keyword.Login}`,
           webAuthnLoginDto,

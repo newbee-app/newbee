@@ -16,15 +16,13 @@ import {
   Team,
   TeamMember,
 } from '@newbee/api/shared/util';
-import {
-  CreateTeamMemberDto,
-  TeamMemberService,
-  UpdateTeamMemberDto,
-} from '@newbee/api/team-member/data-access';
+import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
+  CreateTeamMemberDto,
   Keyword,
   TeamMemberUserOrgMember,
+  UpdateTeamMemberDto,
   apiRoles,
 } from '@newbee/shared/util';
 

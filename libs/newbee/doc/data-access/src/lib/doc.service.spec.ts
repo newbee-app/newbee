@@ -7,13 +7,13 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateDocDto1,
   testBaseDocAndMemberDto1,
-  testBaseUpdateDocDto1,
+  testCreateDocDto1,
   testDoc1,
   testOffsetAndLimit1,
   testOrganization1,
   testPaginatedResultsDocQueryResult1,
+  testUpdateDocDto1,
 } from '@newbee/shared/util';
 import { DocService } from './doc.service';
 
@@ -69,7 +69,7 @@ describe('DocService', () => {
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testOrganization1.slug, testBaseCreateDocDto1).subscribe({
+      service.create(testOrganization1.slug, testCreateDocDto1).subscribe({
         next: (doc) => {
           try {
             expect(doc).toEqual(testDoc1);
@@ -85,7 +85,7 @@ describe('DocService', () => {
         DocService.baseApiUrl(testOrganization1.slug),
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateDocDto1);
+      expect(req.request.body).toEqual(testCreateDocDto1);
 
       req.flush(testDoc1);
     });
@@ -141,7 +141,7 @@ describe('DocService', () => {
   describe('edit', () => {
     it('should send out a patch request', (done) => {
       service
-        .edit(testDoc1.slug, testOrganization1.slug, testBaseUpdateDocDto1)
+        .edit(testDoc1.slug, testOrganization1.slug, testUpdateDocDto1)
         .subscribe({
           next: (docAndMemberDto) => {
             try {
@@ -158,7 +158,7 @@ describe('DocService', () => {
         `${DocService.baseApiUrl(testOrganization1.slug)}/${testDoc1.slug}`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateDocDto1);
+      expect(req.request.body).toEqual(testUpdateDocDto1);
 
       req.flush(testBaseDocAndMemberDto1);
     });

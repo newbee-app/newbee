@@ -3,7 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { RegisterFormComponent } from '@newbee/newbee/auth/ui';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
-import { Keyword, testBaseCreateUserDto1 } from '@newbee/shared/util';
+import { Keyword, testCreateUserDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { RegisterComponent } from './register.component';
 
@@ -48,10 +48,10 @@ describe('RegisterComponent', () => {
 
   describe('onRegister', () => {
     it('should dispatch registerWithWebAuthn action', () => {
-      component.onRegister(testBaseCreateUserDto1);
+      component.onRegister(testCreateUserDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
         AuthActions.registerWithWebAuthn({
-          createUserDto: testBaseCreateUserDto1,
+          createUserDto: testCreateUserDto1,
         }),
       );
     });

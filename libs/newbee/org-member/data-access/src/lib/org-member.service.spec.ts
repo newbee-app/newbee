@@ -8,14 +8,14 @@ import { OrganizationService } from '@newbee/newbee/organization/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateOrgMemberInviteDto1,
-  testBaseGetOrgMemberPostsDto1,
-  testBaseUpdateOrgMemberDto1,
+  testCreateOrgMemberInviteDto1,
+  testGetOrgMemberPostsDto1,
   testOrgMember1,
   testOrgMemberRelation1,
   testOrganization1,
   testPaginatedResultsDocQueryResult1,
   testPaginatedResultsQnaQueryResult1,
+  testUpdateOrgMemberDto1,
 } from '@newbee/shared/util';
 import { OrgMemberService } from './org-member.service';
 
@@ -82,7 +82,7 @@ describe('OrgMemberService', () => {
         .edit(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseUpdateOrgMemberDto1,
+          testUpdateOrgMemberDto1,
         )
         .subscribe({
           next: (orgMember) => {
@@ -103,7 +103,7 @@ describe('OrgMemberService', () => {
         ),
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateOrgMemberDto1);
+      expect(req.request.body).toEqual(testUpdateOrgMemberDto1);
 
       req.flush(testOrgMember1);
     });
@@ -141,7 +141,7 @@ describe('OrgMemberService', () => {
         .getAllDocs(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
         )
         .subscribe({
           next: (results) => {
@@ -156,7 +156,7 @@ describe('OrgMemberService', () => {
         });
 
       const params = new HttpParams({
-        fromObject: { ...testBaseGetOrgMemberPostsDto1 },
+        fromObject: { ...testGetOrgMemberPostsDto1 },
       });
       const req = httpController.expectOne(
         `${OrgMemberService.baseApiUrl(
@@ -176,7 +176,7 @@ describe('OrgMemberService', () => {
         .getAllQnas(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
         )
         .subscribe({
           next: (results) => {
@@ -191,7 +191,7 @@ describe('OrgMemberService', () => {
         });
 
       const params = new HttpParams({
-        fromObject: { ...testBaseGetOrgMemberPostsDto1 },
+        fromObject: { ...testGetOrgMemberPostsDto1 },
       });
       const req = httpController.expectOne(
         `${OrgMemberService.baseApiUrl(
@@ -208,7 +208,7 @@ describe('OrgMemberService', () => {
   describe('inviteUser', () => {
     it('should send out a post request', (done) => {
       service
-        .inviteUser(testOrganization1.slug, testBaseCreateOrgMemberInviteDto1)
+        .inviteUser(testOrganization1.slug, testCreateOrgMemberInviteDto1)
         .subscribe({
           next: (signal) => {
             try {
@@ -225,7 +225,7 @@ describe('OrgMemberService', () => {
         `${OrganizationService.baseApiUrl}/${testOrganization1.slug}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateOrgMemberInviteDto1);
+      expect(req.request.body).toEqual(testCreateOrgMemberInviteDto1);
 
       req.flush(null);
     });

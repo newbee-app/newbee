@@ -8,15 +8,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  CreateDocDto,
-  DocService,
-  UpdateDocDto,
-} from '@newbee/api/doc/data-access';
+import { DocService } from '@newbee/api/doc/data-access';
 import {
   DocEntity,
   EntityService,
-  OffsetAndLimitDto,
   OrgMemberEntity,
   OrganizationEntity,
 } from '@newbee/api/shared/data-access';
@@ -24,10 +19,13 @@ import { Doc, OrgMember, Organization, Role } from '@newbee/api/shared/util';
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseDocAndMemberDto,
+  CreateDocDto,
+  DocAndMemberDto,
   DocQueryResult,
   Keyword,
+  OffsetAndLimitDto,
   PaginatedResults,
+  UpdateDocDto,
   apiRoles,
 } from '@newbee/shared/util';
 
@@ -129,20 +127,20 @@ export class DocController {
   async get(
     @Doc() doc: DocEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<BaseDocAndMemberDto> {
+  ): Promise<DocAndMemberDto> {
     this.logger.log(`Get doc request received for slug: ${doc.slug}}`);
     this.logger.log(`Found doc, slug: ${doc.slug}, ID: ${doc.id}`);
 
     const { team } = doc;
-    return {
-      doc: await this.entityService.createDocNoOrg(doc),
-      teamMember: team
+    return new DocAndMemberDto(
+      await this.entityService.createDocNoOrg(doc),
+      team
         ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
             team,
           )
         : null,
-    };
+    );
   }
 
   /**
@@ -160,7 +158,7 @@ export class DocController {
     @Body() updateDocDto: UpdateDocDto,
     @Doc() doc: DocEntity,
     @OrgMember() orgMember: OrgMemberEntity,
-  ): Promise<BaseDocAndMemberDto> {
+  ): Promise<DocAndMemberDto> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
     const updatedDoc = await this.docService.update(doc, updateDocDto);
     this.logger.log(
@@ -168,15 +166,15 @@ export class DocController {
     );
 
     const { team } = updatedDoc;
-    return {
-      doc: await this.entityService.createDocNoOrg(updatedDoc),
-      teamMember: team
+    return new DocAndMemberDto(
+      await this.entityService.createDocNoOrg(updatedDoc),
+      team
         ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
             orgMember,
             team,
           )
         : null,
-    };
+    );
   }
 
   /**

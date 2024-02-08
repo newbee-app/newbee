@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authFeature } from '@newbee/newbee/auth/data-access';
 import { AuthActions, httpFeature } from '@newbee/newbee/shared/data-access';
-import { BaseEmailDto, Keyword } from '@newbee/shared/util';
+import { EmailDto, Keyword } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -39,7 +39,7 @@ export class LoginComponent {
    *
    * @param emailDto The email to feed into the login request.
    */
-  onWebAuthn(emailDto: BaseEmailDto): void {
+  onWebAuthn(emailDto: EmailDto): void {
     this.store.dispatch(AuthActions.createWebAuthnLoginOptions({ emailDto }));
   }
 
@@ -48,7 +48,7 @@ export class LoginComponent {
    *
    * @param emailDto The email to feed into the login request.
    */
-  onMagicLinkLogin(emailDto: BaseEmailDto): void {
+  onMagicLinkLogin(emailDto: EmailDto): void {
     this.store.dispatch(AuthActions.sendLoginMagicLink({ emailDto }));
   }
 

@@ -17,9 +17,9 @@ import {
   ToastYPosition,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseGetOrgMemberPostsDto,
   defaultLimit,
   emailIsEmail,
+  GetOrgMemberPostsDto,
   Keyword,
   orgRoleIsEnum,
 } from '@newbee/shared/util';
@@ -160,11 +160,11 @@ export class OrgMemberEffects {
       ),
       switchMap(
         ([{ role }, { docs, selectedOrgMember, selectedOrganization }]) => {
-          const getOrgMemberPostsDto: BaseGetOrgMemberPostsDto = {
-            offset: docs ? docs.offset + 1 : 0,
-            limit: docs ? docs.limit : defaultLimit,
-            ...(role && { role }),
-          };
+          const getOrgMemberPostsDto = new GetOrgMemberPostsDto(
+            docs ? docs.offset + 1 : 0,
+            docs ? docs.limit : defaultLimit,
+            role,
+          );
           return this.orgMemberService
             .getAllDocs(
               selectedOrganization?.organization.slug as string,
@@ -211,11 +211,11 @@ export class OrgMemberEffects {
       ),
       switchMap(
         ([{ role }, { qnas, selectedOrgMember, selectedOrganization }]) => {
-          const getOrgMemberPostsDto: BaseGetOrgMemberPostsDto = {
-            offset: qnas ? qnas.offset + 1 : 0,
-            limit: qnas ? qnas.limit : defaultLimit,
-            ...(role && { role }),
-          };
+          const getOrgMemberPostsDto = new GetOrgMemberPostsDto(
+            qnas ? qnas.offset + 1 : 0,
+            qnas ? qnas.limit : defaultLimit,
+            role,
+          );
           return this.orgMemberService
             .getAllQnas(
               selectedOrganization?.organization.slug as string,

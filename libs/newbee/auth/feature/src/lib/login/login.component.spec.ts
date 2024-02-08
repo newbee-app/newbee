@@ -3,7 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { LoginFormComponent } from '@newbee/newbee/auth/ui';
 import { AuthActions } from '@newbee/newbee/shared/data-access';
-import { Keyword, testBaseEmailDto1 } from '@newbee/shared/util';
+import { Keyword, testEmailDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { LoginComponent } from './login.component';
 
@@ -42,18 +42,18 @@ describe('LoginComponent', () => {
 
   describe('onWebAuthn', () => {
     it('should dispatch createWebAuthnLoginOptions', () => {
-      component.onWebAuthn(testBaseEmailDto1);
+      component.onWebAuthn(testEmailDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        AuthActions.createWebAuthnLoginOptions({ emailDto: testBaseEmailDto1 }),
+        AuthActions.createWebAuthnLoginOptions({ emailDto: testEmailDto1 }),
       );
     });
   });
 
   describe('onMagicLinkLogin', () => {
     it('should dispatch sendLoginMagicLink action', () => {
-      component.onMagicLinkLogin(testBaseEmailDto1);
+      component.onMagicLinkLogin(testEmailDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        AuthActions.sendLoginMagicLink({ emailDto: testBaseEmailDto1 }),
+        AuthActions.sendLoginMagicLink({ emailDto: testEmailDto1 }),
       );
     });
   });

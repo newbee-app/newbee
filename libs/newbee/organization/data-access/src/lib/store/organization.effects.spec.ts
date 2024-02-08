@@ -6,13 +6,13 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateOrganizationDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseOrgAndMemberDto1,
-  testBaseSlugTakenDto1,
+  testCreateOrganizationDto1,
+  testGeneratedSlugDto1,
+  testOrgAndMemberDto1,
   testOrganization1,
   testOrganization2,
   testOrganizationRelation1,
+  testSlugTakenDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -45,14 +45,12 @@ describe('OrganizationEffects', () => {
         {
           provide: OrganizationService,
           useValue: createMock<OrganizationService>({
-            get: jest.fn().mockReturnValue(of(testBaseOrgAndMemberDto1)),
+            get: jest.fn().mockReturnValue(of(testOrgAndMemberDto1)),
             create: jest.fn().mockReturnValue(of(testOrganization1)),
             edit: jest.fn().mockReturnValue(of(testOrganization2)),
             delete: jest.fn().mockReturnValue(of(null)),
-            checkSlug: jest.fn().mockReturnValue(of(testBaseSlugTakenDto1)),
-            generateSlug: jest
-              .fn()
-              .mockReturnValue(of(testBaseGeneratedSlugDto1)),
+            checkSlug: jest.fn().mockReturnValue(of(testSlugTakenDto1)),
+            generateSlug: jest.fn().mockReturnValue(of(testGeneratedSlugDto1)),
           }),
         },
       ],
@@ -83,7 +81,7 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrganizationActions.getOrgSuccess({
-          orgAndMemberDto: testBaseOrgAndMemberDto1,
+          orgAndMemberDto: testOrgAndMemberDto1,
         }),
       });
       expect(effects.getOrg$).toBeObservable(expected$);
@@ -98,7 +96,7 @@ describe('OrganizationEffects', () => {
     it('should fire createSuccess if successful', () => {
       actions$ = hot('a', {
         a: OrganizationActions.createOrg({
-          createOrganizationDto: testBaseCreateOrganizationDto1,
+          createOrganizationDto: testCreateOrganizationDto1,
         }),
       });
       const expected$ = hot('a', {
@@ -109,9 +107,7 @@ describe('OrganizationEffects', () => {
       expect(effects.createOrg$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.create).toHaveBeenCalledTimes(1);
-        expect(service.create).toHaveBeenCalledWith(
-          testBaseCreateOrganizationDto1,
-        );
+        expect(service.create).toHaveBeenCalledWith(testCreateOrganizationDto1);
       });
     });
   });
@@ -268,7 +264,7 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrganizationActions.checkSlugSuccess({
-          slugTaken: testBaseSlugTakenDto1.slugTaken,
+          slugTaken: testSlugTakenDto1.slugTaken,
         }),
       });
       expect(effects.checkSlug$).toBeObservable(expected$);
@@ -308,7 +304,7 @@ describe('OrganizationEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrganizationActions.generateSlugSuccess({
-          slug: testBaseGeneratedSlugDto1.generatedSlug,
+          slug: testGeneratedSlugDto1.generatedSlug,
         }),
       });
       expect(effects.generateSlug$).toBeObservable(expected$);

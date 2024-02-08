@@ -7,15 +7,15 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseCreateOrganizationDto1,
-  testBaseGenerateSlugDto1,
-  testBaseGeneratedSlugDto1,
-  testBaseOrgAndMemberDto1,
-  testBaseSlugDto1,
-  testBaseSlugTakenDto1,
-  testBaseUpdateOrganizationDto1,
+  testCreateOrganizationDto1,
+  testGenerateSlugDto1,
+  testGeneratedSlugDto1,
+  testOrgAndMemberDto1,
   testOrganization1,
   testOrganization2,
+  testSlugDto1,
+  testSlugTakenDto1,
+  testUpdateOrganizationDto1,
 } from '@newbee/shared/util';
 import { OrganizationService } from './organization.service';
 
@@ -50,7 +50,7 @@ describe('OrganizationService', () => {
       service.get(testOrganization1.slug).subscribe({
         next: (orgAndMemberDto) => {
           try {
-            expect(orgAndMemberDto).toEqual(testBaseOrgAndMemberDto1);
+            expect(orgAndMemberDto).toEqual(testOrgAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -64,13 +64,13 @@ describe('OrganizationService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseOrgAndMemberDto1);
+      req.flush(testOrgAndMemberDto1);
     });
   });
 
   describe('create', () => {
     it('should send out a post request', (done) => {
-      service.create(testBaseCreateOrganizationDto1).subscribe({
+      service.create(testCreateOrganizationDto1).subscribe({
         next: (organization) => {
           try {
             expect(organization).toEqual(testOrganization1);
@@ -84,7 +84,7 @@ describe('OrganizationService', () => {
 
       const req = httpController.expectOne(OrganizationService.baseApiUrl);
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseCreateOrganizationDto1);
+      expect(req.request.body).toEqual(testCreateOrganizationDto1);
 
       req.flush(testOrganization1);
     });
@@ -93,7 +93,7 @@ describe('OrganizationService', () => {
   describe('edit', () => {
     it('should send out a patch request', (done) => {
       service
-        .edit(testOrganization2.slug, testBaseUpdateOrganizationDto1)
+        .edit(testOrganization2.slug, testUpdateOrganizationDto1)
         .subscribe({
           next: (organization) => {
             try {
@@ -110,7 +110,7 @@ describe('OrganizationService', () => {
         `${OrganizationService.baseApiUrl}/${testOrganization2.slug}`,
       );
       expect(req.request.method).toEqual('PATCH');
-      expect(req.request.body).toEqual(testBaseUpdateOrganizationDto1);
+      expect(req.request.body).toEqual(testUpdateOrganizationDto1);
 
       req.flush(testOrganization1);
     });
@@ -144,7 +144,7 @@ describe('OrganizationService', () => {
       service.checkSlug(testOrganization1.slug).subscribe({
         next: (slugTakenDto) => {
           try {
-            expect(slugTakenDto).toEqual(testBaseSlugTakenDto1);
+            expect(slugTakenDto).toEqual(testSlugTakenDto1);
             done();
           } catch (err) {
             done(err);
@@ -154,7 +154,7 @@ describe('OrganizationService', () => {
       });
 
       const params = new HttpParams({
-        fromObject: { ...testBaseSlugDto1 },
+        fromObject: { ...testSlugDto1 },
       });
       const req = httpController.expectOne(
         `${OrganizationService.baseApiUrl}/${
@@ -163,7 +163,7 @@ describe('OrganizationService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseSlugTakenDto1);
+      req.flush(testSlugTakenDto1);
     });
   });
 
@@ -172,7 +172,7 @@ describe('OrganizationService', () => {
       service.generateSlug(testOrganization1.name).subscribe({
         next: (generatedSlugDto) => {
           try {
-            expect(generatedSlugDto).toEqual(testBaseGeneratedSlugDto1);
+            expect(generatedSlugDto).toEqual(testGeneratedSlugDto1);
             done();
           } catch (err) {
             done(err);
@@ -182,7 +182,7 @@ describe('OrganizationService', () => {
       });
 
       const params = new HttpParams({
-        fromObject: { ...testBaseGenerateSlugDto1 },
+        fromObject: { ...testGenerateSlugDto1 },
       });
       const req = httpController.expectOne(
         `${OrganizationService.baseApiUrl}/${
@@ -191,7 +191,7 @@ describe('OrganizationService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseGeneratedSlugDto1);
+      req.flush(testGeneratedSlugDto1);
     });
   });
 });

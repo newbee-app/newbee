@@ -10,11 +10,11 @@ import {
 } from '@newbee/newbee/shared/data-access';
 import {
   Keyword,
-  testBaseUpdateAnswerDto1,
-  testBaseUpdateQuestionDto1,
   testOrgMemberRelation1,
   testOrganizationRelation1,
   testQnaRelation1,
+  testUpdateAnswerDto1,
+  testUpdateQuestionDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -69,11 +69,11 @@ describe('QnaEditComponent', () => {
 
   describe('onEditQuestion', () => {
     it('should dispatch editQuestion', () => {
-      component.onEditQuestion(testBaseUpdateQuestionDto1);
+      component.onEditQuestion(testUpdateQuestionDto1);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
         QnaActions.editQuestion({
-          updateQuestionDto: testBaseUpdateQuestionDto1,
+          updateQuestionDto: testUpdateQuestionDto1,
         }),
       );
     });
@@ -81,10 +81,10 @@ describe('QnaEditComponent', () => {
 
   describe('onEditAnswer', () => {
     it('should dispatch editAnswer', () => {
-      component.onEditAnswer(testBaseUpdateAnswerDto1);
+      component.onEditAnswer(testUpdateAnswerDto1);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        QnaActions.editAnswer({ updateAnswerDto: testBaseUpdateAnswerDto1 }),
+        QnaActions.editAnswer({ updateAnswerDto: testUpdateAnswerDto1 }),
       );
     });
   });

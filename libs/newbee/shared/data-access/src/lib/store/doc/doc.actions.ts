@@ -1,11 +1,11 @@
 import {
-  BaseCreateDocDto,
-  BaseDocAndMemberDto,
-  BaseUpdateDocDto,
+  CreateDocDto,
   Doc,
+  DocAndMemberDto,
   DocQueryResult,
   Keyword,
   PaginatedResults,
+  UpdateDocDto,
 } from '@newbee/shared/util';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
@@ -33,7 +33,7 @@ export const DocActions = createActionGroup({
     /**
      * Creates a doc using the given information.
      */
-    'Create Doc': props<{ createDocDto: BaseCreateDocDto }>(),
+    'Create Doc': props<{ createDocDto: CreateDocDto }>(),
 
     /**
      * Indicates that a doc was successfully created.
@@ -48,7 +48,7 @@ export const DocActions = createActionGroup({
     /**
      * Indicates that a doc was successfully retrieved.
      */
-    'Get Doc Success': props<{ docAndMemberDto: BaseDocAndMemberDto }>(),
+    'Get Doc Success': props<{ docAndMemberDto: DocAndMemberDto }>(),
 
     /**
      * Mark the selected doc as up-to-date.
@@ -63,7 +63,7 @@ export const DocActions = createActionGroup({
     /**
      * Edit the currently selected doc.
      */
-    'Edit Doc': props<{ updateDocDto: BaseUpdateDocDto }>(),
+    'Edit Doc': props<{ updateDocDto: UpdateDocDto }>(),
 
     /**
      * Delete the currently selected doc.

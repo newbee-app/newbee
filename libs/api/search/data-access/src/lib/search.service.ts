@@ -17,12 +17,14 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
-  BaseQueryResultsDto,
-  BaseSuggestResultsDto,
   DocQueryResult,
   OrgMemberQueryResult,
   QnaQueryResult,
+  QueryDto,
+  QueryResultsDto,
   SolrEntryEnum,
+  SuggestDto,
+  SuggestResultsDto,
   TeamQueryResult,
   internalServerError,
 } from '@newbee/shared/util';
@@ -33,7 +35,6 @@ import {
   SolrCli,
   Spellcheck,
 } from '@newbee/solr-cli';
-import { QueryDto, SuggestDto } from './dto';
 
 @Injectable()
 export class SearchService {
@@ -60,7 +61,7 @@ export class SearchService {
   async suggest(
     organization: OrganizationEntity,
     suggestDto: SuggestDto,
-  ): Promise<BaseSuggestResultsDto> {
+  ): Promise<SuggestResultsDto> {
     const { query, type } = suggestDto;
     const dictionary = type ?? solrDictionaries.all;
     try {
@@ -77,7 +78,7 @@ export class SearchService {
         (suggestion) => suggestion.term,
       );
 
-      return { suggestions };
+      return new SuggestResultsDto(suggestions);
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
@@ -97,9 +98,9 @@ export class SearchService {
   async query(
     organization: OrganizationEntity,
     queryDto: QueryDto,
-  ): Promise<BaseQueryResultsDto> {
+  ): Promise<QueryResultsDto> {
     const { query } = queryDto;
-    const results = new BaseQueryResultsDto();
+    const results = new QueryResultsDto();
     Object.assign(results, queryDto);
 
     // This should never happen, but leave it for safety

@@ -3,15 +3,15 @@ import { Injectable } from '@angular/core';
 import { OrganizationService } from '@newbee/newbee/organization/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateOrgMemberInviteDto,
-  BaseGetOrgMemberPostsDto,
-  BaseUpdateOrgMemberDto,
+  CreateOrgMemberInviteDto,
   DocQueryResult,
+  GetOrgMemberPostsDto,
   Keyword,
   OrgMember,
   OrgMemberNoOrg,
   PaginatedResults,
   QnaQueryResult,
+  UpdateOrgMemberDto,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -61,7 +61,7 @@ export class OrgMemberService {
   edit(
     orgSlug: string,
     memberSlug: string,
-    updateOrgMemberDto: BaseUpdateOrgMemberDto,
+    updateOrgMemberDto: UpdateOrgMemberDto,
   ): Observable<OrgMember> {
     return this.http.patch<OrgMember>(
       OrgMemberService.baseApiUrl(orgSlug, memberSlug),
@@ -95,7 +95,7 @@ export class OrgMemberService {
   getAllDocs(
     orgSlug: string,
     memberSlug: string,
-    getOrgMemberPostsDto: BaseGetOrgMemberPostsDto,
+    getOrgMemberPostsDto: GetOrgMemberPostsDto,
   ): Observable<PaginatedResults<DocQueryResult>> {
     const params = new HttpParams({ fromObject: { ...getOrgMemberPostsDto } });
     return this.http.get<PaginatedResults<DocQueryResult>>(
@@ -116,7 +116,7 @@ export class OrgMemberService {
   getAllQnas(
     orgSlug: string,
     memberSlug: string,
-    getOrgMemberPostsDto: BaseGetOrgMemberPostsDto,
+    getOrgMemberPostsDto: GetOrgMemberPostsDto,
   ): Observable<PaginatedResults<QnaQueryResult>> {
     const params = new HttpParams({ fromObject: { ...getOrgMemberPostsDto } });
     return this.http.get<PaginatedResults<QnaQueryResult>>(
@@ -135,7 +135,7 @@ export class OrgMemberService {
    */
   inviteUser(
     orgSlug: string,
-    createOrgMemberInviteDto: BaseCreateOrgMemberInviteDto,
+    createOrgMemberInviteDto: CreateOrgMemberInviteDto,
   ): Observable<null> {
     return this.http.post<null>(
       `${OrganizationService.baseApiUrl}/${orgSlug}`,

@@ -11,7 +11,7 @@ import {
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateOrgMemberInviteDto1,
+  testCreateOrgMemberInviteDto1,
   testOrgMember1,
   testOrgMemberRelation1,
   testOrganization1,
@@ -71,10 +71,10 @@ describe('OrgMembersViewComponent', () => {
 
   describe('onInvite', () => {
     it('should dispatch inviteUser', () => {
-      component.onInvite(testBaseCreateOrgMemberInviteDto1);
+      component.onInvite(testCreateOrgMemberInviteDto1);
       expect(store.dispatch).toHaveBeenCalledWith(
         OrgMemberActions.inviteUser({
-          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+          createOrgMemberInviteDto: testCreateOrgMemberInviteDto1,
         }),
       );
     });

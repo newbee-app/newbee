@@ -10,7 +10,7 @@ import { EditUserComponent } from '@newbee/newbee/user/ui';
 import {
   Keyword,
   testAuthenticator1,
-  testBaseUpdateUserDto1,
+  testUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -64,10 +64,10 @@ describe('UserEditComponent', () => {
 
   describe('onEdit', () => {
     it('should dispatch editUser', () => {
-      component.onEdit(testBaseUpdateUserDto1);
+      component.onEdit(testUpdateUserDto1);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        UserActions.editUser({ updateUserDto: testBaseUpdateUserDto1 }),
+        UserActions.editUser({ updateUserDto: testUpdateUserDto1 }),
       );
     });
   });

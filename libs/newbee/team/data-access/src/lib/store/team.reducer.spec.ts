@@ -4,12 +4,12 @@ import {
   TeamActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  testBaseCreateTeamMemberDto1,
-  testBaseUpdateTeamMemberDto1,
+  testCreateTeamMemberDto1,
   testOrgMember1,
   testPaginatedResultsDocQueryResult1,
   testPaginatedResultsQnaQueryResult1,
   testTeam1,
+  testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
 import { TeamState, initialTeamState, teamFeature } from './team.reducer';
 
@@ -144,7 +144,7 @@ describe('TeamReducer', () => {
       const updatedState = teamFeature.reducer(
         initialTeamState,
         TeamActions.addTeamMember({
-          createTeamMemberDto: testBaseCreateTeamMemberDto1,
+          createTeamMemberDto: testCreateTeamMemberDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterAddTeamMember);
@@ -155,7 +155,7 @@ describe('TeamReducer', () => {
         initialTeamState,
         TeamActions.editTeamMember({
           orgMemberSlug: testOrgMember1.slug,
-          updateTeamMemberDto: testBaseUpdateTeamMemberDto1,
+          updateTeamMemberDto: testUpdateTeamMemberDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterEditTeamMember);

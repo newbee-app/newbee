@@ -25,10 +25,10 @@ import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
   Keyword,
   internalServerError,
-  testBaseCreateUserDto1,
-  testBaseUpdateUserDto1,
+  testCreateUserDto1,
   testNow1,
   testPublicKeyCredentialCreationOptions1,
+  testUpdateUserDto1,
   userEmailNotFound,
   userEmailTakenBadRequest,
   userIdNotFound,
@@ -71,7 +71,7 @@ describe('UserService', () => {
     ...testUserEntity1,
     organizations: createMock<Collection<OrgMemberEntity>>(),
   });
-  const testUpdatedUser = { ...testUserEntity, ...testBaseUpdateUserDto1 };
+  const testUpdatedUser = { ...testUserEntity, ...testUpdateUserDto1 };
   const testUserAndOptions: UserAndOptions = {
     user: testUserEntity,
     options: testPublicKeyCredentialCreationOptions1,
@@ -152,7 +152,7 @@ describe('UserService', () => {
         1,
       );
       expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledWith(
-        testBaseCreateUserDto1.email,
+        testCreateUserDto1.email,
       );
       expect(mockGenerateRegistrationOptions).toHaveBeenCalledTimes(1);
       expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
@@ -160,7 +160,7 @@ describe('UserService', () => {
     });
 
     it('should create a user', async () => {
-      await expect(service.create(testBaseCreateUserDto1)).resolves.toEqual(
+      await expect(service.create(testCreateUserDto1)).resolves.toEqual(
         testUserAndOptions,
       );
       expect(service.sendVerificationEmail).toHaveBeenCalledTimes(1);
@@ -173,7 +173,7 @@ describe('UserService', () => {
       jest
         .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
-      await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
+      await expect(service.create(testCreateUserDto1)).rejects.toThrow(
         new InternalServerErrorException(internalServerError),
       );
     });
@@ -184,7 +184,7 @@ describe('UserService', () => {
         .mockRejectedValue(
           new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
-      await expect(service.create(testBaseCreateUserDto1)).rejects.toThrow(
+      await expect(service.create(testCreateUserDto1)).rejects.toThrow(
         new BadRequestException(userEmailTakenBadRequest),
       );
     });
@@ -284,14 +284,14 @@ describe('UserService', () => {
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(
         testUserEntity,
-        testBaseUpdateUserDto1,
+        testUpdateUserDto1,
       );
       expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update the user', async () => {
       await expect(
-        service.update(testUserEntity, testBaseUpdateUserDto1),
+        service.update(testUserEntity, testUpdateUserDto1),
       ).resolves.toEqual(testUpdatedUser);
     });
 
@@ -302,14 +302,14 @@ describe('UserService', () => {
           new UniqueConstraintViolationException(new Error('flush')),
         );
       await expect(
-        service.update(testUserEntity, testBaseUpdateUserDto1),
+        service.update(testUserEntity, testUpdateUserDto1),
       ).rejects.toThrow(new BadRequestException(userEmailTakenBadRequest));
     });
 
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testUserEntity, testBaseUpdateUserDto1),
+        service.update(testUserEntity, testUpdateUserDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });

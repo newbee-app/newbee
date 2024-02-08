@@ -9,8 +9,8 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseCreateOrgMemberInviteDto1,
   testBaseTokenDto1,
+  testCreateOrgMemberInviteDto1,
   testOrgMemberRelation1,
 } from '@newbee/shared/util';
 import { OrgMemberInviteController } from './org-member-invite.controller';
@@ -59,7 +59,7 @@ describe('OrgMemberInviteController', () => {
     it('should create a new org member invite', async () => {
       await expect(
         controller.invite(
-          testBaseCreateOrgMemberInviteDto1,
+          testCreateOrgMemberInviteDto1,
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),

@@ -1,4 +1,4 @@
-import { testBaseCsrfTokenAndDataDto1 } from '@newbee/shared/util';
+import { testCsrfTokenAndDataDto1 } from '@newbee/shared/util';
 import { CookieActions } from './cookie.actions';
 import {
   cookieFeature,
@@ -9,7 +9,7 @@ import {
 describe('CookieReducer', () => {
   const stateAfterInitCookiesSuccess: CookieState = {
     ...initialCookieState,
-    csrfToken: testBaseCsrfTokenAndDataDto1.csrfToken,
+    csrfToken: testCsrfTokenAndDataDto1.csrfToken,
   };
 
   describe('from initial state', () => {
@@ -23,7 +23,7 @@ describe('CookieReducer', () => {
       const updatedState = cookieFeature.reducer(
         initialCookieState,
         CookieActions.initCookiesSuccess({
-          csrfTokenAndDataDto: testBaseCsrfTokenAndDataDto1,
+          csrfTokenAndDataDto: testCsrfTokenAndDataDto1,
         }),
       );
       expect(updatedState).toEqual(stateAfterInitCookiesSuccess);

@@ -9,7 +9,7 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseEmailDto, Keyword } from '@newbee/shared/util';
+import { EmailDto, Keyword } from '@newbee/shared/util';
 import { BaseFormComponent } from '../base-form';
 
 /**
@@ -47,12 +47,12 @@ export class LoginFormComponent {
   /**
    * The emitted login form, for use in magic link login.
    */
-  @Output() magicLinkLogin = new EventEmitter<BaseEmailDto>();
+  @Output() magicLinkLogin = new EventEmitter<EmailDto>();
 
   /**
    * The emitted login form, for use in WebAuthn login.
    */
-  @Output() webauthn = new EventEmitter<BaseEmailDto>();
+  @Output() webauthn = new EventEmitter<EmailDto>();
 
   /**
    * The emitted request to navigate to the register page, for use in the smart UI parent.
@@ -101,9 +101,9 @@ export class LoginFormComponent {
   /**
    * The login form as a DTO.
    */
-  get loginFormDto(): BaseEmailDto {
+  get loginFormDto(): EmailDto {
     const { email } = this.loginForm.value;
-    return { email: email ?? '' };
+    return new EmailDto(email ?? '');
   }
 
   /**

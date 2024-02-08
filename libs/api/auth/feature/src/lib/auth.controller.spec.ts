@@ -12,14 +12,14 @@ import type { UserAndOptions } from '@newbee/api/user/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   internalServerError,
-  testBaseCreateUserDto1,
-  testBaseEmailDto1,
-  testBaseMagicLinkLoginDto1,
-  testBaseUserRelationAndOptionsDto1,
-  testBaseWebAuthnLoginDto1,
+  testCreateUserDto1,
+  testEmailDto1,
+  testMagicLinkLoginDto1,
   testPublicKeyCredentialCreationOptions1,
   testPublicKeyCredentialRequestOptions1,
   testUserRelation1,
+  testUserRelationAndOptionsDto1,
+  testWebAuthnLoginDto1,
 } from '@newbee/shared/util';
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
@@ -67,7 +67,7 @@ describe('AuthController', () => {
         {
           provide: MagicLinkLoginStrategy,
           useValue: createMock<MagicLinkLoginStrategy>({
-            send: jest.fn().mockResolvedValue(testBaseMagicLinkLoginDto1.jwtId),
+            send: jest.fn().mockResolvedValue(testMagicLinkLoginDto1.jwtId),
           }),
         },
         {
@@ -99,10 +99,10 @@ describe('AuthController', () => {
   describe('webAuthnRegister', () => {
     it('should create a new user and options', async () => {
       await expect(
-        controller.webAuthnRegister(response, testBaseCreateUserDto1),
-      ).resolves.toEqual(testBaseUserRelationAndOptionsDto1);
+        controller.webAuthnRegister(response, testCreateUserDto1),
+      ).resolves.toEqual(testUserRelationAndOptionsDto1);
       expect(userService.create).toHaveBeenCalledTimes(1);
-      expect(userService.create).toHaveBeenCalledWith(testBaseCreateUserDto1);
+      expect(userService.create).toHaveBeenCalledWith(testCreateUserDto1);
       expect(service.login).toHaveBeenCalledTimes(1);
       expect(service.login).toHaveBeenCalledWith(testUserAndOptions.user);
       expect(entityService.createUserRelation).toHaveBeenCalledTimes(1);
@@ -115,11 +115,11 @@ describe('AuthController', () => {
   describe('webAuthnLoginOptions', () => {
     it('should create login challenge options', async () => {
       await expect(
-        controller.webAuthnLoginOptions(testBaseEmailDto1),
+        controller.webAuthnLoginOptions(testEmailDto1),
       ).resolves.toEqual(testPublicKeyCredentialRequestOptions1);
       expect(service.generateLoginChallenge).toHaveBeenCalledTimes(1);
       expect(service.generateLoginChallenge).toHaveBeenCalledWith(
-        testBaseEmailDto1.email,
+        testEmailDto1.email,
       );
     });
   });
@@ -127,12 +127,12 @@ describe('AuthController', () => {
   describe('webAuthnLogin', () => {
     it('should return a LoginDto', async () => {
       await expect(
-        controller.webAuthnLogin(response, testBaseWebAuthnLoginDto1),
+        controller.webAuthnLogin(response, testWebAuthnLoginDto1),
       ).resolves.toEqual(testUserRelation1);
       expect(service.verifyLoginChallenge).toHaveBeenCalledTimes(1);
       expect(service.verifyLoginChallenge).toHaveBeenCalledWith(
-        testBaseWebAuthnLoginDto1.email,
-        testBaseWebAuthnLoginDto1.response,
+        testWebAuthnLoginDto1.email,
+        testWebAuthnLoginDto1.response,
       );
       expect(service.login).toHaveBeenCalledTimes(1);
       expect(service.login).toHaveBeenCalledWith(testUserEntity1);
@@ -147,20 +147,20 @@ describe('AuthController', () => {
     afterEach(() => {
       expect(strategy.send).toHaveBeenCalledTimes(1);
       expect(strategy.send).toHaveBeenCalledWith({
-        email: testBaseEmailDto1.email,
+        email: testEmailDto1.email,
       });
     });
 
     it('should send a link to the user', async () => {
       await expect(
-        controller.magicLinkLoginLogin(testBaseEmailDto1),
-      ).resolves.toEqual(testBaseMagicLinkLoginDto1);
+        controller.magicLinkLoginLogin(testEmailDto1),
+      ).resolves.toEqual(testMagicLinkLoginDto1);
     });
 
     it('should throw an InternalServerErrorException if send throws an error', async () => {
       jest.spyOn(strategy, 'send').mockRejectedValue(new Error('send'));
       await expect(
-        controller.magicLinkLoginLogin(testBaseEmailDto1),
+        controller.magicLinkLoginLogin(testEmailDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });

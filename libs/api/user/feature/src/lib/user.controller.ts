@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Logger, Patch, Post } from '@nestjs/common';
-import { TokenDto, UserEntity } from '@newbee/api/shared/data-access';
+import { UserEntity } from '@newbee/api/shared/data-access';
 import {
   Public,
   UnverifiedOk,
   User,
   elongateUuid,
 } from '@newbee/api/shared/util';
-import { UpdateUserDto, UserService } from '@newbee/api/user/data-access';
+import { UserService } from '@newbee/api/user/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword } from '@newbee/shared/util';
+import { Keyword, TokenDto, UpdateUserDto } from '@newbee/shared/util';
 
 /**
  * The controller that interacts with the `UserEntity`.

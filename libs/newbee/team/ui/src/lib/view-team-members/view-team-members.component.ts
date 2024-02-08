@@ -25,13 +25,13 @@ import {
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseCreateTeamMemberDto,
-  BaseUpdateTeamMemberDto,
+  CreateTeamMemberDto,
   Keyword,
   OrgMemberUser,
   TeamMember,
   TeamMemberUserOrgMember,
   TeamRoleEnum,
+  UpdateTeamMemberDto,
   apiRoles,
   checkRoles,
   generateLteTeamRoles,
@@ -161,14 +161,14 @@ export class ViewTeamMembersComponent implements OnDestroy {
   /**
    * The information necessary for the smart UI parent to create a team member.
    */
-  @Output() addTeamMember = new EventEmitter<BaseCreateTeamMemberDto>();
+  @Output() addTeamMember = new EventEmitter<CreateTeamMemberDto>();
 
   /**
    * The information necessary for the smart UI parent to edit a team member.
    */
   @Output() editTeamMember = new EventEmitter<{
     orgMemberSlug: string;
-    updateTeamMemberDto: BaseUpdateTeamMemberDto;
+    updateTeamMemberDto: UpdateTeamMemberDto;
   }>();
 
   /**
@@ -255,10 +255,9 @@ export class ViewTeamMembersComponent implements OnDestroy {
       return;
     }
 
-    this.addTeamMember.emit({
-      orgMemberSlug: member.orgMember.slug,
-      role: role,
-    });
+    this.addTeamMember.emit(
+      new CreateTeamMemberDto(role, member.orgMember.slug),
+    );
     this.editingTeamMembers.delete(member.orgMember.slug);
   }
 
@@ -277,7 +276,10 @@ export class ViewTeamMembersComponent implements OnDestroy {
       return;
     }
 
-    this.editTeamMember.emit({ orgMemberSlug, updateTeamMemberDto: { role } });
+    this.editTeamMember.emit({
+      orgMemberSlug,
+      updateTeamMemberDto: new UpdateTeamMemberDto(role),
+    });
     this.editingTeamMembers.delete(orgMemberSlug);
   }
 

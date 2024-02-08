@@ -3,8 +3,6 @@ import {
   SolrEntryEnum,
   TeamRoleEnum,
   testAuthenticator1,
-  testBaseSuggestDto1,
-  testBaseSuggestResultsDto1,
   testChallenge1,
   testDoc1,
   testNow1,
@@ -12,6 +10,8 @@ import {
   testOrgMemberInvite1,
   testOrganization1,
   testQna1,
+  testSuggestDto1,
+  testSuggestResultsDto1,
   testTeam1,
   testUser1,
   testUser2,
@@ -289,11 +289,11 @@ export const testQueryResponse3: QueryResponse = {
   responseHeader: testResponseHeader1,
   suggest: {
     [solrDictionaries.all]: {
-      [testBaseSuggestDto1.query]: {
+      [testSuggestDto1.query]: {
         numFound: 1,
         suggestions: [
           {
-            term: testBaseSuggestResultsDto1.suggestions[0] as string,
+            term: testSuggestResultsDto1.suggestions[0] as string,
             weight: 5,
             payload: '',
           },

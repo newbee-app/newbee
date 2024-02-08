@@ -23,7 +23,8 @@
         "styles": ["apps/newbee/src/styles.css"],
         "scripts": [],
         "serviceWorker": true,
-        "ngswConfigPath": "apps/newbee/ngsw-config.json"
+        "ngswConfigPath": "apps/newbee/ngsw-config.json",
+        "allowedCommonJsDependencies": ["dayjs", "slug", "validator"]
       },
       "configurations": {
         "production": {

@@ -19,7 +19,7 @@ import {
   inputDisplayError,
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
-import { BaseCreateQnaDto, Keyword, Team } from '@newbee/shared/util';
+import { CreateQnaDto, Keyword, Team } from '@newbee/shared/util';
 
 /**
  * A dumb UI for creating a new qna.
@@ -74,7 +74,7 @@ export class CreateQnaComponent implements OnInit {
   /**
    * Tells the smart UI parent when the QnA is ready to be created.
    */
-  @Output() create = new EventEmitter<BaseCreateQnaDto>();
+  @Output() create = new EventEmitter<CreateQnaDto>();
 
   /**
    * The form containing the QnA's title and team.
@@ -158,11 +158,13 @@ export class CreateQnaComponent implements OnInit {
    */
   emitCreate(): void {
     const { title, team } = this.qnaForm.value;
-    this.create.emit({
-      title: title ?? '',
-      questionMarkdoc: this.questionMarkdoc || null,
-      answerMarkdoc: null,
-      team: team?.slug ?? null,
-    });
+    this.create.emit(
+      new CreateQnaDto(
+        title ?? '',
+        this.questionMarkdoc || null,
+        null,
+        team?.slug ?? null,
+      ),
+    );
   }
 }

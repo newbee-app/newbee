@@ -32,8 +32,8 @@ import {
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseUpdateTeamDto,
   Keyword,
+  UpdateTeamDto,
   apiRoles,
   checkRoles,
   type OrgMember,
@@ -130,7 +130,7 @@ export class EditTeamComponent implements OnInit, OnDestroy {
   /**
    * The emitted edit team form, for use in the smart UI parent.
    */
-  @Output() edit = new EventEmitter<BaseUpdateTeamDto>();
+  @Output() edit = new EventEmitter<UpdateTeamDto>();
 
   /**
    * The emitted edit team slug form, for use in the smart UI parent.
@@ -253,13 +253,15 @@ export class EditTeamComponent implements OnInit, OnDestroy {
    */
   emitEdit(): void {
     const { name } = this.editTeamForm.value;
-    this.edit.emit({
-      name: name ?? '',
-      upToDateDuration:
-        numAndFreqInputToDuration(
-          this.editTeamForm.controls.upToDateDuration.value,
-        )?.toISOString() ?? null,
-    });
+    this.edit.emit(
+      new UpdateTeamDto({
+        name: name ?? '',
+        upToDateDuration:
+          numAndFreqInputToDuration(
+            this.editTeamForm.controls.upToDateDuration.value,
+          )?.toISOString() ?? null,
+      }),
+    );
   }
 
   /**

@@ -2,15 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  BaseCreateQnaDto,
-  BaseQnaAndMemberDto,
-  BaseUpdateAnswerDto,
-  BaseUpdateQuestionDto,
+  CreateQnaDto,
   Keyword,
   OffsetAndLimit,
   PaginatedResults,
   Qna,
+  QnaAndMemberDto,
   QnaQueryResult,
+  UpdateAnswerDto,
+  UpdateQuestionDto,
 } from '@newbee/shared/util';
 import { Observable } from 'rxjs';
 
@@ -60,7 +60,7 @@ export class QnaService {
    *
    * @returns An observable containing the created QnA.
    */
-  create(createQnaDto: BaseCreateQnaDto, orgSlug: string): Observable<Qna> {
+  create(createQnaDto: CreateQnaDto, orgSlug: string): Observable<Qna> {
     return this.http.post<Qna>(QnaService.baseApiUrl(orgSlug), createQnaDto);
   }
 
@@ -72,8 +72,8 @@ export class QnaService {
    *
    * @returns An observable containing the requested qna.
    */
-  get(qnaSlug: string, orgSlug: string): Observable<BaseQnaAndMemberDto> {
-    return this.http.get<BaseQnaAndMemberDto>(
+  get(qnaSlug: string, orgSlug: string): Observable<QnaAndMemberDto> {
+    return this.http.get<QnaAndMemberDto>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}`,
     );
   }
@@ -105,9 +105,9 @@ export class QnaService {
   editQuestion(
     qnaSlug: string,
     orgSlug: string,
-    updateQuestionDto: BaseUpdateQuestionDto,
-  ): Observable<BaseQnaAndMemberDto> {
-    return this.http.patch<BaseQnaAndMemberDto>(
+    updateQuestionDto: UpdateQuestionDto,
+  ): Observable<QnaAndMemberDto> {
+    return this.http.patch<QnaAndMemberDto>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Question}`,
       updateQuestionDto,
     );
@@ -125,7 +125,7 @@ export class QnaService {
   editAnswer(
     qnaSlug: string,
     orgSlug: string,
-    updateAnswerDto: BaseUpdateAnswerDto,
+    updateAnswerDto: UpdateAnswerDto,
   ): Observable<Qna> {
     return this.http.patch<Qna>(
       `${QnaService.baseApiUrl(orgSlug)}/${qnaSlug}/${Keyword.Answer}`,

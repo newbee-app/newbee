@@ -19,15 +19,15 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseCreateOrgMemberInviteDto1,
-  testBaseGetOrgMemberPostsDto1,
-  testBaseUpdateOrgMemberDto1,
+  testCreateOrgMemberInviteDto1,
+  testGetOrgMemberPostsDto1,
   testOrganization1,
   testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
   testPaginatedResultsDocQueryResult1,
   testPaginatedResultsQnaQueryResult1,
+  testUpdateOrgMemberDto1,
   testUser1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -135,7 +135,7 @@ describe('OrgMemberEffects', () => {
     it('should fire editOrgMemberSuccess if successful', () => {
       actions$ = hot('a', {
         a: OrgMemberActions.editOrgMember({
-          updateOrgMemberDto: testBaseUpdateOrgMemberDto1,
+          updateOrgMemberDto: testUpdateOrgMemberDto1,
         }),
       });
       const expected$ = hot('a', {
@@ -147,7 +147,7 @@ describe('OrgMemberEffects', () => {
         expect(service.edit).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseUpdateOrgMemberDto1,
+          testUpdateOrgMemberDto1,
         );
       });
     });
@@ -206,12 +206,12 @@ describe('OrgMemberEffects', () => {
     it(`should fire getDocsPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getDocsPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getDocs$).toBeObservable(expected$);
@@ -238,12 +238,12 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getDocsPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getDocs$).toBeObservable(expected$);
@@ -267,7 +267,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -286,7 +286,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -305,7 +305,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -327,7 +327,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocs({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -339,7 +339,7 @@ describe('OrgMemberEffects', () => {
     it('should fire getDocsSuccess if this is the first request', () => {
       actions$ = hot('a', {
         a: OrgMemberActions.getDocsPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
@@ -353,7 +353,7 @@ describe('OrgMemberEffects', () => {
         expect(service.getAllDocs).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
         );
       });
     });
@@ -379,7 +379,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getDocsPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
@@ -394,7 +394,7 @@ describe('OrgMemberEffects', () => {
           testOrganization1.slug,
           testOrgMember1.slug,
           {
-            ...testBaseGetOrgMemberPostsDto1,
+            ...testGetOrgMemberPostsDto1,
             offset: 1,
           },
         );
@@ -406,12 +406,12 @@ describe('OrgMemberEffects', () => {
     it(`should fire getQnasPending if this is the first request, selected organization and selected org member are set, and there's no error`, () => {
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getQnasPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
@@ -438,12 +438,12 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getQnasPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       expect(effects.getQnas$).toBeObservable(expected$);
@@ -467,7 +467,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -486,7 +486,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -505,7 +505,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -527,7 +527,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnas({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('-');
@@ -539,7 +539,7 @@ describe('OrgMemberEffects', () => {
     it('should fire getQnasSuccess if this is the first request', () => {
       actions$ = hot('a', {
         a: OrgMemberActions.getQnasPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
@@ -553,7 +553,7 @@ describe('OrgMemberEffects', () => {
         expect(service.getAllQnas).toHaveBeenCalledWith(
           testOrganization1.slug,
           testOrgMember1.slug,
-          testBaseGetOrgMemberPostsDto1,
+          testGetOrgMemberPostsDto1,
         );
       });
     });
@@ -579,7 +579,7 @@ describe('OrgMemberEffects', () => {
       });
       actions$ = hot('a', {
         a: OrgMemberActions.getQnasPending({
-          role: testBaseGetOrgMemberPostsDto1.role ?? null,
+          role: testGetOrgMemberPostsDto1.role ?? null,
         }),
       });
       const expected$ = hot('a', {
@@ -594,7 +594,7 @@ describe('OrgMemberEffects', () => {
           testOrganization1.slug,
           testOrgMember1.slug,
           {
-            ...testBaseGetOrgMemberPostsDto1,
+            ...testGetOrgMemberPostsDto1,
             offset: 1,
           },
         );
@@ -606,12 +606,12 @@ describe('OrgMemberEffects', () => {
     it('should fire inviteUserSuccess if successful', () => {
       actions$ = hot('a', {
         a: OrgMemberActions.inviteUser({
-          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+          createOrgMemberInviteDto: testCreateOrgMemberInviteDto1,
         }),
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.inviteUserSuccess({
-          email: testBaseCreateOrgMemberInviteDto1.email,
+          email: testCreateOrgMemberInviteDto1.email,
         }),
       });
       expect(effects.inviteUser$).toBeObservable(expected$);
@@ -619,7 +619,7 @@ describe('OrgMemberEffects', () => {
         expect(service.inviteUser).toHaveBeenCalledTimes(1);
         expect(service.inviteUser).toHaveBeenCalledWith(
           testOrganization1.slug,
-          testBaseCreateOrgMemberInviteDto1,
+          testCreateOrgMemberInviteDto1,
         );
       });
     });
@@ -628,7 +628,7 @@ describe('OrgMemberEffects', () => {
       store.setState({});
       actions$ = hot('a', {
         a: OrgMemberActions.inviteUser({
-          createOrgMemberInviteDto: testBaseCreateOrgMemberInviteDto1,
+          createOrgMemberInviteDto: testCreateOrgMemberInviteDto1,
         }),
       });
       const expected$ = hot('-');

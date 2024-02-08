@@ -34,9 +34,9 @@ import {
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
-  testBaseCreateOrganizationDto1,
-  testBaseUpdateOrganizationDto1,
+  testCreateOrganizationDto1,
   testNow1,
+  testUpdateOrganizationDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
@@ -71,7 +71,7 @@ describe('OrganizationService', () => {
   });
   const testUpdatedOrganization = {
     ...testOrganizationEntity,
-    ...testBaseUpdateOrganizationDto1,
+    ...testUpdateOrganizationDto1,
   };
 
   beforeEach(async () => {
@@ -132,9 +132,9 @@ describe('OrganizationService', () => {
       expect(mockOrganizationEntity).toHaveBeenCalledTimes(1);
       expect(mockOrganizationEntity).toHaveBeenCalledWith(
         testOrganizationEntity.id,
-        testBaseCreateOrganizationDto1.name,
-        testBaseCreateOrganizationDto1.slug,
-        testBaseCreateOrganizationDto1.upToDateDuration,
+        testCreateOrganizationDto1.name,
+        testCreateOrganizationDto1.slug,
+        testCreateOrganizationDto1.upToDateDuration,
         testUserEntity1,
       );
       expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
@@ -143,7 +143,7 @@ describe('OrganizationService', () => {
 
     it('should create an organization', async () => {
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
+        service.create(testCreateOrganizationDto1, testUserEntity1),
       ).resolves.toEqual(testOrganizationEntity);
       expect(solrCli.createCollection).toHaveBeenCalledTimes(1);
       expect(solrCli.createCollection).toHaveBeenCalledWith({
@@ -162,7 +162,7 @@ describe('OrganizationService', () => {
         .spyOn(em, 'persistAndFlush')
         .mockRejectedValue(new Error('persistAndFlush'));
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
+        service.create(testCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -173,7 +173,7 @@ describe('OrganizationService', () => {
           new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
+        service.create(testCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(
         new BadRequestException(organizationSlugTakenBadRequest),
       );
@@ -184,7 +184,7 @@ describe('OrganizationService', () => {
         .spyOn(solrCli, 'createCollection')
         .mockRejectedValue(new Error('createCollection'));
       await expect(
-        service.create(testBaseCreateOrganizationDto1, testUserEntity1),
+        service.create(testCreateOrganizationDto1, testUserEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
       expect(solrCli.createCollection).toHaveBeenCalledTimes(1);
       expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
@@ -287,19 +287,19 @@ describe('OrganizationService', () => {
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(
         testOrganizationEntity,
-        testBaseUpdateOrganizationDto1,
+        testUpdateOrganizationDto1,
       );
       expect(service.changeUpToDateDuration).toHaveBeenCalledTimes(1);
       expect(service.changeUpToDateDuration).toHaveBeenCalledWith(
         testOrganizationEntity,
-        testBaseUpdateOrganizationDto1.upToDateDuration,
+        testUpdateOrganizationDto1.upToDateDuration,
       );
       expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update an organization', async () => {
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
+        service.update(testOrganizationEntity, testUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganization);
 
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
@@ -312,7 +312,7 @@ describe('OrganizationService', () => {
     it('should throw an InternalServerErrorException if flush throws an error', async () => {
       jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
+        service.update(testOrganizationEntity, testUpdateOrganizationDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -323,7 +323,7 @@ describe('OrganizationService', () => {
           new UniqueConstraintViolationException(new Error('flush')),
         );
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
+        service.update(testOrganizationEntity, testUpdateOrganizationDto1),
       ).rejects.toThrow(
         new BadRequestException(organizationSlugTakenBadRequest),
       );
@@ -334,7 +334,7 @@ describe('OrganizationService', () => {
         .spyOn(solrCli, 'getVersionAndReplaceDocs')
         .mockRejectedValue(new Error('getVersionAndReplaceDocs'));
       await expect(
-        service.update(testOrganizationEntity, testBaseUpdateOrganizationDto1),
+        service.update(testOrganizationEntity, testUpdateOrganizationDto1),
       ).resolves.toEqual(testUpdatedOrganization);
 
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);

@@ -11,10 +11,7 @@ import {
   selectNonTeamOrgMembers,
   teamFeature as teamModuleFeature,
 } from '@newbee/newbee/team/data-access';
-import {
-  BaseCreateTeamMemberDto,
-  BaseUpdateTeamMemberDto,
-} from '@newbee/shared/util';
+import { CreateTeamMemberDto, UpdateTeamMemberDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -61,7 +58,7 @@ export class TeamMembersViewComponent {
    *
    * @param createTeamMemberDto The details for the new team member.
    */
-  onAddTeamMember(createTeamMemberDto: BaseCreateTeamMemberDto): void {
+  onAddTeamMember(createTeamMemberDto: CreateTeamMemberDto): void {
     this.store.dispatch(TeamActions.addTeamMember({ createTeamMemberDto }));
   }
 
@@ -72,7 +69,7 @@ export class TeamMembersViewComponent {
    */
   onEditTeamMember(editDetails: {
     orgMemberSlug: string;
-    updateTeamMemberDto: BaseUpdateTeamMemberDto;
+    updateTeamMemberDto: UpdateTeamMemberDto;
   }): void {
     const { orgMemberSlug, updateTeamMemberDto } = editDetails;
     this.store.dispatch(

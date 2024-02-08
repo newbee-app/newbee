@@ -25,7 +25,7 @@ import {
   inputErrorMessage,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseCreateOrgMemberInviteDto,
+  CreateOrgMemberInviteDto,
   Keyword,
   OrgMemberUser,
   OrgRoleEnum,
@@ -117,7 +117,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
   /**
    * The emitted invite member form, for use in the smart UI parent.
    */
-  @Output() invite = new EventEmitter<BaseCreateOrgMemberInviteDto>();
+  @Output() invite = new EventEmitter<CreateOrgMemberInviteDto>();
 
   /**
    * The path to navigate to, relative to the current org.
@@ -181,7 +181,7 @@ export class ViewOrgMembersComponent implements OnDestroy {
       return;
     }
 
-    this.invite.emit({ email: email, role: role });
+    this.invite.emit(new CreateOrgMemberInviteDto(email, role));
   }
 
   /**

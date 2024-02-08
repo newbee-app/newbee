@@ -25,6 +25,8 @@ import {
 import { newOrgConfigset, solrDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
+  CreateOrganizationDto,
+  UpdateOrganizationDto,
   internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
@@ -33,8 +35,6 @@ import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
 import slugify from 'slug';
 import { v4 } from 'uuid';
-import { CreateOrganizationDto } from './dto';
-import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
 /**
  * The service that interacts with the `OrganizationEntity`.

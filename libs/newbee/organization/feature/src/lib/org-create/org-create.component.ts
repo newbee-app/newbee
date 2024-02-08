@@ -4,7 +4,7 @@ import {
   OrganizationActions,
   httpFeature,
 } from '@newbee/newbee/shared/data-access';
-import { BaseCreateOrganizationDto } from '@newbee/shared/util';
+import { CreateOrganizationDto } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
@@ -81,7 +81,7 @@ export class OrgCreateComponent implements OnDestroy {
    *
    * @param createOrganizationDto The values to send to the backend.
    */
-  onCreate(createOrganizationDto: BaseCreateOrganizationDto): void {
+  onCreate(createOrganizationDto: CreateOrganizationDto): void {
     this.store.dispatch(
       OrganizationActions.createOrg({ createOrganizationDto }),
     );

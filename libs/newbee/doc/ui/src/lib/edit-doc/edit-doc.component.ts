@@ -28,10 +28,10 @@ import {
   numAndFreqIsDistinct,
 } from '@newbee/newbee/shared/util';
 import {
-  BaseUpdateDocDto,
   Keyword,
   Team,
   TeamMember,
+  UpdateDocDto,
   apiRoles,
   checkRoles,
   userDisplayName,
@@ -159,7 +159,7 @@ export class EditDocComponent implements OnInit {
   /**
    * Tells the smart UI parent to edit the doc with the given values.
    */
-  @Output() edit = new EventEmitter<BaseUpdateDocDto>();
+  @Output() edit = new EventEmitter<UpdateDocDto>();
 
   /**
    * Tells the smart UI parent to mark the doc as up-to-date.
@@ -227,16 +227,18 @@ export class EditDocComponent implements OnInit {
    */
   emitEdit(): void {
     const { title, team, maintainer } = this.editDocForm.value;
-    this.edit.emit({
-      title: title ?? '',
-      team: team?.slug ?? null,
-      maintainer: maintainer?.orgMember.slug ?? '',
-      upToDateDuration:
-        numAndFreqInputToDuration(
-          this.editDocForm.controls.upToDateDuration.value,
-        )?.toISOString() ?? null,
-      docMarkdoc: this.docMarkdoc,
-    });
+    this.edit.emit(
+      new UpdateDocDto({
+        title: title ?? '',
+        team: team?.slug ?? null,
+        maintainer: maintainer?.orgMember.slug ?? '',
+        upToDateDuration:
+          numAndFreqInputToDuration(
+            this.editDocForm.controls.upToDateDuration.value,
+          )?.toISOString() ?? null,
+        docMarkdoc: this.docMarkdoc,
+      }),
+    );
   }
 
   /**
