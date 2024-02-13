@@ -9,9 +9,9 @@ import {
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testBaseTokenDto1,
   testCreateOrgMemberInviteDto1,
   testOrgMemberRelation1,
+  testTokenDto1,
 } from '@newbee/shared/util';
 import { OrgMemberInviteController } from './org-member-invite.controller';
 
@@ -77,11 +77,11 @@ describe('OrgMemberInviteController', () => {
   describe('accept', () => {
     it('should accept an org member invite', async () => {
       await expect(
-        controller.accept(testBaseTokenDto1, testUserEntity1),
+        controller.accept(testTokenDto1, testUserEntity1),
       ).resolves.toEqual(testOrgMemberRelation1);
       expect(service.acceptInvite).toHaveBeenCalledTimes(1);
       expect(service.acceptInvite).toHaveBeenCalledWith(
-        testBaseTokenDto1.token,
+        testTokenDto1.token,
         testUserEntity1,
       );
       expect(entityService.createOrgMemberNoUser).toHaveBeenCalledTimes(1);
@@ -94,11 +94,11 @@ describe('OrgMemberInviteController', () => {
   describe('decline', () => {
     it('should decline an org member invite', async () => {
       await expect(
-        controller.decline(testBaseTokenDto1, testUserEntity1),
+        controller.decline(testTokenDto1, testUserEntity1),
       ).resolves.toBeUndefined();
       expect(service.declineInvite).toHaveBeenCalledTimes(1);
       expect(service.declineInvite).toHaveBeenCalledWith(
-        testBaseTokenDto1.token,
+        testTokenDto1.token,
         testUserEntity1,
       );
     });

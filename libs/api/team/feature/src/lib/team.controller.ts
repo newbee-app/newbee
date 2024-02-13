@@ -65,7 +65,6 @@ export class TeamController {
 
   /**
    * The API route for creating a team.
-   * Organization moderators and owners should be allowed to access this endpoint.
    *
    * @param createTeamDto The information necessary to create a team.
    * @param user The user that sent the request and will become the owner of the team.
@@ -158,8 +157,6 @@ export class TeamController {
 
   /**
    * The API route for getting a team.
-   * Organization members, moderators, and owners should be allowed to access this endpoint.
-   * No need for team permissions as team members should also be organization members.
    *
    * @param organization The organization to look in for the team.
    * @param team The team we were looking for.
@@ -186,7 +183,6 @@ export class TeamController {
 
   /**
    * The API route for updating a team.
-   * Organization moderators and owners, and team moderators and owners, should be allowed to access this endpoint.
    *
    * @param updateTeamDto The new values for the team.
    * @param organization The organization to look in.
@@ -220,7 +216,6 @@ export class TeamController {
 
   /**
    * The API route for deleting a team.
-   * Organization moderators and owners, and team owners, should be allowed to access this endpoint.
    *
    * @param organization The organization to look in.
    * @param team The team we were looking for.

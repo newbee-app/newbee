@@ -1,3 +1,4 @@
+export * from './admin-controls.interface';
 export * from './authenticator.interface';
 export * from './common-entity-fields.interface';
 export * from './doc.interface';

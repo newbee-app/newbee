@@ -1,11 +1,13 @@
 import {
   Collection,
   Entity,
+  ManyToOne,
   OneToMany,
   OneToOne,
   Property,
 } from '@mikro-orm/core';
 import type { UserInvites } from '@newbee/shared/util';
+import { AdminControlsEntity } from './admin-controls.entity';
 import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberInviteEntity } from './org-member-invite.entity';
 import { UserEntity } from './user.entity';
@@ -20,6 +22,14 @@ export class UserInvitesEntity extends CommonEntity implements UserInvites {
    */
   @Property({ unique: true })
   email: string;
+
+  /**
+   * The admin controls housing this user invites instance, if the user has signed up to join the app's waitlist.
+   * `hidden` is on, so it will never be serialized.
+   * `nullable` is on, so it will be `null` if the user is not on the admin waitlist.
+   */
+  @ManyToOne(() => AdminControlsEntity, { hidden: true, nullable: true })
+  adminControls: AdminControlsEntity | null = null;
 
   /**
    * The user who was invited, if they have signed up.

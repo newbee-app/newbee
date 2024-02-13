@@ -15,7 +15,7 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseTokenDto1,
+  testTokenDto1,
   testUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
@@ -125,7 +125,7 @@ describe('UserEffects', () => {
   describe('verifyEmail$', () => {
     it('should fire verifyEmailSuccess if successful', () => {
       actions$ = hot('a', {
-        a: UserActions.verifyEmail({ token: testBaseTokenDto1.token }),
+        a: UserActions.verifyEmail({ token: testTokenDto1.token }),
       });
       const expected$ = hot('a', {
         a: UserActions.verifyEmailSuccess({ user: testUser1 }),
@@ -133,9 +133,7 @@ describe('UserEffects', () => {
       expect(effects.verifyEmail$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.verifyEmail).toHaveBeenCalledTimes(1);
-        expect(service.verifyEmail).toHaveBeenCalledWith(
-          testBaseTokenDto1.token,
-        );
+        expect(service.verifyEmail).toHaveBeenCalledWith(testTokenDto1.token);
       });
     });
   });

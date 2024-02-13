@@ -4,6 +4,7 @@ import { Keyword } from '@newbee/shared/util';
  * All of the current versions for the REST API endpoints.
  */
 export const apiVersion = {
+  [Keyword.Admin]: '1',
   [Keyword.Auth]: '1',
   [Keyword.Authenticator]: '1',
   [Keyword.Cookie]: '1',

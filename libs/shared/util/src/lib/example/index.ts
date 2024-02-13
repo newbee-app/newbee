@@ -36,6 +36,7 @@ import {
   SuggestResultsDto,
   TeamAndMemberDto,
   TokenDto,
+  UpdateAdminControlsDto,
   UpdateAnswerDto,
   UpdateDocDto,
   UpdateOrgMemberDto,
@@ -50,6 +51,8 @@ import {
 } from '../dto';
 import { OrgRoleEnum, TeamRoleEnum, UserRoleEnum } from '../enum';
 import type {
+  AdminControls,
+  AdminControlsRelation,
   Authenticator,
   CommonEntityFields,
   Doc,
@@ -327,6 +330,16 @@ export const testOrgMemberInvite1: OrgMemberInvite = {
 };
 
 /**
+ * An example instance of AdminControls.
+ * Strictly for use in testing.
+ */
+export const testAdminControls1: AdminControls = {
+  ...testCommonEntityFields1,
+  allowRegistration: true,
+  allowWaitlist: true,
+};
+
+/**
  * An example instance of PublicKeyCredentialCreationOptionsJSON, from the `@simplewebauthn` package.
  * Strictly for use in testing.
  */
@@ -395,7 +408,7 @@ export const testOrgMemberUser1: OrgMemberUser = {
 };
 
 /**
- * An example instance of `OrgMemberUser`.
+ * An example instance of OrgMemberUser.
  * Strictly for use in testing.
  */
 export const testOrgMemberUser2: OrgMemberUser = {
@@ -404,14 +417,14 @@ export const testOrgMemberUser2: OrgMemberUser = {
 };
 
 /**
- * An example instance of `OrgMemberQueryResult`.
+ * An example instance of OrgMemberQueryResult.
  * Strictly for use in testing.
  */
 export const testOrgMemberQueryResult1: OrgMemberQueryResult =
   testOrgMemberUser1;
 
 /**
- * An example instance of `TeamQueryResult`.
+ * An example instance of TeamQueryResult.
  * Strictly for use in testing.
  */
 export const testTeamQueryResult1: TeamQueryResult = {
@@ -421,7 +434,7 @@ export const testTeamQueryResult1: TeamQueryResult = {
 };
 
 /**
- * An example instance of `TeamQueryResult`.
+ * An example instance of TeamQueryResult.
  * Strictly for use in testing.
  */
 export const testTeamQueryResult2: TeamQueryResult = {
@@ -431,7 +444,7 @@ export const testTeamQueryResult2: TeamQueryResult = {
 };
 
 /**
- * An example instance of `DocQueryResult`.
+ * An example instance of DocQueryResult.
  * Strictly for use in testing.
  */
 export const testDocQueryResult1: DocQueryResult = {
@@ -446,7 +459,7 @@ export const testDocQueryResult1: DocQueryResult = {
 };
 
 /**
- * An example instance of `DocQueryResult`.
+ * An example instance of DocQueryResult.
  * Strictly for use in testing.
  */
 export const testDocQueryResult2: DocQueryResult = {
@@ -461,7 +474,7 @@ export const testDocQueryResult2: DocQueryResult = {
 };
 
 /**
- * An example instance of `QnaQueryResult`.
+ * An example instance of QnaQueryResult.
  * Strictly for use in testing.
  */
 export const testQnaQueryResult1: QnaQueryResult = {
@@ -476,7 +489,7 @@ export const testQnaQueryResult1: QnaQueryResult = {
 };
 
 /**
- * An example instance of `OrganizationRelation`.
+ * An example instance of OrganizationRelation.
  * Strictly for use in testing.
  */
 export const testOrganizationRelation1: OrganizationRelation = {
@@ -498,7 +511,7 @@ export const testOrganizationRelation1: OrganizationRelation = {
 };
 
 /**
- * An example instance of `OrganizationRelation`.
+ * An example instance of OrganizationRelation.
  * Strictly for use in testing.
  */
 export const testOrganizationRelation2: OrganizationRelation = {
@@ -520,7 +533,7 @@ export const testOrganizationRelation2: OrganizationRelation = {
 };
 
 /**
- * An example instance of `TeamMemberRelation`.
+ * An example instance of TeamMemberRelation.
  * Strictly for use in testing.
  */
 export const testTeamMemberRelation1: TeamMemberRelation = {
@@ -532,7 +545,7 @@ export const testTeamMemberRelation1: TeamMemberRelation = {
 };
 
 /**
- * An example instance of `TeamMemberRelation`.
+ * An example instance of TeamMemberRelation.
  * Strictly for use in testing.
  */
 export const testTeamMemberRelation2: TeamMemberRelation = {
@@ -544,7 +557,7 @@ export const testTeamMemberRelation2: TeamMemberRelation = {
 };
 
 /**
- * An example instance of `DocRelation`.
+ * An example instance of DocRelation.
  * Strictly for use in testing.
  */
 export const testDocRelation1: DocRelation = {
@@ -556,7 +569,7 @@ export const testDocRelation1: DocRelation = {
 };
 
 /**
- * An example instance of `QnaRelation`.
+ * An example instance of QnaRelation.
  * Strictly for use in testing.
  */
 export const testQnaRelation1: QnaRelation = {
@@ -568,7 +581,7 @@ export const testQnaRelation1: QnaRelation = {
 };
 
 /**
- * An example instance of `OrgMemberRelation`.
+ * An example instance of OrgMemberRelation.
  * Strictly for use in testing.
  */
 export const testOrgMemberRelation1: OrgMemberRelation = {
@@ -603,7 +616,7 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
 };
 
 /**
- * An example instance of `TeamRelation`.
+ * An example instance of TeamRelation.
  * Strictly for use in testing.
  */
 export const testTeamRelation1: TeamRelation = {
@@ -625,7 +638,7 @@ export const testTeamRelation1: TeamRelation = {
 };
 
 /**
- * An example instance of `OrgMemberInviteRelation`.
+ * An example instance of OrgMemberInviteRelation.
  * Strictly for use in testing.
  */
 export const testOrgMemberInviteRelation1: OrgMemberInviteRelation = {
@@ -635,13 +648,22 @@ export const testOrgMemberInviteRelation1: OrgMemberInviteRelation = {
 };
 
 /**
- * An example instance of `UserRelation`.
+ * An example instance of UserRelation.
  * Strictly for use in testing.
  */
 export const testUserRelation1: UserRelation = {
   user: testUser1,
   organizations: [testOrganization1],
   invites: [testOrgMemberInviteRelation1],
+};
+
+/**
+ * An example instance of AdminControlsRelation.
+ * Strictly for use in testing.
+ */
+export const testAdminControlsRelation1: AdminControlsRelation = {
+  adminControls: testAdminControls1,
+  waitlist: [testUserInvites1],
 };
 
 /**
@@ -792,7 +814,7 @@ export const testUpdateDocDto1 = new UpdateDocDto({
  * An example instance of DocAndMemberDto.
  * Strictly for use in testing.
  */
-export const testBaseDocAndMemberDto1 = new DocAndMemberDto(
+export const testDocAndMemberDto1 = new DocAndMemberDto(
   testDocRelation1,
   testTeamMember1,
 );
@@ -885,10 +907,19 @@ export const testCreateOrgMemberInviteDto1 = new CreateOrgMemberInviteDto(
 );
 
 /**
- * An example instance of `BaseTokenDto`.
+ * An example instance of UpdateAdminControlsDto.
  * Strictly for use in testing.
  */
-export const testBaseTokenDto1 = new TokenDto('token');
+export const testUpdateAdminControlsDto1 = new UpdateAdminControlsDto({
+  allowRegistration: false,
+  allowWaitlist: false,
+});
+
+/**
+ * An example instance of `TokenDto`.
+ * Strictly for use in testing.
+ */
+export const testTokenDto1 = new TokenDto('token');
 
 /**
  * An example instance of RegistrationResponseDto.

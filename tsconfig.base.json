@@ -37,6 +37,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@newbee/api/admin-controls/data-access": [
+        "libs/api/admin-controls/data-access/src/index.ts"
+      ],
+      "@newbee/api/admin-controls/feature": [
+        "libs/api/admin-controls/feature/src/index.ts"
+      ],
       "@newbee/api/auth/data-access": [
         "libs/api/auth/data-access/src/index.ts"
       ],

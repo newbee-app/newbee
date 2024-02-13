@@ -1,3 +1,4 @@
+export * from './admin-controls';
 export * from './auth';
 export * from './authenticator';
 export * from './cookie';

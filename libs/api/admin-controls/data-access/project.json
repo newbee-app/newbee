@@ -1,0 +1,44 @@
+{
+  "name": "api-admin-controls-data-access",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/api/admin-controls/data-access/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/api/admin-controls/data-access",
+        "tsConfig": "libs/api/admin-controls/data-access/tsconfig.lib.json",
+        "packageJson": "libs/api/admin-controls/data-access/package.json",
+        "main": "libs/api/admin-controls/data-access/src/index.ts",
+        "assets": ["libs/api/admin-controls/data-access/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/api/admin-controls/data-access/**/*.ts",
+          "libs/api/admin-controls/data-access/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/api/admin-controls/data-access/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

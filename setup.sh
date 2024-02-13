@@ -92,6 +92,10 @@ echo 'Running MikroORM Postgres migrations'
 (. ./tools/mikro-orm/run-migration.sh)
 echo 'Migrations successfully ran'
 
+echo 'Running MikroORM admin controls seeder'
+(. ./tools/mikro-orm/seed-admin-controls.sh)
+echo 'Admin controls successfully seeded'
+
 # Finish Solr setup
 echo 'Finishing Solr setup'
 (. ./tools/solr/finish-solr-setup.sh)

@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type {
+  AdminControlsRelation,
   DocNoOrg,
   DocQueryResult,
   OffsetAndLimit,
@@ -34,6 +35,7 @@ import { ClassConstructor } from 'class-transformer';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import {
+  AdminControlsEntity,
   AuthenticatorEntity,
   DocEntity,
   OrgMemberEntity,
@@ -389,7 +391,7 @@ export class EntityService {
   }
 
   /**
-   * Takes in a user and converts it to a `UserEntity`.
+   * Takes in a user and converts it to a `UserRelation`.
    *
    * @param user The user to convert.
    *
@@ -418,6 +420,27 @@ export class EntityService {
         return { orgMemberInvite, organization };
       }),
     };
+  }
+
+  /**
+   * Takes in admin controls and converts it to an `AdminControlsRelation`.
+   *
+   * @param adminControls The admin controls to convert.
+   *
+   * @returns The admin controls as an `AdminControlsRelation`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async createAdminControlsRelation(
+    adminControls: AdminControlsEntity,
+  ): Promise<AdminControlsRelation> {
+    try {
+      await this.em.populate(adminControls, ['waitlist']);
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+
+    return { adminControls, waitlist: adminControls.waitlist.toArray() };
   }
 
   /**

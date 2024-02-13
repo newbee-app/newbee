@@ -6,7 +6,7 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseTokenDto1,
+  testTokenDto1,
   testUpdateUserDto1,
   testUser1,
 } from '@newbee/shared/util';
@@ -83,7 +83,7 @@ describe('UserService', () => {
 
   describe('verifyEmail', () => {
     it('should send out a post request', (done) => {
-      service.verifyEmail(testBaseTokenDto1.token).subscribe({
+      service.verifyEmail(testTokenDto1.token).subscribe({
         next: (user) => {
           try {
             expect(user).toEqual(testUser1);
@@ -99,7 +99,7 @@ describe('UserService', () => {
         `${UserService.baseApiUrl}/${Keyword.Verify}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseTokenDto1);
+      expect(req.request.body).toEqual(testTokenDto1);
 
       req.flush(testUser1);
     });

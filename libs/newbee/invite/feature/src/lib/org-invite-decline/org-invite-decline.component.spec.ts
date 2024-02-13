@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testBaseTokenDto1 } from '@newbee/shared/util';
+import { Keyword, testTokenDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteDeclineComponent } from './org-invite-decline.component';
 
@@ -35,7 +35,7 @@ describe('OrgInviteDeclineComponent', () => {
 
     const harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl(
-      `/${testBaseTokenDto1.token}`,
+      `/${testTokenDto1.token}`,
       OrgInviteDeclineComponent,
     );
   });
@@ -48,7 +48,7 @@ describe('OrgInviteDeclineComponent', () => {
   describe('constructor', () => {
     it('should dispatch declineInvite', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
-        InviteActions.declineInvite({ tokenDto: testBaseTokenDto1 }),
+        InviteActions.declineInvite({ tokenDto: testTokenDto1 }),
       );
     });
   });

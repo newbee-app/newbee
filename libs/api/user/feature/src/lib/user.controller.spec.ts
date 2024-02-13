@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { testUserEntity1 } from '@newbee/api/shared/data-access';
 import { elongateUuid } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
-import { testBaseTokenDto1, testUpdateUserDto1 } from '@newbee/shared/util';
+import { testTokenDto1, testUpdateUserDto1 } from '@newbee/shared/util';
 import { UserController } from './user.controller';
 
 describe('UserController', () => {
@@ -75,12 +75,12 @@ describe('UserController', () => {
 
   describe('verifyEmail', () => {
     it(`should verify the user's email`, async () => {
-      await expect(controller.verifyEmail(testBaseTokenDto1)).resolves.toEqual(
+      await expect(controller.verifyEmail(testTokenDto1)).resolves.toEqual(
         testUpdatedUserEntity,
       );
       expect(service.findOneById).toHaveBeenCalledTimes(1);
       expect(service.findOneById).toHaveBeenCalledWith(
-        elongateUuid(testBaseTokenDto1.token),
+        elongateUuid(testTokenDto1.token),
       );
       expect(service.verifyEmail).toHaveBeenCalledTimes(1);
       expect(service.verifyEmail).toHaveBeenCalledWith(testUserEntity1);

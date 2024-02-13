@@ -3,7 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { Keyword, testBaseTokenDto1 } from '@newbee/shared/util';
+import { Keyword, testTokenDto1 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgInviteAcceptComponent } from './org-invite-accept.component';
 
@@ -37,7 +37,7 @@ describe('OrgInviteAcceptComponent', () => {
 
     const harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl(
-      `/${testBaseTokenDto1.token}`,
+      `/${testTokenDto1.token}`,
       OrgInviteAcceptComponent,
     );
   });
@@ -51,7 +51,7 @@ describe('OrgInviteAcceptComponent', () => {
   describe('constructor', () => {
     it('should dispatch acceptInvite', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
-        InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 }),
+        InviteActions.acceptInvite({ tokenDto: testTokenDto1 }),
       );
     });
   });

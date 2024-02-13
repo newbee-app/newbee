@@ -4,6 +4,9 @@
  * For use in the backend and the frontend.
  */
 export enum Keyword {
+  // admin controls keywords
+  Admin = 'admin',
+
   // auth keywords
   Auth = 'auth',
   WebAuthn = 'webauthn',

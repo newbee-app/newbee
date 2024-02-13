@@ -3,7 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { createMock } from '@golevelup/ts-jest';
 import { InviteActions } from '@newbee/newbee/shared/data-access';
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
-import { testBaseTokenDto1, testOrgMemberRelation1 } from '@newbee/shared/util';
+import { testOrgMemberRelation1, testTokenDto1 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jest-marbles';
@@ -50,7 +50,7 @@ describe('InviteEffects', () => {
   describe('acceptInvite$', () => {
     it('should fire acceptInviteSuccess if successful', () => {
       actions$ = hot('a', {
-        a: InviteActions.acceptInvite({ tokenDto: testBaseTokenDto1 }),
+        a: InviteActions.acceptInvite({ tokenDto: testTokenDto1 }),
       });
       const expected$ = hot('a', {
         a: InviteActions.acceptInviteSuccess({
@@ -60,7 +60,7 @@ describe('InviteEffects', () => {
       expect(effects.acceptInvite$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.acceptInvite).toHaveBeenCalledTimes(1);
-        expect(service.acceptInvite).toHaveBeenCalledWith(testBaseTokenDto1);
+        expect(service.acceptInvite).toHaveBeenCalledWith(testTokenDto1);
       });
     });
   });
@@ -68,13 +68,13 @@ describe('InviteEffects', () => {
   describe('declineInvite$', () => {
     it('should fire declineInviteSuccess if successful', () => {
       actions$ = hot('a', {
-        a: InviteActions.declineInvite({ tokenDto: testBaseTokenDto1 }),
+        a: InviteActions.declineInvite({ tokenDto: testTokenDto1 }),
       });
       const expected$ = hot('a', { a: InviteActions.declineInviteSuccess() });
       expect(effects.declineInvite$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.declineInvite).toHaveBeenCalledTimes(1);
-        expect(service.declineInvite).toHaveBeenCalledWith(testBaseTokenDto1);
+        expect(service.declineInvite).toHaveBeenCalledWith(testTokenDto1);
       });
     });
   });

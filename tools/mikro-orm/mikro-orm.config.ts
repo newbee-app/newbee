@@ -1,6 +1,7 @@
 import { defineConfig } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 import {
+  AdminControlsEntity,
   AuthenticatorEntity,
   DocEntity,
   OrganizationEntity,
@@ -30,6 +31,7 @@ export default defineConfig({
   },
   extensions: [SeedManager],
   entities: [
+    AdminControlsEntity,
     AuthenticatorEntity,
     DocEntity,
     OrgMemberInviteEntity,

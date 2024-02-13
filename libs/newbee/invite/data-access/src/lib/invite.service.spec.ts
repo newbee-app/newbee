@@ -5,8 +5,8 @@ import {
 import { TestBed } from '@angular/core/testing';
 import {
   Keyword,
-  testBaseTokenDto1,
   testOrgMemberRelation1,
+  testTokenDto1,
 } from '@newbee/shared/util';
 import { InviteService } from './invite.service';
 
@@ -30,7 +30,7 @@ describe('InviteService', () => {
 
   describe('acceptInvite', () => {
     it('should send out a post request', (done) => {
-      service.acceptInvite(testBaseTokenDto1).subscribe({
+      service.acceptInvite(testTokenDto1).subscribe({
         next: (orgMember) => {
           try {
             expect(orgMember).toEqual(testOrgMemberRelation1);
@@ -46,7 +46,7 @@ describe('InviteService', () => {
         `${InviteService.baseApiUrl}/${Keyword.Accept}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseTokenDto1);
+      expect(req.request.body).toEqual(testTokenDto1);
 
       req.flush(testOrgMemberRelation1);
     });
@@ -54,7 +54,7 @@ describe('InviteService', () => {
 
   describe('declineInvite', () => {
     it('should send out a post request', (done) => {
-      service.declineInvite(testBaseTokenDto1).subscribe({
+      service.declineInvite(testTokenDto1).subscribe({
         next: (signal) => {
           try {
             expect(signal).toBeNull();
@@ -70,7 +70,7 @@ describe('InviteService', () => {
         `${InviteService.baseApiUrl}/${Keyword.Decline}`,
       );
       expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(testBaseTokenDto1);
+      expect(req.request.body).toEqual(testTokenDto1);
 
       req.flush(null);
     });

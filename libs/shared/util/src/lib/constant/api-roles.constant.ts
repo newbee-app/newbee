@@ -4,6 +4,7 @@ import {
   OrgRoleEnum,
   PostRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
   anyOrgMember,
   anyTeamMember,
   atLeastOrgModerator,
@@ -15,6 +16,10 @@ import {
  * Should be ordered alphabetically, for ease of reading.
  */
 export const apiRoles = {
+  [Keyword.Admin]: {
+    get: [UserRoleEnum.Admin],
+    update: [UserRoleEnum.Admin],
+  },
   [Keyword.Doc]: {
     getAll: anyOrgMember,
     create: anyOrgMember,

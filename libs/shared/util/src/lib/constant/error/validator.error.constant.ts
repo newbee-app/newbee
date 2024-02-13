@@ -120,6 +120,17 @@ export const limitIsInt = 'Limit must be an int.';
 export const limitMin1 = 'Limit cannot be less than 1.';
 
 /**
+ * Constant to say that allow registration must be a boolean.
+ */
+export const allowRegistrationIsBoolean =
+  'Allow registration must be a boolean.';
+
+/**
+ * Constant to say that allow waitlist must be a boolean.
+ */
+export const allowWaitlistIsBoolean = 'Allow waitlist must be a boolean.';
+
+/**
  * Constant to say that the value for type must be in SolrEntryEnum.
  */
 export const typeIsEnum = `Type can only be one of the following values: ${Object.values(

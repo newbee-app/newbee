@@ -1,3 +1,4 @@
+export * from './admin-controls.entity';
 export * from './authenticator.entity';
 export * from './common.abstract.entity';
 export * from './doc.entity';
