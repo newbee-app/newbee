@@ -156,7 +156,7 @@ describe('TeamService', () => {
     });
   });
 
-  describe('hasOneBySlug', () => {
+  describe('hasOneByOrgAndSlug', () => {
     afterEach(() => {
       expect(em.findOne).toHaveBeenCalledTimes(1);
       expect(em.findOne).toHaveBeenCalledWith(TeamEntity, {
@@ -167,26 +167,35 @@ describe('TeamService', () => {
 
     it(`should say a team exists if it's found`, async () => {
       await expect(
-        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.hasOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).resolves.toBeTruthy();
     });
 
     it(`should say a team does not exist if it can't be found`, async () => {
       jest.spyOn(em, 'findOne').mockResolvedValue(null);
       await expect(
-        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.hasOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).resolves.toBeFalsy();
     });
 
     it('should throw an InternalServerErrorException if findOne throws an error', async () => {
       jest.spyOn(em, 'findOne').mockRejectedValue(new Error('findOne'));
       await expect(
-        service.hasOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.hasOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
-  describe('findOneBySlug', () => {
+  describe('findOneByOrgAndSlug', () => {
     afterEach(() => {
       expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
       expect(em.findOneOrFail).toHaveBeenCalledWith(TeamEntity, {
@@ -197,7 +206,10 @@ describe('TeamService', () => {
 
     it('should find a team by slug', async () => {
       await expect(
-        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).resolves.toEqual(testTeamEntity1);
     });
 
@@ -206,7 +218,10 @@ describe('TeamService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -215,7 +230,10 @@ describe('TeamService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneBySlug(testOrganizationEntity1, testTeamEntity1.slug),
+        service.findOneByOrgAndSlug(
+          testOrganizationEntity1,
+          testTeamEntity1.slug,
+        ),
       ).rejects.toThrow(new NotFoundException(teamSlugNotFound));
     });
   });

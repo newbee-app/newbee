@@ -51,18 +51,20 @@ export class CookieController {
     const csrfToken = this.generateToken(req, res, true);
     this.logger.log(`CSRF token generated: ${csrfToken}`);
 
+    const adminControls = await this.entityService.getPublicAdminControls();
     const authToken: string | undefined = req.signedCookies[authJwtCookie];
     if (!authToken) {
-      return { csrfToken, userRelation: null };
+      return new CsrfTokenAndDataDto(csrfToken, adminControls, null);
     }
 
     const user = await this.authService.verifyAuthToken(authToken);
     if (!user) {
-      return { csrfToken, userRelation: null };
+      return new CsrfTokenAndDataDto(csrfToken, adminControls, null);
     }
 
     return new CsrfTokenAndDataDto(
       csrfToken,
+      adminControls,
       await this.entityService.createUserRelation(user),
     );
   }

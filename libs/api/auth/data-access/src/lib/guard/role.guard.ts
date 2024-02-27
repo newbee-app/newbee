@@ -112,7 +112,7 @@ export class RoleGuard implements CanActivate {
       request[organizationKey] = organization;
 
       orgMember = user
-        ? await this.orgMemberService.findOneByUserAndOrgOrNull(
+        ? await this.orgMemberService.findOneByOrgAndUserOrNull(
             user,
             organization,
           )
@@ -140,11 +140,11 @@ export class RoleGuard implements CanActivate {
     let teamMember: TeamMemberEntity | null = null;
     let subjectTeamMember: TeamMemberEntity | null = null;
     if (teamSlug && organization) {
-      team = await this.teamService.findOneBySlug(organization, teamSlug);
+      team = await this.teamService.findOneByOrgAndSlug(organization, teamSlug);
       request[teamKey] = team;
 
       teamMember = orgMember
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )
@@ -155,7 +155,7 @@ export class RoleGuard implements CanActivate {
 
       if (subjectOrgMember) {
         subjectTeamMember =
-          await this.teamMemberService.findOneByOrgMemberAndTeam(
+          await this.teamMemberService.findOneByTeamAndOrgMember(
             subjectOrgMember,
             team,
           );
@@ -265,7 +265,7 @@ export class RoleGuard implements CanActivate {
     const { team: postTeam, creator, maintainer } = post;
     const postTeamMember =
       team && orgMember
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )

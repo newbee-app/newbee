@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import {
-  SolrEntryEnum,
-  resultIsDocQueryResult,
-  resultIsOrgMemberQueryResult,
-  resultIsQnaQueryResult,
-  resultIsTeamQueryResult,
-  type QueryResultType,
+  SolrOrgEntryEnum,
+  isDocSearchResult,
+  isOrgMemberSearchResult,
+  isQnaSearchResult,
+  isTeamSearchResult,
+  type OrgSearchResultType,
 } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
 import { TextTooltipComponent } from '../../tooltip';
@@ -24,20 +24,20 @@ export class SearchResultTypeBtnComponent {
   /**
    * The search result to create a button for.
    */
-  @Input() searchResult!: QueryResultType;
+  @Input() searchResult!: OrgSearchResultType;
 
   /**
    * Get the type of the search result as a string.
    */
   get searchResultType(): string {
-    if (resultIsOrgMemberQueryResult(this.searchResult)) {
-      return capitalize(SolrEntryEnum.User);
-    } else if (resultIsTeamQueryResult(this.searchResult)) {
-      return capitalize(SolrEntryEnum.Team);
-    } else if (resultIsDocQueryResult(this.searchResult)) {
-      return capitalize(SolrEntryEnum.Doc);
-    } else if (resultIsQnaQueryResult(this.searchResult)) {
-      return capitalize(SolrEntryEnum.Qna);
+    if (isOrgMemberSearchResult(this.searchResult)) {
+      return capitalize(SolrOrgEntryEnum.User);
+    } else if (isTeamSearchResult(this.searchResult)) {
+      return capitalize(SolrOrgEntryEnum.Team);
+    } else if (isDocSearchResult(this.searchResult)) {
+      return capitalize(SolrOrgEntryEnum.Doc);
+    } else if (isQnaSearchResult(this.searchResult)) {
+      return capitalize(SolrOrgEntryEnum.Qna);
     } else {
       // this should never happen
       return 'Unknown';

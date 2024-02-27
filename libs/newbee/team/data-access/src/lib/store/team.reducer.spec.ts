@@ -6,8 +6,8 @@ import {
 import {
   testCreateTeamMemberDto1,
   testOrgMember1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testTeam1,
   testUpdateTeamMemberDto1,
 } from '@newbee/shared/util';
@@ -40,7 +40,7 @@ describe('TeamReducer', () => {
   };
   const stateAfterGetDocsSuccess: TeamState = {
     ...initialTeamState,
-    docs: testPaginatedResultsDocQueryResult1,
+    docs: testPaginatedResultsDocSearchResult1,
   };
   const stateAfterGetQnasPending: TeamState = {
     ...initialTeamState,
@@ -48,7 +48,7 @@ describe('TeamReducer', () => {
   };
   const stateAfterGetQnasSuccess: TeamState = {
     ...initialTeamState,
-    qnas: testPaginatedResultsQnaQueryResult1,
+    qnas: testPaginatedResultsQnaSearchResult1,
   };
   const stateAfterAddTeamMember: TeamState = {
     ...initialTeamState,
@@ -226,27 +226,27 @@ describe('TeamReducer', () => {
       let updatedState = teamFeature.reducer(
         stateAfterGetDocsPending,
         TeamActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialTeamState,
-        docs: testPaginatedResultsDocQueryResult1,
+        docs: testPaginatedResultsDocSearchResult1,
       });
 
       updatedState = teamFeature.reducer(
         stateAfterGetDocsSuccess,
         TeamActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetDocsSuccess,
         docs: {
-          ...testPaginatedResultsDocQueryResult1,
+          ...testPaginatedResultsDocSearchResult1,
           results: [
-            ...testPaginatedResultsDocQueryResult1.results,
-            ...testPaginatedResultsDocQueryResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
           ],
         },
       });
@@ -256,27 +256,27 @@ describe('TeamReducer', () => {
       let updatedState = teamFeature.reducer(
         stateAfterGetQnasPending,
         TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialTeamState,
-        qnas: testPaginatedResultsQnaQueryResult1,
+        qnas: testPaginatedResultsQnaSearchResult1,
       });
 
       updatedState = teamFeature.reducer(
         stateAfterGetQnasSuccess,
         TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetQnasSuccess,
         qnas: {
-          ...testPaginatedResultsQnaQueryResult1,
+          ...testPaginatedResultsQnaSearchResult1,
           results: [
-            ...testPaginatedResultsQnaQueryResult1.results,
-            ...testPaginatedResultsQnaQueryResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
           ],
         },
       });

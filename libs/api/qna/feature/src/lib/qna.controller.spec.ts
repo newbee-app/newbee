@@ -13,8 +13,8 @@ import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testCreateQnaDto1,
   testOffsetAndLimit1,
-  testQnaQueryResult1,
   testQnaRelation1,
+  testQnaSearchResult1,
   testUpdateAnswerDto1,
   testUpdateQnaDto1,
 } from '@newbee/shared/util';
@@ -46,9 +46,9 @@ describe('QnaController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createQnaNoOrg: jest.fn().mockResolvedValue(testQnaRelation1),
-            createQnaQueryResults: jest
+            createQnaSearchResults: jest
               .fn()
-              .mockResolvedValue([testQnaQueryResult1]),
+              .mockResolvedValue([testQnaSearchResult1]),
             findPostsByOrgAndCount: jest
               .fn()
               .mockResolvedValue([[testQnaEntity1], 1]),
@@ -57,7 +57,7 @@ describe('QnaController', () => {
         {
           provide: TeamMemberService,
           useValue: createMock<TeamMemberService>({
-            findOneByOrgMemberAndTeamOrNull: jest
+            findOneByTeamAndOrgMemberOrNull: jest
               .fn()
               .mockResolvedValue(testTeamMemberEntity1),
           }),
@@ -85,7 +85,7 @@ describe('QnaController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testQnaQueryResult1],
+        results: [testQnaSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -93,8 +93,8 @@ describe('QnaController', () => {
         testOffsetAndLimit1,
         testOrganizationEntity1,
       );
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledWith([
         testQnaEntity1,
       ]);
     });
@@ -124,10 +124,10 @@ describe('QnaController', () => {
     afterEach(() => {
       expect(entityService.createQnaNoOrg).toHaveBeenCalledTimes(1);
       expect(
-        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+        teamMemberService.findOneByTeamAndOrgMemberOrNull,
       ).toHaveBeenCalledTimes(1);
       expect(
-        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+        teamMemberService.findOneByTeamAndOrgMemberOrNull,
       ).toHaveBeenCalledWith(testOrgMemberEntity1, testQnaEntity1.team);
     });
 

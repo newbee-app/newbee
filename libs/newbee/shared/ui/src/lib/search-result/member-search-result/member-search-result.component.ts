@@ -9,7 +9,7 @@ import {
 import {
   TeamRoleEnum,
   userDisplayName,
-  type OrgMemberQueryResult,
+  type OrgMemberSearchResult,
 } from '@newbee/shared/util';
 import { SearchResultHeaderComponent } from '../header';
 
@@ -33,7 +33,7 @@ export class MemberSearchResultComponent {
   /**
    * Information about the org member to display.
    */
-  @Input() orgMember!: OrgMemberQueryResult;
+  @Input() orgMember!: OrgMemberSearchResult;
 
   /**
    * An optional team role to display, if displaying the org member as a member of a team.

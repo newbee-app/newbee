@@ -10,7 +10,7 @@ import {
   searchFeature,
 } from '@newbee/newbee/shared/data-access';
 import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
-import { Keyword, SolrEntryEnum, defaultLimit } from '@newbee/shared/util';
+import { Keyword, SolrOrgEntryEnum, defaultLimit } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
 
@@ -40,7 +40,7 @@ export class SearchResultsViewComponent implements OnDestroy {
   /**
    * The current value of `_tab` as a Solr entry enum.
    */
-  get type(): SolrEntryEnum | null {
+  get type(): SolrOrgEntryEnum | null {
     return searchTabToSolrEntry(this._tab);
   }
 
@@ -71,8 +71,8 @@ export class SearchResultsViewComponent implements OnDestroy {
           const typeQueryParam = queryParamMap.get(Keyword.Type);
           const type =
             typeQueryParam &&
-            Object.values<string>(SolrEntryEnum).includes(typeQueryParam)
-              ? (typeQueryParam as SolrEntryEnum)
+            Object.values<string>(SolrOrgEntryEnum).includes(typeQueryParam)
+              ? (typeQueryParam as SolrOrgEntryEnum)
               : null;
           this._tab = solrEntryToSearchTab(type);
 

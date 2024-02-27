@@ -14,3 +14,8 @@ export interface AdminControls extends CommonEntityFields {
    */
   readonly allowWaitlist: boolean;
 }
+
+/**
+ * The public admin controls information that is passed around to non-admins.
+ */
+export type PublicAdminControls = Omit<AdminControls, keyof CommonEntityFields>;

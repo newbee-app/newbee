@@ -94,7 +94,7 @@ describe('DocService', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+            findOneByOrgAndSlug: jest.fn().mockResolvedValue(testTeamEntity1),
           }),
         },
         {
@@ -133,8 +133,8 @@ describe('DocService', () => {
 
   describe('create', () => {
     afterEach(() => {
-      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
-      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testCreateDocDto1.team,
       );
@@ -218,8 +218,8 @@ describe('DocService', () => {
 
   describe('update', () => {
     afterEach(() => {
-      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
-      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testCreateDocDto1.team,
       );

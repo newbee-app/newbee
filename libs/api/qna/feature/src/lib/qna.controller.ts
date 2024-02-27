@@ -24,7 +24,7 @@ import {
   OffsetAndLimitDto,
   PaginatedResults,
   QnaAndMemberDto,
-  QnaQueryResult,
+  QnaSearchResult,
   UpdateAnswerDto,
   UpdateQuestionDto,
   apiRoles,
@@ -63,7 +63,7 @@ export class QnaController {
   async getAll(
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<PaginatedResults<QnaQueryResult>> {
+  ): Promise<PaginatedResults<QnaSearchResult>> {
     const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
       `Get all qnas request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
@@ -81,7 +81,7 @@ export class QnaController {
     return {
       ...offsetAndLimitDto,
       total,
-      results: await this.entityService.createQnaQueryResults(qnas),
+      results: await this.entityService.createQnaSearchResults(qnas),
     };
   }
 
@@ -138,7 +138,7 @@ export class QnaController {
     return new QnaAndMemberDto(
       await this.entityService.createQnaNoOrg(qna),
       team
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )
@@ -173,7 +173,7 @@ export class QnaController {
     return new QnaAndMemberDto(
       await this.entityService.createQnaNoOrg(updatedQna),
       team
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )

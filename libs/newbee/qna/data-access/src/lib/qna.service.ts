@@ -8,7 +8,7 @@ import {
   PaginatedResults,
   Qna,
   QnaAndMemberDto,
-  QnaQueryResult,
+  QnaSearchResult,
   UpdateAnswerDto,
   UpdateQuestionDto,
 } from '@newbee/shared/util';
@@ -43,9 +43,9 @@ export class QnaService {
   getAll(
     orgSlug: string,
     offsetAndLimit: OffsetAndLimit,
-  ): Observable<PaginatedResults<QnaQueryResult>> {
+  ): Observable<PaginatedResults<QnaSearchResult>> {
     const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
-    return this.http.get<PaginatedResults<QnaQueryResult>>(
+    return this.http.get<PaginatedResults<QnaSearchResult>>(
       QnaService.baseApiUrl(orgSlug),
       { params },
     );

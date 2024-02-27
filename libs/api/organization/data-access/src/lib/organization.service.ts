@@ -22,7 +22,7 @@ import {
   TeamEntity,
   UserEntity,
 } from '@newbee/api/shared/data-access';
-import { newOrgConfigset, solrDictionaries } from '@newbee/api/shared/util';
+import { solrOrgConfigset, solrOrgDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   CreateOrganizationDto,
@@ -41,16 +41,13 @@ import { v4 } from 'uuid';
  */
 @Injectable()
 export class OrganizationService {
-  /**
-   * The logger to use when logging anything in `OrganizationService`.
-   */
   private readonly logger = new Logger(OrganizationService.name);
 
   constructor(
     private readonly em: EntityManager,
+    private readonly solrCli: SolrCli,
     private readonly entityService: EntityService,
     private readonly teamService: TeamService,
-    private readonly solrCli: SolrCli,
   ) {}
 
   /**
@@ -93,7 +90,7 @@ export class OrganizationService {
       await this.solrCli.createCollection({
         name: id,
         numShards: 1,
-        config: newOrgConfigset,
+        config: solrOrgConfigset,
       });
 
       // Should just be 1 member (the creator)
@@ -325,7 +322,7 @@ export class OrganizationService {
    */
   async buildSuggesters(organization: OrganizationEntity): Promise<void> {
     try {
-      for (const dictionary of Object.values(solrDictionaries)) {
+      for (const dictionary of Object.values(solrOrgDictionaries)) {
         await this.solrCli.suggest(organization.id, {
           params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
         });

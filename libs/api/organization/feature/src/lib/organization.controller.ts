@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { OrganizationService } from '@newbee/api/organization/data-access';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
   EntityService,
   OrgMemberEntity,
@@ -29,8 +30,12 @@ import {
   GeneratedSlugDto,
   Keyword,
   OrgAndMemberDto,
+  OrgSearchDto,
+  OrgSearchResultsDto,
+  OrgSuggestDto,
   SlugDto,
   SlugTakenDto,
+  SuggestResultsDto,
   UpdateOrganizationDto,
   apiRoles,
 } from '@newbee/shared/util';
@@ -46,8 +51,9 @@ export class OrganizationController {
   private readonly logger = new Logger(OrganizationController.name);
 
   constructor(
-    private readonly organizationService: OrganizationService,
     private readonly entityService: EntityService,
+    private readonly organizationService: OrganizationService,
+    private readonly searchService: SearchService,
   ) {}
 
   /**
@@ -199,5 +205,69 @@ export class OrganizationController {
     this.logger.log(`Delete organization request received for slug: ${slug}`);
     await this.organizationService.delete(organization);
     this.logger.log(`Deleted organization, slug: ${slug}, ID: ${id}`);
+  }
+
+  /**
+   * The API route for making query suggestions in an org.
+   *
+   * @param orgSuggestDto The information for generating a suggestion.
+   * @param organization The organization to look in.
+   *
+   * @returns The suggestions as an array of strings.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
+   */
+  @Get(`:${Keyword.Organization}/${Keyword.Search}`)
+  @Role(apiRoles.org.suggest)
+  async suggest(
+    @Query() orgSuggestDto: OrgSuggestDto,
+    @Organization() organization: OrganizationEntity,
+  ): Promise<SuggestResultsDto> {
+    this.logger.log(
+      `Suggest request received in organization ID ${
+        organization.id
+      }: ${JSON.stringify(orgSuggestDto)}`,
+    );
+    const result = await this.searchService.orgSuggest(
+      organization,
+      orgSuggestDto,
+    );
+    this.logger.log(
+      `Suggest results generated in organization ID ${
+        organization.id
+      }: ${JSON.stringify(result)}`,
+    );
+    return result;
+  }
+
+  /**
+   * The API route for searching an org.
+   *
+   * @param orgSearchDto The query information.
+   * @param organization The organization to search in.
+   *
+   * @returns The results of the search.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
+   */
+  @Get(`:${Keyword.Organization}/${Keyword.Search}`)
+  @Role(apiRoles.org.search)
+  async search(
+    @Query() orgSearchDto: OrgSearchDto,
+    @Organization() organization: OrganizationEntity,
+  ): Promise<OrgSearchResultsDto> {
+    this.logger.log(
+      `Search request received in organization ID ${
+        organization.id
+      }: ${JSON.stringify(orgSearchDto)}`,
+    );
+    const result = await this.searchService.orgSearch(
+      organization,
+      orgSearchDto,
+    );
+    this.logger.log(
+      `Search results generated in organization ID ${
+        organization.id
+      }: ${JSON.stringify(result)}`,
+    );
+    return result;
   }
 }

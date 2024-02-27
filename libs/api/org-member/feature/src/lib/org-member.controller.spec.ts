@@ -11,11 +11,11 @@ import {
   testQnaEntity1,
 } from '@newbee/api/shared/data-access';
 import {
-  testDocQueryResult1,
+  testDocSearchResult1,
   testGetOrgMemberPostsDto1,
   testOffsetAndLimit1,
   testOrgMemberRelation1,
-  testQnaQueryResult1,
+  testQnaSearchResult1,
   testUpdateOrgMemberDto1,
 } from '@newbee/shared/util';
 import { OrgMemberController } from './org-member.controller';
@@ -46,12 +46,12 @@ describe('OrgMemberController', () => {
             createOrgMemberNoOrg: jest
               .fn()
               .mockResolvedValue(testOrgMemberRelation1),
-            createDocQueryResults: jest
+            createDocSearchResults: jest
               .fn()
-              .mockResolvedValue([testDocQueryResult1]),
-            createQnaQueryResults: jest
+              .mockResolvedValue([testDocSearchResult1]),
+            createQnaSearchResults: jest
               .fn()
-              .mockResolvedValue([testQnaQueryResult1]),
+              .mockResolvedValue([testQnaSearchResult1]),
           }),
         },
       ],
@@ -127,7 +127,7 @@ describe('OrgMemberController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testDocQueryResult1],
+        results: [testDocSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -136,8 +136,8 @@ describe('OrgMemberController', () => {
         testOrganizationEntity1,
         { orgMember: testOrgMemberEntity1 },
       );
-      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createDocSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocSearchResults).toHaveBeenCalledWith([
         testDocEntity1,
       ]);
     });
@@ -157,7 +157,7 @@ describe('OrgMemberController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testQnaQueryResult1],
+        results: [testQnaSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -166,8 +166,8 @@ describe('OrgMemberController', () => {
         testOrganizationEntity1,
         { orgMember: testOrgMemberEntity1 },
       );
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledWith([
         testQnaEntity1,
       ]);
     });

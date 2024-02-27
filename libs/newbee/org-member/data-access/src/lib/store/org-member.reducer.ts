@@ -4,10 +4,10 @@ import {
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
 } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
@@ -33,12 +33,12 @@ export interface OrgMemberState {
   /**
    * All of the docs of the org member as paginated results.
    */
-  docs: PaginatedResults<DocQueryResult> | null;
+  docs: PaginatedResults<DocSearchResult> | null;
 
   /**
    * All of the qnas of the org member as paginated results.
    */
-  qnas: PaginatedResults<QnaQueryResult> | null;
+  qnas: PaginatedResults<QnaSearchResult> | null;
 
   /**
    * Whether the user is waiting for a response for getting all paginated docs.

@@ -16,11 +16,11 @@ import {
   getHttpClientErrorMsg,
 } from '@newbee/newbee/shared/util';
 import {
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   PaginatedResults,
-  QnaQueryResult,
-  resultIsDocQueryResult,
+  QnaSearchResult,
+  isDocSearchResult,
   userDisplayName,
 } from '@newbee/shared/util';
 import { Subject, takeUntil } from 'rxjs';
@@ -80,14 +80,14 @@ export class ViewPostsComponent implements OnDestroy {
    * The posts of the org.
    */
   @Input()
-  get posts(): PaginatedResults<DocQueryResult | QnaQueryResult> | null {
+  get posts(): PaginatedResults<DocSearchResult | QnaSearchResult> | null {
     return this._posts;
   }
-  set posts(posts: PaginatedResults<DocQueryResult | QnaQueryResult> | null) {
+  set posts(posts: PaginatedResults<DocSearchResult | QnaSearchResult> | null) {
     this._posts = posts;
     this.updatePostsToShow();
   }
-  private _posts: PaginatedResults<DocQueryResult | QnaQueryResult> | null =
+  private _posts: PaginatedResults<DocSearchResult | QnaSearchResult> | null =
     null;
 
   /**
@@ -118,10 +118,10 @@ export class ViewPostsComponent implements OnDestroy {
   /**
    * The subset of the posts to show to the user.
    */
-  get postsToShow(): (DocQueryResult | QnaQueryResult)[] {
+  get postsToShow(): (DocSearchResult | QnaSearchResult)[] {
     return this._postsToShow;
   }
-  private _postsToShow: (DocQueryResult | QnaQueryResult)[] = [];
+  private _postsToShow: (DocSearchResult | QnaSearchResult)[] = [];
 
   /**
    * Update the posts to show using the current searchbar value.
@@ -211,7 +211,7 @@ export class ViewPostsComponent implements OnDestroy {
         post.creator ? userDisplayName(post.creator.user) : null,
         post.maintainer ? userDisplayName(post.maintainer.user) : null,
       ];
-      if (resultIsDocQueryResult(post)) {
+      if (isDocSearchResult(post)) {
         fieldsToCheck.push(...[post.doc.title, post.doc.docSnippet]);
       } else {
         fieldsToCheck.push(

@@ -8,27 +8,27 @@ export interface QnaRelation {
   /**
    * Information associated with the qna.
    */
-  qna: Qna;
+  readonly qna: Qna;
 
   /**
    * The organization the qna belongs to.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * The team the qna belongs to, if any.
    */
-  team: Team | null;
+  readonly team: Team | null;
 
   /**
    * The creator of the qna.
    */
-  creator: OrgMemberUser | null;
+  readonly creator: OrgMemberUser | null;
 
   /**
    * The maintainer of the qna.
    */
-  maintainer: OrgMemberUser | null;
+  readonly maintainer: OrgMemberUser | null;
 }
 
 /**

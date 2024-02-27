@@ -94,7 +94,7 @@ export class TeamMemberService {
    * @throws {NotFoundException} `teamMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneByOrgMemberAndTeam(
+  async findOneByTeamAndOrgMember(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<TeamMemberEntity> {
@@ -121,7 +121,7 @@ export class TeamMemberService {
    * @returns The associated team member instance or null.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneByOrgMemberAndTeamOrNull(
+  async findOneByTeamAndOrgMemberOrNull(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<TeamMemberEntity | null> {
@@ -231,7 +231,7 @@ export class TeamMemberService {
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<void> {
-    const teamMember = await this.findOneByOrgMemberAndTeamOrNull(
+    const teamMember = await this.findOneByTeamAndOrgMemberOrNull(
       orgMember,
       team,
     );

@@ -1,4 +1,10 @@
-import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Index,
+  OneToMany,
+  Property,
+} from '@mikro-orm/core';
 import type { Organization } from '@newbee/shared/util';
 import { OrgRoleEnum } from '@newbee/shared/util';
 import slugify from 'slug';
@@ -25,6 +31,7 @@ export class OrganizationEntity extends CommonEntity implements Organization {
    * @inheritdoc
    */
   @Property({ unique: true })
+  @Index()
   slug: string;
 
   /**

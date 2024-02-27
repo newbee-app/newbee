@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  DocQueryResult,
-  QnaQueryResult,
+  DocSearchResult,
+  QnaSearchResult,
+  isDocSearchResult,
+  isQnaSearchResult,
   maintainerIsCreator,
-  resultIsDocQueryResult,
-  resultIsQnaQueryResult,
   userDisplayName,
 } from '@newbee/shared/util';
 import { SearchResultHeaderComponent } from '../search-result-header';
@@ -34,7 +34,7 @@ export class PostSearchResultHeaderComponent {
   /**
    * The post the search result is about.
    */
-  @Input() searchResult!: DocQueryResult | QnaQueryResult;
+  @Input() searchResult!: DocSearchResult | QnaSearchResult;
 
   /**
    * Where we should navigate to, relative to the current org.
@@ -52,11 +52,11 @@ export class PostSearchResultHeaderComponent {
    * Navigate to the displayed post relative to the current org.
    */
   postNavigate(): void {
-    if (resultIsDocQueryResult(this.searchResult)) {
+    if (isDocSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: [ShortUrl.Doc, this.searchResult.doc.slug].join('/'),
       });
-    } else if (resultIsQnaQueryResult(this.searchResult)) {
+    } else if (isQnaSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: [ShortUrl.Qna, this.searchResult.qna.slug].join('/'),
       });

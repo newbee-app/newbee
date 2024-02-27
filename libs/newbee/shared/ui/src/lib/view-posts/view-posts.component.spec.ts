@@ -1,7 +1,7 @@
 import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrgMemberPostTab } from '@newbee/newbee/shared/util';
-import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
+import { testPaginatedResultsDocSearchResult1 } from '@newbee/shared/util';
 import { ViewPostsComponent } from './view-posts.component';
 
 describe('ViewPostsComponent', () => {
@@ -17,7 +17,7 @@ describe('ViewPostsComponent', () => {
     fixture = TestBed.createComponent(ViewPostsComponent);
     component = fixture.componentInstance;
 
-    component.posts = testPaginatedResultsDocQueryResult1;
+    component.posts = testPaginatedResultsDocSearchResult1;
 
     jest.spyOn(component.orgMemberTabChange, 'emit');
     jest.spyOn(component.search, 'emit');
@@ -33,7 +33,7 @@ describe('ViewPostsComponent', () => {
   describe('setters', () => {
     it('should update posts to show', () => {
       expect(component.postsToShow).toEqual(
-        testPaginatedResultsDocQueryResult1.results,
+        testPaginatedResultsDocSearchResult1.results,
       );
     });
   });

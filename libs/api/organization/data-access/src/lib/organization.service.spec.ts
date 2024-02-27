@@ -28,7 +28,7 @@ import {
   testTeamEntity1,
   testUserEntity1,
 } from '@newbee/api/shared/data-access';
-import { newOrgConfigset, solrDictionaries } from '@newbee/api/shared/util';
+import { solrOrgConfigset, solrOrgDictionaries } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
@@ -59,9 +59,9 @@ const mockV4 = v4 as jest.Mock;
 describe('OrganizationService', () => {
   let service: OrganizationService;
   let em: EntityManager;
+  let solrCli: SolrCli;
   let entityService: EntityService;
   let teamService: TeamService;
-  let solrCli: SolrCli;
 
   const testOrganizationEntity = createMock<OrganizationEntity>({
     ...testOrganizationEntity1,
@@ -87,6 +87,10 @@ describe('OrganizationService', () => {
           }),
         },
         {
+          provide: SolrCli,
+          useValue: createMock<SolrCli>(),
+        },
+        {
           provide: EntityService,
           useValue: createMock<EntityService>(),
         },
@@ -99,18 +103,14 @@ describe('OrganizationService', () => {
             }),
           }),
         },
-        {
-          provide: SolrCli,
-          useValue: createMock<SolrCli>(),
-        },
       ],
     }).compile();
 
     service = module.get<OrganizationService>(OrganizationService);
     em = module.get<EntityManager>(EntityManager);
+    solrCli = module.get<SolrCli>(SolrCli);
     entityService = module.get<EntityService>(EntityService);
     teamService = module.get<TeamService>(TeamService);
-    solrCli = module.get<SolrCli>(SolrCli);
 
     jest.clearAllMocks();
     mockOrganizationEntity.mockReturnValue(testOrganizationEntity);
@@ -122,9 +122,9 @@ describe('OrganizationService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
+    expect(solrCli).toBeDefined();
     expect(entityService).toBeDefined();
     expect(teamService).toBeDefined();
-    expect(solrCli).toBeDefined();
   });
 
   describe('create', () => {
@@ -149,7 +149,7 @@ describe('OrganizationService', () => {
       expect(solrCli.createCollection).toHaveBeenCalledWith({
         name: testOrganizationEntity.id,
         numShards: 1,
-        config: newOrgConfigset,
+        config: solrOrgConfigset,
       });
       expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
       expect(solrCli.addDocs).toHaveBeenCalledWith(testOrganizationEntity.id, [
@@ -458,9 +458,9 @@ describe('OrganizationService', () => {
         service.buildSuggesters(testOrganizationEntity1),
       ).resolves.toBeUndefined();
       expect(solrCli.suggest).toHaveBeenCalledTimes(
-        Object.values(solrDictionaries).length,
+        Object.values(solrOrgDictionaries).length,
       );
-      Object.values(solrDictionaries).forEach((dictionary) => {
+      Object.values(solrOrgDictionaries).forEach((dictionary) => {
         expect(solrCli.suggest).toHaveBeenCalledWith(
           testOrganizationEntity1.id,
           {

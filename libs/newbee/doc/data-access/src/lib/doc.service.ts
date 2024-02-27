@@ -5,7 +5,7 @@ import {
   CreateDocDto,
   Doc,
   DocAndMemberDto,
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   OffsetAndLimit,
   PaginatedResults,
@@ -42,9 +42,9 @@ export class DocService {
   getAll(
     orgSlug: string,
     offsetAndLimit: OffsetAndLimit,
-  ): Observable<PaginatedResults<DocQueryResult>> {
+  ): Observable<PaginatedResults<DocSearchResult>> {
     const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
-    return this.http.get<PaginatedResults<DocQueryResult>>(
+    return this.http.get<PaginatedResults<DocSearchResult>>(
       DocService.baseApiUrl(orgSlug),
       { params },
     );

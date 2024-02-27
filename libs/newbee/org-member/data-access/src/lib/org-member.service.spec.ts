@@ -13,8 +13,8 @@ import {
   testOrgMember1,
   testOrgMemberRelation1,
   testOrganization1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testUpdateOrgMemberDto1,
 } from '@newbee/shared/util';
 import { OrgMemberService } from './org-member.service';
@@ -146,7 +146,7 @@ describe('OrgMemberService', () => {
         .subscribe({
           next: (results) => {
             try {
-              expect(results).toEqual(testPaginatedResultsDocQueryResult1);
+              expect(results).toEqual(testPaginatedResultsDocSearchResult1);
               done();
             } catch (err) {
               done(err);
@@ -166,7 +166,7 @@ describe('OrgMemberService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testPaginatedResultsDocQueryResult1);
+      req.flush(testPaginatedResultsDocSearchResult1);
     });
   });
 
@@ -181,7 +181,7 @@ describe('OrgMemberService', () => {
         .subscribe({
           next: (results) => {
             try {
-              expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+              expect(results).toEqual(testPaginatedResultsQnaSearchResult1);
               done();
             } catch (err) {
               done(err);
@@ -201,7 +201,7 @@ describe('OrgMemberService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testPaginatedResultsQnaQueryResult1);
+      req.flush(testPaginatedResultsQnaSearchResult1);
     });
   });
 

@@ -2,10 +2,10 @@ import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   OrgRoleEnum,
   defaultLimit,
-  testDocQueryResult1,
+  testDocSearchResult1,
   testOrgMember1,
   testOrgMemberRelation1,
-  testQnaQueryResult1,
+  testQnaSearchResult1,
   testTeamMemberRelation1,
   testUser1,
 } from '@newbee/shared/util';
@@ -38,9 +38,9 @@ export default {
       ],
       createdQnas: {
         results: [
-          testQnaQueryResult1,
-          testQnaQueryResult1,
-          testQnaQueryResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
         ],
         total: 100,
         offset: 0,
@@ -48,9 +48,9 @@ export default {
       },
       maintainedQnas: {
         results: [
-          testQnaQueryResult1,
-          testQnaQueryResult1,
-          testQnaQueryResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
         ],
         total: 100,
         offset: 0,
@@ -58,9 +58,9 @@ export default {
       },
       createdDocs: {
         results: [
-          testDocQueryResult1,
-          testDocQueryResult1,
-          testDocQueryResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
         ],
         total: 100,
         offset: 0,
@@ -68,9 +68,9 @@ export default {
       },
       maintainedDocs: {
         results: [
-          testDocQueryResult1,
-          testDocQueryResult1,
-          testDocQueryResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
         ],
         total: 100,
         offset: 0,

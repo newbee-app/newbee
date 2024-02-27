@@ -4,6 +4,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AdminControlsModule } from '@newbee/api/admin-controls/feature';
 import { RoleGuard } from '@newbee/api/auth/data-access';
 import { AuthModule } from '@newbee/api/auth/feature';
 import { JwtAuthGuard } from '@newbee/api/auth/util';
@@ -29,6 +30,7 @@ import { TeamModule } from '@newbee/api/team/feature';
 import { UserInvitesModule } from '@newbee/api/user-invites/feature';
 import { EmailVerifiedGuard } from '@newbee/api/user/data-access';
 import { UserModule } from '@newbee/api/user/feature';
+import { WaitlistMemberModule } from '@newbee/api/waitlist-member/feature';
 import { SolrModule } from '@newbee/nest-solr-cli';
 import { WinstonModule } from 'nest-winston';
 import { default as appConfig } from '../environments/environment';
@@ -75,6 +77,7 @@ import { default as appConfig } from '../environments/environment';
     UtilModule,
 
     // In-house static modules
+    AdminControlsModule,
     AuthModule,
     AuthenticatorModule,
     CookieModule,
@@ -88,6 +91,7 @@ import { default as appConfig } from '../environments/environment';
     TeamMemberModule,
     UserModule,
     UserInvitesModule,
+    WaitlistMemberModule,
   ],
   providers: [
     // App-level pipes

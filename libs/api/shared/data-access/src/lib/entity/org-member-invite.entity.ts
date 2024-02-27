@@ -1,4 +1,11 @@
-import { Entity, Enum, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import {
+  Entity,
+  Enum,
+  Index,
+  ManyToOne,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { shortenUuid } from '@newbee/api/shared/util';
 import type { OrgMemberInvite } from '@newbee/shared/util';
 import { OrgRoleEnum, ascOrgRoleEnum } from '@newbee/shared/util';
@@ -36,6 +43,7 @@ export class OrgMemberInviteEntity
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => OrganizationEntity, { hidden: true })
+  @Index()
   organization: OrganizationEntity;
 
   /**
@@ -43,6 +51,7 @@ export class OrgMemberInviteEntity
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => UserInvitesEntity, { hidden: true })
+  @Index()
   userInvites: UserInvitesEntity;
 
   /**
@@ -50,6 +59,7 @@ export class OrgMemberInviteEntity
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => OrgMemberEntity, { hidden: true })
+  @Index()
   inviter: OrgMemberEntity;
 
   constructor(

@@ -6,7 +6,7 @@ import { CommonEntityFields } from './common-entity-fields.interface';
  */
 export interface UserInvites extends CommonEntityFields {
   /**
-   * The email of the user who was invited.
+   * The unique email of the user who was invited.
    */
-  email: string;
+  readonly email: string;
 }

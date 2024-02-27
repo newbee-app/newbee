@@ -8,9 +8,9 @@ import { ViewPostsComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
   testOrganization1,
-  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsDocSearchResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DocsViewComponent } from './docs-view.component';
@@ -33,7 +33,7 @@ describe('DocsViewComponent', () => {
           initialState: {
             [`${Keyword.Doc}Module`]: {
               ...initialDocState,
-              docs: testPaginatedResultsDocQueryResult1,
+              docs: testPaginatedResultsDocSearchResult1,
             },
           },
         }),
@@ -84,7 +84,7 @@ describe('DocsViewComponent', () => {
     it('should navigate to the search URL for the query', async () => {
       await component.onSearch('searching');
       expect(router.url).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrEntryEnum.Doc}`,
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrOrgEntryEnum.Doc}`,
       );
     });
   });

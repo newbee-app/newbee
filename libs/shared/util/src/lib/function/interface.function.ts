@@ -1,5 +1,5 @@
 import type { DocRelation, PublicUser, QnaRelation } from '../interface';
-import { CreatorOrMaintainer, DocQueryResult, QnaQueryResult } from '../type';
+import { CreatorOrMaintainer, DocSearchResult, QnaSearchResult } from '../type';
 
 /**
  * Returns a user's display name if it's not null, otherwise returns their display name.
@@ -34,8 +34,8 @@ export function maintainerIsCreator(
   post:
     | Pick<DocRelation, CreatorOrMaintainer>
     | Pick<QnaRelation, CreatorOrMaintainer>
-    | DocQueryResult
-    | QnaQueryResult,
+    | DocSearchResult
+    | QnaSearchResult,
 ): boolean {
   const { maintainer, creator } = post;
   return !!(

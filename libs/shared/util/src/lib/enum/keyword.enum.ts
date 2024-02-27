@@ -15,6 +15,7 @@ export enum Keyword {
   Logout = 'logout',
   ConfirmEmail = 'confirm-email',
   MagicLinkLogin = 'magic-link-login',
+  Waitlist = 'waitlist',
 
   // authenticator keywords
   Authenticator = 'authenticator',

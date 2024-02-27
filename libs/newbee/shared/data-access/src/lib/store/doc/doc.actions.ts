@@ -2,7 +2,7 @@ import {
   CreateDocDto,
   Doc,
   DocAndMemberDto,
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   PaginatedResults,
   UpdateDocDto,
@@ -28,7 +28,7 @@ export const DocActions = createActionGroup({
     /**
      * Indicates that the paginated docs were successfully retrieved.
      */
-    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+    'Get Docs Success': props<{ docs: PaginatedResults<DocSearchResult> }>(),
 
     /**
      * Creates a doc using the given information.

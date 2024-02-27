@@ -13,7 +13,7 @@ import {
 import type { PublicUser } from '../../interface';
 
 /**
- * A DTO for sending the necessary information to register a new user from the frontend to the backend.
+ * A DTO sent from the frontend to the backend to register a new user.
  * Suitable for use in POST requests.
  */
 export class CreateUserDto implements PublicUser {

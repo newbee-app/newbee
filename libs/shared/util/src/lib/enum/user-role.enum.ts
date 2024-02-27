@@ -2,8 +2,8 @@
  * All of the possible roles a user can have in an instance of NewBee.
  */
 export enum UserRoleEnum {
-  User = 'user',
-  Admin = 'admin',
+  User = 'User',
+  Admin = 'Admin',
 }
 
 /**

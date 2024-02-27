@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  testDocQueryResult1,
-  testOrgMemberQueryResult1,
-  testQnaQueryResult1,
-  testTeamQueryResult1,
+  testDocSearchResult1,
+  testOrgMemberSearchResult1,
+  testQnaSearchResult1,
+  testTeamSearchResult1,
 } from '@newbee/shared/util';
 import { SearchResultComponent } from './search-result.component';
 
@@ -26,7 +26,7 @@ describe('SearchResultComponent', () => {
     fixture = TestBed.createComponent(SearchResultComponent);
     component = fixture.componentInstance;
 
-    component.searchResult = testOrgMemberQueryResult1;
+    component.searchResult = testOrgMemberSearchResult1;
 
     jest.spyOn(component.orgNavigate, 'emit');
 
@@ -41,29 +41,29 @@ describe('SearchResultComponent', () => {
   describe('getters', () => {
     it('should only be non-null if types match', () => {
       expect(component.searchResultAsOrgMember).toEqual(
-        testOrgMemberQueryResult1
+        testOrgMemberSearchResult1,
       );
       expect(component.searchResultAsTeam).toBeNull();
       expect(component.searchResultAsDoc).toBeNull();
       expect(component.searchResultAsQna).toBeNull();
 
-      component.searchResult = testTeamQueryResult1;
+      component.searchResult = testTeamSearchResult1;
       expect(component.searchResultAsOrgMember).toBeNull();
-      expect(component.searchResultAsTeam).toEqual(testTeamQueryResult1);
+      expect(component.searchResultAsTeam).toEqual(testTeamSearchResult1);
       expect(component.searchResultAsDoc).toBeNull();
       expect(component.searchResultAsQna).toBeNull();
 
-      component.searchResult = testDocQueryResult1;
+      component.searchResult = testDocSearchResult1;
       expect(component.searchResultAsOrgMember).toBeNull();
       expect(component.searchResultAsTeam).toBeNull();
-      expect(component.searchResultAsDoc).toEqual(testDocQueryResult1);
+      expect(component.searchResultAsDoc).toEqual(testDocSearchResult1);
       expect(component.searchResultAsQna).toBeNull();
 
-      component.searchResult = testQnaQueryResult1;
+      component.searchResult = testQnaSearchResult1;
       expect(component.searchResultAsOrgMember).toBeNull();
       expect(component.searchResultAsTeam).toBeNull();
       expect(component.searchResultAsDoc).toBeNull();
-      expect(component.searchResultAsQna).toEqual(testQnaQueryResult1);
+      expect(component.searchResultAsQna).toEqual(testQnaSearchResult1);
     });
   });
 });

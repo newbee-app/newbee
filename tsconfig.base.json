@@ -106,6 +106,12 @@
         "libs/api/user/data-access/src/index.ts"
       ],
       "@newbee/api/user/feature": ["libs/api/user/feature/src/index.ts"],
+      "@newbee/api/waitlist-member/data-access": [
+        "libs/api/waitlist-member/data-access/src/index.ts"
+      ],
+      "@newbee/api/waitlist-member/feature": [
+        "libs/api/waitlist-member/feature/src/index.ts"
+      ],
       "@newbee/codemirror-lang-markdoc": [
         "libs/publishable/codemirror-lang-markdoc/src/index.ts"
       ],

@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  testDocQueryResult1,
+  testDocSearchResult1,
   testOrgMemberUser1,
-  testQnaQueryResult1,
+  testQnaSearchResult1,
 } from '@newbee/shared/util';
 import { PostSearchResultHeaderComponent } from './post-search-result-header.component';
 
@@ -26,7 +26,7 @@ describe('PostSearchResultHeaderComponent', () => {
     fixture = TestBed.createComponent(PostSearchResultHeaderComponent);
     component = fixture.componentInstance;
 
-    component.searchResult = testDocQueryResult1;
+    component.searchResult = testDocSearchResult1;
 
     jest.spyOn(component.orgNavigate, 'emit');
 
@@ -41,21 +41,21 @@ describe('PostSearchResultHeaderComponent', () => {
   describe('maintainerIsCreator', () => {
     it('should return false if either is null', () => {
       component.searchResult = {
-        ...testDocQueryResult1,
+        ...testDocSearchResult1,
         creator: null,
         maintainer: null,
       };
       expect(component.maintainerIsCreator).toBeFalsy();
 
       component.searchResult = {
-        ...testDocQueryResult1,
+        ...testDocSearchResult1,
         creator: testOrgMemberUser1,
         maintainer: null,
       };
       expect(component.maintainerIsCreator).toBeFalsy();
 
       component.searchResult = {
-        ...testDocQueryResult1,
+        ...testDocSearchResult1,
         creator: null,
         maintainer: testOrgMemberUser1,
       };
@@ -72,14 +72,14 @@ describe('PostSearchResultHeaderComponent', () => {
       component.postNavigate();
       expect(component.orgNavigate.emit).toHaveBeenCalledTimes(1);
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`,
+        route: `${ShortUrl.Doc}/${testDocSearchResult1.doc.slug}`,
       });
 
-      component.searchResult = testQnaQueryResult1;
+      component.searchResult = testQnaSearchResult1;
       component.postNavigate();
       expect(component.orgNavigate.emit).toHaveBeenCalledTimes(2);
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`,
+        route: `${ShortUrl.Qna}/${testQnaSearchResult1.qna.slug}`,
       });
     });
   });

@@ -8,10 +8,10 @@ import { ViewPostsComponent } from '@newbee/newbee/shared/ui';
 import { OrgMemberPostTab, ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
   testOrgMember1,
   testOrganization1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsQnaSearchResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgMemberQnasViewComponent } from './org-member-qnas-view.component';
@@ -34,7 +34,7 @@ describe('OrgMemberQnasViewComponent', () => {
           initialState: {
             [`${Keyword.Member}Module`]: {
               ...initialOrgMemberState,
-              qnas: testPaginatedResultsQnaQueryResult1,
+              qnas: testPaginatedResultsQnaSearchResult1,
             },
           },
         }),
@@ -116,7 +116,7 @@ describe('OrgMemberQnasViewComponent', () => {
     it('should navigate to search', async () => {
       await component.onSearch('searching');
       expect(router.url).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrEntryEnum.Qna}&${ShortUrl.Member}=${testOrgMember1.slug}`,
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrOrgEntryEnum.Qna}&${ShortUrl.Member}=${testOrgMember1.slug}`,
       );
     });
   });

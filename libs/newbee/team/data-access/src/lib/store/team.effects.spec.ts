@@ -20,8 +20,8 @@ import {
   testOrgMember1,
   testOrgMember2,
   testOrgMemberRelation1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testSlugTakenDto1,
   testTeam1,
   testTeamAndMemberDto1,
@@ -80,10 +80,10 @@ describe('TeamEffects', () => {
             generateSlug: jest.fn().mockReturnValue(of(testGeneratedSlugDto1)),
             getAllDocs: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsDocSearchResult1)),
             getAllQnas: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsQnaSearchResult1)),
             createTeamMember: jest
               .fn()
               .mockReturnValue(of(testTeamMemberRelation1)),
@@ -466,7 +466,7 @@ describe('TeamEffects', () => {
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
           docs: {
-            ...testPaginatedResultsDocQueryResult1,
+            ...testPaginatedResultsDocSearchResult1,
             total: 100,
           },
         },
@@ -493,7 +493,7 @@ describe('TeamEffects', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -572,7 +572,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -591,7 +591,7 @@ describe('TeamEffects', () => {
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
           docs: {
-            ...testPaginatedResultsDocQueryResult1,
+            ...testPaginatedResultsDocSearchResult1,
             total: 100,
           },
         },
@@ -609,7 +609,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -643,7 +643,7 @@ describe('TeamEffects', () => {
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -670,7 +670,7 @@ describe('TeamEffects', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -750,7 +750,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);
@@ -769,7 +769,7 @@ describe('TeamEffects', () => {
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -788,7 +788,7 @@ describe('TeamEffects', () => {
       });
       const expected$ = hot('a', {
         a: TeamActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);

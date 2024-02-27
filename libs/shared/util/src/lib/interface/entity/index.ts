@@ -11,3 +11,4 @@ export * from './team-member.interface';
 export * from './team.interface';
 export * from './user-invites.interface';
 export * from './user.interface';
+export * from './waitlist-member.interface';

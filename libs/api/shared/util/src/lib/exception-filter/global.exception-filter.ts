@@ -21,9 +21,6 @@ import { AppConfig } from '../config';
  */
 @Catch()
 export class GlobalExceptionFilter extends BaseExceptionFilter {
-  /**
-   * The logger to use to log anything in the exception filter.
-   */
   private readonly logger = new Logger(GlobalExceptionFilter.name);
 
   /**
@@ -35,7 +32,7 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
     super();
     this.invalidCsrfTokenError = configService.get(
       'csrf.invalidCsrfTokenError',
-      { infer: true }
+      { infer: true },
     );
   }
 

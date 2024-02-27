@@ -8,27 +8,27 @@ export interface DocRelation {
   /**
    * Information associated with the doc.
    */
-  doc: Doc;
+  readonly doc: Doc;
 
   /**
    * The organization the doc belongs to.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * The team the doc belongs to, if any.
    */
-  team: Team | null;
+  readonly team: Team | null;
 
   /**
    * The creator of the doc.
    */
-  creator: OrgMemberUser | null;
+  readonly creator: OrgMemberUser | null;
 
   /**
    * The maintainer of the doc.
    */
-  maintainer: OrgMemberUser | null;
+  readonly maintainer: OrgMemberUser | null;
 }
 
 /**

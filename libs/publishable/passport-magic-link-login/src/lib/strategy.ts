@@ -17,7 +17,7 @@ const defaultTokenExpiration = '5m';
 export type DoneCallback = (
   err: Error | null,
   user?: unknown,
-  info?: unknown
+  info?: unknown,
 ) => void;
 
 /**
@@ -38,7 +38,7 @@ export type VerifyFunction = (payload: Payload, done: DoneCallback) => void;
 export type SendMagicLinkFunction = (
   payload: Payload,
   link: string,
-  code: string
+  code: string,
 ) => Promise<void>;
 
 /**
@@ -143,7 +143,7 @@ export class MagicLinkLoginStrategy extends Strategy {
    */
   constructor(
     options: StrategyOptions,
-    private readonly verify: VerifyFunction
+    private readonly verify: VerifyFunction,
   ) {
     super();
 
@@ -179,13 +179,13 @@ export class MagicLinkLoginStrategy extends Strategy {
       const payload = jwt.verify(
         req.body['token'] as string,
         this.secret,
-        this.jwtVerifyOptions
+        this.jwtVerifyOptions,
       ) as Payload;
 
       const verified: DoneCallback = (
         err: Error | null,
         user?: unknown,
-        info?: unknown
+        info?: unknown,
       ): void => {
         if (err) {
           this.error(err);

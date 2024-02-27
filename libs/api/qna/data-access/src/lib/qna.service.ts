@@ -64,7 +64,10 @@ export class QnaService {
     } = createQnaDto;
 
     const team = teamSlug
-      ? await this.teamService.findOneBySlug(creator.organization, teamSlug)
+      ? await this.teamService.findOneByOrgAndSlug(
+          creator.organization,
+          teamSlug,
+        )
       : null;
 
     const id = v4();
@@ -141,7 +144,7 @@ export class QnaService {
 
     const team =
       typeof teamSlug === 'string'
-        ? await this.teamService.findOneBySlug(qna.organization, teamSlug)
+        ? await this.teamService.findOneByOrgAndSlug(qna.organization, teamSlug)
         : teamSlug;
     const maintainer =
       typeof maintainerSlug === 'string'

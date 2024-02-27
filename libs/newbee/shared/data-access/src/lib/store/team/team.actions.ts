@@ -1,11 +1,11 @@
 import {
   CreateTeamDto,
   CreateTeamMemberDto,
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   Organization,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
   Team,
   TeamAndMemberDto,
   TeamMember,
@@ -109,7 +109,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that the paginated docs were successfully retrieved.
      */
-    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+    'Get Docs Success': props<{ docs: PaginatedResults<DocSearchResult> }>(),
 
     /**
      * Gets all of the paginated qnas of the selected team.
@@ -124,7 +124,7 @@ export const TeamActions = createActionGroup({
     /**
      * Indicates that the paginated qnas were successfully retrieved.
      */
-    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaSearchResult> }>(),
 
     /**
      * Add a new team member to the team.

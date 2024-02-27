@@ -7,10 +7,10 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
+  testOrgSearchDto1,
+  testOrgSearchResultsDto1,
+  testOrgSuggestDto1,
   testOrganization1,
-  testQueryDto1,
-  testQueryResultsDto1,
-  testSuggestDto1,
   testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { SearchService } from './search.service';
@@ -43,10 +43,10 @@ describe('SearchService', () => {
 
   describe('search', () => {
     it('should send out a get request', (done) => {
-      service.search(testQueryDto1, testOrganization1.slug).subscribe({
+      service.search(testOrgSearchDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
-            expect(result).toEqual(testQueryResultsDto1);
+            expect(result).toEqual(testOrgSearchResultsDto1);
             done();
           } catch (err) {
             done(err);
@@ -55,7 +55,7 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testQueryDto1 } });
+      const params = new HttpParams({ fromObject: { ...testOrgSearchDto1 } });
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(
           testOrganization1.slug,
@@ -63,13 +63,13 @@ describe('SearchService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testQueryResultsDto1);
+      req.flush(testOrgSearchResultsDto1);
     });
   });
 
   describe('suggest', () => {
     it('should send out a get request', (done) => {
-      service.suggest(testSuggestDto1, testOrganization1.slug).subscribe({
+      service.suggest(testOrgSuggestDto1, testOrganization1.slug).subscribe({
         next: (result) => {
           try {
             expect(result).toEqual(testSuggestResultsDto1);
@@ -81,7 +81,7 @@ describe('SearchService', () => {
         error: done.fail,
       });
 
-      const params = new HttpParams({ fromObject: { ...testSuggestDto1 } });
+      const params = new HttpParams({ fromObject: { ...testOrgSuggestDto1 } });
       const req = httpController.expectOne(
         `${SearchService.baseApiUrl(testOrganization1.slug)}/${
           Keyword.Suggest

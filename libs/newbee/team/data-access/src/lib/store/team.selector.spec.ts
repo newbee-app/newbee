@@ -16,8 +16,8 @@ import {
   testOrgMemberUser1,
   testOrgMemberUser2,
   testOrganizationRelation1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testTeamRelation1,
   testUser1,
 } from '@newbee/shared/util';
@@ -159,8 +159,8 @@ describe('TeamSelector', () => {
       store.setState({
         [`${Keyword.Team}Module`]: {
           ...initialTeamModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         },
         [Keyword.Team]: {
           ...initialTeamState,
@@ -174,8 +174,8 @@ describe('TeamSelector', () => {
       });
       const expected$ = hot('a', {
         a: {
-          docs: testPaginatedResultsDocQueryResult1,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
           selectedTeam: testTeamRelation1,
           selectedOrganization: testOrganizationRelation1,
           error: testHttpClientError1,

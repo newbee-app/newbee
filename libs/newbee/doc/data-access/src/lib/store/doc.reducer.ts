@@ -3,7 +3,11 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { DocQueryResult, Keyword, PaginatedResults } from '@newbee/shared/util';
+import {
+  DocSearchResult,
+  Keyword,
+  PaginatedResults,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -13,7 +17,7 @@ export interface DocState {
   /**
    * All of the docs of the org as paginated results.
    */
-  docs: PaginatedResults<DocQueryResult> | null;
+  docs: PaginatedResults<DocSearchResult> | null;
 
   /**
    * Whether the user is waiting for a response for getting all paginated docs.

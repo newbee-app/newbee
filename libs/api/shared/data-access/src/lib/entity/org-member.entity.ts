@@ -4,7 +4,6 @@ import {
   Enum,
   ManyToOne,
   OneToMany,
-  PrimaryKeyType,
   Property,
   Unique,
 } from '@mikro-orm/core';
@@ -23,7 +22,7 @@ import { UserEntity } from './user.entity';
  * The org member's slug should be unique within the organization.
  */
 @Entity()
-@Unique<OrgMemberEntity>({ properties: ['organization', 'slug'] })
+@Unique<OrgMemberEntity>({ properties: ['slug', 'organization'] })
 @Unique<OrgMemberEntity>({ properties: ['user', 'organization'] })
 export class OrgMemberEntity extends CommonEntity implements OrgMember {
   /**
@@ -92,12 +91,6 @@ export class OrgMemberEntity extends CommonEntity implements OrgMember {
    */
   @OneToMany(() => QnaEntity, (qna) => qna.maintainer, { hidden: true })
   maintainedQnas = new Collection<QnaEntity>(this);
-
-  /**
-   * Specifies the primary key of the entity.
-   * In this case, it's a composite primary key consisting of the foreign keys of `user` and `organization`.
-   */
-  [PrimaryKeyType]?: [string, string];
 
   constructor(
     user: UserEntity,

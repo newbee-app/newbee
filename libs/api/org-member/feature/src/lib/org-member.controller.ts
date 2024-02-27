@@ -23,12 +23,12 @@ import {
 } from '@newbee/api/shared/util';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
-  DocQueryResult,
+  DocSearchResult,
   GetOrgMemberPostsDto,
   Keyword,
   OrgMemberNoOrg,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
   UpdateOrgMemberDto,
   apiRoles,
 } from '@newbee/shared/util';
@@ -148,7 +148,7 @@ export class OrgMemberController {
     @Query() getOrgMemberPostsDto: GetOrgMemberPostsDto,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-  ): Promise<PaginatedResults<DocQueryResult>> {
+  ): Promise<PaginatedResults<DocSearchResult>> {
     const { offset, limit, role } = getOrgMemberPostsDto;
     this.logger.log(
       `Get org member docs request received for org member slug: ${subjectOrgMember.slug} with role: ${role}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
@@ -174,7 +174,7 @@ export class OrgMemberController {
       offset,
       limit,
       total,
-      results: await this.entityService.createDocQueryResults(docs),
+      results: await this.entityService.createDocSearchResults(docs),
     };
   }
 
@@ -194,7 +194,7 @@ export class OrgMemberController {
     @Query() getOrgMemberPostsDto: GetOrgMemberPostsDto,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @Organization() organization: OrganizationEntity,
-  ): Promise<PaginatedResults<QnaQueryResult>> {
+  ): Promise<PaginatedResults<QnaSearchResult>> {
     const { offset, limit, role } = getOrgMemberPostsDto;
     this.logger.log(
       `Get org member qnas request received for org member slug: ${subjectOrgMember.slug} with role: ${role}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
@@ -220,7 +220,7 @@ export class OrgMemberController {
       offset,
       limit,
       total,
-      results: await this.entityService.createQnaQueryResults(qnas),
+      results: await this.entityService.createQnaSearchResults(qnas),
     };
   }
 }

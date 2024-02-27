@@ -10,10 +10,10 @@ export interface OrgMemberInvite extends CommonEntityFields {
    * The token representing the org member invite.
    * Represents a shortened version of the `id`.
    */
-  token: string;
+  readonly token: string;
 
   /**
    * The role the user will have in the organization.
    */
-  role: OrgRoleEnum;
+  readonly role: OrgRoleEnum;
 }

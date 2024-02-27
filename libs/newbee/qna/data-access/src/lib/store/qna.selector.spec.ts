@@ -11,7 +11,7 @@ import {
 import {
   Keyword,
   testOrganizationRelation1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsQnaSearchResult1,
   testQnaRelation1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -89,7 +89,7 @@ describe('QnaSelector', () => {
       store.setState({
         [`${Keyword.Qna}Module`]: {
           ...initialQnaModuleState,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -102,7 +102,7 @@ describe('QnaSelector', () => {
       });
       const expected$ = hot('a', {
         a: {
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
           selectedOrganization: testOrganizationRelation1,
           error: testHttpClientError1,
         },

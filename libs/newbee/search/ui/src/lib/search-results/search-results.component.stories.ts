@@ -2,11 +2,11 @@ import { SearchTab } from '@newbee/newbee/search/util';
 import { ClickWrapperComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
-  testBaseQueryResultsDto1,
-  testDocQueryResult1,
-  testOrgMemberQueryResult1,
-  testQnaQueryResult1,
-  testTeamQueryResult1,
+  testDocSearchResult1,
+  testOrgMemberSearchResult1,
+  testOrgSearchResultsDto1,
+  testQnaSearchResult1,
+  testTeamSearchResult1,
 } from '@newbee/shared/util';
 import {
   Meta,
@@ -31,17 +31,17 @@ export default {
     tab: SearchTab.All,
     searchSuggestions: [],
     searchResults: {
-      ...testBaseQueryResultsDto1,
+      ...testOrgSearchResultsDto1,
       total: 100,
       results: [
-        testTeamQueryResult1,
-        testOrgMemberQueryResult1,
-        testDocQueryResult1,
-        testQnaQueryResult1,
-        testTeamQueryResult1,
-        testOrgMemberQueryResult1,
-        testDocQueryResult1,
-        testQnaQueryResult1,
+        testTeamSearchResult1,
+        testOrgMemberSearchResult1,
+        testDocSearchResult1,
+        testQnaSearchResult1,
+        testTeamSearchResult1,
+        testOrgMemberSearchResult1,
+        testDocSearchResult1,
+        testQnaSearchResult1,
       ],
     },
     searchPending: false,
@@ -62,7 +62,7 @@ export const Primary: Story = {};
 
 export const SpellcheckSuggestion: Story = {
   args: {
-    searchResults: { ...testBaseQueryResultsDto1, suggestion: 'this thing' },
+    searchResults: { ...testOrgSearchResultsDto1, suggestion: 'this thing' },
   },
 };
 

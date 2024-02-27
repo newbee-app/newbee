@@ -15,7 +15,7 @@ import {
   testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsQnaSearchResult1,
   testQna1,
   testQnaAndMemberDto1,
   testQnaRelation1,
@@ -60,7 +60,7 @@ describe('QnaEffects', () => {
             },
             [`${Keyword.Qna}Module`]: {
               ...initialQnaModuleState,
-              qnas: testPaginatedResultsQnaQueryResult1,
+              qnas: testPaginatedResultsQnaSearchResult1,
             },
           },
         }),
@@ -71,7 +71,7 @@ describe('QnaEffects', () => {
           useValue: createMock<QnaService>({
             getAll: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsQnaSearchResult1)),
             create: jest.fn().mockReturnValue(of(testQna1)),
             get: jest.fn().mockReturnValue(of(testQnaAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testQna1)),
@@ -123,7 +123,7 @@ describe('QnaEffects', () => {
         [`${Keyword.Qna}Module`]: {
           ...initialQnaModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -190,7 +190,7 @@ describe('QnaEffects', () => {
       });
       const expected$ = hot('a', {
         a: QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);
@@ -208,7 +208,7 @@ describe('QnaEffects', () => {
         [`${Keyword.Qna}Module`]: {
           ...initialQnaModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -223,7 +223,7 @@ describe('QnaEffects', () => {
       });
       const expected$ = hot('a', {
         a: QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);

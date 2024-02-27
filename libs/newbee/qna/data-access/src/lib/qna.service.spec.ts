@@ -10,7 +10,7 @@ import {
   testCreateQnaDto1,
   testOffsetAndLimit1,
   testOrganization1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsQnaSearchResult1,
   testQna1,
   testQnaAndMemberDto1,
   testUpdateAnswerDto1,
@@ -49,7 +49,7 @@ describe('QnaService', () => {
       service.getAll(testOrganization1.slug, testOffsetAndLimit1).subscribe({
         next: (results) => {
           try {
-            expect(results).toEqual(testPaginatedResultsQnaQueryResult1);
+            expect(results).toEqual(testPaginatedResultsQnaSearchResult1);
             done();
           } catch (err) {
             done(err);
@@ -64,7 +64,7 @@ describe('QnaService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testPaginatedResultsQnaQueryResult1);
+      req.flush(testPaginatedResultsQnaSearchResult1);
     });
   });
 

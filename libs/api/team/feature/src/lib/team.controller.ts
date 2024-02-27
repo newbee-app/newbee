@@ -31,13 +31,13 @@ import { TeamService } from '@newbee/api/team/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   CreateTeamDto,
-  DocQueryResult,
+  DocSearchResult,
   GenerateSlugDto,
   GeneratedSlugDto,
   Keyword,
   OffsetAndLimitDto,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
   SlugDto,
   SlugTakenDto,
   TeamAndMemberDto,
@@ -116,7 +116,10 @@ export class TeamController {
     this.logger.log(
       `Check team slug request received for slug: ${slug}, in org ID: ${organization.id}, by user ID: ${user.id}`,
     );
-    const hasSlug = await this.teamService.hasOneBySlug(organization, slug);
+    const hasSlug = await this.teamService.hasOneByOrgAndSlug(
+      organization,
+      slug,
+    );
     this.logger.log(`Team slug ${slug} taken: ${hasSlug}`);
 
     return new SlugTakenDto(hasSlug);
@@ -145,7 +148,7 @@ export class TeamController {
     );
     const slug = await generateUniqueSlug(
       async (slugToTry) =>
-        !(await this.teamService.hasOneBySlug(organization, slugToTry)),
+        !(await this.teamService.hasOneByOrgAndSlug(organization, slugToTry)),
       base,
     );
     this.logger.log(
@@ -251,7 +254,7 @@ export class TeamController {
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
-  ): Promise<PaginatedResults<DocQueryResult>> {
+  ): Promise<PaginatedResults<DocSearchResult>> {
     const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
       `Get all docs request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
@@ -270,7 +273,7 @@ export class TeamController {
     return {
       ...offsetAndLimitDto,
       total,
-      results: await this.entityService.createDocQueryResults(docs),
+      results: await this.entityService.createDocSearchResults(docs),
     };
   }
 
@@ -290,7 +293,7 @@ export class TeamController {
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
     @Team() team: TeamEntity,
-  ): Promise<PaginatedResults<QnaQueryResult>> {
+  ): Promise<PaginatedResults<QnaSearchResult>> {
     const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
       `Get all qnas request received for team slug: ${team.slug}, in organization ID: ${organization.id}, with offset: ${offset} and limit: ${limit}`,
@@ -309,7 +312,7 @@ export class TeamController {
     return {
       ...offsetAndLimitDto,
       total,
-      results: await this.entityService.createQnaQueryResults(qnas),
+      results: await this.entityService.createQnaSearchResults(qnas),
     };
   }
 }

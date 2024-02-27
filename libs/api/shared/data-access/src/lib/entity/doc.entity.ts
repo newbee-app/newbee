@@ -17,6 +17,25 @@ export class DocEntity extends PostEntity implements Doc {
   /**
    * @inheritdoc
    */
+  @Property({ type: 'text' })
+  docMarkdoc: string;
+
+  /**
+   * @inheritdoc
+   */
+  @Property({ type: 'text' })
+  docHtml: string;
+
+  /**
+   * The raw markdoc converted into plain text.
+   * `hidden` is on, so it will never be serialized.
+   */
+  @Property({ type: 'text', hidden: true })
+  docTxt: string;
+
+  /**
+   * @inheritdoc
+   */
   @ManyToOne(() => OrganizationEntity, { hidden: true })
   organization: OrganizationEntity;
 
@@ -37,25 +56,6 @@ export class DocEntity extends PostEntity implements Doc {
    */
   @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
   maintainer: OrgMemberEntity | null = null;
-
-  /**
-   * @inheritdoc
-   */
-  @Property({ type: 'text' })
-  docMarkdoc: string;
-
-  /**
-   * @inheritdoc
-   */
-  @Property({ type: 'text' })
-  docHtml: string;
-
-  /**
-   * The raw markdoc converted into plain text.
-   * `hidden` is on, so it will never be serialized.
-   */
-  @Property({ type: 'text', hidden: true })
-  docTxt: string;
 
   constructor(
     id: string,

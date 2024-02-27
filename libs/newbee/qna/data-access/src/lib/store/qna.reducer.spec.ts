@@ -3,7 +3,7 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testPaginatedResultsQnaQueryResult1 } from '@newbee/shared/util';
+import { testPaginatedResultsQnaSearchResult1 } from '@newbee/shared/util';
 import { QnaState, initialQnaState, qnaFeature } from './qna.reducer';
 
 describe('QnaReducer', () => {
@@ -13,7 +13,7 @@ describe('QnaReducer', () => {
   };
   const stateAfterGetQnasSuccess: QnaState = {
     ...initialQnaState,
-    qnas: testPaginatedResultsQnaQueryResult1,
+    qnas: testPaginatedResultsQnaSearchResult1,
   };
   const stateAfterCreateQna: QnaState = {
     ...initialQnaState,
@@ -91,27 +91,27 @@ describe('QnaReducer', () => {
       let updatedState = qnaFeature.reducer(
         stateAfterGetQnasPending,
         QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialQnaState,
-        qnas: testPaginatedResultsQnaQueryResult1,
+        qnas: testPaginatedResultsQnaSearchResult1,
       });
 
       updatedState = qnaFeature.reducer(
         stateAfterGetQnasSuccess,
         QnaActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetQnasSuccess,
         qnas: {
-          ...testPaginatedResultsQnaQueryResult1,
+          ...testPaginatedResultsQnaSearchResult1,
           results: [
-            ...testPaginatedResultsQnaQueryResult1.results,
-            ...testPaginatedResultsQnaQueryResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
           ],
         },
       });

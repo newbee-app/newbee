@@ -97,7 +97,7 @@ export class OrgMemberService {
    * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneByUserAndOrg(
+  async findOneByOrgAndUser(
     user: UserEntity,
     organization: OrganizationEntity,
   ): Promise<OrgMemberEntity> {
@@ -113,6 +113,30 @@ export class OrgMemberService {
         throw new NotFoundException(orgMemberNotFound);
       }
 
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * Finds the `OrgMemberEntity` associated with the given user and organization, returns null if it doesn't exist.
+   *
+   * @param user The user to search for.
+   * @param organization The organization to search in.
+   *
+   * @returns The associated `OrgMemberEntity` instance.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   */
+  async findOneByOrgAndUserOrNull(
+    user: UserEntity,
+    organization: OrganizationEntity,
+  ): Promise<OrgMemberEntity | null> {
+    try {
+      return await this.em.findOne(OrgMemberEntity, {
+        user,
+        organization,
+      });
+    } catch (err) {
+      this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
   }
@@ -143,30 +167,6 @@ export class OrgMemberService {
         throw new NotFoundError(orgMemberNotFound);
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
-   * Finds the `OrgMemberEntity` associated with the given user and organization, returns null if it doesn't exist.
-   *
-   * @param user The user to search for.
-   * @param organization The organization to search in.
-   *
-   * @returns The associated `OrgMemberEntity` instance.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
-   */
-  async findOneByUserAndOrgOrNull(
-    user: UserEntity,
-    organization: OrganizationEntity,
-  ): Promise<OrgMemberEntity | null> {
-    try {
-      return await this.em.findOne(OrgMemberEntity, {
-        user,
-        organization,
-      });
-    } catch (err) {
-      this.logger.error(err);
       throw new InternalServerErrorException(internalServerError);
     }
   }

@@ -8,15 +8,15 @@ export interface Organization extends CommonEntityFields {
   /**
    * The unique name for the organization, as it will be displayed on the platform.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The globally unique slug for the organization, auto-generated based on the provided name.
    */
-  slug: string;
+  readonly slug: string;
 
   /**
    * The amount of time to wait before marking any child posts as out-of-date, represented as an ISO 8601 duration string.
    */
-  upToDateDuration: string;
+  readonly upToDateDuration: string;
 }

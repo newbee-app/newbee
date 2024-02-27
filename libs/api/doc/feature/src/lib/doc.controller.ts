@@ -21,7 +21,7 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   CreateDocDto,
   DocAndMemberDto,
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   OffsetAndLimitDto,
   PaginatedResults,
@@ -62,7 +62,7 @@ export class DocController {
   async getAll(
     @Query() offsetAndLimitDto: OffsetAndLimitDto,
     @Organization() organization: OrganizationEntity,
-  ): Promise<PaginatedResults<DocQueryResult>> {
+  ): Promise<PaginatedResults<DocSearchResult>> {
     const { offset, limit } = offsetAndLimitDto;
     this.logger.log(
       `Get all docs request received for organization: ${organization.slug}, with offset: ${offset} and limit: ${limit}`,
@@ -80,7 +80,7 @@ export class DocController {
     return {
       ...offsetAndLimitDto,
       total,
-      results: await this.entityService.createDocQueryResults(docs),
+      results: await this.entityService.createDocSearchResults(docs),
     };
   }
 
@@ -135,7 +135,7 @@ export class DocController {
     return new DocAndMemberDto(
       await this.entityService.createDocNoOrg(doc),
       team
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )
@@ -169,7 +169,7 @@ export class DocController {
     return new DocAndMemberDto(
       await this.entityService.createDocNoOrg(updatedDoc),
       team
-        ? await this.teamMemberService.findOneByOrgMemberAndTeamOrNull(
+        ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
             team,
           )

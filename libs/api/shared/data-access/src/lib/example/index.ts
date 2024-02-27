@@ -1,22 +1,28 @@
-import { solrDictionaries } from '@newbee/api/shared/util';
 import {
-  SolrEntryEnum,
+  solrAppDictionaries,
+  solrOrgDictionaries,
+} from '@newbee/api/shared/util';
+import {
+  SolrAppEntryEnum,
+  SolrOrgEntryEnum,
+  testAdminControls1,
+  testAppSuggestDto1,
   testAuthenticator1,
   testChallenge1,
-  testCommonEntityFields1,
   testDoc1,
   testNow1,
   testOrgMember1,
   testOrgMemberInvite1,
+  testOrgSuggestDto1,
   testOrganization1,
   testQna1,
-  testSuggestDto1,
   testSuggestResultsDto1,
   testTeam1,
   testTeamMember1,
   testUser1,
   testUser2,
   testUserInvites1,
+  testWaitlistMember1,
 } from '@newbee/shared/util';
 import type {
   DocResponse,
@@ -33,6 +39,7 @@ import {
 import {
   AdminControlsEntity,
   AuthenticatorEntity,
+  CommonEntity,
   DocEntity,
   OrgMemberEntity,
   OrgMemberInviteEntity,
@@ -41,175 +48,189 @@ import {
   TeamEntity,
   UserEntity,
   UserInvitesEntity,
+  WaitlistMemberEntity,
 } from '../entity';
 import { TeamMemberEntity } from '../entity/team-member.entity';
 
 /**
- * An example instance of `UserInvitesEntity`.
+ * An example instance of CommonEntity.
  * Strictly for use in testing.
  */
-export const testUserInvitesEntity1 = new UserInvitesEntity(
-  '1',
-  testUserInvites1.email,
-);
+export const testCommonEntity1: CommonEntity = {
+  id: '1',
+  createdAt: testNow1,
+  updatedAt: testNow1,
+};
 
 /**
- * An example instance of `UserEntity`.
+ * An example instance of UserInvitesEntity.
  * Strictly for use in testing.
  */
-export const testUserEntity1 = new UserEntity(
-  '1',
-  testUser1.email,
-  testUser1.name,
-  testUser1.displayName,
-  testUser1.phoneNumber,
-  testChallenge1,
-  testUser1.role,
-  testUserInvitesEntity1,
-);
+export const testUserInvitesEntity1 = {
+  ...testCommonEntity1,
+  ...testUserInvites1,
+  user: null,
+} as UserInvitesEntity;
+
+/**
+ * An example instance of UserEntity.
+ * Strictly for use in testing.
+ */
+export const testUserEntity1 = {
+  ...testCommonEntity1,
+  ...testUser1,
+  verifyEmailLastSentAt: testNow1,
+  challenge: testChallenge1,
+  invites: testUserInvitesEntity1,
+} as UserEntity;
 testUserInvitesEntity1.user = testUserEntity1;
 
 /**
- * An example instance of `UserEntity`.
+ * An example instance of UserEntity.
  * Strictly for use in testing.
  */
-export const testUserEntity2 = new UserEntity(
-  '2',
-  testUser2.email,
-  testUser2.name,
-  testUser2.displayName,
-  testUser2.phoneNumber,
-  testChallenge1,
-  testUser2.role,
-  new UserInvitesEntity('2', testUser2.email),
-);
+export const testUserEntity2 = {
+  ...testCommonEntity1,
+  ...testUser2,
+  id: '2',
+  verifyEmailLastSentAt: testNow1,
+  challenge: testChallenge1,
+  invites: testUserInvites1,
+} as UserEntity;
 
 /**
- * An example instance of `AuthenticatorEntity`.
+ * An example instance of AuthenticatorEntity.
  * Strictly for use in testing.
  */
-export const testAuthenticatorEntity1 = new AuthenticatorEntity(
-  testAuthenticator1.credentialId,
-  testAuthenticator1.credentialPublicKey,
-  testAuthenticator1.counter,
-  testAuthenticator1.credentialDeviceType,
-  testAuthenticator1.credentialBackedUp,
-  testAuthenticator1.transports,
-  testUserEntity1,
-);
-testAuthenticatorEntity1.id = testAuthenticator1.id;
+export const testAuthenticatorEntity1 = {
+  ...testCommonEntity1,
+  ...testAuthenticator1,
+  id: testAuthenticator1.id,
+  user: testUserEntity1,
+} as AuthenticatorEntity;
 
 /**
- * An example instance of `OrganizationEntity`.
+ * An example instance of OrganizationEntity.
  * Strictly for use in testing.
  */
-export const testOrganizationEntity1 = new OrganizationEntity(
-  '1',
-  testOrganization1.name,
-  testOrganization1.slug,
-  testOrganization1.upToDateDuration,
-  testUserEntity1,
-);
-testOrganizationEntity1.suggesterBuiltAt = testNow1;
+export const testOrganizationEntity1 = {
+  ...testCommonEntity1,
+  ...testOrganization1,
+  suggesterBuiltAt: testNow1,
+} as OrganizationEntity;
 
 /**
- * An example instance of `OrgMemberEntity`.
+ * An example instance of OrgMemberEntity.
  * Strictly for use in testing.
  */
-export const testOrgMemberEntity1 = new OrgMemberEntity(
-  testUserEntity1,
-  testOrganizationEntity1,
-  testOrgMember1.role,
-);
-testOrgMemberEntity1.id = '1';
+export const testOrgMemberEntity1 = {
+  ...testCommonEntity1,
+  ...testOrgMember1,
+  user: testUserEntity1,
+  organization: testOrganizationEntity1,
+} as OrgMemberEntity;
 
 /**
- * An example instance of `TeamEntity`.
+ * An example instance of TeamEntity.
  * Strictly for use in testing.
  */
-export const testTeamEntity1 = new TeamEntity(
-  '1',
-  testTeam1.name,
-  testTeam1.slug,
-  testTeam1.upToDateDuration,
-  testOrgMemberEntity1,
-);
-Object.assign(testTeamEntity1, testCommonEntityFields1);
+export const testTeamEntity1 = {
+  ...testCommonEntity1,
+  ...testTeam1,
+  organization: testOrganizationEntity1,
+} as TeamEntity;
 
 /**
- * An example instance of `OrgMemberInviteEntity`.
+ * An example instance of OrgMemberInviteEntity.
  * Strictly for use in testing.
  */
-export const testOrgMemberInviteEntity1 = new OrgMemberInviteEntity(
-  '1',
-  testUserInvitesEntity1,
-  testOrgMemberEntity1,
-  testOrgMemberInvite1.role,
-);
+export const testOrgMemberInviteEntity1 = {
+  ...testCommonEntity1,
+  ...testOrgMemberInvite1,
+  organization: testOrganizationEntity1,
+  userInvites: testUserInvitesEntity1,
+  inviter: testOrgMemberEntity1,
+} as OrgMemberInviteEntity;
 
 /**
- * An example instance of `TeamMemberEntity`.
+ * An example instance of TeamMemberEntity.
  * Strictly for use in testing.
  */
-export const testTeamMemberEntity1 = new TeamMemberEntity(
-  testOrgMemberEntity1,
-  testTeamEntity1,
-  testTeamMember1.role,
-);
+export const testTeamMemberEntity1 = {
+  ...testCommonEntity1,
+  ...testTeamMember1,
+  orgMember: testOrgMemberEntity1,
+  team: testTeamEntity1,
+} as TeamMemberEntity;
 
 /**
- * An example instance of `DocEntity`.
+ * An example instance of DocEntity.
  * Strictly for use in testing.
  */
-export const testDocEntity1 = new DocEntity(
-  '1',
-  testDoc1.title,
-  testDoc1.upToDateDuration,
-  testTeamEntity1,
-  testOrgMemberEntity1,
-  testDoc1.docMarkdoc,
-);
+export const testDocEntity1 = {
+  ...testCommonEntity1,
+  ...testDoc1,
+  docTxt: testDoc1.docMarkdoc,
+  organization: testOrganizationEntity1,
+  team: testTeamEntity1,
+  creator: testOrgMemberEntity1,
+  maintainer: testOrgMemberEntity1,
+} as DocEntity;
 
 /**
- * An example instance of `QnaEntity`.
+ * An example instance of QnaEntity.
  * Strictly for use in testing.
  */
-export const testQnaEntity1 = new QnaEntity(
-  '1',
-  testQna1.title,
-  testTeamEntity1,
-  testOrgMemberEntity1,
-  testQna1.questionMarkdoc,
-  testQna1.answerMarkdoc,
-);
-testQnaEntity1.maintainer = testOrgMemberEntity1;
+export const testQnaEntity1 = {
+  ...testCommonEntity1,
+  ...testQna1,
+  questionTxt: testQna1.questionMarkdoc,
+  answerTxt: testQna1.answerMarkdoc,
+  organization: testOrganizationEntity1,
+  team: testTeamEntity1,
+  creator: testOrgMemberEntity1,
+  maintainer: testOrgMemberEntity1,
+} as QnaEntity;
 
 /**
- * An example instance of `AdminControlsEntity`.
+ * An example instance of AdminControlsEntity.
  * Strictly for use in testing.
  */
-export const testAdminControlsEntity1 = new AdminControlsEntity();
+export const testAdminControlsEntity1 = {
+  ...testCommonEntity1,
+  ...testAdminControls1,
+} as AdminControlsEntity;
 
 /**
- * An example instance of `DocDocParams`.
+ * An example instance of WaitlistMemberEntity.
+ * Strictly for use in testing.
+ */
+export const testWaitlistMemberEntity1 = {
+  ...testCommonEntity1,
+  ...testWaitlistMember1,
+  waitlist: testAdminControlsEntity1,
+} as WaitlistMemberEntity;
+
+/**
+ * An example instance of DocDocParams.
  * Strictly for use in testing.
  */
 export const testDocDocParams1 = new DocDocParams(testDocEntity1);
 
 /**
- * An example instance of `QnaDocParams`.
+ * An example instance of QnaDocParams.
  * Strictly for use in testing.
  */
 export const testQnaDocParams1 = new QnaDocParams(testQnaEntity1);
 
 /**
- * An example instance of `TeamDocParams`.
+ * An example instance of TeamDocParams.
  * Strictly for use in testing.
  */
 export const testTeamDocParams1 = new TeamDocParams(testTeamEntity1);
 
 /**
- * An example instance of `OrgMemberDocParams`.
+ * An example instance of OrgMemberDocParams.
  * Strictly for use in testing.
  */
 export const testOrgMemberDocParams1 = new OrgMemberDocParams(
@@ -217,7 +238,7 @@ export const testOrgMemberDocParams1 = new OrgMemberDocParams(
 );
 
 /**
- * An example instance of `ResponseHeader`.
+ * An example instance of ResponseHeader.
  * Strictly for use in testing.
  */
 export const testResponseHeader1: ResponseHeader = {
@@ -227,14 +248,14 @@ export const testResponseHeader1: ResponseHeader = {
 };
 
 /**
- * An example instance of `DocResponse`.
+ * An example instance of DocResponse.
  * Strictly for use in testing.
  * Uses testTeamEntity1.
  */
 export const testDocResponse1: DocResponse = {
   id: testTeamEntity1.id,
   _version_: BigInt(1),
-  entry_type: SolrEntryEnum.Team,
+  entry_type: SolrOrgEntryEnum.Team,
   slug: testTeamEntity1.slug,
   created_at: testTeamEntity1.createdAt.toISOString(),
   updated_at: testTeamEntity1.updatedAt.toISOString(),
@@ -242,7 +263,26 @@ export const testDocResponse1: DocResponse = {
 };
 
 /**
- * An example instance of `DocsResponse`.
+ * An example instance of DocResponse.
+ * Strictly for use in testing.
+ * Use testUserEntity1.
+ */
+export const testDocResponse2: DocResponse = {
+  id: testUserEntity1.id,
+  _version_: BigInt(1),
+  entry_type: SolrAppEntryEnum.User,
+  created_at: testUserEntity1.createdAt.toISOString(),
+  updated_at: testUserEntity1.updatedAt.toISOString(),
+  user_email: testUserEntity1.email,
+  user_name: testUserEntity1.name,
+  user_display_name: testUserEntity1.displayName as string,
+  user_phone_number: testUserEntity1.phoneNumber as string,
+  user_app_role: testUserEntity1.role,
+  user_email_verified: testUserEntity1.emailVerified,
+};
+
+/**
+ * An example instance of DocsResponse.
  * Strictly for use in testing.
  * Uses testDocResponse1.
  */
@@ -254,7 +294,7 @@ export const testDocsResponse1: DocsResponse = {
 };
 
 /**
- * An example instance of `DocsResponse`.
+ * An example instance of DocsResponse.
  * Strictly for use in testing.
  * Simulates empty results.
  */
@@ -266,22 +306,29 @@ export const testDocsResponse2: DocsResponse = {
 };
 
 /**
- * An example instance of `QueryResponse`.
+ * An example instance of DocsResponse.
  * Strictly for use in testing.
- * Simulates a match with highlights.
+ * Uses testDocResponse2.
+ */
+export const testDocsResponse3: DocsResponse = {
+  numFound: 1,
+  start: 0,
+  numFoundExact: true,
+  docs: [testDocResponse2],
+};
+
+/**
+ * An example instance of QueryResponse.
+ * Strictly for use in testing.
+ * Simulates an org match.
  */
 export const testQueryResponse1: QueryResponse = {
   responseHeader: testResponseHeader1,
   response: testDocsResponse1,
-  highlighting: {
-    '1': {
-      team_name: [testTeamEntity1.name],
-    },
-  },
 };
 
 /**
- * An example instance of `QueryResponse`.
+ * An example instance of QueryResponse.
  * Strictly for use in testing.
  * Simulates spellcheck suggestions.
  */
@@ -303,15 +350,48 @@ export const testQueryResponse2: QueryResponse = {
 };
 
 /**
- * An example instance of `QueryResponse`.
+ * An example instance of QueryResponse.
  * Strictly for use in testing.
- * Simulates suggester suggestions.
+ * Simulates org suggester suggestions.
  */
 export const testQueryResponse3: QueryResponse = {
   responseHeader: testResponseHeader1,
   suggest: {
-    [solrDictionaries.all]: {
-      [testSuggestDto1.query]: {
+    [solrOrgDictionaries.All]: {
+      [testOrgSuggestDto1.query]: {
+        numFound: 1,
+        suggestions: [
+          {
+            term: testSuggestResultsDto1.suggestions[0] as string,
+            weight: 5,
+            payload: '',
+          },
+        ],
+      },
+    },
+  },
+};
+
+/**
+ * An example instance of QueryResponse.
+ * Strictly for use in testing.
+ * Simulates an app match.
+ */
+export const testQueryResponse4: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  response: testDocsResponse3,
+};
+
+/**
+ * An example instance of QueryResponse.
+ * Strictly for use in testing.
+ * Simulates app suggester suggestions.
+ */
+export const testQueryResponse5: QueryResponse = {
+  responseHeader: testResponseHeader1,
+  suggest: {
+    [solrAppDictionaries.All]: {
+      [testAppSuggestDto1.query]: {
         numFound: 1,
         suggestions: [
           {

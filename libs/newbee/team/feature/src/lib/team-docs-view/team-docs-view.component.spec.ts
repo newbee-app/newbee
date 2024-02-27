@@ -8,9 +8,9 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import { initialTeamState } from '@newbee/newbee/team/data-access';
 import {
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
   testOrganization1,
-  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsDocSearchResult1,
   testTeam1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -34,7 +34,7 @@ describe('TeamDocsViewComponent', () => {
           initialState: {
             [`${Keyword.Team}Module`]: {
               ...initialTeamState,
-              docs: testPaginatedResultsDocQueryResult1,
+              docs: testPaginatedResultsDocSearchResult1,
             },
           },
         }),
@@ -91,7 +91,7 @@ describe('TeamDocsViewComponent', () => {
     it('should navigate to the search URL for the query', async () => {
       await component.onSearch('searching');
       expect(router.url).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrEntryEnum.Doc}&${ShortUrl.Team}=${testTeam1.slug}`,
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrOrgEntryEnum.Doc}&${ShortUrl.Team}=${testTeam1.slug}`,
       );
     });
   });

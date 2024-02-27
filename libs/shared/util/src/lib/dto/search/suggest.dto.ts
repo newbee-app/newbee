@@ -1,12 +1,17 @@
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { queryIsNotEmpty, typeIsEnum } from '../../constant';
-import { SolrEntryEnum } from '../../enum';
+import {
+  queryIsNotEmpty,
+  typeIsNotEmpty,
+  typeIsSolrAppEntryEnum,
+  typeIsSolrOrgEntryEnum,
+} from '../../constant';
+import { SolrAppEntryEnum, SolrOrgEntryEnum } from '../../enum';
 
 /**
- * The DTO sent from the frontend to the backend to get query suggestions.
+ * The abstract DTO sent from the frontend to the backend to get query suggestions.
  * Suitable for use in GET requests.
  */
-export class SuggestDto {
+export abstract class CommonSuggestDto {
   /**
    * The query itself.
    */
@@ -19,6 +24,32 @@ export class SuggestDto {
    * Needs to be a partial instead of a nullable because it will be used in GET requests.
    */
   @IsOptional()
-  @IsEnum(SolrEntryEnum, { message: typeIsEnum })
-  type?: SolrEntryEnum;
+  @IsNotEmpty({ message: typeIsNotEmpty })
+  type?: string;
+}
+
+/**
+ * The DTO sent from the frontend to the backend to get org query suggestions.
+ * Suitable for use in GET requests.
+ */
+export class OrgSuggestDto extends CommonSuggestDto {
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsEnum(SolrOrgEntryEnum, { message: typeIsSolrOrgEntryEnum })
+  override type?: SolrOrgEntryEnum;
+}
+
+/**
+ * The DTO sent from the frontend to the backend to get app query suggestions.
+ * Suitable for use in GET requests.
+ */
+export class AppSuggestDto extends CommonSuggestDto {
+  /**
+   * @inheritdoc
+   */
+  @IsOptional()
+  @IsEnum(SolrAppEntryEnum, { message: typeIsSolrAppEntryEnum })
+  override type?: SolrAppEntryEnum;
 }

@@ -7,12 +7,12 @@ import { TestBed } from '@angular/core/testing';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   Keyword,
-  testBaseDocAndMemberDto1,
   testCreateDocDto1,
   testDoc1,
+  testDocAndMemberDto1,
   testOffsetAndLimit1,
   testOrganization1,
-  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsDocSearchResult1,
   testUpdateDocDto1,
 } from '@newbee/shared/util';
 import { DocService } from './doc.service';
@@ -48,7 +48,7 @@ describe('DocService', () => {
       service.getAll(testOrganization1.slug, testOffsetAndLimit1).subscribe({
         next: (results) => {
           try {
-            expect(results).toEqual(testPaginatedResultsDocQueryResult1);
+            expect(results).toEqual(testPaginatedResultsDocSearchResult1);
             done();
           } catch (err) {
             done(err);
@@ -63,7 +63,7 @@ describe('DocService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testPaginatedResultsDocQueryResult1);
+      req.flush(testPaginatedResultsDocSearchResult1);
     });
   });
 
@@ -96,7 +96,7 @@ describe('DocService', () => {
       service.get(testDoc1.slug, testOrganization1.slug).subscribe({
         next: (docAndMemberDto) => {
           try {
-            expect(docAndMemberDto).toEqual(testBaseDocAndMemberDto1);
+            expect(docAndMemberDto).toEqual(testDocAndMemberDto1);
             done();
           } catch (err) {
             done(err);
@@ -110,7 +110,7 @@ describe('DocService', () => {
       );
       expect(req.request.method).toEqual('GET');
 
-      req.flush(testBaseDocAndMemberDto1);
+      req.flush(testDocAndMemberDto1);
     });
   });
 
@@ -145,7 +145,7 @@ describe('DocService', () => {
         .subscribe({
           next: (docAndMemberDto) => {
             try {
-              expect(docAndMemberDto).toEqual(testBaseDocAndMemberDto1);
+              expect(docAndMemberDto).toEqual(testDocAndMemberDto1);
               done();
             } catch (err) {
               done(err);
@@ -160,7 +160,7 @@ describe('DocService', () => {
       expect(req.request.method).toEqual('PATCH');
       expect(req.request.body).toEqual(testUpdateDocDto1);
 
-      req.flush(testBaseDocAndMemberDto1);
+      req.flush(testDocAndMemberDto1);
     });
   });
 

@@ -1,19 +1,19 @@
 // Creates the base Solr configset that will be used by NewBee to store an organization's docs and qnas
 
 import {
-  solrDefaultHighlightedFields,
-  solrDictionaries,
-  solrFields,
+  solrAppCollection,
+  solrAppConfigset,
+  solrAppDictionaries,
+  solrAppFields,
+  solrOrgConfigset,
+  solrOrgDefaultHighlightedFields,
+  solrOrgDictionaries,
+  solrOrgFields,
 } from '@newbee/api/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import type { OptionValues } from 'commander';
 import { Command } from 'commander';
 import { execute, prettyJson } from '../util';
-
-/**
- * The configset this script is ultimately responsible for creating on a fresh Solr instance.
- */
-const newbeeOrg = 'newbee_org';
 
 /**
  * The main body of the script
@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   program
     .command('create')
     .description(
-      'Creates the new configset from scratch, without using uploads',
+      'Creates the new configsets from scratch, without using uploads',
     )
     .option(
       '-u, --url <url>',
@@ -69,7 +69,7 @@ async function main(): Promise<void> {
     .action(download);
 
   program
-    .command('upload <path>')
+    .command('upload <configset> <path>')
     .description('Uploads an existing configset')
     .option(
       '-u, --url <url>',
@@ -93,7 +93,7 @@ async function main(): Promise<void> {
 }
 
 /**
- * Create a configset from scratch, without uploading anything.
+ * Create configsets from scratch, without uploading anything.
  *
  * @param options The CLI options for creating a SolrCli instance.
  */
@@ -101,13 +101,17 @@ async function create(options: OptionValues): Promise<void> {
   // START: Create all of the constants I'll reuse in the method to avoid typos
 
   // Related to outside files
-  const enumsConfigXml = 'enumsConfig.xml';
+  const orgEnumsConfigXml = 'orgEnumsConfig.xml';
+  const appEnumsConfigXml = 'appEnumsConfig.xml';
 
   // Related to field types
-  const orgRoleType = 'org_role_type';
   const solrEnumFieldType = 'solr.EnumFieldType';
-  const entryEnumName = 'entry';
+  const orgEntryEnumName = 'org_entry';
+  const appEntryEnumName = 'app_entry';
+  const orgRoleType = 'org_role_type';
+  const appRoleType = 'app_role_type';
   const orgRoleEnumName = 'org_role';
+  const appRoleEnumName = 'app_role';
   const basicText = 'basic_text';
   const solrTextField = 'solr.TextField';
   const standard = 'standard';
@@ -116,6 +120,7 @@ async function create(options: OptionValues): Promise<void> {
   const stringFieldType = 'string';
   const pdate = 'pdate';
   const textGeneral = 'text_general';
+  const booleanFieldType = 'boolean';
 
   // Related to fields
   const textField = '_text_';
@@ -124,23 +129,30 @@ async function create(options: OptionValues): Promise<void> {
   const spellcheckQna = '_spellcheck_qna_';
   const spellcheckTeam = '_spellcheck_team_';
   const spellcheckUser = '_spellcheck_user_';
+  const spellcheckWaitlist = '_spellcheck_waitlist_';
   const suggestAll = 'suggest_all';
   const suggestDoc = 'suggest_doc';
   const suggestQna = 'suggest_qna';
   const suggestTeam = 'suggest_team';
   const suggestUser = 'suggest_user';
+  const suggestWaitlist = 'suggest_waitlist';
   const commonCopyFields = [textField, spellcheckAll];
   const suggestCopyFields = [...commonCopyFields, suggestAll];
 
   // Related to request handlers
   const suggest = 'suggest';
-  const spellcheck = 'spellcheck';
-  const suggestParams = {
+  const solrSuggestComponent = 'solr.SuggestComponent';
+  const commonSuggestParams = {
     lookupImpl: 'BlendedInfixLookupFactory',
     dictionaryImpl: 'DocumentDictionaryFactory',
     suggestAnalyzerFieldType: basicText,
-    contextField: solrFields.out_of_date_at,
   };
+  const orgSuggestParams = {
+    ...commonSuggestParams,
+    contextField: solrOrgFields.out_of_date_at,
+  };
+  const spellcheck = 'spellcheck';
+  const solrSpellcheckComponent = 'solr.SpellCheckComponent';
   const spellcheckParams = {
     classname: 'solr.DirectSolrSpellChecker',
     distanceMeasure: 'internal',
@@ -151,55 +163,110 @@ async function create(options: OptionValues): Promise<void> {
     minQueryLength: 4,
     maxQueryFrequency: 0.01,
   };
+  const query = 'query';
   const solrSearchHandler = 'solr.SearchHandler';
+  const queryDefaults = {
+    wt: 'json',
+    indent: 'true',
+    defType: 'edismax',
+    qf: textField,
+    spellcheck: 'true',
+    'spellcheck.count': '1',
+    'spellcheck.alternativeTermCount': '5',
+    'spellcheck.extendedResults': 'true',
+    'spellcheck.collate': 'true',
+    'spellcheck.maxCollations': '1',
+    'spellcheck.maxCollationTries': '10',
+    'spellcheck.collateExtendedResults': 'true',
+    'spellcheck.maxResultsForSuggest': '3',
+  };
+  const suggestDefaults = {
+    suggest: 'true',
+    'suggest.count': '10',
+  };
 
   // END: Create all of the constants I'll reuse in the method to avoid typos
 
   const solrCli = createSolrCli(options);
 
-  // Check if the newbeeOrg configset already exists
-  const configsets = (await solrCli.listConfigsets()).configSets;
-  if (configsets.includes(newbeeOrg)) {
-    let res = await solrCli.deleteConfigset(newbeeOrg);
+  // Check if the configsets we want to create already exist
+  const configsets = new Set((await solrCli.listConfigsets()).configSets);
+  if (configsets.has(solrOrgConfigset)) {
+    const res = await solrCli.deleteConfigset(solrOrgConfigset);
     console.log(
-      `Deleting existing ${newbeeOrg} configset: ${prettyJson(res)}\n`,
+      `Deleted existing ${solrOrgConfigset} configset: ${prettyJson(res)}`,
+    );
+  }
+  if (configsets.has(solrAppConfigset)) {
+    const res = await solrCli.deleteConfigset(solrAppConfigset);
+    console.log(
+      `Deleted existing ${solrAppConfigset} configset: ${prettyJson(res)}`,
     );
   }
 
-  // Create the configset
-  let res = await solrCli.createConfigset({ name: newbeeOrg });
-  console.log(`Creating configset '${newbeeOrg}': ${prettyJson(res)}\n`);
+  // Create the configsets
+  let res = await solrCli.createConfigset({ name: solrOrgConfigset });
+  console.log(`Created configset ${solrOrgConfigset}: ${prettyJson(res)}`);
+  res = await solrCli.createConfigset({ name: solrAppConfigset });
+  console.log(`Created configset ${solrAppConfigset}: ${prettyJson(res)}`);
 
-  // Upload config files to the configset
+  // Upload config files to the configsets
   res = await solrCli.uploadConfigset(
-    newbeeOrg,
-    enumsConfigXml,
-    enumsConfigXml,
+    solrOrgConfigset,
+    orgEnumsConfigXml,
+    orgEnumsConfigXml,
   );
-  console.log(
-    `Uploading '${enumsConfigXml}' to configset: ${prettyJson(res)}\n`,
+  console.log(`Uploaded ${orgEnumsConfigXml} to configset: ${prettyJson(res)}`);
+  res = await solrCli.uploadConfigset(
+    solrAppConfigset,
+    appEnumsConfigXml,
+    appEnumsConfigXml,
   );
+  console.log(`Uploaded ${appEnumsConfigXml} to configset: ${prettyJson(res)}`);
 
-  // Create a temporary collection that uses the configset to allow us to make changes to it
+  // Check if the collections we want to create already exist
+  const collections = new Set((await solrCli.listCollections()).collections);
+  if (collections.has(solrOrgConfigset)) {
+    res = await solrCli.deleteCollection(solrOrgConfigset);
+    console.log(
+      `Deleted existing ${solrOrgConfigset} collection: ${prettyJson(res)}`,
+    );
+  }
+  if (collections.has(solrAppCollection)) {
+    res = await solrCli.deleteCollection(solrAppCollection);
+    console.log(
+      `Deleted existing ${solrAppCollection} collection: ${prettyJson(res)}`,
+    );
+  }
+
+  // Create a temporary org collection that uses the org configset to allow us to make changes to it
   res = await solrCli.createCollection({
-    name: newbeeOrg,
+    name: solrOrgConfigset,
     numShards: 1,
-    config: newbeeOrg,
+    config: solrOrgConfigset,
   });
   console.log(
-    `Creating temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
+    `Created temporary collection ${solrOrgConfigset}: ${prettyJson(res)}`,
   );
 
-  // Make a bulk request to set up the schema
-  res = await solrCli.bulkSchemaRequest(newbeeOrg, {
+  // Create the collection for the app configset
+  res = await solrCli.createCollection({
+    name: solrAppCollection,
+    numShards: 1,
+    config: solrAppConfigset,
+  });
+  console.log(`Created collection ${solrAppCollection}: ${prettyJson(res)}`);
+
+  // Make a bulk request to set up the org schema
+  res = await solrCli.bulkSchemaRequest(solrOrgConfigset, {
     // Create all of the needed field types
     'add-field-type': [
       // An enum describing the type of the entry
       {
-        name: solrFields.entry_type,
+        name: solrOrgFields.entry_type,
         class: solrEnumFieldType,
-        enumsConfig: enumsConfigXml,
-        enumName: entryEnumName,
+        enumsConfig: orgEnumsConfigXml,
+        enumName: orgEntryEnumName,
         docValues: true,
       },
 
@@ -207,7 +274,7 @@ async function create(options: OptionValues): Promise<void> {
       {
         name: orgRoleType,
         class: solrEnumFieldType,
-        enumsConfig: enumsConfigXml,
+        enumsConfig: orgEnumsConfigXml,
         enumName: orgRoleEnumName,
         docValues: true,
       },
@@ -315,95 +382,237 @@ async function create(options: OptionValues): Promise<void> {
 
       // Required on all entries to distinguish them
       {
-        name: solrFields.entry_type,
-        type: solrFields.entry_type,
+        name: solrOrgFields.entry_type,
+        type: solrOrgFields.entry_type,
         required: true,
       },
 
       // Applicable for all entries
-      { name: solrFields.slug, type: stringFieldType, required: true },
-      { name: solrFields.created_at, type: pdate, required: true },
-      { name: solrFields.updated_at, type: pdate, required: true },
+      { name: solrOrgFields.slug, type: stringFieldType, required: true },
+      { name: solrOrgFields.created_at, type: pdate, required: true },
+      { name: solrOrgFields.updated_at, type: pdate, required: true },
 
       // Applicable for user
-      { name: solrFields.user_email, type: stringFieldType },
-      { name: solrFields.user_name, type: textGeneral, multiValued: false },
+      { name: solrOrgFields.user_email, type: stringFieldType },
+      { name: solrOrgFields.user_name, type: textGeneral, multiValued: false },
       {
-        name: solrFields.user_display_name,
+        name: solrOrgFields.user_display_name,
         type: textGeneral,
         multiValued: false,
       },
-      { name: solrFields.user_phone_number, type: stringFieldType },
-      { name: solrFields.user_org_role, type: orgRoleType },
+      { name: solrOrgFields.user_phone_number, type: stringFieldType },
+      { name: solrOrgFields.user_org_role, type: orgRoleType },
 
       // Applicable for team
-      { name: solrFields.team_name, type: textGeneral, multiValued: false },
+      { name: solrOrgFields.team_name, type: textGeneral, multiValued: false },
 
       // Applicable for doc and qna
-      { name: solrFields.team_id, type: stringFieldType },
-      { name: solrFields.marked_up_to_date_at, type: pdate },
-      { name: solrFields.out_of_date_at, type: pdate },
-      { name: solrFields.creator_id, type: stringFieldType },
-      { name: solrFields.maintainer_id, type: stringFieldType },
+      { name: solrOrgFields.team_id, type: stringFieldType },
+      { name: solrOrgFields.marked_up_to_date_at, type: pdate },
+      { name: solrOrgFields.out_of_date_at, type: pdate },
+      { name: solrOrgFields.creator_id, type: stringFieldType },
+      { name: solrOrgFields.maintainer_id, type: stringFieldType },
 
       // Applicable for doc
-      { name: solrFields.doc_title, type: textGeneral, multiValued: false },
-      { name: solrFields.doc_txt, type: textGeneral, multiValued: false },
+      { name: solrOrgFields.doc_title, type: textGeneral, multiValued: false },
+      { name: solrOrgFields.doc_txt, type: textGeneral, multiValued: false },
 
       // Applicable for qna
-      { name: solrFields.qna_title, type: textGeneral, multiValued: false },
-      { name: solrFields.question_txt, type: textGeneral, multiValued: false },
-      { name: solrFields.answer_txt, type: textGeneral, multiValued: false },
+      { name: solrOrgFields.qna_title, type: textGeneral, multiValued: false },
+      {
+        name: solrOrgFields.question_txt,
+        type: textGeneral,
+        multiValued: false,
+      },
+      { name: solrOrgFields.answer_txt, type: textGeneral, multiValued: false },
     ],
 
     // Create all of the needed copy fields
     'add-copy-field': [
       {
-        source: solrFields.user_email,
+        source: solrOrgFields.user_email,
         dest: [...suggestCopyFields, spellcheckUser, suggestUser],
       },
       {
-        source: solrFields.user_name,
+        source: solrOrgFields.user_name,
         dest: [...suggestCopyFields, spellcheckUser, suggestUser],
       },
       {
-        source: solrFields.user_display_name,
+        source: solrOrgFields.user_display_name,
         dest: [...suggestCopyFields, spellcheckUser, suggestUser],
       },
       {
-        source: solrFields.user_phone_number,
+        source: solrOrgFields.user_phone_number,
         dest: [...suggestCopyFields, spellcheckUser, suggestUser],
       },
       {
-        source: solrFields.team_name,
+        source: solrOrgFields.team_name,
         dest: [...suggestCopyFields, spellcheckTeam, suggestTeam],
       },
       {
-        source: solrFields.doc_title,
+        source: solrOrgFields.doc_title,
         dest: [...suggestCopyFields, spellcheckDoc, suggestDoc],
       },
       {
-        source: solrFields.doc_txt,
+        source: solrOrgFields.doc_txt,
         dest: [...commonCopyFields, spellcheckDoc],
       },
       {
-        source: solrFields.qna_title,
+        source: solrOrgFields.qna_title,
         dest: [...suggestCopyFields, spellcheckQna, suggestQna],
       },
       {
-        source: solrFields.question_txt,
+        source: solrOrgFields.question_txt,
         dest: [...commonCopyFields, spellcheckQna],
       },
       {
-        source: solrFields.answer_txt,
+        source: solrOrgFields.answer_txt,
         dest: [...commonCopyFields, spellcheckQna],
       },
     ],
   });
-  console.log(`Creating schema with bulk request: ${prettyJson(res)}\n`);
+  console.log(`Created org schema with bulk request: ${prettyJson(res)}`);
 
-  // Make a bulk request to set up the config
-  res = await solrCli.bulkConfigRequest(newbeeOrg, {
+  // Make a bulk request to set up the app schema
+  res = await solrCli.bulkSchemaRequest(solrAppCollection, {
+    // Create all of the needed field types
+    'add-field-type': [
+      // An enum describing the type of the entry
+      {
+        name: solrAppFields.entry_type,
+        class: solrEnumFieldType,
+        enumsConfig: appEnumsConfigXml,
+        enumName: appEntryEnumName,
+        docValues: true,
+      },
+
+      // An enum describing possible roles for org members
+      {
+        name: appRoleType,
+        class: solrEnumFieldType,
+        enumsConfig: appEnumsConfigXml,
+        enumName: appRoleEnumName,
+        docValues: true,
+      },
+
+      // A basic text field with minimal analysis done on it
+      {
+        name: basicText,
+        class: solrTextField,
+        positionIncrementGap: 100,
+        analyzer: {
+          tokenizer: { name: standard },
+          filters: [{ name: lowercase }],
+        },
+      },
+    ],
+
+    // Create all of the needed fields
+    'add-field': [
+      // Required for spellchecking
+      {
+        name: spellcheckAll,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckUser,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+      {
+        name: spellcheckWaitlist,
+        type: basicText,
+        multiValued: true,
+        stored: false,
+      },
+
+      // Required for auto-complete suggestions
+      {
+        name: suggestAll,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestUser,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+      {
+        name: suggestWaitlist,
+        type: basicText,
+        multiValued: true,
+        stored: true,
+      },
+
+      // Required on all entries to distinguish them
+      {
+        name: solrAppFields.entry_type,
+        type: solrAppFields.entry_type,
+        required: true,
+      },
+
+      // Applicable for all entries
+      { name: solrAppFields.created_at, type: pdate, required: true },
+      { name: solrAppFields.updated_at, type: pdate, required: true },
+
+      // Applicable for user
+      { name: solrAppFields.user_email, type: stringFieldType },
+      { name: solrAppFields.user_name, type: textGeneral, multiValued: false },
+      {
+        name: solrAppFields.user_display_name,
+        type: textGeneral,
+        multiValued: false,
+      },
+      { name: solrAppFields.user_phone_number, type: stringFieldType },
+      { name: solrAppFields.user_app_role, type: appRoleType },
+      { name: solrAppFields.user_email_verified, type: booleanFieldType },
+
+      // Applicable for waitlist member
+      { name: solrAppFields.waitlist_email, type: stringFieldType },
+      {
+        name: solrAppFields.waitlist_name,
+        type: textGeneral,
+        multiValued: false,
+      },
+    ],
+
+    // Create all of the needed copy fields
+    'add-copy-field': [
+      {
+        source: solrAppFields.user_email,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrAppFields.user_name,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrAppFields.user_display_name,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrAppFields.user_phone_number,
+        dest: [...suggestCopyFields, spellcheckUser, suggestUser],
+      },
+      {
+        source: solrAppFields.waitlist_email,
+        dest: [...suggestCopyFields, spellcheckWaitlist, suggestWaitlist],
+      },
+      {
+        source: solrAppFields.waitlist_name,
+        dest: [...suggestCopyFields, spellcheckWaitlist, suggestWaitlist],
+      },
+    ],
+  });
+  console.log(`Created app schema with bulk request: ${prettyJson(res)}`);
+
+  // Make a bulk request to set up the org config
+  res = await solrCli.bulkConfigRequest(solrOrgConfigset, {
     // Turn off schemaless mode
     'set-user-property': {
       'update.autoCreateFields': false,
@@ -418,31 +627,31 @@ async function create(options: OptionValues): Promise<void> {
     // Add a suggester search component
     'add-searchcomponent': {
       name: suggest,
-      class: 'solr.SuggestComponent',
+      class: solrSuggestComponent,
       suggester: [
         {
-          ...suggestParams,
-          name: solrDictionaries.all,
+          ...orgSuggestParams,
+          name: solrOrgDictionaries.All,
           field: suggestAll,
         },
         {
-          ...suggestParams,
-          name: solrDictionaries.Doc,
+          ...orgSuggestParams,
+          name: solrOrgDictionaries.Doc,
           field: suggestDoc,
         },
         {
-          ...suggestParams,
-          name: solrDictionaries.Qna,
+          ...orgSuggestParams,
+          name: solrOrgDictionaries.Qna,
           field: suggestQna,
         },
         {
-          ...suggestParams,
-          name: solrDictionaries.Team,
+          ...orgSuggestParams,
+          name: solrOrgDictionaries.Team,
           field: suggestTeam,
         },
         {
-          ...suggestParams,
-          name: solrDictionaries.User,
+          ...orgSuggestParams,
+          name: solrOrgDictionaries.User,
           field: suggestUser,
         },
       ],
@@ -451,32 +660,32 @@ async function create(options: OptionValues): Promise<void> {
     // Modify spellcheck to use basic_text and _spellcheck_text_ instead of text_general and _text_
     'update-searchcomponent': {
       name: spellcheck,
-      class: 'solr.SpellCheckComponent',
+      class: solrSpellcheckComponent,
       queryAnalyzerFieldType: basicText,
       spellchecker: [
         {
           ...spellcheckParams,
-          name: solrDictionaries.all,
+          name: solrOrgDictionaries.All,
           field: spellcheckAll,
         },
         {
           ...spellcheckParams,
-          name: solrDictionaries.Doc,
+          name: solrOrgDictionaries.Doc,
           field: spellcheckDoc,
         },
         {
           ...spellcheckParams,
-          name: solrDictionaries.Qna,
+          name: solrOrgDictionaries.Qna,
           field: spellcheckQna,
         },
         {
           ...spellcheckParams,
-          name: solrDictionaries.Team,
+          name: solrOrgDictionaries.Team,
           field: spellcheckTeam,
         },
         {
           ...spellcheckParams,
-          name: solrDictionaries.User,
+          name: solrOrgDictionaries.User,
           field: spellcheckUser,
         },
       ],
@@ -484,25 +693,13 @@ async function create(options: OptionValues): Promise<void> {
 
     // Add spellcheck and highlighting functionality to the /query request handler
     'update-requesthandler': {
-      name: '/query',
+      name: `/${query}`,
       class: solrSearchHandler,
       defaults: {
-        wt: 'json',
-        indent: 'true',
-        defType: 'edismax',
-        qf: textField,
-        spellcheck: 'true',
-        'spellcheck.count': '1',
-        'spellcheck.alternativeTermCount': '5',
-        'spellcheck.extendedResults': 'true',
-        'spellcheck.collate': 'true',
-        'spellcheck.maxCollations': '1',
-        'spellcheck.maxCollationTries': '10',
-        'spellcheck.collateExtendedResults': 'true',
-        'spellcheck.maxResultsForSuggest': '3',
-        'spellcheck.dictionary': solrDictionaries.all,
+        ...queryDefaults,
+        'spellcheck.dictionary': solrOrgDictionaries.All,
         hl: 'true',
-        'hl.fl': Object.values(solrDefaultHighlightedFields),
+        'hl.fl': Object.values(solrOrgDefaultHighlightedFields),
         'hl.tag.pre': '<strong>',
         'hl.tag.post': '</strong>',
         'hl.defaultSummary': 'true',
@@ -515,21 +712,106 @@ async function create(options: OptionValues): Promise<void> {
       name: `/${suggest}`,
       class: solrSearchHandler,
       defaults: {
-        suggest: 'true',
-        'suggest.count': '10',
-        'suggest.dictionary': solrDictionaries.all,
+        ...suggestDefaults,
+        'suggest.dictionary': solrOrgDictionaries.All,
       },
       components: [suggest],
     },
   });
   console.log(
-    `Creating config overlay with bulk request: ${prettyJson(res)}\n`,
+    `Created org config overlay with bulk request: ${prettyJson(res)}`,
+  );
+
+  // Make a bulk request to set up the app config
+  res = await solrCli.bulkConfigRequest(solrAppCollection, {
+    // Turn off schemaless mode
+    'set-user-property': {
+      'update.autoCreateFields': false,
+    },
+
+    // Turn on auto soft commits
+    'set-property': {
+      'updateHandler.autoSoftCommit.maxTime': 60000, // 1 min
+      'updateHandler.autoCommit.maxTime': 300000, // 5 mins
+    },
+
+    // Add a suggester search component
+    'add-searchcomponent': {
+      name: suggest,
+      class: solrSuggestComponent,
+      suggester: [
+        {
+          ...commonSuggestParams,
+          name: solrAppDictionaries.All,
+          field: suggestAll,
+        },
+        {
+          ...commonSuggestParams,
+          name: solrAppDictionaries.User,
+          field: suggestUser,
+        },
+        {
+          ...commonSuggestParams,
+          name: solrAppDictionaries.Waitlist,
+          field: suggestWaitlist,
+        },
+      ],
+    },
+
+    // Modify spellcheck to use basic_text and _spellcheck_text_ instead of text_general and _text_
+    'update-searchcomponent': {
+      name: spellcheck,
+      class: solrSpellcheckComponent,
+      queryAnalyzerFieldType: basicText,
+      spellchecker: [
+        {
+          ...spellcheckParams,
+          name: solrAppDictionaries.All,
+          field: spellcheckAll,
+        },
+        {
+          ...spellcheckParams,
+          name: solrAppDictionaries.User,
+          field: spellcheckUser,
+        },
+        {
+          ...spellcheckParams,
+          name: solrAppDictionaries.Waitlist,
+          field: spellcheckWaitlist,
+        },
+      ],
+    },
+
+    // Add spellcheck and highlighting functionality to the /query request handler
+    'update-requesthandler': {
+      name: `/${query}`,
+      class: solrSearchHandler,
+      defaults: {
+        ...queryDefaults,
+        'spellcheck.dictionary': solrAppDictionaries.All,
+      },
+      'last-components': [spellcheck],
+    },
+
+    // Add a request handler to generate suggestions based on the suggest copy fields
+    'add-requesthandler': {
+      name: `/${suggest}`,
+      class: solrSearchHandler,
+      defaults: {
+        ...suggestDefaults,
+        'suggest.dictionary': solrAppDictionaries.All,
+      },
+      components: [suggest],
+    },
+  });
+  console.log(
+    `Created app config overlay with bulk request: ${prettyJson(res)}`,
   );
 
   // Delete the temporary collection
-  res = await solrCli.deleteCollection(newbeeOrg);
+  res = await solrCli.deleteCollection(solrOrgConfigset);
   console.log(
-    `Deleting temporary collection '${newbeeOrg}': ${prettyJson(res)}\n`,
+    `Deleted temporary collection ${solrOrgConfigset}: ${prettyJson(res)}`,
   );
 }
 
@@ -545,7 +827,7 @@ async function deleteConfigset(
 ): Promise<void> {
   const solrCli = createSolrCli(options);
   const res = await solrCli.deleteConfigset(configset);
-  console.log(`Deleting configset '${configset}': ${prettyJson(res)}`);
+  console.log(`Deleting configset ${configset}: ${prettyJson(res)}`);
 }
 
 /**
@@ -573,10 +855,14 @@ async function download(
  * @param path The path to the zipped configset to upload.
  * @param options The CLI options for creating a SolrCli instance.
  */
-async function upload(path: string, options: OptionValues): Promise<void> {
+async function upload(
+  configset: string,
+  path: string,
+  options: OptionValues,
+): Promise<void> {
   const solrCli = createSolrCli(options);
-  const res = await solrCli.uploadConfigset(newbeeOrg, path);
-  console.log(`Uploading configset '${newbeeOrg}': ${prettyJson(res)}`);
+  const res = await solrCli.uploadConfigset(configset, path);
+  console.log(`Uploading configset ${configset}: ${prettyJson(res)}`);
 }
 
 /**

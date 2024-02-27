@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  PostQueryResult,
-  resultIsDocQueryResult,
-  resultIsOrgMemberQueryResult,
-  resultIsQnaQueryResult,
-  resultIsTeamQueryResult,
+  PostSearchResult,
+  isDocSearchResult,
+  isOrgMemberSearchResult,
+  isQnaSearchResult,
+  isTeamSearchResult,
   userDisplayName,
-  type QueryResultType,
+  type OrgSearchResultType,
 } from '@newbee/shared/util';
 import {
   SearchResultTypeBtnComponent,
@@ -29,7 +29,7 @@ export class SearchResultHeaderComponent {
   /**
    * The search result to display.
    */
-  @Input() searchResult!: QueryResultType;
+  @Input() searchResult!: OrgSearchResultType;
 
   /**
    * Where to navigate to, relative to the org.
@@ -37,12 +37,12 @@ export class SearchResultHeaderComponent {
   @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
-   * The search result as a `PostQueryResult` if possible, `null` otherwise.
+   * The search result as a `PostSearchResult` if possible, `null` otherwise.
    */
-  get searchResultAsPost(): PostQueryResult | null {
-    if (resultIsDocQueryResult(this.searchResult)) {
+  get searchResultAsPost(): PostSearchResult | null {
+    if (isDocSearchResult(this.searchResult)) {
       return this.searchResult.doc;
-    } else if (resultIsQnaQueryResult(this.searchResult)) {
+    } else if (isQnaSearchResult(this.searchResult)) {
       return this.searchResult.qna;
     }
 
@@ -53,13 +53,13 @@ export class SearchResultHeaderComponent {
    * The string that should act as the search result's header.
    */
   get searchResultHeader(): string {
-    if (resultIsOrgMemberQueryResult(this.searchResult)) {
+    if (isOrgMemberSearchResult(this.searchResult)) {
       return userDisplayName(this.searchResult.user);
-    } else if (resultIsTeamQueryResult(this.searchResult)) {
+    } else if (isTeamSearchResult(this.searchResult)) {
       return this.searchResult.name;
-    } else if (resultIsDocQueryResult(this.searchResult)) {
+    } else if (isDocSearchResult(this.searchResult)) {
       return this.searchResult.doc.title;
-    } else if (resultIsQnaQueryResult(this.searchResult)) {
+    } else if (isQnaSearchResult(this.searchResult)) {
       return this.searchResult.qna.title;
     }
 
@@ -71,19 +71,19 @@ export class SearchResultHeaderComponent {
    * Navigate to the relevant link when the user clicks the header.
    */
   headerClick(): void {
-    if (resultIsOrgMemberQueryResult(this.searchResult)) {
+    if (isOrgMemberSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: `${ShortUrl.Member}/${this.searchResult.orgMember.slug}`,
       });
-    } else if (resultIsTeamQueryResult(this.searchResult)) {
+    } else if (isTeamSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: `${ShortUrl.Team}/${this.searchResult.slug}`,
       });
-    } else if (resultIsDocQueryResult(this.searchResult)) {
+    } else if (isDocSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: `${ShortUrl.Doc}/${this.searchResult.doc.slug}`,
       });
-    } else if (resultIsQnaQueryResult(this.searchResult)) {
+    } else if (isQnaSearchResult(this.searchResult)) {
       this.orgNavigate.emit({
         route: `${ShortUrl.Qna}/${this.searchResult.qna.slug}`,
       });

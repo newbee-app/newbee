@@ -6,6 +6,7 @@ import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
 import {
   testCsrfTokenAndDataDto1,
+  testPublicAdminControls1,
   testUserRelation1,
 } from '@newbee/shared/util';
 import { request, response } from 'express';
@@ -33,6 +34,9 @@ describe('CookieController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createUserRelation: jest.fn().mockResolvedValue(testUserRelation1),
+            getPublicAdminControls: jest
+              .fn()
+              .mockResolvedValue(testPublicAdminControls1),
           }),
         },
         {
@@ -65,6 +69,7 @@ describe('CookieController', () => {
     afterEach(() => {
       expect(generateToken).toHaveBeenCalledTimes(1);
       expect(generateToken).toHaveBeenCalledWith(request, response, true);
+      expect(entityService.getPublicAdminControls).toHaveBeenCalledTimes(1);
     });
 
     it('should return a CSRF token and initial data as a DTO', async () => {

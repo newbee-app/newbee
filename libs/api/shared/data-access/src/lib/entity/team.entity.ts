@@ -34,14 +34,12 @@ export class TeamEntity extends CommonEntity implements Team {
    * @inheritdoc
    */
   @Property()
-  @Index()
   slug: string;
 
   /**
    * @inheritdoc
    */
   @Property({ nullable: true, length: 50 })
-  @Index()
   upToDateDuration: string | null;
 
   /**
@@ -73,6 +71,7 @@ export class TeamEntity extends CommonEntity implements Team {
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => OrganizationEntity, { hidden: true })
+  @Index()
   organization: OrganizationEntity;
 
   /**

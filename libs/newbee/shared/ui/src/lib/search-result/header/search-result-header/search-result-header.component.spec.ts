@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
-  testDocQueryResult1,
-  testOrgMemberQueryResult1,
-  testQnaQueryResult1,
-  testTeamQueryResult1,
+  testDocSearchResult1,
+  testOrgMemberSearchResult1,
+  testQnaSearchResult1,
+  testTeamSearchResult1,
   userDisplayName,
 } from '@newbee/shared/util';
 import { SearchResultHeaderComponent } from './search-result-header.component';
@@ -28,7 +28,7 @@ describe('SearchResultHeaderComponent', () => {
     fixture = TestBed.createComponent(SearchResultHeaderComponent);
     component = fixture.componentInstance;
 
-    component.searchResult = testOrgMemberQueryResult1;
+    component.searchResult = testOrgMemberSearchResult1;
 
     jest.spyOn(component.orgNavigate, 'emit');
 
@@ -44,34 +44,34 @@ describe('SearchResultHeaderComponent', () => {
     it('should return a Post if applicable, null otherwise', () => {
       expect(component.searchResultAsPost).toBeNull();
 
-      component.searchResult = testTeamQueryResult1;
+      component.searchResult = testTeamSearchResult1;
       expect(component.searchResultAsPost).toBeNull();
 
-      component.searchResult = testDocQueryResult1;
-      expect(component.searchResultAsPost).toEqual(testDocQueryResult1.doc);
+      component.searchResult = testDocSearchResult1;
+      expect(component.searchResultAsPost).toEqual(testDocSearchResult1.doc);
 
-      component.searchResult = testQnaQueryResult1;
-      expect(component.searchResultAsPost).toEqual(testQnaQueryResult1.qna);
+      component.searchResult = testQnaSearchResult1;
+      expect(component.searchResultAsPost).toEqual(testQnaSearchResult1.qna);
     });
   });
 
   describe('searchResultHeader', () => {
     it('should return a header for the search result', () => {
       expect(component.searchResultHeader).toEqual(
-        userDisplayName(testOrgMemberQueryResult1.user),
+        userDisplayName(testOrgMemberSearchResult1.user),
       );
 
-      component.searchResult = testTeamQueryResult1;
-      expect(component.searchResultHeader).toEqual(testTeamQueryResult1.name);
+      component.searchResult = testTeamSearchResult1;
+      expect(component.searchResultHeader).toEqual(testTeamSearchResult1.name);
 
-      component.searchResult = testDocQueryResult1;
+      component.searchResult = testDocSearchResult1;
       expect(component.searchResultHeader).toEqual(
-        testDocQueryResult1.doc.title,
+        testDocSearchResult1.doc.title,
       );
 
-      component.searchResult = testQnaQueryResult1;
+      component.searchResult = testQnaSearchResult1;
       expect(component.searchResultHeader).toEqual(
-        testQnaQueryResult1.qna.title,
+        testQnaSearchResult1.qna.title,
       );
     });
   });
@@ -80,25 +80,25 @@ describe('SearchResultHeaderComponent', () => {
     it('should navigate to the proper URL', () => {
       component.headerClick();
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Member}/${testOrgMemberQueryResult1.orgMember.slug}`,
+        route: `${ShortUrl.Member}/${testOrgMemberSearchResult1.orgMember.slug}`,
       });
 
-      component.searchResult = testTeamQueryResult1;
+      component.searchResult = testTeamSearchResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Team}/${testTeamQueryResult1.slug}`,
+        route: `${ShortUrl.Team}/${testTeamSearchResult1.slug}`,
       });
 
-      component.searchResult = testDocQueryResult1;
+      component.searchResult = testDocSearchResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Doc}/${testDocQueryResult1.doc.slug}`,
+        route: `${ShortUrl.Doc}/${testDocSearchResult1.doc.slug}`,
       });
 
-      component.searchResult = testQnaQueryResult1;
+      component.searchResult = testQnaSearchResult1;
       component.headerClick();
       expect(component.orgNavigate.emit).toHaveBeenCalledWith({
-        route: `${ShortUrl.Qna}/${testQnaQueryResult1.qna.slug}`,
+        route: `${ShortUrl.Qna}/${testQnaSearchResult1.qna.slug}`,
       });
     });
   });

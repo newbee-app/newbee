@@ -1,8 +1,8 @@
 import {
-  testDocQueryResult1,
-  testQnaQueryResult1,
-  testQueryDto1,
-  testQueryResultsDto1,
+  testDocSearchResult1,
+  testOrgSearchDto1,
+  testOrgSearchResultsDto1,
+  testQnaSearchResult1,
   testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { RouterActions } from '../router';
@@ -17,7 +17,7 @@ describe('SearchReducer', () => {
   };
   const stateAfterSearchSuccess: SearchState = {
     ...initialSearchState,
-    searchResults: testQueryResultsDto1,
+    searchResults: testOrgSearchResultsDto1,
   };
   const stateAfterSuggestSuccess: SearchState = {
     ...initialSearchState,
@@ -32,7 +32,7 @@ describe('SearchReducer', () => {
     it('should update state for search', () => {
       const updatedState = searchFeature.reducer(
         initialSearchState,
-        SearchActions.search({ query: testQueryDto1 }),
+        SearchActions.search({ query: testOrgSearchDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearch);
     });
@@ -42,17 +42,17 @@ describe('SearchReducer', () => {
     it('should update state for searchSuccess', () => {
       let updatedState = searchFeature.reducer(
         stateAfterSearch,
-        SearchActions.searchSuccess({ results: testQueryResultsDto1 }),
+        SearchActions.searchSuccess({ results: testOrgSearchResultsDto1 }),
       );
       expect(updatedState).toEqual(stateAfterSearchSuccess);
 
       updatedState = searchFeature.reducer(
         stateAfterSuggestSuccess,
-        SearchActions.searchSuccess({ results: testQueryResultsDto1 }),
+        SearchActions.searchSuccess({ results: testOrgSearchResultsDto1 }),
       );
       expect(updatedState).toEqual({
         ...stateAfterSuggestSuccess,
-        searchResults: testQueryResultsDto1,
+        searchResults: testOrgSearchResultsDto1,
       });
     });
 
@@ -77,21 +77,21 @@ describe('SearchReducer', () => {
         stateAfterContinueSearchPending,
         SearchActions.continueSearchSuccess({
           results: {
-            ...testQueryResultsDto1,
+            ...testOrgSearchResultsDto1,
             offset: 1,
-            results: [testDocQueryResult1, testQnaQueryResult1],
+            results: [testDocSearchResult1, testQnaSearchResult1],
           },
         }),
       );
       expect(updatedState).toEqual({
         ...initialSearchState,
         searchResults: {
-          ...testQueryResultsDto1,
+          ...testOrgSearchResultsDto1,
           offset: 1,
           results: [
-            ...testQueryResultsDto1.results,
-            testDocQueryResult1,
-            testQnaQueryResult1,
+            ...testOrgSearchResultsDto1.results,
+            testDocSearchResult1,
+            testQnaSearchResult1,
           ],
         },
       });

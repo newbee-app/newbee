@@ -139,7 +139,7 @@ describe('TeamMemberService', () => {
     });
   });
 
-  describe('findOneByOrgMemberAndTeam', () => {
+  describe('findOneByTeamAndOrgMember', () => {
     afterEach(() => {
       expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
       expect(em.findOneOrFail).toHaveBeenCalledWith(TeamMemberEntity, {
@@ -150,7 +150,7 @@ describe('TeamMemberService', () => {
 
     it('should find a team member', async () => {
       await expect(
-        service.findOneByOrgMemberAndTeam(
+        service.findOneByTeamAndOrgMember(
           testOrgMemberEntity1,
           testTeamEntity1,
         ),
@@ -162,7 +162,7 @@ describe('TeamMemberService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneByOrgMemberAndTeam(
+        service.findOneByTeamAndOrgMember(
           testOrgMemberEntity1,
           testTeamEntity1,
         ),
@@ -174,7 +174,7 @@ describe('TeamMemberService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneByOrgMemberAndTeam(
+        service.findOneByTeamAndOrgMember(
           testOrgMemberEntity1,
           testTeamEntity1,
         ),
@@ -182,7 +182,7 @@ describe('TeamMemberService', () => {
     });
   });
 
-  describe('findOneByOrgMemberAndTeamOrNull', () => {
+  describe('findOneByTeamAndOrgMemberOrNull', () => {
     afterEach(() => {
       expect(em.findOne).toHaveBeenCalledTimes(1);
       expect(em.findOne).toHaveBeenCalledWith(TeamMemberEntity, {
@@ -193,7 +193,7 @@ describe('TeamMemberService', () => {
 
     it('should find a team member', async () => {
       await expect(
-        service.findOneByOrgMemberAndTeamOrNull(
+        service.findOneByTeamAndOrgMemberOrNull(
           testOrgMemberEntity1,
           testTeamEntity1,
         ),
@@ -203,7 +203,7 @@ describe('TeamMemberService', () => {
     it('should throw an InternalServerErrorException if findOne throws an error', async () => {
       jest.spyOn(em, 'findOne').mockRejectedValue(new Error('findOne'));
       await expect(
-        service.findOneByOrgMemberAndTeamOrNull(
+        service.findOneByTeamAndOrgMemberOrNull(
           testOrgMemberEntity1,
           testTeamEntity1,
         ),

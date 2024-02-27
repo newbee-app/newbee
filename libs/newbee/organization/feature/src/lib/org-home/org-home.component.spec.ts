@@ -7,7 +7,11 @@ import {
   initialSearchState,
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword, testQueryDto1, testSuggestDto1 } from '@newbee/shared/util';
+import {
+  Keyword,
+  testOrgSearchDto1,
+  testOrgSuggestDto1,
+} from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OrgHomeComponent } from './org-home.component';
 
@@ -54,18 +58,20 @@ describe('OrgHomeComponent', () => {
 
   describe('onSearch', () => {
     it('should navigate to search', async () => {
-      await component.onSearch(testQueryDto1.query);
-      expect(router.url).toEqual(`/${Keyword.Search}/${testQueryDto1.query}`);
+      await component.onSearch(testOrgSearchDto1.query);
+      expect(router.url).toEqual(
+        `/${Keyword.Search}/${testOrgSearchDto1.query}`,
+      );
     });
   });
 
   describe('onSearchbar', () => {
     it('should dispatch suggest', fakeAsync(() => {
-      component.onSearchbar(testSuggestDto1.query);
+      component.onSearchbar(testOrgSuggestDto1.query);
       tick(300);
       expect(store.dispatch).toHaveBeenCalledTimes(1);
       expect(store.dispatch).toHaveBeenCalledWith(
-        SearchActions.suggest({ query: testSuggestDto1 }),
+        SearchActions.suggest({ query: testOrgSuggestDto1 }),
       );
     }));
   });

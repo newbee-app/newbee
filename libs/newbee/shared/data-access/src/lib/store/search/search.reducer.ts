@@ -1,4 +1,4 @@
-import { Keyword, QueryResultsDto } from '@newbee/shared/util';
+import { Keyword, OrgSearchResultsDto } from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { RouterActions } from '../router';
 import { SearchActions } from './search.actions';
@@ -10,7 +10,7 @@ export interface SearchState {
   /**
    * The results of a search request.
    */
-  searchResults: QueryResultsDto | null;
+  searchResults: OrgSearchResultsDto | null;
 
   /**
    * The results of a suggest request.

@@ -12,8 +12,8 @@ import {
 import { TeamMemberService } from '@newbee/api/team-member/data-access';
 import {
   testCreateDocDto1,
-  testDocQueryResult1,
   testDocRelation1,
+  testDocSearchResult1,
   testOffsetAndLimit1,
   testUpdateDocDto1,
 } from '@newbee/shared/util';
@@ -45,9 +45,9 @@ describe('DocController', () => {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createDocNoOrg: jest.fn().mockResolvedValue(testDocRelation1),
-            createDocQueryResults: jest
+            createDocSearchResults: jest
               .fn()
-              .mockResolvedValue([testDocQueryResult1]),
+              .mockResolvedValue([testDocSearchResult1]),
             findPostsByOrgAndCount: jest
               .fn()
               .mockResolvedValue([[testDocEntity1], 1]),
@@ -56,7 +56,7 @@ describe('DocController', () => {
         {
           provide: TeamMemberService,
           useValue: createMock<TeamMemberService>({
-            findOneByOrgMemberAndTeamOrNull: jest
+            findOneByTeamAndOrgMemberOrNull: jest
               .fn()
               .mockResolvedValue(testTeamMemberEntity1),
           }),
@@ -84,7 +84,7 @@ describe('DocController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testDocQueryResult1],
+        results: [testDocSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -92,8 +92,8 @@ describe('DocController', () => {
         testOffsetAndLimit1,
         testOrganizationEntity1,
       );
-      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createDocSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocSearchResults).toHaveBeenCalledWith([
         testDocEntity1,
       ]);
     });
@@ -125,10 +125,10 @@ describe('DocController', () => {
     afterEach(() => {
       expect(entityService.createDocNoOrg).toHaveBeenCalledTimes(1);
       expect(
-        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+        teamMemberService.findOneByTeamAndOrgMemberOrNull,
       ).toHaveBeenCalledTimes(1);
       expect(
-        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+        teamMemberService.findOneByTeamAndOrgMemberOrNull,
       ).toHaveBeenCalledWith(testOrgMemberEntity1, testDocEntity1.team);
     });
 

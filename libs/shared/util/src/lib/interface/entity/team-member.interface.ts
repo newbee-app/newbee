@@ -9,5 +9,5 @@ export interface TeamMember extends CommonEntityFields {
   /**
    * The org member's role in the team.
    */
-  role: TeamRoleEnum;
+  readonly role: TeamRoleEnum;
 }

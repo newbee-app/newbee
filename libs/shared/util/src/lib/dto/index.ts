@@ -12,3 +12,4 @@ export * from './shared';
 export * from './team';
 export * from './team-member';
 export * from './user';
+export * from './waitlist-member';

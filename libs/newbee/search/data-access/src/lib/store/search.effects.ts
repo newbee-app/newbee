@@ -6,7 +6,11 @@ import {
   SearchActions,
 } from '@newbee/newbee/shared/data-access';
 import { canGetMoreResults } from '@newbee/newbee/shared/util';
-import { Keyword, QueryDto, QueryResultsDto } from '@newbee/shared/util';
+import {
+  Keyword,
+  OrgSearchDto,
+  OrgSearchResultsDto,
+} from '@newbee/shared/util';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, filter, map, switchMap } from 'rxjs';
@@ -63,10 +67,10 @@ export class SearchEffects {
       ofType(SearchActions.continueSearchPending),
       concatLatestFrom(() => this.store.select(selectSearchResultsOrgAndError)),
       switchMap(([, { searchResults, selectedOrganization }]) => {
-        const { offset } = searchResults as QueryResultsDto;
+        const { offset } = searchResults as OrgSearchResultsDto;
 
         // The backend will strip all of the fields that aren't actually in the DTO
-        const queryDto = new QueryDto();
+        const queryDto = new OrgSearchDto();
         Object.assign(queryDto, searchResults);
         queryDto.offset = offset + 1;
 

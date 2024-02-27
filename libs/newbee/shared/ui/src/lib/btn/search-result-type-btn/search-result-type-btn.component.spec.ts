@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  SolrEntryEnum,
-  testDocQueryResult1,
-  testOrgMemberQueryResult1,
-  testQnaQueryResult1,
-  testTeamQueryResult1,
+  SolrOrgEntryEnum,
+  testDocSearchResult1,
+  testOrgMemberSearchResult1,
+  testQnaSearchResult1,
+  testTeamSearchResult1,
 } from '@newbee/shared/util';
 import { capitalize } from 'lodash-es';
 import { SearchResultTypeBtnComponent } from './search-result-type-btn.component';
@@ -28,7 +28,7 @@ describe('SearchResultTypeBtnComponent', () => {
     fixture = TestBed.createComponent(SearchResultTypeBtnComponent);
     component = fixture.componentInstance;
 
-    component.searchResult = testOrgMemberQueryResult1;
+    component.searchResult = testOrgMemberSearchResult1;
 
     fixture.detectChanges();
   });
@@ -41,19 +41,23 @@ describe('SearchResultTypeBtnComponent', () => {
   describe('searchResultType', () => {
     it('should return the search result type as a string', () => {
       expect(component.searchResultType).toEqual(
-        capitalize(SolrEntryEnum.User),
+        capitalize(SolrOrgEntryEnum.User),
       );
 
-      component.searchResult = testTeamQueryResult1;
+      component.searchResult = testTeamSearchResult1;
       expect(component.searchResultType).toEqual(
-        capitalize(SolrEntryEnum.Team),
+        capitalize(SolrOrgEntryEnum.Team),
       );
 
-      component.searchResult = testDocQueryResult1;
-      expect(component.searchResultType).toEqual(capitalize(SolrEntryEnum.Doc));
+      component.searchResult = testDocSearchResult1;
+      expect(component.searchResultType).toEqual(
+        capitalize(SolrOrgEntryEnum.Doc),
+      );
 
-      component.searchResult = testQnaQueryResult1;
-      expect(component.searchResultType).toEqual(capitalize(SolrEntryEnum.Qna));
+      component.searchResult = testQnaSearchResult1;
+      expect(component.searchResultType).toEqual(
+        capitalize(SolrOrgEntryEnum.Qna),
+      );
     });
   });
 });

@@ -15,11 +15,11 @@ import {
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   testCreateTeamDto1,
-  testDocQueryResult1,
+  testDocSearchResult1,
   testGenerateSlugDto1,
   testGeneratedSlugDto1,
   testOffsetAndLimit1,
-  testQnaQueryResult1,
+  testQnaSearchResult1,
   testSlugDto1,
   testSlugTakenDto1,
   testTeamRelation1,
@@ -47,19 +47,19 @@ describe('TeamController', () => {
           useValue: createMock<TeamService>({
             create: jest.fn().mockResolvedValue(testTeamEntity1),
             update: jest.fn().mockResolvedValue(testUpdatedTeamEntity),
-            hasOneBySlug: jest.fn().mockResolvedValue(true),
+            hasOneByOrgAndSlug: jest.fn().mockResolvedValue(true),
           }),
         },
         {
           provide: EntityService,
           useValue: createMock<EntityService>({
             createTeamNoOrg: jest.fn().mockResolvedValue(testTeamRelation1),
-            createDocQueryResults: jest
+            createDocSearchResults: jest
               .fn()
-              .mockResolvedValue([testDocQueryResult1]),
-            createQnaQueryResults: jest
+              .mockResolvedValue([testDocSearchResult1]),
+            createQnaSearchResults: jest
               .fn()
-              .mockResolvedValue([testQnaQueryResult1]),
+              .mockResolvedValue([testQnaSearchResult1]),
           }),
         },
       ],
@@ -102,13 +102,13 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual(testSlugTakenDto1);
-      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
-      expect(service.hasOneBySlug).toHaveBeenCalledWith(
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testSlugDto1.slug,
       );
 
-      jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
+      jest.spyOn(service, 'hasOneByOrgAndSlug').mockResolvedValue(false);
       await expect(
         controller.checkSlug(
           testSlugDto1,
@@ -116,8 +116,8 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual({ slugTaken: false });
-      expect(service.hasOneBySlug).toHaveBeenCalledTimes(2);
-      expect(service.hasOneBySlug).toHaveBeenCalledWith(
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledTimes(2);
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testSlugDto1.slug,
       );
@@ -126,7 +126,7 @@ describe('TeamController', () => {
 
   describe('generateSlug', () => {
     it('should generate a unique slug', async () => {
-      jest.spyOn(service, 'hasOneBySlug').mockResolvedValue(false);
+      jest.spyOn(service, 'hasOneByOrgAndSlug').mockResolvedValue(false);
       const sluggedBase = slug(testGenerateSlugDto1.base);
       await expect(
         controller.generateSlug(
@@ -135,8 +135,8 @@ describe('TeamController', () => {
           testUserEntity1,
         ),
       ).resolves.toEqual(testGeneratedSlugDto1);
-      expect(service.hasOneBySlug).toHaveBeenCalledTimes(1);
-      expect(service.hasOneBySlug).toHaveBeenCalledWith(
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(service.hasOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         sluggedBase,
       );
@@ -209,7 +209,7 @@ describe('TeamController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testDocQueryResult1],
+        results: [testDocSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -218,8 +218,8 @@ describe('TeamController', () => {
         testOrganizationEntity1,
         { team: testTeamEntity1 },
       );
-      expect(entityService.createDocQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createDocQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createDocSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createDocSearchResults).toHaveBeenCalledWith([
         testDocEntity1,
       ]);
     });
@@ -239,7 +239,7 @@ describe('TeamController', () => {
       ).resolves.toEqual({
         ...testOffsetAndLimit1,
         total: 1,
-        results: [testQnaQueryResult1],
+        results: [testQnaSearchResult1],
       });
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledTimes(1);
       expect(entityService.findPostsByOrgAndCount).toHaveBeenCalledWith(
@@ -248,8 +248,8 @@ describe('TeamController', () => {
         testOrganizationEntity1,
         { team: testTeamEntity1 },
       );
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledTimes(1);
-      expect(entityService.createQnaQueryResults).toHaveBeenCalledWith([
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledTimes(1);
+      expect(entityService.createQnaSearchResults).toHaveBeenCalledWith([
         testQnaEntity1,
       ]);
     });

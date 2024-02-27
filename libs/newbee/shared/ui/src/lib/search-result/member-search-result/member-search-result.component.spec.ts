@@ -3,7 +3,7 @@ import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   TeamRoleEnum,
   testOrgMember1,
-  testOrgMemberQueryResult1,
+  testOrgMemberSearchResult1,
 } from '@newbee/shared/util';
 import { MemberSearchResultComponent } from './member-search-result.component';
 
@@ -26,7 +26,7 @@ describe('MemberSearchResultComponent', () => {
     fixture = TestBed.createComponent(MemberSearchResultComponent);
     component = fixture.componentInstance;
 
-    component.orgMember = testOrgMemberQueryResult1;
+    component.orgMember = testOrgMemberSearchResult1;
 
     jest.spyOn(component.orgNavigate, 'emit');
 
@@ -41,12 +41,12 @@ describe('MemberSearchResultComponent', () => {
   describe('permissionsLine', () => {
     it(`should output the org member's permissions`, () => {
       expect(component.permissionsLine).toEqual(
-        testOrgMemberQueryResult1.orgMember.role,
+        testOrgMemberSearchResult1.orgMember.role,
       );
 
       component.teamRole = TeamRoleEnum.Owner;
       expect(component.permissionsLine).toEqual(
-        `${testOrgMemberQueryResult1.orgMember.role} | ${TeamRoleEnum.Owner}`,
+        `${testOrgMemberSearchResult1.orgMember.role} | ${TeamRoleEnum.Owner}`,
       );
     });
   });

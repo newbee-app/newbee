@@ -1,4 +1,10 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import type { Authenticator } from '@newbee/shared/util';
 import type {
   AuthenticatorTransportFuture,
@@ -68,6 +74,7 @@ export class AuthenticatorEntity extends CommonEntity implements Authenticator {
   @ManyToOne(() => UserEntity, {
     hidden: true,
   })
+  @Index()
   user: UserEntity;
 
   constructor(

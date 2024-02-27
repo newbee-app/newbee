@@ -7,17 +7,17 @@ export interface OrgMemberInviteRelation {
   /**
    * The token and role for the org member invite.
    */
-  orgMemberInvite: OrgMemberInvite;
+  readonly orgMemberInvite: OrgMemberInvite;
 
   /**
    * The name and slug of the organization the invite is attached to.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * The email of the user who was invited.
    */
-  userInvites: UserInvites;
+  readonly userInvites: UserInvites;
 }
 
 /**

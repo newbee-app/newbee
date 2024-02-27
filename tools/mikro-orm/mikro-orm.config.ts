@@ -13,6 +13,7 @@ import {
   TeamMemberEntity,
   UserEntity,
   UserInvitesEntity,
+  WaitlistMemberEntity,
 } from '@newbee/api/shared/data-access';
 
 export default defineConfig({
@@ -43,5 +44,6 @@ export default defineConfig({
     TeamEntity,
     UserInvitesEntity,
     UserEntity,
+    WaitlistMemberEntity,
   ],
 });

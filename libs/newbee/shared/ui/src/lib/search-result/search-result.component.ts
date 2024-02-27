@@ -5,16 +5,16 @@ import {
   SearchResultFormat,
 } from '@newbee/newbee/shared/util';
 import {
-  DocQueryResult,
-  OrgMemberQueryResult,
-  QnaQueryResult,
-  TeamQueryResult,
+  DocSearchResult,
+  OrgMemberSearchResult,
+  QnaSearchResult,
   TeamRoleEnum,
-  resultIsDocQueryResult,
-  resultIsOrgMemberQueryResult,
-  resultIsQnaQueryResult,
-  resultIsTeamQueryResult,
-  type QueryResultType,
+  TeamSearchResult,
+  isDocSearchResult,
+  isOrgMemberSearchResult,
+  isQnaSearchResult,
+  isTeamSearchResult,
+  type OrgSearchResultType,
 } from '@newbee/shared/util';
 import { DocSearchResultComponent } from './doc-search-result';
 import { MemberSearchResultComponent } from './member-search-result';
@@ -41,7 +41,7 @@ export class SearchResultComponent {
   /**
    * The search result to display.
    */
-  @Input() searchResult!: QueryResultType;
+  @Input() searchResult!: OrgSearchResultType;
 
   /**
    * Format for how to display the search result, if relevant.
@@ -59,10 +59,10 @@ export class SearchResultComponent {
   @Output() orgNavigate = new EventEmitter<RouteAndQueryParams>();
 
   /**
-   * The search result as an `OrgMemberQueryResult` if applicable, `null` otherwise.
+   * The search result as an `OrgMemberSearchResult` if applicable, `null` otherwise.
    */
-  get searchResultAsOrgMember(): OrgMemberQueryResult | null {
-    if (resultIsOrgMemberQueryResult(this.searchResult)) {
+  get searchResultAsOrgMember(): OrgMemberSearchResult | null {
+    if (isOrgMemberSearchResult(this.searchResult)) {
       return this.searchResult;
     }
 
@@ -70,10 +70,10 @@ export class SearchResultComponent {
   }
 
   /**
-   * The search result as an `TeamQueryResult` if applicable, `null` otherwise.
+   * The search result as an `TeamSearchResult` if applicable, `null` otherwise.
    */
-  get searchResultAsTeam(): TeamQueryResult | null {
-    if (resultIsTeamQueryResult(this.searchResult)) {
+  get searchResultAsTeam(): TeamSearchResult | null {
+    if (isTeamSearchResult(this.searchResult)) {
       return this.searchResult;
     }
 
@@ -81,10 +81,10 @@ export class SearchResultComponent {
   }
 
   /**
-   * The search result as an `DocQueryResult` if applicable, `null` otherwise.
+   * The search result as an `DocSearchResult` if applicable, `null` otherwise.
    */
-  get searchResultAsDoc(): DocQueryResult | null {
-    if (resultIsDocQueryResult(this.searchResult)) {
+  get searchResultAsDoc(): DocSearchResult | null {
+    if (isDocSearchResult(this.searchResult)) {
       return this.searchResult;
     }
 
@@ -92,10 +92,10 @@ export class SearchResultComponent {
   }
 
   /**
-   * The search result as an `QnaQueryResult` if applicable, `null` otherwise.
+   * The search result as an `QnaSearchResult` if applicable, `null` otherwise.
    */
-  get searchResultAsQna(): QnaQueryResult | null {
-    if (resultIsQnaQueryResult(this.searchResult)) {
+  get searchResultAsQna(): QnaSearchResult | null {
+    if (isQnaSearchResult(this.searchResult)) {
       return this.searchResult;
     }
 

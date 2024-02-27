@@ -6,10 +6,9 @@ import {
 } from '@nestjs/common';
 import {
   AdminControlsEntity,
-  UserInvitesEntity,
+  EntityService,
 } from '@newbee/api/shared/data-access';
-import { adminControlsId } from '@newbee/api/shared/util';
-import { UserInvitesService } from '@newbee/api/user-invites/data-access';
+import { WaitlistMemberService } from '@newbee/api/waitlist-member/data-access';
 import {
   UpdateAdminControlsDto,
   internalServerError,
@@ -20,111 +19,51 @@ import {
  */
 @Injectable()
 export class AdminControlsService {
-  /**
-   * The logger to use when logging anything in this service.
-   */
   private readonly logger = new Logger(AdminControlsService.name);
 
   constructor(
     private readonly em: EntityManager,
-    private readonly userInvitesService: UserInvitesService,
+    private readonly entityService: EntityService,
+    private readonly waitlistMemberService: WaitlistMemberService,
   ) {}
 
   /**
-   * Get the NewBee instance's admin controls.
-   *
-   * @returns The NewBee instance's admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async get(): Promise<AdminControlsEntity> {
-    try {
-      let adminControls = await this.em.findOne(
-        AdminControlsEntity,
-        adminControlsId,
-      );
-      if (adminControls) {
-        return adminControls;
-      }
-
-      adminControls = new AdminControlsEntity();
-      await this.em.persistAndFlush(adminControls);
-      return adminControls;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
    * Update the admin controls and save the changes to the database.
+   * If registration is being turned on, remove everyone from the waitlist and turn them into users.
    *
    * @param updateAdminControlsDto The new details for the admin controls.
    *
    * @returns The updated admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async update(
     updateAdminControlsDto: UpdateAdminControlsDto,
   ): Promise<AdminControlsEntity> {
-    let adminControls = await this.get();
+    const { allowRegistration } = updateAdminControlsDto;
+    let adminControls = await this.entityService.getAdminControls();
     adminControls = this.em.assign(adminControls, updateAdminControlsDto);
 
-    try {
-      await this.em.flush();
-      return adminControls;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
+    if (allowRegistration) {
+      try {
+        await this.em.populate(adminControls, ['waitlist']);
+      } catch (err) {
+        this.logger.error(err);
+        throw new InternalServerErrorException(internalServerError);
+      }
+
+      await this.waitlistMemberService.deleteAndCreateUsers(
+        adminControls.waitlist.getItems(),
+      );
+    } else {
+      try {
+        await this.em.flush();
+      } catch (err) {
+        this.logger.error(err);
+        throw new InternalServerErrorException(internalServerError);
+      }
     }
-  }
 
-  /**
-   * Adds the following emails to the admin controls waitlist.
-   *
-   * @param emails The emails to add to the waitlist.
-   *
-   * @returns The updated admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async addToWaitlist(emails: string[]): Promise<AdminControlsEntity> {
-    const userInvites = await Promise.all(
-      emails.map(
-        async (email) =>
-          await this.userInvitesService.findOrCreateOneByEmail(email),
-      ),
-    );
-    const adminControls = await this.get();
-    adminControls.waitlist.add(userInvites);
-
-    try {
-      await this.em.flush();
-      return adminControls;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-  }
-
-  /**
-   * Remove the following user invites from the admin controls waitlist.
-   *
-   * @param userInvites The user invites to remove from the waitlist.
-   *
-   * @returns The updated admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async removeFromWaitlist(
-    userInvites: UserInvitesEntity[],
-  ): Promise<AdminControlsEntity> {
-    const adminControls = await this.get();
-    adminControls.waitlist.remove(userInvites);
-
-    try {
-      await this.em.flush();
-      return adminControls;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return adminControls;
   }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<enumsConfig>
+  <enum name="app_entry">
+    <value>user</value>
+    <value>waitlist</value>
+  </enum>
+  <enum name="app_role">
+    <value>User</value>
+    <value>Admin</value>
+  </enum>
+</enumsConfig>

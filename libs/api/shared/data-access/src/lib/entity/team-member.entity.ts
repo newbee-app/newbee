@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Enum,
-  ManyToOne,
-  PrimaryKeyType,
-  Unique,
-} from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
 import { TeamMember, TeamRoleEnum, ascTeamRoleEnum } from '@newbee/shared/util';
 import { v4 } from 'uuid';
 import { CommonEntity } from './common.abstract.entity';
@@ -18,6 +12,15 @@ import { TeamEntity } from './team.entity';
 @Unique<TeamMemberEntity>({ properties: ['orgMember', 'team'] })
 export class TeamMemberEntity extends CommonEntity implements TeamMember {
   /**
+   * @inheritdoc
+   */
+  @Enum({
+    items: () => TeamRoleEnum,
+    customOrder: ascTeamRoleEnum,
+  })
+  role: TeamRoleEnum;
+
+  /**
    * The org member associated with this entity.
    * `hidden` is on, so it will never be serialized.
    */
@@ -30,21 +33,6 @@ export class TeamMemberEntity extends CommonEntity implements TeamMember {
    */
   @ManyToOne(() => TeamEntity, { hidden: true })
   team: TeamEntity;
-
-  /**
-   * @inheritdoc
-   */
-  @Enum({
-    items: () => TeamRoleEnum,
-    customOrder: ascTeamRoleEnum,
-  })
-  role: TeamRoleEnum;
-
-  /**
-   * Specifies the primary key of the entity.
-   * In this case, it's a composite primary key consisting of the foreign keys of `orgMember` and `team`.
-   */
-  [PrimaryKeyType]?: [string, string];
 
   constructor(
     orgMember: OrgMemberEntity,

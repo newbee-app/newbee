@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
@@ -10,6 +8,10 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { defaultLimit } from '../constant';
 import {
+  AdminControlsRelationAndUsersDto,
+  AppSearchDto,
+  AppSearchResultsDto,
+  AppSuggestDto,
   CreateDocDto,
   CreateOrgMemberInviteDto,
   CreateOrganizationDto,
@@ -17,6 +19,7 @@ import {
   CreateTeamDto,
   CreateTeamMemberDto,
   CreateUserDto,
+  CreateWaitlistMemberDto,
   CsrfTokenAndDataDto,
   DocAndMemberDto,
   EmailDto,
@@ -26,13 +29,13 @@ import {
   MagicLinkLoginDto,
   NameDto,
   OrgAndMemberDto,
+  OrgSearchDto,
+  OrgSearchResultsDto,
+  OrgSuggestDto,
   QnaAndMemberDto,
-  QueryDto,
-  QueryResultsDto,
   RegistrationResponseDto,
   SlugDto,
   SlugTakenDto,
-  SuggestDto,
   SuggestResultsDto,
   TeamAndMemberDto,
   TokenDto,
@@ -67,6 +70,7 @@ import type {
   OrganizationRelation,
   PaginatedResults,
   Post,
+  PublicAdminControls,
   PublicUser,
   Qna,
   QnaRelation,
@@ -77,12 +81,14 @@ import type {
   User,
   UserInvites,
   UserRelation,
+  WaitlistMember,
 } from '../interface';
 import type {
-  DocQueryResult,
-  OrgMemberQueryResult,
-  QnaQueryResult,
-  TeamQueryResult,
+  DocSearchResult,
+  OrgMemberSearchResult,
+  QnaSearchResult,
+  TeamSearchResult,
+  UserSearchResult,
 } from '../type';
 
 dayjs.extend(duration);
@@ -194,46 +200,6 @@ export const testOrganization2: Organization = {
 };
 
 /**
- * An example instance of Team.
- * Strictly for use in testing.
- */
-export const testTeam1: Team = {
-  ...testCommonEntityFields1,
-  name: 'Development',
-  slug: 'development',
-  upToDateDuration: null,
-};
-
-/**
- * An example instance of Team.
- * Strictly for use in testing.
- */
-export const testTeam2: Team = {
-  ...testCommonEntityFields1,
-  name: 'HR',
-  slug: 'hr',
-  upToDateDuration: 'P1Y',
-};
-
-/**
- * An example instance of TeamMember.
- * Strictly for use in testing.
- */
-export const testTeamMember1: TeamMember = {
-  ...testCommonEntityFields1,
-  role: TeamRoleEnum.Owner,
-};
-
-/**
- * An example instance of TeamMember.
- * Strictly for use in testing.
- */
-export const testTeamMember2: TeamMember = {
-  ...testCommonEntityFields1,
-  role: TeamRoleEnum.Member,
-};
-
-/**
  * An example instance of OrgMember.
  * Strictly for use in testing.
  */
@@ -311,6 +277,46 @@ export const testQna1: Qna = {
 };
 
 /**
+ * An example instance of Team.
+ * Strictly for use in testing.
+ */
+export const testTeam1: Team = {
+  ...testCommonEntityFields1,
+  name: 'Development',
+  slug: 'development',
+  upToDateDuration: null,
+};
+
+/**
+ * An example instance of Team.
+ * Strictly for use in testing.
+ */
+export const testTeam2: Team = {
+  ...testCommonEntityFields1,
+  name: 'HR',
+  slug: 'hr',
+  upToDateDuration: 'P1Y',
+};
+
+/**
+ * An example instance of TeamMember.
+ * Strictly for use in testing.
+ */
+export const testTeamMember1: TeamMember = {
+  ...testCommonEntityFields1,
+  role: TeamRoleEnum.Owner,
+};
+
+/**
+ * An example instance of TeamMember.
+ * Strictly for use in testing.
+ */
+export const testTeamMember2: TeamMember = {
+  ...testCommonEntityFields1,
+  role: TeamRoleEnum.Member,
+};
+
+/**
  * An example instance of UserInvites.
  * Strictly for use in testing.
  */
@@ -330,13 +336,31 @@ export const testOrgMemberInvite1: OrgMemberInvite = {
 };
 
 /**
+ * An example instance of PublicAdminControls.
+ * Strictly for use in testing.
+ */
+export const testPublicAdminControls1: PublicAdminControls = {
+  allowRegistration: true,
+  allowWaitlist: true,
+};
+
+/**
  * An example instance of AdminControls.
  * Strictly for use in testing.
  */
 export const testAdminControls1: AdminControls = {
   ...testCommonEntityFields1,
-  allowRegistration: true,
-  allowWaitlist: true,
+  ...testPublicAdminControls1,
+};
+
+/**
+ * An example instance of WaitlistMember.
+ * Strictly for use in testing.
+ */
+export const testWaitlistMember1: WaitlistMember = {
+  ...testCommonEntityFields1,
+  email: testUser1.email,
+  name: testUser1.name,
 };
 
 /**
@@ -417,37 +441,37 @@ export const testOrgMemberUser2: OrgMemberUser = {
 };
 
 /**
- * An example instance of OrgMemberQueryResult.
+ * An example instance of OrgMemberSearchResult.
  * Strictly for use in testing.
  */
-export const testOrgMemberQueryResult1: OrgMemberQueryResult =
+export const testOrgMemberSearchResult1: OrgMemberSearchResult =
   testOrgMemberUser1;
 
 /**
- * An example instance of TeamQueryResult.
+ * An example instance of TeamSearchResult.
  * Strictly for use in testing.
  */
-export const testTeamQueryResult1: TeamQueryResult = {
+export const testTeamSearchResult1: TeamSearchResult = {
   ...testCommonEntityFields1,
   name: testTeam1.name,
   slug: testTeam1.slug,
 };
 
 /**
- * An example instance of TeamQueryResult.
+ * An example instance of TeamSearchResult.
  * Strictly for use in testing.
  */
-export const testTeamQueryResult2: TeamQueryResult = {
+export const testTeamSearchResult2: TeamSearchResult = {
   ...testCommonEntityFields1,
   name: testTeam2.name,
   slug: testTeam2.slug,
 };
 
 /**
- * An example instance of DocQueryResult.
+ * An example instance of DocSearchResult.
  * Strictly for use in testing.
  */
-export const testDocQueryResult1: DocQueryResult = {
+export const testDocSearchResult1: DocSearchResult = {
   doc: {
     ...testDoc1,
     docSnippet:
@@ -455,14 +479,14 @@ export const testDocQueryResult1: DocQueryResult = {
   },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser1,
-  team: testTeamQueryResult1,
+  team: testTeamSearchResult1,
 };
 
 /**
- * An example instance of DocQueryResult.
+ * An example instance of DocSearchResult.
  * Strictly for use in testing.
  */
-export const testDocQueryResult2: DocQueryResult = {
+export const testDocSearchResult2: DocSearchResult = {
   doc: {
     ...testDoc2,
     docSnippet:
@@ -470,14 +494,14 @@ export const testDocQueryResult2: DocQueryResult = {
   },
   creator: testOrgMemberUser1,
   maintainer: testOrgMemberUser2,
-  team: testTeamQueryResult2,
+  team: testTeamSearchResult2,
 };
 
 /**
- * An example instance of QnaQueryResult.
+ * An example instance of QnaSearchResult.
  * Strictly for use in testing.
  */
-export const testQnaQueryResult1: QnaQueryResult = {
+export const testQnaSearchResult1: QnaSearchResult = {
   qna: {
     ...testQna1,
     questionSnippet: `<p>A <b>bolded</b> question snippet</p>`,
@@ -489,6 +513,21 @@ export const testQnaQueryResult1: QnaQueryResult = {
 };
 
 /**
+ * An example instance of UserSearchResult.
+ * Strictly for use in testing.
+ */
+export const testUserSearchResult1: UserSearchResult = testUser1;
+
+/**
+ * An example instance of OffsetAndLimit.
+ * Strictly for use in testing.
+ */
+export const testOffsetAndLimit1: OffsetAndLimit = {
+  offset: 0,
+  limit: defaultLimit,
+};
+
+/**
  * An example instance of OrganizationRelation.
  * Strictly for use in testing.
  */
@@ -497,16 +536,14 @@ export const testOrganizationRelation1: OrganizationRelation = {
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
   docs: {
-    results: [testDocQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testDocSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   qnas: {
-    results: [testQnaQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testQnaSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
 };
 
@@ -519,16 +556,14 @@ export const testOrganizationRelation2: OrganizationRelation = {
   teams: [testTeam1],
   members: [testOrgMemberUser1, testOrgMemberUser2],
   docs: {
-    results: [testDocQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testDocSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   qnas: {
-    results: [testQnaQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testQnaSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
 };
 
@@ -590,28 +625,24 @@ export const testOrgMemberRelation1: OrgMemberRelation = {
   user: testPublicUser1,
   teams: [testTeamMemberRelation1],
   createdDocs: {
-    results: [testDocQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testDocSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   maintainedDocs: {
-    results: [testDocQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testDocSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   createdQnas: {
-    results: [testQnaQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testQnaSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   maintainedQnas: {
-    results: [testQnaQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testQnaSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
 };
 
@@ -623,16 +654,14 @@ export const testTeamRelation1: TeamRelation = {
   team: testTeam1,
   organization: testOrganization1,
   docs: {
-    results: [testDocQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testDocSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   qnas: {
-    results: [testQnaQueryResult1],
+    ...testOffsetAndLimit1,
+    results: [testQnaSearchResult1],
     total: 1,
-    offset: 0,
-    limit: defaultLimit,
   },
   teamMembers: [testTeamMemberRelation1, testTeamMemberRelation2],
 };
@@ -663,8 +692,32 @@ export const testUserRelation1: UserRelation = {
  */
 export const testAdminControlsRelation1: AdminControlsRelation = {
   adminControls: testAdminControls1,
-  waitlist: [testUserInvites1],
+  waitlist: {
+    ...testOffsetAndLimit1,
+    results: [testWaitlistMember1],
+    total: 1,
+  },
 };
+
+/**
+ * An example instance of AdminControlsRelationAndUsersDto.
+ * Strictly for use in testing.
+ */
+export const testAdminControlsRelationAndUsersDto1 =
+  new AdminControlsRelationAndUsersDto(testAdminControlsRelation1, {
+    ...testOffsetAndLimit1,
+    results: [testUser1, testUser2],
+    total: 2,
+  });
+
+/**
+ * An example instance of CreateWaitlistMemberDto.
+ * Strictly for use in testing.
+ */
+export const testCreateWaitlistMemberDto1 = new CreateWaitlistMemberDto(
+  testWaitlistMember1.email,
+  testWaitlistMember1.name,
+);
 
 /**
  * An example instance of EmailDto.
@@ -705,6 +758,7 @@ export const testWebAuthnLoginDto1 = new WebAuthnLoginDto(
  */
 export const testCsrfTokenAndDataDto1 = new CsrfTokenAndDataDto(
   'csrf1',
+  testPublicAdminControls1,
   testUserRelation1,
 );
 
@@ -930,25 +984,39 @@ export const testRegistrationResponseDto1 = new RegistrationResponseDto(
 );
 
 /**
- * An example instance of SuggestDto.
+ * An example instance of OrgSuggestDto.
  * Strictly for use in testing.
  */
-export const testSuggestDto1 = new SuggestDto();
-testSuggestDto1.query = testTeam1.name;
+export const testOrgSuggestDto1 = new OrgSuggestDto();
+testOrgSuggestDto1.query = testTeam1.name;
 
 /**
- * An example instance of QueryDto.
+ * An example instance of AppSuggestDto.
  * Strictly for use in testing.
  */
-export const testQueryDto1 = new QueryDto();
-Object.assign(testQueryDto1, testSuggestDto1);
+export const testAppSuggestDto1 = new AppSuggestDto();
+testAppSuggestDto1.query = testUser1.name;
+
+/**
+ * An example instance of OrgSearchDto.
+ * Strictly for use in testing.
+ */
+export const testOrgSearchDto1 = new OrgSearchDto();
+Object.assign(testOrgSearchDto1, testOrgSuggestDto1);
+
+/**
+ * An example instance of AppSearchDto.
+ * Strictly for use in testing.
+ */
+export const testAppSearchDto1 = new AppSearchDto();
+Object.assign(testAppSearchDto1, testAppSuggestDto1);
 
 /**
  * An example instance of SuggestResultsDto.
  * Strictly for use in testing.
  */
 export const testSuggestResultsDto1 = new SuggestResultsDto([
-  testTeamQueryResult1.name,
+  testTeamSearchResult1.name,
 ]);
 
 /**
@@ -984,15 +1052,6 @@ export const testGeneratedSlugDto1 = new GeneratedSlugDto(
 );
 
 /**
- * An example instance of OffsetAndLimit.
- * Strictly for use in testing.
- */
-export const testOffsetAndLimit1: OffsetAndLimit = {
-  offset: 0,
-  limit: defaultLimit,
-};
-
-/**
  * An example instance of GetOrgMemberPostsDto.
  * Strictly for use in testing.
  */
@@ -1002,32 +1061,41 @@ export const testGetOrgMemberPostsDto1 = new GetOrgMemberPostsDto(
 );
 
 /**
- * An example instance of PaginatedResults with DocQueryResult.
+ * An example instance of PaginatedResults with DocSearchResult.
  * Strictly for use in testing.
  */
-export const testPaginatedResultsDocQueryResult1: PaginatedResults<DocQueryResult> =
+export const testPaginatedResultsDocSearchResult1: PaginatedResults<DocSearchResult> =
   {
     ...testOffsetAndLimit1,
     total: 2,
-    results: [testDocQueryResult1, testDocQueryResult2],
+    results: [testDocSearchResult1, testDocSearchResult2],
   };
 
 /**
- * An example instance of PaginatedResults with QnaQueryResult.
+ * An example instance of PaginatedResults with QnaSearchResult.
  * Strictly for use in testing.
  */
-export const testPaginatedResultsQnaQueryResult1: PaginatedResults<QnaQueryResult> =
+export const testPaginatedResultsQnaSearchResult1: PaginatedResults<QnaSearchResult> =
   {
     ...testOffsetAndLimit1,
     total: 1,
-    results: [testQnaQueryResult1],
+    results: [testQnaSearchResult1],
   };
 
 /**
- * An example instance of BaseQueryResultsDto.
+ * An example instance of OrgSearchResultsDto.
  * Strictly for use in testing.
  */
-export const testQueryResultsDto1 = new QueryResultsDto();
-Object.assign(testQueryResultsDto1, testQueryDto1);
-testQueryResultsDto1.total = 1;
-testQueryResultsDto1.results = [testTeamQueryResult1];
+export const testOrgSearchResultsDto1 = new OrgSearchResultsDto();
+Object.assign(testOrgSearchResultsDto1, testOrgSearchDto1);
+testOrgSearchResultsDto1.total = 1;
+testOrgSearchResultsDto1.results = [testTeamSearchResult1];
+
+/**
+ * An example instance of AppSearchResultsDto.
+ * Strictly for use in testing.
+ */
+export const testAppSearchResultsDto1 = new AppSearchResultsDto();
+Object.assign(testAppSearchResultsDto1, testAppSearchDto1);
+testAppSearchResultsDto1.total = 1;
+testAppSearchResultsDto1.results = [testUserSearchResult1];

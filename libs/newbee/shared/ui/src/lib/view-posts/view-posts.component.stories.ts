@@ -1,8 +1,8 @@
 import { OrgMemberPostTab } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
 } from '@newbee/shared/util';
 import { Meta, StoryObj } from '@storybook/angular';
 import { ViewPostsComponent } from './view-posts.component';
@@ -14,7 +14,7 @@ export default {
     httpClientError: null,
     postType: 'doc',
     orgMemberTab: null,
-    posts: testPaginatedResultsDocQueryResult1,
+    posts: testPaginatedResultsDocSearchResult1,
     getPostsPending: false,
   },
   argTypes: {
@@ -32,7 +32,7 @@ export const Primary: Story = {};
 export const Qnas: Story = {
   args: {
     postType: 'qna',
-    posts: testPaginatedResultsQnaQueryResult1,
+    posts: testPaginatedResultsQnaSearchResult1,
   },
 };
 

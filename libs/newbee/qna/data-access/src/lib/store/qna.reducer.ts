@@ -3,7 +3,11 @@ import {
   QnaActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { Keyword, PaginatedResults, QnaQueryResult } from '@newbee/shared/util';
+import {
+  Keyword,
+  PaginatedResults,
+  QnaSearchResult,
+} from '@newbee/shared/util';
 import { createFeature, createReducer, on } from '@ngrx/store';
 
 /**
@@ -13,7 +17,7 @@ export interface QnaState {
   /**
    * All of the qnas of the org as paginated results.
    */
-  qnas: PaginatedResults<QnaQueryResult> | null;
+  qnas: PaginatedResults<QnaSearchResult> | null;
 
   /**
    * Whether the user is waiting for a resposne for getting all paginated qnas.

@@ -9,10 +9,10 @@ export interface OrgMember extends CommonEntityFields {
   /**
    * The user's role in the organization.
    */
-  role: OrgRoleEnum;
+  readonly role: OrgRoleEnum;
 
   /**
    * The user's unique slug within the organization.
    */
-  slug: string;
+  readonly slug: string;
 }

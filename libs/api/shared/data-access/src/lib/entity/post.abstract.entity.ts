@@ -37,13 +37,13 @@ export abstract class PostEntity extends CommonEntity implements Post {
    * @inheritdoc
    */
   @Property({ nullable: true, length: 50 })
-  @Index()
   upToDateDuration: string | null;
 
   /**
    * @inheritdoc
    */
   @Property()
+  @Index()
   outOfDateAt: Date;
 
   /**

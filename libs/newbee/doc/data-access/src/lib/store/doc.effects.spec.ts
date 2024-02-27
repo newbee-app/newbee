@@ -11,14 +11,14 @@ import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl, testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  testBaseDocAndMemberDto1,
   testCreateDocDto1,
   testDoc1,
+  testDocAndMemberDto1,
   testDocRelation1,
   testOffsetAndLimit1,
   testOrganization1,
   testOrganizationRelation1,
-  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsDocSearchResult1,
   testUpdateDocDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -54,7 +54,7 @@ describe('DocEffects', () => {
             },
             [`${Keyword.Doc}Module`]: {
               ...initialDocModuleState,
-              docs: testPaginatedResultsDocQueryResult1,
+              docs: testPaginatedResultsDocSearchResult1,
             },
           },
         }),
@@ -65,11 +65,11 @@ describe('DocEffects', () => {
           useValue: createMock<DocService>({
             getAll: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsDocSearchResult1)),
             create: jest.fn().mockReturnValue(of(testDoc1)),
-            get: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
+            get: jest.fn().mockReturnValue(of(testDocAndMemberDto1)),
             markUpToDate: jest.fn().mockReturnValue(of(testDoc1)),
-            edit: jest.fn().mockReturnValue(of(testBaseDocAndMemberDto1)),
+            edit: jest.fn().mockReturnValue(of(testDocAndMemberDto1)),
             delete: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -111,7 +111,7 @@ describe('DocEffects', () => {
       store.setState({
         [`${Keyword.Doc}Module`]: {
           ...initialDocModuleState,
-          docs: { ...testPaginatedResultsDocQueryResult1, total: 100 },
+          docs: { ...testPaginatedResultsDocSearchResult1, total: 100 },
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -171,7 +171,7 @@ describe('DocEffects', () => {
       });
       const expected$ = hot('a', {
         a: DocActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -189,7 +189,7 @@ describe('DocEffects', () => {
         [`${Keyword.Doc}Module`]: {
           ...initialDocModuleState,
           docs: {
-            ...testPaginatedResultsDocQueryResult1,
+            ...testPaginatedResultsDocSearchResult1,
             total: 100,
           },
         },
@@ -204,7 +204,7 @@ describe('DocEffects', () => {
       });
       const expected$ = hot('a', {
         a: DocActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -289,7 +289,7 @@ describe('DocEffects', () => {
       });
       const expected$ = hot('a', {
         a: DocActions.getDocSuccess({
-          docAndMemberDto: testBaseDocAndMemberDto1,
+          docAndMemberDto: testDocAndMemberDto1,
         }),
       });
       expect(effects.getDoc$).toBeObservable(expected$);
@@ -353,7 +353,7 @@ describe('DocEffects', () => {
       });
       const expected$ = hot('a', {
         a: DocActions.getDocSuccess({
-          docAndMemberDto: testBaseDocAndMemberDto1,
+          docAndMemberDto: testDocAndMemberDto1,
         }),
       });
       expect(effects.editDoc$).toBeObservable(expected$);

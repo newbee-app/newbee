@@ -12,7 +12,7 @@ import {
   Keyword,
   testDocRelation1,
   testOrganizationRelation1,
-  testPaginatedResultsDocQueryResult1,
+  testPaginatedResultsDocSearchResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
@@ -89,7 +89,7 @@ describe('DocSelector', () => {
       store.setState({
         [`${Keyword.Doc}Module`]: {
           ...initialDocModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -102,7 +102,7 @@ describe('DocSelector', () => {
       });
       const expected$ = hot('a', {
         a: {
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
           selectedOrganization: testOrganizationRelation1,
           error: testHttpClientError1,
         },

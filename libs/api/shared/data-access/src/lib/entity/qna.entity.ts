@@ -17,30 +17,6 @@ export class QnaEntity extends PostEntity implements Qna {
   /**
    * @inheritdoc
    */
-  @ManyToOne(() => OrganizationEntity, { hidden: true })
-  organization: OrganizationEntity;
-
-  /**
-   * @inheritdoc
-   */
-  @ManyToOne(() => TeamEntity, { nullable: true, hidden: true })
-  team: TeamEntity | null;
-
-  /**
-   * @inheritdoc
-   */
-  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
-  creator: OrgMemberEntity | null;
-
-  /**
-   * @inheritdoc
-   */
-  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
-  maintainer: OrgMemberEntity | null = null;
-
-  /**
-   * @inheritdoc
-   */
   @Property({ type: 'text', nullable: true })
   questionMarkdoc: string | null;
 
@@ -75,6 +51,30 @@ export class QnaEntity extends PostEntity implements Qna {
    */
   @Property({ type: 'text', nullable: true, hidden: true })
   answerTxt: string | null;
+
+  /**
+   * @inheritdoc
+   */
+  @ManyToOne(() => OrganizationEntity, { hidden: true })
+  organization: OrganizationEntity;
+
+  /**
+   * @inheritdoc
+   */
+  @ManyToOne(() => TeamEntity, { nullable: true, hidden: true })
+  team: TeamEntity | null;
+
+  /**
+   * @inheritdoc
+   */
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
+  creator: OrgMemberEntity | null;
+
+  /**
+   * @inheritdoc
+   */
+  @ManyToOne(() => OrgMemberEntity, { hidden: true, nullable: true })
+  maintainer: OrgMemberEntity | null = null;
 
   constructor(
     id: string,

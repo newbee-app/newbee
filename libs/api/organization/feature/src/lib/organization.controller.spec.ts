@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationService } from '@newbee/api/organization/data-access';
+import { SearchService } from '@newbee/api/search/data-access';
 import {
   EntityService,
   testOrgMemberEntity1,
@@ -12,9 +13,13 @@ import {
   testGenerateSlugDto1,
   testGeneratedSlugDto1,
   testOrgMemberRelation1,
+  testOrgSearchDto1,
+  testOrgSearchResultsDto1,
+  testOrgSuggestDto1,
   testOrganizationRelation1,
   testSlugDto1,
   testSlugTakenDto1,
+  testSuggestResultsDto1,
   testUpdateOrganizationDto1,
 } from '@newbee/shared/util';
 import slug from 'slug';
@@ -24,6 +29,7 @@ describe('OrganizationController', () => {
   let controller: OrganizationController;
   let service: OrganizationService;
   let entityService: EntityService;
+  let searchService: SearchService;
 
   const testUpdatedOrganizationEntity = {
     ...testOrganizationEntity1,
@@ -53,18 +59,27 @@ describe('OrganizationController', () => {
               .mockResolvedValue(testOrgMemberRelation1),
           }),
         },
+        {
+          provide: SearchService,
+          useValue: createMock<SearchService>({
+            orgSuggest: jest.fn().mockResolvedValue(testSuggestResultsDto1),
+            orgSearch: jest.fn().mockResolvedValue(testOrgSearchResultsDto1),
+          }),
+        },
       ],
     }).compile();
 
-    controller = module.get<OrganizationController>(OrganizationController);
-    service = module.get<OrganizationService>(OrganizationService);
-    entityService = module.get<EntityService>(EntityService);
+    controller = module.get(OrganizationController);
+    service = module.get(OrganizationService);
+    entityService = module.get(EntityService);
+    searchService = module.get(SearchService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
     expect(entityService).toBeDefined();
+    expect(searchService).toBeDefined();
   });
 
   describe('create', () => {
@@ -148,6 +163,32 @@ describe('OrganizationController', () => {
       ).resolves.toBeUndefined();
       expect(service.delete).toHaveBeenCalledTimes(1);
       expect(service.delete).toHaveBeenCalledWith(testOrganizationEntity1);
+    });
+  });
+
+  describe('suggest', () => {
+    it('should return suggest results', async () => {
+      await expect(
+        controller.suggest(testOrgSuggestDto1, testOrganizationEntity1),
+      ).resolves.toEqual(testSuggestResultsDto1);
+      expect(searchService.orgSuggest).toHaveBeenCalledTimes(1);
+      expect(searchService.orgSuggest).toHaveBeenCalledWith(
+        testOrganizationEntity1,
+        testOrgSuggestDto1,
+      );
+    });
+  });
+
+  describe('search', () => {
+    it('should return search results', async () => {
+      await expect(
+        controller.search(testOrgSearchDto1, testOrganizationEntity1),
+      ).resolves.toEqual(testOrgSearchResultsDto1);
+      expect(searchService.orgSearch).toHaveBeenCalledTimes(1);
+      expect(searchService.orgSearch).toHaveBeenCalledWith(
+        testOrganizationEntity1,
+        testOrgSearchDto1,
+      );
     });
   });
 });

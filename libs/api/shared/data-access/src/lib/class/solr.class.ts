@@ -1,13 +1,20 @@
-import { SolrDocFields } from '@newbee/api/shared/util';
-import { SolrEntryEnum } from '@newbee/shared/util';
+import { SolrAppFields, SolrOrgFields } from '@newbee/api/shared/util';
+import { SolrAppEntryEnum, SolrOrgEntryEnum } from '@newbee/shared/util';
 import { AddDocParams, DocInput } from '@newbee/solr-cli';
-import { DocEntity, OrgMemberEntity, QnaEntity, TeamEntity } from '../entity';
+import {
+  DocEntity,
+  OrgMemberEntity,
+  QnaEntity,
+  TeamEntity,
+  UserEntity,
+  WaitlistMemberEntity,
+} from '../entity';
 
 /**
- * A class compatible with a doc Solr doc.
+ * A class compatible with a doc Solr org doc.
  * Made to add a new doc to Solr.
  */
-export class DocDocParams extends SolrDocFields implements AddDocParams {
+export class DocDocParams extends SolrOrgFields implements AddDocParams {
   /**
    * Needed to implement `AddDocParams`.
    */
@@ -27,7 +34,7 @@ export class DocDocParams extends SolrDocFields implements AddDocParams {
       title,
       docTxt,
     } = doc;
-    super(id, SolrEntryEnum.Doc, slug, createdAt, updatedAt, {
+    super(id, SolrOrgEntryEnum.Doc, slug, createdAt, updatedAt, {
       team_id: team?.id ?? null,
       marked_up_to_date_at: markedUpToDateAt,
       out_of_date_at: outOfDateAt,
@@ -40,10 +47,10 @@ export class DocDocParams extends SolrDocFields implements AddDocParams {
 }
 
 /**
- * A class compatible with a qna Solr doc.
+ * A class compatible with a qna Solr org doc.
  * Made to add a new qna to Solr.
  */
-export class QnaDocParams extends SolrDocFields implements AddDocParams {
+export class QnaDocParams extends SolrOrgFields implements AddDocParams {
   /**
    * Needed to implement `AddDocParams`.
    */
@@ -64,7 +71,7 @@ export class QnaDocParams extends SolrDocFields implements AddDocParams {
       questionTxt,
       answerTxt,
     } = qna;
-    super(id, SolrEntryEnum.Qna, slug, createdAt, updatedAt, {
+    super(id, SolrOrgEntryEnum.Qna, slug, createdAt, updatedAt, {
       team_id: team?.id ?? null,
       marked_up_to_date_at: markedUpToDateAt,
       out_of_date_at: outOfDateAt,
@@ -78,10 +85,10 @@ export class QnaDocParams extends SolrDocFields implements AddDocParams {
 }
 
 /**
- * A class compatible with a team Solr doc.
+ * A class compatible with a team Solr org doc.
  * Made to add a new team to Solr.
  */
-export class TeamDocParams extends SolrDocFields implements AddDocParams {
+export class TeamDocParams extends SolrOrgFields implements AddDocParams {
   /**
    * Needed to implement `AddDocParams`.
    */
@@ -89,19 +96,19 @@ export class TeamDocParams extends SolrDocFields implements AddDocParams {
 
   constructor(team: TeamEntity) {
     const { id, slug, createdAt, updatedAt, name } = team;
-    super(id, SolrEntryEnum.Team, slug, createdAt, updatedAt, {
+    super(id, SolrOrgEntryEnum.Team, slug, createdAt, updatedAt, {
       team_name: name,
     });
   }
 }
 
 /**
- * A class compatible with an org member Solr doc.
+ * A class compatible with an org member Solr org doc.
  * Made to add a new org member to Solr.
  *
  * NOTE the constructor assumes the org member's `user` field is populated.
  */
-export class OrgMemberDocParams extends SolrDocFields implements AddDocParams {
+export class OrgMemberDocParams extends SolrOrgFields implements AddDocParams {
   /**
    * Needed to implement `AddDocParams`.
    */
@@ -110,12 +117,62 @@ export class OrgMemberDocParams extends SolrDocFields implements AddDocParams {
   constructor(orgMember: OrgMemberEntity) {
     const { id, slug, createdAt, updatedAt, user, role } = orgMember;
     const { email, name, displayName, phoneNumber } = user;
-    super(id, SolrEntryEnum.User, slug, createdAt, updatedAt, {
-      user_org_role: role,
+    super(id, SolrOrgEntryEnum.User, slug, createdAt, updatedAt, {
       user_email: email,
       user_name: name,
       user_display_name: displayName,
       user_phone_number: phoneNumber,
+      user_org_role: role,
+    });
+  }
+}
+
+/**
+ * A class compatible with a user Solr app doc.
+ * Made to add a new user to Solr.
+ */
+export class UserDocParams extends SolrAppFields implements AddDocParams {
+  /**
+   * Needed to implement `AddDocParams`.
+   */
+  [docFields: string]: DocInput;
+
+  constructor(user: UserEntity) {
+    const {
+      id,
+      createdAt,
+      updatedAt,
+      email,
+      name,
+      displayName,
+      phoneNumber,
+      role,
+    } = user;
+    super(id, SolrAppEntryEnum.User, createdAt, updatedAt, {
+      user_email: email,
+      user_name: name,
+      user_display_name: displayName,
+      user_phone_number: phoneNumber,
+      user_app_role: role,
+    });
+  }
+}
+
+/**
+ * A class compatible with a waitlist Solr app doc.
+ * Made to add a new user to Solr.
+ */
+export class WaitlistDocParams extends SolrAppFields implements AddDocParams {
+  /**
+   * Needed to implement `AddDocParams`.
+   */
+  [docFields: string]: DocInput;
+
+  constructor(waitlistMember: WaitlistMemberEntity) {
+    const { id, createdAt, updatedAt, email, name } = waitlistMember;
+    super(id, SolrAppEntryEnum.Waitlist, createdAt, updatedAt, {
+      waitlist_email: email,
+      waitlist_name: name,
     });
   }
 }

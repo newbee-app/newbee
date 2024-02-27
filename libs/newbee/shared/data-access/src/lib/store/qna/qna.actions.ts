@@ -4,7 +4,7 @@ import {
   PaginatedResults,
   Qna,
   QnaAndMemberDto,
-  QnaQueryResult,
+  QnaSearchResult,
   UpdateAnswerDto,
   UpdateQuestionDto,
 } from '@newbee/shared/util';
@@ -29,7 +29,7 @@ export const QnaActions = createActionGroup({
     /**
      * Indicates that the paginated qnas were successfully retrieved.
      */
-    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaSearchResult> }>(),
 
     /**
      * Creates a QnA using the given information.

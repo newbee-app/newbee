@@ -47,12 +47,12 @@ export class OrgMemberInviteService {
 
   constructor(
     private readonly em: EntityManager,
+    private readonly configService: ConfigService<AppConfig, true>,
+    private readonly mailerService: MailerService,
     private readonly entityService: EntityService,
     private readonly userService: UserService,
     private readonly userInvitesService: UserInvitesService,
     private readonly orgMemberService: OrgMemberService,
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService<AppConfig, true>,
   ) {}
 
   /**
@@ -102,7 +102,7 @@ export class OrgMemberInviteService {
       await this.em.persistAndFlush(orgMemberInvite);
       await this.mailerService.sendMail({
         to: email,
-        subject: `Your NewBee Invitation`,
+        subject: 'Your NewBee Invitation',
         text: `${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.\nPlease click the link below to accept your invitation: ${acceptLink}\nPlease click the link below to decline your invitation: ${declineLink}\nOtherwise, log in to your NewBee account to accept your invitation.`,
         html: `<p>${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.</p><p>Please click the link below to accept your invitation: <a href="${acceptLink}">${acceptLink}</a></p><p>Please click the link below to decline your invitation: <a href="${declineLink}">${declineLink}</a></p><p>Otherwise, log in to your NewBee account to accept your invitation.</p>`,
       });
@@ -246,7 +246,7 @@ export class OrgMemberInviteService {
       return;
     }
 
-    const orgMember = await this.orgMemberService.findOneByUserAndOrgOrNull(
+    const orgMember = await this.orgMemberService.findOneByOrgAndUserOrNull(
       user,
       organization,
     );

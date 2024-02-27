@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TeamActions, httpFeature } from '@newbee/newbee/shared/data-access';
 import { RouteAndQueryParams, ShortUrl } from '@newbee/newbee/shared/util';
 import { teamFeature } from '@newbee/newbee/team/data-access';
-import { Keyword, SolrEntryEnum } from '@newbee/shared/util';
+import { Keyword, SolrOrgEntryEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -79,7 +79,7 @@ export class TeamQnasViewComponent implements OnDestroy {
     await this.router.navigate([`../../../${Keyword.Search}/${query}`], {
       relativeTo: this.route,
       queryParams: {
-        [Keyword.Type]: SolrEntryEnum.Qna,
+        [Keyword.Type]: SolrOrgEntryEnum.Qna,
         ...(this._teamSlug && { [ShortUrl.Team]: this._teamSlug }),
       },
     });

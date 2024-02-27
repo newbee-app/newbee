@@ -1,5 +1,5 @@
 import { SearchResultFormat } from '@newbee/newbee/shared/util';
-import { TeamRoleEnum, testOrgMemberQueryResult1 } from '@newbee/shared/util';
+import { TeamRoleEnum, testOrgMemberSearchResult1 } from '@newbee/shared/util';
 import { Meta, StoryObj, componentWrapperDecorator } from '@storybook/angular';
 import { MemberSearchResultComponent } from './member-search-result.component';
 
@@ -11,7 +11,7 @@ export default {
   ],
   args: {
     format: SearchResultFormat.Card,
-    orgMember: testOrgMemberQueryResult1,
+    orgMember: testOrgMemberSearchResult1,
     teamRole: TeamRoleEnum.Owner,
   },
   argTypes: {

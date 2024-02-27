@@ -6,13 +6,19 @@ import {
   AuthService,
   MagicLinkLoginStrategy,
 } from '@newbee/api/auth/data-access';
-import { EntityService, testUserEntity1 } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  testUserEntity1,
+  testWaitlistMemberEntity1,
+} from '@newbee/api/shared/data-access';
 import { authJwtCookie } from '@newbee/api/shared/util';
 import type { UserAndOptions } from '@newbee/api/user/data-access';
 import { UserService } from '@newbee/api/user/data-access';
+import { WaitlistMemberService } from '@newbee/api/waitlist-member/data-access';
 import {
   internalServerError,
   testCreateUserDto1,
+  testCreateWaitlistMemberDto1,
   testEmailDto1,
   testMagicLinkLoginDto1,
   testPublicKeyCredentialCreationOptions1,
@@ -29,6 +35,7 @@ describe('AuthController', () => {
   let service: AuthService;
   let entityService: EntityService;
   let userService: UserService;
+  let waitlistMemberService: WaitlistMemberService;
   let strategy: MagicLinkLoginStrategy;
   let response: Response;
 
@@ -49,12 +56,6 @@ describe('AuthController', () => {
           }),
         },
         {
-          provide: UserService,
-          useValue: createMock<UserService>({
-            create: jest.fn().mockResolvedValue(testUserAndOptions),
-          }),
-        },
-        {
           provide: AuthService,
           useValue: createMock<AuthService>({
             login: jest.fn().mockReturnValue(testAccessToken),
@@ -62,6 +63,18 @@ describe('AuthController', () => {
               .fn()
               .mockResolvedValue(testPublicKeyCredentialRequestOptions1),
             verifyLoginChallenge: jest.fn().mockResolvedValue(testUserEntity1),
+          }),
+        },
+        {
+          provide: UserService,
+          useValue: createMock<UserService>({
+            create: jest.fn().mockResolvedValue(testUserAndOptions),
+          }),
+        },
+        {
+          provide: WaitlistMemberService,
+          useValue: createMock<WaitlistMemberService>({
+            create: jest.fn().mockResolvedValue(testWaitlistMemberEntity1),
           }),
         },
         {
@@ -79,11 +92,12 @@ describe('AuthController', () => {
       ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
-    service = module.get<AuthService>(AuthService);
-    entityService = module.get<EntityService>(EntityService);
-    userService = module.get<UserService>(UserService);
-    strategy = module.get<MagicLinkLoginStrategy>(MagicLinkLoginStrategy);
+    controller = module.get(AuthController);
+    service = module.get(AuthService);
+    entityService = module.get(EntityService);
+    userService = module.get(UserService);
+    waitlistMemberService = module.get(WaitlistMemberService);
+    strategy = module.get(MagicLinkLoginStrategy);
 
     response = createMock<Response>();
   });
@@ -93,6 +107,7 @@ describe('AuthController', () => {
     expect(service).toBeDefined();
     expect(entityService).toBeDefined();
     expect(userService).toBeDefined();
+    expect(waitlistMemberService).toBeDefined();
     expect(strategy).toBeDefined();
   });
 
@@ -184,6 +199,18 @@ describe('AuthController', () => {
       expect(controller.logout(response, testUserEntity1)).toBeUndefined();
       expect(response.clearCookie).toHaveBeenCalledTimes(1);
       expect(response.clearCookie).toHaveBeenCalledWith(authJwtCookie, {});
+    });
+  });
+
+  describe('signUpForWaitlist', () => {
+    it('should return waitlist member', async () => {
+      await expect(
+        controller.signUpForWaitlist(testCreateWaitlistMemberDto1),
+      ).resolves.toEqual(testWaitlistMemberEntity1);
+      expect(waitlistMemberService.create).toHaveBeenCalledTimes(1);
+      expect(waitlistMemberService.create).toHaveBeenCalledWith(
+        testCreateWaitlistMemberDto1,
+      );
     });
   });
 });

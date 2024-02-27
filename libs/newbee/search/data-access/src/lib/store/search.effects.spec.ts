@@ -9,12 +9,12 @@ import {
 import { testHttpClientError1 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  QueryResultsDto,
+  OrgSearchResultsDto,
   testOrganization1,
   testOrganizationRelation1,
-  testQueryDto1,
-  testQueryResultsDto1,
-  testSuggestDto1,
+  testOrgSearchDto1,
+  testOrgSearchResultsDto1,
+  testOrgSuggestDto1,
   testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { provideMockActions } from '@ngrx/effects/testing';
@@ -42,7 +42,7 @@ describe('SearchEffects', () => {
             },
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResultsDto1,
+              searchResults: testOrgSearchResultsDto1,
             },
             [Keyword.Http]: initialHttpState,
           },
@@ -52,7 +52,7 @@ describe('SearchEffects', () => {
         {
           provide: SearchService,
           useValue: createMock<SearchService>({
-            search: jest.fn().mockReturnValue(of(testQueryResultsDto1)),
+            search: jest.fn().mockReturnValue(of(testOrgSearchResultsDto1)),
             suggest: jest.fn().mockReturnValue(of(testSuggestResultsDto1)),
           }),
         },
@@ -74,16 +74,16 @@ describe('SearchEffects', () => {
   describe('search$', () => {
     it('should fire searchSuccess and contact API if successful', () => {
       actions$ = hot('a', {
-        a: SearchActions.search({ query: testQueryDto1 }),
+        a: SearchActions.search({ query: testOrgSearchDto1 }),
       });
       const expected$ = hot('a', {
-        a: SearchActions.searchSuccess({ results: testQueryResultsDto1 }),
+        a: SearchActions.searchSuccess({ results: testOrgSearchResultsDto1 }),
       });
       expect(effects.search$).toBeObservable(expected$);
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.search).toHaveBeenCalledTimes(1);
         expect(service.search).toHaveBeenCalledWith(
-          testQueryDto1,
+          testOrgSearchDto1,
           testOrganization1.slug,
         );
       });
@@ -92,7 +92,7 @@ describe('SearchEffects', () => {
     it('should do nothing if query is empty', () => {
       actions$ = hot('a', {
         a: SearchActions.search({
-          query: new QueryResultsDto(),
+          query: new OrgSearchResultsDto(),
         }),
       });
       const expected$ = hot('-');
@@ -105,7 +105,7 @@ describe('SearchEffects', () => {
     it('should not fire if selectedOrganization is null', () => {
       store.setState({ org: initialOrganizationState });
       actions$ = hot('a', {
-        a: SearchActions.search({ query: testQueryDto1 }),
+        a: SearchActions.search({ query: testOrgSearchDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.search$).toBeObservable(expected$);
@@ -124,7 +124,7 @@ describe('SearchEffects', () => {
         },
         [Keyword.Search]: {
           ...initialSearchState,
-          searchResults: { ...testQueryResultsDto1, total: 100 },
+          searchResults: { ...testOrgSearchResultsDto1, total: 100 },
         },
         [Keyword.Http]: initialHttpState,
       });
@@ -162,7 +162,7 @@ describe('SearchEffects', () => {
         [Keyword.Organization]: initialOrganizationState,
         [Keyword.Search]: {
           ...initialSearchState,
-          searchResults: { ...testQueryResultsDto1, total: 100 },
+          searchResults: { ...testOrgSearchResultsDto1, total: 100 },
         },
         [Keyword.Http]: initialHttpState,
       });
@@ -176,7 +176,7 @@ describe('SearchEffects', () => {
         [Keyword.Organization]: initialOrganizationState,
         [Keyword.Search]: {
           ...initialSearchState,
-          searchResults: { ...testQueryResultsDto1, total: 100 },
+          searchResults: { ...testOrgSearchResultsDto1, total: 100 },
         },
         [Keyword.Http]: { ...initialHttpState, error: testHttpClientError1 },
       });
@@ -195,7 +195,7 @@ describe('SearchEffects', () => {
         },
         [Keyword.Search]: {
           ...initialSearchState,
-          searchResults: testQueryResultsDto1,
+          searchResults: testOrgSearchResultsDto1,
         },
         [Keyword.Http]: initialHttpState,
       });
@@ -204,7 +204,7 @@ describe('SearchEffects', () => {
       });
       const expected$ = hot('a', {
         a: SearchActions.continueSearchSuccess({
-          results: testQueryResultsDto1,
+          results: testOrgSearchResultsDto1,
         }),
       });
       expect(effects.continueSearchPending$).toBeObservable(expected$);
@@ -212,7 +212,7 @@ describe('SearchEffects', () => {
         expect(service.search).toHaveBeenCalledTimes(1);
         expect(service.search).toHaveBeenCalledWith(
           {
-            ...testQueryResultsDto1,
+            ...testOrgSearchResultsDto1,
             offset: 1,
           },
           testOrganization1.slug,
@@ -224,7 +224,7 @@ describe('SearchEffects', () => {
   describe('suggest$', () => {
     it('should fire suggestSuccess if suggest', () => {
       actions$ = hot('a', {
-        a: SearchActions.suggest({ query: testSuggestDto1 }),
+        a: SearchActions.suggest({ query: testOrgSuggestDto1 }),
       });
       const expected$ = hot('a', {
         a: SearchActions.suggestSuccess({
@@ -235,7 +235,7 @@ describe('SearchEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.suggest).toHaveBeenCalledTimes(1);
         expect(service.suggest).toHaveBeenCalledWith(
-          testSuggestDto1,
+          testOrgSuggestDto1,
           testOrganization1.slug,
         );
       });
@@ -243,7 +243,7 @@ describe('SearchEffects', () => {
 
     it('should fire suggestSuccess if search', () => {
       actions$ = hot('a', {
-        a: SearchActions.search({ query: testQueryDto1 }),
+        a: SearchActions.search({ query: testOrgSearchDto1 }),
       });
       const expected$ = hot('a', {
         a: SearchActions.suggestSuccess({
@@ -254,7 +254,7 @@ describe('SearchEffects', () => {
       expect(expected$).toSatisfyOnFlush(() => {
         expect(service.suggest).toHaveBeenCalledTimes(1);
         expect(service.suggest).toHaveBeenCalledWith(
-          testQueryDto1,
+          testOrgSearchDto1,
           testOrganization1.slug,
         );
       });
@@ -274,7 +274,7 @@ describe('SearchEffects', () => {
     it('should not fire if selectedOrganization is null', () => {
       store.setState({ org: initialOrganizationState });
       actions$ = hot('a', {
-        a: SearchActions.suggest({ query: testSuggestDto1 }),
+        a: SearchActions.suggest({ query: testOrgSuggestDto1 }),
       });
       const expected$ = hot('-');
       expect(effects.suggest$).toBeObservable(expected$);

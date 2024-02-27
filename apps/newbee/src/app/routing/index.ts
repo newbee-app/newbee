@@ -48,7 +48,6 @@ export class AppTitleStrategy extends TitleStrategy {
   }
 }
 
-// TODO: set up a 404 not found page with a wildcard route
 /**
  * All of the routes of the app.
  */

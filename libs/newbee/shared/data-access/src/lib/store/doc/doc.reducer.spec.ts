@@ -1,7 +1,7 @@
 import {
   Doc,
-  testBaseDocAndMemberDto1,
   testDoc1,
+  testDocAndMemberDto1,
   testDocRelation1,
   testNowDayjs1,
   testTeamMember1,
@@ -19,7 +19,7 @@ describe('DocReducer', () => {
     it('should update state for getDocSuccess', () => {
       const updatedState = docFeature.reducer(
         initialDocState,
-        DocActions.getDocSuccess({ docAndMemberDto: testBaseDocAndMemberDto1 }),
+        DocActions.getDocSuccess({ docAndMemberDto: testDocAndMemberDto1 }),
       );
       expect(updatedState).toEqual(stateAfterGetDocSuccess);
     });

@@ -1,4 +1,4 @@
-import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
+import { testPaginatedResultsDocSearchResult1 } from '@newbee/shared/util';
 import { canGetMoreResults } from './can-get-more-results.function';
 
 describe('canGetMoreResults', () => {
@@ -7,9 +7,12 @@ describe('canGetMoreResults', () => {
   });
 
   it('should return true if there are more results to fetch', () => {
-    expect(canGetMoreResults(testPaginatedResultsDocQueryResult1)).toBeFalsy();
+    expect(canGetMoreResults(testPaginatedResultsDocSearchResult1)).toBeFalsy();
     expect(
-      canGetMoreResults({ ...testPaginatedResultsDocQueryResult1, total: 100 }),
+      canGetMoreResults({
+        ...testPaginatedResultsDocSearchResult1,
+        total: 100,
+      }),
     ).toBeTruthy();
   });
 });

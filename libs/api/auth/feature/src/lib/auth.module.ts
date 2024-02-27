@@ -10,6 +10,7 @@ import {
 import { AppAuthConfig, authConfig } from '@newbee/api/auth/util';
 import { AuthenticatorModule } from '@newbee/api/authenticator/feature';
 import { UserModule } from '@newbee/api/user/feature';
+import { WaitlistMemberModule } from '@newbee/api/waitlist-member/feature';
 import { AuthController } from './auth.controller';
 
 @Module({
@@ -23,6 +24,7 @@ import { AuthController } from './auth.controller';
     }),
     UserModule,
     AuthenticatorModule,
+    WaitlistMemberModule,
   ],
   controllers: [AuthController],
   providers: [MagicLinkLoginStrategy, AuthService, JwtStrategy],

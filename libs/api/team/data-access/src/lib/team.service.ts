@@ -99,7 +99,7 @@ export class TeamService {
    * @returns `true` if the slug already exists in the organization, `false` if not.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async hasOneBySlug(
+  async hasOneByOrgAndSlug(
     organization: OrganizationEntity,
     slug: string,
   ): Promise<boolean> {
@@ -121,7 +121,7 @@ export class TeamService {
    * @throws {NotFoundException} `teamSlugNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
-  async findOneBySlug(
+  async findOneByOrgAndSlug(
     organization: OrganizationEntity,
     slug: string,
   ): Promise<TeamEntity> {

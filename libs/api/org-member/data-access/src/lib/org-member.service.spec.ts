@@ -163,7 +163,7 @@ describe('OrgMemberService', () => {
     });
   });
 
-  describe('findOneByUserAndOrg', () => {
+  describe('findOneByOrgAndUser', () => {
     afterEach(() => {
       expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
       expect(em.findOneOrFail).toHaveBeenCalledWith(OrgMemberEntity, {
@@ -174,7 +174,7 @@ describe('OrgMemberService', () => {
 
     it('should find an org member', async () => {
       await expect(
-        service.findOneByUserAndOrg(testUserEntity1, testOrganizationEntity1),
+        service.findOneByOrgAndUser(testUserEntity1, testOrganizationEntity1),
       ).resolves.toEqual(testOrgMemberEntity1);
     });
 
@@ -183,7 +183,7 @@ describe('OrgMemberService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new Error('findOneOrFail'));
       await expect(
-        service.findOneByUserAndOrg(testUserEntity1, testOrganizationEntity1),
+        service.findOneByOrgAndUser(testUserEntity1, testOrganizationEntity1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
 
@@ -192,12 +192,12 @@ describe('OrgMemberService', () => {
         .spyOn(em, 'findOneOrFail')
         .mockRejectedValue(new NotFoundError('findOneOrFail'));
       await expect(
-        service.findOneByUserAndOrg(testUserEntity1, testOrganizationEntity1),
+        service.findOneByOrgAndUser(testUserEntity1, testOrganizationEntity1),
       ).rejects.toThrow(new NotFoundException(orgMemberNotFound));
     });
   });
 
-  describe('findOneByUserAndOrgOrNull', () => {
+  describe('findOneByOrgAndUserOrNull', () => {
     afterEach(() => {
       expect(em.findOne).toHaveBeenCalledTimes(1);
       expect(em.findOne).toHaveBeenCalledWith(OrgMemberEntity, {
@@ -208,7 +208,7 @@ describe('OrgMemberService', () => {
 
     it('should find an org member', async () => {
       await expect(
-        service.findOneByUserAndOrgOrNull(
+        service.findOneByOrgAndUserOrNull(
           testUserEntity1,
           testOrganizationEntity1,
         ),
@@ -218,7 +218,7 @@ describe('OrgMemberService', () => {
     it('should throw an InternalServerErrorException if findOne throws an error', async () => {
       jest.spyOn(em, 'findOne').mockRejectedValue(new Error('findOne'));
       await expect(
-        service.findOneByUserAndOrgOrNull(
+        service.findOneByOrgAndUserOrNull(
           testUserEntity1,
           testOrganizationEntity1,
         ),

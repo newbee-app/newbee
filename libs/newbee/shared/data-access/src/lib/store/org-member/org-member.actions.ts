@@ -1,11 +1,11 @@
 import {
   CreateOrgMemberInviteDto,
   CreatorOrMaintainer,
-  DocQueryResult,
+  DocSearchResult,
   Keyword,
   OrgMember,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
   UpdateOrgMemberDto,
   type OrgMemberNoOrg,
 } from '@newbee/shared/util';
@@ -63,7 +63,7 @@ export const OrgMemberActions = createActionGroup({
     /**
      * Indicates that the paginated docs were successfully retrieved.
      */
-    'Get Docs Success': props<{ docs: PaginatedResults<DocQueryResult> }>(),
+    'Get Docs Success': props<{ docs: PaginatedResults<DocSearchResult> }>(),
 
     /**
      * Gets all of the paginated qnas of the selected org member.
@@ -78,7 +78,7 @@ export const OrgMemberActions = createActionGroup({
     /**
      * Indicates that the paginated qnas were successfully retrieved.
      */
-    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaQueryResult> }>(),
+    'Get Qnas Success': props<{ qnas: PaginatedResults<QnaSearchResult> }>(),
 
     /**
      * Invite a user to an org.

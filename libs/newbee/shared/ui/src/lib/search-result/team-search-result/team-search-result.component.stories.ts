@@ -2,7 +2,7 @@ import { SearchResultFormat } from '@newbee/newbee/shared/util';
 import {
   TeamRoleEnum,
   testTeam1,
-  testTeamQueryResult1,
+  testTeamSearchResult1,
 } from '@newbee/shared/util';
 import { Meta, StoryObj, componentWrapperDecorator } from '@storybook/angular';
 import { TeamSearchResultComponent } from './team-search-result.component';
@@ -15,7 +15,7 @@ export default {
   ],
   args: {
     format: SearchResultFormat.Card,
-    team: testTeamQueryResult1,
+    team: testTeamSearchResult1,
     teamRole: TeamRoleEnum.Owner,
   },
   argTypes: { orgNavigate: { action: 'orgNavigate' } },

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { docFeature } from '@newbee/newbee/doc/data-access';
 import { DocActions, httpFeature } from '@newbee/newbee/shared/data-access';
 import { RouteAndQueryParams } from '@newbee/newbee/shared/util';
-import { Keyword, SolrEntryEnum } from '@newbee/shared/util';
+import { Keyword, SolrOrgEntryEnum } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 
 /**
@@ -56,7 +56,7 @@ export class DocsViewComponent {
   async onSearch(query: string): Promise<void> {
     await this.router.navigate([`../${Keyword.Search}/${query}`], {
       relativeTo: this.route,
-      queryParams: { [Keyword.Type]: SolrEntryEnum.Doc },
+      queryParams: { [Keyword.Type]: SolrOrgEntryEnum.Doc },
     });
   }
 

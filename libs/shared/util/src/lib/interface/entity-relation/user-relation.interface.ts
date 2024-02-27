@@ -8,17 +8,17 @@ export interface UserRelation {
   /**
    * The user themselves.
    */
-  user: User;
+  readonly user: User;
 
   /**
    * The organizations the user is a part of.
    */
-  organizations: Organization[];
+  readonly organizations: Organization[];
 
   /**
    * The pending org member invites for the user, including:
    * - The token and role for the org member invite
    * - The name and slug of the organization the invite is attached to
    */
-  invites: OrgMemberInviteNoUser[];
+  readonly invites: OrgMemberInviteNoUser[];
 }

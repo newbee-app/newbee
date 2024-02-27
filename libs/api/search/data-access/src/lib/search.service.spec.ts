@@ -7,14 +7,23 @@ import {
   testQueryResponse1,
   testQueryResponse2,
   testQueryResponse3,
+  testQueryResponse4,
+  testQueryResponse5,
 } from '@newbee/api/shared/data-access';
-import { solrDictionaries } from '@newbee/api/shared/util';
+import {
+  solrAppCollection,
+  solrAppDictionaries,
+  solrOrgDictionaries,
+} from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
   internalServerError,
-  testQueryDto1,
-  testQueryResultsDto1,
-  testSuggestDto1,
+  testAppSearchDto1,
+  testAppSearchResultsDto1,
+  testAppSuggestDto1,
+  testOrgSearchDto1,
+  testOrgSearchResultsDto1,
+  testOrgSuggestDto1,
   testSuggestResultsDto1,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -49,9 +58,9 @@ describe('SearchService', () => {
     }).compile();
 
     service = module.get<SearchService>(SearchService);
+    solrCli = module.get<SolrCli>(SolrCli);
     teamService = module.get<TeamService>(TeamService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
-    solrCli = module.get<SolrCli>(SolrCli);
   });
 
   it('should be defined', () => {
@@ -61,64 +70,90 @@ describe('SearchService', () => {
     expect(orgMemberService).toBeDefined();
   });
 
-  describe('suggest', () => {
+  describe('orgSuggest', () => {
     afterEach(() => {
       expect(solrCli.suggest).toHaveBeenCalledTimes(1);
       expect(solrCli.suggest).toHaveBeenCalledWith(testOrganizationEntity1.id, {
         params: {
-          'suggest.q': testSuggestDto1.query,
-          'suggest.dictionary': solrDictionaries.all,
+          'suggest.q': testOrgSuggestDto1.query,
+          'suggest.dictionary': solrOrgDictionaries.All,
         },
       });
     });
 
     it('should generate suggestions', async () => {
       await expect(
-        service.suggest(testOrganizationEntity1, testSuggestDto1),
+        service.orgSuggest(testOrganizationEntity1, testOrgSuggestDto1),
       ).resolves.toEqual(testSuggestResultsDto1);
     });
 
     it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
       jest.spyOn(solrCli, 'suggest').mockRejectedValue(new Error('suggest'));
       await expect(
-        service.suggest(testOrganizationEntity1, testSuggestDto1),
+        service.orgSuggest(testOrganizationEntity1, testOrgSuggestDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
-  describe('query', () => {
+  describe('appSuggest', () => {
     afterEach(() => {
-      const { query } = testQueryDto1;
+      expect(solrCli.suggest).toHaveBeenCalledTimes(1);
+      expect(solrCli.suggest).toHaveBeenCalledWith(solrAppCollection, {
+        params: {
+          'suggest.q': testAppSuggestDto1.query,
+          'suggest.dictionary': solrAppDictionaries.All,
+        },
+      });
+    });
+
+    it('should generate suggestions', async () => {
+      jest.spyOn(solrCli, 'suggest').mockResolvedValue(testQueryResponse5);
+      await expect(service.appSuggest(testAppSuggestDto1)).resolves.toEqual(
+        testSuggestResultsDto1,
+      );
+    });
+
+    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
+      jest.spyOn(solrCli, 'suggest').mockRejectedValue(new Error('suggest'));
+      await expect(service.appSuggest(testAppSuggestDto1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
+    });
+  });
+
+  describe('orgSearch', () => {
+    afterEach(() => {
+      const { query, offset, limit } = testOrgSearchDto1;
       expect(solrCli.query).toHaveBeenCalledTimes(1);
       expect(solrCli.query).toHaveBeenCalledWith(testOrganizationEntity1.id, {
         query,
-        offset: testQueryDto1.offset,
-        limit: testQueryDto1.limit,
+        offset,
+        limit,
         filter: [],
         params: {
           'hl.q': query,
           'spellcheck.q': query,
-          'spellcheck.dictionary': solrDictionaries.all,
+          'spellcheck.dictionary': solrOrgDictionaries.All,
         },
       });
     });
 
     it('should generate results', async () => {
       await expect(
-        service.query(testOrganizationEntity1, testQueryDto1),
-      ).resolves.toEqual(testQueryResultsDto1);
+        service.orgSearch(testOrganizationEntity1, testOrgSearchDto1),
+      ).resolves.toEqual(testOrgSearchResultsDto1);
     });
 
     it('should offer spellcheck suggestions if no results', async () => {
       jest.spyOn(solrCli, 'query').mockResolvedValue(testQueryResponse2);
       await expect(
-        service.query(testOrganizationEntity1, testQueryDto1),
+        service.orgSearch(testOrganizationEntity1, testOrgSearchDto1),
       ).resolves.toEqual({
         total: testQueryResponse2.response?.numFound,
-        offset: testQueryDto1.offset,
-        limit: testQueryDto1.limit,
+        offset: testOrgSearchDto1.offset,
+        limit: testOrgSearchDto1.limit,
         results: [],
-        query: testQueryDto1.query,
+        query: testOrgSearchDto1.query,
         suggestion:
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });
@@ -127,8 +162,53 @@ describe('SearchService', () => {
     it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
       jest.spyOn(solrCli, 'query').mockRejectedValue(new Error('query'));
       await expect(
-        service.query(testOrganizationEntity1, testQueryDto1),
+        service.orgSearch(testOrganizationEntity1, testOrgSearchDto1),
       ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+    });
+  });
+
+  describe('appSearch', () => {
+    afterEach(() => {
+      const { query, offset, limit } = testAppSearchDto1;
+      expect(solrCli.query).toHaveBeenCalledTimes(1);
+      expect(solrCli.query).toHaveBeenCalledWith(solrAppCollection, {
+        query,
+        offset,
+        limit,
+        filter: [],
+        params: {
+          'hl.q': query,
+          'spellcheck.q': query,
+          'spellcheck.dictionary': solrAppDictionaries.All,
+        },
+      });
+    });
+
+    it('should generate results', async () => {
+      jest.spyOn(solrCli, 'query').mockResolvedValue(testQueryResponse4);
+      await expect(service.appSearch(testAppSearchDto1)).resolves.toEqual(
+        testAppSearchResultsDto1,
+      );
+    });
+
+    it('should offer spellcheck suggestions if no results', async () => {
+      jest.spyOn(solrCli, 'query').mockResolvedValue(testQueryResponse2);
+      await expect(service.appSearch(testAppSearchDto1)).resolves.toEqual({
+        total: testQueryResponse2.response?.numFound,
+        offset: testAppSearchDto1.offset,
+        limit: testAppSearchDto1.limit,
+        results: [],
+        query: testAppSearchDto1.query,
+        suggestion:
+          testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
+      });
+    });
+
+    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
+      jest.spyOn(solrCli, 'query').mockRejectedValue(new Error('query'));
+      await expect(service.appSearch(testAppSearchDto1)).rejects.toThrow(
+        new InternalServerErrorException(internalServerError),
+      );
     });
   });
 });

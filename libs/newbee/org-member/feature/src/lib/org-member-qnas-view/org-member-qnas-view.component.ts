@@ -15,7 +15,7 @@ import {
 import {
   CreatorOrMaintainer,
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
 } from '@newbee/shared/util';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
@@ -133,7 +133,7 @@ export class OrgMemberQnasViewComponent implements OnDestroy {
     await this.router.navigate([`../../../${Keyword.Search}/${query}`], {
       relativeTo: this.route,
       queryParams: {
-        [Keyword.Type]: SolrEntryEnum.Qna,
+        [Keyword.Type]: SolrOrgEntryEnum.Qna,
         ...(this._orgMemberSlug && {
           [this._role ? this._role : ShortUrl.Member]: this._orgMemberSlug,
         }),

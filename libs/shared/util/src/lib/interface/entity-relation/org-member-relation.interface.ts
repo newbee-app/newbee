@@ -1,4 +1,4 @@
-import type { DocQueryResult, QnaQueryResult } from '../../type';
+import type { DocSearchResult, QnaSearchResult } from '../../type';
 import type { OrgMember, Organization, PublicUser } from '../entity';
 import { PaginatedResults } from '../util';
 import type { TeamMemberAndTeam } from './team-member-relation.interface';
@@ -10,42 +10,42 @@ export interface OrgMemberRelation {
   /**
    * The role and slug of the org member.
    */
-  orgMember: OrgMember;
+  readonly orgMember: OrgMember;
 
   /**
    * The name and slug of the organization the org member is attached to.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * The email, name, display name, and phone number of the user the org member is attached to.
    */
-  user: PublicUser;
+  readonly user: PublicUser;
 
   /**
    * The teams the org member is a part of, and the role they hold in each team.
    */
-  teams: TeamMemberAndTeam[];
+  readonly teams: TeamMemberAndTeam[];
 
   /**
    * The docs the org member created.
    */
-  createdDocs: PaginatedResults<DocQueryResult>;
+  readonly createdDocs: PaginatedResults<DocSearchResult>;
 
   /**
    * The docs the org member maintains.
    */
-  maintainedDocs: PaginatedResults<DocQueryResult>;
+  readonly maintainedDocs: PaginatedResults<DocSearchResult>;
 
   /**
    * The qnas the org member created.
    */
-  createdQnas: PaginatedResults<QnaQueryResult>;
+  readonly createdQnas: PaginatedResults<QnaSearchResult>;
 
   /**
    * The qnas the org member maintains.
    */
-  maintainedQnas: PaginatedResults<QnaQueryResult>;
+  readonly maintainedQnas: PaginatedResults<QnaSearchResult>;
 }
 
 /**

@@ -1,4 +1,5 @@
-import { AdminControls, UserInvites } from '../entity';
+import { AdminControls, WaitlistMember } from '../entity';
+import { PaginatedResults } from '../util';
 
 /**
  * The AdminControls interface with relevant relationship information.
@@ -10,7 +11,7 @@ export interface AdminControlsRelation {
   readonly adminControls: AdminControls;
 
   /**
-   * All of the users currently on the waitlist in a paginated format.
+   * All of the possible users currently on the waitlist, in a paginated format.
    */
-  readonly waitlist: UserInvites[];
+  readonly waitlist: PaginatedResults<WaitlistMember>;
 }

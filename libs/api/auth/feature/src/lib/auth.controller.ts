@@ -11,9 +11,15 @@ import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
   MagicLinkLoginStrategy,
+  RegistrationGuard,
+  WaitlistGuard,
 } from '@newbee/api/auth/data-access';
 import { AppAuthConfig, MagicLinkLoginAuthGuard } from '@newbee/api/auth/util';
-import { EntityService, UserEntity } from '@newbee/api/shared/data-access';
+import {
+  EntityService,
+  UserEntity,
+  WaitlistMemberEntity,
+} from '@newbee/api/shared/data-access';
 import {
   Public,
   UnverifiedOk,
@@ -21,9 +27,11 @@ import {
   authJwtCookie,
 } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
+import { WaitlistMemberService } from '@newbee/api/waitlist-member/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
 import {
   CreateUserDto,
+  CreateWaitlistMemberDto,
   EmailDto,
   Keyword,
   MagicLinkLoginDto,
@@ -52,9 +60,10 @@ export class AuthController {
   private readonly cookieOptions: CookieOptions;
 
   constructor(
+    private readonly authService: AuthService,
     private readonly entityService: EntityService,
     private readonly userService: UserService,
-    private readonly authService: AuthService,
+    private readonly waitlistMemberService: WaitlistMemberService,
     private readonly magicLinkLoginStrategy: MagicLinkLoginStrategy,
     configService: ConfigService<AppAuthConfig, true>,
   ) {
@@ -73,6 +82,7 @@ export class AuthController {
    * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(`${Keyword.WebAuthn}/${Keyword.Register}`)
+  @UseGuards(RegistrationGuard)
   async webAuthnRegister(
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto,
@@ -215,5 +225,28 @@ export class AuthController {
     this.logger.log(`Logout request received from user ID: ${user.id}`);
     res.clearCookie(authJwtCookie, this.cookieOptions);
     this.logger.log(`Logged out user ID: ${user.id}`);
+  }
+
+  /**
+   * Signs up an email and name to the waitlist.
+   *
+   * @param createWaitlistMemberDto The email and name to add to the waitlist.
+   *
+   * @returns The waitlist member that was added to the waitlist.
+   * @throws {BadRequestException} `emailAlreadyRegisteredBadRequest`, `alreadyOnWaitlistBadRequest`. If the given email is already a user or a waitlist member.
+   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
+   */
+  @Post(Keyword.Waitlist)
+  @UseGuards(WaitlistGuard)
+  async signUpForWaitlist(
+    @Body() createWaitlistMemberDto: CreateWaitlistMemberDto,
+  ): Promise<WaitlistMemberEntity> {
+    const { email } = createWaitlistMemberDto;
+    this.logger.log(`Waitlist sign-up request received for email: ${email}`);
+    const waitlistMember = await this.waitlistMemberService.create(
+      createWaitlistMemberDto,
+    );
+    this.logger.log(`Signed up email to waitlist: ${email}`);
+    return waitlistMember;
   }
 }

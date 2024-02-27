@@ -3,7 +3,7 @@ import {
   HttpActions,
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
-import { testPaginatedResultsDocQueryResult1 } from '@newbee/shared/util';
+import { testPaginatedResultsDocSearchResult1 } from '@newbee/shared/util';
 import { DocState, docFeature, initialDocState } from './doc.reducer';
 
 describe('DocReducer', () => {
@@ -13,7 +13,7 @@ describe('DocReducer', () => {
   };
   const stateAfterGetDocsSuccess: DocState = {
     ...initialDocState,
-    docs: testPaginatedResultsDocQueryResult1,
+    docs: testPaginatedResultsDocSearchResult1,
   };
   const stateAfterCreateDoc: DocState = {
     ...initialDocState,
@@ -79,27 +79,27 @@ describe('DocReducer', () => {
       let updatedState = docFeature.reducer(
         stateAfterGetDocsPending,
         DocActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialDocState,
-        docs: testPaginatedResultsDocQueryResult1,
+        docs: testPaginatedResultsDocSearchResult1,
       });
 
       updatedState = docFeature.reducer(
         stateAfterGetDocsSuccess,
         DocActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetDocsSuccess,
         docs: {
-          ...testPaginatedResultsDocQueryResult1,
+          ...testPaginatedResultsDocSearchResult1,
           results: [
-            ...testPaginatedResultsDocQueryResult1.results,
-            ...testPaginatedResultsDocQueryResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
           ],
         },
       });

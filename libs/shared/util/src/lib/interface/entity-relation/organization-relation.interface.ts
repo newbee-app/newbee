@@ -1,4 +1,4 @@
-import { DocQueryResult, QnaQueryResult } from '../../type';
+import { DocSearchResult, QnaSearchResult } from '../../type';
 import type { Organization } from '../entity/organization.interface';
 import type { Team } from '../entity/team.interface';
 import { PaginatedResults } from '../util';
@@ -11,27 +11,27 @@ export interface OrganizationRelation {
   /**
    * The name and slug of the organization.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * The names and slugs of all of the teams of the organization.
    */
-  teams: Team[];
+  readonly teams: Team[];
 
   /**
    * All of the org members that belong to the org.
    */
-  members: OrgMemberUser[];
+  readonly members: OrgMemberUser[];
 
   /**
    * A selection of docs that belong to the team, as well as a count of the total number of docs in the org.
    */
-  docs: PaginatedResults<DocQueryResult>;
+  readonly docs: PaginatedResults<DocSearchResult>;
 
   /**
    * A selection of QnAs that belong to the team, as well as a count of the total number of QnAs in the org.
    */
-  qnas: PaginatedResults<QnaQueryResult>;
+  readonly qnas: PaginatedResults<QnaSearchResult>;
 }
 
 /**

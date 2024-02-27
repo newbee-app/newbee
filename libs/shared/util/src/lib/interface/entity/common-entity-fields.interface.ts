@@ -5,10 +5,10 @@ export interface CommonEntityFields {
   /**
    * The DateTime or datetime string when the post was created.
    */
-  createdAt: Date | string;
+  readonly createdAt: Date | string;
 
   /**
    * The DateTime or datetime string when the post was last updated.
    */
-  updatedAt: Date | string;
+  readonly updatedAt: Date | string;
 }

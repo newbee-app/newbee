@@ -25,8 +25,8 @@ import {
   testOrganizationRelation1,
   testOrgMember1,
   testOrgMemberRelation1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testUpdateOrgMemberDto1,
   testUser1,
 } from '@newbee/shared/util';
@@ -81,10 +81,10 @@ describe('OrgMemberEffects', () => {
             delete: jest.fn().mockReturnValue(of(null)),
             getAllDocs: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsDocQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsDocSearchResult1)),
             getAllQnas: jest
               .fn()
-              .mockReturnValue(of(testPaginatedResultsQnaQueryResult1)),
+              .mockReturnValue(of(testPaginatedResultsQnaSearchResult1)),
             inviteUser: jest.fn().mockReturnValue(of(null)),
           }),
         },
@@ -222,7 +222,7 @@ describe('OrgMemberEffects', () => {
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
           docs: {
-            ...testPaginatedResultsDocQueryResult1,
+            ...testPaginatedResultsDocSearchResult1,
             total: 100,
           },
         },
@@ -253,7 +253,7 @@ describe('OrgMemberEffects', () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -344,7 +344,7 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -363,7 +363,7 @@ describe('OrgMemberEffects', () => {
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
           docs: {
-            ...testPaginatedResultsDocQueryResult1,
+            ...testPaginatedResultsDocSearchResult1,
             total: 100,
           },
         },
@@ -384,7 +384,7 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       });
       expect(effects.getDocsPending$).toBeObservable(expected$);
@@ -422,7 +422,7 @@ describe('OrgMemberEffects', () => {
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -453,7 +453,7 @@ describe('OrgMemberEffects', () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         },
         [Keyword.Organization]: {
           ...initialOrganizationState,
@@ -544,7 +544,7 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);
@@ -563,7 +563,7 @@ describe('OrgMemberEffects', () => {
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
           qnas: {
-            ...testPaginatedResultsQnaQueryResult1,
+            ...testPaginatedResultsQnaSearchResult1,
             total: 100,
           },
         },
@@ -584,7 +584,7 @@ describe('OrgMemberEffects', () => {
       });
       const expected$ = hot('a', {
         a: OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       });
       expect(effects.getQnasPending$).toBeObservable(expected$);

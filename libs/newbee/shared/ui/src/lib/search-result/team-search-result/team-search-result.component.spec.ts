@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShortUrl } from '@newbee/newbee/shared/util';
-import { testTeam1, testTeamQueryResult1 } from '@newbee/shared/util';
+import { testTeam1, testTeamSearchResult1 } from '@newbee/shared/util';
 import { TeamSearchResultComponent } from './team-search-result.component';
 
 jest.mock('@floating-ui/dom', () => ({
@@ -22,7 +22,7 @@ describe('TeamSearchResultComponent', () => {
     fixture = TestBed.createComponent(TeamSearchResultComponent);
     component = fixture.componentInstance;
 
-    component.team = testTeamQueryResult1;
+    component.team = testTeamSearchResult1;
 
     jest.spyOn(component.orgNavigate, 'emit');
 

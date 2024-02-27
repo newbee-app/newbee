@@ -94,7 +94,7 @@ describe('QnaService', () => {
         {
           provide: TeamService,
           useValue: createMock<TeamService>({
-            findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+            findOneByOrgAndSlug: jest.fn().mockResolvedValue(testTeamEntity1),
           }),
         },
         {
@@ -143,8 +143,8 @@ describe('QnaService', () => {
         testQnaEntity1.questionMarkdoc,
         testQnaEntity1.answerMarkdoc,
       );
-      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
-      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testCreateQnaDto1.team,
       );
@@ -220,8 +220,8 @@ describe('QnaService', () => {
 
   describe('update', () => {
     afterEach(() => {
-      expect(teamService.findOneBySlug).toHaveBeenCalledTimes(1);
-      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledTimes(1);
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testQnaEntity1.organization,
         testUpdateQnaDto1.team,
       );

@@ -12,8 +12,8 @@ import {
   Keyword,
   testOrgMemberRelation1,
   testOrganizationRelation1,
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
@@ -90,8 +90,8 @@ describe('OrgMemberSelector', () => {
       store.setState({
         [`${Keyword.Member}Module`]: {
           ...initialOrgMemberModuleState,
-          docs: testPaginatedResultsDocQueryResult1,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         },
         [Keyword.Member]: {
           ...initialOrgMemberState,
@@ -105,8 +105,8 @@ describe('OrgMemberSelector', () => {
       });
       const expected$ = hot('a', {
         a: {
-          docs: testPaginatedResultsDocQueryResult1,
-          qnas: testPaginatedResultsQnaQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
           selectedOrgMember: testOrgMemberRelation1,
           selectedOrganization: testOrganizationRelation1,
           error: testHttpClientError1,

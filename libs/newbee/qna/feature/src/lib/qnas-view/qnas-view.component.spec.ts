@@ -8,9 +8,9 @@ import { ViewPostsComponent } from '@newbee/newbee/shared/ui';
 import { ShortUrl } from '@newbee/newbee/shared/util';
 import {
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
   testOrganization1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsQnaSearchResult1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { QnasViewComponent } from './qnas-view.component';
@@ -33,7 +33,7 @@ describe('QnasViewComponent', () => {
           initialState: {
             [`${Keyword.Qna}Module`]: {
               ...initialQnaState,
-              qnas: testPaginatedResultsQnaQueryResult1,
+              qnas: testPaginatedResultsQnaSearchResult1,
             },
           },
         }),
@@ -84,7 +84,7 @@ describe('QnasViewComponent', () => {
     it('should navigate to the search URL for the query', async () => {
       await component.onSearch('searching');
       expect(router.url).toEqual(
-        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrEntryEnum.Qna}`,
+        `/${ShortUrl.Organization}/${testOrganization1.slug}/${Keyword.Search}/searching?${Keyword.Type}=${SolrOrgEntryEnum.Qna}`,
       );
     });
   });

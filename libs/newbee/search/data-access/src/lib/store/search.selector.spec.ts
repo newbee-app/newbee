@@ -10,8 +10,8 @@ import {
 } from '@newbee/newbee/shared/util';
 import {
   Keyword,
+  testOrgSearchResultsDto1,
   testOrganizationRelation1,
-  testQueryResultsDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jest-marbles';
@@ -30,7 +30,7 @@ describe('SearchSelector', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResultsDto1,
+              searchResults: testOrgSearchResultsDto1,
             },
             [Keyword.Organization]: {
               ...initialOrganizationState,
@@ -57,7 +57,7 @@ describe('SearchSelector', () => {
     it('should select search results and screen error', () => {
       const expected$ = hot('a', {
         a: {
-          searchResults: testQueryResultsDto1,
+          searchResults: testOrgSearchResultsDto1,
           screenError: testHttpScreenError1,
         },
       });
@@ -71,7 +71,7 @@ describe('SearchSelector', () => {
     it('should select seach results, currently selected org, and error', () => {
       const expected$ = hot('a', {
         a: {
-          searchResults: testQueryResultsDto1,
+          searchResults: testOrgSearchResultsDto1,
           selectedOrganization: testOrganizationRelation1,
           error: testHttpClientError1,
         },

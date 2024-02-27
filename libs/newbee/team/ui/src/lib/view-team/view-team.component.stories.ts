@@ -2,9 +2,9 @@ import {
   OrgRoleEnum,
   TeamRoleEnum,
   defaultLimit,
-  testDocQueryResult1,
+  testDocSearchResult1,
   testOrganization1,
-  testQnaQueryResult1,
+  testQnaSearchResult1,
   testTeam1,
   testTeamMember1,
   testTeamMemberRelation1,
@@ -29,9 +29,9 @@ export default {
       ],
       qnas: {
         results: [
-          testQnaQueryResult1,
-          testQnaQueryResult1,
-          testQnaQueryResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
+          testQnaSearchResult1,
         ],
         total: 100,
         offset: 0,
@@ -39,9 +39,9 @@ export default {
       },
       docs: {
         results: [
-          testDocQueryResult1,
-          testDocQueryResult1,
-          testDocQueryResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
+          testDocSearchResult1,
         ],
         total: 100,
         offset: 0,

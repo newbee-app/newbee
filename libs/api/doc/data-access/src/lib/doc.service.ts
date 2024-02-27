@@ -65,7 +65,10 @@ export class DocService {
     } = createDocDto;
 
     const team = teamSlug
-      ? await this.teamService.findOneBySlug(creator.organization, teamSlug)
+      ? await this.teamService.findOneByOrgAndSlug(
+          creator.organization,
+          teamSlug,
+        )
       : null;
 
     const id = v4();
@@ -142,7 +145,7 @@ export class DocService {
 
     const team =
       typeof teamSlug === 'string'
-        ? await this.teamService.findOneBySlug(doc.organization, teamSlug)
+        ? await this.teamService.findOneByOrgAndSlug(doc.organization, teamSlug)
         : teamSlug;
     const maintainer =
       typeof maintainerSlug === 'string'

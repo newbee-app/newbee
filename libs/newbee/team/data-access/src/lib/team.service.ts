@@ -4,12 +4,12 @@ import { apiVersion } from '@newbee/shared/data-access';
 import {
   CreateTeamDto,
   CreateTeamMemberDto,
-  DocQueryResult,
+  DocSearchResult,
   GeneratedSlugDto,
   Keyword,
   OffsetAndLimit,
   PaginatedResults,
-  QnaQueryResult,
+  QnaSearchResult,
   SlugTakenDto,
   Team,
   TeamAndMemberDto,
@@ -156,9 +156,9 @@ export class TeamService {
     orgSlug: string,
     teamSlug: string,
     offsetAndLimit: OffsetAndLimit,
-  ): Observable<PaginatedResults<DocQueryResult>> {
+  ): Observable<PaginatedResults<DocSearchResult>> {
     const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
-    return this.http.get<PaginatedResults<DocQueryResult>>(
+    return this.http.get<PaginatedResults<DocSearchResult>>(
       `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}/${Keyword.Doc}`,
       { params },
     );
@@ -177,9 +177,9 @@ export class TeamService {
     orgSlug: string,
     teamSlug: string,
     offsetAndLimit: OffsetAndLimit,
-  ): Observable<PaginatedResults<QnaQueryResult>> {
+  ): Observable<PaginatedResults<QnaSearchResult>> {
     const params = new HttpParams({ fromObject: { ...offsetAndLimit } });
-    return this.http.get<PaginatedResults<QnaQueryResult>>(
+    return this.http.get<PaginatedResults<QnaSearchResult>>(
       `${TeamService.baseApiUrl(orgSlug)}/${teamSlug}/${Keyword.Qna}`,
       { params },
     );

@@ -1,4 +1,4 @@
-import { SolrEntryEnum } from '@newbee/shared/util';
+import { SolrOrgEntryEnum } from '@newbee/shared/util';
 import { SearchTab } from '../enum';
 import {
   searchTabToSolrEntry,
@@ -17,10 +17,10 @@ describe('search tab functions', () => {
       ];
       const expected = [
         null,
-        SolrEntryEnum.Doc,
-        SolrEntryEnum.User,
-        SolrEntryEnum.Qna,
-        SolrEntryEnum.Team,
+        SolrOrgEntryEnum.Doc,
+        SolrOrgEntryEnum.User,
+        SolrOrgEntryEnum.Qna,
+        SolrOrgEntryEnum.Team,
       ];
 
       searchTabs.forEach((searchTab, i) => {
@@ -33,10 +33,10 @@ describe('search tab functions', () => {
     it('should return the correct value', () => {
       const solrEntries = [
         null,
-        SolrEntryEnum.Doc,
-        SolrEntryEnum.Qna,
-        SolrEntryEnum.Team,
-        SolrEntryEnum.User,
+        SolrOrgEntryEnum.Doc,
+        SolrOrgEntryEnum.Qna,
+        SolrOrgEntryEnum.Team,
+        SolrOrgEntryEnum.User,
       ];
       const expected = [
         SearchTab.All,

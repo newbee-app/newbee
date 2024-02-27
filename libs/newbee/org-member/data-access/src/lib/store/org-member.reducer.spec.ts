@@ -4,8 +4,8 @@ import {
   RouterActions,
 } from '@newbee/newbee/shared/data-access';
 import {
-  testPaginatedResultsDocQueryResult1,
-  testPaginatedResultsQnaQueryResult1,
+  testPaginatedResultsDocSearchResult1,
+  testPaginatedResultsQnaSearchResult1,
   testUser1,
 } from '@newbee/shared/util';
 import {
@@ -29,7 +29,7 @@ describe('OrgMemberReducer', () => {
   };
   const stateAfterGetDocsSuccess: OrgMemberState = {
     ...initialOrgMemberState,
-    docs: testPaginatedResultsDocQueryResult1,
+    docs: testPaginatedResultsDocSearchResult1,
   };
   const stateAfterGetQnasPending: OrgMemberState = {
     ...initialOrgMemberState,
@@ -37,7 +37,7 @@ describe('OrgMemberReducer', () => {
   };
   const stateAfterGetQnasSuccess: OrgMemberState = {
     ...initialOrgMemberState,
-    qnas: testPaginatedResultsQnaQueryResult1,
+    qnas: testPaginatedResultsQnaSearchResult1,
   };
   const stateAfterInviteUser: OrgMemberState = {
     ...initialOrgMemberState,
@@ -107,27 +107,27 @@ describe('OrgMemberReducer', () => {
       let updatedState = orgMemberFeature.reducer(
         stateAfterGetDocsPending,
         OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialOrgMemberState,
-        docs: testPaginatedResultsDocQueryResult1,
+        docs: testPaginatedResultsDocSearchResult1,
       });
 
       updatedState = orgMemberFeature.reducer(
         stateAfterGetDocsSuccess,
         OrgMemberActions.getDocsSuccess({
-          docs: testPaginatedResultsDocQueryResult1,
+          docs: testPaginatedResultsDocSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetDocsSuccess,
         docs: {
-          ...testPaginatedResultsDocQueryResult1,
+          ...testPaginatedResultsDocSearchResult1,
           results: [
-            ...testPaginatedResultsDocQueryResult1.results,
-            ...testPaginatedResultsDocQueryResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
+            ...testPaginatedResultsDocSearchResult1.results,
           ],
         },
       });
@@ -137,27 +137,27 @@ describe('OrgMemberReducer', () => {
       let updatedState = orgMemberFeature.reducer(
         stateAfterGetQnasPending,
         OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...initialOrgMemberState,
-        qnas: testPaginatedResultsQnaQueryResult1,
+        qnas: testPaginatedResultsQnaSearchResult1,
       });
 
       updatedState = orgMemberFeature.reducer(
         stateAfterGetQnasSuccess,
         OrgMemberActions.getQnasSuccess({
-          qnas: testPaginatedResultsQnaQueryResult1,
+          qnas: testPaginatedResultsQnaSearchResult1,
         }),
       );
       expect(updatedState).toEqual({
         ...stateAfterGetQnasSuccess,
         qnas: {
-          ...testPaginatedResultsQnaQueryResult1,
+          ...testPaginatedResultsQnaSearchResult1,
           results: [
-            ...testPaginatedResultsQnaQueryResult1.results,
-            ...testPaginatedResultsQnaQueryResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
+            ...testPaginatedResultsQnaSearchResult1.results,
           ],
         },
       });

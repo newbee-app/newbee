@@ -24,9 +24,6 @@ import {
   version: apiVersion['org-member-invite'],
 })
 export class OrgMemberInviteController {
-  /**
-   * The logger to use when logging anything in the controller.
-   */
   private readonly logger = new Logger(OrgMemberInviteController.name);
 
   constructor(

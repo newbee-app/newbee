@@ -9,33 +9,33 @@ export interface User extends CommonEntityFields {
   /**
    * The globally unique email of the given user.
    */
-  email: string;
+  readonly email: string;
 
   /**
    * The full name of the given user.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * How the user's name will be displayed on the platform, regardless of the value of name.
    * If the value is null, the user's name will be displayed.
    */
-  displayName: string | null;
+  readonly displayName: string | null;
 
   /**
    * The phone number of the given user, stored in the backend in E.164 format.
    */
-  phoneNumber: string | null;
+  readonly phoneNumber: string | null;
 
   /**
    * The user's role in the given NewBee instance.
    */
-  role: UserRoleEnum;
+  readonly role: UserRoleEnum;
 
   /**
    * Whether the user's email has been verified.
    */
-  emailVerified: boolean;
+  readonly emailVerified: boolean;
 }
 
 /**

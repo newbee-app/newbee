@@ -70,8 +70,8 @@ export class UserController {
     this.logger.log(
       `Send verification email received for user email: ${user.email}`,
     );
-    const emailSentUser = await this.userService.sendVerificationEmail(user);
-    this.logger.log(`Sent verification email to: ${emailSentUser.email}`);
+    await this.userService.sendVerificationEmail(user);
+    this.logger.log(`Sent verification email to: ${user.email}`);
   }
 
   /**

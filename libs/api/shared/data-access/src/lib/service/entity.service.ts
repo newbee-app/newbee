@@ -6,19 +6,21 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+import { adminControlsId } from '@newbee/api/shared/util';
 import type {
   AdminControlsRelation,
   DocNoOrg,
-  DocQueryResult,
+  DocSearchResult,
   OffsetAndLimit,
   OrgMemberNoOrg,
   OrgMemberNoUser,
   OrgMemberNoUserOrg,
   OrgMemberRelation,
   OrgTeamsMembers,
+  PublicAdminControls,
   PublicUser,
   QnaNoOrg,
-  QnaQueryResult,
+  QnaSearchResult,
   TeamMemberUserOrgMember,
   TeamNoOrg,
   UserRelation,
@@ -29,6 +31,7 @@ import {
   cannotDeleteMaintainerBadReqest,
   cannotDeleteOnlyOrgOwnerBadRequest,
   cannotDeleteOnlyTeamOwnerBadRequest,
+  defaultLimit,
   internalServerError,
 } from '@newbee/shared/util';
 import { ClassConstructor } from 'class-transformer';
@@ -47,6 +50,7 @@ import {
   TeamMemberEntity,
   UserEntity,
   UserInvitesEntity,
+  WaitlistMemberEntity,
 } from '../entity';
 
 /**
@@ -62,17 +66,17 @@ export class EntityService {
 
   constructor(private readonly em: EntityManager) {}
 
-  // START: Entities to query results
+  // START: Entities to search results
 
   /**
-   * Takes in an array of `DocEntity` and converts it into an array of `DocQueryResult`.
+   * Takes in an array of `DocEntity` and converts it into an array of `DocSearchResult`.
    *
    * @param docs The docs to convert.
    *
-   * @returns The entities as `DocQueryResult`.
+   * @returns The entities as `DocSearchResult`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createDocQueryResults(docs: DocEntity[]): Promise<DocQueryResult[]> {
+  async createDocSearchResults(docs: DocEntity[]): Promise<DocSearchResult[]> {
     await this.populatePostMembersTeam(docs);
     return docs.map((doc) => {
       const {
@@ -113,14 +117,14 @@ export class EntityService {
   }
 
   /**
-   * Takes in an array of `QnaEntity` and converts it into an array of `QnaQueryResult`.
+   * Takes in an array of `QnaEntity` and converts it into an array of `QnaSearchResult`.
    *
    * @param qnas The qnas to convert.
    *
-   * @returns The entities as `QnaQueryResult`.
+   * @returns The entities as `QnaSearchResult`.
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async createQnaQueryResults(qnas: QnaEntity[]): Promise<QnaQueryResult[]> {
+  async createQnaSearchResults(qnas: QnaEntity[]): Promise<QnaSearchResult[]> {
     await this.populatePostMembersTeam(qnas);
     return qnas.map((qna) => {
       const {
@@ -162,7 +166,7 @@ export class EntityService {
     });
   }
 
-  // END: Entities to query results
+  // END: Entities to search results
 
   // START: Entity relations
 
@@ -296,12 +300,12 @@ export class EntityService {
       return {
         team,
         docs: {
-          results: await this.createDocQueryResults(docs),
+          results: await this.createDocSearchResults(docs),
           total: docsCount,
           ...postOffsetAndLimit,
         },
         qnas: {
-          results: await this.createQnaQueryResults(qnas),
+          results: await this.createQnaSearchResults(qnas),
           total: qnasCount,
           ...postOffsetAndLimit,
         },
@@ -423,27 +427,6 @@ export class EntityService {
   }
 
   /**
-   * Takes in admin controls and converts it to an `AdminControlsRelation`.
-   *
-   * @param adminControls The admin controls to convert.
-   *
-   * @returns The admin controls as an `AdminControlsRelation`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
-   */
-  async createAdminControlsRelation(
-    adminControls: AdminControlsEntity,
-  ): Promise<AdminControlsRelation> {
-    try {
-      await this.em.populate(adminControls, ['waitlist']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    return { adminControls, waitlist: adminControls.waitlist.toArray() };
-  }
-
-  /**
    * A helper function to populate the relations related to a post's members and team.
    *
    * @param posts The posts to populate.
@@ -525,22 +508,22 @@ export class EntityService {
           team: teamMember.team,
         })),
         createdDocs: {
-          results: await this.createDocQueryResults(createdDocs),
+          results: await this.createDocSearchResults(createdDocs),
           total: createdDocsCount,
           ...postOffsetAndLimit,
         },
         maintainedDocs: {
-          results: await this.createDocQueryResults(maintainedDocs),
+          results: await this.createDocSearchResults(maintainedDocs),
           total: maintainedDocsCount,
           ...postOffsetAndLimit,
         },
         createdQnas: {
-          results: await this.createQnaQueryResults(createdQnas),
+          results: await this.createQnaSearchResults(createdQnas),
           total: createdQnasCount,
           ...postOffsetAndLimit,
         },
         maintainedQnas: {
-          results: await this.createQnaQueryResults(maintainedQnas),
+          results: await this.createQnaSearchResults(maintainedQnas),
           total: maintainedQnasCount,
           ...postOffsetAndLimit,
         },
@@ -554,6 +537,76 @@ export class EntityService {
   // END: Entity relations
 
   // START: Misc
+
+  /**
+   * Get the NewBee instance's admin controls.
+   *
+   * @returns The NewBee instance's admin controls.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async getAdminControls(): Promise<AdminControlsEntity> {
+    try {
+      let adminControls = await this.em.findOne(
+        AdminControlsEntity,
+        adminControlsId,
+      );
+      if (adminControls) {
+        return adminControls;
+      }
+
+      adminControls = new AdminControlsEntity();
+      await this.em.persistAndFlush(adminControls);
+      return adminControls;
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
+
+  /**
+   * Get the NewBee instance's public admin controls.
+   *
+   * @returns The NewBee instance's public admin controls.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async getPublicAdminControls(): Promise<PublicAdminControls> {
+    const adminControls = await this.getAdminControls();
+    const { allowRegistration, allowWaitlist } = adminControls;
+    return { allowRegistration, allowWaitlist };
+  }
+
+  /**
+   * Gets the NewBee instance's admin controls as an `AdminControlsRelation`.
+   *
+   * @returns The NewBee instance's `AdminControlsRelation`.
+   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   */
+  async getAdminControlsRelation(): Promise<AdminControlsRelation> {
+    const adminControls = await this.getAdminControls();
+    try {
+      const [waitlist, waitlistCount] = await this.em.findAndCount(
+        WaitlistMemberEntity,
+        { waitlist: adminControls },
+        {
+          offset: 0,
+          limit: defaultLimit,
+          orderBy: { createdAt: QueryOrder.ASC },
+        },
+      );
+      return {
+        adminControls,
+        waitlist: {
+          results: waitlist,
+          total: waitlistCount,
+          offset: 0,
+          limit: defaultLimit,
+        },
+      };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException(internalServerError);
+    }
+  }
 
   /**
    * Check whether the given entity is safe to delete and throw a `BadRequestException` if it's not.

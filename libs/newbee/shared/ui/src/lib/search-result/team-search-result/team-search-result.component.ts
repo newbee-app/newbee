@@ -5,7 +5,7 @@ import {
   SearchResultFormat,
   ShortUrl,
 } from '@newbee/newbee/shared/util';
-import { TeamRoleEnum, type TeamQueryResult } from '@newbee/shared/util';
+import { TeamRoleEnum, type TeamSearchResult } from '@newbee/shared/util';
 import { SearchResultTypeBtnComponent } from '../../btn';
 import { SearchResultHeaderComponent } from '../header';
 
@@ -31,7 +31,7 @@ export class TeamSearchResultComponent {
   /**
    * The team to display.
    */
-  @Input() team!: TeamQueryResult;
+  @Input() team!: TeamSearchResult;
 
   /**
    * The role a user has for the team, if displaying the result for a specific org member.

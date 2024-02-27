@@ -81,20 +81,20 @@ describe('RoleGuard', () => {
       findOneBySlug: jest.fn().mockResolvedValue(testOrganizationEntity1),
     });
     orgMemberService = createMock<OrgMemberService>({
-      findOneByUserAndOrgOrNull: jest
+      findOneByOrgAndUserOrNull: jest
         .fn()
         .mockResolvedValue(testOrgMemberEntity1),
       findOneByOrgAndSlug: jest.fn().mockResolvedValue(testOrgMemberEntity1),
     });
     teamService = createMock<TeamService>({
-      findOneBySlug: jest.fn().mockResolvedValue(testTeamEntity1),
+      findOneByOrgAndSlug: jest.fn().mockResolvedValue(testTeamEntity1),
       findOneById: jest.fn().mockResolvedValue(testTeamEntity1),
     });
     teamMemberService = createMock<TeamMemberService>({
-      findOneByOrgMemberAndTeam: jest
+      findOneByTeamAndOrgMember: jest
         .fn()
         .mockResolvedValue(testTeamMemberEntity1),
-      findOneByOrgMemberAndTeamOrNull: jest
+      findOneByTeamAndOrgMemberOrNull: jest
         .fn()
         .mockResolvedValue(testTeamMemberEntity1),
     });
@@ -231,7 +231,7 @@ describe('RoleGuard', () => {
       expect(context.switchToHttp().getRequest()[organizationKey]).toEqual(
         testOrganizationEntity1,
       );
-      expect(orgMemberService.findOneByUserAndOrgOrNull).toHaveBeenCalledWith(
+      expect(orgMemberService.findOneByOrgAndUserOrNull).toHaveBeenCalledWith(
         testUserEntity1,
         testOrganizationEntity1,
       );
@@ -247,7 +247,7 @@ describe('RoleGuard', () => {
       );
 
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
+        .spyOn(orgMemberService, 'findOneByOrgAndUserOrNull')
         .mockResolvedValue(moderator);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
       expect(context.switchToHttp().getRequest()[orgMemberKey]).toEqual(
@@ -257,7 +257,7 @@ describe('RoleGuard', () => {
 
     it('should account for OrgMemberIfNoTeam', async () => {
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
+        .spyOn(orgMemberService, 'findOneByOrgAndUserOrNull')
         .mockResolvedValue(member);
       jest
         .spyOn(reflector, 'getAllAndOverride')
@@ -290,7 +290,7 @@ describe('RoleGuard', () => {
 
     it('should account for OrgRoleGteSubject', async () => {
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
+        .spyOn(orgMemberService, 'findOneByOrgAndUserOrNull')
         .mockResolvedValue(moderator);
       jest
         .spyOn(reflector, 'getAllAndOverride')
@@ -332,7 +332,7 @@ describe('RoleGuard', () => {
     });
 
     afterEach(() => {
-      expect(teamService.findOneBySlug).toHaveBeenCalledWith(
+      expect(teamService.findOneByOrgAndSlug).toHaveBeenCalledWith(
         testOrganizationEntity1,
         testTeamEntity1.slug,
       );
@@ -341,10 +341,10 @@ describe('RoleGuard', () => {
       );
 
       expect(
-        teamMemberService.findOneByOrgMemberAndTeamOrNull,
+        teamMemberService.findOneByTeamAndOrgMemberOrNull,
       ).toHaveBeenCalledWith(testOrgMemberEntity1, testTeamEntity1);
 
-      expect(teamMemberService.findOneByOrgMemberAndTeam).toHaveBeenCalledWith(
+      expect(teamMemberService.findOneByTeamAndOrgMember).toHaveBeenCalledWith(
         testOrgMemberEntity1,
         testTeamEntity1,
       );
@@ -357,26 +357,26 @@ describe('RoleGuard', () => {
       );
 
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMemberOrNull')
         .mockResolvedValue(null);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMemberOrNull')
         .mockResolvedValue(member);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
     });
 
     it('should account for post teams', async () => {
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMemberOrNull')
         .mockResolvedValueOnce(testTeamMemberEntity1)
         .mockResolvedValueOnce(member)
         .mockResolvedValue(member);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMemberOrNull')
         .mockResolvedValueOnce(testTeamMemberEntity1)
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(null);
@@ -392,12 +392,12 @@ describe('RoleGuard', () => {
           ConditionalRoleEnum.TeamRoleGteSubject,
         ]);
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeamOrNull')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMemberOrNull')
         .mockResolvedValue(moderator);
       await expect(guard.canActivate(context)).resolves.toBeFalsy();
 
       jest
-        .spyOn(teamMemberService, 'findOneByOrgMemberAndTeam')
+        .spyOn(teamMemberService, 'findOneByTeamAndOrgMember')
         .mockResolvedValue(moderator);
       await expect(guard.canActivate(context)).resolves.toBeTruthy();
       expect(context.switchToHttp().getRequest()[teamMemberKey]).toEqual(

@@ -11,9 +11,9 @@ import {
 import { EmptyComponent } from '@newbee/newbee/shared/ui';
 import {
   Keyword,
-  SolrEntryEnum,
+  SolrOrgEntryEnum,
   defaultLimit,
-  testQueryResultsDto1,
+  testOrgSearchResultsDto1,
 } from '@newbee/shared/util';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SearchResultsViewComponent } from './search-results-view.component';
@@ -47,7 +47,7 @@ describe('SearchResultsViewComponent', () => {
           initialState: {
             [Keyword.Search]: {
               ...initialSearchState,
-              searchResults: testQueryResultsDto1,
+              searchResults: testOrgSearchResultsDto1,
             },
           },
         }),
@@ -72,7 +72,7 @@ describe('SearchResultsViewComponent', () => {
 
     const harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl(
-      `${Keyword.Search}/${testSearchTerm}?${Keyword.Type}=${SolrEntryEnum.Team}`,
+      `${Keyword.Search}/${testSearchTerm}?${Keyword.Type}=${SolrOrgEntryEnum.Team}`,
       SearchResultsViewComponent,
     );
   });
@@ -95,7 +95,7 @@ describe('SearchResultsViewComponent', () => {
             offset: 0,
             limit: defaultLimit,
             query: testSearchTerm,
-            type: SolrEntryEnum.Team,
+            type: SolrOrgEntryEnum.Team,
           },
         }),
       );
@@ -106,7 +106,7 @@ describe('SearchResultsViewComponent', () => {
     it('should change tab value and dispatch search', async () => {
       await component.onTabChange(SearchTab.Doc);
       expect(router.url).toEqual(
-        `/${Keyword.Search}/${testSearchTermUrl}?${Keyword.Type}=${SolrEntryEnum.Doc}`,
+        `/${Keyword.Search}/${testSearchTermUrl}?${Keyword.Type}=${SolrOrgEntryEnum.Doc}`,
       );
       expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('SearchResultsViewComponent', () => {
             offset: 0,
             limit: defaultLimit,
             query: testSearchTerm,
-            type: SolrEntryEnum.Doc,
+            type: SolrOrgEntryEnum.Doc,
           },
         }),
       );
@@ -129,7 +129,7 @@ describe('SearchResultsViewComponent', () => {
       expect(router.url).toEqual(
         `/${Keyword.Search}/${encodeURIComponent(newSearchTerm)}?${
           Keyword.Type
-        }=${SolrEntryEnum.Team}`,
+        }=${SolrOrgEntryEnum.Team}`,
       );
     });
   });
@@ -140,7 +140,7 @@ describe('SearchResultsViewComponent', () => {
       expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         SearchActions.suggest({
-          query: { query: testSearchTerm, type: SolrEntryEnum.Team },
+          query: { query: testSearchTerm, type: SolrOrgEntryEnum.Team },
         }),
       );
     });

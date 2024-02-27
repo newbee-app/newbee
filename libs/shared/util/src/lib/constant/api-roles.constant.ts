@@ -16,10 +16,7 @@ import {
  * Should be ordered alphabetically, for ease of reading.
  */
 export const apiRoles = {
-  [Keyword.Admin]: {
-    get: [UserRoleEnum.Admin],
-    update: [UserRoleEnum.Admin],
-  },
+  [Keyword.Admin]: UserRoleEnum.Admin,
   [Keyword.Doc]: {
     getAll: anyOrgMember,
     create: anyOrgMember,
@@ -46,6 +43,8 @@ export const apiRoles = {
     get: anyOrgMember,
     update: atLeastOrgModerator,
     delete: [OrgRoleEnum.Owner],
+    search: anyOrgMember,
+    suggest: anyOrgMember,
   },
   [Keyword.Qna]: {
     getAll: anyOrgMember,
@@ -59,10 +58,6 @@ export const apiRoles = {
       ...atLeastTeamModerator,
       PostRoleEnum.Maintainer,
     ],
-  },
-  [Keyword.Search]: {
-    search: anyOrgMember,
-    suggest: anyOrgMember,
   },
   [Keyword.Team]: {
     create: anyOrgMember,

@@ -1,48 +1,48 @@
-import { SolrEntryEnum } from '@newbee/shared/util';
+import { SolrOrgEntryEnum } from '@newbee/shared/util';
 import { SearchTab } from '../enum';
 
 /**
- * Converts a SearchTab to a SolrEntryEnum.
+ * Converts a SearchTab to a SolrOrgEntryEnum.
  *
  * @param searchTab The search tab to convert.
- * @returns The SolrEntryEnum that corresponds to the SearchTab, null for `All`.
+ * @returns The SolrOrgEntryEnum that corresponds to the SearchTab, null for `All`.
  */
 export function searchTabToSolrEntry(
   searchTab: SearchTab,
-): SolrEntryEnum | null {
+): SolrOrgEntryEnum | null {
   switch (searchTab) {
     case SearchTab.All:
       return null;
     case SearchTab.Doc:
-      return SolrEntryEnum.Doc;
+      return SolrOrgEntryEnum.Doc;
     case SearchTab.Qna:
-      return SolrEntryEnum.Qna;
+      return SolrOrgEntryEnum.Qna;
     case SearchTab.Team:
-      return SolrEntryEnum.Team;
+      return SolrOrgEntryEnum.Team;
     case SearchTab.People:
-      return SolrEntryEnum.User;
+      return SolrOrgEntryEnum.User;
   }
 }
 
 /**
- * Converts a SolrEntryEnum to a SearchTab.
+ * Converts a SolrOrgEntryEnum to a SearchTab.
  *
  * @param solrEntry The solr entry to convert.
- * @returns The SearchTab that corresponds to the SolrEntryEnum, `All` if `null` was fed in.
+ * @returns The SearchTab that corresponds to the SolrOrgEntryEnum, `All` if `null` was fed in.
  */
 export function solrEntryToSearchTab(
-  solrEntry: SolrEntryEnum | null,
+  solrEntry: SolrOrgEntryEnum | null,
 ): SearchTab {
   switch (solrEntry) {
     case null:
       return SearchTab.All;
-    case SolrEntryEnum.Doc:
+    case SolrOrgEntryEnum.Doc:
       return SearchTab.Doc;
-    case SolrEntryEnum.Qna:
+    case SolrOrgEntryEnum.Qna:
       return SearchTab.Qna;
-    case SolrEntryEnum.Team:
+    case SolrOrgEntryEnum.Team:
       return SearchTab.Team;
-    case SolrEntryEnum.User:
+    case SolrOrgEntryEnum.User:
       return SearchTab.People;
   }
 }

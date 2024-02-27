@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
+  Collection,
   NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
@@ -62,12 +63,12 @@ const mockElongateUuid = elongateUuid as jest.Mock;
 describe('OrgMemberInviteService', () => {
   let service: OrgMemberInviteService;
   let em: EntityManager;
+  let configService: ConfigService;
+  let mailerService: MailerService;
   let entityService: EntityService;
   let userService: UserService;
   let userInvitesService: UserInvitesService;
   let orgMemberService: OrgMemberService;
-  let mailerService: MailerService;
-  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -80,6 +81,16 @@ describe('OrgMemberInviteService', () => {
               .fn()
               .mockResolvedValue(testOrgMemberInviteEntity1),
           }),
+        },
+        {
+          provide: ConfigService,
+          useValue: createMock<ConfigService>({
+            get: jest.fn().mockReturnValue(''),
+          }),
+        },
+        {
+          provide: MailerService,
+          useValue: createMock<MailerService>(),
         },
         {
           provide: EntityService,
@@ -105,44 +116,39 @@ describe('OrgMemberInviteService', () => {
             create: jest.fn().mockResolvedValue(testOrgMemberEntity1),
           }),
         },
-        {
-          provide: MailerService,
-          useValue: createMock<MailerService>(),
-        },
-        {
-          provide: ConfigService,
-          useValue: createMock<ConfigService>({
-            get: jest.fn().mockReturnValue(''),
-          }),
-        },
       ],
     }).compile();
 
     service = module.get<OrgMemberInviteService>(OrgMemberInviteService);
     em = module.get<EntityManager>(EntityManager);
+    configService = module.get<ConfigService>(ConfigService);
+    mailerService = module.get<MailerService>(MailerService);
     entityService = module.get<EntityService>(EntityService);
     userService = module.get<UserService>(UserService);
     userInvitesService = module.get<UserInvitesService>(UserInvitesService);
     orgMemberService = module.get<OrgMemberService>(OrgMemberService);
-    mailerService = module.get<MailerService>(MailerService);
-    configService = module.get<ConfigService>(ConfigService);
 
     jest.clearAllMocks();
     mockV4.mockReturnValue(testOrgMemberInviteEntity1.id);
     mockOrgMemberInviteEntity.mockReturnValue(testOrgMemberInviteEntity1);
     mockShortenUuid.mockReturnValue(testOrgMemberInviteEntity1.token);
     mockElongateUuid.mockReturnValue(testOrgMemberInviteEntity1.id);
+    testUserInvitesEntity1.orgMemberInvites = createMock<
+      Collection<OrgMemberInviteEntity>
+    >({
+      length: 2,
+    });
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
+    expect(configService).toBeDefined();
+    expect(mailerService).toBeDefined();
     expect(entityService).toBeDefined();
     expect(userService).toBeDefined();
     expect(userInvitesService).toBeDefined();
     expect(orgMemberService).toBeDefined();
-    expect(mailerService).toBeDefined();
-    expect(configService).toBeDefined();
   });
 
   describe('create', () => {
@@ -158,7 +164,7 @@ describe('OrgMemberInviteService', () => {
         .spyOn(userService, 'findOneByEmailOrNull')
         .mockResolvedValue(testUserEntity1);
       jest
-        .spyOn(orgMemberService, 'findOneByUserAndOrgOrNull')
+        .spyOn(orgMemberService, 'findOneByOrgAndUserOrNull')
         .mockResolvedValue(testOrgMemberEntity1);
       await expect(
         service.create(
