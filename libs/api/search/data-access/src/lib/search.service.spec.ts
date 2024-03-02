@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
@@ -17,7 +16,6 @@ import {
 } from '@newbee/api/shared/util';
 import { TeamService } from '@newbee/api/team/data-access';
 import {
-  internalServerError,
   testAppSearchDto1,
   testAppSearchResultsDto1,
   testAppSuggestDto1,
@@ -71,7 +69,10 @@ describe('SearchService', () => {
   });
 
   describe('orgSuggest', () => {
-    afterEach(() => {
+    it('should generate suggestions', async () => {
+      await expect(
+        service.orgSuggest(testOrganizationEntity1, testOrgSuggestDto1),
+      ).resolves.toEqual(testSuggestResultsDto1);
       expect(solrCli.suggest).toHaveBeenCalledTimes(1);
       expect(solrCli.suggest).toHaveBeenCalledWith(testOrganizationEntity1.id, {
         params: {
@@ -80,23 +81,14 @@ describe('SearchService', () => {
         },
       });
     });
-
-    it('should generate suggestions', async () => {
-      await expect(
-        service.orgSuggest(testOrganizationEntity1, testOrgSuggestDto1),
-      ).resolves.toEqual(testSuggestResultsDto1);
-    });
-
-    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
-      jest.spyOn(solrCli, 'suggest').mockRejectedValue(new Error('suggest'));
-      await expect(
-        service.orgSuggest(testOrganizationEntity1, testOrgSuggestDto1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
   });
 
   describe('appSuggest', () => {
-    afterEach(() => {
+    it('should generate suggestions', async () => {
+      jest.spyOn(solrCli, 'suggest').mockResolvedValue(testQueryResponse5);
+      await expect(service.appSuggest(testAppSuggestDto1)).resolves.toEqual(
+        testSuggestResultsDto1,
+      );
       expect(solrCli.suggest).toHaveBeenCalledTimes(1);
       expect(solrCli.suggest).toHaveBeenCalledWith(solrAppCollection, {
         params: {
@@ -104,20 +96,6 @@ describe('SearchService', () => {
           'suggest.dictionary': solrAppDictionaries.All,
         },
       });
-    });
-
-    it('should generate suggestions', async () => {
-      jest.spyOn(solrCli, 'suggest').mockResolvedValue(testQueryResponse5);
-      await expect(service.appSuggest(testAppSuggestDto1)).resolves.toEqual(
-        testSuggestResultsDto1,
-      );
-    });
-
-    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
-      jest.spyOn(solrCli, 'suggest').mockRejectedValue(new Error('suggest'));
-      await expect(service.appSuggest(testAppSuggestDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
     });
   });
 
@@ -158,13 +136,6 @@ describe('SearchService', () => {
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });
     });
-
-    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
-      jest.spyOn(solrCli, 'query').mockRejectedValue(new Error('query'));
-      await expect(
-        service.orgSearch(testOrganizationEntity1, testOrgSearchDto1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
   });
 
   describe('appSearch', () => {
@@ -202,13 +173,6 @@ describe('SearchService', () => {
         suggestion:
           testQueryResponse2.spellcheck?.collations[1]?.collationQuery,
       });
-    });
-
-    it('should throw an InternalServerErrorException if solr cli throws an error', async () => {
-      jest.spyOn(solrCli, 'query').mockRejectedValue(new Error('query'));
-      await expect(service.appSearch(testAppSearchDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
     });
   });
 });

@@ -34,8 +34,8 @@ const mockVerifyAuthenticationResponse =
 describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
-  let userService: UserService;
   let authenticatorService: AuthenticatorService;
+  let userService: UserService;
 
   const testAccessToken = 'access';
   const testCounter = 100;
@@ -66,14 +66,6 @@ describe('AuthService', () => {
           useValue: createMock<ConfigService>(),
         },
         {
-          provide: UserService,
-          useValue: createMock<UserService>({
-            findOneById: jest.fn().mockResolvedValue(testUserEntity1),
-            findOneByEmail: jest.fn().mockResolvedValue(testUserEntity1),
-            update: jest.fn().mockResolvedValue(testUserEntity1),
-          }),
-        },
-        {
           provide: AuthenticatorService,
           useValue: createMock<AuthenticatorService>({
             findAllByEmail: jest
@@ -88,14 +80,21 @@ describe('AuthService', () => {
             }),
           }),
         },
+        {
+          provide: UserService,
+          useValue: createMock<UserService>({
+            findOneByIdOrNull: jest.fn().mockResolvedValue(testUserEntity1),
+            findOneByEmail: jest.fn().mockResolvedValue(testUserEntity1),
+            update: jest.fn().mockResolvedValue(testUserEntity1),
+          }),
+        },
       ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
-    jwtService = module.get<JwtService>(JwtService);
-    userService = module.get<UserService>(UserService);
-    authenticatorService =
-      module.get<AuthenticatorService>(AuthenticatorService);
+    service = module.get(AuthService);
+    jwtService = module.get(JwtService);
+    authenticatorService = module.get(AuthenticatorService);
+    userService = module.get(UserService);
 
     jest.clearAllMocks();
     mockGenerateAuthenticationOptions.mockReturnValue(
@@ -110,8 +109,8 @@ describe('AuthService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(jwtService).toBeDefined();
-    expect(userService).toBeDefined();
     expect(authenticatorService).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
   describe('login', () => {
@@ -127,18 +126,10 @@ describe('AuthService', () => {
       await expect(service.verifyAuthToken(testAccessToken)).resolves.toEqual(
         testUserEntity1,
       );
-      expect(userService.findOneById).toHaveBeenCalledTimes(1);
-      expect(userService.findOneById).toHaveBeenCalledWith(testUserEntity1.id);
-    });
-
-    it('should return null if verify throws an error', async () => {
-      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
-        throw new Error('verify');
-      });
-      await expect(
-        service.verifyAuthToken(testAccessToken),
-      ).resolves.toBeNull();
-      expect(userService.findOneById).not.toHaveBeenCalled();
+      expect(userService.findOneByIdOrNull).toHaveBeenCalledTimes(1);
+      expect(userService.findOneByIdOrNull).toHaveBeenCalledWith(
+        testUserEntity1.id,
+      );
     });
   });
 

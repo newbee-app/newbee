@@ -22,12 +22,12 @@ import { AuthController } from './auth.controller';
         configService.get('auth.jwtModule', { infer: true }),
       inject: [ConfigService],
     }),
-    UserModule,
     AuthenticatorModule,
+    UserModule,
     WaitlistMemberModule,
   ],
   controllers: [AuthController],
-  providers: [MagicLinkLoginStrategy, AuthService, JwtStrategy],
+  providers: [MagicLinkLoginStrategy, JwtStrategy, AuthService],
   exports: [AuthService],
 })
 export class AuthModule {}

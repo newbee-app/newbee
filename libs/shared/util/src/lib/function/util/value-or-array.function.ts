@@ -10,11 +10,16 @@
  */
 export function valueOrArray<T>(
   value: T,
-  prev?: T | T[] | undefined | null
+  prev?: T | T[] | undefined | null,
 ): T | T[] {
   if (prev === undefined || prev === null) {
     return value;
   }
 
-  return Array.isArray(prev) ? [...prev, value] : [prev, value];
+  if (Array.isArray(prev)) {
+    prev.push(value);
+    return prev;
+  }
+
+  return [prev, value];
 }

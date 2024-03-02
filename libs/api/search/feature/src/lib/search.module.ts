@@ -4,7 +4,7 @@ import { SearchService } from '@newbee/api/search/data-access';
 import { TeamModule } from '@newbee/api/team/feature';
 
 @Module({
-  imports: [TeamModule, OrgMemberModule],
+  imports: [OrgMemberModule, TeamModule],
   providers: [SearchService],
   exports: [SearchService],
 })

@@ -9,7 +9,6 @@ import {
 } from '@mikro-orm/core';
 import { translator } from '@newbee/api/shared/util';
 import { OrgMember, OrgRoleEnum, ascOrgRoleEnum } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { CommonEntity } from './common.abstract.entity';
 import { DocEntity } from './doc.entity';
 import { OrganizationEntity } from './organization.entity';
@@ -97,7 +96,7 @@ export class OrgMemberEntity extends CommonEntity implements OrgMember {
     organization: OrganizationEntity,
     role: OrgRoleEnum,
   ) {
-    super(v4());
+    super();
 
     this.user = user;
     this.organization = organization;

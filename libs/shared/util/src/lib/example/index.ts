@@ -89,6 +89,7 @@ import type {
   QnaSearchResult,
   TeamSearchResult,
   UserSearchResult,
+  WaitlistMemberSearchResult,
 } from '../type';
 
 dayjs.extend(duration);
@@ -517,6 +518,13 @@ export const testQnaSearchResult1: QnaSearchResult = {
  * Strictly for use in testing.
  */
 export const testUserSearchResult1: UserSearchResult = testUser1;
+
+/**
+ * An example instance of WaitlistMemberSearchResult.
+ * Strictly for use in testing.
+ */
+export const testWaitlistMemberSearchResult1: WaitlistMemberSearchResult =
+  testWaitlistMember1;
 
 /**
  * An example instance of OffsetAndLimit.

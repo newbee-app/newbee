@@ -41,8 +41,8 @@ export class TeamMemberController {
 
   constructor(
     private readonly teamMemberService: TeamMemberService,
-    private readonly orgMemberService: OrgMemberService,
     private readonly entityService: EntityService,
+    private readonly orgMemberService: OrgMemberService,
   ) {}
 
   /**
@@ -58,7 +58,6 @@ export class TeamMemberController {
    * @throws {NotFoundException} `orgMemberNotFound`. If the invitee can not be found in the org.
    * @throws {ForbiddenException} `forbiddenError`. If the user is trying to create a team member with permissions that exceed their own.
    * @throws {BadRequestException} `userAlreadyTeamMemberBadRequest`. If the invitee is already a team member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post()
   @Role(apiRoles['team-member'].create)
@@ -108,7 +107,6 @@ export class TeamMemberController {
    * @param team The team in question.
    *
    * @returns The udpated team member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${Keyword.Member}`)
   @Role(apiRoles['team-member'].update)
@@ -132,7 +130,7 @@ export class TeamMemberController {
     );
 
     const { role } = updateTeamMemberDto;
-    const updatedTeamMember = await this.teamMemberService.updateRole(
+    subjectTeamMember = await this.teamMemberService.updateRole(
       subjectTeamMember,
       role,
       orgMember.role,
@@ -142,7 +140,7 @@ export class TeamMemberController {
       `Updated team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );
 
-    return updatedTeamMember;
+    return subjectTeamMember;
   }
 
   /**
@@ -154,13 +152,12 @@ export class TeamMemberController {
    * @param subjectTeamMember The team member being affected.
    * @param organization The organization the team is in.
    * @param team The team in question.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Member}`)
   @Role(apiRoles['team-member'].delete)
   async delete(
     @OrgMember() orgMember: OrgMemberEntity,
+    @TeamMember() teamMember: TeamMemberEntity | undefined,
     @SubjectOrgMember() subjectOrgMember: OrgMemberEntity,
     @SubjectTeamMember() subjectTeamMember: TeamMemberEntity,
     @Organization() organization: OrganizationEntity,
@@ -169,7 +166,11 @@ export class TeamMemberController {
     this.logger.log(
       `Delete team member request received for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}, in organization ID: ${organization.id}, in team ID: ${team.id}`,
     );
-    await this.teamMemberService.delete(subjectTeamMember);
+    await this.teamMemberService.delete(
+      subjectTeamMember,
+      orgMember.role,
+      teamMember?.role ?? null,
+    );
     this.logger.log(
       `Deleted team member for org member slug: ${subjectOrgMember.slug}, in team ID: ${team.id}`,
     );

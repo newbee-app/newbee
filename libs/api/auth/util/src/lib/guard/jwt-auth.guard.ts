@@ -15,7 +15,7 @@ export class JwtAuthGuard extends AuthGuard(jwt) {
   }
 
   /**
-   * Allows users to access a given route if its metadata is decorated with `IS_PUBLIC_KEY`.
+   * Allows users to access a given route if they have a vaild auth token or its metadata is decorated with `IS_PUBLIC_KEY`.
    *
    * @param context The context of the request.
    *

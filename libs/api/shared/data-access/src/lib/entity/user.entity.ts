@@ -113,8 +113,9 @@ export class UserEntity extends CommonEntity implements User {
     role: UserRoleEnum,
     invites: UserInvitesEntity,
   ) {
-    super(id);
+    super();
 
+    this.id = id;
     this.email = email.toLowerCase();
     this.name = name;
     this.displayName = displayName;

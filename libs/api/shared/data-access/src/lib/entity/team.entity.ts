@@ -1,7 +1,6 @@
 import {
   Collection,
   Entity,
-  Index,
   ManyToOne,
   OneToMany,
   Property,
@@ -71,7 +70,6 @@ export class TeamEntity extends CommonEntity implements Team {
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => OrganizationEntity, { hidden: true })
-  @Index()
   organization: OrganizationEntity;
 
   /**
@@ -87,13 +85,12 @@ export class TeamEntity extends CommonEntity implements Team {
   teamMembers = new Collection<TeamMemberEntity>(this);
 
   constructor(
-    id: string,
     name: string,
     slug: string,
     upToDateDuration: string | null,
     creator: OrgMemberEntity,
   ) {
-    super(id);
+    super();
 
     this.name = name;
     this.slug = slugify(slug);

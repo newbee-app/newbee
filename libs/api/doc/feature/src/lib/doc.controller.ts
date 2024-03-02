@@ -37,9 +37,6 @@ import {
   version: apiVersion.doc,
 })
 export class DocController {
-  /**
-   * The logger to use when logging anything in the controller.
-   */
   private readonly logger = new Logger(DocController.name);
 
   constructor(
@@ -55,7 +52,6 @@ export class DocController {
    * @param organization The organization to look in.
    *
    * @returns The result containing the retrieved docs, the total number of docs in the org, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get()
   @Role(apiRoles.doc.getAll)
@@ -94,7 +90,6 @@ export class DocController {
    *
    * @returns The newly created doc.
    * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post()
   @Role(apiRoles.doc.create)
@@ -120,7 +115,6 @@ export class DocController {
    * @param orgMember The org member making the request.
    *
    * @returns The doc associated with the slug, if one exists.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Doc}`)
   @Role(apiRoles.doc.get)
@@ -160,14 +154,12 @@ export class DocController {
     @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<DocAndMemberDto> {
     this.logger.log(`Update doc request received for slug: ${doc.slug}`);
-    const updatedDoc = await this.docService.update(doc, updateDocDto);
-    this.logger.log(
-      `Updated doc, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
-    );
+    doc = await this.docService.update(doc, updateDocDto);
+    this.logger.log(`Updated doc, slug: ${doc.slug}, ID: ${doc.id}`);
 
-    const { team } = updatedDoc;
+    const { team } = doc;
     return new DocAndMemberDto(
-      await this.entityService.createDocNoOrg(updatedDoc),
+      await this.entityService.createDocNoOrg(doc),
       team
         ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
@@ -189,11 +181,9 @@ export class DocController {
   @Role(apiRoles.doc.markUpToDate)
   async markUpToDate(@Doc() doc: DocEntity): Promise<DocEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${doc.slug}`);
-    const updatedDoc = await this.docService.markUpToDate(doc);
-    this.logger.log(
-      `Marked doc up-to-date, slug: ${updatedDoc.slug}, ID: ${updatedDoc.id}`,
-    );
-    return updatedDoc;
+    doc = await this.docService.markUpToDate(doc);
+    this.logger.log(`Marked doc up-to-date, slug: ${doc.slug}, ID: ${doc.id}`);
+    return doc;
   }
 
   /**

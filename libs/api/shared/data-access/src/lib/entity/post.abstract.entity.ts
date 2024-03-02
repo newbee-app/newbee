@@ -30,7 +30,6 @@ export abstract class PostEntity extends CommonEntity implements Post {
    * @inheritdoc
    */
   @Property()
-  @Index()
   slug: string;
 
   /**
@@ -75,16 +74,15 @@ export abstract class PostEntity extends CommonEntity implements Post {
   abstract maintainer: OrgMemberEntity | null;
 
   constructor(
-    id: string,
     title: string,
     upToDateDuration: string | null,
     team: TeamEntity | null,
     creator: OrgMemberEntity,
   ) {
-    super(id);
+    super();
 
     this.title = title;
-    this.slug = shortenUuid(id);
+    this.slug = shortenUuid(this.id);
     this.upToDateDuration = upToDateDuration;
     this.outOfDateAt = dayjs(this.createdAt)
       .add(

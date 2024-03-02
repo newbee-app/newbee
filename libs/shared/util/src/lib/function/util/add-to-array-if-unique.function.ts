@@ -18,5 +18,11 @@ export function addToArrayIfUnique<T>(
     return arr;
   }
 
-  return last ? [...arr, toAdd] : [toAdd, ...arr];
+  if (last) {
+    arr.push(toAdd);
+  } else {
+    arr.unshift(toAdd);
+  }
+
+  return arr;
 }

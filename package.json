@@ -57,7 +57,6 @@
     "@mikro-orm/core": "~5.7.14",
     "@mikro-orm/nestjs": "~5.2.1",
     "@mikro-orm/postgresql": "~5.7.14",
-    "@mikro-orm/seeder": "~5.7.14",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "10.2.4",
     "@nestjs/config": "3.0.1",

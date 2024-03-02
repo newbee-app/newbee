@@ -4,8 +4,6 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  InternalServerErrorException,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -41,7 +39,6 @@ import {
   RoleType,
   checkRoles,
   docWithoutOrgBadRequest,
-  internalServerError,
   qnaWithoutOrgBadRequest,
   teamWithoutOrgBadRequest,
   unauthorizedError,
@@ -54,8 +51,6 @@ import {
  */
 @Injectable()
 export class RoleGuard implements CanActivate {
-  private readonly logger = new Logger(RoleGuard.name);
-
   constructor(
     private readonly reflector: Reflector,
     private readonly em: EntityManager,
@@ -77,7 +72,6 @@ export class RoleGuard implements CanActivate {
    *
    * @returns `true` if roles weren't specified or if the user has one of the requisite roles, `false` otherwise.
    * @throws {NotFoundException} `organizationSlugNotFound`, `orgMemberNotFound`, `teamSlugNotFound`, `teamMemberNotFound`, `docSlugNotFound`, `qnaSlugNotFound`. If any of the services throw a `NotFoundException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If any of the services throws an error.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get all of the roles annotated at the endpoint
@@ -243,7 +237,6 @@ export class RoleGuard implements CanActivate {
    * @param team The team being affected by the request.
    *
    * @returns `true` if the user has the permissions to work with the post, `false` otherwise.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async checkPostRoles(
     roles: RoleType[],
@@ -255,13 +248,7 @@ export class RoleGuard implements CanActivate {
     subjectTeamMember: TeamMemberEntity | null | undefined,
     team: TeamEntity | null | undefined,
   ): Promise<boolean> {
-    try {
-      await this.em.populate(post, ['team', 'creator', 'maintainer']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(post, ['team', 'creator', 'maintainer']);
     const { team: postTeam, creator, maintainer } = post;
     const postTeamMember =
       team && orgMember

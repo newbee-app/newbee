@@ -1,6 +1,5 @@
-import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { WaitlistMember } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { AdminControlsEntity } from './admin-controls.entity';
 import { CommonEntity } from './common.abstract.entity';
 
@@ -29,11 +28,10 @@ export class WaitlistMemberEntity
    * `hidden` is on, so it will never be serialized.
    */
   @ManyToOne(() => AdminControlsEntity, { hidden: true })
-  @Index()
   waitlist: AdminControlsEntity;
 
   constructor(email: string, name: string, waitlist: AdminControlsEntity) {
-    super(v4());
+    super();
     this.email = email;
     this.name = name;
     this.waitlist = waitlist;

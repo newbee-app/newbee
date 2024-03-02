@@ -39,7 +39,6 @@ export class OrgMemberInviteController {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the inviter has a lower role than the invitee.
    * @throws {BadRequestException} `orgMemberAlreadyBadRequest`, `orgMemberInvitedBadRequest`. If the invitee is already an org member or if they've already been invited to the organization.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`${Keyword.Organization}/:${Keyword.Organization}`)
   @Role(apiRoles['org-member-invite'].invite)
@@ -70,7 +69,6 @@ export class OrgMemberInviteController {
    * @throws {NotFoundException} `orgMemberInviteTokenNotFound`. If the org member invite could not be found.
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
    * @throws {BadRequestException} `userAlreadyOrgMemberBadRequest`. If the user is already an org member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(Keyword.Accept)
   async accept(
@@ -99,7 +97,6 @@ export class OrgMemberInviteController {
    *
    * @throws {NotFoundException} `orgMemberInviteTokenNotfound`. If the org member invite could not be found.
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(Keyword.Decline)
   async decline(

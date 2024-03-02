@@ -1,13 +1,9 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,7 +18,6 @@ import {
   OrgRoleEnum,
   forbiddenError,
   generateLteOrgRoles,
-  internalServerError,
   orgMemberNotFound,
   userAlreadyOrgMemberBadRequest,
 } from '@newbee/shared/util';
@@ -33,15 +28,12 @@ import { SolrCli } from '@newbee/solr-cli';
  */
 @Injectable()
 export class OrgMemberService {
-  /**
-   * The logger to use when logging anything in the service.
-   */
   private readonly logger = new Logger(OrgMemberService.name);
 
   constructor(
     private readonly em: EntityManager,
-    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
+    private readonly entityService: EntityService,
   ) {}
 
   /**
@@ -53,38 +45,30 @@ export class OrgMemberService {
    *
    * @returns A new `OrgMemberEntity` instance.
    * @throws {BadRequestException} `userAlreadyOrgMemberBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(
     user: UserEntity,
     organization: OrganizationEntity,
     role: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
-    const orgMember = new OrgMemberEntity(user, organization, role);
-    try {
-      await this.em.persistAndFlush(orgMember);
-    } catch (err) {
-      this.logger.error(err);
+    return await this.em.transactional(async (em): Promise<OrgMemberEntity> => {
+      const orgMember = new OrgMemberEntity(user, organization, role);
+      try {
+        await em.persistAndFlush(orgMember);
+      } catch (err) {
+        if (err instanceof UniqueConstraintViolationException) {
+          this.logger.error(err);
+          throw new BadRequestException(userAlreadyOrgMemberBadRequest);
+        }
 
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(userAlreadyOrgMemberBadRequest);
+        throw err;
       }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
       await this.solrCli.addDocs(
         organization.id,
         new OrgMemberDocParams(orgMember),
       );
-    } catch (err) {
-      this.logger.error(err);
-      await this.em.removeAndFlush(orgMember);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    return orgMember;
+      return orgMember;
+    });
   }
 
   /**
@@ -94,27 +78,20 @@ export class OrgMemberService {
    * @param organization The organization to search in.
    *
    * @returns The associated `OrgMemberEntity` instance.
-   * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `orgMemberNotFound`. If the org member cannot be found.
    */
   async findOneByOrgAndUser(
     user: UserEntity,
     organization: OrganizationEntity,
   ): Promise<OrgMemberEntity> {
-    try {
-      return await this.em.findOneOrFail(OrgMemberEntity, {
-        user,
-        organization,
-      });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(orgMemberNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const orgMember = await this.em.findOne(OrgMemberEntity, {
+      user,
+      organization,
+    });
+    if (!orgMember) {
+      throw new NotFoundException(orgMemberNotFound);
     }
+    return orgMember;
   }
 
   /**
@@ -123,22 +100,16 @@ export class OrgMemberService {
    * @param user The user to search for.
    * @param organization The organization to search in.
    *
-   * @returns The associated `OrgMemberEntity` instance.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @returns The associated `OrgMemberEntity` instance, `null` if it doesn't exist.
    */
   async findOneByOrgAndUserOrNull(
     user: UserEntity,
     organization: OrganizationEntity,
   ): Promise<OrgMemberEntity | null> {
-    try {
-      return await this.em.findOne(OrgMemberEntity, {
-        user,
-        organization,
-      });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findOne(OrgMemberEntity, {
+      user,
+      organization,
+    });
   }
 
   /**
@@ -148,27 +119,20 @@ export class OrgMemberService {
    * @param slug The slug to search for.
    *
    * @returns The associated `OrgMemberEntity` instance.
-   * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `orgMemberNotFound`. If the org member cannot be found.
    */
   async findOneByOrgAndSlug(
     organization: OrganizationEntity,
     slug: string,
   ): Promise<OrgMemberEntity> {
-    try {
-      return await this.em.findOneOrFail(OrgMemberEntity, {
-        organization,
-        slug,
-      });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundError(orgMemberNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const orgMember = await this.em.findOne(OrgMemberEntity, {
+      organization,
+      slug,
+    });
+    if (!orgMember) {
+      throw new NotFoundException(orgMemberNotFound);
     }
+    return orgMember;
   }
 
   /**
@@ -180,7 +144,6 @@ export class OrgMemberService {
    *
    * @returns The udpated org member.
    * @throws {ForbiddenException} `forbiddenError`. If the user is trying to update an org member with permissions that exceed their own.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateRole(
     orgMember: OrgMemberEntity,
@@ -188,17 +151,17 @@ export class OrgMemberService {
     requesterOrgRole: OrgRoleEnum,
   ): Promise<OrgMemberEntity> {
     OrgMemberService.checkRequesterOrgRole(requesterOrgRole, newRole);
-    const updatedOrgMember = this.em.assign(orgMember, {
-      role: newRole,
+    return await this.em.transactional(async (em): Promise<OrgMemberEntity> => {
+      orgMember = em.assign(orgMember, {
+        role: newRole,
+      });
+      await em.flush();
+      await this.solrCli.getVersionAndReplaceDocs(
+        orgMember.organization.id,
+        new OrgMemberDocParams(orgMember),
+      );
+      return orgMember;
     });
-
-    try {
-      await this.em.flush();
-      return updatedOrgMember;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
   }
 
   /**
@@ -209,27 +172,14 @@ export class OrgMemberService {
    * @param orgMember The org member to delete.
    *
    * @throws {BadRequestException} `cannotDeleteOnlyOwnerBadRequest`. If the org member is the only owner of the team.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(orgMember: OrgMemberEntity): Promise<void> {
-    const collectionName = orgMember.organization.id;
-    const id = orgMember.slug;
+    const { id } = orgMember;
     await this.entityService.safeToDelete(orgMember);
-
-    try {
-      await this.em.removeAndFlush(orgMember);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    // Handle deleting the org member in Solr
-
-    try {
-      await this.solrCli.deleteDocs(collectionName, { id });
-    } catch (err) {
-      this.logger.error(err);
-    }
+    await this.em.transactional(async (em): Promise<void> => {
+      await em.removeAndFlush(orgMember);
+      await this.solrCli.deleteDocs(orgMember.organization.id, { id });
+    });
   }
 
   /**

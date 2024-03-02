@@ -1,11 +1,6 @@
 import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { adminControlsId } from '@newbee/api/shared/util';
 import type {
   AdminControlsRelation,
@@ -32,24 +27,20 @@ import {
   cannotDeleteOnlyOrgOwnerBadRequest,
   cannotDeleteOnlyTeamOwnerBadRequest,
   defaultLimit,
-  internalServerError,
 } from '@newbee/shared/util';
 import { ClassConstructor } from 'class-transformer';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import {
   AdminControlsEntity,
-  AuthenticatorEntity,
   DocEntity,
   OrgMemberEntity,
-  OrgMemberInviteEntity,
   OrganizationEntity,
   PostEntity,
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
   UserEntity,
-  UserInvitesEntity,
   WaitlistMemberEntity,
 } from '../entity';
 
@@ -59,11 +50,6 @@ import {
  */
 @Injectable()
 export class EntityService {
-  /**
-   * The logger to use when logging anything in the service.
-   */
-  private readonly logger = new Logger(EntityService.name);
-
   constructor(private readonly em: EntityManager) {}
 
   // START: Entities to search results
@@ -74,7 +60,6 @@ export class EntityService {
    * @param docs The docs to convert.
    *
    * @returns The entities as `DocSearchResult`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createDocSearchResults(docs: DocEntity[]): Promise<DocSearchResult[]> {
     await this.populatePostMembersTeam(docs);
@@ -122,7 +107,6 @@ export class EntityService {
    * @param qnas The qnas to convert.
    *
    * @returns The entities as `QnaSearchResult`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createQnaSearchResults(qnas: QnaEntity[]): Promise<QnaSearchResult[]> {
     await this.populatePostMembersTeam(qnas);
@@ -176,25 +160,19 @@ export class EntityService {
    * @param organization The org to convert.
    *
    * @returns The org as an `OrgTeams`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgTeamsMembers(
     organization: OrganizationEntity,
   ): Promise<OrgTeamsMembers> {
-    try {
-      await this.em.populate(organization, ['teams', 'members.user']);
-      return {
-        organization,
-        teams: organization.teams.toArray(),
-        members: organization.members.getItems().map((orgMember) => ({
-          orgMember,
-          user: EntityService.createPublicUser(orgMember.user),
-        })),
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.populate(organization, ['teams', 'members.user']);
+    return {
+      organization,
+      teams: organization.teams.toArray(),
+      members: organization.members.getItems().map((orgMember) => ({
+        orgMember,
+        user: EntityService.createPublicUser(orgMember.user),
+      })),
+    };
   }
 
   /**
@@ -203,27 +181,19 @@ export class EntityService {
    * @param orgMember The org member to convert.
    *
    * @returns The org member as an `OrgMemberNoOrg`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoOrg(
     orgMember: OrgMemberEntity,
   ): Promise<OrgMemberNoOrg> {
     const orgMemberCollections =
       await this.populateOrgMemberCollections(orgMember);
-
-    try {
-      await this.em.populate(orgMember, ['user']);
-      const { user } = orgMember;
-
-      return {
-        orgMember,
-        user: EntityService.createPublicUser(user),
-        ...orgMemberCollections,
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.populate(orgMember, ['user']);
+    const { user } = orgMember;
+    return {
+      orgMember,
+      user: EntityService.createPublicUser(user),
+      ...orgMemberCollections,
+    };
   }
 
   /**
@@ -232,23 +202,15 @@ export class EntityService {
    * @param orgMember The org member to convert.
    *
    * @returns The org member as an `OrgMemberNoUser`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoUser(
     orgMember: OrgMemberEntity,
   ): Promise<OrgMemberNoUser> {
     const orgMemberCollections =
       await this.populateOrgMemberCollections(orgMember);
-
-    try {
-      await this.em.populate(orgMember, ['organization']);
-      const { organization } = orgMember;
-
-      return { orgMember, organization, ...orgMemberCollections };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.populate(orgMember, ['organization']);
+    const { organization } = orgMember;
+    return { orgMember, organization, ...orgMemberCollections };
   }
 
   /**
@@ -257,7 +219,6 @@ export class EntityService {
    * @param orgMember The org member to convert.
    *
    * @returns The org member as an `OrgMemberNoUserOrg`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createOrgMemberNoUserOrg(
     orgMember: OrgMemberEntity,
@@ -275,50 +236,45 @@ export class EntityService {
    * @returns The entity as a `TeamNoOrg`.
    */
   async createTeamNoOrg(team: TeamEntity): Promise<TeamNoOrg> {
-    try {
-      await this.em.populate(team, ['teamMembers.orgMember.user']);
+    await this.em.populate(team, ['teamMembers.orgMember.user']);
 
-      const postOffsetAndLimit: OffsetAndLimit = {
-        offset: 0,
-        limit: 3,
-      };
-      const postFindAndCountOptions = {
+    const postOffsetAndLimit: OffsetAndLimit = {
+      offset: 0,
+      limit: 3,
+    };
+    const postFindAndCountOptions = {
+      ...postOffsetAndLimit,
+      orderBy: { markedUpToDateAt: QueryOrder.DESC },
+    };
+    const [docs, docsCount] = await this.em.findAndCount(
+      DocEntity,
+      { team },
+      postFindAndCountOptions,
+    );
+    const [qnas, qnasCount] = await this.em.findAndCount(
+      QnaEntity,
+      { team },
+      postFindAndCountOptions,
+    );
+
+    return {
+      team,
+      docs: {
+        results: await this.createDocSearchResults(docs),
+        total: docsCount,
         ...postOffsetAndLimit,
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-      };
-      const [docs, docsCount] = await this.em.findAndCount(
-        DocEntity,
-        { team },
-        postFindAndCountOptions,
-      );
-      const [qnas, qnasCount] = await this.em.findAndCount(
-        QnaEntity,
-        { team },
-        postFindAndCountOptions,
-      );
-
-      return {
-        team,
-        docs: {
-          results: await this.createDocSearchResults(docs),
-          total: docsCount,
-          ...postOffsetAndLimit,
-        },
-        qnas: {
-          results: await this.createQnaSearchResults(qnas),
-          total: qnasCount,
-          ...postOffsetAndLimit,
-        },
-        teamMembers: team.teamMembers.getItems().map((teamMember) => ({
-          teamMember,
-          orgMember: teamMember.orgMember,
-          user: EntityService.createPublicUser(teamMember.orgMember.user),
-        })),
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+      },
+      qnas: {
+        results: await this.createQnaSearchResults(qnas),
+        total: qnasCount,
+        ...postOffsetAndLimit,
+      },
+      teamMembers: team.teamMembers.getItems().map((teamMember) => ({
+        teamMember,
+        orgMember: teamMember.orgMember,
+        user: EntityService.createPublicUser(teamMember.orgMember.user),
+      })),
+    };
   }
 
   /**
@@ -327,18 +283,11 @@ export class EntityService {
    * @param teamMember The team member to convert.
    *
    * @returns The entity as a `TeamMemberUserOrgMember`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createTeamMemberUserOrgMember(
     teamMember: TeamMemberEntity,
   ): Promise<TeamMemberUserOrgMember> {
-    try {
-      await this.em.populate(teamMember, ['orgMember.user']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(teamMember, ['orgMember.user']);
     return {
       teamMember,
       orgMember: teamMember.orgMember,
@@ -352,7 +301,6 @@ export class EntityService {
    * @param doc The doc to convert.
    *
    * @returns The entities as `DocNoOrg`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createDocNoOrg(doc: DocEntity): Promise<DocNoOrg> {
     await this.populatePostMembersTeam(doc);
@@ -376,7 +324,6 @@ export class EntityService {
    * @param qna The qna to convert.
    *
    * @returns The entities as `QnaNoOrg`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createQnaNoOrg(qna: QnaEntity): Promise<QnaNoOrg> {
     await this.populatePostMembersTeam(qna);
@@ -400,19 +347,12 @@ export class EntityService {
    * @param user The user to convert.
    *
    * @returns The user as a `UserRelation`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async createUserRelation(user: UserEntity): Promise<UserRelation> {
-    try {
-      await this.em.populate(user, [
-        'organizations.organization',
-        'invites.orgMemberInvites.organization',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(user, [
+      'organizations.organization',
+      'invites.orgMemberInvites.organization',
+    ]);
     const { invites, organizations } = user;
     return {
       user,
@@ -430,21 +370,11 @@ export class EntityService {
    * A helper function to populate the relations related to a post's members and team.
    *
    * @param posts The posts to populate.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   private async populatePostMembersTeam(
     posts: PostEntity | PostEntity[],
   ): Promise<void> {
-    try {
-      await this.em.populate(posts, [
-        'creator.user',
-        'maintainer.user',
-        'team',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.populate(posts, ['creator.user', 'maintainer.user', 'team']);
   }
 
   /**
@@ -466,72 +396,67 @@ export class EntityService {
       | 'maintainedQnas'
     >
   > {
-    try {
-      const teamMembers = await this.em.find(
-        TeamMemberEntity,
-        { orgMember },
-        { populate: ['team'] },
-      );
+    const teamMembers = await this.em.find(
+      TeamMemberEntity,
+      { orgMember },
+      { populate: ['team'] },
+    );
 
-      const postOffsetAndLimit: OffsetAndLimit = {
-        offset: 0,
-        limit: 3,
-      };
-      const postFindAndCountOptions = {
+    const postOffsetAndLimit: OffsetAndLimit = {
+      offset: 0,
+      limit: 3,
+    };
+    const postFindAndCountOptions = {
+      ...postOffsetAndLimit,
+      orderBy: { markedUpToDateAt: QueryOrder.DESC },
+    };
+    const [createdDocs, createdDocsCount] = await this.em.findAndCount(
+      DocEntity,
+      { creator: orgMember },
+      postFindAndCountOptions,
+    );
+    const [maintainedDocs, maintainedDocsCount] = await this.em.findAndCount(
+      DocEntity,
+      { maintainer: orgMember },
+      postFindAndCountOptions,
+    );
+    const [createdQnas, createdQnasCount] = await this.em.findAndCount(
+      QnaEntity,
+      { creator: orgMember },
+      postFindAndCountOptions,
+    );
+    const [maintainedQnas, maintainedQnasCount] = await this.em.findAndCount(
+      QnaEntity,
+      { maintainer: orgMember },
+      postFindAndCountOptions,
+    );
+
+    return {
+      teams: teamMembers.map((teamMember) => ({
+        teamMember,
+        team: teamMember.team,
+      })),
+      createdDocs: {
+        results: await this.createDocSearchResults(createdDocs),
+        total: createdDocsCount,
         ...postOffsetAndLimit,
-        orderBy: { markedUpToDateAt: QueryOrder.DESC },
-      };
-      const [createdDocs, createdDocsCount] = await this.em.findAndCount(
-        DocEntity,
-        { creator: orgMember },
-        postFindAndCountOptions,
-      );
-      const [maintainedDocs, maintainedDocsCount] = await this.em.findAndCount(
-        DocEntity,
-        { maintainer: orgMember },
-        postFindAndCountOptions,
-      );
-      const [createdQnas, createdQnasCount] = await this.em.findAndCount(
-        QnaEntity,
-        { creator: orgMember },
-        postFindAndCountOptions,
-      );
-      const [maintainedQnas, maintainedQnasCount] = await this.em.findAndCount(
-        QnaEntity,
-        { maintainer: orgMember },
-        postFindAndCountOptions,
-      );
-
-      return {
-        teams: teamMembers.map((teamMember) => ({
-          teamMember,
-          team: teamMember.team,
-        })),
-        createdDocs: {
-          results: await this.createDocSearchResults(createdDocs),
-          total: createdDocsCount,
-          ...postOffsetAndLimit,
-        },
-        maintainedDocs: {
-          results: await this.createDocSearchResults(maintainedDocs),
-          total: maintainedDocsCount,
-          ...postOffsetAndLimit,
-        },
-        createdQnas: {
-          results: await this.createQnaSearchResults(createdQnas),
-          total: createdQnasCount,
-          ...postOffsetAndLimit,
-        },
-        maintainedQnas: {
-          results: await this.createQnaSearchResults(maintainedQnas),
-          total: maintainedQnasCount,
-          ...postOffsetAndLimit,
-        },
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+      },
+      maintainedDocs: {
+        results: await this.createDocSearchResults(maintainedDocs),
+        total: maintainedDocsCount,
+        ...postOffsetAndLimit,
+      },
+      createdQnas: {
+        results: await this.createQnaSearchResults(createdQnas),
+        total: createdQnasCount,
+        ...postOffsetAndLimit,
+      },
+      maintainedQnas: {
+        results: await this.createQnaSearchResults(maintainedQnas),
+        total: maintainedQnasCount,
+        ...postOffsetAndLimit,
+      },
+    };
   }
 
   // END: Entity relations
@@ -542,32 +467,25 @@ export class EntityService {
    * Get the NewBee instance's admin controls.
    *
    * @returns The NewBee instance's admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async getAdminControls(): Promise<AdminControlsEntity> {
-    try {
-      let adminControls = await this.em.findOne(
-        AdminControlsEntity,
-        adminControlsId,
-      );
-      if (adminControls) {
-        return adminControls;
-      }
-
-      adminControls = new AdminControlsEntity();
-      await this.em.persistAndFlush(adminControls);
+    let adminControls = await this.em.findOne(
+      AdminControlsEntity,
+      adminControlsId,
+    );
+    if (adminControls) {
       return adminControls;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
     }
+
+    adminControls = new AdminControlsEntity();
+    await this.em.persistAndFlush(adminControls);
+    return adminControls;
   }
 
   /**
    * Get the NewBee instance's public admin controls.
    *
    * @returns The NewBee instance's public admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async getPublicAdminControls(): Promise<PublicAdminControls> {
     const adminControls = await this.getAdminControls();
@@ -579,33 +497,27 @@ export class EntityService {
    * Gets the NewBee instance's admin controls as an `AdminControlsRelation`.
    *
    * @returns The NewBee instance's `AdminControlsRelation`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async getAdminControlsRelation(): Promise<AdminControlsRelation> {
     const adminControls = await this.getAdminControls();
-    try {
-      const [waitlist, waitlistCount] = await this.em.findAndCount(
-        WaitlistMemberEntity,
-        { waitlist: adminControls },
-        {
-          offset: 0,
-          limit: defaultLimit,
-          orderBy: { createdAt: QueryOrder.ASC },
-        },
-      );
-      return {
-        adminControls,
-        waitlist: {
-          results: waitlist,
-          total: waitlistCount,
-          offset: 0,
-          limit: defaultLimit,
-        },
-      };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    const [waitlist, waitlistCount] = await this.em.findAndCount(
+      WaitlistMemberEntity,
+      { waitlist: adminControls },
+      {
+        offset: 0,
+        limit: defaultLimit,
+        orderBy: { createdAt: QueryOrder.ASC },
+      },
+    );
+    return {
+      adminControls,
+      waitlist: {
+        results: waitlist,
+        total: waitlistCount,
+        offset: 0,
+        limit: defaultLimit,
+      },
+    };
   }
 
   /**
@@ -614,39 +526,12 @@ export class EntityService {
    * @param entity The entity to check.
    *
    * @throws {BadRequestException} `cannotDeleteMaintainerBadRequest`, `cannotDeleteOnlyTeamOwnerBadRequest`, `cannotDeleteOnlyOrgOwnerBadRequest`. If trying to delete a user who's the only maintainer of a post, the only team owner, or the only org owner.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async safeToDelete(
-    entity:
-      | AuthenticatorEntity
-      | DocEntity
-      | OrgMemberInviteEntity
-      | OrgMemberEntity
-      | OrganizationEntity
-      | QnaEntity
-      | TeamMemberEntity
-      | TeamEntity
-      | UserInvitesEntity
-      | UserEntity,
+    entity: OrgMemberEntity | TeamMemberEntity | UserEntity,
   ): Promise<void> {
-    try {
-      await this.em.populate(entity, true);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    if (
-      entity instanceof AuthenticatorEntity ||
-      entity instanceof DocEntity ||
-      entity instanceof OrgMemberInviteEntity ||
-      entity instanceof OrganizationEntity ||
-      entity instanceof QnaEntity ||
-      entity instanceof TeamEntity ||
-      entity instanceof UserInvitesEntity
-    ) {
-      return;
-    } else if (entity instanceof OrgMemberEntity) {
+    await this.em.populate(entity, true);
+    if (entity instanceof OrgMemberEntity) {
       if (entity.maintainedDocs.length || entity.maintainedQnas.length) {
         throw new BadRequestException(cannotDeleteMaintainerBadReqest);
       }
@@ -744,7 +629,6 @@ export class EntityService {
    * @param optionalParams All of the optional params for fetching posts.
    *
    * @returns A tuple containing the found post entities and a count of the total number of posts in the org.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async findPostsByOrgAndCount<PostType extends PostEntity>(
     postType: ClassConstructor<PostType>,
@@ -760,22 +644,17 @@ export class EntityService {
     const { offset, limit } = offsetAndLimit;
     const params = optionalParams ?? {};
     const { orgMember, ...restParams } = params;
-    try {
-      return await this.em.findAndCount(
-        postType,
-        {
-          organization,
-          ...(orgMember && {
-            $or: [{ creator: orgMember }, { maintainer: orgMember }],
-          }),
-          ...(restParams && restParams),
-        },
-        { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findAndCount(
+      postType,
+      {
+        organization,
+        ...(orgMember && {
+          $or: [{ creator: orgMember }, { maintainer: orgMember }],
+        }),
+        ...(restParams && restParams),
+      },
+      { orderBy: { markedUpToDateAt: QueryOrder.DESC }, offset, limit },
+    );
   }
 
   /**

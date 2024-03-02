@@ -14,8 +14,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(
+    private readonly userService: UserService,
     configService: ConfigService<AppAuthConfig, true>,
-    private readonly userService: UserService
   ) {
     super(configService.get('auth.jwtStrategy', { infer: true }));
   }
@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    */
   async validate(payload: UserJwtPayload): Promise<UserEntity> {
     this.logger.log(
-      `JWT validate request received for payload: ${JSON.stringify(payload)}`
+      `JWT validate request received for payload: ${JSON.stringify(payload)}`,
     );
 
     const { sub: id } = payload;

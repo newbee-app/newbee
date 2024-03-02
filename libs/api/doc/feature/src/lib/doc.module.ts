@@ -10,9 +10,9 @@ import { DocController } from './doc.controller';
 @Module({
   imports: [
     MikroOrmModule.forFeature([DocEntity]),
-    TeamModule,
-    TeamMemberModule,
     OrgMemberModule,
+    TeamMemberModule,
+    TeamModule,
   ],
   providers: [DocService],
   controllers: [DocController],

@@ -63,14 +63,13 @@ export class OrgMemberInviteEntity
   inviter: OrgMemberEntity;
 
   constructor(
-    id: string,
     userInvites: UserInvitesEntity,
     inviter: OrgMemberEntity,
     role: OrgRoleEnum,
   ) {
-    super(id);
+    super();
 
-    this.token = shortenUuid(id);
+    this.token = shortenUuid(this.id);
     this.organization = inviter.organization;
     this.userInvites = userInvites;
     this.inviter = inviter;

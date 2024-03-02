@@ -26,7 +26,7 @@ export class SearchService {
    * @returns The base API URL for dealing with search.
    */
   static baseApiUrl(orgSlug: string): string {
-    return `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}`;
+    return `/${Keyword.Api}/v${apiVersion.org}/${Keyword.Organization}/${orgSlug}/${Keyword.Search}`;
   }
 
   /**

@@ -48,9 +48,9 @@ describe('CookieController', () => {
       ],
     }).compile();
 
-    controller = module.get<CookieController>(CookieController);
-    authService = module.get<AuthService>(AuthService);
-    entityService = module.get<EntityService>(EntityService);
+    controller = module.get(CookieController);
+    authService = module.get(AuthService);
+    entityService = module.get(EntityService);
 
     request.signedCookies = {};
     request.signedCookies[authJwtCookie] = testToken;

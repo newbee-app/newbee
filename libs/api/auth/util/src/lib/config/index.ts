@@ -55,6 +55,7 @@ export default registerAs(
       verifyLink: `${process.env['FRONTEND_URL'] as string}/${Keyword.Auth}/${
         Keyword.Login
       }/${Keyword.MagicLinkLogin}`,
+      tokenFromReq: (req) => req.body['token'],
       name: Keyword.MagicLinkLogin,
     },
     jwtStrategy: {

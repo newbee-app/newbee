@@ -1,5 +1,4 @@
 import { defineConfig } from '@mikro-orm/postgresql';
-import { SeedManager } from '@mikro-orm/seeder';
 import {
   AdminControlsEntity,
   AuthenticatorEntity,
@@ -30,7 +29,6 @@ export default defineConfig({
   migrations: {
     disableForeignKeys: false,
   },
-  extensions: [SeedManager],
   entities: [
     AdminControlsEntity,
     AuthenticatorEntity,

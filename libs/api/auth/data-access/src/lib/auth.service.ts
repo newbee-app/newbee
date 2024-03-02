@@ -29,8 +29,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<AppAuthConfig, true>,
-    private readonly userService: UserService,
     private readonly authenticatorService: AuthenticatorService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -50,19 +50,11 @@ export class AuthService {
    *
    * @param token The auth bearer token to examine.
    *
-   * @returns The user associated with the token.
-   * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @returns The user associated with the token or `null` if the token can't be verified or no user such user exists.
    */
   async verifyAuthToken(token: string): Promise<UserEntity | null> {
-    try {
-      const { sub: id }: UserJwtPayload = this.jwtService.verify(token);
-      const user = await this.userService.findOneById(id);
-      return user;
-    } catch (err) {
-      this.logger.error(err);
-      return null;
-    }
+    const { sub: id }: UserJwtPayload = this.jwtService.verify(token);
+    return await this.userService.findOneByIdOrNull(id);
   }
 
   /**
@@ -72,7 +64,6 @@ export class AuthService {
    *
    * @returns The options needed for the frontend for starting the WebAuthn authentication process.
    * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async generateLoginChallenge(
     email: string,
@@ -105,9 +96,7 @@ export class AuthService {
    * @returns The `UserEntity` instance associated with the user, if the challenge is valid and verified.
    * @throws {NotFoundException} `userEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
    * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
-   * @throws {ForbiddenException} `forbiddenError`. If the user's authenticator is somehow not assigned to the user (should never happen).
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   async verifyLoginChallenge(
     email: string,

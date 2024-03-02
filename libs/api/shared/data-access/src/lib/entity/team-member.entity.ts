@@ -1,6 +1,5 @@
 import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
 import { TeamMember, TeamRoleEnum, ascTeamRoleEnum } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { CommonEntity } from './common.abstract.entity';
 import { OrgMemberEntity } from './org-member.entity';
 import { TeamEntity } from './team.entity';
@@ -39,7 +38,7 @@ export class TeamMemberEntity extends CommonEntity implements TeamMember {
     team: TeamEntity,
     role: TeamRoleEnum,
   ) {
-    super(v4());
+    super();
 
     this.orgMember = orgMember;
     this.team = team;

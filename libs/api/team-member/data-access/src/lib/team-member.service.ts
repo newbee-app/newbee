@@ -1,13 +1,9 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,7 +18,6 @@ import {
   TeamRoleEnum,
   forbiddenError,
   generateLteTeamRoles,
-  internalServerError,
   teamMemberNotFound,
   userAlreadyTeamMemberBadRequest,
 } from '@newbee/shared/util';
@@ -32,9 +27,6 @@ import {
  */
 @Injectable()
 export class TeamMemberService {
-  /**
-   * The logger to use when logging anything in the service.
-   */
   private readonly logger = new Logger(TeamMemberService.name);
 
   constructor(
@@ -54,7 +46,6 @@ export class TeamMemberService {
    * @returns A new team member instance.
    * @throws {ForbiddenException} `forbiddenError`. If the user is trying to create a team member with permissions that exceed their own.
    * @throws {BadRequestException} `userAlreadyTeamMemberBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(
     orgMember: OrgMemberEntity,
@@ -72,16 +63,15 @@ export class TeamMemberService {
     const teamMember = new TeamMemberEntity(orgMember, team, role);
     try {
       await this.em.persistAndFlush(teamMember);
-      return teamMember;
     } catch (err) {
-      this.logger.error(err);
-
       if (err instanceof UniqueConstraintViolationException) {
+        this.logger.error(err);
         throw new BadRequestException(userAlreadyTeamMemberBadRequest);
       }
 
-      throw new InternalServerErrorException(internalServerError);
+      throw err;
     }
+    return teamMember;
   }
 
   /**
@@ -91,24 +81,20 @@ export class TeamMemberService {
    * @param team The team to search in.
    *
    * @returns The associated team member instance.
-   * @throws {NotFoundException} `teamMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `teamMemberNotFound`. If the team member cannot be found.
    */
   async findOneByTeamAndOrgMember(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<TeamMemberEntity> {
-    try {
-      return await this.em.findOneOrFail(TeamMemberEntity, { orgMember, team });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(teamMemberNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const teamMember = await this.em.findOne(TeamMemberEntity, {
+      orgMember,
+      team,
+    });
+    if (!teamMember) {
+      throw new NotFoundException(teamMemberNotFound);
     }
+    return teamMember;
   }
 
   /**
@@ -119,18 +105,12 @@ export class TeamMemberService {
    * @param team The team to search in.
    *
    * @returns The associated team member instance or null.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByTeamAndOrgMemberOrNull(
     orgMember: OrgMemberEntity,
     team: TeamEntity,
   ): Promise<TeamMemberEntity | null> {
-    try {
-      return await this.em.findOne(TeamMemberEntity, { orgMember, team });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findOne(TeamMemberEntity, { orgMember, team });
   }
 
   /**
@@ -143,7 +123,6 @@ export class TeamMemberService {
    *
    * @returns The updated team member.
    * @throws {ForbiddenException} `forbiddenError`. If the user is trying to update a team member with permissions that exceed their own.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async updateRole(
     teamMember: TeamMemberEntity,
@@ -157,16 +136,11 @@ export class TeamMemberService {
       newRole,
     );
 
-    const updatedTeamMember = this.em.assign(teamMember, {
+    teamMember = this.em.assign(teamMember, {
       role: newRole,
     });
-    try {
-      await this.em.flush();
-      return updatedTeamMember;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.flush();
+    return teamMember;
   }
 
   /**
@@ -179,16 +153,19 @@ export class TeamMemberService {
    *
    * @throws {ForbiddenException} `forbiddenError`. If the user is trying to delete a team member with permissions that exceed their own.
    * @throws {BadRequestException} `cannotDeleteOnlyOwnerBadRequest`. If the team member is the only owner of the team.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
-  async delete(teamMember: TeamMemberEntity): Promise<void> {
+  async delete(
+    teamMember: TeamMemberEntity,
+    requesterOrgRole: OrgRoleEnum,
+    requesterTeamRole: TeamRoleEnum | null,
+  ): Promise<void> {
+    TeamMemberService.checkRequesterTeamRole(
+      requesterOrgRole,
+      requesterTeamRole,
+      teamMember.role,
+    );
     await this.entityService.safeToDelete(teamMember);
-    try {
-      await this.em.removeAndFlush(teamMember);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.removeAndFlush(teamMember);
   }
 
   /**
@@ -215,30 +192,5 @@ export class TeamMemberService {
     }
 
     throw new ForbiddenException(forbiddenError);
-  }
-
-  /**
-   * A helper function to check whether the org member has the team permissions to fulfill the request.
-   *
-   * It will pass if the org member is >= moderator or they are >= a member of the team.
-   *
-   * @param orgMember The org member to examine.
-   * @param team The team to check the org member against.
-   *
-   * @throws {ForbiddenException} `forbiddenError`. If the requester does not have the adequate permissions.
-   */
-  async findAndCheckRequesterTeamRoles(
-    orgMember: OrgMemberEntity,
-    team: TeamEntity,
-  ): Promise<void> {
-    const teamMember = await this.findOneByTeamAndOrgMemberOrNull(
-      orgMember,
-      team,
-    );
-    TeamMemberService.checkRequesterTeamRole(
-      orgMember.role,
-      teamMember?.role ?? null,
-      TeamRoleEnum.Member,
-    );
   }
 }

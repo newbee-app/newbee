@@ -16,5 +16,4 @@ export const apiVersion = {
   [Keyword.TeamMember]: '1',
   [Keyword.Doc]: '1',
   [Keyword.Qna]: '1',
-  [Keyword.Search]: '1',
 };

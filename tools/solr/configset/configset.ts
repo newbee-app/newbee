@@ -13,6 +13,7 @@ import {
 import { SolrCli } from '@newbee/solr-cli';
 import type { OptionValues } from 'commander';
 import { Command } from 'commander';
+import config from '../solr.config';
 import { execute, prettyJson } from '../util';
 
 /**
@@ -33,29 +34,11 @@ async function main(): Promise<void> {
     .description(
       'Creates the new configsets from scratch, without using uploads',
     )
-    .option(
-      '-u, --url <url>',
-      'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983',
-    )
-    .option(
-      '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
-    )
     .action(create);
 
   program
     .command('delete <configset>')
     .description('Deletes the given configset')
-    .option(
-      '-u, --url <url>',
-      'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983',
-    )
-    .option(
-      '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
-    )
     .action(deleteConfigset);
 
   program
@@ -71,15 +54,6 @@ async function main(): Promise<void> {
   program
     .command('upload <configset> <path>')
     .description('Uploads an existing configset')
-    .option(
-      '-u, --url <url>',
-      'The URL associated with the Solr instance',
-      'http://127.0.0.1:8983',
-    )
-    .option(
-      '-b, --basic-auth <basic-auth>',
-      'The username and password to attach to the basic auth portion of request headers (in username:password format)',
-    )
     .action(upload);
 
   program
@@ -94,10 +68,8 @@ async function main(): Promise<void> {
 
 /**
  * Create configsets from scratch, without uploading anything.
- *
- * @param options The CLI options for creating a SolrCli instance.
  */
-async function create(options: OptionValues): Promise<void> {
+async function create(): Promise<void> {
   // START: Create all of the constants I'll reuse in the method to avoid typos
 
   // Related to outside files
@@ -187,7 +159,7 @@ async function create(options: OptionValues): Promise<void> {
 
   // END: Create all of the constants I'll reuse in the method to avoid typos
 
-  const solrCli = createSolrCli(options);
+  const solrCli = new SolrCli(config);
 
   // Check if the configsets we want to create already exist
   const configsets = new Set((await solrCli.listConfigsets()).configSets);
@@ -821,11 +793,8 @@ async function create(options: OptionValues): Promise<void> {
  * @param configset The configset to delete.
  * @param options The CLI options for creating a SolrCli instance.
  */
-async function deleteConfigset(
-  configset: string,
-  options: OptionValues,
-): Promise<void> {
-  const solrCli = createSolrCli(options);
+async function deleteConfigset(configset: string): Promise<void> {
+  const solrCli = new SolrCli(config);
   const res = await solrCli.deleteConfigset(configset);
   console.log(`Deleting configset ${configset}: ${prettyJson(res)}`);
 }
@@ -855,12 +824,8 @@ async function download(
  * @param path The path to the zipped configset to upload.
  * @param options The CLI options for creating a SolrCli instance.
  */
-async function upload(
-  configset: string,
-  path: string,
-  options: OptionValues,
-): Promise<void> {
-  const solrCli = createSolrCli(options);
+async function upload(configset: string, path: string): Promise<void> {
+  const solrCli = new SolrCli(config);
   const res = await solrCli.uploadConfigset(configset, path);
   console.log(`Uploading configset ${configset}: ${prettyJson(res)}`);
 }
@@ -873,29 +838,6 @@ async function upload(
  */
 async function zip(path: string, destination: string): Promise<void> {
   await execute(`(cd ${path} && zip -r - *) > ${destination}`);
-}
-
-/**
- * Creates a SolrCli using the given options.
- *
- * @param options The options object to extract option values from.
- *
- * @returns A new SolrCli instance.
- */
-function createSolrCli(options: OptionValues): SolrCli {
-  const url: string = options['url'];
-  const basicAuth: string | undefined = options['basicAuth'];
-  const splitBasicAuth = basicAuth?.split(':');
-  return new SolrCli({
-    url,
-    ...(basicAuth &&
-      splitBasicAuth && {
-        basicAuth: {
-          username: splitBasicAuth[0] ?? '',
-          password: splitBasicAuth[1] ?? '',
-        },
-      }),
-  });
 }
 
 main();

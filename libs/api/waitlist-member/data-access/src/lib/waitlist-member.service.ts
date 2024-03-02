@@ -4,12 +4,7 @@ import {
 } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { MailerService } from '@nestjs-modules/mailer';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   EntityService,
@@ -27,7 +22,6 @@ import {
   UserRoleEnum,
   alreadyOnWaitlistBadRequest,
   emailAlreadyRegisteredBadRequest,
-  internalServerError,
   userEmailTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
@@ -46,8 +40,8 @@ export class WaitlistMemberService {
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly mailerService: MailerService,
     private readonly entityService: EntityService,
-    private readonly userService: UserService,
     private readonly userInvitesService: UserInvitesService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -57,7 +51,6 @@ export class WaitlistMemberService {
    *
    * @returns The waitlist member that was added to the waitlist.
    * @throws {BadRequestException} `emailAlreadyRegisteredBadRequest`, `alreadyOnWaitlistBadRequest`. If the given email is already a user or a waitlist member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async create(
     createWaitlistMemberDto: CreateWaitlistMemberDto,
@@ -68,24 +61,33 @@ export class WaitlistMemberService {
     }
 
     const adminControls = await this.entityService.getAdminControls();
-    const waitlistMember = new WaitlistMemberEntity(email, name, adminControls);
+    const waitlistMember = await this.em.transactional(
+      async (em): Promise<WaitlistMemberEntity> => {
+        const waitlistMember = new WaitlistMemberEntity(
+          email,
+          name,
+          adminControls,
+        );
+        try {
+          await em.persistAndFlush(waitlistMember);
+        } catch (err) {
+          if (err instanceof UniqueConstraintViolationException) {
+            this.logger.error(err);
+            throw new BadRequestException(alreadyOnWaitlistBadRequest);
+          }
+
+          throw err;
+        }
+
+        await this.solrCli.addDocs(
+          solrAppCollection,
+          new WaitlistDocParams(waitlistMember),
+        );
+        return waitlistMember;
+      },
+    );
+
     try {
-      await this.em.persistAndFlush(waitlistMember);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(alreadyOnWaitlistBadRequest);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
-      await this.solrCli.addDocs(
-        solrAppCollection,
-        new WaitlistDocParams(waitlistMember),
-      );
       await this.mailerService.sendMail({
         to: email,
         subject: `You're on the waitlist`,
@@ -94,8 +96,6 @@ export class WaitlistMemberService {
       });
     } catch (err) {
       this.logger.error(err);
-      await this.em.removeAndFlush(waitlistMember);
-      throw new InternalServerErrorException(internalServerError);
     }
 
     return waitlistMember;
@@ -107,15 +107,9 @@ export class WaitlistMemberService {
    * @param email The email to look for.
    *
    * @returns The waitlist member associated with the email, `null` if none exist.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async findByEmailOrNull(email: string): Promise<WaitlistMemberEntity | null> {
-    try {
-      return await this.em.findOne(WaitlistMemberEntity, { email });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findOne(WaitlistMemberEntity, { email });
   }
 
   /**
@@ -124,22 +118,16 @@ export class WaitlistMemberService {
    * @param offsetAndLimit The offset and limit of the waitlist members to get.
    *
    * @returns A tuple containing the waitlist member entities and a count of the toal number of waitlist members.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async getAllAndCount(
     offsetAndLimit: OffsetAndLimit,
   ): Promise<[WaitlistMemberEntity[], number]> {
     const { offset, limit } = offsetAndLimit;
-    try {
-      return await this.em.findAndCount(
-        WaitlistMemberEntity,
-        {},
-        { offset, limit, orderBy: { createdAt: QueryOrder.ASC } },
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findAndCount(
+      WaitlistMemberEntity,
+      {},
+      { offset, limit, orderBy: { createdAt: QueryOrder.ASC } },
+    );
   }
 
   /**
@@ -149,7 +137,6 @@ export class WaitlistMemberService {
    *
    * @returns The users made from waitlist members.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueContraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async deleteAndCreateUsers(
     waitlistMembers: WaitlistMemberEntity[],
@@ -177,46 +164,48 @@ export class WaitlistMemberService {
     );
     const userDocParams = users.map((user) => new UserDocParams(user));
 
-    try {
-      await this.em.persist(users).remove(waitlistMembers).flush();
-    } catch (err) {
-      this.logger.error(err);
+    await this.em.transactional(async (em): Promise<void> => {
+      try {
+        em.persist(users);
+        em.remove(waitlistMembers);
+        await em.flush();
+      } catch (err) {
+        if (err instanceof UniqueConstraintViolationException) {
+          this.logger.error(err);
+          throw new BadRequestException(userEmailTakenBadRequest);
+        }
 
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(userEmailTakenBadRequest);
+        throw err;
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
       await this.solrCli.bulkDocRequest(solrAppCollection, {
         add: userDocParams,
         delete: waitlistAsIds,
       });
-    } catch (err) {
-      this.logger.error(err);
-      await this.em.persist(waitlistMembers).remove(users).flush();
-      throw new InternalServerErrorException(internalServerError);
-    }
+    });
 
     const link = this.configService.get('rpInfo.origin', { infer: true });
-    try {
-      for (const user of users) {
-        const { email, name } = user;
+    for (const user of users) {
+      const { email, name } = user;
+      try {
         await this.mailerService.sendMail({
           to: email,
           subject: `You're off the waitlist!`,
           text: `Congratulations ${name}, you're off the waitlist! You should have also gotten an email to verify your new account. Please click here to start using NewBee: ${link}`,
           html: `<p>Congratulations ${name}, you're off the waitlist!</p><p>You should have also gotten an email to verify your new account.</p><p>Please click here to start using NewBee: <a href="${link}">${link}</a></p>`,
         });
+      } catch (err) {
+        this.logger.error(err);
+        continue;
       }
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
     }
 
-    await this.userService.sendVerificationEmail(users);
+    try {
+      await this.userService.sendVerificationEmail(users);
+    } catch (err) {
+      this.logger.error(err);
+    }
+
     return users;
   }
 }

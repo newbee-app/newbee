@@ -41,9 +41,6 @@ import {
   version: apiVersion['org-member'],
 })
 export class OrgMemberController {
-  /**
-   * The logger to use when logging anything in the controller.
-   */
   private readonly logger = new Logger(OrgMemberController.name);
 
   constructor(
@@ -58,8 +55,6 @@ export class OrgMemberController {
    * @param organization The organization to look in.
    *
    * @returns Information about the org member;
-   * @throws {NotFoundException} `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Get(`:${Keyword.Member}`)
   @Role(apiRoles['org-member'].getBySlug)
@@ -95,18 +90,16 @@ export class OrgMemberController {
     this.logger.log(
       `Update org member request received in organization ID: ${organization.id}, for org member slug: ${subjectOrgMember.slug}, from org member slug: ${orgMember.slug}`,
     );
-
     const { role } = updateOrgMemberDto;
-    const updatedOrgMember = await this.orgMemberService.updateRole(
+    subjectOrgMember = await this.orgMemberService.updateRole(
       subjectOrgMember,
       role,
       orgMember.role,
     );
     this.logger.log(
-      `Updated org member for org member slug: ${updatedOrgMember.slug}, in organization ID: ${organization.id}`,
+      `Updated org member for org member slug: ${subjectOrgMember.slug}, in organization ID: ${organization.id}`,
     );
-
-    return updatedOrgMember;
+    return subjectOrgMember;
   }
 
   /**
@@ -140,7 +133,6 @@ export class OrgMemberController {
    * @param organization The organization to look in.
    *
    * @returns The result containing the retrieved docs, the total number of docs in the team, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Member}/${Keyword.Doc}`)
   @Role(apiRoles['org-member'].getAllDocs)
@@ -186,7 +178,6 @@ export class OrgMemberController {
    * @param organization The organization to look in.
    *
    * @returns The result containing the retrieved qnas, the total number of qnas in the team, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Member}/${Keyword.Qna}`)
   @Role(apiRoles['org-member'].getAllQnas)

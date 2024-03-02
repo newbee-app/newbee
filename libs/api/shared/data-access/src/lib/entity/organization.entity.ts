@@ -46,7 +46,7 @@ export class OrganizationEntity extends CommonEntity implements Organization {
    * `hidden` is on, so it will never be serialized.
    */
   @Property({ hidden: true })
-  suggesterBuiltAt: Date = new Date();
+  suggesterBuiltAt: Date = this.createdAt;
 
   /**
    * All of the teams that belong to the organization.
@@ -106,13 +106,12 @@ export class OrganizationEntity extends CommonEntity implements Organization {
   invites = new Collection<OrgMemberInviteEntity>(this);
 
   constructor(
-    id: string,
     name: string,
     slug: string,
     upToDateDuration: string,
     creator: UserEntity,
   ) {
-    super(id);
+    super();
 
     this.name = name;
     this.slug = slugify(slug);

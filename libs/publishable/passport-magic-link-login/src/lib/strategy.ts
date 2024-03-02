@@ -8,11 +8,16 @@ import { Strategy } from 'passport-strategy';
 const defaultTokenExpiration = '5m';
 
 /**
+ * An error explaining there is no auth token attached to the request.
+ */
+export const noAuthTokenErr = 'No auth token';
+
+/**
  * The function responsible for calling one of the Passport strategy's augmented functions, once the user verification is complete.
  *
- * @param err - The error object, if there is an error.
- * @param user - The user object, if verified.
- * @param info - An object to hold any additional information, if relevant.
+ * @param err The error object, if there is an error.
+ * @param user The user object, if verified.
+ * @param info An object to hold any additional information, if relevant.
  */
 export type DoneCallback = (
   err: Error | null,
@@ -23,23 +28,32 @@ export type DoneCallback = (
 /**
  * The function responsible for validating the verified payload against the database.
  *
- * @param payload - The payload to validate.
- * @param done - The function to call after the validation is complete.
+ * @param payload The payload to validate.
+ * @param done The function to call after the validation is complete.
  */
 export type VerifyFunction = (payload: Payload, done: DoneCallback) => void;
 
 /**
  * The function responsible for sending the magic link to the user's email.
  *
- * @param payload - The payload that will be turned into the JWT attached to the magic link.
- * @param link - The magic link to be sent in the email.
- * @param code - The JWT ID or code, used to identify which magic link is associated with which magic link login attempt.
+ * @param payload The payload that will be turned into the JWT attached to the magic link.
+ * @param link The magic link to be sent in the email.
+ * @param code The JWT ID or code, used to identify which magic link is associated with which magic link login attempt.
  */
 export type SendMagicLinkFunction = (
   payload: Payload,
   link: string,
   code: string,
 ) => Promise<void>;
+
+/**
+ * The function responsible for extracting a token from a request object.
+ *
+ * @param req The request to extract the token from.
+ *
+ * @returns The token associated with the request, or `null` or `undefined` if none could be found.
+ */
+export type TokenFromReqFunction = (req: Request) => string | null | undefined;
 
 /**
  * All of the options used to configure the strategy.
@@ -62,6 +76,11 @@ export interface StrategyOptions {
    * Your implementation of how the magic link should be sent.
    */
   sendMagicLink: SendMagicLinkFunction;
+
+  /**
+   * Your implementation of how a token should be extracted from a request.
+   */
+  tokenFromReq: TokenFromReqFunction;
 
   /**
    * The name that should be used for the strategy in Passport.
@@ -118,6 +137,11 @@ export class MagicLinkLoginStrategy extends Strategy {
   private readonly sendMagicLink: SendMagicLinkFunction;
 
   /**
+   * Your implementation of how a token should be extracted from a request.
+   */
+  private readonly tokenFromReq: TokenFromReqFunction;
+
+  /**
    * The name that should be used for the strategy in Passport.
    * Defaults to 'magic-link-login', if not specified.
    */
@@ -150,6 +174,7 @@ export class MagicLinkLoginStrategy extends Strategy {
     this.secret = options.secret;
     this.verifyLink = options.verifyLink;
     this.sendMagicLink = options.sendMagicLink;
+    this.tokenFromReq = options.tokenFromReq;
 
     if (options.name) {
       this.name = options.name;
@@ -175,9 +200,14 @@ export class MagicLinkLoginStrategy extends Strategy {
    */
   override authenticate(req: Request): void {
     try {
+      const token = this.tokenFromReq(req);
+      if (!token) {
+        throw new Error(noAuthTokenErr);
+      }
+
       // No need to check the result of jwt.verify more strictly with something like a Joi schema because we create the payload when the token is created, so we know its structure and can guarantee type safety
       const payload = jwt.verify(
-        req.body['token'] as string,
+        token,
         this.secret,
         this.jwtVerifyOptions,
       ) as Payload;

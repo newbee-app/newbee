@@ -33,11 +33,6 @@ describe('TeamController', () => {
   let service: TeamService;
   let entityService: EntityService;
 
-  const testUpdatedTeamEntity = {
-    ...testTeamEntity1,
-    ...testUpdateTeamDto1,
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TeamController],
@@ -46,7 +41,7 @@ describe('TeamController', () => {
           provide: TeamService,
           useValue: createMock<TeamService>({
             create: jest.fn().mockResolvedValue(testTeamEntity1),
-            update: jest.fn().mockResolvedValue(testUpdatedTeamEntity),
+            update: jest.fn().mockResolvedValue(testTeamEntity1),
             hasOneByOrgAndSlug: jest.fn().mockResolvedValue(true),
           }),
         },
@@ -65,9 +60,9 @@ describe('TeamController', () => {
       ],
     }).compile();
 
-    controller = module.get<TeamController>(TeamController);
-    service = module.get<TeamService>(TeamService);
-    entityService = module.get<EntityService>(EntityService);
+    controller = module.get(TeamController);
+    service = module.get(TeamService);
+    entityService = module.get(EntityService);
   });
 
   it('should be defined', () => {
@@ -179,7 +174,7 @@ describe('TeamController', () => {
         testOrganizationEntity1,
         testTeamEntity1,
       ),
-    ).resolves.toEqual(testUpdatedTeamEntity);
+    ).resolves.toEqual(testTeamEntity1);
     expect(service.update).toHaveBeenCalledTimes(1);
     expect(service.update).toHaveBeenCalledWith(
       testTeamEntity1,

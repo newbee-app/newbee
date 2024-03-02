@@ -1,6 +1,5 @@
 import type { EntityData } from '@mikro-orm/core';
 import {
-  NotFoundError,
   QueryOrder,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
@@ -9,7 +8,6 @@ import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -31,14 +29,12 @@ import {
   Keyword,
   OffsetAndLimit,
   UserRoleEnum,
-  internalServerError,
   userEmailNotFound,
   userEmailTakenBadRequest,
   userIdNotFound,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
-import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types';
 import { v4 } from 'uuid';
 import type { UserAndOptions } from './interface';
 
@@ -53,9 +49,9 @@ export class UserService {
     private readonly em: EntityManager,
     private readonly solrCli: SolrCli,
     private readonly configService: ConfigService<AppConfig, true>,
+    private readonly mailerService: MailerService,
     private readonly entityService: EntityService,
     private readonly userInvitesService: UserInvitesService,
-    private readonly mailerService: MailerService,
   ) {}
 
   /**
@@ -65,65 +61,59 @@ export class UserService {
    *
    * @returns A new `UserEntity` instance and a new `PublicKeyCredentialCreationOptionsJSON` for registering a new authenticator to the user, using WebAuthn.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM or Solr cli throws any other type of error.
    */
   async create(createUserDto: CreateUserDto): Promise<UserAndOptions> {
     const { email, name, displayName, phoneNumber } = createUserDto;
-    const id = v4();
-    const rpInfo = this.configService.get('rpInfo', { infer: true });
-
-    let options: PublicKeyCredentialCreationOptionsJSON;
-    try {
-      options = await generateRegistrationOptions({
-        rpName: rpInfo.name,
-        rpID: rpInfo.id,
-        userID: id,
-        userName: email,
-        userDisplayName: displayName ?? name,
-        authenticatorSelection: {
-          residentKey: 'required',
-          userVerification: 'required',
-        },
-      });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
     const userInvites =
       await this.userInvitesService.findOrCreateOneByEmail(email);
-    const user = new UserEntity(
-      id,
-      email,
-      name,
-      displayName,
-      phoneNumber,
-      options.challenge,
-      UserRoleEnum.User,
-      userInvites,
+    const userAndOptions = await this.em.transactional(
+      async (em): Promise<UserAndOptions> => {
+        const id = v4();
+        const rpInfo = this.configService.get('rpInfo', { infer: true });
+        const options = await generateRegistrationOptions({
+          rpName: rpInfo.name,
+          rpID: rpInfo.id,
+          userID: id,
+          userName: email,
+          userDisplayName: displayName ?? name,
+          authenticatorSelection: {
+            residentKey: 'required',
+            userVerification: 'required',
+          },
+        });
+        const user = new UserEntity(
+          id,
+          email,
+          name,
+          displayName,
+          phoneNumber,
+          options.challenge,
+          UserRoleEnum.User,
+          userInvites,
+        );
+        try {
+          await em.persistAndFlush(user);
+        } catch (err) {
+          if (err instanceof UniqueConstraintViolationException) {
+            this.logger.error(err);
+            throw new BadRequestException(userEmailTakenBadRequest);
+          }
+
+          throw err;
+        }
+
+        await this.solrCli.addDocs(solrAppCollection, new UserDocParams(user));
+        return { user, options };
+      },
     );
-    try {
-      await this.em.persistAndFlush(user);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(userEmailTakenBadRequest);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
 
     try {
-      await this.solrCli.addDocs(solrAppCollection, new UserDocParams(user));
+      await this.sendVerificationEmail(userAndOptions.user);
     } catch (err) {
       this.logger.error(err);
-      await this.em.removeAndFlush(user);
-      throw new InternalServerErrorException(internalServerError);
     }
 
-    await this.sendVerificationEmail(user);
-    return { user, options };
+    return userAndOptions;
   }
 
   /**
@@ -132,21 +122,25 @@ export class UserService {
    * @param id The user ID to look for.
    *
    * @returns The associated `UserEntity` instance.
-   * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userIdNotFound`. If the user cannot be found.
    */
   async findOneById(id: string): Promise<UserEntity> {
-    try {
-      return await this.em.findOneOrFail(UserEntity, id);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(userIdNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const user = await this.em.findOne(UserEntity, id);
+    if (!user) {
+      throw new NotFoundException(userIdNotFound);
     }
+    return user;
+  }
+
+  /**
+   * Finds the `UserEntity` in the database associated with the given ID or `null` if it doesn't exist.
+   *
+   * @param id The user ID to look for.
+   *
+   * @returns The associated `UserEntity` instance or `null` if it doesn't exist.
+   */
+  async findOneByIdOrNull(id: string): Promise<UserEntity | null> {
+    return await this.em.findOne(UserEntity, id);
   }
 
   /**
@@ -155,21 +149,14 @@ export class UserService {
    * @param email The email to look for.
    *
    * @returns The associated `UserEntity` instance.
-   * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `userEmailNotFound`. If the user cannot be found.
    */
   async findOneByEmail(email: string): Promise<UserEntity> {
-    try {
-      return await this.em.findOneOrFail(UserEntity, { email });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(userEmailNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const user = await this.em.findOne(UserEntity, { email });
+    if (!user) {
+      throw new NotFoundException(userEmailNotFound);
     }
+    return user;
   }
 
   /**
@@ -178,15 +165,9 @@ export class UserService {
    * @param email The email to look for.
    *
    * @returns The associated `UserEntity` instance.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async findOneByEmailOrNull(email: string): Promise<UserEntity | null> {
-    try {
-      return await this.em.findOne(UserEntity, { email });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findOne(UserEntity, { email });
   }
 
   /**
@@ -195,22 +176,16 @@ export class UserService {
    * @param offsetAndLimit The offset and limit of the user to get.
    *
    * @returns A tuple containing the user entities and a count of the total number of users.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async getAllAndCount(
     offsetAndLimit: OffsetAndLimit,
   ): Promise<[UserEntity[], number]> {
     const { offset, limit } = offsetAndLimit;
-    try {
-      return await this.em.findAndCount(
-        UserEntity,
-        {},
-        { offset, limit, orderBy: { role: QueryOrder.DESC } },
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.findAndCount(
+      UserEntity,
+      {},
+      { offset, limit, orderBy: { role: QueryOrder.DESC } },
+    );
   }
 
   /**
@@ -221,89 +196,77 @@ export class UserService {
    *
    * @returns The updated `UserEntity` instance.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
     user: UserEntity,
     data: EntityData<UserEntity>,
   ): Promise<UserEntity> {
-    const updatedUser = this.em.assign(user, data);
+    return await this.em.transactional(async (em): Promise<UserEntity> => {
+      user = em.assign(user, data);
+      try {
+        await em.flush();
+      } catch (err) {
+        if (err instanceof UniqueConstraintViolationException) {
+          this.logger.error(err);
+          throw new BadRequestException(userEmailTakenBadRequest);
+        }
 
-    try {
-      await this.em.flush();
-      await this.em.populate(updatedUser, ['organizations']);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(userEmailTakenBadRequest);
+        throw err;
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
+      await em.populate(user, ['organizations']);
       await this.solrCli.getVersionAndReplaceDocs(
         solrAppCollection,
-        new UserDocParams(updatedUser),
+        new UserDocParams(user),
       );
-      for (const orgMember of updatedUser.organizations) {
+      for (const orgMember of user.organizations.getItems()) {
         await this.solrCli.getVersionAndReplaceDocs(
           orgMember.organization.id,
           new OrgMemberDocParams(orgMember),
         );
       }
-    } catch (err) {
-      this.logger.error(err);
-    }
 
-    return updatedUser;
+      return user;
+    });
   }
 
   /**
    * Deletes the given `UserEntity` and saves the changes to the database.
    *
    * @param user The `UserEntity` instance to delete.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(user: UserEntity): Promise<void> {
     await this.entityService.safeToDelete(user);
-    const userId = user.id;
-    const collectionNamesAndIds: [string, string][] = user.organizations
-      .getItems()
-      .map((orgMember) => [orgMember.organization.id, orgMember.id]);
-
-    try {
-      await this.em.removeAndFlush(user);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
+    await this.em.transactional(async (em): Promise<void> => {
+      const { id: userId } = user;
+      await em.populate(user, ['organizations']);
+      const collectionNamesAndIds: [string, string][] = user.organizations
+        .getItems()
+        .map((orgMember) => [orgMember.organization.id, orgMember.id]);
+      await em.removeAndFlush(user);
       await this.solrCli.deleteDocs(solrAppCollection, { id: userId });
       for (const [collectionName, id] of collectionNamesAndIds) {
         await this.solrCli.deleteDocs(collectionName, { id });
       }
-    } catch (err) {
-      this.logger.error(err);
-    }
+    });
   }
 
   /**
-   * Send verification emails to the given users.
+   * Send verification emails to the given users and update when a verify email was last sent.
    *
    * @param users The users to send verification emails to.
    *
-   * @throws {InternalServerErrorException} `internalServerError`. If the mailer or ORM throws an error.
+   * @returns The users that were modified.
    */
-  async sendVerificationEmail(users: UserEntity | UserEntity[]): Promise<void> {
-    const usersArray = Array.isArray(users) ? users : [users];
+  async sendVerificationEmail(
+    users: UserEntity | UserEntity[],
+  ): Promise<UserEntity[]> {
+    const usersArr = Array.isArray(users) ? users : [users];
     const newbeeLink = this.configService.get('rpInfo.origin', { infer: true });
     const now = new Date();
-    try {
-      for (const user of usersArray) {
+    const changedUsers: UserEntity[] = [];
+    for (const user of usersArr) {
+      try {
         const verifyLink = `${newbeeLink}/${Keyword.User}/${
           Keyword.Verify
         }/${shortenUuid(user.id)}`;
@@ -314,13 +277,18 @@ export class UserService {
           html: `<p>You must verify your email to keep using NewBee. Please click the link below to verify: <a href="${verifyLink}">${verifyLink}</a></p>`,
         });
         this.em.assign(user, { verifyEmailLastSentAt: now });
+        changedUsers.push(user);
+      } catch (err) {
+        this.logger.error(err);
+        continue;
       }
-
-      await this.em.flush();
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
     }
+
+    if (changedUsers.length) {
+      await this.em.flush();
+    }
+
+    return changedUsers;
   }
 
   /**
@@ -328,16 +296,11 @@ export class UserService {
    *
    * @param user The user to verify.
    *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   * @returns The user whose email was just verified.
    */
   async verifyEmail(user: UserEntity): Promise<UserEntity> {
-    const verifiedUser = this.em.assign(user, { emailVerified: true });
-    try {
-      await this.em.flush();
-      return verifiedUser;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    user = this.em.assign(user, { emailVerified: true });
+    await this.em.flush();
+    return user;
   }
 }

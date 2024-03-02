@@ -1,21 +1,16 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
-  EntityService,
   OrgMemberEntity,
   OrgMemberInviteEntity,
   OrganizationEntity,
@@ -28,31 +23,25 @@ import {
   Keyword,
   OrgRoleEnum,
   forbiddenError,
-  internalServerError,
   orgMemberAlreadyBadRequest,
   orgMemberInviteTokenNotFound,
   orgMemberInvitedBadRequest,
 } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 
 /**
  * The service that interacts with `OrgMemberInviteEntity`.
  */
 @Injectable()
 export class OrgMemberInviteService {
-  /**
-   * The logger to use when logging anything in the service.
-   */
   private readonly logger = new Logger(OrgMemberInviteService.name);
 
   constructor(
     private readonly em: EntityManager,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly mailerService: MailerService,
-    private readonly entityService: EntityService,
-    private readonly userService: UserService,
-    private readonly userInvitesService: UserInvitesService,
     private readonly orgMemberService: OrgMemberService,
+    private readonly userInvitesService: UserInvitesService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -67,7 +56,6 @@ export class OrgMemberInviteService {
    * @returns A new `OrgMemberInviteEntity` instance.
    * @throws {ForbiddenException} `forbiddenError`. If the inviter has a lower role than the invitee.
    * @throws {BadRequestException} `orgMemberAlreadyBadRequest`, `orgMemberInvitedBadRequest`. If the invitee is already an org member or if they've already been invited to the organization.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async create(
     email: string,
@@ -77,45 +65,43 @@ export class OrgMemberInviteService {
   ): Promise<OrgMemberInviteEntity> {
     OrgMemberService.checkRequesterOrgRole(inviter.role, role);
     await this.checkIfOrgMember(organization, email);
-
     const userInvites =
       await this.userInvitesService.findOrCreateOneByEmail(email);
-    const id = v4();
-    const token = shortenUuid(id);
-    const orgMemberInvite = new OrgMemberInviteEntity(
-      id,
-      userInvites,
-      inviter,
-      role,
+    return await this.em.transactional(
+      async (em): Promise<OrgMemberInviteEntity> => {
+        const orgMemberInvite = new OrgMemberInviteEntity(
+          userInvites,
+          inviter,
+          role,
+        );
+        const { id } = orgMemberInvite;
+        try {
+          await em.persistAndFlush(orgMemberInvite);
+        } catch (err) {
+          if (err instanceof UniqueConstraintViolationException) {
+            this.logger.error(err);
+            throw new BadRequestException(orgMemberInvitedBadRequest);
+          }
+
+          throw err;
+        }
+
+        const token = shortenUuid(id);
+        const newbeeLink = this.configService.get('rpInfo.origin', {
+          infer: true,
+        });
+        const acceptLink = `${newbeeLink}/${Keyword.Invite}/${Keyword.Accept}/${token}`;
+        const declineLink = `${newbeeLink}/${Keyword.Invite}/${Keyword.Decline}/${token}`;
+        await this.mailerService.sendMail({
+          to: email,
+          subject: 'Your NewBee Invitation',
+          text: `${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.\nPlease click the link below to accept your invitation: ${acceptLink}\nPlease click the link below to decline your invitation: ${declineLink}\nOtherwise, log in to your NewBee account to accept your invitation.`,
+          html: `<p>${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.</p><p>Please click the link below to accept your invitation: <a href="${acceptLink}">${acceptLink}</a></p><p>Please click the link below to decline your invitation: <a href="${declineLink}">${declineLink}</a></p><p>Otherwise, log in to your NewBee account to accept your invitation.</p>`,
+        });
+
+        return orgMemberInvite;
+      },
     );
-
-    const acceptLink =
-      this.configService.get('rpInfo.origin', {
-        infer: true,
-      }) + `/${Keyword.Invite}/${Keyword.Accept}/${token}`;
-    const declineLink =
-      this.configService.get('rpInfo.origin', {
-        infer: true,
-      }) + `/${Keyword.Invite}/${Keyword.Decline}/${token}`;
-
-    try {
-      await this.em.persistAndFlush(orgMemberInvite);
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Your NewBee Invitation',
-        text: `${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.\nPlease click the link below to accept your invitation: ${acceptLink}\nPlease click the link below to decline your invitation: ${declineLink}\nOtherwise, log in to your NewBee account to accept your invitation.`,
-        html: `<p>${inviter.user.email} has invited you to join ${inviter.organization.name} as an ${role}.</p><p>Please click the link below to accept your invitation: <a href="${acceptLink}">${acceptLink}</a></p><p>Please click the link below to decline your invitation: <a href="${declineLink}">${declineLink}</a></p><p>Otherwise, log in to your NewBee account to accept your invitation.</p>`,
-      });
-      return orgMemberInvite;
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(orgMemberInvitedBadRequest);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
   }
 
   /**
@@ -124,22 +110,15 @@ export class OrgMemberInviteService {
    * @param token The token to search for.
    *
    * @returns The `OrgMemberInviteEntity` associated with the given `token`.
-   * @throws {NotFoundException} `orgMemberInviteTokenNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `orgMemberInviteTokenNotFound`. If the org member invite cannot be found.
    */
   async findOneByToken(token: string): Promise<OrgMemberInviteEntity> {
     const id = elongateUuid(token);
-    try {
-      return await this.em.findOneOrFail(OrgMemberInviteEntity, id);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(orgMemberInviteTokenNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const orgMemberInvite = await this.em.findOne(OrgMemberInviteEntity, id);
+    if (!orgMemberInvite) {
+      throw new NotFoundException(orgMemberInviteTokenNotFound);
     }
+    return orgMemberInvite;
   }
 
   /**
@@ -147,33 +126,18 @@ export class OrgMemberInviteService {
    * If the `OrgMemberInviteEntity` is the only invite the user invites object has, it deletes the user invites object if there is no registered user attached to it.
    *
    * @param orgMemberInvite The `OrgMemberInviteEntity` to delete.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(orgMemberInvite: OrgMemberInviteEntity): Promise<void> {
-    try {
-      await this.em.populate(orgMemberInvite, [
-        'userInvites.orgMemberInvites',
-        'userInvites.user',
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(orgMemberInvite, [
+      'userInvites.orgMemberInvites',
+      'userInvites.user',
+    ]);
     const { userInvites } = orgMemberInvite;
     if (!userInvites.user && userInvites.orgMemberInvites.length === 1) {
       await this.userInvitesService.delete(userInvites);
       return;
     }
-
-    await this.entityService.safeToDelete(orgMemberInvite);
-    try {
-      await this.em.removeAndFlush(orgMemberInvite);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.removeAndFlush(orgMemberInvite);
   }
 
   /**
@@ -187,7 +151,6 @@ export class OrgMemberInviteService {
    * @throws {NotFoundException} `orgMemberInviteTokenNotFound`. If the org member invite could not be found.
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
    * @throws {BadRequestException} `userAlreadyOrgMemberBadRequest`. If the user is already an org member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async acceptInvite(
     token: string,
@@ -196,13 +159,7 @@ export class OrgMemberInviteService {
     const orgMemberInvite = await this.findOneByToken(token);
     await this.checkUser(user, orgMemberInvite);
 
-    try {
-      await this.em.populate(orgMemberInvite, ['organization']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(orgMemberInvite, ['organization']);
     const orgMember = await this.orgMemberService.create(
       user,
       orgMemberInvite.organization,
@@ -221,7 +178,6 @@ export class OrgMemberInviteService {
    *
    * @throws {NotFoundException} `orgMemberInviteTokenNotfound`. If the org member invite could not be found.
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async declineInvite(token: string, user: UserEntity): Promise<void> {
     const orgMemberInvite = await this.findOneByToken(token);
@@ -265,19 +221,12 @@ export class OrgMemberInviteService {
    *
    * @returns `true` if the given `user` is the invitee of the given `orgMemberInvite`, `false` otherwise.
    * @throws {ForbiddenException} `forbiddenError`. If the user is not the invitee.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   private async checkUser(
     user: UserEntity,
     orgMemberInvite: OrgMemberInviteEntity,
   ): Promise<void> {
-    try {
-      await this.em.populate(orgMemberInvite, ['userInvites.user']);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
+    await this.em.populate(orgMemberInvite, ['userInvites.user']);
     if (orgMemberInvite.userInvites.user?.id !== user.id) {
       throw new ForbiddenException(forbiddenError);
     }

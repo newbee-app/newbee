@@ -1,3 +1,13 @@
+// START: auth
+
+/**
+ * Constant to say that a magic link login token could not be verified.
+ */
+export const magicLinkLoginBadRequest =
+  'We could not verify your magic link login token, please check the structure of your request and try again.';
+
+// END: auth
+
 // START: authenticator
 
 /**

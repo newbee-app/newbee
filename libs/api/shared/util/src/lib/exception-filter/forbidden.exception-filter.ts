@@ -4,11 +4,10 @@ import {
   ExceptionFilter,
   ForbiddenException,
 } from '@nestjs/common';
-import {
-  emailUnverifiedForbiddenError,
-  forbiddenError,
-} from '@newbee/shared/util';
+import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
+import { forbiddenError } from '@newbee/shared/util';
 import type { Response } from 'express';
+import { errors } from '../constant';
 
 /**
  * A global exception filter to handle any `ForbiddenException` thrown by the JWT strategy.
@@ -24,10 +23,10 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       statusCode: status,
-      message: [forbiddenError, emailUnverifiedForbiddenError].includes(message)
-        ? message
-        : forbiddenError,
-      error: 'Forbidden',
+      message: [errors.forbidden, FORBIDDEN_MESSAGE].includes(message)
+        ? forbiddenError
+        : message,
+      error: errors.forbidden,
     });
   }
 }

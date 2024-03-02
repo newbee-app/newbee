@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Logger,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthService,
@@ -38,7 +30,6 @@ import {
   UserRelation,
   UserRelationAndOptionsDto,
   WebAuthnLoginDto,
-  internalServerError,
 } from '@newbee/shared/util';
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import type { CookieOptions, Response } from 'express';
@@ -79,7 +70,6 @@ export class AuthController {
    *
    * @returns The new user, their access token, and the options needed to register an authenticator for use in WebAuthn authentication.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the email is already taken.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(`${Keyword.WebAuthn}/${Keyword.Register}`)
   @UseGuards(RegistrationGuard)
@@ -87,13 +77,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserRelationAndOptionsDto> {
-    const createUserDtoString = JSON.stringify(createUserDto);
     this.logger.log(
-      `WebAuthn register request received for: ${createUserDtoString}`,
+      `WebAuthn register request received for: ${JSON.stringify(
+        createUserDto,
+      )}`,
     );
-
-    const userAndOptions = await this.userService.create(createUserDto);
-    const { user, options } = userAndOptions;
+    const { user, options } = await this.userService.create(createUserDto);
     this.logger.log(`User created with ID: ${user.id}, email: ${user.email}`);
 
     const accessToken = this.authService.login(user);
@@ -113,7 +102,6 @@ export class AuthController {
    *
    * @returns The challenge for the user's authenticator to verify.
    * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`${Keyword.WebAuthn}/${Keyword.Login}/${Keyword.Options}`)
   async webAuthnLoginOptions(
@@ -123,7 +111,6 @@ export class AuthController {
     this.logger.log(
       `WebAuthn login option request received for email: ${email}`,
     );
-
     const options = await this.authService.generateLoginChallenge(email);
     this.logger.log(
       `WebAuthn login options generated: ${JSON.stringify(options)}`,
@@ -139,9 +126,7 @@ export class AuthController {
    * @returns The logged in user and their access token, if verified.
    * @throws {NotFoundException} `userEmailNotFound`, `authenticatorCredentialIdNotFound`, `authenticatorIdNotFound`.
    * If the user challenge cannot be found by email or the authenticator cannot be found by credential ID nor ID.
-   * @throws {ForbiddenException} `forbiddenError`. If the user's authenticator is somehow not assigned to the user (should never happen).
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`. If the challenge can't be verified.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post(`${Keyword.WebAuthn}/${Keyword.Login}`)
   async webAuthnLogin(
@@ -152,7 +137,6 @@ export class AuthController {
     this.logger.log(
       `WebAuthn login verify request received for email: ${email}`,
     );
-
     const user = await this.authService.verifyLoginChallenge(email, response);
     const accessToken = this.authService.login(user);
     this.logger.log(
@@ -169,7 +153,6 @@ export class AuthController {
    * @param emailDto The email to send the magic link to.
    *
    * @returns The JWT ID and email associated with the magic link email.
-   * @throws {InternalServerErrorException} `internalServerError`. If something goes wrong sending the email.
    */
   @Post(`${Keyword.MagicLinkLogin}/${Keyword.Login}`)
   async magicLinkLoginLogin(
@@ -177,16 +160,9 @@ export class AuthController {
   ): Promise<MagicLinkLoginDto> {
     const { email } = emailDto;
     this.logger.log(`Magic link login request received for: ${email}`);
-
-    try {
-      const jwtId = await this.magicLinkLoginStrategy.send({ email });
-      this.logger.log(`Magic link sent to email: ${email}`);
-
-      return new MagicLinkLoginDto(jwtId, email);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    const jwtId = await this.magicLinkLoginStrategy.send({ email });
+    this.logger.log(`Magic link sent to email: ${email}`);
+    return new MagicLinkLoginDto(jwtId, email);
   }
 
   /**
@@ -234,7 +210,6 @@ export class AuthController {
    *
    * @returns The waitlist member that was added to the waitlist.
    * @throws {BadRequestException} `emailAlreadyRegisteredBadRequest`, `alreadyOnWaitlistBadRequest`. If the given email is already a user or a waitlist member.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(Keyword.Waitlist)
   @UseGuards(WaitlistGuard)

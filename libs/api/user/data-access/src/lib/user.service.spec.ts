@@ -1,17 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
   Collection,
-  NotFoundError,
   QueryOrder,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { MailerService } from '@nestjs-modules/mailer';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import {
@@ -19,18 +14,17 @@ import {
   OrgMemberEntity,
   UserDocParams,
   UserEntity,
+  testOrgMemberDocParams1,
   testOrgMemberEntity1,
   testOrganizationEntity1,
   testUserEntity1,
   testUserEntity2,
   testUserInvitesEntity1,
 } from '@newbee/api/shared/data-access';
-import { shortenUuid, solrAppCollection } from '@newbee/api/shared/util';
+import { solrAppCollection } from '@newbee/api/shared/util';
 import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import {
-  Keyword,
   UserRoleEnum,
-  internalServerError,
   testCreateUserDto1,
   testNow1,
   testOffsetAndLimit1,
@@ -69,31 +63,37 @@ const mockUserEntity = UserEntity as jest.Mock;
 describe('UserService', () => {
   let service: UserService;
   let em: EntityManager;
+  let txEm: EntityManager;
   let solrCli: SolrCli;
   let configService: ConfigService;
+  let mailerService: MailerService;
   let entityService: EntityService;
   let userInvitesService: UserInvitesService;
-  let mailerService: MailerService;
 
-  const testUpdatedUser = { ...testUserEntity1, ...testUpdateUserDto1 };
   const testUserAndOptions: UserAndOptions = {
     user: testUserEntity1,
     options: testPublicKeyCredentialCreationOptions1,
   };
 
   beforeEach(async () => {
+    txEm = createMock<EntityManager>({
+      assign: jest.fn().mockReturnValue(testUserEntity1),
+    });
+
     const module = await Test.createTestingModule({
       providers: [
         UserService,
         {
           provide: EntityManager,
-          useValue: createMock<EntityRepository<UserEntity>>({
-            findOneOrFail: jest.fn().mockResolvedValue(testUserEntity1),
+          useValue: createMock<EntityManager>({
             findOne: jest.fn().mockResolvedValue(testUserEntity1),
             findAndCount: jest
               .fn()
               .mockResolvedValue([[testUserEntity1, testUserEntity2], 2]),
-            assign: jest.fn().mockReturnValue(testUpdatedUser),
+            assign: jest.fn().mockReturnValue(testUserEntity1),
+            transactional: jest.fn().mockImplementation(async (cb) => {
+              return await cb(txEm);
+            }),
           }),
         },
         {
@@ -102,7 +102,9 @@ describe('UserService', () => {
         },
         {
           provide: ConfigService,
-          useValue: createMock<ConfigService>(),
+          useValue: createMock<ConfigService>({
+            get: jest.fn().mockReturnValue('http://localhost:4200'),
+          }),
         },
         {
           provide: EntityService,
@@ -131,16 +133,15 @@ describe('UserService', () => {
     userInvitesService = module.get(UserInvitesService);
     mailerService = module.get(MailerService);
 
-    testUserEntity1.organizations = createMock<Collection<OrgMemberEntity>>({
-      getItems: jest.fn().mockReturnValue([testOrgMemberEntity1]),
-    });
-
     jest.clearAllMocks();
     mockGenerateRegistrationOptions.mockResolvedValue(
       testUserAndOptions.options,
     );
     mockV4.mockReturnValue(testUserEntity1.id);
     mockUserEntity.mockReturnValue(testUserEntity1);
+    testUserEntity1.organizations = createMock<Collection<OrgMemberEntity>>({
+      getItems: jest.fn().mockReturnValue([testOrgMemberEntity1]),
+    });
 
     jest.useFakeTimers().setSystemTime(testNow1);
   });
@@ -148,6 +149,7 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
+    expect(txEm).toBeDefined();
     expect(solrCli).toBeDefined();
     expect(configService).toBeDefined();
     expect(entityService).toBeDefined();
@@ -157,25 +159,22 @@ describe('UserService', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      jest.spyOn(service, 'sendVerificationEmail').mockResolvedValue(undefined);
+      jest
+        .spyOn(service, 'sendVerificationEmail')
+        .mockResolvedValue([testUserEntity1]);
     });
 
     afterEach(() => {
-      expect(configService.get).toHaveBeenCalledTimes(1);
-      expect(configService.get).toHaveBeenCalledWith('rpInfo', { infer: true });
-      expect(mockGenerateRegistrationOptions).toHaveBeenCalledTimes(1);
-    });
-
-    it('should create a user', async () => {
-      await expect(service.create(testCreateUserDto1)).resolves.toEqual(
-        testUserAndOptions,
-      );
       expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledTimes(
         1,
       );
       expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledWith(
         testCreateUserDto1.email,
       );
+      expect(em.transactional).toHaveBeenCalledTimes(1);
+      expect(configService.get).toHaveBeenCalledTimes(1);
+      expect(configService.get).toHaveBeenCalledWith('rpInfo', { infer: true });
+      expect(mockGenerateRegistrationOptions).toHaveBeenCalledTimes(1);
       expect(mockUserEntity).toHaveBeenCalledTimes(1);
       expect(mockUserEntity).toHaveBeenCalledWith(
         testUserEntity1.id,
@@ -187,40 +186,13 @@ describe('UserService', () => {
         UserRoleEnum.User,
         testUserInvitesEntity1,
       );
-      expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
-      expect(em.persistAndFlush).toHaveBeenCalledWith(testUserEntity1);
-      expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
-      expect(solrCli.addDocs).toHaveBeenCalledWith(
-        solrAppCollection,
-        new UserDocParams(testUserEntity1),
-      );
-      expect(service.sendVerificationEmail).toHaveBeenCalledTimes(1);
-      expect(service.sendVerificationEmail).toHaveBeenCalledWith(
-        testUserEntity1,
-      );
-    });
-
-    it('should throw an InternalServerErrorException if generateRegistrationOptions throws an error', async () => {
-      mockGenerateRegistrationOptions.mockRejectedValue(
-        new Error('generateRegistrationOptions'),
-      );
-      await expect(service.create(testCreateUserDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
-    });
-
-    it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
-      jest
-        .spyOn(em, 'persistAndFlush')
-        .mockRejectedValue(new Error('persistAndFlush'));
-      await expect(service.create(testCreateUserDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
+      expect(txEm.persistAndFlush).toHaveBeenCalledTimes(1);
+      expect(txEm.persistAndFlush).toHaveBeenCalledWith(testUserEntity1);
     });
 
     it('should throw a BadRequestException if email already exists', async () => {
       jest
-        .spyOn(em, 'persistAndFlush')
+        .spyOn(txEm, 'persistAndFlush')
         .mockRejectedValue(
           new UniqueConstraintViolationException(new Error('persistAndFlush')),
         );
@@ -229,23 +201,40 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw an InternalServerErrorException and delete user if solr cli throws an error', async () => {
-      jest.spyOn(solrCli, 'addDocs').mockRejectedValue(new Error('addDocs'));
-      await expect(service.create(testCreateUserDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
-      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
-      expect(em.removeAndFlush).toHaveBeenCalledWith(testUserEntity1);
+    describe('succeeds', () => {
+      afterEach(() => {
+        expect(solrCli.addDocs).toHaveBeenCalledTimes(1);
+        expect(solrCli.addDocs).toHaveBeenCalledWith(
+          solrAppCollection,
+          new UserDocParams(testUserEntity1),
+        );
+        expect(service.sendVerificationEmail).toHaveBeenCalledTimes(1);
+        expect(service.sendVerificationEmail).toHaveBeenCalledWith(
+          testUserEntity1,
+        );
+      });
+
+      it('should create a user', async () => {
+        await expect(service.create(testCreateUserDto1)).resolves.toEqual(
+          testUserAndOptions,
+        );
+      });
+
+      it('should continue if sendVerificationEmail throws', async () => {
+        jest
+          .spyOn(service, 'sendVerificationEmail')
+          .mockRejectedValue(new Error('sendVerificationEmail'));
+        await expect(service.create(testCreateUserDto1)).resolves.toEqual(
+          testUserAndOptions,
+        );
+      });
     });
   });
 
   describe('findOneById', () => {
     afterEach(() => {
-      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
-      expect(em.findOneOrFail).toHaveBeenCalledWith(
-        UserEntity,
-        testUserEntity1.id,
-      );
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(UserEntity, testUserEntity1.id);
     });
 
     it('should get a single user by id', async () => {
@@ -254,59 +243,25 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new NotFoundError('findOneOrFail'));
+    it('should throw a NotFoundException if user cannot be found', async () => {
+      jest.spyOn(em, 'findOne').mockResolvedValue(null);
       await expect(service.findOneById(testUserEntity1.id)).rejects.toThrow(
         new NotFoundException(userIdNotFound),
       );
     });
+  });
 
-    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new Error('findOneOrFail'));
-      await expect(service.findOneById(testUserEntity1.id)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
+  describe('findOneByIdOrNull', () => {
+    it('should get a single user by id', async () => {
+      await expect(
+        service.findOneByIdOrNull(testUserEntity1.id),
+      ).resolves.toEqual(testUserEntity1);
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(UserEntity, testUserEntity1.id);
     });
   });
 
   describe('findOneByEmail', () => {
-    afterEach(() => {
-      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
-      expect(em.findOneOrFail).toHaveBeenCalledWith(UserEntity, {
-        email: testUserEntity1.email,
-      });
-    });
-
-    it('should get a single user by email', async () => {
-      await expect(
-        service.findOneByEmail(testUserEntity1.email),
-      ).resolves.toEqual(testUserEntity1);
-    });
-
-    it('should throw a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new NotFoundError('findOneOrFail'));
-      await expect(
-        service.findOneByEmail(testUserEntity1.email),
-      ).rejects.toThrow(new NotFoundException(userEmailNotFound));
-    });
-
-    it('should throw an InternalServerErrorException if findOneOrFail throws an error', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new Error('findOneOrFail'));
-      await expect(
-        service.findOneByEmail(testUserEntity1.email),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
-  });
-
-  describe('findOneByEmailOrNull', () => {
     afterEach(() => {
       expect(em.findOne).toHaveBeenCalledTimes(1);
       expect(em.findOne).toHaveBeenCalledWith(UserEntity, {
@@ -316,20 +271,35 @@ describe('UserService', () => {
 
     it('should get a single user by email', async () => {
       await expect(
-        service.findOneByEmailOrNull(testUserEntity1.email),
+        service.findOneByEmail(testUserEntity1.email),
       ).resolves.toEqual(testUserEntity1);
     });
 
-    it('should throw an InternalServerErrorException if findOne throws an error', async () => {
-      jest.spyOn(em, 'findOne').mockRejectedValue(new Error('findOne'));
+    it('should throw a NotFoundException if user cannot be found', async () => {
+      jest.spyOn(em, 'findOne').mockResolvedValue(null);
+      await expect(
+        service.findOneByEmail(testUserEntity1.email),
+      ).rejects.toThrow(new NotFoundException(userEmailNotFound));
+    });
+  });
+
+  describe('findOneByEmailOrNull', () => {
+    it('should get a single user by email', async () => {
       await expect(
         service.findOneByEmailOrNull(testUserEntity1.email),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+      ).resolves.toEqual(testUserEntity1);
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(UserEntity, {
+        email: testUserEntity1.email,
+      });
     });
   });
 
   describe('getAllAndCount', () => {
-    afterEach(() => {
+    it('should get users and count', async () => {
+      await expect(
+        service.getAllAndCount(testOffsetAndLimit1),
+      ).resolves.toEqual([[testUserEntity1, testUserEntity2], 2]);
       expect(em.findAndCount).toHaveBeenCalledTimes(1);
       expect(em.findAndCount).toHaveBeenCalledWith(
         UserEntity,
@@ -337,51 +307,41 @@ describe('UserService', () => {
         { ...testOffsetAndLimit1, orderBy: { role: QueryOrder.DESC } },
       );
     });
-
-    it('should get users and count', async () => {
-      await expect(
-        service.getAllAndCount(testOffsetAndLimit1),
-      ).resolves.toEqual([[testUserEntity1, testUserEntity2], 2]);
-    });
-
-    it('should throw InternalServerErrorException if findAndCount throws an error', async () => {
-      jest
-        .spyOn(em, 'findAndCount')
-        .mockRejectedValue(new Error('findAndCount'));
-      await expect(service.getAllAndCount(testOffsetAndLimit1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
-    });
   });
 
   describe('update', () => {
     afterEach(() => {
-      expect(em.assign).toHaveBeenCalledTimes(1);
-      expect(em.assign).toHaveBeenCalledWith(
+      expect(em.transactional).toHaveBeenCalledTimes(1);
+      expect(txEm.assign).toHaveBeenCalledTimes(1);
+      expect(txEm.assign).toHaveBeenCalledWith(
         testUserEntity1,
         testUpdateUserDto1,
       );
-      expect(em.flush).toHaveBeenCalledTimes(1);
+      expect(txEm.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should update the user', async () => {
       await expect(
         service.update(testUserEntity1, testUpdateUserDto1),
-      ).resolves.toEqual(testUpdatedUser);
-      expect(em.populate).toHaveBeenCalledTimes(1);
-      expect(em.populate).toHaveBeenCalledWith(testUpdatedUser, [
+      ).resolves.toEqual(testUserEntity1);
+      expect(txEm.populate).toHaveBeenCalledTimes(1);
+      expect(txEm.populate).toHaveBeenCalledWith(testUserEntity1, [
         'organizations',
       ]);
-      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(1);
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledTimes(2);
       expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
         solrAppCollection,
-        new UserDocParams(testUpdatedUser),
+        new UserDocParams(testUserEntity1),
+      );
+      expect(solrCli.getVersionAndReplaceDocs).toHaveBeenCalledWith(
+        testOrgMemberEntity1.organization.id,
+        testOrgMemberDocParams1,
       );
     });
 
     it('should throw a BadRequestException if email already exists', async () => {
       jest
-        .spyOn(em, 'flush')
+        .spyOn(txEm, 'flush')
         .mockRejectedValue(
           new UniqueConstraintViolationException(new Error('flush')),
         );
@@ -389,25 +349,20 @@ describe('UserService', () => {
         service.update(testUserEntity1, testUpdateUserDto1),
       ).rejects.toThrow(new BadRequestException(userEmailTakenBadRequest));
     });
-
-    it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
-      await expect(
-        service.update(testUserEntity1, testUpdateUserDto1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
   });
 
   describe('delete', () => {
-    afterEach(() => {
-      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
-      expect(entityService.safeToDelete).toHaveBeenCalledWith(testUserEntity1);
-      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
-      expect(em.removeAndFlush).toHaveBeenCalledWith(testUserEntity1);
-    });
-
     it('should delete the user', async () => {
       await expect(service.delete(testUserEntity1)).resolves.toBeUndefined();
+      expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
+      expect(entityService.safeToDelete).toHaveBeenCalledWith(testUserEntity1);
+      expect(em.transactional).toHaveBeenCalledTimes(1);
+      expect(txEm.populate).toHaveBeenCalledTimes(1);
+      expect(txEm.populate).toHaveBeenCalledWith(testUserEntity1, [
+        'organizations',
+      ]);
+      expect(txEm.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(txEm.removeAndFlush).toHaveBeenCalledWith(testUserEntity1);
       expect(solrCli.deleteDocs).toHaveBeenCalledTimes(2);
       expect(solrCli.deleteDocs).toHaveBeenCalledWith(solrAppCollection, {
         id: testUserEntity1.id,
@@ -417,94 +372,46 @@ describe('UserService', () => {
         { id: testOrgMemberEntity1.id },
       );
     });
-
-    it('should throw an InternalServerErrorException if removeAndFlush throws an error', async () => {
-      jest
-        .spyOn(em, 'removeAndFlush')
-        .mockRejectedValue(new Error('removeAndFlush'));
-      await expect(service.delete(testUserEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
-    });
   });
 
   describe('sendVerificationEmail', () => {
-    beforeEach(() => {
-      jest.spyOn(configService, 'get').mockReturnValue('http://localhost:4200');
-    });
-
     afterEach(() => {
-      const verifyLink = `http://localhost:4200/${Keyword.User}/${
-        Keyword.Verify
-      }/${shortenUuid(testUserEntity1.id)}`;
-      expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
-      expect(mailerService.sendMail).toHaveBeenCalledWith({
-        to: testUserEntity1.email,
-        subject: 'Verify your NewBee email',
-        text: `You must verify your email to keep using NewBee. Please click the link below to verify: ${verifyLink}`,
-        html: `<p>You must verify your email to keep using NewBee. Please click the link below to verify: <a href="${verifyLink}">${verifyLink}</a></p>`,
+      expect(em.assign).toHaveBeenCalledTimes(1);
+      expect(em.assign).toHaveBeenCalledWith(testUserEntity1, {
+        verifyEmailLastSentAt: testNow1,
       });
+      expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
     it('should send email for single user', async () => {
       await expect(
         service.sendVerificationEmail(testUserEntity1),
-      ).resolves.toBeUndefined();
-      expect(em.assign).toHaveBeenCalledTimes(1);
-      expect(em.assign).toHaveBeenCalledWith(testUserEntity1, {
-        verifyEmailLastSentAt: testNow1,
-      });
-      expect(em.flush).toHaveBeenCalledTimes(1);
+      ).resolves.toEqual([testUserEntity1]);
+      expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('should send emails for users array', async () => {
-      await expect(
-        service.sendVerificationEmail([testUserEntity1]),
-      ).resolves.toBeUndefined();
-      expect(em.assign).toHaveBeenCalledTimes(1);
-      expect(em.assign).toHaveBeenCalledWith(testUserEntity1, {
-        verifyEmailLastSentAt: testNow1,
-      });
-      expect(em.flush).toHaveBeenCalledTimes(1);
-    });
-
-    it('should throw an InternalServerErrorException if sendMail throws an error', async () => {
+    it('should continue on if mailer throws an error', async () => {
       jest
         .spyOn(mailerService, 'sendMail')
-        .mockRejectedValue(new Error('sendMail'));
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error('sendMail'));
       await expect(
-        service.sendVerificationEmail(testUserEntity1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-    });
-
-    it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
-      await expect(
-        service.sendVerificationEmail(testUserEntity1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
+        service.sendVerificationEmail([testUserEntity1, testUserEntity2]),
+      ).resolves.toEqual([testUserEntity1]);
+      expect(mailerService.sendMail).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('verifyEmail', () => {
-    afterEach(() => {
+    it('should mark the user as having a verified email', async () => {
+      await expect(service.verifyEmail(testUserEntity1)).resolves.toEqual(
+        testUserEntity1,
+      );
       expect(em.assign).toHaveBeenCalledTimes(1);
       expect(em.assign).toHaveBeenCalledWith(testUserEntity1, {
         emailVerified: true,
       });
       expect(em.flush).toHaveBeenCalledTimes(1);
-    });
-
-    it('should mark the user as having a verified email', async () => {
-      await expect(service.verifyEmail(testUserEntity1)).resolves.toEqual(
-        testUpdatedUser,
-      );
-    });
-
-    it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(em, 'flush').mockRejectedValue('flush');
-      await expect(service.verifyEmail(testUserEntity1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
     });
   });
 });

@@ -13,6 +13,6 @@ cd "$script_dir"
   . ../../.env
   set +a
 
-  # Seed the admin user
-  npx mikro-orm seeder:run --class=AdminSeeder
+  # Create admin controls
+  npx ts-node admin/create-admin.ts controls
 )

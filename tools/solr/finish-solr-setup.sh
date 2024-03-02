@@ -18,6 +18,6 @@ cd "$script_dir"
 
   # Create the NewBee configset in Solr
   cd ./configset
-  npx ts-node configset.ts create -b "${SOLR_USERNAME}:${SOLR_PASSWORD}"
+  npx ts-node configset.ts create
   cd ..
 )

@@ -26,7 +26,8 @@ export class WaitlistGuard implements CanActivate {
     const adminControls = await this.entityService.getAdminControls();
     if (adminControls.allowRegistration) {
       throw new MethodNotAllowedException(registerNotWaitlistMethodNotAllowed);
-    } else if (!adminControls.allowWaitlist) {
+    }
+    if (!adminControls.allowWaitlist) {
       throw new MethodNotAllowedException(waitlistClosedMethodNotAllowed);
     }
 

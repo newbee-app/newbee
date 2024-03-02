@@ -34,6 +34,7 @@ export class AdminControlsEntity extends CommonEntity implements AdminControls {
   waitlist = new Collection<WaitlistMemberEntity>(this);
 
   constructor() {
-    super(adminControlsId);
+    super();
+    this.id = adminControlsId;
   }
 }

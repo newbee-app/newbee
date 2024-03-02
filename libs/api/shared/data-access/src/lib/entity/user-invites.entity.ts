@@ -45,8 +45,8 @@ export class UserInvitesEntity extends CommonEntity implements UserInvites {
   )
   orgMemberInvites = new Collection<OrgMemberInviteEntity>(this);
 
-  constructor(id: string, email: string) {
-    super(id);
+  constructor(email: string) {
+    super();
 
     this.email = email;
   }

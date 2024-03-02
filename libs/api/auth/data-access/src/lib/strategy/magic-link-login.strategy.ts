@@ -1,20 +1,15 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AppAuthConfig } from '@newbee/api/auth/util';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
-  MagicLinkLoginStrategy as Strategy,
   Payload,
   SendMagicLinkFunction,
+  MagicLinkLoginStrategy as Strategy,
 } from '@newbee/passport-magic-link-login';
-import { internalServerError } from '@newbee/shared/util';
 
 /**
  * The Nest Passport Strategy for the Magic Link Login Strategy.
@@ -25,8 +20,8 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
 
   constructor(
     private readonly userService: UserService,
+    configService: ConfigService<AppAuthConfig, true>,
     mailerService: MailerService,
-    configService: ConfigService<AppAuthConfig, true>
   ) {
     const magicLinkLoginConfig = configService.get('auth.magicLinkLogin', {
       infer: true,
@@ -34,21 +29,16 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
     const sendMagicLink: SendMagicLinkFunction = async (
       payload: Payload,
       link: string,
-      code: string
+      code: string,
     ): Promise<void> => {
       const { email } = payload;
       await this.userService.findOneByEmail(email);
-      try {
-        await mailerService.sendMail({
-          to: payload.email,
-          subject: 'Your NewBee Magic Login Link',
-          text: `Code: ${code}\nPlease click the link below to login to your NewBee account: ${link}`,
-          html: `<p>Code: ${code}</p><p>Please click the link below to login to your NewBee account: <a href="${link}">${link}</a></p>`,
-        });
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
+      await mailerService.sendMail({
+        to: payload.email,
+        subject: 'Your NewBee Magic Login Link',
+        text: `Code: ${code}\nPlease click the link below to login to your NewBee account: ${link}`,
+        html: `<p>Code: ${code}</p><p>Please click the link below to login to your NewBee account: <a href="${link}">${link}</a></p>`,
+      });
     };
 
     super({
@@ -68,8 +58,8 @@ export class MagicLinkLoginStrategy extends PassportStrategy(Strategy) {
   async validate(payload: Payload): Promise<UserEntity> {
     this.logger.log(
       `Magic Link Login validate request received for payload: ${JSON.stringify(
-        payload
-      )}`
+        payload,
+      )}`,
     );
 
     const { email } = payload;

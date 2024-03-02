@@ -12,7 +12,7 @@ import { compareOrgRoles, compareTeamRoles } from './compare-roles.function';
 /**
  * The options object to use in the `checkRoles` function.
  */
-interface CheckRolesOptions {
+export interface CheckRolesOptions {
   /**
    * The user role for the user attempting to make the request.
    */

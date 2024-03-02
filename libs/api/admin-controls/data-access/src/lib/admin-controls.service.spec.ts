@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   AdminControlsEntity,
@@ -11,10 +10,7 @@ import {
   testWaitlistMemberEntity1,
 } from '@newbee/api/shared/data-access';
 import { WaitlistMemberService } from '@newbee/api/waitlist-member/data-access';
-import {
-  internalServerError,
-  testUpdateAdminControlsDto1,
-} from '@newbee/shared/util';
+import { testUpdateAdminControlsDto1 } from '@newbee/shared/util';
 import { AdminControlsService } from './admin-controls.service';
 
 describe('AdminControlsService', () => {
@@ -86,13 +82,6 @@ describe('AdminControlsService', () => {
       expect(em.flush).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an InternalServerErrorException if flush throws an error', async () => {
-      jest.spyOn(em, 'flush').mockRejectedValue(new Error('flush'));
-      await expect(service.update(testUpdateAdminControlsDto1)).rejects.toThrow(
-        new InternalServerErrorException(internalServerError),
-      );
-    });
-
     it('should remove everyone from the waitlist and turn them into users if turning registration on', async () => {
       await expect(
         service.update({
@@ -114,16 +103,6 @@ describe('AdminControlsService', () => {
       expect(waitlistMemberService.deleteAndCreateUsers).toHaveBeenCalledWith([
         testWaitlistMemberEntity1,
       ]);
-    });
-
-    it('should throw an InternalServerErrorException if populate throws an error', async () => {
-      jest.spyOn(em, 'populate').mockRejectedValue(new Error('populate'));
-      await expect(
-        service.update({
-          ...testUpdateAdminControlsDto1,
-          allowRegistration: true,
-        }),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 });

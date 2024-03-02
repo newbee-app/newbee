@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { CommonEntityFields } from '@newbee/shared/util';
+import { v4 } from 'uuid';
 
 /**
  * The abstract MikroORM entity representing a base common entity.
@@ -12,7 +13,7 @@ export abstract class CommonEntity implements CommonEntityFields {
    * No need for users to know what this value is.
    */
   @PrimaryKey({ hidden: true })
-  id: string;
+  id: string = v4();
 
   /**
    * @inheritdoc
@@ -25,8 +26,4 @@ export abstract class CommonEntity implements CommonEntityFields {
    */
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = this.createdAt;
-
-  constructor(id: string) {
-    this.id = id;
-  }
 }

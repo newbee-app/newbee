@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import { OrganizationEntity } from '@newbee/api/shared/data-access';
 import {
@@ -32,7 +28,6 @@ import {
   SolrAppEntryEnum,
   SolrOrgEntryEnum,
   SuggestResultsDto,
-  internalServerError,
 } from '@newbee/shared/util';
 import {
   DocResponse,
@@ -46,8 +41,6 @@ import {
  */
 @Injectable()
 export class SearchService {
-  private readonly logger = new Logger(SearchService.name);
-
   constructor(
     private readonly solrCli: SolrCli,
     private readonly teamService: TeamService,
@@ -61,7 +54,6 @@ export class SearchService {
    * @param orgSuggestDto The parameters for the suggest query.
    *
    * @returns The suggestions based on the query.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr cli throws an error.
    */
   async orgSuggest(
     organization: OrganizationEntity,
@@ -69,17 +61,12 @@ export class SearchService {
   ): Promise<SuggestResultsDto> {
     const { query, type } = orgSuggestDto;
     const dictionary = type ?? solrOrgDictionaries.All;
-    try {
-      const solrRes = await this.solrCli.suggest(organization.id, {
-        params: { 'suggest.q': query, 'suggest.dictionary': dictionary },
-      });
-      return new SuggestResultsDto(
-        SearchService.getSuggestions(solrRes, dictionary, query),
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    const solrRes = await this.solrCli.suggest(organization.id, {
+      params: { 'suggest.q': query, 'suggest.dictionary': dictionary },
+    });
+    return new SuggestResultsDto(
+      SearchService.getSuggestions(solrRes, dictionary, query),
+    );
   }
 
   /**
@@ -88,22 +75,16 @@ export class SearchService {
    * @param appSuggestDto The parameters for the suggest query.
    *
    * @returns The suggestions based on the query.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr cli throws an error.
    */
   async appSuggest(appSuggestDto: AppSuggestDto): Promise<SuggestResultsDto> {
     const { query, type } = appSuggestDto;
     const dictionary = type ?? solrAppDictionaries.All;
-    try {
-      const solrRes = await this.solrCli.suggest(solrAppCollection, {
-        params: { 'suggest.q': query, 'suggest.dictionary': dictionary },
-      });
-      return new SuggestResultsDto(
-        SearchService.getSuggestions(solrRes, dictionary, query),
-      );
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    const solrRes = await this.solrCli.suggest(solrAppCollection, {
+      params: { 'suggest.q': query, 'suggest.dictionary': dictionary },
+    });
+    return new SuggestResultsDto(
+      SearchService.getSuggestions(solrRes, dictionary, query),
+    );
   }
 
   /**
@@ -113,8 +94,7 @@ export class SearchService {
    * @param orgSearchDto The parameters for the query itself.
    *
    * @returns The matches that fulfill the query.
-   * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr cli or services throw an error.
+   * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotFound`. If team or org member cannot be found.
    */
   async orgSearch(
     organization: OrganizationEntity,
@@ -228,7 +208,6 @@ export class SearchService {
    * @param appSearchDto The parameters for the query itself.
    *
    * @returns The matches that fulfill the query.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr cli throws an error.
    */
   async appSearch(appSearchDto: AppSearchDto): Promise<AppSearchResultsDto> {
     const { query } = appSearchDto;
@@ -277,7 +256,6 @@ export class SearchService {
    *
    * @returns The query response from Solr.
    * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
    */
   private async makeOrgQuery(
     organization: OrganizationEntity,
@@ -330,22 +308,17 @@ export class SearchService {
         : []),
     ];
 
-    try {
-      return await this.solrCli.query(organization.id, {
-        query,
-        offset,
-        limit,
-        filter,
-        params: {
-          'hl.q': query,
-          'spellcheck.q': query,
-          'spellcheck.dictionary': dictionary,
-        },
-      });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.solrCli.query(organization.id, {
+      query,
+      offset,
+      limit,
+      filter,
+      params: {
+        'hl.q': query,
+        'spellcheck.q': query,
+        'spellcheck.dictionary': dictionary,
+      },
+    });
   }
 
   /**
@@ -354,7 +327,6 @@ export class SearchService {
    * @param appSearchDto The parameters for the query itself.
    *
    * @returns The query response from Solr.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
    */
   private async makeAppQuery(
     appSearchDto: AppSearchDto,
@@ -366,22 +338,17 @@ export class SearchService {
       ...(type ? [`${solrOrgFields.entry_type}:${type}`] : []),
     ];
 
-    try {
-      return await this.solrCli.query(solrAppCollection, {
-        query,
-        offset,
-        limit,
-        filter,
-        params: {
-          'hl.q': query,
-          'spellcheck.q': query,
-          'spellcheck.dictionary': dictionary,
-        },
-      });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.solrCli.query(solrAppCollection, {
+      query,
+      offset,
+      limit,
+      filter,
+      params: {
+        'hl.q': query,
+        'spellcheck.q': query,
+        'spellcheck.dictionary': dictionary,
+      },
+    });
   }
 
   /**
@@ -433,10 +400,8 @@ export class SearchService {
     dictionary: string,
     query: string,
   ): string[] {
-    console.log(queryResponse, dictionary, query);
     const suggestionObjects =
       queryResponse.suggest?.[dictionary]?.[query]?.suggestions ?? [];
-    console.log(suggestionObjects);
     return suggestionObjects.map((suggestion) => suggestion.term);
   }
 

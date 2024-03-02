@@ -25,11 +25,6 @@ describe('OrgMemberController', () => {
   let service: OrgMemberService;
   let entityService: EntityService;
 
-  const testUpdatedOrgMember = {
-    ...testOrgMemberEntity1,
-    role: testUpdateOrgMemberDto1.role,
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OrgMemberController],
@@ -37,7 +32,7 @@ describe('OrgMemberController', () => {
         {
           provide: OrgMemberService,
           useValue: createMock<OrgMemberService>({
-            updateRole: jest.fn().mockResolvedValue(testUpdatedOrgMember),
+            updateRole: jest.fn().mockResolvedValue(testOrgMemberEntity1),
           }),
         },
         {
@@ -89,7 +84,7 @@ describe('OrgMemberController', () => {
           testOrgMemberEntity1,
           testOrganizationEntity1,
         ),
-      ).resolves.toEqual(testUpdatedOrgMember);
+      ).resolves.toEqual(testOrgMemberEntity1);
       expect(service.updateRole).toHaveBeenCalledTimes(1);
       expect(service.updateRole).toHaveBeenCalledWith(
         testOrgMemberEntity1,

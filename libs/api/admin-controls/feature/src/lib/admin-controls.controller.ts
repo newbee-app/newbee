@@ -60,7 +60,6 @@ export class AdminControlsController {
    * @param user The user making the request.
    *
    * @returns The NewBee instance's admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get()
   async get(
@@ -91,7 +90,6 @@ export class AdminControlsController {
    * @param user The user making the request.
    *
    * @returns The updated admin controls.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Patch()
   async update(
@@ -116,7 +114,6 @@ export class AdminControlsController {
    * @returns The updated user.
    * @throws {NotFoundException} `userEmailNotFound`. If the ORM throws a `NotFoundError`.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(Keyword.User)
   async makeUserAdmin(@Body() emailDto: EmailDto): Promise<UserEntity> {
@@ -134,7 +131,6 @@ export class AdminControlsController {
    * @param offsetAndLimitDto The offset and limit for the pagination.
    *
    * @returns The result containing the retrieved users, the total number of users, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(Keyword.User)
   async getAllUsers(
@@ -156,7 +152,6 @@ export class AdminControlsController {
    * @param offsetAndLimitDto The offset and limit for the pagination.
    *
    * @returns The result containing the retrieved waitlist members, the total number of waitlist members, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(Keyword.Waitlist)
   async getAllWaitlistMembers(
@@ -178,7 +173,6 @@ export class AdminControlsController {
    * @param appSuggestDto The information for generating a suggestion.
    *
    * @returns The suggestions as an array of strings.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(Keyword.Suggest)
   async suggest(
@@ -198,7 +192,6 @@ export class AdminControlsController {
    * @param appSearchDto The search information.
    *
    * @returns The results of the search.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(Keyword.Search)
   async search(

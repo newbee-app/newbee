@@ -56,6 +56,7 @@ export class AuthenticatorController {
    * The API route for starting the WebAuthn authenticator registration process for a logged in user.
    *
    * @param user The user to associate with the authenticator.
+   *
    * @returns The registration options for the new authenticator.
    */
   @Post(Keyword.Options)
@@ -65,12 +66,10 @@ export class AuthenticatorController {
     this.logger.log(
       `Create authenticator registration options request received for user ID: ${user.id}`,
     );
-
     const options = await this.authenticatorService.generateOptions(user);
     this.logger.log(
       `Authenticator registration options created: ${JSON.stringify(options)}`,
     );
-
     return options;
   }
 
@@ -82,7 +81,6 @@ export class AuthenticatorController {
    *
    * @returns The newly created authenticator.
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`, `authenticatorTakenBadRequest`. If the authenticator cannot be verified or is already in use.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
   async create(
@@ -90,9 +88,10 @@ export class AuthenticatorController {
     @User() user: UserEntity,
   ): Promise<AuthenticatorEntity> {
     const { response } = registrationResponseDto;
-    const responseString = JSON.stringify(response);
     this.logger.log(
-      `Create authenticator verify request received for user ID: ${user.id}, response: ${responseString}`,
+      `Create authenticator verify request received for user ID: ${
+        user.id
+      }, response: ${JSON.stringify(response)}`,
     );
 
     const authenticator = await this.authenticatorService.create(
@@ -116,7 +115,6 @@ export class AuthenticatorController {
    * @returns The udpated authenticator, if it was updated successfully.
    * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user and the provided user IDs do not match.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other error.
    */
   @Patch(`:${Keyword.Authenticator}`)
   async updateName(
@@ -144,7 +142,6 @@ export class AuthenticatorController {
    * @param user The user making the request.
    *
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Delete(`:${Keyword.Authenticator}`)
   async delete(

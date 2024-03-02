@@ -1,26 +1,17 @@
 import { EntityManager } from '@mikro-orm/postgresql';
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AdminControlsEntity,
   EntityService,
 } from '@newbee/api/shared/data-access';
 import { WaitlistMemberService } from '@newbee/api/waitlist-member/data-access';
-import {
-  UpdateAdminControlsDto,
-  internalServerError,
-} from '@newbee/shared/util';
+import { UpdateAdminControlsDto } from '@newbee/shared/util';
 
 /**
  * The service that interacts with the `AdminControlsEntity`.
  */
 @Injectable()
 export class AdminControlsService {
-  private readonly logger = new Logger(AdminControlsService.name);
-
   constructor(
     private readonly em: EntityManager,
     private readonly entityService: EntityService,
@@ -35,7 +26,6 @@ export class AdminControlsService {
    *
    * @returns The updated admin controls.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   async update(
     updateAdminControlsDto: UpdateAdminControlsDto,
@@ -45,23 +35,12 @@ export class AdminControlsService {
     adminControls = this.em.assign(adminControls, updateAdminControlsDto);
 
     if (allowRegistration) {
-      try {
-        await this.em.populate(adminControls, ['waitlist']);
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
-
+      await this.em.populate(adminControls, ['waitlist']);
       await this.waitlistMemberService.deleteAndCreateUsers(
         adminControls.waitlist.getItems(),
       );
     } else {
-      try {
-        await this.em.flush();
-      } catch (err) {
-        this.logger.error(err);
-        throw new InternalServerErrorException(internalServerError);
-      }
+      await this.em.flush();
     }
 
     return adminControls;

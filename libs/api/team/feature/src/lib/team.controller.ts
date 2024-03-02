@@ -72,7 +72,6 @@ export class TeamController {
    *
    * @returns The newly created team.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team slug is already taken in the organization.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Post()
   @Role(apiRoles.team.create)
@@ -103,7 +102,6 @@ export class TeamController {
    * @param user The user making the request.
    *
    * @returns `true` if the org slug is taken, `false` otherwise.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.CheckSlug)
   @Role(apiRoles.team.checkSlug)
@@ -121,7 +119,6 @@ export class TeamController {
       slug,
     );
     this.logger.log(`Team slug ${slug} taken: ${hasSlug}`);
-
     return new SlugTakenDto(hasSlug);
   }
 
@@ -133,7 +130,6 @@ export class TeamController {
    * @param user The user making the request.
    *
    * @returns A unique team slug suitable fo ruse.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.GenerateSlug)
   @Role(apiRoles.team.generateSlug)
@@ -154,7 +150,6 @@ export class TeamController {
     this.logger.log(
       `Team slug ${slug} generated for base ${base}, in organization ID: ${organization.id}, by user ID: ${user.id}`,
     );
-
     return new GeneratedSlugDto(slug);
   }
 
@@ -165,7 +160,6 @@ export class TeamController {
    * @param team The team we were looking for.
    *
    * @returns The team associated with the slug in the organization, if one exists.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Get(`:${Keyword.Team}`)
   @Role(apiRoles.team.get)
@@ -193,7 +187,6 @@ export class TeamController {
    *
    * @returns The updated team, if it was updated successfully.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the team's slug is being updated and is already taken.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Patch(`:${Keyword.Team}`)
   @Role(apiRoles.team.update)
@@ -209,12 +202,9 @@ export class TeamController {
         updateTeamDto,
       )}`,
     );
-    const updatedTeam = await this.teamService.update(team, updateTeamDto);
-    this.logger.log(
-      `Updated team, slug: ${updatedTeam.slug}, ID: ${updatedTeam.id}`,
-    );
-
-    return updatedTeam;
+    team = await this.teamService.update(team, updateTeamDto);
+    this.logger.log(`Updated team, slug: ${team.slug}, ID: ${team.id}`);
+    return team;
   }
 
   /**
@@ -222,8 +212,6 @@ export class TeamController {
    *
    * @param organization The organization to look in.
    * @param team The team we were looking for.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Team}`)
   @Role(apiRoles.team.delete)
@@ -246,7 +234,6 @@ export class TeamController {
    * @param team The team to look in.
    *
    * @returns The result containing the retrieved docs, the total number of docs in the team, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Team}/${Keyword.Doc}`)
   @Role(apiRoles.team.getAllDocs)
@@ -285,7 +272,6 @@ export class TeamController {
    * @param team The team to look in.
    *
    * @returns The result containing the retrieved qnas, the total number of qnas in the team, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Team}/${Keyword.Qna}`)
   @Role(apiRoles.team.getAllQnas)

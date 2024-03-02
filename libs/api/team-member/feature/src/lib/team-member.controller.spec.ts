@@ -19,13 +19,8 @@ import { TeamMemberController } from './team-member.controller';
 describe('TeamMemberController', () => {
   let controller: TeamMemberController;
   let service: TeamMemberService;
-  let orgMemberService: OrgMemberService;
   let entityService: EntityService;
-
-  const testUpdatedTeamMember = {
-    ...testTeamMemberEntity1,
-    role: testUpdateTeamMemberDto1.role,
-  };
+  let orgMemberService: OrgMemberService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,15 +30,7 @@ describe('TeamMemberController', () => {
           provide: TeamMemberService,
           useValue: createMock<TeamMemberService>({
             create: jest.fn().mockResolvedValue(testTeamMemberEntity1),
-            updateRole: jest.fn().mockResolvedValue(testUpdatedTeamMember),
-          }),
-        },
-        {
-          provide: OrgMemberService,
-          useValue: createMock<OrgMemberService>({
-            findOneByOrgAndSlug: jest
-              .fn()
-              .mockResolvedValue(testOrgMemberEntity1),
+            updateRole: jest.fn().mockResolvedValue(testTeamMemberEntity1),
           }),
         },
         {
@@ -54,20 +41,28 @@ describe('TeamMemberController', () => {
               .mockResolvedValue(testTeamMemberRelation1),
           }),
         },
+        {
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>({
+            findOneByOrgAndSlug: jest
+              .fn()
+              .mockResolvedValue(testOrgMemberEntity1),
+          }),
+        },
       ],
     }).compile();
 
-    controller = module.get<TeamMemberController>(TeamMemberController);
-    service = module.get<TeamMemberService>(TeamMemberService);
-    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
-    entityService = module.get<EntityService>(EntityService);
+    controller = module.get(TeamMemberController);
+    service = module.get(TeamMemberService);
+    entityService = module.get(EntityService);
+    orgMemberService = module.get(OrgMemberService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
-    expect(orgMemberService).toBeDefined();
     expect(entityService).toBeDefined();
+    expect(orgMemberService).toBeDefined();
   });
 
   describe('create', () => {
@@ -115,7 +110,7 @@ describe('TeamMemberController', () => {
           testOrganizationEntity1,
           testTeamEntity1,
         ),
-      ).resolves.toEqual(testUpdatedTeamMember);
+      ).resolves.toEqual(testTeamMemberEntity1);
       expect(service.updateRole).toHaveBeenCalledTimes(1);
       expect(service.updateRole).toHaveBeenCalledWith(
         testTeamMemberEntity1,
@@ -131,6 +126,7 @@ describe('TeamMemberController', () => {
       await expect(
         controller.delete(
           testOrgMemberEntity1,
+          undefined,
           testOrgMemberEntity1,
           testTeamMemberEntity1,
           testOrganizationEntity1,
@@ -138,7 +134,11 @@ describe('TeamMemberController', () => {
         ),
       ).resolves.toBeUndefined();
       expect(service.delete).toHaveBeenCalledTimes(1);
-      expect(service.delete).toHaveBeenCalledWith(testTeamMemberEntity1);
+      expect(service.delete).toHaveBeenCalledWith(
+        testTeamMemberEntity1,
+        testOrgMemberEntity1.role,
+        null,
+      );
     });
   });
 });

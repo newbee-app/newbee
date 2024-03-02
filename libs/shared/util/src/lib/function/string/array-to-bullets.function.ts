@@ -6,7 +6,7 @@
 export function arrayToBullets(arr: string[]): string {
   return arr.reduce(
     (prevValue, currValue, currIndex) =>
-      prevValue + `${currIndex ? '\n' : ''}- ${currValue}`,
-    ''
+      `${prevValue}${currIndex ? '\n' : ''}- ${currValue}`,
+    '',
   );
 }

@@ -1,8 +1,6 @@
-import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
+import { renderMarkdoc } from '@newbee/api/shared/util';
 import type { Doc } from '@newbee/shared/util';
-import { strToContent } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -58,14 +56,13 @@ export class DocEntity extends PostEntity implements Doc {
   maintainer: OrgMemberEntity | null = null;
 
   constructor(
-    id: string,
     title: string,
     upToDateDuration: string | null,
     team: TeamEntity | null,
     creator: OrgMemberEntity,
     docMarkdoc: string,
   ) {
-    super(id, title, upToDateDuration, team, creator);
+    super(title, upToDateDuration, team, creator);
 
     this.organization = creator.organization;
     this.team = team;
@@ -73,8 +70,8 @@ export class DocEntity extends PostEntity implements Doc {
     this.maintainer = creator;
 
     this.docMarkdoc = docMarkdoc;
-    const content = strToContent(docMarkdoc);
-    this.docHtml = Markdoc.renderers.html(content);
-    this.docTxt = markdocTxtRenderer(content);
+    const { html, txt } = renderMarkdoc(docMarkdoc);
+    this.docHtml = html ?? '';
+    this.docTxt = txt ?? '';
   }
 }

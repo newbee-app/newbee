@@ -86,10 +86,9 @@ export class AuthenticatorEntity extends CommonEntity implements Authenticator {
     transports: AuthenticatorTransportFuture[] | null,
     user: UserEntity,
   ) {
-    const id = v4();
-    super(id);
+    super();
 
-    this.id = id;
+    this.id = v4();
     this.credentialId = credentialId;
     this.credentialPublicKey = credentialPublicKey;
     this.counter = counter;

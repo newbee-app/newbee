@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
   Collection,
-  NotFoundError,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
@@ -9,14 +8,12 @@ import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   ForbiddenException,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
-  EntityService,
   OrgMemberInviteEntity,
   UserEntity,
   testOrgMemberEntity1,
@@ -30,19 +27,11 @@ import { UserInvitesService } from '@newbee/api/user-invites/data-access';
 import { UserService } from '@newbee/api/user/data-access';
 import {
   forbiddenError,
-  internalServerError,
   orgMemberAlreadyBadRequest,
   orgMemberInviteTokenNotFound,
   orgMemberInvitedBadRequest,
 } from '@newbee/shared/util';
-import { v4 } from 'uuid';
 import { OrgMemberInviteService } from './org-member-invite.service';
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn(),
-}));
-const mockV4 = v4 as jest.Mock;
 
 jest.mock('@newbee/api/shared/data-access', () => ({
   __esModule: true,
@@ -63,23 +52,26 @@ const mockElongateUuid = elongateUuid as jest.Mock;
 describe('OrgMemberInviteService', () => {
   let service: OrgMemberInviteService;
   let em: EntityManager;
+  let txEm: EntityManager;
   let configService: ConfigService;
   let mailerService: MailerService;
-  let entityService: EntityService;
-  let userService: UserService;
-  let userInvitesService: UserInvitesService;
   let orgMemberService: OrgMemberService;
+  let userInvitesService: UserInvitesService;
+  let userService: UserService;
 
   beforeEach(async () => {
+    txEm = createMock<EntityManager>();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrgMemberInviteService,
         {
           provide: EntityManager,
           useValue: createMock<EntityManager>({
-            findOneOrFail: jest
-              .fn()
-              .mockResolvedValue(testOrgMemberInviteEntity1),
+            findOne: jest.fn().mockResolvedValue(testOrgMemberInviteEntity1),
+            transactional: jest.fn().mockImplementation(async (cb) => {
+              return await cb(txEm);
+            }),
           }),
         },
         {
@@ -93,13 +85,9 @@ describe('OrgMemberInviteService', () => {
           useValue: createMock<MailerService>(),
         },
         {
-          provide: EntityService,
-          useValue: createMock<EntityService>(),
-        },
-        {
-          provide: UserService,
-          useValue: createMock<UserService>({
-            findOneByEmailOrNull: jest.fn().mockResolvedValue(null),
+          provide: OrgMemberService,
+          useValue: createMock<OrgMemberService>({
+            create: jest.fn().mockResolvedValue(testOrgMemberEntity1),
           }),
         },
         {
@@ -111,28 +99,27 @@ describe('OrgMemberInviteService', () => {
           }),
         },
         {
-          provide: OrgMemberService,
-          useValue: createMock<OrgMemberService>({
-            create: jest.fn().mockResolvedValue(testOrgMemberEntity1),
+          provide: UserService,
+          useValue: createMock<UserService>({
+            findOneByEmailOrNull: jest.fn().mockResolvedValue(null),
           }),
         },
       ],
     }).compile();
 
-    service = module.get<OrgMemberInviteService>(OrgMemberInviteService);
-    em = module.get<EntityManager>(EntityManager);
-    configService = module.get<ConfigService>(ConfigService);
-    mailerService = module.get<MailerService>(MailerService);
-    entityService = module.get<EntityService>(EntityService);
-    userService = module.get<UserService>(UserService);
-    userInvitesService = module.get<UserInvitesService>(UserInvitesService);
-    orgMemberService = module.get<OrgMemberService>(OrgMemberService);
+    service = module.get(OrgMemberInviteService);
+    em = module.get(EntityManager);
+    configService = module.get(ConfigService);
+    mailerService = module.get(MailerService);
+    orgMemberService = module.get(OrgMemberService);
+    userInvitesService = module.get(UserInvitesService);
+    userService = module.get(UserService);
 
     jest.clearAllMocks();
-    mockV4.mockReturnValue(testOrgMemberInviteEntity1.id);
     mockOrgMemberInviteEntity.mockReturnValue(testOrgMemberInviteEntity1);
     mockShortenUuid.mockReturnValue(testOrgMemberInviteEntity1.token);
     mockElongateUuid.mockReturnValue(testOrgMemberInviteEntity1.id);
+    testUserInvitesEntity1.user = testUserEntity1;
     testUserInvitesEntity1.orgMemberInvites = createMock<
       Collection<OrgMemberInviteEntity>
     >({
@@ -143,12 +130,12 @@ describe('OrgMemberInviteService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(em).toBeDefined();
+    expect(txEm).toBeDefined();
     expect(configService).toBeDefined();
     expect(mailerService).toBeDefined();
-    expect(entityService).toBeDefined();
-    expect(userService).toBeDefined();
-    expect(userInvitesService).toBeDefined();
     expect(orgMemberService).toBeDefined();
+    expect(userInvitesService).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
   describe('create', () => {
@@ -184,20 +171,15 @@ describe('OrgMemberInviteService', () => {
         expect(userInvitesService.findOrCreateOneByEmail).toHaveBeenCalledWith(
           testUserEntity1.email,
         );
-        expect(mockShortenUuid).toHaveBeenCalledTimes(1);
-        expect(mockShortenUuid).toHaveBeenCalledWith(
-          testOrgMemberInviteEntity1.id,
-        );
+        expect(em.transactional).toHaveBeenCalledTimes(1);
         expect(mockOrgMemberInviteEntity).toHaveBeenCalledTimes(1);
         expect(mockOrgMemberInviteEntity).toHaveBeenCalledWith(
-          testOrgMemberInviteEntity1.id,
           testUserInvitesEntity1,
           testOrgMemberEntity1,
           testOrgMemberInviteEntity1.role,
         );
-        expect(configService.get).toHaveBeenCalledTimes(2);
-        expect(em.persistAndFlush).toHaveBeenCalledTimes(1);
-        expect(em.persistAndFlush).toHaveBeenCalledWith(
+        expect(txEm.persistAndFlush).toHaveBeenCalledTimes(1);
+        expect(txEm.persistAndFlush).toHaveBeenCalledWith(
           testOrgMemberInviteEntity1,
         );
       });
@@ -211,11 +193,20 @@ describe('OrgMemberInviteService', () => {
             testOrganizationEntity1,
           ),
         ).resolves.toEqual(testOrgMemberInviteEntity1);
+        expect(mockShortenUuid).toHaveBeenCalledTimes(1);
+        expect(mockShortenUuid).toHaveBeenCalledWith(
+          testOrgMemberInviteEntity1.id,
+        );
+        expect(configService.get).toHaveBeenCalledTimes(1);
+        expect(configService.get).toHaveBeenCalledWith('rpInfo.origin', {
+          infer: true,
+        });
+        expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
       });
 
       it('should throw a BadRequestException if persistAndFlush throws a UniqueConstraintViolationException', async () => {
         jest
-          .spyOn(em, 'persistAndFlush')
+          .spyOn(txEm, 'persistAndFlush')
           .mockRejectedValue(
             new UniqueConstraintViolationException(
               new Error('persistAndFlush'),
@@ -230,39 +221,6 @@ describe('OrgMemberInviteService', () => {
           ),
         ).rejects.toThrow(new BadRequestException(orgMemberInvitedBadRequest));
       });
-
-      it('should throw an InternalServerErrorException if persistAndFlush throws any other type of error', async () => {
-        jest
-          .spyOn(em, 'persistAndFlush')
-          .mockRejectedValue(new Error('persistAndFlush'));
-        await expect(
-          service.create(
-            testOrgMemberInviteEntity1.userInvites.email,
-            testOrgMemberInviteEntity1.role,
-            testOrgMemberEntity1,
-            testOrganizationEntity1,
-          ),
-        ).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-      });
-
-      it('should throw an InternalServerErrorException if sendMail throws an error', async () => {
-        jest
-          .spyOn(mailerService, 'sendMail')
-          .mockRejectedValue(new Error('sendMail'));
-        await expect(
-          service.create(
-            testOrgMemberInviteEntity1.userInvites.email,
-            testOrgMemberInviteEntity1.role,
-            testOrgMemberEntity1,
-            testOrganizationEntity1,
-          ),
-        ).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-        expect(mailerService.sendMail).toHaveBeenCalledTimes(1);
-      });
     });
   });
 
@@ -272,8 +230,8 @@ describe('OrgMemberInviteService', () => {
       expect(mockElongateUuid).toHaveBeenCalledWith(
         testOrgMemberInviteEntity1.token,
       );
-      expect(em.findOneOrFail).toHaveBeenCalledTimes(1);
-      expect(em.findOneOrFail).toHaveBeenCalledWith(
+      expect(em.findOne).toHaveBeenCalledTimes(1);
+      expect(em.findOne).toHaveBeenCalledWith(
         OrgMemberInviteEntity,
         testOrgMemberInviteEntity1.id,
       );
@@ -285,22 +243,11 @@ describe('OrgMemberInviteService', () => {
       ).resolves.toEqual(testOrgMemberInviteEntity1);
     });
 
-    it('throws a NotFoundException if findOneOrFail throws a NotFoundError', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new NotFoundError('findOneOrFail'));
+    it('throws a NotFoundException if org member cannot be found', async () => {
+      jest.spyOn(em, 'findOne').mockResolvedValue(null);
       await expect(
         service.findOneByToken(testOrgMemberInviteEntity1.token),
       ).rejects.toThrow(new NotFoundException(orgMemberInviteTokenNotFound));
-    });
-
-    it('throws an InternalServerErrorException if findOneOrFail throws any other error', async () => {
-      jest
-        .spyOn(em, 'findOneOrFail')
-        .mockRejectedValue(new Error('findOneOrFail'));
-      await expect(
-        service.findOneByToken(testOrgMemberInviteEntity1.token),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
     });
   });
 
@@ -313,34 +260,30 @@ describe('OrgMemberInviteService', () => {
       ]);
     });
 
-    describe('more than one org member invite', () => {
-      afterEach(() => {
-        expect(entityService.safeToDelete).toHaveBeenCalledTimes(1);
-        expect(entityService.safeToDelete).toHaveBeenCalledWith(
-          testOrgMemberInviteEntity1,
-        );
-        expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
-        expect(em.removeAndFlush).toHaveBeenCalledWith(
-          testOrgMemberInviteEntity1,
-        );
+    it('should delete the org member invite and user invites if only one org member invite', async () => {
+      testUserInvitesEntity1.orgMemberInvites = createMock<
+        Collection<OrgMemberInviteEntity>
+      >({
+        length: 1,
       });
+      testUserInvitesEntity1.user = null;
+      await expect(
+        service.delete(testOrgMemberInviteEntity1),
+      ).resolves.toBeUndefined();
+      expect(userInvitesService.delete).toHaveBeenCalledTimes(1);
+      expect(userInvitesService.delete).toHaveBeenCalledWith(
+        testUserInvitesEntity1,
+      );
+    });
 
-      it('should only delete the org member invite', async () => {
-        await expect(
-          service.delete(testOrgMemberInviteEntity1),
-        ).resolves.toBeUndefined();
-      });
-
-      it('throws an InternalServerErrorException if removeAndFlush throws an error', async () => {
-        jest
-          .spyOn(em, 'removeAndFlush')
-          .mockRejectedValue(new Error('removeAndFlush'));
-        await expect(
-          service.delete(testOrgMemberInviteEntity1),
-        ).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-      });
+    it('should only delete the org member invite if more than one org member invite', async () => {
+      await expect(
+        service.delete(testOrgMemberInviteEntity1),
+      ).resolves.toBeUndefined();
+      expect(em.removeAndFlush).toHaveBeenCalledTimes(1);
+      expect(em.removeAndFlush).toHaveBeenCalledWith(
+        testOrgMemberInviteEntity1,
+      );
     });
   });
 
@@ -350,17 +293,6 @@ describe('OrgMemberInviteService', () => {
         .spyOn(service, 'findOneByToken')
         .mockResolvedValue(testOrgMemberInviteEntity1);
       jest.spyOn(service, 'delete').mockResolvedValue(undefined);
-    });
-
-    it('should throw an InternalServerErrorException if populate throws an error', async () => {
-      jest.spyOn(em, 'populate').mockRejectedValue(new Error('populate'));
-      await expect(
-        service.acceptInvite(testOrgMemberInviteEntity1.token, testUserEntity1),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.populate).toHaveBeenCalledTimes(1);
-      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
-        'userInvites.user',
-      ]);
     });
 
     it('should throw a ForbiddenException if the request and invitee are not the same user', async () => {
@@ -397,20 +329,6 @@ describe('OrgMemberInviteService', () => {
         .spyOn(service, 'findOneByToken')
         .mockResolvedValue(testOrgMemberInviteEntity1);
       jest.spyOn(service, 'delete').mockResolvedValue(undefined);
-    });
-
-    it('should throw an InternalServerErrorException if populate throws an error', async () => {
-      jest.spyOn(em, 'populate').mockRejectedValue(new Error('populate'));
-      await expect(
-        service.declineInvite(
-          testOrgMemberInviteEntity1.token,
-          testUserEntity1,
-        ),
-      ).rejects.toThrow(new InternalServerErrorException(internalServerError));
-      expect(em.populate).toHaveBeenCalledTimes(1);
-      expect(em.populate).toHaveBeenCalledWith(testOrgMemberInviteEntity1, [
-        'userInvites.user',
-      ]);
     });
 
     it('should throw a ForbiddenException if the request and invitee are not the same user', async () => {

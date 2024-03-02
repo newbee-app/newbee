@@ -45,9 +45,6 @@ import {
  */
 @Controller({ path: Keyword.Organization, version: apiVersion.org })
 export class OrganizationController {
-  /**
-   * The logger to use when logging anything in the controller.
-   */
   private readonly logger = new Logger(OrganizationController.name);
 
   constructor(
@@ -64,7 +61,6 @@ export class OrganizationController {
    *
    * @returns The newly created organization.
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Post()
   async create(
@@ -94,7 +90,6 @@ export class OrganizationController {
    * @param slugDto The org slug to check.
    *
    * @returns `true` if the org slug is taken, `false` if not.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.CheckSlug)
   async checkSlug(@Query() slugDto: SlugDto): Promise<SlugTakenDto> {
@@ -104,7 +99,6 @@ export class OrganizationController {
     );
     const hasSlug = await this.organizationService.hasOneBySlug(slug);
     this.logger.log(`Organization slug ${slug} taken: ${hasSlug}`);
-
     return new SlugTakenDto(hasSlug);
   }
 
@@ -114,7 +108,6 @@ export class OrganizationController {
    * @param generateSlugDto The base string to use.
    *
    * @returns A unique org slug suitable for use.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Get(Keyword.GenerateSlug)
   async generateSlug(
@@ -128,7 +121,6 @@ export class OrganizationController {
       base,
     );
     this.logger.log(`Organization slug ${slug} generated for base ${base}`);
-
     return new GeneratedSlugDto(slug);
   }
 
@@ -166,7 +158,6 @@ export class OrganizationController {
    *
    * @returns The updated organization, if it was updated successfully.
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch(`:${Keyword.Organization}`)
   @Role(apiRoles.org.update)
@@ -180,14 +171,12 @@ export class OrganizationController {
         updateOrganizationDto,
       )}`,
     );
-
-    const updatedOrganization = await this.organizationService.update(
+    organization = await this.organizationService.update(
       organization,
       updateOrganizationDto,
     );
     this.logger.log(`Updated organization, slug: ${slug}, ID: ${id}`);
-
-    return updatedOrganization;
+    return organization;
   }
 
   /**
@@ -214,7 +203,6 @@ export class OrganizationController {
    * @param organization The organization to look in.
    *
    * @returns The suggestions as an array of strings.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Get(`:${Keyword.Organization}/${Keyword.Search}`)
   @Role(apiRoles.org.suggest)
@@ -246,7 +234,6 @@ export class OrganizationController {
    * @param organization The organization to search in.
    *
    * @returns The results of the search.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   @Get(`:${Keyword.Organization}/${Keyword.Search}`)
   @Role(apiRoles.org.search)

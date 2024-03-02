@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { unauthorizedError } from '@newbee/shared/util';
 import type { Response } from 'express';
+import { errors } from '../constant';
 
 /**
  * A global exception filter to handle any `UnauthorizedException`.
@@ -21,7 +22,7 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       message: unauthorizedError,
-      error: 'Unauthorized',
+      error: errors.unauthorized,
     });
   }
 }

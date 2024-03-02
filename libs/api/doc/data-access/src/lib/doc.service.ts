@@ -1,11 +1,5 @@
-import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrgMemberService } from '@newbee/api/org-member/data-access';
 import {
   DocDocParams,
@@ -19,28 +13,20 @@ import {
   CreateDocDto,
   UpdateDocDto,
   docSlugNotFound,
-  internalServerError,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
-import { v4 } from 'uuid';
 
 /**
  * The service that interacts with the `DocEntity`.
  */
 @Injectable()
 export class DocService {
-  /**
-   * The logger to use when logging anything in the service.
-   */
-  private readonly logger = new Logger(DocService.name);
-
   constructor(
     private readonly em: EntityManager,
-    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
-    private readonly teamService: TeamService,
     private readonly orgMemberService: OrgMemberService,
+    private readonly teamService: TeamService,
   ) {}
 
   /**
@@ -51,7 +37,6 @@ export class DocService {
    *
    * @returns A new `DocEntity` instance.
    * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async create(
     createDocDto: CreateDocDto,
@@ -63,7 +48,6 @@ export class DocService {
       docMarkdoc,
       team: teamSlug,
     } = createDocDto;
-
     const team = teamSlug
       ? await this.teamService.findOneByOrgAndSlug(
           creator.organization,
@@ -71,33 +55,21 @@ export class DocService {
         )
       : null;
 
-    const id = v4();
-    const doc = new DocEntity(
-      id,
-      title,
-      upToDateDuration,
-      team,
-      creator,
-      docMarkdoc,
-    );
-
-    try {
-      await this.em.persistAndFlush(doc);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const collectionName = creator.organization.id;
-    try {
-      await this.solrCli.addDocs(collectionName, new DocDocParams(doc));
-    } catch (err) {
-      this.logger.error(err);
-      await this.em.removeAndFlush(doc);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    return doc;
+    return await this.em.transactional(async (em): Promise<DocEntity> => {
+      const doc = new DocEntity(
+        title,
+        upToDateDuration,
+        team,
+        creator,
+        docMarkdoc,
+      );
+      await em.persistAndFlush(doc);
+      await this.solrCli.addDocs(
+        creator.organization.id,
+        new DocDocParams(doc),
+      );
+      return doc;
+    });
   }
 
   /**
@@ -106,22 +78,15 @@ export class DocService {
    * @param slug The slug to look for.
    *
    * @returns The associated `DocEntity` instance, if one exists.
-   * @throws {NotFoundException} `docSlugNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `docSlugNotFound`. If the doc cannot be found.
    */
   async findOneBySlug(slug: string): Promise<DocEntity> {
     const id = elongateUuid(slug);
-    try {
-      return await this.em.findOneOrFail(DocEntity, id);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(docSlugNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const doc = await this.em.findOne(DocEntity, id);
+    if (!doc) {
+      throw new NotFoundException(docSlugNotFound);
     }
+    return doc;
   }
 
   /**
@@ -132,8 +97,7 @@ export class DocService {
    * @param orgMember The org member making the request.
    *
    * @returns The updated `DocEntity` instance.
-   * @throws {NotFoundException} `teamSlugNotFound`. If the DTO specifies a team slug that cannot be found.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
+   * @throws {NotFoundException} `teamSlugNotFound`, `orgMemberNotfound`. If the DTO specifies a team or an org member slug that cannot be found.
    */
   async update(doc: DocEntity, updateDocDto: UpdateDocDto): Promise<DocEntity> {
     const {
@@ -155,53 +119,43 @@ export class DocService {
           )
         : maintainerSlug;
 
-    const { txt: docTxt, html: docHtml } = renderMarkdoc(docMarkdoc);
-
-    const meaningfulUpdates = [title, docMarkdoc];
-    const updateTime = meaningfulUpdates.some((update) => update !== undefined)
-      ? new Date()
-      : null;
-    const trueUpToDateDuration = EntityService.trueUpToDateDuration(
-      doc,
-      upToDateDuration,
-      team,
-    );
-    const updatedDoc = this.em.assign(doc, {
-      ...restUpdateDocDto,
-      ...(docTxt !== undefined && { docTxt }),
-      ...(docHtml !== undefined && { docHtml }),
-      ...(team !== undefined && { team }),
-      ...(maintainer !== undefined && { maintainer }),
-      ...(updateTime && {
-        markedUpToDateAt: updateTime,
-        outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
-      }),
-      ...(!updateTime &&
-        (upToDateDuration !== undefined || team !== undefined) && {
-          outOfDateAt: dayjs(doc.markedUpToDateAt)
-            .add(trueUpToDateDuration)
-            .toDate(),
-        }),
-    });
-
-    try {
-      await this.em.flush();
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const collectionName = doc.organization.id;
-    try {
-      await this.solrCli.getVersionAndReplaceDocs(
-        collectionName,
-        new DocDocParams(updatedDoc),
+    return await this.em.transactional(async (em): Promise<DocEntity> => {
+      const { txt: docTxt, html: docHtml } = renderMarkdoc(docMarkdoc);
+      const meaningfulUpdates = [title, docMarkdoc];
+      const updateTime = meaningfulUpdates.some(
+        (update) => update !== undefined,
+      )
+        ? new Date()
+        : null;
+      const trueUpToDateDuration = EntityService.trueUpToDateDuration(
+        doc,
+        upToDateDuration,
+        team,
       );
-    } catch (err) {
-      this.logger.error(err);
-    }
-
-    return updatedDoc;
+      doc = em.assign(doc, {
+        ...restUpdateDocDto,
+        ...(docTxt !== undefined && { docTxt }),
+        ...(docHtml !== undefined && { docHtml }),
+        ...(team !== undefined && { team }),
+        ...(maintainer !== undefined && { maintainer }),
+        ...(updateTime && {
+          markedUpToDateAt: updateTime,
+          outOfDateAt: dayjs(updateTime).add(trueUpToDateDuration).toDate(),
+        }),
+        ...(!updateTime &&
+          (upToDateDuration !== undefined || team !== undefined) && {
+            outOfDateAt: dayjs(doc.markedUpToDateAt)
+              .add(trueUpToDateDuration)
+              .toDate(),
+          }),
+      });
+      await em.flush();
+      await this.solrCli.getVersionAndReplaceDocs(
+        doc.organization.id,
+        new DocDocParams(doc),
+      );
+      return doc;
+    });
   }
 
   /**
@@ -210,60 +164,35 @@ export class DocService {
    * @param doc The `DocEntity` to mark as up-to-date.
    *
    * @returns The updated `DocEntity` instance.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async markUpToDate(doc: DocEntity): Promise<DocEntity> {
-    const now = new Date();
-    const updatedDoc = this.em.assign(doc, {
-      markedUpToDateAt: now,
-      outOfDateAt: dayjs(now)
-        .add(EntityService.trueUpToDateDuration(doc, undefined, undefined))
-        .toDate(),
-    });
-
-    try {
-      await this.em.flush();
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    const collectionName = doc.organization.id;
-    try {
+    return await this.em.transactional(async (em): Promise<DocEntity> => {
+      const now = new Date();
+      doc = em.assign(doc, {
+        markedUpToDateAt: now,
+        outOfDateAt: dayjs(now)
+          .add(EntityService.trueUpToDateDuration(doc, undefined, undefined))
+          .toDate(),
+      });
+      await em.flush();
       await this.solrCli.getVersionAndReplaceDocs(
-        collectionName,
-        new DocDocParams(updatedDoc),
+        doc.organization.id,
+        new DocDocParams(doc),
       );
-    } catch (err) {
-      this.logger.error(err);
-    }
-
-    return updatedDoc;
+      return doc;
+    });
   }
 
   /**
    * Deletes the given `DocEntity` and saves the changes.
    *
    * @param doc The `DocEntity` instance to delete.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(doc: DocEntity): Promise<void> {
-    const collectionName = doc.organization.id;
-    const { id } = doc;
-    await this.entityService.safeToDelete(doc);
-
-    try {
-      await this.em.removeAndFlush(doc);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
-      await this.solrCli.deleteDocs(collectionName, { id });
-    } catch (err) {
-      this.logger.error(err);
-    }
+    await this.em.transactional(async (em): Promise<void> => {
+      const { id } = doc;
+      await em.removeAndFlush(doc);
+      await this.solrCli.deleteDocs(doc.organization.id, { id });
+    });
   }
 }

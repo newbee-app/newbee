@@ -1,8 +1,6 @@
-import Markdoc from '@markdoc/markdoc';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import markdocTxtRenderer from '@newbee/markdoc-txt-renderer';
+import { renderMarkdoc } from '@newbee/api/shared/util';
 import type { Qna } from '@newbee/shared/util';
-import { strToContent } from '@newbee/shared/util';
 import { OrgMemberEntity } from './org-member.entity';
 import { OrganizationEntity } from './organization.entity';
 import { PostEntity } from './post.abstract.entity';
@@ -77,37 +75,26 @@ export class QnaEntity extends PostEntity implements Qna {
   maintainer: OrgMemberEntity | null = null;
 
   constructor(
-    id: string,
     title: string,
     team: TeamEntity | null,
     creator: OrgMemberEntity,
     questionMarkdoc: string | null,
     answerMarkdoc: string | null,
   ) {
-    super(id, title, null, team, creator);
+    super(title, null, team, creator);
 
     this.organization = creator.organization;
     this.team = team;
     this.creator = creator;
 
     this.questionMarkdoc = questionMarkdoc;
-    if (questionMarkdoc) {
-      const content = strToContent(questionMarkdoc);
-      this.questionTxt = markdocTxtRenderer(content);
-      this.questionHtml = Markdoc.renderers.html(content);
-    } else {
-      this.questionTxt = null;
-      this.questionHtml = null;
-    }
+    let { html, txt } = renderMarkdoc(questionMarkdoc);
+    this.questionHtml = html ?? null;
+    this.questionTxt = txt ?? null;
 
     this.answerMarkdoc = answerMarkdoc;
-    if (answerMarkdoc) {
-      const content = strToContent(answerMarkdoc);
-      this.answerTxt = markdocTxtRenderer(content);
-      this.answerHtml = Markdoc.renderers.html(content);
-    } else {
-      this.answerTxt = null;
-      this.answerHtml = null;
-    }
+    ({ html, txt } = renderMarkdoc(answerMarkdoc));
+    this.answerHtml = html ?? null;
+    this.answerTxt = txt ?? null;
   }
 }

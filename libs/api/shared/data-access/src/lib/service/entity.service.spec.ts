@@ -1,12 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { adminControlsId } from '@newbee/api/shared/util';
 import {
   defaultLimit,
-  internalServerError,
   testNow1,
   testOffsetAndLimit1,
   testPublicAdminControls1,
@@ -95,23 +93,6 @@ describe('EntityService', () => {
           testAdminControlsEntity1,
         );
       });
-
-      it('should throw an InternalServerErrorException if findOne throws an error', async () => {
-        jest.spyOn(em, 'findOne').mockRejectedValue(new Error('findOne'));
-        await expect(service.getAdminControls()).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-      });
-
-      it('should throw an InternalServerErrorException if persistAndFlush throws an error', async () => {
-        jest.spyOn(em, 'findOne').mockResolvedValue(null);
-        jest
-          .spyOn(em, 'persistAndFlush')
-          .mockRejectedValue(new Error('persistAndFlush'));
-        await expect(service.getAdminControls()).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-      });
     });
 
     describe('getPublicAdminControls', () => {
@@ -133,15 +114,6 @@ describe('EntityService', () => {
             limit: defaultLimit,
           },
         });
-      });
-
-      it('should throw InternalServerErrorException if findAndCount throws an error', async () => {
-        jest
-          .spyOn(em, 'findAndCount')
-          .mockRejectedValue(new Error('findAndCount'));
-        await expect(service.getAdminControlsRelation()).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
       });
     });
   });
@@ -189,7 +161,14 @@ describe('EntityService', () => {
     });
 
     describe('only org', () => {
-      afterEach(() => {
+      it('should find doc entities and count', async () => {
+        await expect(
+          service.findPostsByOrgAndCount(
+            DocEntity,
+            testOffsetAndLimit1,
+            testOrganizationEntity1,
+          ),
+        ).resolves.toEqual([[testDocEntity1], 1]);
         expect(em.findAndCount).toHaveBeenCalledWith(
           DocEntity,
           { organization: testOrganizationEntity1 },
@@ -199,45 +178,9 @@ describe('EntityService', () => {
           },
         );
       });
-
-      it('should find doc entities and count', async () => {
-        await expect(
-          service.findPostsByOrgAndCount(
-            DocEntity,
-            testOffsetAndLimit1,
-            testOrganizationEntity1,
-          ),
-        ).resolves.toEqual([[testDocEntity1], 1]);
-      });
-
-      it('should throw an InternalServerErrorException if findAndCount throws an error', async () => {
-        jest
-          .spyOn(em, 'findAndCount')
-          .mockRejectedValue(new Error('findAndCount'));
-        await expect(
-          service.findPostsByOrgAndCount(
-            DocEntity,
-            testOffsetAndLimit1,
-            testOrganizationEntity1,
-          ),
-        ).rejects.toThrow(
-          new InternalServerErrorException(internalServerError),
-        );
-      });
     });
 
     describe('org and optional params', () => {
-      afterEach(() => {
-        expect(em.findAndCount).toHaveBeenCalledWith(
-          DocEntity,
-          { organization: testOrganizationEntity1, team: testTeamEntity1 },
-          {
-            ...testOffsetAndLimit1,
-            orderBy: { markedUpToDateAt: QueryOrder.DESC },
-          },
-        );
-      });
-
       it('should accept team if specified', async () => {
         await expect(
           service.findPostsByOrgAndCount(
@@ -247,6 +190,14 @@ describe('EntityService', () => {
             { team: testTeamEntity1 },
           ),
         ).resolves.toEqual([[testDocEntity1], 1]);
+        expect(em.findAndCount).toHaveBeenCalledWith(
+          DocEntity,
+          { organization: testOrganizationEntity1, team: testTeamEntity1 },
+          {
+            ...testOffsetAndLimit1,
+            orderBy: { markedUpToDateAt: QueryOrder.DESC },
+          },
+        );
       });
     });
   });

@@ -9,8 +9,8 @@ import { OrganizationController } from './organization.controller';
 @Module({
   imports: [
     MikroOrmModule.forFeature([OrganizationEntity]),
-    TeamModule,
     SearchModule,
+    TeamModule,
   ],
   controllers: [OrganizationController],
   providers: [OrganizationService],

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Logger, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  InternalServerErrorException,
+  Logger,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { UserEntity } from '@newbee/api/shared/data-access';
 import {
   Public,
@@ -8,7 +16,12 @@ import {
 } from '@newbee/api/shared/util';
 import { UserService } from '@newbee/api/user/data-access';
 import { apiVersion } from '@newbee/shared/data-access';
-import { Keyword, TokenDto, UpdateUserDto } from '@newbee/shared/util';
+import {
+  Keyword,
+  TokenDto,
+  UpdateUserDto,
+  internalServerError,
+} from '@newbee/shared/util';
 
 /**
  * The controller that interacts with the `UserEntity`.
@@ -28,7 +41,6 @@ export class UserController {
    *
    * @returns The updated `UserEntity` instance.
    * @throws {BadRequestException} `userEmailTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   @Patch()
   async update(
@@ -40,17 +52,15 @@ export class UserController {
         updateUserDto,
       )}`,
     );
-    const updatedUser = await this.userService.update(user, updateUserDto);
+    user = await this.userService.update(user, updateUserDto);
     this.logger.log(`Updated user: ${user.id}`);
-    return updatedUser;
+    return user;
   }
 
   /**
    * The API route for deleting the authenticated user.
    *
    * @param user The `UserEntity` instance to delete.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   @Delete()
   async delete(@User() user: UserEntity): Promise<void> {
@@ -63,15 +73,22 @@ export class UserController {
    * The API route to request a verification email.
    *
    * @param user The user who's requesting a verification email.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM or mailer throws an error.
+   *
+   * @returns The user who was just sent a verification email.
+   * @throws {InternalServerErrorException} `internalServerError`. If there is an error sending the email.
    */
   @Post()
-  async sendVerificationEmail(@User() user: UserEntity): Promise<void> {
+  async sendVerificationEmail(@User() user: UserEntity): Promise<UserEntity> {
     this.logger.log(
       `Send verification email received for user email: ${user.email}`,
     );
-    await this.userService.sendVerificationEmail(user);
-    this.logger.log(`Sent verification email to: ${user.email}`);
+    const users = await this.userService.sendVerificationEmail(user);
+    if (users.length === 1) {
+      this.logger.log(`Sent verification email to: ${user.email}`);
+      return users[0] as UserEntity;
+    }
+
+    throw new InternalServerErrorException(internalServerError);
   }
 
   /**
@@ -81,16 +98,15 @@ export class UserController {
    *
    * @returns The `UserEntity` instance of the updated user.
    * @throws {NotFoundException} `userIdNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM or mailer throws any other type of error.
    */
   @Post(Keyword.Verify)
   @Public()
   async verifyEmail(@Body() tokenDto: TokenDto): Promise<UserEntity> {
     const { token } = tokenDto;
     this.logger.log(`Verify email request received for token: ${token}`);
-    const user = await this.userService.findOneById(elongateUuid(token));
-    const verifiedUser = await this.userService.verifyEmail(user);
-    this.logger.log(`Email verified for user ID: ${verifiedUser.id}`);
-    return verifiedUser;
+    let user = await this.userService.findOneById(elongateUuid(token));
+    user = await this.userService.verifyEmail(user);
+    this.logger.log(`Email verified for user ID: ${user.id}`);
+    return user;
   }
 }

@@ -13,6 +13,7 @@ import {
 } from '@newbee/shared/util';
 import { Response } from 'express';
 import { AppConfig } from '../config';
+import { errors } from '../constant';
 
 /**
  * A global exception filter to handle any unhandled backend exceptions.
@@ -51,7 +52,7 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
       response.status(HttpStatus.FORBIDDEN).json({
         statusCode: HttpStatus.FORBIDDEN,
         message: csrfTokenInvalidForbidden,
-        error: 'Forbidden',
+        error: errors.forbidden,
       });
       return;
     }
@@ -59,7 +60,7 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: internalServerError,
-      error: 'Internal Server Error',
+      error: errors.internalServerError,
     });
   }
 }

@@ -36,7 +36,7 @@ describe('SearchService', () => {
   describe('baseApiUrl', () => {
     it('should match the expected API route', () => {
       expect(SearchService.baseApiUrl(testOrganization1.slug)).toEqual(
-        `/${Keyword.Api}/v${apiVersion.search}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`,
+        `/${Keyword.Api}/v${apiVersion.org}/${Keyword.Organization}/${testOrganization1.slug}/${Keyword.Search}`,
       );
     });
   });

@@ -92,9 +92,10 @@ echo 'Running MikroORM Postgres migrations'
 (. ./tools/mikro-orm/run-migration.sh)
 echo 'Migrations successfully ran'
 
-echo 'Running MikroORM admin controls seeder'
-(. ./tools/mikro-orm/seed-admin-controls.sh)
-echo 'Admin controls successfully seeded'
+# Create admin controls
+echo 'Creating admin controls'
+(. ./tools/mikro-orm/create-admin-controls.sh)
+echo 'Admin controls successfully created'
 
 # Finish Solr setup
 echo 'Finishing Solr setup'

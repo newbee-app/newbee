@@ -3,33 +3,44 @@ import {
   testOrgMemberSearchResult1,
   testQnaSearchResult1,
   testTeamSearchResult1,
+  testUserSearchResult1,
+  testWaitlistMemberSearchResult1,
 } from '../../example';
-import type { OrgSearchResultType } from '../../type';
+import type { AppSearchResultType, OrgSearchResultType } from '../../type';
 import {
   isDocSearchResult,
   isOrgMemberSearchResult,
   isQnaSearchResult,
   isTeamSearchResult,
+  isUserSearchResult,
+  isWaitlistMemberSearchResult,
 } from './search-result.type-guard.function';
 
 describe('search result type guards', () => {
-  const allSearchResults = [
+  const allOrgSearchResults = [
     testOrgMemberSearchResult1,
     testTeamSearchResult1,
     testDocSearchResult1,
     testQnaSearchResult1,
   ];
-  let allSearchResultsSet: Set<OrgSearchResultType>;
+  let allOrgSearchResultsSet: Set<OrgSearchResultType>;
+
+  const allAppSearchResults = [
+    testUserSearchResult1,
+    testWaitlistMemberSearchResult1,
+  ];
+  let allAppSearchResultsSet: Set<AppSearchResultType>;
 
   beforeEach(() => {
-    allSearchResultsSet = new Set(allSearchResults);
+    allOrgSearchResultsSet = new Set(allOrgSearchResults);
+    allAppSearchResultsSet = new Set(allAppSearchResults);
   });
 
   describe('isOrgMemberSearchResult', () => {
     it('should return true if object is OrgMemberSearchResult', () => {
       expect(isOrgMemberSearchResult(testOrgMemberSearchResult1)).toBeTruthy();
-      allSearchResultsSet.delete(testOrgMemberSearchResult1);
-      allSearchResultsSet.forEach((searchResult) => {
+      allOrgSearchResultsSet.delete(testOrgMemberSearchResult1);
+      allOrgSearchResultsSet.forEach((searchResult) => {
         expect(isOrgMemberSearchResult(searchResult)).toBeFalsy();
       });
     });
@@ -38,8 +49,8 @@ describe('search result type guards', () => {
   describe('isTeamSearchResult', () => {
     it('should return true if object is TeamSearchResult', () => {
       expect(isTeamSearchResult(testTeamSearchResult1)).toBeTruthy();
-      allSearchResultsSet.delete(testTeamSearchResult1);
-      allSearchResultsSet.forEach((searchResult) => {
+      allOrgSearchResultsSet.delete(testTeamSearchResult1);
+      allOrgSearchResultsSet.forEach((searchResult) => {
         expect(isTeamSearchResult(searchResult)).toBeFalsy();
       });
     });
@@ -48,8 +59,8 @@ describe('search result type guards', () => {
   describe('isDocSearchResult', () => {
     it('should return true if object is DocSearchResult', () => {
       expect(isDocSearchResult(testDocSearchResult1)).toBeTruthy();
-      allSearchResultsSet.delete(testDocSearchResult1);
-      allSearchResultsSet.forEach((searchResult) => {
+      allOrgSearchResultsSet.delete(testDocSearchResult1);
+      allOrgSearchResultsSet.forEach((searchResult) => {
         expect(isDocSearchResult(searchResult)).toBeFalsy();
       });
     });
@@ -58,9 +69,31 @@ describe('search result type guards', () => {
   describe('isQnaSearchResult', () => {
     it('should return true if object is QnaSearchResult', () => {
       expect(isQnaSearchResult(testQnaSearchResult1)).toBeTruthy();
-      allSearchResultsSet.delete(testQnaSearchResult1);
-      allSearchResultsSet.forEach((searchResult) => {
+      allOrgSearchResultsSet.delete(testQnaSearchResult1);
+      allOrgSearchResultsSet.forEach((searchResult) => {
         expect(isQnaSearchResult(searchResult)).toBeFalsy();
+      });
+    });
+  });
+
+  describe('isUserSearchResult', () => {
+    it('should return true if object is UserSearchResult', () => {
+      expect(isUserSearchResult(testUserSearchResult1)).toBeTruthy();
+      allAppSearchResultsSet.delete(testUserSearchResult1);
+      allAppSearchResultsSet.forEach((searchResult) => {
+        expect(isUserSearchResult(searchResult)).toBeFalsy();
+      });
+    });
+  });
+
+  describe('isWaitlistMemberSearchResult', () => {
+    it('should return true if object is WaitlistMemberSearchResult', () => {
+      expect(
+        isWaitlistMemberSearchResult(testWaitlistMemberSearchResult1),
+      ).toBeTruthy();
+      allAppSearchResultsSet.delete(testWaitlistMemberSearchResult1);
+      allAppSearchResultsSet.forEach((searchResult) => {
+        expect(isWaitlistMemberSearchResult(searchResult)).toBeFalsy();
       });
     });
   });

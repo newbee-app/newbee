@@ -10,9 +10,9 @@ import { OrgMemberInviteController } from './org-member-invite.controller';
 @Module({
   imports: [
     MikroOrmModule.forFeature([OrgMemberInviteEntity]),
-    UserModule,
-    UserInvitesModule,
     OrgMemberModule,
+    UserInvitesModule,
+    UserModule,
   ],
   controllers: [OrgMemberInviteController],
   providers: [OrgMemberInviteService],

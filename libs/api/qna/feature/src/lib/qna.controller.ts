@@ -38,9 +38,6 @@ import {
   version: apiVersion.qna,
 })
 export class QnaController {
-  /**
-   * The logger to use when logging anything in the controller.
-   */
   private readonly logger = new Logger(QnaController.name);
 
   constructor(
@@ -56,7 +53,6 @@ export class QnaController {
    * @param organization The organization to look in.
    *
    * @returns The result containing the retrieved qnas, the total number of qnas in the org, and the offset we retrieved.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get()
   @Role(apiRoles.qna.getAll)
@@ -95,7 +91,6 @@ export class QnaController {
    * @param teamSlugDto The DTO containing the slug of the team the qna will go in, if applicable.
    *
    * @returns The newly created qna.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Post()
   @Role(apiRoles.qna.create)
@@ -111,7 +106,6 @@ export class QnaController {
     this.logger.log(
       `Qna created with ID: ${qna.id}, slug: ${qna.slug}, title: ${qna.title}`,
     );
-
     return qna;
   }
 
@@ -123,7 +117,6 @@ export class QnaController {
    * @param orgMember The org member making the request.
    *
    * @returns The qna associated with the slug, if one exists.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Get(`:${Keyword.Qna}`)
   @Role(apiRoles.qna.get)
@@ -133,7 +126,6 @@ export class QnaController {
   ): Promise<QnaAndMemberDto> {
     this.logger.log(`Get qna request received for slug: ${qna.slug}`);
     this.logger.log(`Found qna, slug: ${qna.slug}, ID: ${qna.id}`);
-
     const { team } = qna;
     return new QnaAndMemberDto(
       await this.entityService.createQnaNoOrg(qna),
@@ -154,7 +146,6 @@ export class QnaController {
    * @param qna The qna we're looking look for.
    *
    * @returns The updated qna, if it was updated successfully.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Patch(`:${Keyword.Qna}/${Keyword.Question}`)
   @Role(apiRoles.qna.updateQuestion)
@@ -164,14 +155,11 @@ export class QnaController {
     @OrgMember() orgMember: OrgMemberEntity,
   ): Promise<QnaAndMemberDto> {
     this.logger.log(`Update question request received for slug: ${qna.slug}`);
-    const updatedQna = await this.qnaService.update(qna, updateQuestionDto);
-    this.logger.log(
-      `Updated question, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
-    );
-
-    const { team } = updatedQna;
+    qna = await this.qnaService.update(qna, updateQuestionDto);
+    this.logger.log(`Updated question, slug: ${qna.slug}, ID: ${qna.id}`);
+    const { team } = qna;
     return new QnaAndMemberDto(
-      await this.entityService.createQnaNoOrg(updatedQna),
+      await this.entityService.createQnaNoOrg(qna),
       team
         ? await this.teamMemberService.findOneByTeamAndOrgMemberOrNull(
             orgMember,
@@ -192,7 +180,6 @@ export class QnaController {
    * @param orgMember The org member that sent the request and will become the maintainer if the qna doesn't already have a maintainer.
    *
    * @returns The updated qna, if it was updated successfully.
-   * @throws {InternalServerErrorException} `internalServerError`. For any error.
    */
   @Patch(`:${Keyword.Qna}/${Keyword.Answer}`)
   @Role(apiRoles.qna.updateAnswer)
@@ -201,11 +188,9 @@ export class QnaController {
     @Qna() qna: QnaEntity,
   ): Promise<QnaEntity> {
     this.logger.log(`Update answer request received for slug: ${qna.slug}`);
-    const updatedQna = await this.qnaService.update(qna, updateAnswerDto);
-    this.logger.log(
-      `Updated answer, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
-    );
-    return updatedQna;
+    qna = await this.qnaService.update(qna, updateAnswerDto);
+    this.logger.log(`Updated answer, slug: ${qna.slug}, ID: ${qna.id}`);
+    return qna;
   }
 
   /**
@@ -215,17 +200,14 @@ export class QnaController {
    * @param qna The qna we're looking look for.
    *
    * @returns The updated qna, if it was updated successfully.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Post(`:${Keyword.Qna}`)
   @Role(apiRoles.qna.markUpToDate)
   async markUpToDate(@Qna() qna: QnaEntity): Promise<QnaEntity> {
     this.logger.log(`Mark up-to-date request received for slug: ${qna.slug}`);
-    const updatedQna = await this.qnaService.markUpToDate(qna);
-    this.logger.log(
-      `Marked qna up-to-date, slug: ${updatedQna.slug}, ID: ${updatedQna.id}`,
-    );
-    return updatedQna;
+    qna = await this.qnaService.markUpToDate(qna);
+    this.logger.log(`Marked qna up-to-date, slug: ${qna.slug}, ID: ${qna.id}`);
+    return qna;
   }
 
   /**
@@ -233,8 +215,6 @@ export class QnaController {
    * Organization moderators and owners; team moderators and owners; and post maintainers should be allowed to access the endpoint.
    *
    * @param qna The qna we're looking look for.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. For any other error.
    */
   @Delete(`:${Keyword.Qna}`)
   @Role(apiRoles.qna.delete)

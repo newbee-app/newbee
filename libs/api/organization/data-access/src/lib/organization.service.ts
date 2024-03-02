@@ -1,20 +1,14 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
-  HttpException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
   DocDocParams,
   DocEntity,
-  EntityService,
   OrgMemberDocParams,
   OrganizationEntity,
   QnaDocParams,
@@ -27,14 +21,12 @@ import { TeamService } from '@newbee/api/team/data-access';
 import {
   CreateOrganizationDto,
   UpdateOrganizationDto,
-  internalServerError,
   organizationSlugNotFound,
   organizationSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
 import slugify from 'slug';
-import { v4 } from 'uuid';
 
 /**
  * The service that interacts with the `OrganizationEntity`.
@@ -46,7 +38,6 @@ export class OrganizationService {
   constructor(
     private readonly em: EntityManager,
     private readonly solrCli: SolrCli,
-    private readonly entityService: EntityService,
     private readonly teamService: TeamService,
   ) {}
 
@@ -58,55 +49,50 @@ export class OrganizationService {
    *
    * @returns A new `OrganizationEntity` instance.
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(
     createOrganizationDto: CreateOrganizationDto,
     creator: UserEntity,
   ): Promise<OrganizationEntity> {
-    const { name, slug, upToDateDuration } = createOrganizationDto;
-    const id = v4();
-    const organization = new OrganizationEntity(
-      id,
-      name,
-      slug,
-      upToDateDuration,
-      creator,
+    return await this.em.transactional(
+      async (em): Promise<OrganizationEntity> => {
+        const { name, slug, upToDateDuration } = createOrganizationDto;
+        const organization = new OrganizationEntity(
+          name,
+          slug,
+          upToDateDuration,
+          creator,
+        );
+        const { id } = organization;
+
+        try {
+          await em.persistAndFlush(organization);
+        } catch (err) {
+          if (err instanceof UniqueConstraintViolationException) {
+            this.logger.error(err);
+            throw new BadRequestException(organizationSlugTakenBadRequest);
+          }
+
+          throw err;
+        }
+
+        await this.solrCli.createCollection({
+          name: id,
+          numShards: 1,
+          config: solrOrgConfigset,
+        });
+
+        // Should just be 1 member (the creator)
+        await this.solrCli.addDocs(
+          id,
+          organization.members
+            .getItems()
+            .map((member) => new OrgMemberDocParams(member)),
+        );
+
+        return organization;
+      },
     );
-
-    try {
-      await this.em.persistAndFlush(organization);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(organizationSlugTakenBadRequest);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
-      await this.solrCli.createCollection({
-        name: id,
-        numShards: 1,
-        config: solrOrgConfigset,
-      });
-
-      // Should just be 1 member (the creator)
-      await this.solrCli.addDocs(
-        id,
-        organization.members
-          .getItems()
-          .map((member) => new OrgMemberDocParams(member)),
-      );
-    } catch (err) {
-      this.logger.error(err);
-      await this.em.removeAndFlush(organization);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    return organization;
   }
 
   /**
@@ -115,15 +101,9 @@ export class OrganizationService {
    * @param slug The slug to check for.
    *
    * @returns `true` if the slug already exists in the database, `false` if not.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async hasOneBySlug(slug: string): Promise<boolean> {
-    try {
-      return !!(await this.em.findOne(OrganizationEntity, { slug }));
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return !!(await this.em.findOne(OrganizationEntity, { slug }));
   }
 
   /**
@@ -133,40 +113,28 @@ export class OrganizationService {
    * @param slug The slug to look for.
    *
    * @returns The associated `OrganizationEntity` instance.
-   * @throws {NotFoundException} `organizationSlugNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `organizationSlugNotFound`. If the org cannot be found.
    */
   async findOneBySlug(slug: string): Promise<OrganizationEntity> {
-    try {
-      let organization = await this.em.findOneOrFail(OrganizationEntity, {
-        slug,
-      });
-
-      // If it's been a day or more since the suggester was last built, build the suggester for the org
-      const now = new Date();
-      if (
-        now.getTime() - organization.suggesterBuiltAt.getTime() >=
-        86400000 /* 1 day in ms */
-      ) {
-        await this.buildSuggesters(organization);
-        organization = this.em.assign(organization, { suggesterBuiltAt: now });
-        await this.em.flush();
-      }
-
-      return organization;
-    } catch (err) {
-      if (err instanceof HttpException) {
-        throw err;
-      }
-
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(organizationSlugNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    let organization = await this.em.findOne(OrganizationEntity, {
+      slug,
+    });
+    if (!organization) {
+      throw new NotFoundException(organizationSlugNotFound);
     }
+
+    // If it's been a day or more since the suggester was last built, build the suggester for the org
+    const now = new Date();
+    if (
+      now.getTime() - organization.suggesterBuiltAt.getTime() >=
+      86400000 /* 1 day in ms */
+    ) {
+      await this.buildSuggesters(organization);
+      organization = this.em.assign(organization, { suggesterBuiltAt: now });
+      await this.em.flush();
+    }
+
+    return organization;
   }
 
   /**
@@ -177,85 +145,77 @@ export class OrganizationService {
    *
    * @returns The updated `OrganizationEntity` instance.
    * @throws {BadRequestException} `organizationSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
     organization: OrganizationEntity,
     updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<OrganizationEntity> {
-    const { slug, upToDateDuration } = updateOrganizationDto;
-    if (slug) {
-      updateOrganizationDto.slug = slugify(slug);
-    }
+    return await this.em.transactional(
+      async (em): Promise<OrganizationEntity> => {
+        const { slug, upToDateDuration } = updateOrganizationDto;
+        if (slug) {
+          updateOrganizationDto.slug = slugify(slug);
+        }
+        organization = em.assign(organization, updateOrganizationDto);
+        const { docs, qnas } = await this.getAffectedPosts(
+          organization,
+          upToDateDuration,
+        );
 
-    const updatedOrganization = this.em.assign(
-      organization,
-      updateOrganizationDto,
+        if ((docs || qnas) && upToDateDuration) {
+          const newDuration = dayjs.duration(upToDateDuration);
+          [...docs, ...qnas].forEach((post) => {
+            em.assign(post, {
+              outOfDateAt: dayjs(post.markedUpToDateAt)
+                .add(newDuration)
+                .toDate(),
+            });
+          });
+        }
+
+        try {
+          await this.em.flush();
+        } catch (err) {
+          if (err instanceof UniqueConstraintViolationException) {
+            this.logger.error(err);
+            throw new BadRequestException(organizationSlugTakenBadRequest);
+          }
+
+          throw err;
+        }
+
+        await this.solrCli.getVersionAndReplaceDocs(organization.id, [
+          ...docs.map((doc) => new DocDocParams(doc)),
+          ...qnas.map((qna) => new QnaDocParams(qna)),
+        ]);
+
+        return organization;
+      },
     );
-
-    const { docs, qnas } = await this.changeUpToDateDuration(
-      organization,
-      upToDateDuration,
-    );
-
-    try {
-      await this.em.flush();
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(organizationSlugTakenBadRequest);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
-      await this.solrCli.getVersionAndReplaceDocs(organization.id, [
-        ...docs.map((doc) => new DocDocParams(doc)),
-        ...qnas.map((qna) => new QnaDocParams(qna)),
-      ]);
-    } catch (err) {
-      this.logger.error(err);
-    }
-
-    return updatedOrganization;
   }
 
   /**
    * Deletes the given `OrganizationEntity` and saves the changes to the database.
    *
    * @param organization The `OrganizationEntity` instance to delete.
-   *
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(organization: OrganizationEntity): Promise<void> {
-    const { id } = organization;
-    await this.entityService.safeToDelete(organization);
-    try {
-      await this.em.removeAndFlush(organization);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
+    await this.em.transactional(async (em): Promise<void> => {
+      const { id } = organization;
+      await em.removeAndFlush(organization);
       await this.solrCli.deleteCollection(id);
-    } catch (err) {
-      this.logger.error(err);
-    }
+    });
   }
 
   /**
-   * Helper function for changing out-of-date datetimes for all child posts that use the organization's duration value.
+   * Helper function for getting all child posts that use the organization's duration value for changing the organization's up-to-date duration.
    *
    * @param organization The organization whose duration changed.
    * @param upToDateDuration The new value for the up-to-date duration as an ISO 8601 duration string.
    *
    * @returns All of the posts that were updated.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error.
    */
-  async changeUpToDateDuration(
+  async getAffectedPosts(
     organization: OrganizationEntity,
     upToDateDuration: string | undefined,
   ): Promise<{ docs: DocEntity[]; qnas: QnaEntity[] }> {
@@ -266,70 +226,48 @@ export class OrganizationService {
       return { docs: [], qnas: [] };
     }
 
-    try {
-      let allDocs: DocEntity[] = [];
-      let allQnas: QnaEntity[] = [];
+    let allDocs: DocEntity[] = [];
+    let allQnas: QnaEntity[] = [];
 
-      const teams = await this.em.find(TeamEntity, {
-        organization,
-        upToDateDuration: null,
-      });
-      teams.forEach(async (team) => {
-        const { docs, qnas } = await this.teamService.changeUpToDateDuration(
-          team,
-          upToDateDuration,
-        );
-        allDocs = allDocs.concat(docs);
-        allQnas = allQnas.concat(qnas);
-      });
-
-      const docs = await this.em.find(DocEntity, {
-        organization,
-        team: null,
-        upToDateDuration: null,
-      });
-      const qnas = await this.em.find(QnaEntity, {
-        organization,
-        team: null,
-        upToDateDuration: null,
-      });
-
-      const newDuration = dayjs.duration(upToDateDuration);
-      [...docs, ...qnas].forEach((post) => {
-        this.em.assign(post, {
-          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
-        });
-      });
+    const teams = await this.em.find(TeamEntity, {
+      organization,
+      upToDateDuration: null,
+    });
+    for (const team of teams) {
+      const { docs, qnas } = await this.teamService.getAffectedPosts(
+        team,
+        upToDateDuration,
+      );
       allDocs = allDocs.concat(docs);
       allQnas = allQnas.concat(qnas);
-
-      return { docs: allDocs, qnas: allQnas };
-    } catch (err) {
-      if (err instanceof HttpException) {
-        throw err;
-      }
-
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
     }
+
+    const docs = await this.em.find(DocEntity, {
+      organization,
+      team: null,
+      upToDateDuration: null,
+    });
+    const qnas = await this.em.find(QnaEntity, {
+      organization,
+      team: null,
+      upToDateDuration: null,
+    });
+    allDocs = allDocs.concat(docs);
+    allQnas = allQnas.concat(qnas);
+
+    return { docs: allDocs, qnas: allQnas };
   }
 
   /**
    * Send a request to build an organization's suggesters.
    *
    * @param organization The organization to build.
-   * @throws {InternalServerErrorException} `internalServerError`. If the Solr CLI throws an error.
    */
   async buildSuggesters(organization: OrganizationEntity): Promise<void> {
-    try {
-      for (const dictionary of Object.values(solrOrgDictionaries)) {
-        await this.solrCli.suggest(organization.id, {
-          params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
-        });
-      }
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
+    for (const dictionary of Object.values(solrOrgDictionaries)) {
+      await this.solrCli.suggest(organization.id, {
+        params: { 'suggest.build': true, 'suggest.dictionary': dictionary },
+      });
     }
   }
 }

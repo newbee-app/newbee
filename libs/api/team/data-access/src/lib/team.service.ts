@@ -1,19 +1,14 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
   DocDocParams,
   DocEntity,
-  EntityService,
   OrgMemberEntity,
   OrganizationEntity,
   QnaDocParams,
@@ -24,13 +19,11 @@ import {
 import {
   CreateTeamDto,
   UpdateTeamDto,
-  internalServerError,
   teamSlugNotFound,
   teamSlugTakenBadRequest,
 } from '@newbee/shared/util';
 import { SolrCli } from '@newbee/solr-cli';
 import dayjs from 'dayjs';
-import { v4 } from 'uuid';
 
 /**
  * The service that interacts with the `TeamEntity`.
@@ -44,7 +37,6 @@ export class TeamService {
 
   constructor(
     private readonly em: EntityManager,
-    private readonly entityService: EntityService,
     private readonly solrCli: SolrCli,
   ) {}
 
@@ -56,38 +48,30 @@ export class TeamService {
    *
    * @returns A new `TeamEntity` instance.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async create(
     createTeamDto: CreateTeamDto,
     creator: OrgMemberEntity,
   ): Promise<TeamEntity> {
-    const { name, slug, upToDateDuration } = createTeamDto;
-    const { organization } = creator;
-    const id = v4();
-    const team = new TeamEntity(id, name, slug, upToDateDuration, creator);
+    return await this.em.transactional(async (em): Promise<TeamEntity> => {
+      const { name, slug, upToDateDuration } = createTeamDto;
+      const { organization } = creator;
+      const team = new TeamEntity(name, slug, upToDateDuration, creator);
 
-    try {
-      await this.em.persistAndFlush(team);
-    } catch (err) {
-      this.logger.error(err);
+      try {
+        await em.persistAndFlush(team);
+      } catch (err) {
+        if (err instanceof UniqueConstraintViolationException) {
+          this.logger.error(err);
+          throw new BadRequestException(teamSlugTakenBadRequest);
+        }
 
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(teamSlugTakenBadRequest);
+        throw err;
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
       await this.solrCli.addDocs(organization.id, new TeamDocParams(team));
-    } catch (err) {
-      this.logger.error(err);
-      await this.em.removeAndFlush(team);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    return team;
+      return team;
+    });
   }
 
   /**
@@ -97,18 +81,12 @@ export class TeamService {
    * @param slug The slug to check for.
    *
    * @returns `true` if the slug already exists in the organization, `false` if not.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async hasOneByOrgAndSlug(
     organization: OrganizationEntity,
     slug: string,
   ): Promise<boolean> {
-    try {
-      return !!(await this.em.findOne(TeamEntity, { organization, slug }));
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return !!(await this.em.findOne(TeamEntity, { organization, slug }));
   }
 
   /**
@@ -118,44 +96,20 @@ export class TeamService {
    * @param slug The slug to look for.
    *
    * @returns The associated `TeamEntity` instance.
-   * @throws {NotFoundException} `teamSlugNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `teamSlugNotFound`. If the team cannot be found.
    */
   async findOneByOrgAndSlug(
     organization: OrganizationEntity,
     slug: string,
   ): Promise<TeamEntity> {
-    try {
-      return await this.em.findOneOrFail(TeamEntity, {
-        organization,
-        slug,
-      });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(teamSlugNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const team = await this.em.findOne(TeamEntity, {
+      organization,
+      slug,
+    });
+    if (!team) {
+      throw new NotFoundException(teamSlugNotFound);
     }
-  }
-
-  /**
-   * Finds the `TeamEntity` associated with the given ID.
-   *
-   * @param id The ID of the team to find.
-   *
-   * @returns The associated `TeamEntity` instance.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error. As the ID is never expoed to the frontend, not being able to find a provided ID is a serious backend issue.
-   */
-  async findOneById(id: string): Promise<TeamEntity> {
-    try {
-      return await this.em.findOneOrFail(TeamEntity, id);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return team;
   }
 
   /**
@@ -166,44 +120,49 @@ export class TeamService {
    *
    * @returns The updated `TeamEntity` instance.
    * @throws {BadRequestException} `teamSlugTakenBadRequest`. If the ORM throws a `UniqueConstraintViolationException`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
    */
   async update(
     team: TeamEntity,
     updateTeamDto: UpdateTeamDto,
   ): Promise<TeamEntity> {
-    const updatedTeam = this.em.assign(team, updateTeamDto);
+    return await this.em.transactional(async (em): Promise<TeamEntity> => {
+      const updatedTeam = em.assign(team, updateTeamDto);
+      const { upToDateDuration } = updateTeamDto;
+      const { docs, qnas } = await this.getAffectedPosts(
+        team,
+        upToDateDuration,
+      );
 
-    const { upToDateDuration } = updateTeamDto;
-    const { docs, qnas } = await this.changeUpToDateDuration(
-      team,
-      upToDateDuration,
-    );
-
-    try {
-      await this.em.flush();
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof UniqueConstraintViolationException) {
-        throw new BadRequestException(teamSlugTakenBadRequest);
+      if ((docs || qnas) && upToDateDuration !== undefined) {
+        const newDuration = dayjs.duration(
+          upToDateDuration ?? team.organization.upToDateDuration,
+        );
+        [...docs, ...qnas].forEach((post) => {
+          em.assign(post, {
+            outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
+          });
+        });
       }
 
-      throw new InternalServerErrorException(internalServerError);
-    }
+      try {
+        await em.flush();
+      } catch (err) {
+        if (err instanceof UniqueConstraintViolationException) {
+          this.logger.error(err);
+          throw new BadRequestException(teamSlugTakenBadRequest);
+        }
 
-    const collectionName = team.organization.id;
-    try {
-      await this.solrCli.getVersionAndReplaceDocs(collectionName, [
+        throw err;
+      }
+
+      await this.solrCli.getVersionAndReplaceDocs(team.organization.id, [
         new TeamDocParams(updatedTeam),
         ...docs.map((doc) => new DocDocParams(doc)),
         ...qnas.map((qna) => new QnaDocParams(qna)),
       ]);
-    } catch (err) {
-      this.logger.error(err);
-    }
 
-    return updatedTeam;
+      return updatedTeam;
+    });
   }
 
   /**
@@ -214,25 +173,14 @@ export class TeamService {
    * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async delete(team: TeamEntity): Promise<void> {
-    const collectionName = team.organization.id;
-    const { id } = team;
-    await this.entityService.safeToDelete(team);
-
-    try {
-      await this.em.removeAndFlush(team);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
-
-    try {
-      await this.solrCli.deleteDocs(collectionName, [
+    await this.em.transactional(async (em): Promise<void> => {
+      const { id } = team;
+      await em.removeAndFlush(team);
+      await this.solrCli.deleteDocs(team.organization.id, [
         { id },
         { query: `team:${id}` },
       ]);
-    } catch (err) {
-      this.logger.error(err);
-    }
+    });
   }
 
   /**
@@ -242,9 +190,8 @@ export class TeamService {
    * @param upToDateDuration The new value for the up-to-date duration as an ISO 8601 duration string.
    *
    * @returns All of the posts that were updated.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any error.
    */
-  async changeUpToDateDuration(
+  async getAffectedPosts(
     team: TeamEntity,
     upToDateDuration: string | null | undefined,
   ): Promise<{ docs: DocEntity[]; qnas: QnaEntity[] }> {
@@ -255,29 +202,15 @@ export class TeamService {
       return { docs: [], qnas: [] };
     }
 
-    try {
-      const docs = await this.em.find(DocEntity, {
-        team,
-        upToDateDuration: null,
-      });
-      const qnas = await this.em.find(QnaEntity, {
-        team,
-        upToDateDuration: null,
-      });
+    const docs = await this.em.find(DocEntity, {
+      team,
+      upToDateDuration: null,
+    });
+    const qnas = await this.em.find(QnaEntity, {
+      team,
+      upToDateDuration: null,
+    });
 
-      const newDuration = dayjs.duration(
-        upToDateDuration ?? team.organization.upToDateDuration,
-      );
-      [...docs, ...qnas].forEach((post) => {
-        this.em.assign(post, {
-          outOfDateAt: dayjs(post.markedUpToDateAt).add(newDuration).toDate(),
-        });
-      });
-
-      return { docs, qnas };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return { docs, qnas };
   }
 }

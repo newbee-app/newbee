@@ -10,9 +10,9 @@ import { QnaController } from './qna.controller';
 @Module({
   imports: [
     MikroOrmModule.forFeature([QnaEntity]),
-    TeamModule,
-    TeamMemberModule,
     OrgMemberModule,
+    TeamMemberModule,
+    TeamModule,
   ],
   providers: [QnaService],
   controllers: [QnaController],

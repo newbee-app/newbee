@@ -1,9 +1,17 @@
-import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
-import { UserEntity, UserInvitesEntity } from '@newbee/api/shared/data-access';
+import { MikroORM } from '@mikro-orm/postgresql';
+import {
+  AdminControlsEntity,
+  UserDocParams,
+  UserEntity,
+  UserInvitesEntity,
+} from '@newbee/api/shared/data-access';
+import { adminControlsId, solrAppCollection } from '@newbee/api/shared/util';
 import { UserRoleEnum } from '@newbee/shared/util';
+import { SolrCli } from '@newbee/solr-cli';
 import { isEmail } from 'class-validator';
 import { Command, OptionValues } from 'commander';
 import { v4 } from 'uuid';
+import solrConfig from '../../solr/solr.config';
 import config from '../mikro-orm.config';
 
 /**
@@ -23,6 +31,11 @@ function main(): void {
     .option('-n, --name <name>', 'The name to associate with the admin user')
     .action(create);
 
+  program
+    .command('controls')
+    .description('Create admin controls')
+    .action(createAdminControls);
+
   program.parse(process.argv);
 }
 
@@ -33,62 +46,81 @@ function main(): void {
  * @param options Additional options for the new admin user.
  */
 async function create(email: string, options: OptionValues): Promise<void> {
-  const orm = await MikroORM.init(config);
-  const em = orm.em.fork();
-  await createOrUpgradeAdminUser(em, email, options['name']);
-  await em.flush();
-  console.log('Successfully created admin user');
-  await orm.close();
-}
-
-/**
- * A helper function for creating a new admin user or upgrading an existing user to have admin privileges.
- *
- * NOTE: The function does NOT call flush, so it's up to the caller to do so.
- *
- * @param em The entity manager to use.
- * @param email The email for the admin user.
- * @param name The name for the admin user, if creating a new one.
- *
- * @throws {Error} If the email is not a valid email value.
- */
-export async function createOrUpgradeAdminUser(
-  em: EntityManager,
-  email: string,
-  name?: string | undefined | null,
-): Promise<void> {
+  let name: string | undefined = options['name'];
   email = email.trim();
   name = name?.trim();
   if (!isEmail(email)) {
     throw new Error(`${email} is not a valid email value`);
   }
 
-  const existingUser = await em.findOne(UserEntity, { email });
-  if (existingUser) {
-    console.log(
-      `Found an existing user with the email ${email}, upgrading the existing user's privileges`,
-    );
-    em.assign(existingUser, {
-      role: UserRoleEnum.Admin,
-      updatedAt: new Date(),
-    });
+  const orm = await MikroORM.init(config);
+  const em = orm.em.fork();
+  let user = await em.findOne(UserEntity, { email });
+  const isReplace = !!user;
+  if (user && user.role === UserRoleEnum.Admin) {
+    console.log('User is already an admin, no changes necessary');
+    await orm.close();
     return;
   }
 
-  console.log(`Creating a new admin user with the email ${email}`);
-  let userInvites = await em.findOne(UserInvitesEntity, { email });
-  userInvites = userInvites ?? new UserInvitesEntity(v4(), email);
-  const user = new UserEntity(
-    v4(),
-    email,
-    name || 'NewBee Admin',
-    null,
-    null,
-    null,
-    UserRoleEnum.Admin,
-    userInvites,
-  );
-  em.persist(user);
+  await em.transactional(async (em) => {
+    if (user) {
+      console.log(
+        `Found an existing user with the email ${email}, upgrading the existing user's privileges`,
+      );
+      user = em.assign(user, { role: UserRoleEnum.Admin });
+    } else {
+      console.log(`Creating a new admin user with the email ${email}`);
+      let userInvites = await em.findOne(UserInvitesEntity, { email });
+      userInvites = userInvites ?? new UserInvitesEntity(v4(), email);
+      user = new UserEntity(
+        v4(),
+        email,
+        name || 'NewBee Admin',
+        null,
+        null,
+        null,
+        UserRoleEnum.Admin,
+        userInvites,
+      );
+      em.persist(user);
+    }
+    await em.flush();
+
+    const solrCli = new SolrCli(solrConfig);
+    if (isReplace) {
+      await solrCli.getVersionAndReplaceDocs(
+        solrAppCollection,
+        new UserDocParams(user),
+      );
+    } else {
+      await solrCli.addDocs(solrAppCollection, new UserDocParams(user));
+    }
+  });
+
+  console.log('Successfully created admin user');
+  await orm.close();
+}
+
+/**
+ * Creates the NewBee instance's admin controls.
+ */
+async function createAdminControls(): Promise<void> {
+  const orm = await MikroORM.init(config);
+  const em = orm.em.fork();
+  let adminControls = await em.findOne(AdminControlsEntity, adminControlsId);
+  if (adminControls) {
+    console.log('Admin controls already exist, no changes necessary');
+    await orm.close();
+    return;
+  }
+
+  console.log('Creating new admin controls');
+  adminControls = new AdminControlsEntity();
+  await em.persistAndFlush(adminControls);
+  console.log('Successfully created admin controls');
+
+  await orm.close();
 }
 
 main();

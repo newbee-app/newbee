@@ -88,7 +88,6 @@ describe('RoleGuard', () => {
     });
     teamService = createMock<TeamService>({
       findOneByOrgAndSlug: jest.fn().mockResolvedValue(testTeamEntity1),
-      findOneById: jest.fn().mockResolvedValue(testTeamEntity1),
     });
     teamMemberService = createMock<TeamMemberService>({
       findOneByTeamAndOrgMember: jest

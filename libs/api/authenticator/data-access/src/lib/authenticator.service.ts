@@ -1,20 +1,15 @@
-import {
-  NotFoundError,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthenticatorEntity,
-  EntityService,
   UserEntity,
 } from '@newbee/api/shared/data-access';
 import { challengeFalsy, type AppConfig } from '@newbee/api/shared/util';
@@ -25,7 +20,6 @@ import {
   authenticatorTakenBadRequest,
   authenticatorVerifyBadRequest,
   forbiddenError,
-  internalServerError,
 } from '@newbee/shared/util';
 import type { VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import {
@@ -48,7 +42,6 @@ export class AuthenticatorService {
   constructor(
     private readonly em: EntityManager,
     private readonly configService: ConfigService<AppConfig, true>,
-    private readonly entityService: EntityService,
     private readonly userService: UserService,
   ) {}
 
@@ -83,6 +76,7 @@ export class AuthenticatorService {
         userVerification: 'required',
       },
     });
+
     await this.userService.update(user, { challenge: options.challenge });
     return options;
   }
@@ -95,7 +89,6 @@ export class AuthenticatorService {
    *
    * @returns The newly created authenticator.
    * @throws {BadRequestException} `authenticatorVerifyBadRequest`, `authenticatorTakenBadRequest`. If the authenticator cannot be verified or it's already being used.
-   * @throws {InternalServerErrorException} `internalServerError`. For any other type of error.
    */
   async create(
     response: RegistrationResponseJSON,
@@ -147,13 +140,12 @@ export class AuthenticatorService {
       await this.em.persistAndFlush(authenticator);
       return authenticator;
     } catch (err) {
-      this.logger.error(err);
-
       if (err instanceof UniqueConstraintViolationException) {
+        this.logger.error(err);
         throw new BadRequestException(authenticatorTakenBadRequest);
       }
 
-      throw new InternalServerErrorException(internalServerError);
+      throw err;
     }
   }
 
@@ -163,15 +155,9 @@ export class AuthenticatorService {
    * @param user The user to look for.
    *
    * @returns The associated authenticator instances. An empty array if non could be found.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async findAllByUser(user: UserEntity): Promise<AuthenticatorEntity[]> {
-    try {
-      return await this.em.find(AuthenticatorEntity, { user });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.find(AuthenticatorEntity, { user });
   }
 
   /**
@@ -180,15 +166,9 @@ export class AuthenticatorService {
    * @param email The user email to look for.
    *
    * @returns The associated authenticator instances. An empty array if none could be found.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async findAllByEmail(email: string): Promise<AuthenticatorEntity[]> {
-    try {
-      return await this.em.find(AuthenticatorEntity, { user: { email } });
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    return await this.em.find(AuthenticatorEntity, { user: { email } });
   }
 
   /**
@@ -197,21 +177,14 @@ export class AuthenticatorService {
    * @param id The database ID of the authenticator to look for.
    *
    * @returns The assocaited authenticator instance.
-   * @throws {NotFoundException} `authenticatorIdNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found.
    */
   async findOneById(id: string): Promise<AuthenticatorEntity> {
-    try {
-      return await this.em.findOneOrFail(AuthenticatorEntity, id);
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(authenticatorIdNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const authenticator = await this.em.findOne(AuthenticatorEntity, id);
+    if (!authenticator) {
+      throw new NotFoundException(authenticatorIdNotFound);
     }
+    return authenticator;
   }
 
   /**
@@ -220,23 +193,18 @@ export class AuthenticatorService {
    * @param credentialId The credential ID to look for.
    *
    * @returns The associated authenticator instance.
-   * @throws {NotFoundException} `authenticatorCredentialIdNotFound`. If the ORM throws a `NotFoundError`.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other type of error.
+   * @throws {NotFoundException} `authenticatorCredentialIdNotFound`. If the authenticator cannot be found.
    */
   async findOneByCredentialId(
     credentialId: string,
   ): Promise<AuthenticatorEntity> {
-    try {
-      return await this.em.findOneOrFail(AuthenticatorEntity, { credentialId });
-    } catch (err) {
-      this.logger.error(err);
-
-      if (err instanceof NotFoundError) {
-        throw new NotFoundException(authenticatorCredentialIdNotFound);
-      }
-
-      throw new InternalServerErrorException(internalServerError);
+    const authenticator = await this.em.findOne(AuthenticatorEntity, {
+      credentialId,
+    });
+    if (!authenticator) {
+      throw new NotFoundException(authenticatorCredentialIdNotFound);
     }
+    return authenticator;
   }
 
   /**
@@ -249,7 +217,6 @@ export class AuthenticatorService {
    * @returns The updated authenticator.
    * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID does not match the given user ID.
-   * @throws {InternalServerErrorException} `internalServerError`. If any other error is thrown.
    */
   async updateCounterById(
     id: string,
@@ -264,13 +231,8 @@ export class AuthenticatorService {
     authenticator = this.em.assign(authenticator, {
       counter,
     });
-    try {
-      await this.em.flush();
-      return authenticator;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.flush();
+    return authenticator;
   }
 
   /**
@@ -283,7 +245,6 @@ export class AuthenticatorService {
    * @returns The updated authenticator.
    * @throws {NotFoundException} `authenticatorIdNotFound`. If the authenticator cannot be found by the given ID.
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user and the provided user IDs do not match.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws any other error.
    */
   async updateNameById(
     id: string,
@@ -298,13 +259,8 @@ export class AuthenticatorService {
     authenticator = this.em.assign(authenticator, {
       name,
     });
-    try {
-      await this.em.flush();
-      return authenticator;
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.flush();
+    return authenticator;
   }
 
   /**
@@ -314,7 +270,6 @@ export class AuthenticatorService {
    * @param userId The ID of the user making the request.
    *
    * @throws {ForbiddenException} `forbiddenError`. If the authenticator's user ID and the given user IDs do not match.
-   * @throws {InternalServerErrorException} `internalServerError`. If the ORM throws an error.
    */
   async deleteOneById(id: string, userId: string): Promise<void> {
     const authenticator = await this.findOneById(id);
@@ -322,12 +277,6 @@ export class AuthenticatorService {
       throw new ForbiddenException(forbiddenError);
     }
 
-    await this.entityService.safeToDelete(authenticator);
-    try {
-      await this.em.removeAndFlush(authenticator);
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException(internalServerError);
-    }
+    await this.em.removeAndFlush(authenticator);
   }
 }
