@@ -1,0 +1,47 @@
+{
+  "name": "oriz",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publishable/oriz/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/publishable/oriz",
+        "main": "libs/publishable/oriz/src/index.ts",
+        "tsConfig": "libs/publishable/oriz/tsconfig.lib.json",
+        "assets": ["libs/publishable/oriz/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs oriz {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/publishable/oriz/**/*.ts",
+          "libs/publishable/oriz/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/publishable/oriz/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

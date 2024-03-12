@@ -192,6 +192,7 @@
       "@newbee/ngx-codemirror": [
         "libs/publishable/ngx-codemirror/src/index.ts"
       ],
+      "@newbee/oriz": ["libs/publishable/oriz/src/index.ts"],
       "@newbee/passport-magic-link-login": [
         "libs/publishable/passport-magic-link-login/src/index.ts"
       ],
