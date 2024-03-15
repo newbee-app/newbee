@@ -2,6 +2,7 @@ import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { adminControlsId } from '@newbee/api/shared/util';
+import { Permissions } from '@newbee/oriz';
 import type {
   AdminControlsRelation,
   DocNoOrg,
@@ -23,9 +24,12 @@ import type {
 import {
   OrgRoleEnum,
   TeamRoleEnum,
+  UserRoleEnum,
   cannotDeleteMaintainerBadReqest,
   cannotDeleteOnlyOrgOwnerBadRequest,
   cannotDeleteOnlyTeamOwnerBadRequest,
+  compareOrgRoles,
+  compareTeamRoles,
   defaultLimit,
 } from '@newbee/shared/util';
 import { ClassConstructor } from 'class-transformer';
@@ -33,20 +37,28 @@ import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import {
   AdminControlsEntity,
+  AuthenticatorEntity,
   DocEntity,
   OrgMemberEntity,
+  OrgMemberInviteEntity,
   OrganizationEntity,
   PostEntity,
   QnaEntity,
   TeamEntity,
   TeamMemberEntity,
   UserEntity,
+  UserInvitesEntity,
   WaitlistMemberEntity,
 } from '../entity';
+import { OrizAction, OrizSubject } from '../type';
 
 /**
  * A helper service for anything to do with entities.
- * Logic should be put here when it's needed across several modules, which might otherwise cause circular dependencies.
+ * All functions in the service should be static.
+ *
+ * Put functions in here when:
+ * - It's needed across several modules, which might otherwise cause circular dependencies.
+ * - You want to make it a function of an entity class (entity classes should be kept clean of everything but its properties and constructor).
  */
 @Injectable()
 export class EntityService {
@@ -667,6 +679,222 @@ export class EntityService {
   static createPublicUser(user: UserEntity): PublicUser {
     const { email, name, displayName, phoneNumber } = user;
     return { email, name, displayName, phoneNumber };
+  }
+
+  /**
+   * Generate permissions using the given options.
+   *
+   * @param options The options to consider when examining permissions.
+   *
+   * @returns A permissions object based on the given options.
+   */
+  static permissionsFor(options: {
+    adminControls?: AdminControlsEntity;
+    orgMember?: OrgMemberEntity;
+    teamMember?: TeamMemberEntity;
+    user?: UserEntity;
+  }): Permissions<OrizAction, OrizSubject> {
+    const permissions = new Permissions<OrizAction, OrizSubject>();
+    permissions.addActionAlias('all', ['create', 'read', 'update', 'delete']);
+    const { adminControls, orgMember, teamMember, user } = options;
+
+    // START: admin controls-related permissions
+
+    if (adminControls) {
+      // allow users to register if admin controls allow registration
+      if (adminControls.allowRegistration) {
+        permissions.allow('create', UserEntity);
+      }
+
+      // allow users to waitlist if admin controls allow waitlist  but does not allow registration
+      else if (adminControls.allowWaitlist) {
+        permissions.allow('create', WaitlistMemberEntity);
+      }
+    }
+
+    // END: admin controls-related permissions
+
+    // START: user-related permissions
+
+    if (user) {
+      // allow users to do all actions related to authenticators if it's their authenticator
+      permissions.allow('all', AuthenticatorEntity, {
+        conditional: (authenticator) => user.id === authenticator.user.id,
+      });
+
+      // allow users to read, update, and delete themselves
+      permissions.allow(['read', 'update', 'delete'], UserEntity, {
+        conditional: (subjectUser) => user.id === subjectUser.id,
+      });
+
+      // allow users to read their own invites object
+      permissions.allow('read', UserInvitesEntity, {
+        conditional: (userInvites) => user.id === userInvites.user?.id,
+      });
+
+      // allow users to create orgs
+      permissions.allow('create', OrganizationEntity);
+
+      // allow admins to read and update admin controls and do all actions on waitlist members
+      if (user.role === UserRoleEnum.Admin) {
+        permissions.allow(['read', 'update'], AdminControlsEntity);
+        permissions.allow('all', WaitlistMemberEntity);
+      }
+    }
+
+    // END: user-related permissions
+
+    // START: org member-related permissions
+
+    if (orgMember) {
+      // allow all org members to read their org
+      permissions.allow('read', OrganizationEntity, {
+        conditional: (org) => orgMember.organization.id === org.id,
+      });
+
+      // allow all org members to read other org members in their org
+      permissions.allow('read', OrgMemberEntity, {
+        conditional: (subjectOrgMember) =>
+          orgMember.organization.id === subjectOrgMember.organization.id,
+      });
+
+      // allow all org members to create org member invites in their org whose role is >= the invite's
+      permissions.allow('create', OrgMemberInviteEntity, {
+        conditional: (orgMemberInvite) =>
+          orgMember.organization.id === orgMemberInvite.organization.id &&
+          compareOrgRoles(orgMember.role, orgMemberInvite.role) >= 0,
+      });
+
+      // allow all org members to create and read org member invites in their org
+      permissions.allow('read', OrgMemberInviteEntity, {
+        conditional: (orgMemberInvite) =>
+          orgMember.organization.id === orgMemberInvite.organization.id,
+      });
+
+      // allow all org members to create or read a team in their org
+      permissions.allow(['create', 'read'], TeamEntity, {
+        conditional: (team) =>
+          orgMember.organization.id === team.organization.id,
+      });
+
+      // allow all org members to read other team members in their org
+      permissions.allow('read', TeamMemberEntity, {
+        conditional: (subjectTeamMember) =>
+          orgMember.organization.id ===
+          subjectTeamMember.orgMember.organization.id,
+      });
+
+      // allow all org members to create, read, or update a post in their org
+      permissions.allow(['create', 'read', 'update'], [DocEntity, QnaEntity], {
+        conditional: (post) =>
+          orgMember.organization.id === post.organization.id,
+      });
+
+      if (compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) {
+        // only allow org moderators to update their org
+        permissions.allow('update', OrganizationEntity, {
+          conditional: (org) => orgMember.organization.id === org.id,
+        });
+
+        // only allow org moderators to update and delete org members in their org if their role is >= the subject's
+        permissions.allow(['update', 'delete'], OrgMemberEntity, {
+          conditional: (subjectOrgMember) =>
+            orgMember.organization.id === subjectOrgMember.organization.id &&
+            compareOrgRoles(orgMember.role, subjectOrgMember.role) >= 0,
+        });
+
+        // only allow org moderators to update and delete org member invites in their org
+        permissions.allow(['update', 'delete'], OrgMemberInviteEntity, {
+          conditional: (orgMemberInvite) =>
+            orgMember.organization.id === orgMemberInvite.organization.id,
+        });
+      }
+
+      if (orgMember.role === OrgRoleEnum.Owner) {
+        // only allow org owners to delete their org
+        permissions.allow('delete', OrganizationEntity, {
+          conditional: (org) => orgMember.organization.id === org.id,
+        });
+      }
+    }
+
+    // END: org member-related permissions
+
+    // START: bound-spanning permissions
+
+    // allow org moderators and team moderators to update their teams or teams in their org
+    permissions.allow('update', TeamEntity, {
+      conditional: (team) =>
+        !!(
+          (orgMember &&
+            orgMember.organization.id === team.organization.id &&
+            compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) ||
+          (teamMember &&
+            teamMember.team.id === team.id &&
+            compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0)
+        ),
+    });
+
+    // allow org moderators and team owners to update tehir teams or teams in their org
+    permissions.allow('delete', TeamEntity, {
+      conditional: (team) =>
+        !!(
+          (orgMember &&
+            orgMember.organization.id === team.organization.id &&
+            compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) ||
+          (teamMember &&
+            teamMember.team.id === team.id &&
+            teamMember.role === TeamRoleEnum.Owner)
+        ),
+    });
+
+    // allow org moderators and any team member to create team members in their org/team
+    permissions.allow('create', TeamMemberEntity, {
+      conditional: (subjectTeamMember) =>
+        !!(
+          (orgMember &&
+            orgMember.organization.id ===
+              subjectTeamMember.orgMember.organization.id &&
+            compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) ||
+          (teamMember &&
+            teamMember.team.id === subjectTeamMember.team.id &&
+            compareTeamRoles(teamMember.role, subjectTeamMember.role) >= 0)
+        ),
+    });
+
+    // allow org moderators and team moderators to update other team members if their role >= the subject's
+    permissions.allow(['update', 'delete'], TeamMemberEntity, {
+      conditional: (subjectTeamMember) =>
+        !!(
+          (orgMember &&
+            orgMember.organization.id ===
+              subjectTeamMember.orgMember.organization.id &&
+            compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0) ||
+          (teamMember &&
+            teamMember.team.id === subjectTeamMember.team.id &&
+            compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0 &&
+            compareTeamRoles(teamMember.role, subjectTeamMember.role) >= 0)
+        ),
+    });
+
+    // allow org moderators, team moderators, and post maintainers to delete posts in their org/team
+    permissions.allow('delete', [DocEntity, QnaEntity], {
+      conditional: (post) =>
+        !!(
+          (orgMember &&
+            orgMember.organization.id === post.organization.id &&
+            (compareOrgRoles(orgMember.role, OrgRoleEnum.Moderator) >= 0 ||
+              orgMember.id === post.maintainer?.id)) ||
+          (teamMember &&
+            teamMember.team.id === post.team?.id &&
+            compareTeamRoles(teamMember.role, TeamRoleEnum.Moderator) >= 0)
+        ),
+    });
+
+    // END: bound-spanning permissions
+
+    permissions.lock();
+    return permissions;
   }
 
   // END: Misc

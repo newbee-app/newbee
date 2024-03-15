@@ -38,7 +38,7 @@ export class Permissions<
       string,
       Map<
         string | null,
-        { conditional: Func<boolean>; reverse: boolean } | null
+        { conditional: (subject: any) => boolean; reverse: boolean } | null
       >
     >
   >();
@@ -68,7 +68,7 @@ export class Permissions<
   }
 
   /**
-   * Adds the specified action alias to the object and associate it with the given actions.
+   * Adds the specified action alias to this object and associate it with the given actions.
    * If an alias of the given name already exists, any unique actions will be added on top and old associations will not be overwritten.
    *
    * Does nothing if permissions are locked.
@@ -338,7 +338,7 @@ export class Permissions<
 
       const { conditional, reverse } = condition;
       if (typeof subject === 'function' || typeof subject === 'string') {
-        return reverse;
+        return !reverse;
       }
 
       return conditional(subject) !== reverse;
